@@ -72,6 +72,10 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class RomanWhatToDoAi implements IWhatToDoAi {
 
+	public static final int NUMBER_OF_SMALL_LIVINGHOUSE_BEDS = 10;
+	public static final int NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS = 30;
+	public static final int NUMBER_OF_BIG_LIVINGHOUSE_BEDS = 100;
+	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -80,7 +84,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
 	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
 	private final ArmyGeneral armyGeneral;
-	BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
+	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 
 	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
@@ -281,9 +285,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		}
 
 		// destroy livinghouses
-		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) * 10
-				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * 30
-				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * 100
+		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
 		if (numberOfFreeBeds >= 11 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
@@ -423,15 +427,15 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		}
 
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
-		if (futureNumberOfBearers < 10 || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 3 > futureNumberOfBearers) {
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS;
+		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 3 > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 3) {
 				return construct(SMALL_LIVINGHOUSE);
-			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) >= 2) {
-				return construct(BIG_LIVINGHOUSE);
-			} else {
+			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) < 2) {
 				return construct(MEDIUM_LIVINGHOUSE);
+			} else {
+				return construct(BIG_LIVINGHOUSE);
 			}
 		}
 		return false;

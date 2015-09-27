@@ -76,7 +76,7 @@ public class LooserGeneral implements ArmyGeneral {
 		allMyTroops.addAll(situation.bowmenPositions);
 		allMyTroops.addAll(situation.spearmenPositions);
 		allMyTroops.addAll(situation.swordsmenPositions);
-		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(playerId).get(0));
+		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(playerId).iterator().next());
 	}
 
 	private AttackInformation determineAttackInformation(Situation situation) {

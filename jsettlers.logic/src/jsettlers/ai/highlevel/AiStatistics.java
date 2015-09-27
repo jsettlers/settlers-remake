@@ -56,7 +56,7 @@ import jsettlers.logic.player.Team;
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
  * multiple times within one AiExecutor step triggerd by the game clock.
- * 
+ *
  * @author codingberlin
  */
 public class AiStatistics {
@@ -108,7 +108,7 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
-		for (PlayerStatistic playerStatistic: playerStatistics) {
+		for (PlayerStatistic playerStatistic : playerStatistics) {
 			playerStatistic.clearAll();
 		}
 		sortedRiversInDefaultPartition.clear();
@@ -139,8 +139,9 @@ public class AiStatistics {
 
 		if (building.getBuildingType().isMine() && building.isOccupied()) {
 			MineBuilding mine = (MineBuilding) building;
-			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD && mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
-				playerStatistic.deadMines.add(mine.getPos());
+			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD
+					&& mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
+				playerStatistic.deadMines.addNoCollission(mine.getPos().x, mine.getPos().y);
 			}
 		}
 	}
@@ -188,12 +189,12 @@ public class AiStatistics {
 							&& player.playerId != movablePlayerId
 							&& EMovableType.isSoldier(movableType)
 							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
-						playerStatistics[player.playerId].enemyTroopsInTown.add(movable.getPos());
+						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}
 				}
 				if (player == null) {
 					updateFreeLand(x, y);
-				} else {
+				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn){
 					updatePlayerLand(x, y, player);
 				}
 			}
@@ -204,12 +205,12 @@ public class AiStatistics {
 		int playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
 		updateBorderlandNextToFreeLand(playerStatistic, x, y);
-		playerStatistic.land.addNoCollission(x, y);
+		playerStatistic.landToBuildOn.addNoCollission(x, y);
 		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 		if (o != null) {
-			if (o.hasCuttableObject(STONE)) {
+			if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.stones.addNoCollission(x, y);
-			} else if (o.hasCuttableObject(TREE_ADULT)) {
+			} else if (o.hasCuttableObject(TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.trees.addNoCollission(x, y);
 			}
 		}
@@ -227,6 +228,20 @@ public class AiStatistics {
 			}
 			movables.add(new ShortPoint2D(x, y));
 		}
+	}
+
+	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
+		byte[] playerIds = new byte[4];
+		playerIds[0] = partitionsGrid.getPlayerIdAt(x - 2, y - 2);
+		playerIds[1] = partitionsGrid.getPlayerIdAt(x - 2, y + 2);
+		playerIds[2] = partitionsGrid.getPlayerIdAt(x + 2, y - 2);
+		playerIds[3] = partitionsGrid.getPlayerIdAt(x + 2, y + 2);
+		for (byte positionPlayerId: playerIds) {
+			if (positionPlayerId != playerId) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void updateFreeLand(short x, short y) {
@@ -390,9 +405,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].trees;
 	}
 
-	public AiPositions getLandForPlayer(byte playerId) {
-		return playerStatistics[playerId].land;
-	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
+	public AiPositions getLandForPlayer ( byte playerId){
 		return playerStatistics[playerId].landToBuildOn;
 	}
 
@@ -455,9 +468,6 @@ public class AiStatistics {
 	public static ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
 		if (points.isEmpty()) {
 			return null;
-	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
-		if (points.isEmpty()) {
-			return null;
 		}
 
 		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
@@ -465,25 +475,6 @@ public class AiStatistics {
 
 	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points,
 			int amountOfPointsToDetect) {
-		if (amountOfPointsToDetect <= 0) {
-			return Collections.emptyList();
-		}
-
-		if (points.size() <= amountOfPointsToDetect) {
-			return points;
-		}
-
-		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override
-			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
-				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
-			}
-		});
-
-		return points.subList(0, amountOfPointsToDetect);
-	}
-
-	public List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
 			return Collections.EMPTY_LIST;
 		}
@@ -551,11 +542,11 @@ public class AiStatistics {
 		return new ShortPoint2D(averageX / points.size(), averageY / points.size());
 	}
 
-	public List<ShortPoint2D> getEnemiesInTownOf(byte playerId) {
+	public AiPositions getEnemiesInTownOf(byte playerId) {
 		return playerStatistics[playerId].enemyTroopsInTown;
 	}
 
-	public List<ShortPoint2D> getDeadMinesOf(byte playerId) {
+	public AiPositions getDeadMinesOf(byte playerId) {
 		return playerStatistics[playerId].deadMines;
 	}
 
@@ -566,21 +557,14 @@ public class AiStatistics {
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		private short partitionIdToBuildOn;
 		private IPartitionData materials;
-		private AiPositions land;
+		private AiPositions landToBuildOn;
 		private AiPositions borderLandNextToFreeLand;
-		private short partitionIdToBuildOn;
-		private IPartitionData materials;
-		private List<ShortPoint2D> landToBuildOn;
-		private List<ShortPoint2D> borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		private AiPositions stones;
 		private AiPositions trees;
 		private AiPositions rivers;
-		private List<ShortPoint2D> stones;
-		private List<ShortPoint2D> trees;
-		private List<ShortPoint2D> rivers;
-		private List<ShortPoint2D> enemyTroopsInTown;
-		private List<ShortPoint2D> deadMines;
+		private AiPositions enemyTroopsInTown;
+		private AiPositions deadMines;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
@@ -590,15 +574,10 @@ public class AiStatistics {
 			stones = new AiPositions();
 			trees = new AiPositions();
 			rivers = new AiPositions();
-			land = new AiPositions();
+			landToBuildOn = new AiPositions();
+			enemyTroopsInTown = new AiPositions();
+			deadMines = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
-			stones = new ArrayList<ShortPoint2D>();
-			trees = new ArrayList<ShortPoint2D>();
-			rivers = new ArrayList<ShortPoint2D>();
-			landToBuildOn = new ArrayList<ShortPoint2D>();
-			enemyTroopsInTown = new Vector<ShortPoint2D>();
-			deadMines = new Vector<ShortPoint2D>();
-			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
