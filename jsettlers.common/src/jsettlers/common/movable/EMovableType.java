@@ -17,6 +17,9 @@ package jsettlers.common.movable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.selectable.ESelectionType;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Defines all types of movables with the tool they need, their selection level and if they need their players ground.
  *
@@ -77,6 +80,11 @@ public enum EMovableType {
 	private final boolean needsPlayersGround;
 	private final short stepDurationMs;
 
+	private static final Set<EMovableType> soldiers = EnumSet.of(
+			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3,
+			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
+
 	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
 		this(tool, selectionType, needsPlayersGround, DEFAULT_STEP_DURATION_SECONDS);
 	}
@@ -116,5 +124,9 @@ public enum EMovableType {
 
 	public short getStepDurationMs() {
 		return stepDurationMs;
+	}
+
+	public static boolean isSoldier(EMovableType movableType) {
+		return soldiers.contains(movableType);
 	}
 }

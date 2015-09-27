@@ -12,53 +12,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.player;
+package jsettlers.ai.army;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
+/**
+ * The army general can command the troops of the computer player.
+ * The idea behind different army generals is, that easy, middle and strong players
+ * can be constructed by different difficult economies with different army generals.
+ *
+ * @author codingberlin
+ */
+public interface ArmyGeneral {
 
-public class Team implements Serializable {
-	private static final long serialVersionUID = 8051219906193296800L;
+	/**
+	 * Let move troops to defeat or attack
+	 */
+	void commandTroops();
 
-	private final byte teamId;
-	private final LinkedList<Player> members = new LinkedList<Player>();
+	/**
+	 * - upgrades soldiers
+	 * - enable and disable recrution (not implemented yet)
+	 * - choose the weapons to produce (not implemented yet)
+	 */
+	void levyUnits();
 
-	public Team(byte teamId) {
-		this.teamId = teamId;
-
-	}
-
-	public void registerPlayer(Player player) {
-		members.add(player);
-	}
-
-	public boolean isMember(byte playerId) {
-		for (Player member: members) {
-			if (member.playerId == playerId) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public List<Player> getMembers() {
-		return members;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("Team " + getTeamId() + "\n");
-		for (Player curr : members) {
-			builder.append(curr.toString());
-		}
-
-		return builder.toString();
-	}
-
-	public byte getTeamId() {
-		return teamId;
-	}
 }

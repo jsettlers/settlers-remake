@@ -73,6 +73,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
+	private final Team[] teams;
+
 	final short[] partitions;
 	private final byte[] towers;
 
@@ -91,9 +93,11 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		this.players = new Player[numberOfPlayers]; // create the players.
 		this.blockedPartitionsForPlayers = new short[numberOfPlayers];
+		this.teams = new Team[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			Team team = new Team(playerId);
 			this.players[playerId] = new Player(playerId, team);
+			this.teams[playerId] = team;
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 
@@ -818,6 +822,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
 		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialPrioritiesSettings(materialTypeForPriority);
+	}
+
+	public Team[] getTeams() {
+		return teams;
 	}
 
 }

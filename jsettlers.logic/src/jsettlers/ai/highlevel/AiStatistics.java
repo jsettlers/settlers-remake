@@ -23,13 +23,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -46,6 +40,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
@@ -56,16 +51,19 @@ import jsettlers.logic.map.grid.partition.Partition;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.player.Team;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
  * multiple times within one AiExecutor step triggerd by the game clock.
- * 
+ *
  * @author codingberlin
  */
 public class AiStatistics {
 
 	private static final short BORDER_LAND_WIDTH = 10;
+	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
+	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
@@ -99,7 +97,6 @@ public class AiStatistics {
 		for (int i = 0; i < sortedResourceTypes.length; i++) {
 			sortedResourceTypes[i] = new AiPositions();
 		}
-
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -135,11 +132,18 @@ public class AiStatistics {
 	}
 
 	private void updateBuildingPositions(PlayerStatistic playerStatistic, EBuildingType type, Building building) {
-
 		if (!playerStatistic.buildingPositions.containsKey(type)) {
 			playerStatistic.buildingPositions.put(type, new ArrayList<ShortPoint2D>());
 		}
 		playerStatistic.buildingPositions.get(type).add(building.getPos());
+
+		if (building.getBuildingType().isMine() && building.isOccupied()) {
+			MineBuilding mine = (MineBuilding) building;
+			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD
+					&& mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
+				playerStatistic.deadMines.addNoCollission(mine.getPos().x, mine.getPos().y);
+			}
+		}
 	}
 
 	private void updateBuildingsNumbers(PlayerStatistic playerStatistic, Building building, EBuildingType type) {
@@ -172,9 +176,25 @@ public class AiStatistics {
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
+				Movable movable = movableGrid.getMovableAt(x, y);
+				if (movable != null) {
+					byte movablePlayerId = movable.getPlayerId();
+					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
+					EMovableType movableType = movable.getMovableType();
+					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
+						movablePlayerStatistic.movablePositions.put(movableType, new Vector<ShortPoint2D>());
+					}
+					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
+					if (player != null
+							&& player.playerId != movablePlayerId
+							&& EMovableType.isSoldier(movableType)
+							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
+						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
+					}
+				}
 				if (player == null) {
 					updateFreeLand(x, y);
-				} else {
+				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn){
 					updatePlayerLand(x, y, player);
 				}
 			}
@@ -185,12 +205,12 @@ public class AiStatistics {
 		int playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
 		updateBorderlandNextToFreeLand(playerStatistic, x, y);
-		playerStatistic.land.addNoCollission(x, y);
+		playerStatistic.landToBuildOn.addNoCollission(x, y);
 		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 		if (o != null) {
-			if (o.hasCuttableObject(STONE)) {
+			if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.stones.addNoCollission(x, y);
-			} else if (o.hasCuttableObject(TREE_ADULT)) {
+			} else if (o.hasCuttableObject(TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.trees.addNoCollission(x, y);
 			}
 		}
@@ -208,6 +228,20 @@ public class AiStatistics {
 			}
 			movables.add(new ShortPoint2D(x, y));
 		}
+	}
+
+	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
+		byte[] playerIds = new byte[4];
+		playerIds[0] = partitionsGrid.getPlayerIdAt(x - 2, y - 2);
+		playerIds[1] = partitionsGrid.getPlayerIdAt(x - 2, y + 2);
+		playerIds[2] = partitionsGrid.getPlayerIdAt(x + 2, y - 2);
+		playerIds[3] = partitionsGrid.getPlayerIdAt(x + 2, y + 2);
+		for (byte positionPlayerId: playerIds) {
+			if (positionPlayerId != playerId) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void updateFreeLand(short x, short y) {
@@ -371,8 +405,8 @@ public class AiStatistics {
 		return playerStatistics[playerId].trees;
 	}
 
-	public AiPositions getLandForPlayer(byte playerId) {
-		return playerStatistics[playerId].land;
+	public AiPositions getLandForPlayer ( byte playerId){
+		return playerStatistics[playerId].landToBuildOn;
 	}
 
 	public AiPositions getBorderLandNextToFreeLandForPlayer(byte playerId) {
@@ -442,7 +476,7 @@ public class AiStatistics {
 	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points,
 			int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
-			return Collections.emptyList();
+			return Collections.EMPTY_LIST;
 		}
 
 		if (points.size() <= amountOfPointsToDetect) {
@@ -450,8 +484,7 @@ public class AiStatistics {
 		}
 
 		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override
-			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
 				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
 			}
 		});
@@ -487,19 +520,51 @@ public class AiStatistics {
 		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
 	}
 
-	private class PlayerStatistic {
+	public List<Byte> getEnemiesOf(byte playerId) {
+      	List<Byte> enemies = new ArrayList<Byte>();
+		for (Team team : partitionsGrid.getTeams()) {
+			if (!team.isMember(playerId)) {
+				for (Player player: team.getMembers()) {
+					enemies.add(player.playerId);
+				}
+			}
+		}
+		return enemies;
+	}
+
+	public ShortPoint2D calculateAveragePointFromList(List<ShortPoint2D> points) {
+		int averageX = 0;
+		int averageY = 0;
+		for (ShortPoint2D point : points) {
+			averageX += point.x;
+			averageY += point.y;
+		}
+		return new ShortPoint2D(averageX / points.size(), averageY / points.size());
+	}
+
+	public AiPositions getEnemiesInTownOf(byte playerId) {
+		return playerStatistics[playerId].enemyTroopsInTown;
+	}
+
+	public AiPositions getDeadMinesOf(byte playerId) {
+		return playerStatistics[playerId].deadMines;
+	}
+
+	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		private short partitionIdToBuildOn;
 		private IPartitionData materials;
-		private AiPositions land;
+		private AiPositions landToBuildOn;
 		private AiPositions borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		private AiPositions stones;
 		private AiPositions trees;
 		private AiPositions rivers;
+		private AiPositions enemyTroopsInTown;
+		private AiPositions deadMines;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
@@ -509,7 +574,9 @@ public class AiStatistics {
 			stones = new AiPositions();
 			trees = new AiPositions();
 			rivers = new AiPositions();
-			land = new AiPositions();
+			landToBuildOn = new AiPositions();
+			enemyTroopsInTown = new AiPositions();
+			deadMines = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -521,10 +588,12 @@ public class AiStatistics {
 		public void clearAll() {
 			materials = null;
 			buildingPositions.clear();
+			enemyTroopsInTown.clear();
+			deadMines.clear();
 			stones.clear();
 			trees.clear();
 			rivers.clear();
-			land.clear();
+			landToBuildOn.clear();
 			borderLandNextToFreeLand.clear();
 			movablePositions.clear();
 			clearIntegers();
