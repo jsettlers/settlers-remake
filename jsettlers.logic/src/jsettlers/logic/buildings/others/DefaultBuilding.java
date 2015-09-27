@@ -56,5 +56,4 @@ public final class DefaultBuilding extends Building {
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}
-
 }

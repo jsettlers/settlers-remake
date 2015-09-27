@@ -164,4 +164,9 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	public IMapObject getMapObject(EMapObjectType type) {
 		return type == getObjectType() ? this : null;
 	}
+
+	@Override
+	public boolean cannotWork() {
+		return false;
+	}
 }
