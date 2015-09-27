@@ -152,10 +152,10 @@ public class MapHeaderEditor extends JPanel {
 	public void setHeader(MapFileHeader header) {
 		nameField.setText(header.getName());
 		descriptionField.setText(header.getDescription());
-		width.setValue(new Integer(header.getWidth()));
-		height.setValue(new Integer(header.getHeight()));
-		minPlayer.setValue(new Integer(header.getMinPlayer()));
-		maxPlayer.setValue(new Integer(header.getMaxPlayer()));
+		width.setValue(Integer.valueOf(header.getWidth()));
+		height.setValue(Integer.valueOf(header.getHeight()));
+		minPlayer.setValue(Integer.valueOf(header.getMinPlayer()));
+		maxPlayer.setValue(Integer.valueOf(header.getMaxPlayer()));
 	}
 
 	public MapFileHeader getHeader() {

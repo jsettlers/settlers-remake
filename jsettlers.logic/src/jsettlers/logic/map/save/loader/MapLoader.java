@@ -33,6 +33,7 @@ import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This is the main map loader.
@@ -161,19 +162,19 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	}
 
 	@Override
-	public MainGridWithUiSettings loadMainGrid(boolean[] availablePlayers) throws MapLoadException {
+	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		IMapData mapData = getMapData();
 
 		byte numberOfPlayers = (byte) getMaxPlayers();
 
-		if (availablePlayers == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
-			availablePlayers = new boolean[numberOfPlayers];
+		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
+			playerSettings = new PlayerSetting[numberOfPlayers];
 			for (int i = 0; i < numberOfPlayers; i++) {
-				availablePlayers[i] = true;
+				playerSettings[i] = new PlayerSetting(true, false);
 			}
 		}
 
-		MainGrid mainGrid = new MainGrid(getMapId(), getMapName(), mapData, availablePlayers);
+		MainGrid mainGrid = new MainGrid(getMapId(), getMapName(), mapData, playerSettings);
 
 		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {

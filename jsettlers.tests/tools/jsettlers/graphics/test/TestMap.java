@@ -197,7 +197,7 @@ public class TestMap implements IGraphicsGrid {
 		if (Math.random() < .6) {
 			return EMovableType.BEARER;
 		} else {
-			return EMovableType.values()[(int) (Math.random() * EMovableType.values().length)];
+			return EMovableType.values()[(int) (Math.random() * EMovableType.NUMBER_OF_MOVABLETYPES)];
 		}
 	}
 

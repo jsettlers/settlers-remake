@@ -12,46 +12,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.ai.construction;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.buildings.EBuildingType;
 
 /**
- * Classes of this interface are capable of creating a game.
+ * Assumptions: trees are placed as groups or as a single tree on the map
  * 
- * @author michael
- * @author Andreas Eberle
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near
+ * tree of the possible construction position - takes the position with the best score (lowest distance to the most near tree)
+ * 
+ * @author codingberlin
  */
-public interface IGameCreator {
+public class BestLumberJackConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
 
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
+	public BestLumberJackConstructionPositionFinder(EBuildingType buildingType) {
+		super(buildingType);
+	}
 
-	public String getMapName();
-
-	public String getMapId();
-
-	public class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
+	@Override
+	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
+		return aiStatistics.getTreesForPlayer(playerId);
 	}
 }

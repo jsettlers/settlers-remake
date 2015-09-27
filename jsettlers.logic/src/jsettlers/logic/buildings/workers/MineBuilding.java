@@ -29,9 +29,9 @@ import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This is a mine building. It's ground won't be flattened.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class MineBuilding extends ResourceBuilding {
 	private static final long serialVersionUID = 9201058266194063092L;

@@ -12,46 +12,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.ai.construction;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.buildings.EBuildingType;
 
 /**
- * Classes of this interface are capable of creating a game.
+ * Assumptions: stones are placed as groups at the map, never alone without other stones
  * 
- * @author michael
- * @author Andreas Eberle
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near
+ * stone of the possible construction position - takes the position with the best score (lowest distance to the most near stone)
+ * 
+ * @author codingberlin
  */
-public interface IGameCreator {
+public class BestStoneCutterConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
 
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
-
-	public String getMapName();
-
-	public String getMapId();
-
-	public class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
+	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
+		super(buildingType);
 	}
+
+	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
+		return aiStatistics.getStonesForPlayer(playerId);
+	}
+
 }

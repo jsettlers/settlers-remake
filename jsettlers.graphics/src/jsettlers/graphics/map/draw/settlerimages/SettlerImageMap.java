@@ -65,9 +65,9 @@ public final class SettlerImageMap {
 	 * Creates a new settler image map.
 	 */
 	private SettlerImageMap() {
-		this.types = EMovableType.values().length;
+		this.types = EMovableType.NUMBER_OF_MOVABLETYPES;
 		this.actions = EAction.values().length;
-		this.materials = EMaterialType.values().length;
+		this.materials = EMaterialType.NUMBER_OF_MATERIALS;
 		this.directions = EDirection.values.length;
 		this.map =
 				new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];

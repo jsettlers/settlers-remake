@@ -30,8 +30,8 @@ public class StatisticsTable extends AbstractTableModel {
 	private static final long serialVersionUID = -3492356821401542476L;
 
 	private static final int MATERIAL_START = 0;
-	private static final int MOVABLE_START = MATERIAL_START + EMaterialType.values().length;
-	private static final int BUILDING_START = MOVABLE_START + EMovableType.values().length;
+	private static final int MOVABLE_START = MATERIAL_START + EMaterialType.NUMBER_OF_MATERIALS;
+	private static final int BUILDING_START = MOVABLE_START + EMovableType.NUMBER_OF_MOVABLETYPES;
 	private static final int END_POS = BUILDING_START + EBuildingType.NUMBER_OF_BUILDINGS;
 	private final int playercount;
 	private final int[][] counts;

@@ -12,46 +12,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.ai.construction;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+import java.util.List;
+
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Classes of this interface are capable of creating a game.
- * 
- * @author michael
- * @author Andreas Eberle
+ * The ScoredConstructionPosition helps to create lists of possible construction positions with their score for the low level KI
+ * IBestConstructionPositionFinder
+ *
+ * @author codingberlin
  */
-public interface IGameCreator {
+class ScoredConstructionPosition {
+	ShortPoint2D point;
+	int score;
 
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
-
-	public String getMapName();
-
-	public String getMapId();
-
-	public class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
+	public ScoredConstructionPosition(ShortPoint2D point, int score) {
+		this.point = point;
+		this.score = score;
 	}
+
+	public static ShortPoint2D detectPositionWithLowestScore(List<ScoredConstructionPosition> scoredConstructionPositions) {
+		if (scoredConstructionPositions.size() == 0) {
+			return null;
+		}
+
+		ScoredConstructionPosition winnerPosition = null;
+		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
+			if (winnerPosition == null) {
+				winnerPosition = scoredConstructionPosition;
+			} else if (scoredConstructionPosition.score < winnerPosition.score) {
+				winnerPosition = scoredConstructionPosition;
+			}
+		}
+
+		return winnerPosition.point;
+	}
+
 }

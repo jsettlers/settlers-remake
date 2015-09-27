@@ -12,46 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.ai.construction;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+import jsettlers.common.buildings.EBuildingType;
 
 /**
- * Classes of this interface are capable of creating a game.
+ * Whis this class you can store a specific count of a specific building type. e.g. you can use this class to store dependencies like that a baker
+ * needs 1/3 mills: BuildingCount(MILL, 0.33f)
  * 
- * @author michael
- * @author Andreas Eberle
+ * @author codingberlin
  */
-public interface IGameCreator {
+public class BuildingCount {
 
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
+	public final EBuildingType buildingType;
+	public final float count;
 
-	public String getMapName();
-
-	public String getMapId();
-
-	public class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
+	public BuildingCount(EBuildingType buildingType, float count) {
+		this.buildingType = buildingType;
+		this.count = count;
 	}
 }

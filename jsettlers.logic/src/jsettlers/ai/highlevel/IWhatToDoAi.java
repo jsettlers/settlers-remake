@@ -12,46 +12,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
-
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+package jsettlers.ai.highlevel;
 
 /**
- * Classes of this interface are capable of creating a game.
+ * The purpose of the higher level IWhatToDoAi is to decide WHAT to do. It delegates the decision WHERE it is to do to the lower level KI. For example
+ * if the AI player has no stone cutters the WhatToDoAi decides to build with high priority a stone cutter because otherwise the AI player would be
+ * unable to build more houses without stones. Then the WhatToDoAi gets a BestConstructionPositionFinder for Stonecutters and asks it to find the best
+ * place to put a stone cutter on the map - which means near some stones ;-) - and builds the stone cutter there.
  * 
- * @author michael
- * @author Andreas Eberle
+ * @author codingberlin
  */
-public interface IGameCreator {
+public interface IWhatToDoAi {
 
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
+	abstract void applyRules();
 
-	public String getMapName();
-
-	public String getMapId();
-
-	public class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
-	}
 }

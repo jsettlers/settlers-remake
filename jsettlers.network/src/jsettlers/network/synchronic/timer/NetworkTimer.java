@@ -34,9 +34,9 @@ import jsettlers.network.client.task.packets.TaskPacket;
 /**
  * This is a basic game timer. All synchronous actions must be based on this clock. The {@link NetworkTimer} also triggers the execution of
  * synchronous tasks in the network game.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class NetworkTimer extends TimerTask implements INetworkClientClock {
 	public static final short TIME_SLICE = 50;
@@ -198,7 +198,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	 * Schedules the given {@link INetworkTimerable} with given delay. The internal delay of NetworkTimer is {@value #TIME_SLICE}, but you may choose
 	 * smaller delays for the {@link INetworkTimerable}. The NetworkTimer will then call the {@link INetworkTimerable} multiple times on each internal
 	 * tick in the exact rate to ensure the given delay in the long run.
-	 * 
+	 *
 	 * @param timerable
 	 *            {@link INetworkTimerable} to be scheduled.
 	 * @param delay
@@ -213,7 +213,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 
 	/**
 	 * removes an INetworkTimerable from the list of scheduled tasks.
-	 * 
+	 *
 	 * @param timerable
 	 */
 	@Override

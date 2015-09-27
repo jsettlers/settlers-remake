@@ -18,7 +18,9 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,6 +48,7 @@ import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
@@ -210,9 +213,15 @@ public class SwingManagedJSettlers {
 			if (loadableReplayFile == null) {
 				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
-				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
-				availablePlayers[playerId] = true;
-				game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers).start();
+				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
+				playerSettings[playerId] = new PlayerSetting(true, false);
+				for (byte i = 0; i < playerSettings.length;i++) {
+					if (i != playerId) {
+						playerSettings[i] = new PlayerSetting(false, true);
+					}
+				}
+				
+				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}

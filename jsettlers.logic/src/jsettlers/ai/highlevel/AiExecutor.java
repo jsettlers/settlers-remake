@@ -12,54 +12,49 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save.loader;
+package jsettlers.ai.highlevel;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.grid.GameSerializer;
+import jsettlers.common.logging.StatisticsStopWatch;
+import jsettlers.common.logging.StopWatch;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.logic.timer.RescheduleTimer;
+import jsettlers.network.client.interfaces.ITaskScheduler;
+import jsettlers.network.synchronic.timer.INetworkTimerable;
 
 /**
+ * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
  * 
- * @author Andreas Eberle
- * 
+ * @author codingberlin
  */
-public class SavegameLoader extends MapLoader {
+public class AiExecutor implements INetworkTimerable {
 
-	public SavegameLoader(IListedMap file, MapFileHeader header) {
-		super(file, header);
-	}
+	private final List<IWhatToDoAi> whatToDoAis;
+	AiStatistics aiStatistics;
+	StopWatch stopWatch = new StatisticsStopWatch();
+	StopWatch stopWatch2 = new StatisticsStopWatch();
 
-	@Override
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
-		try {
-			ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream());
-
-			PlayerState[] playerStates = (PlayerState[]) ois.readObject();
-			GameSerializer gameSerializer = new GameSerializer();
-			MainGrid mainGrid = gameSerializer.load(ois);
-			RescheduleTimer.loadFrom(ois);
-
-			ois.close();
-
-			return new MainGridWithUiSettings(mainGrid, playerStates);
-		} catch (IOException ex) {
-			throw new MapLoadException(ex);
-		} catch (ClassNotFoundException ex) {
-			throw new MapLoadException(ex);
+	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+		aiStatistics = new AiStatistics(mainGrid);
+		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
+			if (playerSettings[playerId].isAi()) {
+				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+			}
 		}
 	}
 
 	@Override
-	public IMapData getMapData() throws MapLoadException {
-		throw new UnsupportedOperationException("A savegame can't supply IMapData");
+	public void timerEvent() {
+		stopWatch.restart();
+		aiStatistics.updateStatistics();
+		stopWatch.stop("computerplayer:updateStatistics()");
+		stopWatch2.restart();
+		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
+			whatToDoAi.applyRules();
+		}
+		stopWatch2.stop("computerplayer:applyRules()");
 	}
 }

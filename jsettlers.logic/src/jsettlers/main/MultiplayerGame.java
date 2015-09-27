@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.interfaces.INetworkClient;
@@ -55,6 +57,7 @@ public class MultiplayerGame {
 	private IJoiningGameListener joiningGameListener;
 	private IMultiplayerListener multiplayerListener;
 	private IChatMessageListener chatMessageListener;
+	private boolean iAmTheHost = false;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
 		this.networkClientFactory = networkClientFactory;
@@ -72,6 +75,7 @@ public class MultiplayerGame {
 	}
 
 	public IJoiningGame openNewGame(final IOpenMultiplayerGameInfo gameInfo) {
+		iAmTheHost = true;
 		new Thread("openNewGameThread") {
 			@Override
 			public void run() {
@@ -125,15 +129,31 @@ public class MultiplayerGame {
 				long randomSeed = packet.getRandomSeed();
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				byte ownPlayerId = calculatePlayerInfos(availablePlayers);
+				PlayerSetting[] playerSettings = determinePlayerSettings(availablePlayers);
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, availablePlayers);
-
+				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, playerSettings);
+				
 				multiplayerListener.gameIsStarting(game.start());
 			}
 
 		};
 	}
 
+	private PlayerSetting[] determinePlayerSettings(boolean[] availablePlayers) {
+		boolean aiPlayersEnabled = iAmTheHost;
+		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
+
+		for (byte i = 0; i < playersList.getItems().size(); i++) {
+			playerSettings[i] = new PlayerSetting(true, false);
+		}
+
+		for (byte i = (byte) playersList.getItems().size(); i < availablePlayers.length; i++) {
+			playerSettings[i] = new PlayerSetting(true, aiPlayersEnabled);
+		}
+
+		return playerSettings;
+	}
+	
 	byte calculatePlayerInfos(boolean[] availablePlayers) {
 		String myId = networkClient.getPlayerInfo().getId();
 		byte i = 0;
@@ -144,6 +164,9 @@ public class MultiplayerGame {
 				ownPlayerId = i;
 			}
 			i++;
+		}
+		for (byte ii = i; ii < availablePlayers.length; ii++) {
+			availablePlayers[ii] = true;
 		}
 
 		if (ownPlayerId < 0) {
