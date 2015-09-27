@@ -689,4 +689,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return grid.getPartitionIdAt(pos);
 	}
 
+	@Override
+	public boolean cannotWork() {
+		return false;
+	}
 }

@@ -332,11 +332,13 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (pathFound) {
 			jobFinished();
 			searchFailedCtr = 0;
+			this.building.setCannotWork(false);
 		} else {
 			jobFailed();
 			searchFailedCtr++;
 
 			if (searchFailedCtr > 10) {
+				this.building.setCannotWork(true);
 				super.getPlayer().showMessage(SimpleMessage.cannotFindWork(building));
 			}
 		}

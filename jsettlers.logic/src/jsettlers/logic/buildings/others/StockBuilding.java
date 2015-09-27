@@ -56,5 +56,4 @@ public final class StockBuilding extends Building {
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}
-
 }

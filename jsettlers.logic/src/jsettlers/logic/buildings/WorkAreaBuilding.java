@@ -34,6 +34,8 @@ public abstract class WorkAreaBuilding extends Building {
 
 	private ShortPoint2D workAreaCenter;
 
+	private boolean cannotWork = false;
+
 	protected WorkAreaBuilding(EBuildingType type, Player player) {
 		super(type, player);
 	}
@@ -59,6 +61,8 @@ public abstract class WorkAreaBuilding extends Building {
 			if (isSelected()) {
 				drawWorkAreaCircle(true);
 			}
+
+			this.cannotWork = false; // reset cannotWork, we need to check it in the new work are first.
 		}
 	}
 
@@ -94,5 +98,14 @@ public abstract class WorkAreaBuilding extends Building {
 		}
 
 		return priorities;
+	}
+
+	@Override
+	public boolean cannotWork() {
+		return cannotWork;
+	}
+
+	public void setCannotWork(boolean cannotWork) {
+		this.cannotWork = cannotWork;
 	}
 }

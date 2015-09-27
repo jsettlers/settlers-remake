@@ -83,4 +83,9 @@ public abstract class SpawnBuilding extends Building {
 	public final boolean isOccupied() {
 		return true;
 	}
+
+	@Override
+	public boolean cannotWork() {
+		return produced >= getProduceLimit();
+	}
 }

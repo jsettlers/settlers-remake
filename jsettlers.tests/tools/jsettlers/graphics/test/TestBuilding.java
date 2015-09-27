@@ -111,4 +111,9 @@ public class TestBuilding implements IBuilding {
 	public IMapObject getMapObject(EMapObjectType type) {
 		return type == getObjectType() ? this : null;
 	}
+
+	@Override
+	public boolean cannotWork() {
+		return false;
+	}
 }
