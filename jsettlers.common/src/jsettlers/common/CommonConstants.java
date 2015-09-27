@@ -45,5 +45,5 @@ public abstract class CommonConstants {
 
 	public static boolean CONTROL_ALL = false;
 
-	public static final boolean USE_SAVEGAME_COMPRESSION = true;
+	public static boolean USE_SAVEGAME_COMPRESSION = false;
 }

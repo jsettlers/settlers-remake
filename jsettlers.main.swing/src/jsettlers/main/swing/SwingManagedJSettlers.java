@@ -60,6 +60,9 @@ import jsettlers.network.client.OfflineNetworkConnector;
  * @author michael
  */
 public class SwingManagedJSettlers {
+	static {
+		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
+	}
 
 	/**
 	 * @param args
