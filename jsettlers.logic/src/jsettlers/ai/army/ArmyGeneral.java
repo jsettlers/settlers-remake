@@ -23,8 +23,16 @@ package jsettlers.ai.army;
  */
 public interface ArmyGeneral {
 
+	/**
+	 * Let move troops to defeat or attack
+	 */
 	void commandTroops();
 
+	/**
+	 * - upgrades soldiers
+	 * - enable and disable recrution (not implemented yet)
+	 * - choose the weapons to produce (not implemented yet)
+	 */
 	void levyUnits();
 
 }
