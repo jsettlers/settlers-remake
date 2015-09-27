@@ -18,6 +18,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -125,8 +126,9 @@ public class MainPanel extends UIPanel {
 	 */
 	private ActionFireable actionFireable;
 
-	public MainPanel(ActionFireable actionFireable) {
+	public MainPanel(ActionFireable actionFireable, IManaInformation manaInformation) {
 		this.actionFireable = actionFireable;
+		ContentType.WARRIORS.setManaInformation(manaInformation);
 
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}

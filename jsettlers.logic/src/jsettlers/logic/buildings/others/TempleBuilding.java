@@ -25,7 +25,7 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 
 /**
- * This is a default building. It can be used for every building type that has no real function.
+ *
  * 
  * @author Andreas Eberle
  * 
@@ -54,6 +54,7 @@ public final class TempleBuilding extends Building {
 		RequestStack wineStack = getWineStack();
 
 		if (wineStack.pop()) {
+			getPlayer().getManaInformation().increaseMana();
 			return CONSUME_DELAY;
 		} else {
 			return CHECK_DELAY;

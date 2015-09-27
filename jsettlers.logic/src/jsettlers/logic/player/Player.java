@@ -30,6 +30,7 @@ public class Player implements Serializable, IMessenger {
 
 	public final byte playerId;
 	private final Team team;
+	private final ManaInformation manaInformation = new ManaInformation();;
 
 	private transient IMessenger messenger;
 
@@ -53,5 +54,9 @@ public class Player implements Serializable, IMessenger {
 		if (messenger != null) {
 			messenger.showMessage(message);
 		}
+	}
+
+	public ManaInformation getManaInformation() {
+		return manaInformation;
 	}
 }

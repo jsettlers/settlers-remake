@@ -228,6 +228,11 @@ public class PartitionsGridTestingWnd {
 			public IPartitionData getPartitionData(int x, int y) {
 				return null;
 			}
+
+			@Override
+			public boolean isBuilding(int x, int y) {
+				return false;
+			}
 		};
 	}
 }

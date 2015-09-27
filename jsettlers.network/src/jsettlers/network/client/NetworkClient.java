@@ -130,7 +130,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	public void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws IllegalStateException {
+					throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo,
@@ -140,7 +140,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	@Override
 	public void joinMatch(String matchId, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws IllegalStateException {
+					throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH, new IdPacket(matchId));
@@ -193,7 +193,8 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, task);
 	}
 
-	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(ENetworkKey key, Class<T> classType, IPacketReceiver<T> listener) {
+	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(ENetworkKey key, Class<T> classType,
+			IPacketReceiver<T> listener) {
 		return new DefaultClientPacketListener<T>(key, new GenericDeserializer<T>(classType), listener);
 	}
 
@@ -224,7 +225,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 
 	private void playerLeftEvent(MatchInfoUpdatePacket matchInfoUpdate) {
 		MatchInfoPacket updatedInfo = matchInfoUpdate.getMatchInfo();
-		assert updatedInfo != null && updatedInfo.getId().equals(updatedInfo.getId()) : "received match info for wrong match! " + updatedInfo.getId();
+		assert updatedInfo != null && updatedInfo.getId().equals(updatedInfo.getId()) : "received match info for wrong match! " + updatedInfo;
 
 		if (playerInfo.getId().equals(matchInfoUpdate.getUpdatedPlayer().getId())) { // if this client left the game
 			state = EPlayerState.LOGGED_IN;

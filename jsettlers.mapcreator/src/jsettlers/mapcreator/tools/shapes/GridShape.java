@@ -26,7 +26,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
 public class GridShape extends LineShape {
 	@Override
 	protected boolean shouldDrawAt(ShortPoint2D current) {
-		return current.x % 2 == 0 && current.y % 2 == 1;
+		return current.x % 2 == 0 && current.y % 2 != 0;
 	}
 
 	@Override

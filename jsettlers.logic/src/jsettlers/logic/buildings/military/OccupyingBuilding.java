@@ -26,13 +26,13 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -67,8 +67,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private boolean inFight = false;
 	private AttackableTowerMapObject attackableTowerObject = null;
 
-	private final int[] maximumRequestedSoldiers = new int[ESoldierType.values().length];
-	private final int[] currentlyCommingSoldiers = new int[ESoldierType.values().length];
+	private final int[] maximumRequestedSoldiers = new int[ESoldierClass.NUMBER_OF_VALUES];
+	private final int[] currentlyCommingSoldiers = new int[ESoldierClass.NUMBER_OF_VALUES];
 
 	public OccupyingBuilding(EBuildingType type, Player player) {
 		super(type, player);
@@ -89,7 +89,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private void requestSoldierForPlace(OccupyerPlace currPlace) {
 		emptyPlaces.add(currPlace);
-		searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTRY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
+		searchedSoldiers.add(currPlace.getSoldierClass() == ESoldierClass.INFANTRY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		initSoldierRequests();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 		enemy.setOccupyableBuilding(this);
-		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
+		currentlyCommingSoldiers[ESoldierClass.INFANTRY.ordinal]++;
 
 		doorHealth = 0.1f;
 		inFight = false;
@@ -154,7 +154,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	protected final void appearedEvent() {
 		occupyAreaIfNeeded();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
-		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
+		currentlyCommingSoldiers[ESoldierClass.INFANTRY.ordinal]++;
 	}
 
 	@Override
@@ -179,20 +179,20 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				Movable soldier = super.getGrid().getMovable(path.getTargetPos());
 				if (soldier != null && soldier.setOccupyableBuilding(this)) {
 					ESearchType searchedSoldier = searchedSoldiers.pop();
-					currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
-				}// soldier wasn't at the position or wasn't able to take the job to go to this building
+					currentlyCommingSoldiers[getSoldierClass(searchedSoldier).ordinal]++;
+				} // soldier wasn't at the position or wasn't able to take the job to go to this building
 			}
 		}
 		return TIMER_PERIOD;
 	}
 
-	private ESoldierType getSoldierType(ESearchType searchedSoldier) {
+	private ESoldierClass getSoldierClass(ESearchType searchedSoldier) {
 		switch (searchedSoldier) {
 		case SOLDIER_BOWMAN:
-			return ESoldierType.BOWMAN;
+			return ESoldierClass.BOWMAN;
 		case SOLDIER_PIKEMAN:
 		case SOLDIER_SWORDSMAN:
-			return ESoldierType.INFANTRY;
+			return ESoldierClass.INFANTRY;
 		default:
 			throw new IllegalArgumentException(searchedSoldier + " is no soldier search type!");
 		}
@@ -240,9 +240,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier) {
-		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierType());
+		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierClass());
 
-		currentlyCommingSoldiers[freePosition.getType().ordinal()]--;
+		currentlyCommingSoldiers[freePosition.getSoldierClass().ordinal]--;
 		emptyPlaces.remove(freePosition);
 
 		TowerOccupier towerOccupier = new TowerOccupier(freePosition, soldier);
@@ -294,7 +294,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	 *            if false, the object is removed.
 	 */
 	private void addInformableMapObject(TowerOccupier soldier, boolean add) {
-		if (soldier.place.getType() == ESoldierType.BOWMAN) {
+		if (soldier.place.getSoldierClass() == ESoldierClass.BOWMAN) {
 			ShortPoint2D position = getTowerBowmanSearchPosition(soldier.place);
 
 			if (add) {
@@ -313,10 +313,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return position;
 	}
 
-	private OccupyerPlace findFreePositionFor(ESoldierType soldierType) {
+	private OccupyerPlace findFreePositionFor(ESoldierClass soldierType) {
 		OccupyerPlace freePosition = null;
 		for (OccupyerPlace curr : emptyPlaces) {
-			if (curr.getType() == soldierType) {
+			if (curr.getSoldierClass() == soldierType) {
 				freePosition = curr;
 
 				break;
@@ -334,13 +334,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final void requestFailed(EMovableType soldierType) {
-		ESearchType searchType = getSearchType(soldierType);
+	public final void requestFailed(EMovableType movableType) {
+		ESearchType searchType = getSearchType(movableType);
 
-		currentlyCommingSoldiers[getSoldierType(searchType).ordinal()]--;
-
-		if (searchType != null)
-			searchedSoldiers.add(searchType);
+		currentlyCommingSoldiers[getSoldierClass(searchType).ordinal]--;
+		searchedSoldiers.add(searchType);
 	}
 
 	@Override
@@ -408,23 +406,23 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public int getMaximumRequestedSoldiers(ESoldierType type) {
-		return maximumRequestedSoldiers[type.ordinal()];
+	public int getMaximumRequestedSoldiers(ESoldierClass soldierClass) {
+		return maximumRequestedSoldiers[soldierClass.ordinal];
 	}
 
 	@Override
-	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+	public void setMaximumRequestedSoldiers(ESoldierClass soldierClass, int max) {
 		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
 		int physicalMax = 0;
 		for (OccupyerPlace place : occupyerPlaces) {
-			if (place.getType() == type) {
+			if (place.getSoldierClass() == soldierClass) {
 				physicalMax++;
 			}
 		}
 		if (max > physicalMax) {
-			maximumRequestedSoldiers[type.ordinal()] = physicalMax;
+			maximumRequestedSoldiers[soldierClass.ordinal] = physicalMax;
 		} else if (max <= 0) {
-			maximumRequestedSoldiers[type.ordinal()] = 0;
+			maximumRequestedSoldiers[soldierClass.ordinal] = 0;
 			/* There must always be someone in a tower, or at least requested. */
 			/*
 			 * NOTE: We might skip this, and instead let the last soldier not leave the tower if the tower would become empty afterwards
@@ -434,16 +432,16 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				isEmpty &= count == 0;
 			}
 			if (isEmpty && physicalMax >= 1) {
-				maximumRequestedSoldiers[type.ordinal()] = 1;
+				maximumRequestedSoldiers[soldierClass.ordinal] = 1;
 			}
 		} else {
-			maximumRequestedSoldiers[type.ordinal()] = max;
+			maximumRequestedSoldiers[soldierClass.ordinal] = max;
 		}
 	}
 
 	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierType type) {
-		return currentlyCommingSoldiers[type.ordinal()];
+	public int getCurrentlyCommingSoldiers(ESoldierClass soldierClass) {
+		return currentlyCommingSoldiers[soldierClass.ordinal];
 	}
 
 	private final static class TowerOccupier implements IBuildingOccupyer, Serializable {

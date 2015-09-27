@@ -44,7 +44,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 		}
 	}
 
-	public static void stop() {
+	public static synchronized void stop() {
 		if (uniIns != null) {
 			MatchConstants.clock.remove(uniIns);
 			uniIns = null;

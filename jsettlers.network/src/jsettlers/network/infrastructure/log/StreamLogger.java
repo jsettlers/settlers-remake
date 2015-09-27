@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -28,6 +29,7 @@ import java.util.Date;
  * 
  */
 public class StreamLogger extends Logger {
+	private static final SimpleDateFormat DATE_FORMAT = Logger.getDateFormat();
 
 	private final String loggerId;
 	private final PrintStream outStream;
@@ -47,7 +49,7 @@ public class StreamLogger extends Logger {
 	}
 
 	private synchronized void println(String msg) {
-		outStream.println(Logger.DATE_FORMAT.format(new Date()) + ": " + msg);
+		outStream.println(DATE_FORMAT.format(new Date()) + ": " + msg);
 	}
 
 	public void close() {

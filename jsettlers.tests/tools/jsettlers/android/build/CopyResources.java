@@ -50,10 +50,13 @@ public final class CopyResources {
 			if (!dest.exists()) {
 				dest.mkdirs();
 			}
-			for (File file : src.listFiles()) {
-				String name = file.getName();
-				File srcFile = new File(src, name);
-				copy(srcFile, dest);
+			File[] files = src.listFiles();
+			if (files != null) {
+				for (File file : files) {
+					String name = file.getName();
+					File srcFile = new File(src, name);
+					copy(srcFile, dest);
+				}
 			}
 		} else if (src.exists()) {
 			try {

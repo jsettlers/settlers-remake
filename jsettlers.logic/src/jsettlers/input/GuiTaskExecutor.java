@@ -33,6 +33,7 @@ import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
+import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
@@ -132,6 +133,11 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			grid.setMaterialPrioritiesSettings(task.getManagerPosition(), task.getMaterialTypeForPriority());
 		}
 			break;
+
+		case UPGRADE_SOLDIERS: {
+			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
+			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
+		}
 
 		default:
 			break;

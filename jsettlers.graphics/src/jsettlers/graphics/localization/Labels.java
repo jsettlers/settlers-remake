@@ -21,6 +21,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.progress.EProgressState;
@@ -94,7 +95,7 @@ public final class Labels extends AbstractLabels {
 
 	/**
 	 * Gets the name of a material
-	 * 
+	 *
 	 * @param type
 	 *            The material type
 	 * @param plural
@@ -103,6 +104,17 @@ public final class Labels extends AbstractLabels {
 	 */
 	public static String getName(EMaterialType type, boolean plural) {
 		return getString("material_" + type + (plural ? "p" : ""));
+	}
+
+	/**
+	 * Gets the name of a {@link ESoldierType}
+	 *
+	 * @param type
+	 *            The soldier type
+	 * @return The localized name.
+	 */
+	public static String getName(ESoldierType type) {
+		return getString("soldier_" + type);
 	}
 
 	/**

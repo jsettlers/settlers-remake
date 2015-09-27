@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element x="9" y="219" maxx="127" maxy="435">
+    
+	<element class="Label" x="9" maxx="127" y="219" maxy="234">
+		<localized label="warriors_title" />
+		<font-size size="NORMAL" />
+	</element>
+
+	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeProgressLabel" x="9" maxx="127" y="235" maxy="250">
+	</element>
+
+	<element x="15" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<soldierType soldierType="SWORDSMAN" />
+	</element>
+
+	<element x="50" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<soldierType soldierType="BOWMAN" />
+	</element>
+
+	<element x="85" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<soldierType soldierType="PIKEMAN" />
+	</element>
+
+</element>

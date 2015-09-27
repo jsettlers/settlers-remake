@@ -73,14 +73,15 @@ public class ReplayTool {
 
 		((GameRunner) startedGame).stopGame();
 
-		try {
+		synchronized (gameStopped) {
 			while (gameStopped.value == 0) {
-				synchronized (gameStopped) {
+				try {
 					gameStopped.wait();
+				} catch (InterruptedException e) {
 				}
 			}
-		} catch (InterruptedException e) {
 		}
+
 	}
 
 	private static IStartedGame waitForGameStartup(IStartingGame game) {
@@ -89,8 +90,9 @@ public class ReplayTool {
 		return startingGameListener.waitForGameStartup();
 	}
 
-	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
-			throws IOException {
+	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector,
+			ReplayStartInformation replayStartInformation)
+					throws IOException {
 		File loadableReplayFile = replayFile;
 		System.out.println("Found loadable replay file. Started loading it: " + loadableReplayFile);
 

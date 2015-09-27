@@ -31,6 +31,11 @@ import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
 import jsettlers.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
@@ -39,11 +44,6 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.tests.utils.CountingInputStream;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -111,7 +111,7 @@ public class AutoReplayIT {
 			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 
 			int e, a;
-			while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
+			while (((e = expectedStream.read()) != -1) & ((a = actualStream.read()) != -1)) {
 				assertEquals("difference at byte " + (actualStream.getByteCounter() - 1), a, e);
 			}
 			assertEquals("files have different lengths", e, a);

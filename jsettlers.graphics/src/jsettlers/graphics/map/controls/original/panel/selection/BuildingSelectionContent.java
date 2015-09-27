@@ -24,12 +24,12 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -223,7 +223,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			float height = big ? .15f : .05f;
 
 			Button button = new Button(null, link, link, "");
-			if (place.getType() == ESoldierType.BOWMAN) {
+			if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
 				float left = topindex * .1f + .3f;
 				panel.addChild(button, left, .6f, left + width, .6f + height);
 				topindex++;

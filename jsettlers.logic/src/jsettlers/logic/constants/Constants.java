@@ -43,11 +43,6 @@ public final class Constants {
 
 	public static final short MOVABLE_INTERRUPT_PERIOD = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
 
-	/**
-	 * Step duration in ms
-	 */
-	public static short MOVABLE_STEP_DURATION = 400;
-
 	public static final short MOVABLE_BEND_DURATION = 500;
 
 	public static final short MOVABLE_VIEW_DISTANCE = 8;
