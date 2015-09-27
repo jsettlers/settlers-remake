@@ -46,7 +46,7 @@ After that, follow the detailed installation instructions for you platform.
 
 ## Developer's Guide
 
-This project can be built using the [Eclipse IDE](http://www.eclipse.org). The development process follows the [Fork & Pull](https://help.github.com/articles/using-pull-requests/#fork--pull) principle. 
+This project can be built using the [Eclipse IDE](http://www.eclipse.org) (versions Luna and Mars are tested). The development process follows the [Fork & Pull](https://help.github.com/articles/using-pull-requests/#fork--pull) principle. 
 
 ### A Word in Advance
 The code of this project has grown over years. Furthermore, I never expected this project to get so far. However, I want to make clear that I know there is still a lot to do and that some parts of the code need to evolve. Therefore I'm glad you want to help. If you find ugly code, you know a better way to do something or you think the architecture needs to be changed, feel free to tell me. Feel free to open tickets for these proposals, so everybody can have a look on them and share their opinion.
@@ -56,18 +56,20 @@ Moreover, if you have any questions or additions to this guide, feel free to wri
 ### Development Process
 In order to assist development, follow these steps:
 
-1. Fork this repository.
-2. Clone the forked repository to your local machine.
-3. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it. If you have trouble building the projects, the following steps might help:
+1. Make sure you have installed the Java Development Kit (JDK). If you're on Windows, make sure the JAVA_HOME variable is added as a Windows variable. JAVA_HOME should point to the location of your JDK installation (example: C:\Program Files\Java\jdk1.8.0_60)
+2. Fork this repository.
+3. Clone the forked repository to your local machine.
+4. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it.
+5. Build all the projects. This is easiest done with "CTRL + B". Alternatively, you can right click the jsettlers.main.swing -> build -> build.ant and click "Run as" and chose "Java Application". If you have trouble building the projects, the following steps might help:
   - Clean and build all the projects.
   - Make sure the project jsettlers.common has a source folder called "gen". If not, refresh the project. If it still isn't there, try to explicitly build the project (right click on the project -> "Build Project").
   - After that, rebuild all projects (without a clean!). You can do this with "CTRL + B".
   - If there is still a project refusing to build, try to explicitly build that one via right click on the project -> "Build Project". 
   - If you know how to fix this trouble, I'm looking forward to your hints and code changes ;).
-4. When developing changes, create a new branch off of the project's master and give it a speaking name. 
-5. Regularly commit your changes and push them to the new branch in your forked repository. 
-6. If you have questions, need help, or want to see the test results of your code, create a [Pull Request](https://help.github.com/articles/using-pull-requests/) to this repository.
-7. After your changes have been reviewed and all is fine, we will merge them into the master.
+6. When developing changes, create a new branch off of the project's master and give it a speaking name. 
+7. Regularly commit your changes and push them to the new branch in your forked repository. 
+8. If you have questions, need help, or want to see the test results of your code, create a [Pull Request](https://help.github.com/articles/using-pull-requests/) to this repository.
+9. After your changes have been reviewed and all is fine, we will merge them into the master.
 
 ### Development Guidelines
 In order to ease collaboration and reduce unnecessary overhead, developers should follow these guidelines.
