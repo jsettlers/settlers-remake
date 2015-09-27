@@ -17,6 +17,7 @@ package jsettlers.tests.autoreplay;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileVisitResult;
@@ -167,7 +168,7 @@ public class AutoReplayIT {
 				compareMapFiles(expectedSavegamePath, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
 				Files.delete(newSavegame);
-			} catch (AssertionError | NoSuchFileException ex) { // if the files are not equal, replace the existing one.
+			} catch (AssertionError | NoSuchFileException | FileNotFoundException ex) { // if the files are not equal, replace the existing one.
 				Files.move(newSavegame, expectedSavegamePath, StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("Replacing reference file '" + expectedSavegamePath + "' with new savegame '" + newSavegame + "'");
 			}
