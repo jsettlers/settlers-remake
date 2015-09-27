@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
 
@@ -47,7 +50,7 @@ public class DirectoryMapLister implements IMapLister {
 
 		@Override
 		public String getFileName() {
-			return file.getName();
+			return file.getName().replaceFirst(".*/", "");
 		}
 
 		@Override
@@ -59,6 +62,11 @@ public class DirectoryMapLister implements IMapLister {
 		public void delete() {
 			file.delete();
 		}
+
+		@Override
+		public boolean isCompressed() {
+			return file.getName().endsWith(MapList.COMPRESSED_MAP_EXTENSION);
+		}
 	}
 
 	public DirectoryMapLister(File directory) {
@@ -69,19 +77,20 @@ public class DirectoryMapLister implements IMapLister {
 	}
 
 	@Override
-	public void getMaps(final IMapListerCallable callable) {
+	public void listMaps(final IMapListerCallable callback) {
 		File[] files = directory.listFiles();
 		if (files == null) {
 			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
 		}
 
 		try {
-			// traverse all folders
+			// traverse all files and sub-folders
 			FileUtils.walkFileTree(directory, new IFileVisitor() {
 				@Override
 				public void visitFile(File file) throws IOException {
-					if (file.getName().endsWith(MapList.MAP_EXTENSION)) {
-						callable.foundMap(new ListedMapFile(file));
+					String fileName = file.getName();
+					if (fileName.endsWith(MapList.MAP_EXTENSION) || fileName.endsWith(MapList.COMPRESSED_MAP_EXTENSION)) {
+						callback.foundMap(new ListedMapFile(file));
 					}
 				}
 			});
@@ -103,15 +112,31 @@ public class DirectoryMapLister implements IMapLister {
 			name += format.format(date);
 		}
 
-		File file = new File(directory, name + MapList.MAP_EXTENSION);
+		String mapFileExtension = MapList.getMapExtension();
+
+		String actualName = name;
+		File file = new File(directory, actualName + mapFileExtension);
 		int i = 1;
 		while (file.exists()) {
-			file = new File(directory, name + "-" + i + MapList.MAP_EXTENSION);
+			actualName = name + "-" + i;
+			file = new File(directory, actualName + mapFileExtension);
 			i++;
 		}
 
 		try {
-			return new BufferedOutputStream(new FileOutputStream(file));
+			OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+
+			if (CommonConstants.USE_SAVEGAME_COMPRESSION) {
+				System.out.println("Using savegame compression!");
+				ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+				ZipEntry zipEntry = new ZipEntry(actualName + MapList.MAP_EXTENSION);
+				zipOutputStream.putNextEntry(zipEntry);
+
+				return zipOutputStream;
+			} else {
+				System.out.println("No savegame compression!");
+				return outputStream;
+			}
 		} catch (FileNotFoundException e) {
 			throw new IOException(e);
 		}

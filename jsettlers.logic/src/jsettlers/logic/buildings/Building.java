@@ -447,15 +447,17 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void kill() {
 		System.out.println("building killed");
 
-		grid.removeBuildingAt(pos);
-		grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
-				EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
-		placeAdditionalMapObjects(grid, pos, false);
-		placeFlag(false);
+		if (grid != null) {
+			grid.removeBuildingAt(pos);
+			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
+					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
+			placeAdditionalMapObjects(grid, pos, false);
+			placeFlag(false);
+			placeReusableMaterials();
+		}
 
 		allBuildings.remove(this);
 
-		placeReusableMaterials();
 		releaseRequestStacks();
 		this.state = STATE_DESTROYED;
 

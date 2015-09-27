@@ -40,4 +40,10 @@ public interface IListedMap {
 	 *             if the file cannot be deleted.
 	 */
 	void delete();
+
+	/**
+	 * 
+	 * @return Returns true if this is a compressed map file.
+	 */
+	boolean isCompressed();
 }
