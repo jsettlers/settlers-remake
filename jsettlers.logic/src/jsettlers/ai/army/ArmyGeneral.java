@@ -25,4 +25,6 @@ public interface ArmyGeneral {
 
 	void commandTroops();
 
+	void levyUnits();
+
 }

@@ -251,6 +251,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		destroyBuildings();
 		buildBuildings();
+		armyGeneral.levyUnits();
 		armyGeneral.commandTroops();
 		occupyTowers();
 	}
