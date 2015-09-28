@@ -60,7 +60,7 @@ In order to assist development, follow these steps:
 2. Fork this repository.
 3. Clone the forked repository to your local machine.
 4. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it.
-5. Build all the projects. This is easiest done with "CTRL + B". Alternatively, you can right click the jsettlers.main.swing -> build -> build.ant and click "Run as" and chose "Java Application". If you have trouble building the projects, the following steps might help:
+5. Build all the projects. This is easiest done with "CTRL + B". Alternatively, you can right click the jsettlers.main.swing -> build -> build.ant and click "Run as" and chose "Ant Build". If you have trouble building the projects, the following steps might help:
   - Clean and build all the projects.
   - Make sure the project jsettlers.common has a source folder called "gen". If not, refresh the project. If it still isn't there, try to explicitly build the project (right click on the project -> "Build Project").
   - After that, rebuild all projects (without a clean!). You can do this with "CTRL + B".
