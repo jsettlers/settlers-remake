@@ -12,44 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager.materials;
+package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
-import java.io.IOException;
+import java.io.Serializable;
 
-import org.junit.Test;
-
-import jsettlers.TestUtils;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
-import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 
 /**
- * This is a test for the {@link MaterialsManager} class.
  * 
  * @author Andreas Eberle
- * 
+ *
  */
-public class MaterialsManagerTest {
-	private final OffersList offersList = new OffersList(null);
-	private final JoblessSupplierMock joblessSupplier = new JoblessSupplierMock();
-	private final MaterialsManager manager = new MaterialsManager(joblessSupplier, offersList, new PartitionManagerSettings());
+public interface IOffersCountListener extends Serializable {
 
-	@Test
-	public void testSerialization() throws IOException, ClassNotFoundException {
-		offersList.addOffer(pos(20, 20), EMaterialType.PLANK);
-		offersList.addOffer(pos(20, 20), EMaterialType.PLANK);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
+	public static final IOffersCountListener DEFAULT_IMPLEMENTATION = new IOffersCountListener() {
+		private static final long serialVersionUID = 7842646893654546055L;
 
-		joblessSupplier.addJoblessAt(new ShortPoint2D(10, 10));
+		@Override
+		public void offersCountChanged(EMaterialType materialType, int delta) {
+		}
+	};
 
-		TestUtils.serializeAndDeserialize(manager);
-	}
-
-	private ShortPoint2D pos(int x, int y) {
-		return new ShortPoint2D(x, y);
-	}
-
+	void offersCountChanged(EMaterialType materialType, int delta);
 }

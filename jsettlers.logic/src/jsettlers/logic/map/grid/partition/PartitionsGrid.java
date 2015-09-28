@@ -679,7 +679,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		playerChangedListener.playerChangedAt(x, y, newPlayer);
 	}
 
-	short createNewPartition(byte player) { // package private for tests
+	short createNewPartition(byte playerId) { // package private for tests
 		checkNormalizePartitions(NUMBER_OF_START_PARTITION_OBJECTS / 2);
 
 		short newPartitionId = 1;
@@ -701,7 +701,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		}
 
-		Partition newPartitionObject = new Partition(newPartitionId, player);
+		Partition newPartitionObject = new Partition(newPartitionId, playerId, players[playerId]);
 		newPartitionObject.startManager();
 		partitionObjects[newPartitionId] = newPartitionObject;
 
