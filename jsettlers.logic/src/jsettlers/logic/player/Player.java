@@ -28,22 +28,21 @@ import jsettlers.graphics.messages.Message;
  * @author Andreas Eberle
  * 
  */
-public class Player implements Serializable, IMessenger, IInGamePlayer {
+public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatStrengthInformation {
 	private static final long serialVersionUID = 1L;
 
 	public final byte playerId;
 	private final Team team;
+	private final byte numberOfPlayers;
+
 	private final IManaInformation manaInformation = new ManaInformation();
-
-
-	private final ICombatStrengthInformation combatStrengthInformation;
 
 	private transient IMessenger messenger;
 
-	public Player(byte playerId, Team team, ICombatStrengthInformation combatStrengthInformation) {
+	public Player(byte playerId, Team team, byte numberOfPlayers) {
 		this.playerId = playerId;
 		this.team = team;
-		this.combatStrengthInformation = combatStrengthInformation;
+		this.numberOfPlayers = numberOfPlayers;
 		team.registerPlayer(this);
 	}
 
@@ -70,6 +69,16 @@ public class Player implements Serializable, IMessenger, IInGamePlayer {
 
 	@Override
 	public ICombatStrengthInformation getCombatStrengthInformation() {
-		return combatStrengthInformation;
+		return this;
+	}
+
+	@Override
+	public float getCombatStrength(boolean ownGround) {
+		return CombatStrengthCalculator.getCombatStrength(ownGround, numberOfPlayers, getAmountOfGold());
+	}
+
+	private int getAmountOfGold() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

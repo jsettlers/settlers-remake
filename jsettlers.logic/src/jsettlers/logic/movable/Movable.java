@@ -667,6 +667,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		path = null;
 	}
 
+	boolean isOnOwnGround() {
+		return grid.getPlayerAt(position) == player;
+	}
+
 	private void followPath(Path path) {
 		this.path = path;
 		setState(EMovableState.PATHING);

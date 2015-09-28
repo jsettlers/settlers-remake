@@ -111,11 +111,12 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 		@Override
 		public synchronized void drawAt(GLDrawContext gl) {
-			setText(Labels.getString("combat_strength", (byte) (combatStrengthInformation.getCombatStrength() * 100)));
+			setText(Labels.getString("combat_strength", (int) (combatStrengthInformation.getCombatStrength(false) * 100)));
 			super.drawAt(gl);
 		}
 
-		@Override public void setCombatStrengthInformation(ICombatStrengthInformation combatStrengthInformation) {
+		@Override
+		public void setCombatStrengthInformation(ICombatStrengthInformation combatStrengthInformation) {
 			this.combatStrengthInformation = combatStrengthInformation;
 		}
 	}
