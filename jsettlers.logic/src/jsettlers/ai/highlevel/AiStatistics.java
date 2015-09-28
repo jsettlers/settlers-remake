@@ -23,7 +23,14 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -194,7 +201,7 @@ public class AiStatistics {
 				}
 				if (player == null) {
 					updateFreeLand(x, y);
-				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn){
+				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn) {
 					updatePlayerLand(x, y, player);
 				}
 			}
@@ -236,7 +243,7 @@ public class AiStatistics {
 		playerIds[1] = partitionsGrid.getPlayerIdAt(x - 2, y + 2);
 		playerIds[2] = partitionsGrid.getPlayerIdAt(x + 2, y - 2);
 		playerIds[3] = partitionsGrid.getPlayerIdAt(x + 2, y + 2);
-		for (byte positionPlayerId: playerIds) {
+		for (byte positionPlayerId : playerIds) {
 			if (positionPlayerId != playerId) {
 				return false;
 			}
@@ -405,7 +412,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].trees;
 	}
 
-	public AiPositions getLandForPlayer ( byte playerId){
+	public AiPositions getLandForPlayer(byte playerId) {
 		return playerStatistics[playerId].landToBuildOn;
 	}
 
@@ -476,7 +483,7 @@ public class AiStatistics {
 	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points,
 			int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		if (points.size() <= amountOfPointsToDetect) {
@@ -484,7 +491,8 @@ public class AiStatistics {
 		}
 
 		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+			@Override
+			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
 				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
 			}
 		});
@@ -505,7 +513,8 @@ public class AiStatistics {
 	}
 
 	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint, int currentNearestPointDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1, currentNearestPointDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1,
+				currentNearestPointDistance);
 	}
 
 	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {
@@ -521,10 +530,10 @@ public class AiStatistics {
 	}
 
 	public List<Byte> getEnemiesOf(byte playerId) {
-      	List<Byte> enemies = new ArrayList<Byte>();
+		List<Byte> enemies = new ArrayList<Byte>();
 		for (Team team : partitionsGrid.getTeams()) {
 			if (!team.isMember(playerId)) {
-				for (Player player: team.getMembers()) {
+				for (Player player : team.getMembers()) {
 					enemies.add(player.playerId);
 				}
 			}

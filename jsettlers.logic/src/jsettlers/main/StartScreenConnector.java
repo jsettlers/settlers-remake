@@ -24,9 +24,6 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class implements the {@link IStartScreen} interface and acts as connector between the start screen and the game logic.
  * 
@@ -77,7 +74,7 @@ public class StartScreenConnector implements IStartScreen {
 		byte playerId = 0;
 		PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
 		playerSettings[playerId] = new PlayerSetting(true, false);
-		for (byte i = 0; i < playerSettings.length;i++) {
+		for (byte i = 0; i < playerSettings.length; i++) {
 			playerSettings[i] = new PlayerSetting(true, i != playerId);
 		}
 
