@@ -20,13 +20,11 @@ package jsettlers.logic.player;
 public final class CombatStrengthCalculator {
 
 	public static final float COMBAT_STRENGTH_WITHIN_OWN_LAND = 1;
-	public static final int BORDER_50_PERCENT = 600;
-	public static final int BORDER_85_PERCENT = 1160;
 
-	private static final float[] COMBAT_STRENGTH_INCREASE = { 613, 626, 639, 652, 665, 679, 693, 707, 721, 735, 750, 765, 780, 795, 810, 826,
-			842, 858, 874, 890, 907, 924, 941, 958, 975, 993, 1011, 1029, 1047, 1065, 1084, 1103, 1122, 1141 };
-	private static final int[] START_AMOUNT = { 652, 600, 504, 444, 396, 348, 312, 300, 276, 252, 228, 216, 204, 192, 180, 168, 163, 156, 149,
-			144 };
+	private static final float[] START_AMOUNT = {29, 22, 14, 10.25f, 8, 6, 5, 4.7f, 4.2f, 3.8f, 3.3f, 3.1f, 2.9f, 2.7f, 2.6f, 2.4f, 2.3f, 2.2f, 2.1f,
+			2, 1.9f, 1.8f, 1.7f, 1.6f, 1.5f, 1.4f, 1.3f, 1.2f, 1.1f};
+	private static final double logOf2 = (float) Math.log(2);
+	private static final double goldDevisor = logOf2 * 9;
 
 	private CombatStrengthCalculator() { // no objects of this class possible.
 	}
@@ -42,21 +40,12 @@ public final class CombatStrengthCalculator {
 	}
 
 	private static float getGoldCombatStrength(byte numberOfPlayers, int amountOfGold) {
-		amountOfGold += START_AMOUNT[numberOfPlayers - 1];
-
-		if (amountOfGold <= BORDER_50_PERCENT) {
-			return (amountOfGold / 12f) / 100f;
-
-		} else if (amountOfGold <= BORDER_85_PERCENT) {
-			for (int i = COMBAT_STRENGTH_INCREASE.length - 1; i >= 0; i--) {
-				if (amountOfGold >= COMBAT_STRENGTH_INCREASE[i]) {
-					return (51f + i) / 100f;
-				}
-			}
-			return 0.5f;
-
+		if (numberOfPlayers > START_AMOUNT.length) {
+			amountOfGold += START_AMOUNT[START_AMOUNT.length-1];
 		} else {
-			return ((1700f + amountOfGold - BORDER_85_PERCENT) / 20f) / 100f;
+			amountOfGold += START_AMOUNT[numberOfPlayers - 1];
 		}
+
+		return (float) (Math.log(amountOfGold)/goldDevisor);
 	}
 }
