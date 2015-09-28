@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.main;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -132,7 +131,7 @@ public class MultiplayerGame {
 				PlayerSetting[] playerSettings = determinePlayerSettings(availablePlayers);
 
 				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, playerSettings);
-				
+
 				multiplayerListener.gameIsStarting(game.start());
 			}
 
@@ -153,7 +152,7 @@ public class MultiplayerGame {
 
 		return playerSettings;
 	}
-	
+
 	byte calculatePlayerInfos(boolean[] availablePlayers) {
 		String myId = networkClient.getPlayerInfo().getId();
 		byte i = 0;

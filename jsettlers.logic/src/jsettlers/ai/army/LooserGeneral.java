@@ -16,6 +16,9 @@
  */
 package jsettlers.ai.army;
 
+import java.util.List;
+import java.util.Vector;
+
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
@@ -28,17 +31,12 @@ import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-import java.util.List;
-import java.util.Vector;
-
 /**
- * This general is named looser because his attacks are no serious danger because he sends no more solders than his opponent has,
- * which gives his opponent the chance to defeat.
- * - When any enemy solder enters his land, he sends all his solders to it to defeat.
- * - He keeps a 10 swordsmen buffer in his land to occupy own towers
- * - He uses the rest of the troops to attack when the attack group minimum size is 10 and the opponent have less soldiers.
- * - He sends at minimum 20 soldiers and maximum as many soldiers as his opoonent has
- * - He preferes bowmens but takes 10 near combat soldiers at minimum to attack in order to occupy enemy towers.
+ * This general is named looser because his attacks are no serious danger because he sends no more solders than his opponent has, which gives his
+ * opponent the chance to defeat. - When any enemy solder enters his land, he sends all his solders to it to defeat. - He keeps a 10 swordsmen buffer
+ * in his land to occupy own towers - He uses the rest of the troops to attack when the attack group minimum size is 10 and the opponent have less
+ * soldiers. - He sends at minimum 20 soldiers and maximum as many soldiers as his opoonent has - He preferes bowmens but takes 10 near combat
+ * soldiers at minimum to attack in order to occupy enemy towers.
  *
  * @author codingberlin
  */
@@ -59,7 +57,8 @@ public class LooserGeneral implements ArmyGeneral {
 		this.movableGrid = movableGrid;
 	}
 
-	@Override public void commandTroops() {
+	@Override
+	public void commandTroops() {
 		Situation situation = calculateSituation();
 		if (aiStatistics.getEnemiesInTownOf(player.playerId).size() > 0) {
 			defend(situation);
@@ -71,7 +70,8 @@ public class LooserGeneral implements ArmyGeneral {
 		}
 	}
 
-	@Override public void levyUnits() {
+	@Override
+	public void levyUnits() {
 		if (!upgradeSoldiers(ESoldierType.SWORDSMAN))
 			if (!upgradeSoldiers(ESoldierType.PIKEMAN))
 				upgradeSoldiers(ESoldierType.BOWMAN);
@@ -128,14 +128,14 @@ public class LooserGeneral implements ArmyGeneral {
 	private void attack(Situation situation, AttackInformation attackInformation) {
 		List<ShortPoint2D> attackerPositions = new Vector<ShortPoint2D>();
 		int numberOfBowmen = Math.min(attackInformation.amountOfAttackers - MIN_NEAR_COMBAT_SOLDIERS, situation.bowmenPositions.size());
-		attackerPositions.addAll(aiStatistics
+		attackerPositions.addAll(AiStatistics
 				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen));
 		int numberOfSpearmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		attackerPositions.addAll(aiStatistics
+		attackerPositions.addAll(AiStatistics
 				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.spearmenPositions, numberOfSpearmen));
 		int numberOfSwordsmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		attackerPositions.addAll(aiStatistics
-					.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
+		attackerPositions.addAll(AiStatistics
+				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
 
 		sendTroopsTo(attackerPositions, attackInformation.towerToAttack.getDoor());
 	}
@@ -163,7 +163,7 @@ public class LooserGeneral implements ArmyGeneral {
 			return null;
 		}
 
-		return aiStatistics.getBuildingAt(aiStatistics.detectNearestPointFromList(myBaseAveragePoint, enemyMilitaryBuildings));
+		return aiStatistics.getBuildingAt(AiStatistics.detectNearestPointFromList(myBaseAveragePoint, enemyMilitaryBuildings));
 	}
 
 	private Situation calculateSituation() {
@@ -177,10 +177,9 @@ public class LooserGeneral implements ArmyGeneral {
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId));
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId));
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId));
-		situation.amountOfMyAttackingTroops =
-				Math.max(situation.swordsmenPositions.size() - SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS, 0)
-						+ situation.bowmenPositions.size()
-						+ situation.spearmenPositions.size();
+		situation.amountOfMyAttackingTroops = Math.max(situation.swordsmenPositions.size() - SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS, 0)
+				+ situation.bowmenPositions.size()
+				+ situation.spearmenPositions.size();
 
 		return situation;
 	}
@@ -193,12 +192,12 @@ public class LooserGeneral implements ArmyGeneral {
 	}
 
 	private class AttackInformation {
-		private byte targetPlayerId;
+		// private byte targetPlayerId;
 		private int amountOfAttackers;
 		private Building towerToAttack;
 
 		public AttackInformation(byte targetPlayerId, int amountOfAttackers, Building towerToAttack) {
-			this.targetPlayerId = targetPlayerId;
+			// this.targetPlayerId = targetPlayerId;
 			this.amountOfAttackers = amountOfAttackers;
 			this.towerToAttack = towerToAttack;
 		}
