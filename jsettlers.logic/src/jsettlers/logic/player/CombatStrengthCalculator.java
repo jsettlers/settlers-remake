@@ -48,7 +48,7 @@ public final class CombatStrengthCalculator {
 			return (amountOfGold / 12f) / 100f;
 
 		} else if (amountOfGold <= BORDER_85_PERCENT) {
-			for (int i = COMBAT_STRENGTH_INCREASE.length; i >= 0; i--) {
+			for (int i = COMBAT_STRENGTH_INCREASE.length - 1; i >= 0; i--) {
 				if (amountOfGold >= COMBAT_STRENGTH_INCREASE[i]) {
 					return (51f + i) / 100f;
 				}
