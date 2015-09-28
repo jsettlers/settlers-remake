@@ -28,6 +28,9 @@ public class UpgradeSoldiersGuiTask extends SimpleGuiTask {
 
 	private ESoldierType soldierType;
 
+	public UpgradeSoldiersGuiTask() {
+	}
+
 	public UpgradeSoldiersGuiTask(byte playerId, ESoldierType soldierType) {
 		super(EGuiAction.UPGRADE_SOLDIERS, playerId);
 		this.soldierType = soldierType;
