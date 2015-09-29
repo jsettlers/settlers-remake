@@ -59,6 +59,7 @@ import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -575,6 +576,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		try {
 			MapFileHeader imagedHeader = generateMapHeader();
 			data.doPreSaveActions();
+			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
 		} catch (Throwable e) {
 			e.printStackTrace();
