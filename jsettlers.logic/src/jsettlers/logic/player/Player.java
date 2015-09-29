@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.player;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
@@ -23,6 +25,7 @@ import jsettlers.common.player.IManaInformation;
 import jsettlers.graphics.map.IMessenger;
 import jsettlers.graphics.messages.Message;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
+import jsettlers.logic.player.CombatStrengthCalculator.CombatStrengthInformation;
 
 /**
  * This class represents a player in the game. It can be used to access player specific statistics and methods.
@@ -30,7 +33,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
  * @author Andreas Eberle
  * 
  */
-public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatStrengthInformation, IOffersCountListener {
+public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
 
 	public final byte playerId;
@@ -40,6 +43,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatS
 	private final IManaInformation manaInformation = new ManaInformation();
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
+	private transient CombatStrengthInformation combatStrengthInfo;
 	private transient IMessenger messenger;
 
 	public Player(byte playerId, Team team, byte numberOfPlayers) {
@@ -47,6 +51,12 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatS
 		this.team = team;
 		this.numberOfPlayers = numberOfPlayers;
 		team.registerPlayer(this);
+		updateCombatStrengths();
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		ois.defaultReadObject();
+		updateCombatStrengths();
 	}
 
 	@Override
@@ -72,16 +82,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatS
 
 	@Override
 	public ICombatStrengthInformation getCombatStrengthInformation() {
-		return this;
+		return this.combatStrengthInfo;
 	}
 
-	@Override
-	public float getCombatStrength(boolean ownGround) {
-		return CombatStrengthCalculator.getCombatStrength(ownGround, numberOfPlayers, getAmountOfGold());
-	}
-
-	private int getAmountOfGold() {
-		return materialCounts[EMaterialType.GOLD.ordinal];
+	private int getAmountOf(EMaterialType materialType) {
+		return materialCounts[materialType.ordinal];
 	}
 
 	@Override
@@ -91,7 +96,17 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, ICombatS
 			System.err.println("Sanity check: material count cannot be negative!");
 		}
 
-		if (materialType == EMaterialType.GOLD)
-			System.err.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: " + getAmountOfGold());
+		if (materialType == EMaterialType.GOLD) {
+			CombatStrengthInformation combatStrength = this.combatStrengthInfo;
+			updateCombatStrengths();
+			System.err.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: "
+					+ getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" + combatStrength + "   to \n\t"
+					+ this.combatStrengthInfo);
+		}
+	}
+
+	private void updateCombatStrengths() {
+		int amountOfGold = getAmountOf(EMaterialType.GOLD);
+		this.combatStrengthInfo = CombatStrengthCalculator.calculateCombatStrengthInformation(numberOfPlayers, amountOfGold);
 	}
 }
