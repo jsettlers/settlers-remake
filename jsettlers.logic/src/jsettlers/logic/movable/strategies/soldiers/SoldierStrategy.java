@@ -334,4 +334,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		state = ESoldierState.AGGRESSIVE;
 	}
+
+	@Override
+	protected boolean shouldEndActionBeforeMoving() {
+		return state == ESoldierState.HITTING;
+	}
 }

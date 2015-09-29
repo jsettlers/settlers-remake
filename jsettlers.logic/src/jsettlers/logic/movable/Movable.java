@@ -137,7 +137,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isMoveToAble()) {
+		if (movableType.isMoveToAble() && strategy.isMoveToAble() && !strategy.shouldEndActionBeforeMoving()) {
 			this.moveToRequest = targetPosition;
 		}
 	}

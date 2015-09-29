@@ -334,4 +334,15 @@ public abstract class MovableStrategy implements Serializable {
 	protected void drop(EMaterialType materialToDrop) {
 		movable.drop(materialToDrop);
 	}
+
+	/**
+	 * The difference to isMoveToAble() method is that you can force the movable to move when shouldEndActionBeforeMoving() returns true.
+	 * e.g. if a soldier is fighting he should not move but can be forced to retreat and save his live but if a soldier goes to a tower he can not be
+	 * forced to move elsewhere.
+	 *
+	 * @return
+	 */
+	protected boolean shouldEndActionBeforeMoving() {
+		return false;
+	}
 }
