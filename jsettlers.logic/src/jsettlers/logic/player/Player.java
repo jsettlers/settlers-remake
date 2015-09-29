@@ -99,7 +99,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		if (materialType == EMaterialType.GOLD) {
 			CombatStrengthInformation combatStrength = this.combatStrengthInfo;
 			updateCombatStrengths();
-			System.err.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: "
+			System.out.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: "
 					+ getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" + combatStrength + "   to \n\t"
 					+ this.combatStrengthInfo);
 		}
