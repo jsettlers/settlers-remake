@@ -63,7 +63,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private DijkstraContinuableRequest request;
 
 	private boolean occupiedArea;
-	private float doorHealth = 1.0f;
+	private float doorHealth = 50f;
 	private boolean inFight = false;
 	private AttackableTowerMapObject attackableTowerObject = null;
 
