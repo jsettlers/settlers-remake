@@ -83,7 +83,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private ShortPoint2D moveToRequest = null;
 	private Path path;
 
-	private float health = 1.0f;
+	private float health;
+	private float strength;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
 	private Movable pushedFrom;
@@ -102,6 +103,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.player = player;
 		this.strategy = MovableStrategy.getStrategy(this, movableType);
 		this.movableType = movableType;
+		this.health = movableType.getHealth();
+		this.strength = movableType.getStrength();
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 

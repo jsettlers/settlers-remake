@@ -43,7 +43,8 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
-		return EDirection.getDirection(super.getPos(), enemy.getPos()) != null;
+		short maxDistance = (short) Math.max(Math.abs(super.getPos().x - enemy.getPos().x), Math.abs(super.getPos().y - enemy.getPos().y));
+		return (maxDistance == 1 || (EMovableType.isPikeman(super.getMovableType()) && maxDistance == 2));
 	}
 
 	@Override
@@ -53,7 +54,8 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
-		enemy.receiveHit(0.1f, super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
+		enemy.receiveHit(super.getMovableType().getStrength(), super.getPos(), super.getPlayer().playerId);
+		// decrease the enemy's health
 	}
 
 	@Override
