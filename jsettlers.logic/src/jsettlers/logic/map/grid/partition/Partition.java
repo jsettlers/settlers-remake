@@ -17,6 +17,7 @@ package jsettlers.logic.map.grid.partition;
 import java.io.Serializable;
 
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
 /**
  * This class holds the metadata of a partition.
@@ -34,13 +35,14 @@ public final class Partition extends PartitionManager implements Serializable {
 	private int xSum = 0;
 	private int ySum = 0;
 
-	public Partition(short partitionId, byte player) {
+	public Partition(short partitionId, byte playerId, IOffersCountListener countListener) {
+		super(countListener);
 		this.partitionId = partitionId;
-		this.playerId = player;
+		this.playerId = playerId;
 	}
 
-	public Partition(short partitionId, byte player, int size) {
-		this(partitionId, player);
+	public Partition(short partitionId, byte playerId, int size) {
+		this(partitionId, playerId, null);
 		this.counter = size;
 	}
 

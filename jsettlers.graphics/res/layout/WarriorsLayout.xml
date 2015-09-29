@@ -7,7 +7,10 @@
 		<font-size size="NORMAL" />
 	</element>
 
-	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeProgressLabel" x="9" maxx="127" y="235" maxy="250">
+	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.CombatStrengthLabel" x="9" maxx="127" y="235" maxy="250">
+	</element>
+
+	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeProgressLabel" x="9" maxx="127" y="265" maxy="280">
 	</element>
 
 	<element x="15" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">

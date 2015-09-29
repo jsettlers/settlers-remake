@@ -38,6 +38,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
@@ -62,6 +63,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	private static final int SCHEDULING_PERIOD = 25;
 
 	private static final byte priorityForTool[] = new byte[EMaterialType.NUMBER_OF_MATERIALS];
+
 	static { // Tools with higher priorities are produced first by auto production.
 		priorityForTool[EMaterialType.AXE.ordinal] = 10;
 		priorityForTool[EMaterialType.SAW.ordinal] = 10;
@@ -76,21 +78,9 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
-	private final OffersList materialOffers = new OffersList();
+	private final OffersList materialOffers;
 
-	private final MaterialsManager materialsManager = new MaterialsManager(new IJoblessSupplier() {
-		private static final long serialVersionUID = -113397265091126902L;
-
-		@Override
-		public IManagerBearer removeJoblessCloseTo(ShortPoint2D position) {
-			return joblessBearer.removeObjectNextTo(position);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return joblessBearer.isEmpty();
-		}
-	}, materialOffers, settings);
+	private final MaterialsManager materialsManager;
 
 	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
@@ -105,6 +95,23 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<SoilderCreationRequest>();
 
 	private boolean stopped = true;
+
+	public PartitionManager(IOffersCountListener offersCountListener) {
+		materialOffers = new OffersList(offersCountListener);
+		materialsManager = new MaterialsManager(new IJoblessSupplier() {
+			private static final long serialVersionUID = -113397265091126902L;
+
+			@Override
+			public IManagerBearer removeJoblessCloseTo(ShortPoint2D position) {
+				return joblessBearer.removeObjectNextTo(position);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return joblessBearer.isEmpty();
+			}
+		}, materialOffers, settings);
+	}
 
 	public void startManager() {
 		stopped = false;
