@@ -335,6 +335,10 @@ public abstract class MovableStrategy implements Serializable {
 		movable.drop(materialToDrop);
 	}
 
+	protected boolean isOnOwnGround() {
+		return movable.isOnOwnGround();
+	}
+
 	/**
 	 * The difference to isMoveToAble() method is that you can force the movable to move when shouldEndActionBeforeMoving() returns true.
 	 * e.g. if a soldier is fighting he should not move but can be forced to retreat and save his live but if a soldier goes to a tower he can not be

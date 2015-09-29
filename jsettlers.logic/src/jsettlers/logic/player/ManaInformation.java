@@ -38,6 +38,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 	private short mana = 0;
 	private short numberOfUpgradesExecuted = 0;
 
+	@Override
 	public void increaseMana() {
 		mana++;
 	}
@@ -96,6 +97,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 		return (byte) (percent * 100);
 	}
 
+	@Override
 	public EMovableType getMovableTypeOf(ESoldierType type) {
 		switch (type) {
 		case BOWMAN:

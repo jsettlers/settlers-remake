@@ -20,6 +20,8 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.player.ICombatStrengthInformation;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.IManaInformation;
 import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.localization.Labels;
@@ -40,11 +42,15 @@ public class WarriorsPanel extends AbstractContentProvider {
 	public WarriorsPanel() {
 	}
 
-	public void setManaInformation(IManaInformation manaInformation) {
+	public void setPlayer(IInGamePlayer player) {
 		panel = new WarriorsLayout()._root;
 		for (UIElement element : panel.getChildren()) {
 			if (element instanceof IManaInformationConsument) {
-				((IManaInformationConsument) element).setManaInformation(manaInformation);
+				((IManaInformationConsument) element).setManaInformation(player.getManaInformation());
+			}
+			if (element instanceof ICombatStrengthInformationConsument) {
+				((ICombatStrengthInformationConsument) element)
+						.setCombatStrengthInformation(player.getCombatStrengthInformation());
 			}
 		}
 	}
@@ -61,6 +67,10 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 	public interface IManaInformationConsument {
 		void setManaInformation(IManaInformation manaInformation);
+	}
+
+	public interface ICombatStrengthInformationConsument {
+		void setCombatStrengthInformation(ICombatStrengthInformation combatStrengthInformation);
 	}
 
 	/**
@@ -84,6 +94,30 @@ public class WarriorsPanel extends AbstractContentProvider {
 		public synchronized void drawAt(GLDrawContext gl) {
 			setText(Labels.getString("upgrade_warriros_progress", manaInformation.getNextUpdateProgressPercent()));
 			super.drawAt(gl);
+		}
+	}
+
+	/**
+	 * This is a label that displays the combat strength percentage.
+	 *
+	 * @author codingberlin
+	 */
+	public static class CombatStrengthLabel extends Label implements ICombatStrengthInformationConsument {
+		private ICombatStrengthInformation combatStrengthInformation;
+
+		public CombatStrengthLabel() {
+			super("", EFontSize.NORMAL);
+		}
+
+		@Override
+		public synchronized void drawAt(GLDrawContext gl) {
+			setText(Labels.getString("combat_strength", (int) (combatStrengthInformation.getCombatStrength(false) * 100)));
+			super.drawAt(gl);
+		}
+
+		@Override
+		public void setCombatStrengthInformation(ICombatStrengthInformation combatStrengthInformation) {
+			this.combatStrengthInformation = combatStrengthInformation;
 		}
 	}
 

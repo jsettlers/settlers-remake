@@ -684,7 +684,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final RelativePoint[] getFlattenTiles() {
-		return type.getProtectedTiles();
+		if (shouldBeFlatened()) {
+			return type.getProtectedTiles();
+		} else {
+			return new RelativePoint[0];
+		}
 	}
 
 	public short getPartitionId() {

@@ -339,4 +339,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected boolean shouldEndActionBeforeMoving() {
 		return state == ESoldierState.HITTING;
 	}
+
+	protected float getCombatStrength() {
+		return super.getPlayer().getCombatStrengthInformation().getCombatStrength(isOnOwnGround());
+	}
 }
