@@ -147,6 +147,7 @@
 
 	<constructionStack dx="6" dy="7" material="PLANK" buildrequired="8" />
 	<constructionStack dx="6" dy="5" material="STONE" buildrequired="8" />
+	<constructionStack dx="6" dy="3" material="PLANK" buildrequired="6" />
 
 	<bricklayer dx="2" dy="7" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="8" direction="NORTH_EAST" />
@@ -166,6 +167,4 @@
 	<buildmark dx="-1" dy="5" />
 	<buildmark dx="1" dy="7" />
 	<buildmark dx="1" dy="5" />
-
-
 </building>
