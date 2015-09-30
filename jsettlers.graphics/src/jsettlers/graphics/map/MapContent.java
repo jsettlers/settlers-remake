@@ -605,7 +605,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.SPEED_TOGGLE_PAUSE);
 		} else if ("BACK".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.BACK);
-		} else if ("]".equals(keyCode)) {
+		} else if ("+".equals(keyCode)) {
 			return new Action(EActionType.SPEED_FASTER);
 		} else if ("-".equals(keyCode)) {
 			return new Action(EActionType.SPEED_SLOWER);
