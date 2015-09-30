@@ -31,6 +31,7 @@ public final class BigTemple extends SpawnBuilding {
 	private static final int PRODUCE_PERIOD_TICK = 30000;
 	private static final int PRODUCE_PERIOD = 600000;
 	private int nextProduceMillis = 0;
+	private boolean iIncreasedMana = false;
 
 	public BigTemple(Player player) {
 		super(EBuildingType.BIG_TEMPLE, player);
@@ -44,6 +45,21 @@ public final class BigTemple extends SpawnBuilding {
 			return super.subTimerEvent();
 		} else {
 			return getProducePeriod();
+		}
+	}
+
+	@Override
+	protected int constructionFinishedEvent() {
+		getPlayer().getManaInformation().increaseManaByBigTemple();
+		iIncreasedMana = true;
+		return super.constructionFinishedEvent();
+	}
+
+	@Override
+	protected void killedEvent() {
+		if (iIncreasedMana) {
+			// prevent the player from building temples and immediately destroy them to get back the material for more temples to get fast Level3
+			getPlayer().getManaInformation().stopFutureManaIncreasingByBigTemple();
 		}
 	}
 

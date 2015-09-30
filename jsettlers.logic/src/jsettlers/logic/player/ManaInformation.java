@@ -37,9 +37,20 @@ public class ManaInformation implements Serializable, IManaInformation {
 
 	private short mana = 0;
 	private short numberOfUpgradesExecuted = 0;
+	private boolean isManaIncreasableByBigTemples = true;
 
 	public void increaseMana() {
 		mana++;
+	}
+
+	public void increaseManaByBigTemple() {
+		if (isManaIncreasableByBigTemples) {
+			mana += 8;
+		}
+	}
+
+	public void stopFutureManaIncreasingByBigTemple() {
+		isManaIncreasableByBigTemples = false;
 	}
 
 	@Override
