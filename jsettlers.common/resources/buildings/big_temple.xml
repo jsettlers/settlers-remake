@@ -170,5 +170,7 @@
 	<buildmark dx="1" dy="7" />
 	<buildmark dx="1" dy="5" />
 
-
+	<image file="14" for="GUI" type="GUI" sequence="105" image="0"/>
+	<image file="13" type="SETTLER" for="FINAL" image="0" sequence="32"/>
+	<image file="13" type="SETTLER" for="BUILD" image="1" sequence="32"/>
 </building>
