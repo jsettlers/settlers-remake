@@ -94,20 +94,22 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	 *            x coordinate
 	 * @param y
 	 *            y coordinate
-	 * @param blocked
+	 * @param newBlocked
 	 *            new blocked value of this position
 	 * @param newProtected
 	 *            new protected value of this position
 	 */
-	public void setBlockedAndProtected(int x, int y, boolean blocked, boolean newProtected) {
+	public void setBlockedAndProtected(int x, int y, boolean newBlocked, boolean newProtected) {
 		final int idx = x + y * width;
-		this.blockedGrid.set(idx, blocked);
-		this.protectedGrid.set(idx, newProtected);
+		boolean oldBlocked = this.blockedGrid.get(idx);
+		boolean oldProtected = this.protectedGrid.get(idx);
 
-		if (blockingChangedListener != null) {
-			this.blockingChangedListener.blockingChanged(x, y, blocked);
+		if (blockingChangedListener != null && oldBlocked != newBlocked) {
+			this.blockedGrid.set(idx, newBlocked);
+			this.blockingChangedListener.blockingChanged(x, y, newBlocked);
 		}
-		if (protectedChangedListener != null) {
+		if (protectedChangedListener != null && oldProtected != newProtected) {
+			this.protectedGrid.set(idx, newProtected);
 			this.protectedChangedListener.protectedChanged(x, y, newProtected);
 		}
 	}

@@ -39,6 +39,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 	private short numberOfUpgradesExecuted = 0;
 	private boolean isManaIncreasableByBigTemples = true;
 
+	@Override
 	public void increaseMana() {
 		mana++;
 	}
@@ -107,6 +108,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 		return (byte) (percent * 100);
 	}
 
+	@Override
 	public EMovableType getMovableTypeOf(ESoldierType type) {
 		switch (type) {
 		case BOWMAN:

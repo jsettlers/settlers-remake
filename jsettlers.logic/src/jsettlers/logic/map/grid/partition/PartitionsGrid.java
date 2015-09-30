@@ -96,7 +96,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.teams = new Team[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			Team team = new Team(playerId);
-			this.players[playerId] = new Player(playerId, team);
+			this.players[playerId] = new Player(playerId, team, numberOfPlayers);
 			this.teams[playerId] = team;
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
@@ -117,7 +117,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	public short getHeight() {
 		return height;
 	}
-	
+
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		int normalizedPartitions = checkNormalizePartitions(0);
 		System.out.println("Normalized " + normalizedPartitions + " partitions");
@@ -679,7 +679,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		playerChangedListener.playerChangedAt(x, y, newPlayer);
 	}
 
-	short createNewPartition(byte player) { // package private for tests
+	short createNewPartition(byte playerId) { // package private for tests
 		checkNormalizePartitions(NUMBER_OF_START_PARTITION_OBJECTS / 2);
 
 		short newPartitionId = 1;
@@ -701,7 +701,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		}
 
-		Partition newPartitionObject = new Partition(newPartitionId, player);
+		Partition newPartitionObject = new Partition(newPartitionId, playerId, players[playerId]);
 		newPartitionObject.startManager();
 		partitionObjects[newPartitionId] = newPartitionObject;
 
@@ -827,5 +827,4 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	public Team[] getTeams() {
 		return teams;
 	}
-
 }

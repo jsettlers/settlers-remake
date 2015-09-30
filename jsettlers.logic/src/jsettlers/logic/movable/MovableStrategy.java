@@ -334,4 +334,8 @@ public abstract class MovableStrategy implements Serializable {
 	protected void drop(EMaterialType materialToDrop) {
 		movable.drop(materialToDrop);
 	}
+
+	protected boolean isOnOwnGround() {
+		return movable.isOnOwnGround();
+	}
 }

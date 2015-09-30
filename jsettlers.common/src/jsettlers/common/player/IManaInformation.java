@@ -1,5 +1,6 @@
 package jsettlers.common.player;
 
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 
 /**
@@ -16,4 +17,8 @@ public interface IManaInformation {
 	byte getNextUpdateProgressPercent();
 
 	byte getMaximumLevel();
+
+	EMovableType getMovableTypeOf(ESoldierType type);
+
+	void increaseMana();
 }

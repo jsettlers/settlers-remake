@@ -334,4 +334,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		state = ESoldierState.AGGRESSIVE;
 	}
+
+	protected float getCombatStrength() {
+		return super.getPlayer().getCombatStrengthInformation().getCombatStrength(isOnOwnGround());
+	}
 }

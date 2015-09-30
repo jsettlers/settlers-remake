@@ -18,6 +18,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.IManaInformation;
 import jsettlers.common.statistics.IStatisticable;
 
@@ -66,26 +67,8 @@ public class FakeMapGame implements IStartedGame {
 		return new NullStatistics();
 	}
 
-	@Override public IManaInformation getManaInformation() {
-		return new IManaInformation() {
-			@Override public boolean isUpgradePossible(ESoldierType type) {
-				return false;
-			}
-
-			@Override public byte getLevel(ESoldierType type) {
-				return 0;
-			}
-
-			@Override public void upgrade(ESoldierType type) {}
-
-			@Override public byte getNextUpdateProgressPercent() {
-				return 0;
-			}
-
-			@Override public byte getMaximumLevel() {
-				return 0;
-			}
-		};
+	@Override public IInGamePlayer getInGamePlayer() {
+		return null;
 	}
 
 	@Override

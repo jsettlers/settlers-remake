@@ -29,17 +29,13 @@ import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.player.IManaInformation;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.EGameError;
-import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
+import jsettlers.graphics.startscreen.interfaces.*;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
@@ -51,7 +47,7 @@ import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.player.PlayerSetting;
+import jsettlers.logic.player.*;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -328,8 +324,9 @@ public class JSettlersGame {
 			return statistics;
 		}
 
-		@Override public IManaInformation getManaInformation() {
-			return mainGrid.getPartitionsGrid().getPlayer(playerId).getManaInformation();
+		@Override
+		public IInGamePlayer getInGamePlayer() {
+			return mainGrid.getPartitionsGrid().getPlayer(playerId);
 		}
 
 		@Override

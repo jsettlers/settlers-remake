@@ -26,7 +26,6 @@ public class Team implements Serializable {
 
 	public Team(byte teamId) {
 		this.teamId = teamId;
-
 	}
 
 	public void registerPlayer(Player player) {
@@ -34,7 +33,7 @@ public class Team implements Serializable {
 	}
 
 	public boolean isMember(byte playerId) {
-		for (Player member: members) {
+		for (Player member : members) {
 			if (member.playerId == playerId) {
 				return true;
 			}
