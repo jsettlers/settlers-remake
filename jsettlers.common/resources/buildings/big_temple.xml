@@ -84,6 +84,8 @@
 	<blocked dx="1" dy="5" block="true" />
 	<blocked dx="-3" dy="-4" block="true" />
 	<blocked dx="6" dy="0" block="true" />
+	<blocked dx="-2" dy="3" block="true" />
+	<blocked dx="2" dy="6" block="true" />
 
 	<blocked dx="0" dy="5" block="false" />
 	<blocked dx="0" dy="4" block="false" />
@@ -101,8 +103,6 @@
 	<blocked dx="-5" dy="0" block="false" />
 	<blocked dx="-4" dy="1" block="false" />
 	<blocked dx="-3" dy="2" block="false" />
-	<blocked dx="-2" dy="3" block="false" />
-	<blocked dx="2" dy="6" block="false" />
 	<blocked dx="3" dy="7" block="false" />
 	<blocked dx="4" dy="8" block="false" />
 	<blocked dx="5" dy="8" block="false" />
@@ -142,12 +142,14 @@
 	<blocked dx="0" dy="2" block="false" />
 	<blocked dx="-2" dy="4" block="false" />
 	<blocked dx="-2" dy="-8" block="false" />
+	<blocked dx="-3" dy="3" block="false" />
+	<blocked dx="3" dy="8" block="false" />
 
 	<door dx="0" dy="2" />
 
-	<constructionStack dx="6" dy="7" material="PLANK" buildrequired="8" />
-	<constructionStack dx="6" dy="5" material="STONE" buildrequired="8" />
-	<constructionStack dx="6" dy="3" material="PLANK" buildrequired="6" />
+	<constructionStack dx="1" dy="7" material="PLANK" buildrequired="6" />
+	<constructionStack dx="5" dy="9" material="PLANK" buildrequired="8" />
+	<constructionStack dx="6" dy="7" material="STONE" buildrequired="8" />
 
 	<bricklayer dx="2" dy="7" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="8" direction="NORTH_EAST" />
@@ -167,4 +169,6 @@
 	<buildmark dx="-1" dy="5" />
 	<buildmark dx="1" dy="7" />
 	<buildmark dx="1" dy="5" />
+
+
 </building>

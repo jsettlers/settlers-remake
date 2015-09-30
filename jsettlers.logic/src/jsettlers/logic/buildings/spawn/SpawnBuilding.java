@@ -31,7 +31,6 @@ import jsettlers.logic.player.Player;
 public abstract class SpawnBuilding extends Building {
 	private static final long serialVersionUID = 7584783336566602225L;
 
-	private static final int PRODUCE_PERIOD = 2000;
 	private byte produced = 0;
 
 	protected SpawnBuilding(EBuildingType type, Player player) {
@@ -45,11 +44,11 @@ public abstract class SpawnBuilding extends Building {
 
 	@Override
 	protected int constructionFinishedEvent() {
-		return PRODUCE_PERIOD;
+		return subTimerEvent();
 	}
 
 	@Override
-	protected final int subTimerEvent() {
+	protected int subTimerEvent() {
 		int rescheduleDelay;
 		Movable movableAtDoor = super.getGrid().getMovable(super.getDoor());
 
@@ -58,7 +57,7 @@ public abstract class SpawnBuilding extends Building {
 			produced++;
 
 			if (produced < getProduceLimit()) {
-				rescheduleDelay = PRODUCE_PERIOD;
+				rescheduleDelay = getProducePeriod();
 			} else {
 				rescheduleDelay = -1; // remove from scheduling
 			}
@@ -70,6 +69,8 @@ public abstract class SpawnBuilding extends Building {
 
 		return rescheduleDelay;
 	}
+
+	protected abstract int getProducePeriod();
 
 	protected abstract EMovableType getMovableType();
 

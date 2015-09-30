@@ -28,9 +28,28 @@ public final class BigTemple extends SpawnBuilding {
 	private static final long serialVersionUID = -6442369297239688436L;
 
 	private static final byte PRODUCE_LIMIT = 100;
+	private static final int PRODUCE_PERIOD_TICK = 30000;
+	private static final int PRODUCE_PERIOD = 600000;
+	private int nextProduceMillis = 0;
 
 	public BigTemple(Player player) {
 		super(EBuildingType.BIG_TEMPLE, player);
+	}
+
+	@Override
+	protected final int subTimerEvent() {
+		nextProduceMillis -= PRODUCE_PERIOD_TICK;
+		if (nextProduceMillis <= 0) {
+			nextProduceMillis = PRODUCE_PERIOD;
+			return super.subTimerEvent();
+		} else {
+			return getProducePeriod();
+		}
+	}
+
+	@Override
+	protected int getProducePeriod() {
+		return PRODUCE_PERIOD_TICK;
 	}
 
 	@Override
