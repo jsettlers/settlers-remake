@@ -43,6 +43,9 @@ public class WarriorsPanel extends AbstractContentProvider {
 	}
 
 	public void setPlayer(IInGamePlayer player) {
+		if (player == null) {
+			return;
+		}
 		panel = new WarriorsLayout()._root;
 		for (UIElement element : panel.getChildren()) {
 			if (element instanceof IManaInformationConsument) {
