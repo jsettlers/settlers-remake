@@ -1,6 +1,7 @@
-<?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
+<?xml version="1.1" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd">
 
-<building worker="" workradius="30">
+<building worker="">
 	<ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
