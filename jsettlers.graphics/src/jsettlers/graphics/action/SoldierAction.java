@@ -17,12 +17,21 @@ package jsettlers.graphics.action;
 import jsettlers.common.movable.ESoldierType;
 
 /**
- * @author codingberlin
- * @author Andreas Eberle
+ * This is for all actions that allows you to specify a soldier type.
+ * 
+ * @author Michael Zangl
+ *
  */
-public class UpgradeSoldiersAction extends SoldierAction {
+public class SoldierAction extends Action {
 
-	public UpgradeSoldiersAction(ESoldierType soldierType) {
-		super(EActionType.UPGRADE_SOLDIERS, soldierType);
+	private final ESoldierType soldierType;
+
+	public SoldierAction(EActionType actionType, ESoldierType soldierType) {
+		super(actionType);
+		this.soldierType = soldierType;
+	}
+
+	public ESoldierType getSoldierType() {
+		return soldierType;
 	}
 }

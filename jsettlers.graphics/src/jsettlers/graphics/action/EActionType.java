@@ -266,5 +266,26 @@ public enum EActionType {
 	FOCUS,
 
 	NEXT_OF_TYPE,
-	UPGRADE_SOLDIERS
+	UPGRADE_SOLDIERS,
+
+	/**
+	 * Add as many soldiers to this building as possible.
+	 */
+	SOLDIERS_ALL,
+	/**
+	 * Only put one soldier in this building.
+	 */
+	SOLDIERS_ONE,
+	/**
+	 * Add one more soldier of this type to the building
+	 * 
+	 * @see SoldierAction
+	 */
+	SOLDIERS_MORE,
+	/**
+	 * Add one more soldier of this type to the building
+	 * 
+	 * @see SoldierAction
+	 */
+	SOLDIERS_LESS,
 }
