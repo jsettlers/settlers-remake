@@ -41,8 +41,11 @@ public final class BigTemple extends SpawnBuilding {
 	protected final int subTimerEvent() {
 		nextProduceMillis -= PRODUCE_PERIOD_TICK;
 		if (nextProduceMillis <= 0) {
-			nextProduceMillis = PRODUCE_PERIOD;
-			return super.subTimerEvent();
+			int nextEventMillis =  super.subTimerEvent();
+			if (nextEventMillis == PRODUCE_PERIOD_TICK) { // priest was not prevented from spawning
+				nextProduceMillis = PRODUCE_PERIOD;
+			}
+			return nextEventMillis;
 		} else {
 			return getProducePeriod();
 		}
