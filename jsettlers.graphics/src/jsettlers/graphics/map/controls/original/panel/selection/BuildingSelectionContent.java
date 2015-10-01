@@ -21,32 +21,50 @@ import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.buildings.IBuildingOccupyer;
-import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.OccupierState;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.StackState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
+import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
 
 public class BuildingSelectionContent extends AbstractSelectionContent {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 48, 0);
+
+	public static class SoldierButton extends Button {
+
+		public SoldierButton(EActionType actionType, ESoldierType type, ImageLink image) {
+			super(new SoldierAction(actionType, type), image, image, Labels.getString("action_" + actionType + "_" + type));
+		}
+	}
+
+	public static class SoldierCount extends Label {
+
+		public SoldierCount(ESoldierType type) {
+			super("?", EFontSize.NORMAL);
+		}
+	}
+
 	private final IBuilding building;
 	private final UIPanel rootPanel = new ContentRefreshingPanel();
 
@@ -65,9 +83,19 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
+		BuidlingBackgroundPanel root;
+		if (!state.isConstruction() && building instanceof IBuilding.IOccupyed) {
+			root = creteOccupiedBuildingContent(state);
+		} else {
+			root = createNormalBuildingContent(state);
+		}
 		ImageLink[] images = building.getBuildingType().getImages();
+		root.setImages(images);
+		rootPanel.addChild(root, 0, 0, 1, 1);
+	}
+
+	private BuidlingBackgroundPanel createNormalBuildingContent(BuildingState state) {
 		BuildingSelectionLayout layout = new BuildingSelectionLayout();
-		layout.background.setImages(images);
 
 		EPriority[] supported = state.getSupportedPriorities();
 		if (supported.length < 2) {
@@ -86,20 +114,15 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		if (building.getStateProgress() < 1) {
 			text = Labels.getString("materials_required");
 		} else if (building instanceof IBuilding.IResourceBuilding) {
-			IBuilding.IResourceBuilding mill = (IBuilding.IResourceBuilding) building;
-			text = Labels.getString("productivity", (int) (mill.getProductivity() * 100));
+			IBuilding.IResourceBuilding resourceBuilding = (IBuilding.IResourceBuilding) building;
+			text = Labels.getString("productivity", (int) (resourceBuilding.getProductivity() * 100));
 		}
 		layout.materialText.setText(text);
 
 		addRequestAndOfferStacks(layout.materialArea, state);
 
-		// TODO: convert to state
-		if (building instanceof IBuilding.IOccupyed) {
-			List<? extends IBuildingOccupyer> occupyers =
-					((IBuilding.IOccupyed) building).getOccupyers();
-			addOccupyerPlaces(layout.background, occupyers);
-		}
-		rootPanel.addChild(layout._root, 0, 0, 1, 1);
+		BuidlingBackgroundPanel root = layout._root;
+		return root;
 	}
 
 	private void addRequestAndOfferStacks(UIPanel materialArea, BuildingState state) {
@@ -107,7 +130,6 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		float buttonWidth = 18f / (127 - 9);
 		float buttonSpace = 12f / (127 - 9);
 		float requestOfferSpace = 18f / (127 - 9);
-		List<IBuildingMaterial> materials = building.getMaterials();
 
 		float requestX = buttonSpace;
 		float offerX = 1 - buttonSpace - buttonWidth;
@@ -124,6 +146,11 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
+	/**
+	 * A button with a number of materials below it.
+	 * 
+	 * @author Michael Zangl
+	 */
 	public static class MaterialDisplay extends UIPanel {
 		private static final float BUTTON_BOTTOM = 1 - 18f / 29;
 
@@ -136,6 +163,11 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
+	/**
+	 * A panel that displays the name of the building.
+	 * 
+	 * @author Michael Zangl
+	 */
 	public static class NamePanel extends Label {
 		public NamePanel() {
 			super("", EFontSize.HEADLINE);
@@ -153,7 +185,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	/**
 	 * A button to change the priority of the current building.
 	 * 
-	 * @author michael
+	 * @author Michael Zangl
 	 *
 	 */
 	public static class PriorityButton extends Button {
@@ -205,32 +237,31 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	}
 
-	private void addOccupyerPlaces(BuidlingBackgroundPanel panel, List<? extends IBuildingOccupyer> occupyers) {
-		int bottomindex = 0;
+	private BuidlingBackgroundPanel creteOccupiedBuildingContent(BuildingState state) {
+		OccupiableSelectionLayout layout = new OccupiableSelectionLayout();
+		layout.nameText.setType(building.getBuildingType(), false);
+		addOccupyerPlaces(layout.infantry_places, layout.infantry_missing, state.getOccupiers(ESoldierClass.INFANTRY));
+		addOccupyerPlaces(layout.bowman_places, layout.bowman_missing, state.getOccupiers(ESoldierClass.BOWMAN));
+		return layout._root;
+	}
 
-		int topindex = 0;
-
-		for (IBuildingOccupyer occupyer : occupyers) {
-			OccupyerPlace place = occupyer.getPlace();
-			OriginalImageLink link = SOILDER_COMMING;
-			boolean big = false;
-
-			if (occupyer.getMovable() != null) {
-				link = getIconFor(occupyer.getMovable());
-				big = true;
-			}
-			float width = big ? .2f : .1f;
-			float height = big ? .15f : .05f;
-
-			Button button = new Button(null, link, link, "");
-			if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
-				float left = topindex * .1f + .3f;
-				panel.addChild(button, left, .6f, left + width, .6f + height);
-				topindex++;
-			} else {
-				float left = bottomindex * .1f + .1f;
-				panel.addChild(button, left, .4f, left + width, .4f + height);
-				bottomindex++;
+	private void addOccupyerPlaces(UIPanel places, UIPanel missing, List<OccupierState> occupiers) {
+		List<UIElement> buttonPlaces = places.getChildren();
+		List<UIElement> missingPlaces = missing.getChildren();
+		for (int i = 0; i < Math.min(buttonPlaces.size(), missingPlaces.size()); i++) {
+			UIPanel icon = (UIPanel) buttonPlaces.get(i);
+			UIPanel missingIcon = (UIPanel) missingPlaces.get(i);
+			icon.setBackground(null);
+			missingIcon.setBackground(null);
+			if (i < occupiers.size()) {
+				OccupierState state = occupiers.get(i);
+				if (state.isComming()) {
+					missingIcon.setBackground(SOILDER_COMMING);
+				} else if (state.isMissing()) {
+					missingIcon.setBackground(SOILDER_MISSING);
+				} else {
+					icon.setBackground(getIconFor(state.getMovable()));
+				}
 			}
 		}
 	}

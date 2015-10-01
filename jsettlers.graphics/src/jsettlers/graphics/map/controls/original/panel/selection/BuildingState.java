@@ -16,12 +16,17 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
+import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.movable.IMovable;
 
 /**
  * This class saves the state parts of the building that is displayed by the gui, to detect changes
@@ -34,6 +39,11 @@ public class BuildingState {
 	private final EPriority[] supportedPriorities;
 	private final ArrayList<StackState> stackStates = new ArrayList<>();
 	private boolean construction;
+
+	/**
+	 * An array: soldier class -> available places.
+	 */
+	private final Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates;
 
 	public static class StackState {
 		public final EMaterialType type;
@@ -52,6 +62,33 @@ public class BuildingState {
 
 	}
 
+	public static class OccupierState {
+		private final IMovable movable;
+		private final boolean comming;
+
+		private OccupierState(IMovable movable) {
+			this.movable = movable;
+			comming = false;
+		}
+
+		private OccupierState(boolean comming) {
+			this.comming = comming;
+			movable = null;
+		}
+
+		public boolean isComming() {
+			return comming;
+		}
+
+		public boolean isMissing() {
+			return movable == null && !isComming();
+		}
+
+		public IMovable getMovable() {
+			return movable;
+		}
+	}
+
 	/**
 	 * Saves the current state of the building
 	 * 
@@ -62,15 +99,41 @@ public class BuildingState {
 		priority = building.getPriority();
 		supportedPriorities = building.getSupportedPriorities();
 		construction = building.getStateProgress() < 1;
-		if (building instanceof IBuilding.IOccupyed) {
-			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
-			// TODO: use this to store how many people are occupying the
-			// building.
-		}
-
+		Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates = computeOccupierStates(building);
+		this.occupierStates = occupierStates;
 		for (IBuildingMaterial mat : building.getMaterials()) {
 			stackStates.add(new StackState(mat));
 		}
+	}
+
+	private Hashtable<ESoldierClass, ArrayList<OccupierState>> computeOccupierStates(IBuilding building) {
+		Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates = null;
+		if (building instanceof IBuilding.IOccupyed && building.getStateProgress() >= 1) {
+			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
+			occupierStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
+			for (ESoldierClass soldierClass : ESoldierClass.values) {
+				occupierStates.put(soldierClass, new ArrayList<OccupierState>());
+			}
+
+			for (IBuildingOccupyer o : occupyed.getOccupyers()) {
+				ESoldierClass soldierClass = o.getPlace().getSoldierClass();
+				OccupierState state = new OccupierState(o.getMovable());
+				occupierStates.get(soldierClass).add(state);
+			}
+
+			for (ESoldierClass soldierClass : ESoldierClass.values) {
+				ArrayList<OccupierState> list = occupierStates.get(soldierClass);
+				int comming = occupyed.getCurrentlyCommingSoldiers(soldierClass);
+				while (list.size() < comming) {
+					list.add(new OccupierState(true));
+				}
+				int requested = occupyed.getMaximumRequestedSoldiers(soldierClass);
+				while (list.size() < requested) {
+					list.add(new OccupierState(false));
+				}
+			}
+		}
+		return occupierStates;
 	}
 
 	public EPriority[] getSupportedPriorities() {
@@ -90,7 +153,19 @@ public class BuildingState {
 				&& Arrays.equals(supportedPriorities,
 						building.getSupportedPriorities())
 				&& construction == (building.getStateProgress() < 1)
-				&& hasSameStacks(building);
+				&& hasSameStacks(building)
+				&& hasSameOccupiers(building);
+	}
+
+	private boolean hasSameOccupiers(IBuilding building) {
+		Hashtable<ESoldierClass, ArrayList<OccupierState>> states = computeOccupierStates(building);
+		if (states == null) {
+			return occupierStates == null;
+		} else if (occupierStates == null) {
+			return false;
+		} else {
+			return occupierStates.equals(states);
+		}
 	}
 
 	private boolean hasSameStacks(IBuilding building) {
@@ -107,4 +182,7 @@ public class BuildingState {
 		return true;
 	}
 
+	public List<OccupierState> getOccupiers(ESoldierClass soldierClass) {
+		return Collections.unmodifiableList(occupierStates.get(soldierClass));
+	}
 }

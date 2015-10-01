@@ -25,4 +25,8 @@ public class SimpleActionButton extends Button {
 		super(new Action(actionType), image, active, Labels.getName(actionType));
 	}
 
+	public SimpleActionButton(EActionType actionType, ImageLink image) {
+		this(actionType, image, image);
+	}
+
 }
