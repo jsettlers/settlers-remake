@@ -31,6 +31,7 @@ import jsettlers.logic.player.Player;
 public abstract class SpawnBuilding extends Building {
 	private static final long serialVersionUID = 7584783336566602225L;
 
+	private static final int PRODUCE_PERIOD = 2000;
 	private byte produced = 0;
 
 	protected SpawnBuilding(EBuildingType type, Player player) {
@@ -44,7 +45,7 @@ public abstract class SpawnBuilding extends Building {
 
 	@Override
 	protected int constructionFinishedEvent() {
-		return subTimerEvent();
+		return PRODUCE_PERIOD;
 	}
 
 	@Override
@@ -70,7 +71,9 @@ public abstract class SpawnBuilding extends Building {
 		return rescheduleDelay;
 	}
 
-	protected abstract int getProducePeriod();
+	protected int getProducePeriod() {
+		return PRODUCE_PERIOD;
+	}
 
 	protected abstract EMovableType getMovableType();
 

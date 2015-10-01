@@ -45,9 +45,8 @@ public final class BigTemple extends SpawnBuilding {
 				nextProduceMillis = PRODUCE_PERIOD;
 			}
 			return nextEventMillis;
-		} else {
-			return getProducePeriod();
 		}
+		return getProducePeriod();
 	}
 
 	@Override
