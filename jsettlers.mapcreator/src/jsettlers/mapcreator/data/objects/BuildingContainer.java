@@ -22,12 +22,12 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupyer;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -137,16 +137,16 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public int getMaximumRequestedSoldiers(ESoldierType type) {
+	public int getMaximumRequestedSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
 	@Override
-	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+	public void setMaximumRequestedSoldiers(ESoldierClass type, int max) {
 	}
 
 	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierType type) {
+	public int getCurrentlyCommingSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
@@ -163,5 +163,10 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	@Override
 	public IMapObject getMapObject(EMapObjectType type) {
 		return type == getObjectType() ? this : null;
+	}
+
+	@Override
+	public boolean cannotWork() {
+		return false;
 	}
 }

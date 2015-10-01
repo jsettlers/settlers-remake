@@ -33,15 +33,22 @@ public final class OffersList implements IMaterialCounts, Serializable {
 
 	private final PositionableList<MaterialOffer>[] offersLists;
 	private final short[] numberOfOffers = new short[EMaterialType.NUMBER_OF_MATERIALS];
+	private final IOffersCountListener countListener;
 
 	/**
 	 * Constructor to create a new {@link OffersList}.
 	 */
 	@SuppressWarnings("unchecked")
-	public OffersList() {
+	public OffersList(IOffersCountListener countListener) {
 		offersLists = new PositionableList[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			offersLists[i] = new PositionableList<MaterialOffer>();
+		}
+
+		if (countListener != null) {
+			this.countListener = countListener;
+		} else {
+			this.countListener = IOffersCountListener.DEFAULT_IMPLEMENTATION;
 		}
 	}
 
@@ -64,6 +71,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 		}
 
 		numberOfOffers[material.ordinal]++;
+		countListener.offersCountChanged(material, +1);
 	}
 
 	/**
@@ -118,6 +126,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 				offerSlot.remove(offer);
 			}
 			numberOfOffers[materialType.ordinal]--;
+			countListener.offersCountChanged(materialType, -1);
 		}
 	}
 
@@ -135,12 +144,15 @@ public final class OffersList implements IMaterialCounts, Serializable {
 
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			final int materialType = i;
-			offersLists[materialType].moveObjectsAtPositionTo(position, otherList.offersLists[i], new IMovedVisitor<MaterialOffer>() {
+			final int materialTypeIdx = i;
+			final EMaterialType materialType = EMaterialType.values[materialTypeIdx];
+			offersLists[materialTypeIdx].moveObjectsAtPositionTo(position, otherList.offersLists[i], new IMovedVisitor<MaterialOffer>() {
 				@Override
 				public void visit(MaterialOffer moved) { // correct the counts
-					numberOfOffers[materialType] -= moved.getAmount();
-					otherList.numberOfOffers[materialType] += moved.getAmount();
+					numberOfOffers[materialTypeIdx] -= moved.getAmount();
+					countListener.offersCountChanged(materialType, -moved.getAmount());
+					otherList.numberOfOffers[materialTypeIdx] += moved.getAmount();
+					otherList.countListener.offersCountChanged(materialType, +moved.getAmount());
 				}
 			});
 		}
@@ -148,8 +160,14 @@ public final class OffersList implements IMaterialCounts, Serializable {
 
 	public void addAll(OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			offersLists[i].addAll(otherList.offersLists[i]);
-			numberOfOffers[i] += otherList.numberOfOffers[i];
+			short amount = otherList.numberOfOffers[i];
+			if (amount > 0) {
+				offersLists[i].addAll(otherList.offersLists[i]);
+				numberOfOffers[i] += amount;
+				EMaterialType materialType = EMaterialType.values[i];
+				otherList.countListener.offersCountChanged(materialType, -amount);
+				countListener.offersCountChanged(materialType, amount);
+			}
 		}
 	}
 

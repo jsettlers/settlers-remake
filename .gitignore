@@ -2,8 +2,6 @@ bin
 gen
 target
 logs
-.idea
-*.iml
 
 /.metadata
 /.recommenders

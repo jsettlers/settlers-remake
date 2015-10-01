@@ -54,10 +54,12 @@ import jsettlers.common.position.ShortPoint2D;
  * For each map object (until end of file): 16 bit x, 16 bit y, 8 bit type, String for additional data.
  * 
  * @author michael
+ * @author Andreas Eberle
+ * 
  * @see IMapData
  */
 public class FreshMapSerializer {
-	private static final int VERSION = 3;
+	protected static final int VERSION = 3;
 	private static final int VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS = 3;
 
 	private static final int TYPE_TREE = 1;
@@ -162,7 +164,7 @@ public class FreshMapSerializer {
 			DataInputStream stream = new DataInputStream(in);
 			int version = stream.readShort();
 
-			if (!(version == VERSION || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
+			if (version < VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
 

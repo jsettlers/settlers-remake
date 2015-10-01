@@ -20,6 +20,8 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -59,10 +61,10 @@ public class OriginalControls implements IControls {
 
 	private MapDrawContext context;
 
-	public OriginalControls(ActionFireable actionFireable) {
+	public OriginalControls(ActionFireable actionFireable, IInGamePlayer player) {
 		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(480);
 		final MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
-		mainPanel = new MainPanel(actionFireable);
+		mainPanel = new MainPanel(actionFireable, player);
 
 		btnChat = new Button(
 				new ExecutableAction() {

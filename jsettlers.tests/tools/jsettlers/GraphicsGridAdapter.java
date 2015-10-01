@@ -97,4 +97,8 @@ public class GraphicsGridAdapter implements IGraphicsGrid {
 		return null;
 	}
 
+	@Override
+	public boolean isBuilding(int x, int y) {
+		return false;
+	}
 }

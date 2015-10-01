@@ -171,7 +171,7 @@ public class MapData implements IMapData {
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
 
-		assert (isAllFalse(this.doneBuffer));
+		assert(isAllFalse(this.doneBuffer));
 
 		System.out.println("filling");
 		int ymin = Integer.MAX_VALUE;
@@ -294,7 +294,7 @@ public class MapData implements IMapData {
 				doneBuffer[x][y] = false;
 			}
 		}
-		assert (isAllFalse(this.doneBuffer));
+		assert(isAllFalse(this.doneBuffer));
 	}
 
 	private static boolean isAllFalse(boolean[][] doneBuffer2) {
@@ -609,6 +609,7 @@ public class MapData implements IMapData {
 		while (start != null) {
 			inverse.setStartPoint(start.player, playerStarts[start.player]);
 			playerStarts[start.player] = start.pos;
+			start = start.next;
 		}
 		return inverse;
 	}

@@ -15,6 +15,7 @@
 package jsettlers.common.images;
 
 public class DirectImageLink extends ImageLink {
+	private static final long serialVersionUID = -7746487283146780673L;
 
 	private final String name;
 

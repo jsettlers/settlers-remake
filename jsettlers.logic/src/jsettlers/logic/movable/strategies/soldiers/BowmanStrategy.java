@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
@@ -41,8 +41,8 @@ public final class BowmanStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	public final ESoldierType getSoldierType() {
-		return ESoldierType.BOWMAN;
+	public final ESoldierClass getSoldierClass() {
+		return ESoldierClass.BOWMAN;
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EAction.ACTION1, BOWMAN_ATTACK_DURATION);
 
-		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer().playerId, 0.08f);
+		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer().playerId, getCombatStrength() * 0.08f);
 	}
 
 	@Override

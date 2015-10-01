@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -37,8 +37,8 @@ public final class InfantryStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	public final ESoldierType getSoldierType() {
-		return ESoldierType.INFANTRY;
+	public final ESoldierClass getSoldierClass() {
+		return ESoldierClass.INFANTRY;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
-		enemy.receiveHit(0.1f, super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
+		enemy.receiveHit(getCombatStrength() * 0.1f, super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
 	}
 
 	@Override

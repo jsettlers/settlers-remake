@@ -42,6 +42,7 @@ import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
+import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.MillBuilding;
@@ -447,15 +448,17 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void kill() {
 		System.out.println("building killed");
 
-		grid.removeBuildingAt(pos);
-		grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
-				EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
-		placeAdditionalMapObjects(grid, pos, false);
-		placeFlag(false);
+		if (grid != null) {
+			grid.removeBuildingAt(pos);
+			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
+					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
+			placeAdditionalMapObjects(grid, pos, false);
+			placeFlag(false);
+			placeReusableMaterials();
+		}
 
 		allBuildings.remove(this);
 
-		placeReusableMaterials();
 		releaseRequestStacks();
 		this.state = STATE_DESTROYED;
 
@@ -609,6 +612,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case LOOKOUT_TOWER:
 			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
+		case BIG_TEMPLE:
+			return new BigTemple(player);
 
 		default:
 			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
@@ -682,11 +687,19 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final RelativePoint[] getFlattenTiles() {
-		return type.getProtectedTiles();
+		if (shouldBeFlatened()) {
+			return type.getProtectedTiles();
+		} else {
+			return new RelativePoint[0];
+		}
 	}
 
 	public short getPartitionId() {
 		return grid.getPartitionIdAt(pos);
 	}
 
+	@Override
+	public boolean cannotWork() {
+		return false;
+	}
 }

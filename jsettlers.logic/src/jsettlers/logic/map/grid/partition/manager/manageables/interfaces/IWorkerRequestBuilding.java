@@ -59,4 +59,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	boolean tryTakingFoood(EMaterialType[] foodOrder);
 
 	boolean tryTakingResource();
+
+	void setCannotWork(boolean cannotWork);
 }

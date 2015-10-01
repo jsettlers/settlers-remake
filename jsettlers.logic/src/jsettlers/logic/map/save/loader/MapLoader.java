@@ -20,8 +20,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
@@ -33,6 +36,7 @@ import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
@@ -71,19 +75,10 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	}
 
 	private static MapFileHeader loadHeader(IListedMap file) throws MapLoadException {
-		InputStream stream = null;
-		try {
-			stream = new BufferedInputStream(file.getInputStream());
+		try (InputStream stream = getMapInputStream(file)) {
 			return MapFileHeader.readFromStream(stream);
 		} catch (IOException e) {
 			throw new MapLoadException("Error during header request: ", e);
-		} finally {
-			try {
-				if (stream != null) {
-					stream.close();
-				}
-			} catch (IOException e) {
-			}
 		}
 	}
 
@@ -93,9 +88,22 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	 * @throws IOException
 	 */
 	protected final InputStream getMapDataStream() throws IOException {
-		InputStream stream = new BufferedInputStream(file.getInputStream());
-		MapFileHeader.readFromStream(stream);
-		return stream;
+		InputStream inputStream = getMapInputStream(file);
+		MapFileHeader.readFromStream(inputStream);
+		return inputStream;
+	}
+
+	public static InputStream getMapInputStream(IListedMap file) throws IOException {
+		InputStream inputStream = new BufferedInputStream(file.getInputStream());
+		if (file.isCompressed()) {
+			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+			ZipEntry zipEntry = zipInputStream.getNextEntry();
+			if (!zipEntry.getName().endsWith(MapList.MAP_EXTENSION)) {
+				throw new IOException("Invalid compressed map format!");
+			}
+			inputStream = zipInputStream;
+		}
+		return inputStream;
 	}
 
 	@Override
@@ -163,7 +171,9 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
+		MilliStopWatch watch = new MilliStopWatch();
 		IMapData mapData = getMapData();
+		watch.stop("Loading map data required");
 
 		byte numberOfPlayers = (byte) getMaxPlayers();
 

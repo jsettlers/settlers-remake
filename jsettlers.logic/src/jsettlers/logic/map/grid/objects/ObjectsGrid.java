@@ -235,7 +235,7 @@ public final class ObjectsGrid implements Serializable {
 		return buildingsGrid[x + y * width];
 	}
 
-	public boolean isBuildingAt(short x, short y) {
+	public boolean isBuildingAt(int x, int y) {
 		return buildingsGrid[x + y * width] != null;
 	}
 

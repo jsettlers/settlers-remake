@@ -106,8 +106,6 @@ public class BuildingtestMap implements IGraphicsGrid {
 
 	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -118,6 +116,11 @@ public class BuildingtestMap implements IGraphicsGrid {
 	@Override
 	public IPartitionData getPartitionData(int x, int y) {
 		return null;
+	}
+
+	@Override
+	public boolean isBuilding(int x, int y) {
+		return false;
 	}
 
 }

@@ -17,6 +17,7 @@ package jsettlers.ai.highlevel;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.ai.army.LooserGeneral;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.logic.map.grid.MainGrid;
@@ -41,7 +42,8 @@ public class AiExecutor implements INetworkTimerable {
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, new LooserGeneral(aiStatistics,
+						mainGrid.getPartitionsGrid().getPlayer(playerId), mainGrid.getMovableGrid(), taskScheduler), mainGrid, taskScheduler));
 			}
 		}
 	}

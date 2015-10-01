@@ -148,4 +148,10 @@ public class MatchInfoPacket extends Packet {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "MatchInfoPacket [id=" + id + ", matchName=" + matchName + ", maxPlayers=" + maxPlayers + ", mapInfo=" + mapInfo + ", players="
+				+ Arrays.toString(players) + "]";
+	}
 }

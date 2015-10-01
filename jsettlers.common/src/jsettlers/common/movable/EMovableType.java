@@ -17,6 +17,9 @@ package jsettlers.common.movable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.selectable.ESelectionType;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Defines all types of movables with the tool they need, their selection level and if they need their players ground.
  *
@@ -50,22 +53,24 @@ public enum EMovableType {
 	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 
-	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
+	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false, 0.7),
 
-	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
-	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
-	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
+	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45),
+	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45),
+	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false, 0.45),
 
-	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
-	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
-	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
+	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5),
+	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5),
+	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false, 0.5),
 
-	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
-	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
-	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
+	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6),
+	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6),
+	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6),
 
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
+
+	public static final double DEFAULT_STEP_DURATION_SECONDS = 0.6;
 
 	public static final EMovableType[] values = EMovableType.values();
 	public static final int NUMBER_OF_MOVABLETYPES = values.length;
@@ -73,11 +78,22 @@ public enum EMovableType {
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;
 	private final boolean needsPlayersGround;
+	private final short stepDurationMs;
+
+	private static final Set<EMovableType> soldiers = EnumSet.of(
+			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3,
+			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
 	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
+		this(tool, selectionType, needsPlayersGround, DEFAULT_STEP_DURATION_SECONDS);
+	}
+
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround, double stepDurationSec) {
 		this.tool = tool;
 		this.selectionType = selectionType;
 		this.needsPlayersGround = needsPlayersGround;
+		this.stepDurationMs = (short) (stepDurationSec * 1000);
 	}
 
 	/**
@@ -104,5 +120,13 @@ public enum EMovableType {
 
 	public static boolean isBowman(EMovableType movableType) {
 		return movableType.getTool() == EMaterialType.BOW;
+	}
+
+	public short getStepDurationMs() {
+		return stepDurationMs;
+	}
+
+	public static boolean isSoldier(EMovableType movableType) {
+		return soldiers.contains(movableType);
 	}
 }

@@ -117,4 +117,9 @@ public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	public IMapObject getMapObject(EMapObjectType type) {
 		return type == getObjectType() ? this : null;
 	}
+
+	@Override
+	public boolean cannotWork() {
+		return false;
+	}
 }

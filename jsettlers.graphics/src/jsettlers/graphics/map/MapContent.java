@@ -169,7 +169,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		backgroundSound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
-			this.controls = new OriginalControls(this);
+			this.controls = new OriginalControls(this, game.getInGamePlayer());
 		} else {
 			this.controls = controls;
 		}
@@ -598,6 +598,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @return The action that corresponds to the key
 	 */
 	private static Action getActionForKeyboard(String keyCode) {
+		System.out.println(keyCode);
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
 		} else if ("P".equalsIgnoreCase(keyCode)
@@ -605,9 +606,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.SPEED_TOGGLE_PAUSE);
 		} else if ("BACK".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.BACK);
-		} else if ("+".equals(keyCode)) {
+		} else if ("+".equals(keyCode) || "]".equals(keyCode)) {
 			return new Action(EActionType.SPEED_FASTER);
-		} else if ("-".equals(keyCode)) {
+		} else if ("-".equals(keyCode) || "/".equals(keyCode)) {
 			return new Action(EActionType.SPEED_SLOWER);
 		} else if (" ".equals(keyCode) || "space".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SHOW_SELECTION);

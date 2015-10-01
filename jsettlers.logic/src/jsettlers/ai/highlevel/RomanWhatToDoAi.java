@@ -46,12 +46,9 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
 import jsettlers.common.buildings.EBuildingType;
@@ -75,6 +72,11 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class RomanWhatToDoAi implements IWhatToDoAi {
 
+	public static final int NUMBER_OF_SMALL_LIVINGHOUSE_BEDS = 10;
+	public static final int NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS = 30;
+	public static final int NUMBER_OF_BIG_LIVINGHOUSE_BEDS = 100;
+	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
+	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 5;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -82,13 +84,15 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final List<EBuildingType> buildingsToBuild;
 	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
 	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
-	BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
+	private final ArmyGeneral armyGeneral;
+	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 
-	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
+		this.armyGeneral = armyGeneral;
 		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
@@ -108,9 +112,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, (float) 1 / 3));
 		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
 		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, (float) 1 / 3));
-		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 0.5f));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 0.5f));
-		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 0.5f));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
 		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 0.5f));
 		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
@@ -214,6 +216,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMELT);
 		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(FARM);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
@@ -221,13 +226,35 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMELT);
 		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(MILL);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(WATERWORKS);
+		buildingsToBuild.add(PIG_FARM);
+		buildingsToBuild.add(SLAUGHTERHOUSE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(WATERWORKS);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
 	}
 
 	@Override
 	public void applyRules() {
 		destroyBuildings();
-		occupyTowers();
 		buildBuildings();
+		armyGeneral.levyUnits();
+		armyGeneral.commandTroops();
+		occupyTowers();
 	}
 
 	private void occupyTowers() {
@@ -251,15 +278,35 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	private void destroyBuildings() {
 		// destroy stonecutters
-		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
-			ShortPoint2D nearestStone = stones.getNearestPoint(stoneCutterPosition);
-			if (nearestStone != null && stoneCutterPosition.getOnGridDistTo(nearestStone) > STONECUTTER.getWorkradius()) {
+			if (aiStatistics.getBuildingAt(stoneCutterPosition).cannotWork()) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
 		}
-		// TODO: destroy living houses to get material back
-		// TODO: destroy mines which have no resources anymore
+
+		// destroy livinghouses
+		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
+		if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
+				.SMALL_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
+		} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
+				.MEDIUM_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
+		} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
+				.BIG_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
+		}
+
+		// destroy mines
+		for (ShortPoint2D mine: aiStatistics.getDeadMinesOf(playerId)) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, mine));
+		}
 	}
 
 	private void destroyHinterlandTowers() {
@@ -383,15 +430,16 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		}
 
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
-		if (futureNumberOfBearers < 10 || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 3 > futureNumberOfBearers) {
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS;
+		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE
+				> futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 3) {
 				return construct(SMALL_LIVINGHOUSE);
-			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) >= 2) {
-				return construct(BIG_LIVINGHOUSE);
-			} else {
+			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) < 2) {
 				return construct(MEDIUM_LIVINGHOUSE);
+			} else {
+				return construct(BIG_LIVINGHOUSE);
 			}
 		}
 		return false;

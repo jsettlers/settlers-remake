@@ -23,7 +23,9 @@ import java.text.SimpleDateFormat;
  * 
  */
 public abstract class Logger {
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS");
+	public static SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS");
+	}
 
 	/**
 	 * Logs the given exception.

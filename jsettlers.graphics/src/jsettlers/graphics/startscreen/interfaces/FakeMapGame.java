@@ -17,6 +17,9 @@ package jsettlers.graphics.startscreen.interfaces;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.statistics.IStatisticable;
 
 /**
@@ -62,6 +65,10 @@ public class FakeMapGame implements IStartedGame {
 	@Override
 	public IStatisticable getPlayerStatistics() {
 		return new NullStatistics();
+	}
+
+	@Override public IInGamePlayer getInGamePlayer() {
+		return null;
 	}
 
 	@Override

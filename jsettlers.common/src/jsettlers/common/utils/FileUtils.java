@@ -24,7 +24,16 @@ public class FileUtils {
 	}
 
 	public static void walkFileTree(File directory, IFileVisitor fileVisitor) throws IOException {
-		for (File file : directory.listFiles()) {
+		if (directory == null) {
+			return;
+		}
+
+		File[] files = directory.listFiles();
+		if (files == null) {
+			return;
+		}
+
+		for (File file : files) {
 			fileVisitor.visitFile(file);
 			if (file.isDirectory()) {
 				walkFileTree(file, fileVisitor);

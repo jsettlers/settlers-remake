@@ -89,6 +89,14 @@ public class TestTile {
 		this.movable = moveavble;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof TestTile) {
+			return equals((TestTile) o);
+		}
+		return false;
+	}
+
 	public boolean equals(TestTile other) {
 		return other.x == this.x && other.y == this.y;
 	}

@@ -186,7 +186,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		case DROP:
 			if (this.movableAction != EAction.RAISE_UP) {
 				break;
-			}// TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
+			} // TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
 
 		case WAITING:
 		case GOING_SINGLE_STEP:
@@ -311,7 +311,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
-		playAnimation(EAction.WALKING, Constants.MOVABLE_STEP_DURATION);
+		playAnimation(EAction.WALKING, movableType.getStepDurationMs());
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
 		this.position = position;
@@ -601,7 +601,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * 
 	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
 	 */
-	final AbstractStrategyGrid getStrategyGrid() {
+	public final AbstractStrategyGrid getStrategyGrid() {
 		return grid;
 	}
 
@@ -665,6 +665,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		setState(EMovableState.DOING_NOTHING);
 		movableAction = EAction.NO_ACTION;
 		path = null;
+	}
+
+	boolean isOnOwnGround() {
+		return grid.getPlayerAt(position) == player;
 	}
 
 	private void followPath(Path path) {

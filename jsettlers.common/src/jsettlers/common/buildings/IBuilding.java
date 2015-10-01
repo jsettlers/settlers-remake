@@ -16,10 +16,10 @@ package jsettlers.common.buildings;
 
 import java.util.List;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.selectable.ISelectable;
@@ -73,6 +73,13 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	List<IBuildingMaterial> getMaterials();
 
 	/**
+	 * Gives information if the building cannot work.
+	 * 
+	 * @return Return true if this building cannot work.
+	 */
+	boolean cannotWork();
+
+	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 * 
 	 * @author michael
@@ -102,31 +109,31 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		/**
 		 * Gets the number of soldiers the user has set to be requested at maximum for this building.
 		 * 
-		 * @param type
-		 *            The type of slots.
+		 * @param soldierClass
+		 *            The class of soldier.
 		 * @return The number of soldiers we have at maximum.
 		 */
-		int getMaximumRequestedSoldiers(ESoldierType type);
+		int getMaximumRequestedSoldiers(ESoldierClass soldierClass);
 
 		/**
 		 * Sets the maximum number of requested soldiers for the given type. The number may be silently clamped by the logic depending on how much
 		 * free space is available.
 		 * 
-		 * @param type
-		 *            The building type.
+		 * @param soldierClass
+		 *            The class of soldier.
 		 * @param max
 		 *            The maximum.
 		 */
-		void setMaximumRequestedSoldiers(ESoldierType type, int max);
+		void setMaximumRequestedSoldiers(ESoldierClass soldierClass, int max);
 
 		/**
 		 * Gets the number of soldiers that are currently comming or already inside this building.
 		 * 
-		 * @param type
-		 *            The type.
+		 * @param soldierClass
+		 *            The class of soldier
 		 * @return The number of soldiers comming plus the number of soldiers already inside the building.
 		 */
-		int getCurrentlyCommingSoldiers(ESoldierType type);
+		int getCurrentlyCommingSoldiers(ESoldierClass soldierClass);
 	}
 
 	/**

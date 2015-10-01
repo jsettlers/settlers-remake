@@ -1,14 +1,8 @@
 package jsettlers.graphics.androidui.hud;
 
-import go.graphics.UIPoint;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
-import jsettlers.graphics.androidui.R;
-import jsettlers.graphics.androidui.R.drawable;
-import jsettlers.graphics.map.ScreenPosition;
-import jsettlers.graphics.map.controls.original.panel.content.AnimateablePosition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,6 +12,10 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import go.graphics.UIPoint;
+import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.map.ScreenPosition;
+import jsettlers.graphics.map.controls.original.panel.content.AnimateablePosition;
 
 /**
  * This view displays a navigation arrow.

@@ -28,9 +28,15 @@ public final class MediumLivinghouse extends SpawnBuilding {
 	private static final long serialVersionUID = 6182479871695461138L;
 
 	private static final byte PRODUCE_LIMIT = 30;
+	private static final int PRODUCE_PERIOD = 2000;
 
 	public MediumLivinghouse(Player player) {
 		super(EBuildingType.MEDIUM_LIVINGHOUSE, player);
+	}
+
+	@Override
+	protected int getProducePeriod() {
+		return PRODUCE_PERIOD;
 	}
 
 	@Override
