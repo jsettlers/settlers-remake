@@ -610,8 +610,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case TEMPLE:
 			return new TempleBuilding(player);
 
+		case DONKEY_FARM:
+		case MARKET_PLACE:
+		case HOSPITAL:
 		case LOOKOUT_TOWER:
-			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
+			return new DefaultBuilding(type, player);
 		case BIG_TEMPLE:
 			return new BigTemple(player);
 
