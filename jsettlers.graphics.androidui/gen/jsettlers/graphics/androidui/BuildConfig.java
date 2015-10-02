@@ -2,5 +2,5 @@
 package jsettlers.graphics.androidui;
 
 public final class BuildConfig {
-    public final static boolean DEBUG = Boolean.parseBoolean(null);
+    public final static boolean DEBUG = true;
 }
