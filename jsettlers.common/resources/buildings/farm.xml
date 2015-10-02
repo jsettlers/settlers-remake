@@ -114,7 +114,7 @@
 	<blocked dx="-4" dy="0" block="false" />
 	<blocked dx="-4" dy="1" block="false" />
 	<blocked dx="0" dy="5" block="false" />
-	
+
 	<door dx="-1" dy="4" />
 
     <!-- materials checked with original -->
@@ -161,15 +161,15 @@
     <!-- 1: cut some corn -->
     <job name="show1"			type="SHOW"				successjob="with_scythe"	failjob="start"			dx="-1" dy="4"/>
     <job name="with_scythe"		type="SET_MATERIAL"		successjob="search1"		failjob="gohome"		material="SCYTHE"/>
-    <job name="search1"  		type="FOLLOW_SEARCHED"	successjob="cutlook_at_NE"	failjob="hide"			/>
+    <job name="search1"  		type="FOLLOW_SEARCHED"	successjob="cutlook_at_SW"	failjob="hide"			/>
 
-    <job name="cutlook_at_NE"	type="LOOK_AT"			successjob="cut1"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="cut1"			type="PLAY_ACTION1"		successjob="cutlook_at_SW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_SW" 	type="LOOK_AT"			successjob="cut2"			failjob="gohome"		direction="SOUTH_WEST"/>
-    <job name="cut2"			type="PLAY_ACTION1"		successjob="cutlook_at_W"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_W" 	type="LOOK_AT"			successjob="cut3"			failjob="gohome"		direction="WEST"/>
-    <job name="cut3"			type="PLAY_ACTION1"		successjob="cutlook_at_NW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_NW" 	type="LOOK_AT"			successjob="cut4"			failjob="gohome"		direction="NORTH_WEST"/>
+    <job name="cutlook_at_SW"	type="LOOK_AT"			successjob="cut1"			failjob="gohome"		direction="SOUTH_WEST"/>
+    <job name="cut1"			type="PLAY_ACTION1"		successjob="cutlook_at_NW"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_NW" 	type="LOOK_AT"			successjob="cut2"			failjob="gohome"		direction="NORTH_WEST"/>
+    <job name="cut2"			type="PLAY_ACTION1"		successjob="cutlook_at_NE"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_NE" 	type="LOOK_AT"			successjob="cut3"			failjob="gohome"		direction="NORTH_EAST"/>
+    <job name="cut3"			type="PLAY_ACTION1"		successjob="cutlook_at_SE"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_SE" 	type="LOOK_AT"			successjob="cut4"			failjob="gohome"		direction="SOUTH_EAST"/>
     <job name="cut4"			type="PLAY_ACTION1"		successjob="execute1"		failjob="gohome"		time="1.0"/>
 
     <job name="execute1"		type="EXECUTE"			successjob="look_at"		failjob="gohome"		search="CUTTABLE_CORN"/>

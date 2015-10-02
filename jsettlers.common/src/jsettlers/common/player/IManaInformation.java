@@ -21,4 +21,8 @@ public interface IManaInformation {
 	EMovableType getMovableTypeOf(ESoldierType type);
 
 	void increaseMana();
+
+	void increaseManaByBigTemple();
+
+	void stopFutureManaIncreasingByBigTemple();
 }

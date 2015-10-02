@@ -49,7 +49,7 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	protected final int subTimerEvent() {
+	protected int subTimerEvent() {
 		int rescheduleDelay;
 		Movable movableAtDoor = super.getGrid().getMovable(super.getDoor());
 
@@ -58,7 +58,7 @@ public abstract class SpawnBuilding extends Building {
 			produced++;
 
 			if (produced < getProduceLimit()) {
-				rescheduleDelay = PRODUCE_PERIOD;
+				rescheduleDelay = getProducePeriod();
 			} else {
 				rescheduleDelay = -1; // remove from scheduling
 			}
@@ -69,6 +69,10 @@ public abstract class SpawnBuilding extends Building {
 		movableAtDoor.leavePosition();
 
 		return rescheduleDelay;
+	}
+
+	protected int getProducePeriod() {
+		return PRODUCE_PERIOD;
 	}
 
 	protected abstract EMovableType getMovableType();
