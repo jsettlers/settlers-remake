@@ -33,6 +33,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	private static final float BOWMAN_ATTACK_DURATION = 1.2f;
 	private static final int SQUARE_BOWMAN_ATTACK_RADIUS = Constants.BOWMAN_ATTACK_RADIUS * Constants.BOWMAN_ATTACK_RADIUS;
 	private static final int SQUARE_BOWMAN_IN_TOWER_ATTACK_RADIUS = Constants.BOWMAN_IN_TOWER_ATTACK_RADIUS * Constants.BOWMAN_IN_TOWER_ATTACK_RADIUS;
+	private static final int SQAURE_BOWMAN_MINIMUM_DISTANCE = Constants.BOWMAN_MIN_ATTACK_DISTANCE * Constants.BOWMAN_MIN_ATTACK_DISTANCE;
 
 	// private static final int SQAURE_BOWMAN_MINIMUM_DISTANCE = Constants.BOWMAN_MIN_ATTACK_DISTANCE * Constants.BOWMAN_MIN_ATTACK_DISTANCE;
 
@@ -55,11 +56,11 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 		final int squareDist = dx * dx + dy * dy;
 
-		// SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist &&
+
 		if (isInTower) {
-			return squareDist <= SQUARE_BOWMAN_IN_TOWER_ATTACK_RADIUS;
+			return SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist && squareDist <= SQUARE_BOWMAN_IN_TOWER_ATTACK_RADIUS;
 		} else {
-			return squareDist <= SQUARE_BOWMAN_ATTACK_RADIUS;
+			return SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist &&squareDist <= SQUARE_BOWMAN_ATTACK_RADIUS;
 		}
 	}
 
