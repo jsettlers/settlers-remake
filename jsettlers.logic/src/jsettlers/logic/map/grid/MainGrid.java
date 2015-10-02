@@ -119,6 +119,12 @@ import jsettlers.logic.stack.IRequestsStackGrid;
  */
 public final class MainGrid implements Serializable {
 	private static final long serialVersionUID = 3824511313693431423L;
+	private final static RangeFilter ALL_RANGES_FILTER = new RangeFilter() {
+
+		@Override public boolean isInRange(int x, int y) {
+			return true;
+		}
+	};
 
 	final String mapId;
 	final String mapName;
@@ -987,7 +993,12 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	public interface RangeFilter {
+		boolean isInRange(int x, int y);
+	}
+
 	final class MovablePathfinderGrid extends AbstractMovableGrid {
+
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
@@ -1269,32 +1280,48 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius, boolean includeTowers) {
+		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
+				final short
+				maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
 
+			RangeFilter rangeFilter = minSearchRadius == 0 ? ALL_RANGES_FILTER : new RangeFilter() {
+				private final int MIN_SQUARE_RANGE = minSearchRadius * minSearchRadius;
+
+				@Override public boolean isInRange(int x, int y) {
+					final int dx = Math.abs(position.x - x);
+					final int dy = Math.abs(position.y - y);
+					final int squareDistance = dx * dx + dy * dy;
+					return squareDistance >= MIN_SQUARE_RANGE;
+				}
+			};
+
 			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, (short) 1,
-					searchRadius), isBowman, includeTowers);
+					maxSearchRadius), isBowman, includeTowers, rangeFilter);
 			if (includeTowers && !isBowman && enemy == null) {
-				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, searchRadius,
-						Constants.TOWER_SEARCH_RADIUS), isBowman, true);
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, maxSearchRadius,
+						Constants.TOWER_SEARCH_RADIUS), isBowman, true, rangeFilter);
 			}
 
 			return enemy;
 		}
 
-		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
+		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers, RangeFilter
+				rangeFilter) {
 			for (ShortPoint2D curr : area) {
 				short x = curr.x;
 				short y = curr.y;
 
 				if (0 <= x && x < width && 0 <= y && y < height) {
-					IAttackable currAttackable = movableGrid.getMovableAt(x, y);
-					if (includeTowers && !isBowman && currAttackable == null) {
-						currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
-					}
+					if (rangeFilter.isInRange(x, y)) {
+						IAttackable currAttackable = movableGrid.getMovableAt(x, y);
+						if (includeTowers && !isBowman && currAttackable == null) {
+							currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+						}
 
-					if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
-						return currAttackable;
+						if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
+							return currAttackable;
+						}
 					}
 				}
 			}

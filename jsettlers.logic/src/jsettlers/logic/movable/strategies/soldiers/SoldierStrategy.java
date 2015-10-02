@@ -84,7 +84,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			}
 		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getSearchDistance(isInTower), !defending);
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getMinSearchDistance(), getMaxSearchDistance
+					(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsave mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
@@ -152,7 +153,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		}
 	}
 
-	protected abstract short getSearchDistance(boolean isInTower);
+	protected abstract short getMaxSearchDistance(boolean isInTower);
+
+	protected abstract short getMinSearchDistance();
 
 	private ShortPoint2D getAttackPosition() {
 		return isInTower && isBowman() ? inTowerAttackPosition : super.getPos();

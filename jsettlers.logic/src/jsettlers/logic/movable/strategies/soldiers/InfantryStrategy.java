@@ -59,7 +59,12 @@ public final class InfantryStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	protected short getSearchDistance(boolean isInTower) {
+	protected short getMaxSearchDistance(boolean isInTower) {
 		return Constants.SOLDIER_SEARCH_RADIUS;
+	}
+
+	@Override
+	protected short getMinSearchDistance() {
+		return 0;
 	}
 }
