@@ -18,6 +18,7 @@ import java.util.List;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.player.IPlayerable;
@@ -156,5 +157,23 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 * @return The number of resources available.
 		 */
 		public int getRemainingResourceAmount();
+	}
+
+	static interface IStock extends IBuilding {
+		/**
+		 * Checks if this stock building allows this material.
+		 * 
+		 * @param material
+		 *            The material
+		 * @return True if that material should be stored in this building.
+		 */
+		boolean acceptsMaterial(EMaterialType material);
+
+		/**
+		 * Checks if this stock building is using the global stock settings
+		 * 
+		 * @return <code>true</code> if the settings are inherited from the partition/player.
+		 */
+		boolean usesGlobalSettings();
 	}
 }

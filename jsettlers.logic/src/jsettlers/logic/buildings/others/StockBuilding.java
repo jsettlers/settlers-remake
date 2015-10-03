@@ -15,7 +15,9 @@
 package jsettlers.logic.buildings.others;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
@@ -26,7 +28,7 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public final class StockBuilding extends Building {
+public final class StockBuilding extends Building implements IBuilding.IStock {
 	private static final long serialVersionUID = 1L;
 
 	public StockBuilding(Player player) {
@@ -55,5 +57,17 @@ public final class StockBuilding extends Building {
 	@Override
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
+	}
+
+	@Override
+	public boolean acceptsMaterial(EMaterialType material) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean usesGlobalSettings() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 }
