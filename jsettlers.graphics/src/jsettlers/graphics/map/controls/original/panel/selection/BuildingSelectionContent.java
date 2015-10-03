@@ -44,12 +44,17 @@ import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
 import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
+import jsettlers.graphics.ui.layout.StockSelectionLayout;
 
 public class BuildingSelectionContent extends AbstractSelectionContent {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 48, 0);
+
+	private interface StateDependendElement {
+		void setState(BuildingState state);
+	}
 
 	public static class SoldierButton extends Button {
 
@@ -62,6 +67,30 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		public SoldierCount(ESoldierType type) {
 			super("?", EFontSize.NORMAL);
+		}
+	}
+
+	public static class StockControlItem extends UIPanel implements StateDependendElement {
+		private static final OriginalImageLink STOCK_ACCEPTS = new OriginalImageLink(EImageLinkType.SETTLER, 4, 6, 0);
+		private static final OriginalImageLink STOCK_REJECTS = new OriginalImageLink(EImageLinkType.SETTLER, 4, 6, 7);
+		private final EMaterialType material;
+
+		public StockControlItem(EMaterialType material) {
+			this.material = material;
+			setBackground(material.getIcon());
+		}
+
+		@Override
+		public void drawAt(GLDrawContext gl) {
+			super.drawAt(gl);
+		}
+
+		@Override
+		public void setState(BuildingState state) {
+			removeAll();
+			UIPanel child = new UIPanel();
+			child.setBackground(state.stockAcceptsMaterial(material) ? STOCK_ACCEPTS : STOCK_REJECTS);
+			addChild(child, .1f, .6f, .4f, .9f);
 		}
 	}
 
@@ -86,6 +115,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		BuidlingBackgroundPanel root;
 		if (!state.isConstruction() && building instanceof IBuilding.IOccupyed) {
 			root = creteOccupiedBuildingContent(state);
+		} else if (!state.isConstruction() && building instanceof IBuilding.IStock) {
+			root = creteStockBuildingContent(state);
 		} else {
 			root = createNormalBuildingContent(state);
 		}
@@ -292,6 +323,15 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 					+ "Type=" + movable.getMovableType());
 			return new OriginalImageLink(EImageLinkType.GUI, 24, 213, 0);
 		}
+	}
+
+	private BuidlingBackgroundPanel creteStockBuildingContent(BuildingState state) {
+		StockSelectionLayout layout = new StockSelectionLayout();
+		layout.nameText.setType(building.getBuildingType(), false);
+		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
+			i.setState(state);
+		}
+		return layout._root;
 	}
 
 	public static class BuidlingBackgroundPanel extends UIPanel {

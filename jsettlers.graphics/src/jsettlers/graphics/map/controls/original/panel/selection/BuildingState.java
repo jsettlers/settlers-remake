@@ -16,6 +16,7 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -44,6 +45,7 @@ public class BuildingState {
 	 * An array: soldier class -> available places.
 	 */
 	private final Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates;
+	private final BitSet stockStates;
 
 	public static class StackState {
 		public final EMaterialType type;
@@ -99,16 +101,31 @@ public class BuildingState {
 		priority = building.getPriority();
 		supportedPriorities = building.getSupportedPriorities();
 		construction = building.getStateProgress() < 1;
-		Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates = computeOccupierStates(building);
-		this.occupierStates = occupierStates;
+		occupierStates = computeOccupierStates(building);
+		stockStates = computeStockStates(building);
 		for (IBuildingMaterial mat : building.getMaterials()) {
 			stackStates.add(new StackState(mat));
+		}
+
+	}
+
+	private BitSet computeStockStates(IBuilding building) {
+		if (building instanceof IBuilding.IStock && !construction) {
+			BitSet set = new BitSet();
+			IBuilding.IStock stock = (IBuilding.IStock) building;
+			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
+				set.set(m.ordinal, stock.acceptsMaterial(m));
+			}
+			// TODO: Store the is global flag.
+			return set;
+		} else {
+			return null;
 		}
 	}
 
 	private Hashtable<ESoldierClass, ArrayList<OccupierState>> computeOccupierStates(IBuilding building) {
 		Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates = null;
-		if (building instanceof IBuilding.IOccupyed && building.getStateProgress() >= 1) {
+		if (building instanceof IBuilding.IOccupyed && !construction) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
 			occupierStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
 			for (ESoldierClass soldierClass : ESoldierClass.values) {
@@ -148,24 +165,30 @@ public class BuildingState {
 		return stackStates;
 	}
 
+	public boolean stockAcceptsMaterial(EMaterialType material) {
+		return stockStates != null && stockStates.get(material.ordinal);
+	}
+
 	public boolean isStillInState(IBuilding building) {
 		return building.getPriority() == priority
 				&& Arrays.equals(supportedPriorities,
 						building.getSupportedPriorities())
 				&& construction == (building.getStateProgress() < 1)
 				&& hasSameStacks(building)
-				&& hasSameOccupiers(building);
+				&& hasSameOccupiers(building)
+				&& hasSameStock(building);
+	}
+
+	private boolean hasSameStock(IBuilding building) {
+		return isEqual(computeStockStates(building), stockStates);
 	}
 
 	private boolean hasSameOccupiers(IBuilding building) {
-		Hashtable<ESoldierClass, ArrayList<OccupierState>> states = computeOccupierStates(building);
-		if (states == null) {
-			return occupierStates == null;
-		} else if (occupierStates == null) {
-			return false;
-		} else {
-			return occupierStates.equals(states);
-		}
+		return isEqual(computeOccupierStates(building), occupierStates);
+	}
+
+	private static boolean isEqual(Object o1, Object o2) {
+		return o1 == o2 || (o1 != null && o1.equals(o2));
 	}
 
 	private boolean hasSameStacks(IBuilding building) {
