@@ -74,7 +74,7 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	public void kill() {
-		if (workAreaCenter != null) {
+		if (workAreaCenter != null && isSelected()) {
 			drawWorkAreaCircle(false);
 		}
 
