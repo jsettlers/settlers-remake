@@ -142,6 +142,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
 			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
 		}
+			break;
 
 		case CHANGE_TRADING: {
 			ChangeTradingRequestGuiTask task = (ChangeTradingRequestGuiTask) guiTask;
@@ -151,6 +152,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 				((TestTradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
 			}
 		}
+			break;
 
 		case SET_TRADING_WAYPOINT: {
 			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
@@ -160,6 +162,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 				((TestTradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
 			}
 		}
+			break;
 
 		default:
 			break;
