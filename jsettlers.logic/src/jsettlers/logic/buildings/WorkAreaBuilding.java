@@ -54,7 +54,9 @@ public abstract class WorkAreaBuilding extends Building {
 		int distance = super.getPos().getOnGridDistTo(newWorkAreaCenter);
 
 		if (distance < Constants.BUILDINGS_MAX_WORKRADIUS_FACTOR * super.getBuildingType().getWorkradius()) {
-			drawWorkAreaCircle(false);
+			if (isSelected()) {
+				drawWorkAreaCircle(false);
+			}
 
 			this.workAreaCenter = newWorkAreaCenter;
 
