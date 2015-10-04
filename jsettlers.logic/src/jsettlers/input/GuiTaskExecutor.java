@@ -34,6 +34,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetStockAcceptsMaterialGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
@@ -163,6 +164,11 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			}
 		}
 			break;
+
+		case SET_STOCK_ACEPTS_MATERIAL: {
+			SetStockAcceptsMaterialGuiTask task = (SetStockAcceptsMaterialGuiTask) guiTask;
+			grid.setMaterialAcceptedInStock(task.getManagerPosition(), task.getMaterialType(), task.isAcceptedInStock());
+		}
 
 		default:
 			break;

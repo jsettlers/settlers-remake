@@ -467,4 +467,8 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	public void setMaterialPrioritiesSettings(EMaterialType[] materialTypeForPriority) {
 		settings.setMaterialTypesForPriorities(materialTypeForPriority);
 	}
+
+	public void setMaterialAcceptedInStock(EMaterialType materialType, boolean acceptedInStock) {
+		settings.setMaterialAcceptedInStock(materialType, acceptedInStock);
+	}
 }

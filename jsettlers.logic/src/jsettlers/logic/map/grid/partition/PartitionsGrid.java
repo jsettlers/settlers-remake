@@ -824,6 +824,11 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialPrioritiesSettings(materialTypeForPriority);
 	}
 
+	public void setMaterialAcceptedInStock(ShortPoint2D managerPosition, EMaterialType materialType, boolean acceptedInStock) {
+		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialAcceptedInStock(materialType, acceptedInStock);
+
+	}
+
 	public Team[] getTeams() {
 		return teams;
 	}

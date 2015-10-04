@@ -124,6 +124,8 @@ public interface IGuiInputGrid {
 	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority);
 
+	void setMaterialAcceptedInStock(ShortPoint2D managerPosition, EMaterialType materialType, boolean acceptedInStock);
+
 	short getBlockedPartition(ShortPoint2D pos);
 
 	boolean isBlocked(ShortPoint2D potentialTargetPos);
@@ -133,4 +135,5 @@ public interface IGuiInputGrid {
 	byte getNumberOfPlayers();
 
 	FogOfWar getFogOfWar();
+
 }

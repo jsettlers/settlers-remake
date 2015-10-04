@@ -1749,6 +1749,12 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void setMaterialAcceptedInStock(ShortPoint2D managerPosition, EMaterialType materialType, boolean acceptedInStock) {
+			if (isInBounds(managerPosition))
+				partitionsGrid.setMaterialAcceptedInStock(managerPosition, materialType, acceptedInStock);
+		}
+
+		@Override
 		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
 			if (isInBounds(managerPosition))
 				partitionsGrid.setMaterialPrioritiesSettings(managerPosition, materialTypeForPriority);

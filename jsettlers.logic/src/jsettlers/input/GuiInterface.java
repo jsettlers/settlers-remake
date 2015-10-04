@@ -57,6 +57,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetStockAcceptsMaterialGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
@@ -276,8 +277,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_STOCK_ACCEPTED: {
 			SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
-			// TODO @Andreas: implement this.
-			System.err.println("Not implemented: " + a);
+			scheduleTask(new SetStockAcceptsMaterialGuiTask(playerId, a.getPosition(), a.getMaterial(), a.shouldAccept()));
 			break;
 		}
 
