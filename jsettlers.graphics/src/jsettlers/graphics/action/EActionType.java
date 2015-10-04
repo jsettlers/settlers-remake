@@ -321,4 +321,11 @@ public enum EActionType {
 	 * @see PointAction
 	 */
 	SET_DOCK,
+
+	/**
+	 * Changes the amount of materials that should be traded from the current trading building.
+	 * 
+	 * @see ChangeTradingRequestAction
+	 */
+	CHANGE_TRADING_REQUEST
 }
