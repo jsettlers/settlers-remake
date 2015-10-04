@@ -613,6 +613,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MARKET_PLACE:
 			return new TestTradingBuilding(type, player, false);
+		case HARBUR:
+			return new TestTradingBuilding(type, player, true);
+
 		case DONKEY_FARM:
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
