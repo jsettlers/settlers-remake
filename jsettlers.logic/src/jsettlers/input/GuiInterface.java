@@ -29,11 +29,34 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.graphics.action.*;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ConvertAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.ScreenChangeAction;
+import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
+import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.UIState;
-import jsettlers.input.tasks.*;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MovableGuiTask;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
+import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SimpleGuiTask;
+import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -245,7 +268,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
-			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getManagerPosition(), a.getMaterialTypeForPriority()));
+			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getPosition(), a.getMaterialTypeForPriority()));
+			break;
+		}
+
+		case SET_MATERIAL_STOCK_ACCEPTED: {
+			SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
+			// TODO @Andreas: implement this.
+			System.err.println("Not implemented: " + a);
 			break;
 		}
 

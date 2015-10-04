@@ -16,8 +16,8 @@ import jsettlers.graphics.ui.UIPanel;
 public class MaterialButton extends Button {
 
 	public enum DotColor {
-		RED(0),
-		GREEN(7),
+		RED(7),
+		GREEN(0),
 		YELLOW(3);
 
 		private OriginalImageLink image;

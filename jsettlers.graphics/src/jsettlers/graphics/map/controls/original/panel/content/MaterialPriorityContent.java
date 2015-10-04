@@ -17,6 +17,7 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import go.graphics.GLDrawContext;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
@@ -26,7 +27,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
+import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialPriorityLayout;
@@ -143,17 +146,23 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 				removeAll();
 			} else {
 				EMaterialType[] newOrder = new EMaterialType[EMaterialType.DROPPABLE_MATERIALS.length];
+				BitSet materialsAccepted = new BitSet();
 
 				for (int i = 0; i < newOrder.length; i++) {
 					// FIXME: Synchronize!
 					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
 				}
+				for (EMaterialType m : EMaterialType.values) {
+					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
+				}
 				setOrder(newOrder);
 
 				for (EMaterialType material : newOrder) {
 					MaterialPriorityButton button = buttons[material.ordinal];
-					removeChild(button);
 					AnimateablePosition position = positions[material.ordinal];
+
+					button.setDotColor(materialsAccepted.get(button.getMaterial().ordinal) ? DotColor.GREEN : DotColor.RED);
+					removeChild(button);
 					addChild(button, position.getX(), position.getY(), position.getX() + BUTTON_WIDTH, position.getY() + BUTTON_HEIGHT);
 				}
 			}
@@ -276,8 +285,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			if (selected == null || mapPosition == null) {
 				return null;
 			}
-			// TODO: return new SetMaterialShouldUseStockAction(mapPosition, selected, accept);
-			return null;
+			return new SetMaterialStockAcceptedAction(mapPosition, selected, accept);
 		}
 	}
 

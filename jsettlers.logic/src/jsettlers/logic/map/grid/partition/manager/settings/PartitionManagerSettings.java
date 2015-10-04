@@ -78,4 +78,10 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 			this.materialTypeForPriorities[i] = materialTypeForPriority[i];
 		}
 	}
+
+	@Override
+	public boolean getStockAcceptsMaterial(EMaterialType material) {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }

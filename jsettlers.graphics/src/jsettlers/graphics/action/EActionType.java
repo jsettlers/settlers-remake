@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+
 /**
  * This enum defines the type of the action.
  * 
@@ -259,6 +260,13 @@ public enum EActionType {
 	 * @see SetMaterialPrioritiesAction
 	 */
 	SET_MATERIAL_PRIORITIES,
+
+	/**
+	 * Sets if the material should be placed in stock or not.
+	 * 
+	 * @see SetMaterialShouldUseStockAction
+	 */
+	SET_MATERIAL_STOCK_ACCEPTED,
 
 	/**
 	 * Focus a UI Input
