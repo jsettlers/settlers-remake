@@ -72,15 +72,19 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
-			hitEnemy(enemy);
-			if (state != ESoldierState.HITTING) {
-				break; // the soldier could have entered an attacked tower
-			}
-
-			if (enemy.getHealth() <= 0) {
-				enemy = null;
+			if(!isEnemyAttackable(enemy, isInTower)) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
-				break; // don't directly walk on the enemy's position, because there may be others to walk in first
+			} else {
+				hitEnemy(enemy);
+				if (state != ESoldierState.HITTING) {
+					break; // the soldier could have entered an attacked tower
+				}
+
+				if (enemy.getHealth() <= 0) {
+					enemy = null;
+					changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+					break; // don't directly walk on the enemy's position, because there may be others to walk in first
+				}
 			}
 		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
@@ -94,6 +98,17 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
+				if (getMinSearchDistance() > 0 && !isInTower) {
+					enemy = super.getStrategyGrid().getEnemyInSearchArea(
+							getAttackPosition(), super.getMovable(), (short) 0, getMinSearchDistance(), !defending);
+					if (enemy != null) { // we are in danger because an enemy entered our range where we can't defend
+						EDirection escapeDirection = EDirection.getApproxDirection(enemy.getPos(), getMovable().getPos());
+						getMovable().moveTo(new ShortPoint2D(
+								getMovable().getPos().x + escapeDirection.getGridDeltaX() * getMinSearchDistance() * 2,
+								getMovable().getPos().y + escapeDirection.getGridDeltaY() * getMinSearchDistance() * 2));
+						break;
+					}
+				}
 				if (defending) {
 					building.towerDefended(this);
 					defending = false;
