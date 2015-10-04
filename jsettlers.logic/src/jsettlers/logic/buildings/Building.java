@@ -571,6 +571,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new SmallLivinghouse(player);
 		case CHARCOAL_BURNER:
 		case BAKER:
+		case DONKEY_FARM:
 		case FARM:
 		case FORESTER:
 		case GOLDMELT:
@@ -616,7 +617,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case HARBUR:
 			return new TestTradingBuilding(type, player, true);
 
-		case DONKEY_FARM:
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
 			return new DefaultBuilding(type, player);
