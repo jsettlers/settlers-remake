@@ -21,49 +21,49 @@ import java.io.IOException;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
+ * A task that is for a building (given by it's position).
  * 
+ * @author Michael Zangl
  * @author Andreas Eberle
- * 
  */
-public class WorkAreaGuiTask extends SimpleBuildingGuiTask {
-	private ShortPoint2D workAreaPosition;
+public class SimpleBuildingGuiTask extends SimpleGuiTask {
 
-	public WorkAreaGuiTask() {
+	private ShortPoint2D buildingPos;
+
+	public SimpleBuildingGuiTask() {
+	}
+
+	public SimpleBuildingGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D buildingPos) {
+		super(guiAction, playerId);
+		this.buildingPos = buildingPos;
 	}
 
 	/**
+	 * Gets the position of the building.
 	 * 
-	 * @param guiAction
-	 * @param playerId
-	 * @param workAreaPosition
-	 * @param buildingPos
+	 * @return The position.
 	 */
-	public WorkAreaGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D workAreaPosition, ShortPoint2D buildingPos) {
-		super(guiAction, playerId, buildingPos);
-		this.workAreaPosition = workAreaPosition;
-	}
-
-	public ShortPoint2D getPosition() {
-		return workAreaPosition;
+	public ShortPoint2D getBuildingPos() {
+		return buildingPos;
 	}
 
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
-		SimpleGuiTask.serializePosition(dos, workAreaPosition);
+		SimpleGuiTask.serializePosition(dos, buildingPos);
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		workAreaPosition = SimpleGuiTask.deserializePosition(dis);
+		buildingPos = SimpleGuiTask.deserializePosition(dis);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((workAreaPosition == null) ? 0 : workAreaPosition.hashCode());
+		result = prime * result + ((buildingPos == null) ? 0 : buildingPos.hashCode());
 		return result;
 	}
 
@@ -75,18 +75,12 @@ public class WorkAreaGuiTask extends SimpleBuildingGuiTask {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WorkAreaGuiTask other = (WorkAreaGuiTask) obj;
-		if (workAreaPosition == null) {
-			if (other.workAreaPosition != null)
+		SimpleBuildingGuiTask other = (SimpleBuildingGuiTask) obj;
+		if (buildingPos == null) {
+			if (other.buildingPos != null)
 				return false;
-		} else if (!workAreaPosition.equals(other.workAreaPosition))
+		} else if (!buildingPos.equals(other.buildingPos))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "WorkAreaGuiTask [workAreaPosition=" + workAreaPosition + ", getBuildingPos()=" + getBuildingPos() + ", getGuiAction()="
-				+ getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
 	}
 }

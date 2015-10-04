@@ -18,52 +18,62 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
+ * Requests to change the number of requested materials for a trading building
  * 
- * @author Andreas Eberle
- * 
+ * @author Michael Zangl
  */
-public class WorkAreaGuiTask extends SimpleBuildingGuiTask {
-	private ShortPoint2D workAreaPosition;
+public class ChangeTradingRequestGuiTask extends SimpleBuildingGuiTask {
+	private EMaterialType material;
+	private int amount;
+	private boolean relative;
 
-	public WorkAreaGuiTask() {
+	public ChangeTradingRequestGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D bildingPos, EMaterialType material, int amount,
+			boolean relative) {
+		super(guiAction, playerId, bildingPos);
+		this.material = material;
+		this.amount = amount;
+		this.relative = relative;
 	}
 
-	/**
-	 * 
-	 * @param guiAction
-	 * @param playerId
-	 * @param workAreaPosition
-	 * @param buildingPos
-	 */
-	public WorkAreaGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D workAreaPosition, ShortPoint2D buildingPos) {
-		super(guiAction, playerId, buildingPos);
-		this.workAreaPosition = workAreaPosition;
+	public EMaterialType getMaterial() {
+		return material;
 	}
 
-	public ShortPoint2D getPosition() {
-		return workAreaPosition;
+	public int getAmount() {
+		return amount;
+	}
+
+	public boolean isRelative() {
+		return relative;
 	}
 
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
-		SimpleGuiTask.serializePosition(dos, workAreaPosition);
+		dos.writeByte(material.ordinal);
+		dos.writeInt(amount);
+		dos.writeBoolean(relative);
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		workAreaPosition = SimpleGuiTask.deserializePosition(dis);
+		material = EMaterialType.values[dis.readByte()];
+		amount = dis.readInt();
+		relative = dis.readBoolean();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((workAreaPosition == null) ? 0 : workAreaPosition.hashCode());
+		result = prime * result + amount;
+		result = prime * result + ((material == null) ? 0 : material.hashCode());
+		result = prime * result + (relative ? 1231 : 1237);
 		return result;
 	}
 
@@ -75,18 +85,19 @@ public class WorkAreaGuiTask extends SimpleBuildingGuiTask {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WorkAreaGuiTask other = (WorkAreaGuiTask) obj;
-		if (workAreaPosition == null) {
-			if (other.workAreaPosition != null)
-				return false;
-		} else if (!workAreaPosition.equals(other.workAreaPosition))
+		ChangeTradingRequestGuiTask other = (ChangeTradingRequestGuiTask) obj;
+		if (amount != other.amount)
+			return false;
+		if (material != other.material)
+			return false;
+		if (relative != other.relative)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "WorkAreaGuiTask [workAreaPosition=" + workAreaPosition + ", getBuildingPos()=" + getBuildingPos() + ", getGuiAction()="
-				+ getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+		return "ChangeTradingRequestGuiTask [material=" + material + ", amount=" + amount + ", relative=" + relative + ", getBuildingPos()="
+				+ getBuildingPos() + ", getGuiAction()=" + getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
 	}
 }

@@ -31,6 +31,7 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
@@ -45,6 +46,7 @@ import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.UIState;
+import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
@@ -213,9 +215,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		case SET_WORK_AREA:
-			if (currentSelection.getSize() > 0) {
-				setBuildingWorkArea(((PointAction) action).getPosition());
-			}
+			setBuildingWorkArea(((PointAction) action).getPosition());
 			break;
 
 		case DESTROY:
@@ -283,10 +283,21 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			selectNextOfType();
 			break;
 
-		case UPGRADE_SOLDIERS:
+		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersAction a = (UpgradeSoldiersAction) action;
 			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
 			break;
+		}
+
+		case CHANGE_TRADING_REQUEST: {
+			ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
+				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPos(), a.getMaterial(),
+						a.getAmount(), a.isRelative()));
+			}
+			break;
+		}
 
 		case ABORT:
 			break;
@@ -337,7 +348,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
-		ISelectable selected = currentSelection.iterator().next();
+		ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
 			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
 		}
