@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-
 /**
  * This enum defines the type of the action.
  * 
@@ -296,4 +295,30 @@ public enum EActionType {
 	 * @see SoldierAction
 	 */
 	SOLDIERS_LESS,
+
+	/**
+	 * Ask the user to select a trading waypoint.
+	 * 
+	 * @see AskSetTradingWaypointAction
+	 */
+	ASK_SET_TRADING_WAYPOINT,
+
+	/**
+	 * Set the trading waypoint for the current selection.
+	 * 
+	 * @see SetTradingWaypointAction
+	 */
+	SET_TRADING_WAYPOINT,
+
+	/**
+	 * Ask the user to set the dock position.
+	 */
+	ASK_SET_DOCK,
+
+	/**
+	 * Set the dock position.
+	 * 
+	 * @see PointAction
+	 */
+	SET_DOCK,
 }
