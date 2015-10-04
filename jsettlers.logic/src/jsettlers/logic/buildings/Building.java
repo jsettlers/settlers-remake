@@ -41,6 +41,7 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
+import jsettlers.logic.buildings.others.TestTradingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
@@ -610,8 +611,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case TEMPLE:
 			return new TempleBuilding(player);
 
-		case DONKEY_FARM:
 		case MARKET_PLACE:
+			return new TestTradingBuilding(type, player, false);
+		case DONKEY_FARM:
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
 			return new DefaultBuilding(type, player);

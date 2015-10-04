@@ -176,4 +176,22 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 */
 		boolean usesGlobalSettings();
 	}
+
+	static interface ITrading extends IBuilding {
+		/**
+		 * Gets the amount of material requested for a given type.
+		 * 
+		 * @param material
+		 *            The material.
+		 * @return The amount, which is 0 in most cases. {@link Integer#MAX_VALUE} indicates an infinite amount.
+		 */
+		int getRequestedTradingFor(EMaterialType material);
+
+		/**
+		 * Checks if this is a sea trading building.
+		 * 
+		 * @return True for sea trading buildings.
+		 */
+		boolean isSeaTrading();
+	}
 }
