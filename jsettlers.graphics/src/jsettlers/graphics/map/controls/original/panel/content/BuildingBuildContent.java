@@ -71,9 +71,10 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 			EBuildingType.MEDIUM_LIVINGHOUSE,
 			EBuildingType.BIG_LIVINGHOUSE,
 			EBuildingType.STOCK,
+			EBuildingType.MARKET_PLACE,
+			EBuildingType.HARBUR,
 			EBuildingType.TEMPLE,
 			EBuildingType.BIG_TEMPLE,
-			EBuildingType.MARKET_PLACE,
 	};
 
 	public static class BuildingCountState {
