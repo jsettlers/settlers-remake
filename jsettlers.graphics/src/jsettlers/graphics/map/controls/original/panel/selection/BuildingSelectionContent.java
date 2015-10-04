@@ -17,6 +17,7 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 
+import java.util.Collection;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -31,8 +32,13 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.AskSetTradingWaypointAction;
+import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetTradingWaypointAction;
+import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
@@ -46,6 +52,7 @@ import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
 import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
 import jsettlers.graphics.ui.layout.StockSelectionLayout;
+import jsettlers.graphics.ui.layout.TradingSelectionLayout;
 
 public class BuildingSelectionContent extends AbstractSelectionContent {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
@@ -82,10 +89,163 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
+	private static class TradingSelectionManager {
+		private Collection<TradingMaterialButton> buttons;
+		private EMaterialType selected;
+
+		public TradingSelectionManager() {
+		}
+
+		public void setButtons(Collection<TradingMaterialButton> buttons) {
+			this.buttons = buttons;
+			updteSelected();
+		}
+
+		public Action getSelectAction(final EMaterialType material) {
+			return new ExecutableAction() {
+				@Override
+				public void execute() {
+					select(material);
+				}
+			};
+		}
+
+		protected void select(EMaterialType material) {
+			this.selected = material;
+			updteSelected();
+		}
+
+		private void updteSelected() {
+			for (TradingMaterialButton b : buttons) {
+				b.setSelected(selected == b.getMaterial());
+			}
+		}
+
+		public EMaterialType getSelected() {
+			return selected;
+		}
+	}
+
+	public static class TradingMaterialButton extends MaterialButton {
+		private TradingSelectionManager selectionManager;
+
+		public TradingMaterialButton(EMaterialType material) {
+			super(null, material);
+		}
+
+		@Override
+		public Action getAction() {
+			if (selectionManager != null) {
+				return selectionManager.getSelectAction(getMaterial());
+			} else {
+				return null;
+			}
+		}
+
+		public void setSelectionManager(TradingSelectionManager selectionManager) {
+			this.selectionManager = selectionManager;
+		}
+	}
+
+	public static class TradingMaterialCount extends Label implements StateDependendElement {
+
+		private EMaterialType material;
+
+		public TradingMaterialCount(EMaterialType material) {
+			super("", EFontSize.NORMAL);
+			this.material = material;
+		}
+
+		@Override
+		public void setState(BuildingState state) {
+			setText(state.getTradingCount(material) + "");
+		}
+
+	}
+
+	private static class TradingPath extends UIPanel {
+
+		public TradingPath(ImageLink image) {
+			setBackground(image);
+		}
+
+		protected Action getActionForStep(int step) {
+			WaypointType wp;
+			if (step <= 0) {
+				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_1;
+			} else if (step <= 1) {
+				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_2;
+			} else if (step <= 2) {
+				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_3;
+			} else {
+				wp = SetTradingWaypointAction.WaypointType.DESTINATION;
+			}
+
+			return new AskSetTradingWaypointAction(wp);
+		}
+	}
+
+	public static class LandTradingPath extends TradingPath {
+
+		public LandTradingPath(ImageLink image) {
+			super(image);
+		}
+
+		@Override
+		public Action getAction(float relativex, float relativey) {
+			int step = (int) (relativex * 4);
+			return getActionForStep(step);
+		}
+	}
+
+	public static class SeaTradingPath extends TradingPath {
+
+		public SeaTradingPath(ImageLink image) {
+			super(image);
+		}
+
+		@Override
+		public Action getAction(float relativex, float relativey) {
+			int step = (int) (relativex * 5) - 1;
+			if (step >= 0) {
+				return getActionForStep(step);
+			} else {
+				return new Action(EActionType.ASK_SET_DOCK);
+			}
+		}
+	}
+
+	public static class TradingButton extends Button {
+		private TradingSelectionManager selectionManager;
+		private int amount;
+		private boolean relative;
+
+		public TradingButton(ImageLink image, String description) {
+			super(null, image, image, description);
+		}
+
+		@Override
+		public Action getAction() {
+			if (selectionManager == null) {
+				return null;
+			}
+			EMaterialType selected = selectionManager.getSelected();
+			if (selected == null) {
+				return null;
+			}
+			return new ChangeTradingRequestAction(selected, amount, relative);
+		}
+
+		public void setSelectionManager(TradingSelectionManager selectionManager) {
+			this.selectionManager = selectionManager;
+		}
+	}
+
 	private final IBuilding building;
 	private final UIPanel rootPanel = new ContentRefreshingPanel();
 
 	private BuildingState lastState = null;
+	private final TradingSelectionManager selectionManager = new TradingSelectionManager();
 
 	public BuildingSelectionContent(ISelectionSet selection) {
 		building = (IBuilding) selection.get(0);
@@ -101,10 +261,12 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
 		BuidlingBackgroundPanel root;
-		if (!state.isConstruction() && building instanceof IBuilding.IOccupyed) {
-			root = creteOccupiedBuildingContent(state);
-		} else if (!state.isConstruction() && building instanceof IBuilding.IStock) {
-			root = creteStockBuildingContent(state);
+		if (state.isOccupied()) {
+			root = createOccupiedBuildingContent(state);
+		} else if (state.isStock()) {
+			root = createStockBuildingContent(state);
+		} else if (state.isTrading()) {
+			root = createTradingBuildingContent(state);
 		} else {
 			root = createNormalBuildingContent(state);
 		}
@@ -256,7 +418,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	}
 
-	private BuidlingBackgroundPanel creteOccupiedBuildingContent(BuildingState state) {
+	private BuidlingBackgroundPanel createOccupiedBuildingContent(BuildingState state) {
 		OccupiableSelectionLayout layout = new OccupiableSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		addOccupyerPlaces(layout.infantry_places, layout.infantry_missing, state.getOccupiers(ESoldierClass.INFANTRY));
@@ -313,12 +475,45 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
-	private BuidlingBackgroundPanel creteStockBuildingContent(BuildingState state) {
+	private BuidlingBackgroundPanel createStockBuildingContent(BuildingState state) {
 		StockSelectionLayout layout = new StockSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
 			i.setState(state);
 		}
+		return layout._root;
+	}
+
+	private BuidlingBackgroundPanel createTradingBuildingContent(BuildingState state) {
+		TradingSelectionLayout layout = new TradingSelectionLayout();
+		layout.nameText.setType(building.getBuildingType(), false);
+		Collection<TradingMaterialButton> buttons = layout.getAll(TradingMaterialButton.class);
+		selectionManager.setButtons(buttons);
+		for (TradingMaterialButton b : buttons) {
+			b.setSelectionManager(selectionManager);
+		}
+		for (TradingButton b : layout.getAll(TradingButton.class)) {
+			b.setSelectionManager(selectionManager);
+		}
+		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
+			i.setState(state);
+		}
+
+		if (state.isSeaTrading()) {
+			layout._root.removeChild(layout.landTradingPath);
+		} else {
+			layout._root.removeChild(layout.seaTradingPath);
+		}
+		layout.tradeAll.amount = Integer.MAX_VALUE;
+		layout.tradeMore5.relative = true;
+		layout.tradeMore5.amount = 5;
+		layout.tradeMore.relative = true;
+		layout.tradeMore.amount = 1;
+		layout.tradeLess.relative = true;
+		layout.tradeLess.amount = -1;
+		layout.tradeLess5.relative = true;
+		layout.tradeLess5.amount = -5;
+
 		return layout._root;
 	}
 

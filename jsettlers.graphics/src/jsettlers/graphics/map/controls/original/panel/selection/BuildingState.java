@@ -46,6 +46,8 @@ public class BuildingState {
 	 */
 	private final Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates;
 	private final BitSet stockStates;
+	private int[] tradingCounts;
+	private boolean isSeaTrading;
 
 	public static class StackState {
 		public final EMaterialType type;
@@ -103,10 +105,24 @@ public class BuildingState {
 		construction = building.getStateProgress() < 1;
 		occupierStates = computeOccupierStates(building);
 		stockStates = computeStockStates(building);
+		tradingCounts = computeTradingCounts(building);
 		for (IBuildingMaterial mat : building.getMaterials()) {
 			stackStates.add(new StackState(mat));
 		}
+		isSeaTrading = building instanceof IBuilding.ITrading && ((IBuilding.ITrading) building).isSeaTrading();
+	}
 
+	private int[] computeTradingCounts(IBuilding building) {
+		if (building instanceof IBuilding.ITrading) {
+			IBuilding.ITrading trading = (IBuilding.ITrading) building;
+			int[] counts = new int[EMaterialType.NUMBER_OF_MATERIALS];
+			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
+				counts[m.ordinal] = trading.getRequestedTradingFor(m);
+			}
+			return counts;
+		} else {
+			return null;
+		}
 	}
 
 	private BitSet computeStockStates(IBuilding building) {
@@ -176,7 +192,12 @@ public class BuildingState {
 				&& construction == (building.getStateProgress() < 1)
 				&& hasSameStacks(building)
 				&& hasSameOccupiers(building)
-				&& hasSameStock(building);
+				&& hasSameStock(building)
+				&& hasSameTrading(building);
+	}
+
+	private boolean hasSameTrading(IBuilding building) {
+		return isEqual(computeTradingCounts(building), tradingCounts);
 	}
 
 	private boolean hasSameStock(IBuilding building) {
@@ -207,5 +228,25 @@ public class BuildingState {
 
 	public List<OccupierState> getOccupiers(ESoldierClass soldierClass) {
 		return Collections.unmodifiableList(occupierStates.get(soldierClass));
+	}
+
+	public int getTradingCount(EMaterialType material) {
+		return tradingCounts == null ? 0 : tradingCounts[material.ordinal];
+	}
+
+	public boolean isOccupied() {
+		return occupierStates != null && !construction;
+	}
+
+	public boolean isStock() {
+		return stockStates != null && !construction;
+	}
+
+	public boolean isTrading() {
+		return tradingCounts != null && !construction;
+	}
+
+	public boolean isSeaTrading() {
+		return isSeaTrading;
 	}
 }
