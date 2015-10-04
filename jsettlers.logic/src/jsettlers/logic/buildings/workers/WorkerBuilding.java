@@ -14,9 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.workers;
 
+import java.util.HashSet;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -33,6 +36,12 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private static final long serialVersionUID = 7050284039312172046L;
 
 	private IManageableWorker worker;
+
+	/**
+	 * Points where we need to clean up pigs or donkeys.
+	 */
+	private final HashSet<ShortPoint2D> cleanupPositions = new HashSet<>();
+	private final HashSet<EMapObjectType> cleanupTypes = new HashSet<>();
 
 	public WorkerBuilding(EBuildingType type, Player player) {
 		super(type, player);
@@ -95,6 +104,11 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			this.worker.buildingDestroyed();
 			this.worker = null;
 		}
+		for (ShortPoint2D pos : cleanupPositions) {
+			for (EMapObjectType t : cleanupTypes) {
+				getGrid().getMapObjectsManager().removeMapObjectType(pos.x, pos.y, t);
+			}
+		}
 	}
 
 	@Override
@@ -110,5 +124,11 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
 		return false;
+	}
+
+	@Override
+	public void addMapObjectCleanupPosition(ShortPoint2D pos, EMapObjectType objectType) {
+		cleanupPositions.add(pos);
+		cleanupTypes.add(objectType);
 	}
 }
