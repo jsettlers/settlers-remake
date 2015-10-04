@@ -147,6 +147,19 @@ public interface IBuildingsGrid {
 	 */
 	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
 
+	/**
+	 * Draws the trading path.
+	 * 
+	 * @param start
+	 *            The market position.
+	 * @param waypoints
+	 *            The waypoints. May contain null elements.
+	 * @param draw
+	 *            If true, the line is drawn,<br>
+	 *            if false, it is removed.
+	 */
+	void drawTradingPathLine(ShortPoint2D start, ShortPoint2D[] waypoints, boolean draw);
+
 	short getPartitionIdAt(ShortPoint2D pos);
 
 	boolean tryTakingResource(ShortPoint2D position, EResourceType resource);

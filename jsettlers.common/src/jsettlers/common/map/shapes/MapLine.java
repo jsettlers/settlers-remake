@@ -12,29 +12,71 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.action;
+package jsettlers.common.map.shapes;
 
+import java.util.Iterator;
+
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
-public class SetTradingWaypointAction extends PointAction {
+/**
+ * This is a line on a map.
+ * 
+ * @author Michael Zangl
+ */
+public class MapLine implements IMapArea {
 
-	public enum WaypointType {
-		WAYPOINT_1,
-		WAYPOINT_2,
-		WAYPOINT_3,
-		DESTINATION;
+	private static final long serialVersionUID = -5934808006015795383L;
 
-		public static WaypointType[] values = values();
+	private class LineIterator implements Iterator<ShortPoint2D> {
+		private ShortPoint2D next = start;
+
+		@Override
+		public boolean hasNext() {
+			return next != null;
+		}
+
+		@Override
+		public ShortPoint2D next() {
+			ShortPoint2D next = this.next;
+			if (next.equals(end)) {
+				this.next = null;
+			} else {
+				EDirection dir = EDirection.getApproxDirection(next, end);
+				this.next = dir.getNextHexPoint(next);
+			}
+			return next;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
 	}
 
-	private final WaypointType waypoint;
+	private ShortPoint2D start;
+	private ShortPoint2D end;
 
-	public SetTradingWaypointAction(WaypointType waypoint, ShortPoint2D position) {
-		super(EActionType.SET_TRADING_WAYPOINT, position);
-		this.waypoint = waypoint;
+	public MapLine(ShortPoint2D start, ShortPoint2D end) {
+		this.start = start;
+		this.end = end;
+
 	}
 
-	public WaypointType getWaypoint() {
-		return waypoint;
+	@Override
+	public boolean contains(ShortPoint2D position) {
+		for (ShortPoint2D p : this) {
+			if (p.equals(position)) {
+				return true;
+			}
+		}
+		return false;
 	}
+
+	@Override
+	public Iterator<ShortPoint2D> iterator() {
+		return new LineIterator();
+	}
+
 }

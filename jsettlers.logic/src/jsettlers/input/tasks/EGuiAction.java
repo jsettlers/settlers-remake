@@ -40,7 +40,8 @@ public enum EGuiAction {
 	 */
 	SET_MATERIAL_PRIORITIES,
 	UPGRADE_SOLDIERS,
-	CHANGE_TRADING;
+	CHANGE_TRADING,
+	SET_TRADING_WAYPOINT;
 
 	public static final EGuiAction[] values = values();
 }

@@ -34,6 +34,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
@@ -148,6 +149,15 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
 			if (building instanceof TestTradingBuilding) {
 				((TestTradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
+			}
+		}
+
+		case SET_TRADING_WAYPOINT: {
+			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
+			ShortPoint2D buildingPos = task.getBuildingPos();
+			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
+			if (building instanceof TestTradingBuilding) {
+				((TestTradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
 			}
 		}
 

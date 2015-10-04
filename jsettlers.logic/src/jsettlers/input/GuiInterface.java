@@ -41,6 +41,7 @@ import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
+import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
@@ -56,6 +57,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
@@ -297,6 +299,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 						a.getAmount(), a.isRelative()));
 			}
 			break;
+		}
+
+		case SET_TRADING_WAYPOINT: {
+			ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
+						a.getWaypoint(), a.getPosition()));
+			}
 		}
 
 		case ABORT:
