@@ -158,7 +158,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		@Override
 		public void setState(BuildingState state) {
-			setText(state.getTradingCount(material) + "");
+			int count = state.getTradingCount(material);
+			setText(count == Integer.MAX_VALUE ? "\u221E" : count + "");
 		}
 
 	}
