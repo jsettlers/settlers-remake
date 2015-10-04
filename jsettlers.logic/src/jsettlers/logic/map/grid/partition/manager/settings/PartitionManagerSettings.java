@@ -75,7 +75,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
 
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
-			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
+			this.materialTypeForPriorities[i] = materialTypeForPriority[i];
 		}
 	}
 }
