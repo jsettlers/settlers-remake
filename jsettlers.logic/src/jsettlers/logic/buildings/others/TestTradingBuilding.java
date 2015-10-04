@@ -96,10 +96,15 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
+
+		if (waypointType != WaypointType.DESTINATION && waypoints[waypoints.length - 1] == null) {
+			waypointType = WaypointType.DESTINATION;
+		}
 		if (waypointType == WaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
 		waypoints[waypointType.ordinal()] = position;
+
 		if (isSelected()) {
 			drawWaypointLine(true);
 		}
