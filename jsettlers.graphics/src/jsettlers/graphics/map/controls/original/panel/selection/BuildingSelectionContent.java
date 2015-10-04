@@ -35,6 +35,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.OccupierState;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.StackState;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -70,27 +71,14 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
-	public static class StockControlItem extends UIPanel implements StateDependendElement {
-		private static final OriginalImageLink STOCK_ACCEPTS = new OriginalImageLink(EImageLinkType.SETTLER, 4, 6, 0);
-		private static final OriginalImageLink STOCK_REJECTS = new OriginalImageLink(EImageLinkType.SETTLER, 4, 6, 7);
-		private final EMaterialType material;
-
+	public static class StockControlItem extends MaterialButton implements StateDependendElement {
 		public StockControlItem(EMaterialType material) {
-			this.material = material;
-			setBackground(material.getIcon());
-		}
-
-		@Override
-		public void drawAt(GLDrawContext gl) {
-			super.drawAt(gl);
+			super(null, material);
 		}
 
 		@Override
 		public void setState(BuildingState state) {
-			removeAll();
-			UIPanel child = new UIPanel();
-			child.setBackground(state.stockAcceptsMaterial(material) ? STOCK_ACCEPTS : STOCK_REJECTS);
-			addChild(child, .1f, .6f, .4f, .9f);
+			setDotColor(state.stockAcceptsMaterial(getMaterial()) ? DotColor.GREEN : DotColor.RED);
 		}
 	}
 
