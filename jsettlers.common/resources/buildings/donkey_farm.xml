@@ -201,5 +201,32 @@
 
 	<job name="walkHomeWater1" type="WALK" direction="SOUTH_EAST" successjob="walkHomeWater2" failjob="gohome"/>
 	<job name="walkHomeWater2" type="WALK" direction="EAST" successjob="walkHomeWater3" failjob="gohome"/>
-	<job name="walkHomeWater3" type="HIDE" successjob="reset1" failjob="gohome"/>
+	<job name="walkHomeWater3" type="HIDE" successjob="waitForFeed1" failjob="gohome"/>
+	
+	<job name="waitForFeed1" type="SET_MATERIAL" material="BASKET" successjob="waitForFeed2" failjob="reset1" />
+	<job name="waitForFeed2" type="WAIT" time="5" successjob="feed1" failjob="reset1" />
+
+	<!-- Walk and feed -->
+	<job name="feed1" type="SHOW"  dx="-2" dy="2" successjob="feed2" failjob="gohome"/>
+	<job name="feed2" type="WALK" direction="SOUTH_EAST" successjob="feed3" failjob="gohome"/>
+	<job name="feed3" type="WALK" direction="SOUTH_EAST" successjob="feed4" failjob="gohome"/>
+	<job name="feed4" type="WALK" direction="SOUTH_EAST" successjob="feed5" failjob="gohome"/>
+	<job name="feed5" type="WALK" direction="EAST" successjob="feed6" failjob="gohome"/>
+	<job name="feed6" type="WALK" direction="NORTH_EAST" successjob="feed7" failjob="gohome"/>
+	<job name="feed7" type="WALK" direction="NORTH_EAST" successjob="feed8" failjob="gohome"/>
+	<job name="feed8" type="PLAY_ACTION1" direction="NORTH_EAST" successjob="feed9" failjob="gohome" time="0.9"/>
+	<job name="feed9" type="WALK" direction="SOUTH_EAST" successjob="feed10" failjob="gohome"/>
+	<job name="feed10" type="PLAY_ACTION1" direction="SOUTH_EAST" successjob="feed11" failjob="gohome" time="0.9"/>
+	<job name="feed11" type="WALK" direction="SOUTH_WEST" successjob="feed12" failjob="gohome"/>
+	<job name="feed12" type="WALK" direction="WEST" successjob="feed13" failjob="gohome"/>
+	<job name="feed13" type="WALK" direction="WEST" successjob="feed14" failjob="gohome"/>
+	<job name="feed14" type="WALK" direction="NORTH_WEST" successjob="feed15" failjob="gohome"/>
+	<job name="feed15" type="WALK" direction="NORTH_WEST" successjob="feed16" failjob="gohome"/>
+	<job name="feed16" type="WALK" direction="NORTH_WEST" successjob="feed17" failjob="gohome"/>
+	<job name="feed17" type="HIDE" successjob="growDonkey1" failjob="gohome"/>
+	
+	<!-- Donkey growing: Attempt to grow both -->
+	<job name="growDonkey1" type="GROW_DONKEY" successjob="reset1" failjob="growDonkey2" dx="2" dy="2"/>
+	<job name="growDonkey2" type="GROW_DONKEY" successjob="reset1" failjob="growDonkey3" dx="4" dy="4"/>
+	<job name="growDonkey3" type="WAIT" successjob="growDonkey1" failjob="growDonkey1" time="1"/>
 </building>

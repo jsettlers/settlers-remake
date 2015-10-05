@@ -256,6 +256,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			popWeaponRequestAction();
 			break;
 
+		case GROW_DONKEY:
+			growDonkeyAction();
+			break;
 		}
 	}
 
@@ -272,6 +275,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		ShortPoint2D pos = getCurrentJobPos();
 		super.getStrategyGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
 		building.addMapObjectCleanupPosition(pos, EMapObjectType.PIG);
+		jobFinished();
+	}
+
+	private void growDonkeyAction() {
+		// TODO Auto-generated method stub
 		jobFinished();
 	}
 
