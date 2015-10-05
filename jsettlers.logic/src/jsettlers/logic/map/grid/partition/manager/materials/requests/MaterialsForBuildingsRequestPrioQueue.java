@@ -37,6 +37,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 	private static final long serialVersionUID = 4856036773080549412L;
 
 	private final DoubleLinkedList<MaterialRequestObject> queues[][];
+	private final DoubleLinkedList<MaterialRequestObject> stockQueues[];
 
 	private final IMaterialsDistributionSettings settings;
 
@@ -50,6 +51,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		for (int i = 0; i < queues.length; i++) {
 			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings());
 		}
+		stockQueues = DoubleLinkedList.getArray(EPriority.NUMBER_OF_PRIORITIES);
 
 		calculateBuildingTypesToIndex();
 	}
@@ -57,10 +59,9 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 	private void calculateBuildingTypesToIndex() {
 		buildingTypesToIndex = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 
-		for (int i = 0; i < buildingTypesToIndex.length; i++) {
-			buildingTypesToIndex[i] = -1;
-		}
-		for (int i = 0; i < settings.getNumberOfBuildings(); i++) {
+		Arrays.fill(buildingTypesToIndex, -1);
+		int numberOfBuildings = settings.getNumberOfBuildings();
+		for (int i = 0; i < numberOfBuildings; i++) {
 			buildingTypesToIndex[settings.getBuildingType(i).ordinal] = i;
 		}
 	}
@@ -71,61 +72,44 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 	}
 
 	@Override
-	protected DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType) {
-		int buildingIndex = buildingTypesToIndex[buildingType.ordinal];
+	protected DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType, boolean stockRequest) {
+		if (stockRequest) {
+			return stockQueues[priority.ordinal];
+		} else {
+			int buildingIndex = buildingTypesToIndex[buildingType.ordinal];
 
-		assert buildingIndex >= 0 : "Unknown building for this queue: " + buildingType;
+			assert buildingIndex >= 0 : "Unknown building for this queue: " + buildingType;
 
-		return queues[priority.ordinal][buildingIndex];
+			return queues[priority.ordinal][buildingIndex];
+		}
 	}
 
 	@Override
 	protected MaterialRequestObject getRequestForPrio(int prio) {
 		DoubleLinkedList<MaterialRequestObject>[] queues = this.queues[prio];
+		if (queues != null) {
+			int startIndex = getRandomStartIndex();
 
-		int startIndex = getRandomStartIndex();
+			final int numberOfBuildings = settings.getNumberOfBuildings();
+			for (int i = 0; i < numberOfBuildings; i++) {
+				int buildingIdx = (i + startIndex) % numberOfBuildings;
 
-		final int numberOfBuildings = settings.getNumberOfBuildings();
-		for (int i = 0; i < numberOfBuildings; i++) {
-			int buildingIdx = (i + startIndex) % numberOfBuildings;
+				if (settings.getProbablity(buildingIdx) <= 0.0f) // if this building type should not receive any materials, skip it
+					continue;
 
-			if (settings.getProbablity(buildingIdx) <= 0.0f) // if this building type should not receive any materials, skip it
-				continue;
-
-			DoubleLinkedList<MaterialRequestObject> queue = queues[buildingIdx];
-
-			int numberOfElements = queue.size();
-
-			for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
-				MaterialRequestObject result = queue.getFront();
-
-				int inDelivery = result.inDelivery;
-				int stillNeeded = result.getStillNeeded();
-
-				// if the request is done
-				if (stillNeeded <= 0) {
-					result.requestQueue = null;
-					queue.popFront(); // remove the request
-					numberOfElements--;
-				}
-
-				// if all needed are in delivery, or there can not be any more in delivery
-				else if (stillNeeded <= inDelivery || inDelivery >= result.getInDeliveryable()) {
-					queue.pushEnd(queue.popFront()); // move the request to the end.
-				}
-
-				// everything fine, take this request
-				else {
-					if (result.isRoundRobinRequest()) {
-						queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
-					}
-
-					return result;
+				MaterialRequestObject request = getRequestFrom(queues[buildingIdx]);
+				if (request != null) {
+					return request;
 				}
 			}
 		}
 
-		return null;
+		DoubleLinkedList<MaterialRequestObject> stockQueue = this.stockQueues[prio];
+		if (stockQueue != null) {
+			return getRequestFrom(stockQueue);
+		} else {
+			return null;
+		}
 	}
 
 	private int getRandomStartIndex() {
@@ -142,6 +126,23 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		System.err.println("ERROR: No correct material distribution!");
 		return 0;
+	}
+
+	@Override
+	public boolean hasOnlyStockRequests() {
+		for (DoubleLinkedList<MaterialRequestObject>[] qs : queues) {
+			for (DoubleLinkedList<MaterialRequestObject> q : qs) {
+				if (!hasOnlyStockRequests(q)) {
+					return false;
+				}
+			}
+		}
+		for (DoubleLinkedList<MaterialRequestObject> q : stockQueues) {
+			if (!hasOnlyStockRequests(q)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -175,6 +176,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		return true;
 	}
 
+	// TODO @Michael: Insert stock.
 	@Override
 	public void moveObjectsOfPositionTo(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newAbstractQueue) {
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";
@@ -198,6 +200,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		}
 	}
 
+	// TODO @Michael: Insert stock.
 	@Override
 	public void mergeInto(AbstractMaterialRequestPriorityQueue newAbstractQueue) {
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";

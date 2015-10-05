@@ -61,4 +61,14 @@ public interface IRequestsStackGrid extends Serializable {
 	 *         position.
 	 */
 	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
+
+	/**
+	 * Creates a single stock offer. May be called multiple times for multiple items.
+	 * 
+	 * @param position
+	 *            The position.
+	 * @param materialType
+	 *            The material that is offered.
+	 */
+	void createOneStockOffer(ShortPoint2D position, EMaterialType materialType);
 }

@@ -1547,6 +1547,20 @@ public final class MainGrid implements Serializable {
 					partition.addOffer(position, materialType);
 				}
 			}
+
+			/**
+			 * Creates a single stock offer. May be called multiple times for multiple items.
+			 * 
+			 * @param position
+			 *            The position.
+			 * @param materialType
+			 *            The material that is offered.
+			 */
+			@Override
+			public final void createOneStockOffer(ShortPoint2D position, EMaterialType materialType) {
+				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
+				partition.addOffer(position, materialType, true);
+			}
 		}
 
 		@Override

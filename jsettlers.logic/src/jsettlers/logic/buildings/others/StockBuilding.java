@@ -14,13 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.others;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.IRequestsStackGrid;
+import jsettlers.logic.stack.StockBuildingStackGroup;
 
 /**
  * This is a stock building that can store materials.
@@ -31,8 +37,15 @@ import jsettlers.logic.player.Player;
 public final class StockBuilding extends Building implements IBuilding.IStock {
 	private static final long serialVersionUID = 1L;
 
+	private final ArrayList<StockBuildingStackGroup> stockStacks = new ArrayList<>();
+
+	private final BitSet acceptedMaterials = new BitSet();
+
 	public StockBuilding(Player player) {
 		super(EBuildingType.STOCK, player);
+
+		acceptedMaterials.set(EMaterialType.GOLD.ordinal);
+		acceptedMaterials.set(EMaterialType.GEMS.ordinal);
 	}
 
 	@Override
@@ -51,7 +64,32 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 
 	@Override
 	protected int constructionFinishedEvent() {
+		IRequestsStackGrid grid = getGrid().getRequestStackGrid();
+		for (RelativeStack stack : getBuildingType().getRequestStacks()) {
+			ShortPoint2D pos = stack.calculatePoint(this.getPos());
+			stockStacks.add(new StockBuildingStackGroup(grid, pos, getBuildingType()));
+		}
+		updateStockStackRequests();
 		return -1;
+	}
+
+	private void updateStockStackRequests() {
+		EMaterialType[] materials = new EMaterialType[acceptedMaterials.cardinality()];
+		for (int i = acceptedMaterials.nextSetBit(0), j = 0; i >= 0; i = acceptedMaterials.nextSetBit(i + 1), j++) {
+			materials[j] = EMaterialType.values[i];
+		}
+		for (StockBuildingStackGroup stack : stockStacks) {
+			stack.setAcceptedMaterials(materials);
+		}
+	}
+
+	@Override
+	protected void killedEvent() {
+		super.killedEvent();
+
+		for (StockBuildingStackGroup stack : stockStacks) {
+			stack.releaseAll();
+		}
 	}
 
 	@Override
@@ -61,13 +99,12 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 
 	@Override
 	public boolean acceptsMaterial(EMaterialType material) {
-		// TODO Auto-generated method stub
-		return false;
+		return acceptedMaterials.get(material.ordinal);
 	}
 
 	@Override
 	public boolean usesGlobalSettings() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 }

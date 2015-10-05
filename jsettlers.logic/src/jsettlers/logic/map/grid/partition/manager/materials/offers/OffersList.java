@@ -16,6 +16,7 @@ package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
 import java.io.Serializable;
 
+import jsettlers.algorithms.queue.ITypeAcceptor;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
@@ -30,6 +31,13 @@ import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableLis
  */
 public final class OffersList implements IMaterialCounts, Serializable {
 	private static final long serialVersionUID = 3747575330300586115L;
+
+	private static final ITypeAcceptor<MaterialOffer> NO_STOCK_ACCEPTOR = new ITypeAcceptor<MaterialOffer>() {
+		@Override
+		public boolean accepts(MaterialOffer offer) {
+			return !offer.isStockOffer();
+		}
+	};
 
 	private final PositionableList<MaterialOffer>[] offersLists;
 	private final short[] numberOfOffers = new short[EMaterialType.NUMBER_OF_MATERIALS];
@@ -59,15 +67,18 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 *            The position the offered material is located.
 	 * @param material
 	 *            The material that is offered at the given position.
+	 * @param isStockOffer
+	 *            <code>true</code> if this offer is from a stock building (and should not be brought to an other stock building). This flag is only
+	 *            respected for the first item at that position.
 	 */
-	public void addOffer(ShortPoint2D position, EMaterialType material) {
+	public void addOffer(ShortPoint2D position, EMaterialType material, boolean isStockOffer) {
 		PositionableList<MaterialOffer> list = offersLists[material.ordinal];
 
 		MaterialOffer existingOffer = list.getObjectAt(position);
 		if (existingOffer != null) {
 			existingOffer.incAmount();
 		} else {
-			list.insert(new MaterialOffer(position, (byte) 1));
+			list.insert(new MaterialOffer(position, (byte) 1, isStockOffer));
 		}
 
 		numberOfOffers[material.ordinal]++;
@@ -92,12 +103,14 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 *            {@link EMaterialType} of the offer.
 	 * @param position
 	 *            The position to be used for the search.
+	 * @param ignoreStock
+	 *            <code>true</code> if we should ignore stock offers.
 	 * @return Returns an offer of the given {@link EMaterialType} that's close to the given position or <br>
 	 *         null if no offer for the given {@link EMaterialType} exists.
 	 */
-	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, ShortPoint2D position) {
+	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, ShortPoint2D position, boolean ignoreStock) {
 		PositionableList<MaterialOffer> offerSlot = offersLists[materialType.ordinal];
-		MaterialOffer offer = offerSlot.getObjectCloseTo(position);
+		MaterialOffer offer = offerSlot.getObjectCloseTo(position, ignoreStock ? NO_STOCK_ACCEPTOR : null);
 
 		decrementOfferAmount(offerSlot, materialType, offer);
 		return offer;
@@ -174,5 +187,15 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	@Override
 	public int getAmountOf(EMaterialType materialType) {
 		return numberOfOffers[materialType.ordinal];
+	}
+
+	public boolean hasOnlyStockOffers(EMaterialType materialType) {
+		PositionableList<MaterialOffer> list = offersLists[materialType.ordinal];
+		for (MaterialOffer offer : list) {
+			if (!offer.isStockOffer()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

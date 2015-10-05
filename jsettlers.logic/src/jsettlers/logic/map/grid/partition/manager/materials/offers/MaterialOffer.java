@@ -32,14 +32,17 @@ public final class MaterialOffer implements Serializable, ILocatable {
 	private final ShortPoint2D position;
 	private byte amount = 0;
 
-	MaterialOffer(ShortPoint2D position, byte amount) {
+	private boolean isStockOffer;
+
+	MaterialOffer(ShortPoint2D position, byte amount, boolean isStockOffer) {
 		this.position = position;
 		this.amount = amount;
+		this.isStockOffer = isStockOffer;
 	}
 
 	@Override
 	public String toString() {
-		return "Offer: " + position + "    " + amount;
+		return "Offer: " + position + "    " + amount + (isStockOffer ? " (stock)" : "");
 	}
 
 	@Override
@@ -67,6 +70,10 @@ public final class MaterialOffer implements Serializable, ILocatable {
 
 	public byte getAmount() {
 		return amount;
+	}
+
+	public boolean isStockOffer() {
+		return isStockOffer;
 	}
 
 }

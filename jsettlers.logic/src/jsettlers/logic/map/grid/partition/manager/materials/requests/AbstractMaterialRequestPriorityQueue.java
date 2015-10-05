@@ -41,8 +41,9 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	final void updatePriority(EPriority oldPriority, EPriority newPriority, MaterialRequestObject materialRequest) {
 		EBuildingType buildingType = materialRequest.getBuildingType();
-		getQueue(oldPriority, buildingType).remove(materialRequest);
-		getQueue(newPriority, buildingType).pushFront(materialRequest); // TODO @Andreas Eberle: check if this should be pushEnd()
+		getQueue(oldPriority, buildingType, materialRequest.isStockRequest()).remove(materialRequest);
+		getQueue(newPriority, buildingType, materialRequest.isStockRequest()).pushFront(materialRequest); // TODO @Andreas Eberle: check if this
+																											// should be pushEnd()
 	}
 
 	/**
@@ -52,7 +53,7 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The {@link MaterialRequestObject} that shall be inserted.
 	 */
 	public final void insertRequest(MaterialRequestObject materialRequest) {
-		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType()).pushEnd(materialRequest);
+		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType(), materialRequest.isStockRequest()).pushEnd(materialRequest);
 		materialRequest.requestQueue = this;
 	}
 
@@ -80,10 +81,12 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The priority of the element.
 	 * @param buildingType
 	 *            The type of the building that is requesting.
+	 * @param stockRequest
+	 *            <code>true</code> if this is a stock building request.
 	 * 
 	 * @return Returns the queue for given priority and building type.
 	 */
-	protected abstract DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType);
+	protected abstract DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType, boolean stockRequest);
 
 	/**
 	 * 
@@ -117,4 +120,55 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	public abstract void mergeInto(AbstractMaterialRequestPriorityQueue newQueue);
 
+	/**
+	 * A helper method that takes one request form a queue.
+	 * 
+	 * @param queue
+	 *            The queue.
+	 * @return The request or <code>null</code> if none was found.
+	 */
+	protected static MaterialRequestObject getRequestFrom(DoubleLinkedList<MaterialRequestObject> queue) {
+		int numberOfElements = queue.size();
+
+		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
+			MaterialRequestObject request = queue.getFront();
+
+			int inDelivery = request.inDelivery;
+			int stillNeeded = request.getStillNeeded();
+
+			// if the request is done
+			if (stillNeeded <= 0) {
+				request.requestQueue = null;
+				queue.popFront(); // remove the request
+				numberOfElements--;
+			}
+
+			// if all needed are in delivery, or there can not be any more in delivery
+			else if (stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable()) {
+				queue.pushEnd(queue.popFront()); // move the request to the end.
+			}
+
+			// everything fine, take this request
+			else {
+				if (request.isRoundRobinRequest()) {
+					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
+				}
+
+				return request;
+			}
+		}
+		return null;
+	}
+
+	public abstract boolean hasOnlyStockRequests();
+
+	protected static boolean hasOnlyStockRequests(DoubleLinkedList<MaterialRequestObject> queue) {
+		// TODO: Optimize.
+		for (MaterialRequestObject req : queue) {
+			if (!req.isStockRequest()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

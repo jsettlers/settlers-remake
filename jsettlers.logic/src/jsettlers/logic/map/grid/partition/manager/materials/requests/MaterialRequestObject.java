@@ -114,4 +114,13 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract boolean isRoundRobinRequest();
 
 	protected abstract EBuildingType getBuildingType();
+
+	/**
+	 * If this is a request to move the material to a stock building.
+	 * 
+	 * @return <code>true</code> if this is a stock stack.
+	 */
+	public boolean isStockRequest() {
+		return false;
+	}
 }
