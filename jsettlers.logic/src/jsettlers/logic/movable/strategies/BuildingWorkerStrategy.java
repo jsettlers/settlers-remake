@@ -279,8 +279,13 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void growDonkeyAction() {
-		// TODO Auto-generated method stub
-		jobFinished();
+		ShortPoint2D pos = getCurrentJobPos();
+		if (super.getStrategyGrid().feedDonkeyAt(pos)) {
+			building.addMapObjectCleanupPosition(pos, EMapObjectType.DONKEY);
+			jobFinished();
+		} else {
+			jobFailed();
+		}
 	}
 
 	private void popWeaponRequestAction() {
