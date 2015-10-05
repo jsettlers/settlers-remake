@@ -17,7 +17,6 @@ package jsettlers.logic.map.grid.partition.manager.materials.requests;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IMaterialsDistributionSettings;
@@ -152,6 +151,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		result = prime * result + Arrays.hashCode(buildingTypesToIndex);
 		result = prime * result + Arrays.hashCode(queues);
 		result = prime * result + ((settings == null) ? 0 : settings.hashCode());
+		result = prime * result + Arrays.hashCode(stockQueues);
 		return result;
 	}
 
@@ -173,10 +173,11 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 				return false;
 		} else if (!settings.equals(other.settings))
 			return false;
+		if (!Arrays.equals(stockQueues, other.stockQueues))
+			return false;
 		return true;
 	}
 
-	// TODO @Michael: Insert stock.
 	@Override
 	public void moveObjectsOfPositionTo(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newAbstractQueue) {
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";
@@ -185,22 +186,13 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		final int numberOfBuildings = settings.getNumberOfBuildings();
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
-			DoubleLinkedList<MaterialRequestObject>[] prioQueue = queues[prioIdx];
 			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
-				Iterator<MaterialRequestObject> iter = prioQueue[queueIdx].iterator();
-				while (iter.hasNext()) {
-					MaterialRequestObject curr = iter.next();
-					if (curr.getPos().equals(position)) {
-						iter.remove();
-						newQueue.queues[prioIdx][queueIdx].pushEnd(curr);
-						curr.requestQueue = newQueue;
-					}
-				}
+				moveBetweenQueues(position, newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
 			}
+			moveBetweenQueues(position, newQueue, stockQueues[prioIdx], newQueue.stockQueues[prioIdx]);
 		}
 	}
 
-	// TODO @Michael: Insert stock.
 	@Override
 	public void mergeInto(AbstractMaterialRequestPriorityQueue newAbstractQueue) {
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";
@@ -210,13 +202,9 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
 			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
-				DoubleLinkedList<MaterialRequestObject> currList = queues[prioIdx][queueIdx];
-				DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[prioIdx][queueIdx];
-				for (MaterialRequestObject request : currList) {
-					request.requestQueue = newQueue;
-				}
-				currList.mergeInto(newList);
+				mergeQueues(newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
 			}
+			mergeQueues(newQueue, stockQueues[prioIdx], newQueue.stockQueues[prioIdx]);
 		}
 	}
 

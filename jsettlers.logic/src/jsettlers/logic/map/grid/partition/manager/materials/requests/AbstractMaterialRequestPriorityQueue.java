@@ -15,6 +15,7 @@
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
@@ -109,6 +110,20 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	public abstract void moveObjectsOfPositionTo(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newQueue);
 
+	protected static void moveBetweenQueues(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newQueue,
+			DoubleLinkedList<MaterialRequestObject> queue,
+			DoubleLinkedList<MaterialRequestObject> pushTo) {
+		Iterator<MaterialRequestObject> iter = queue.iterator();
+		while (iter.hasNext()) {
+			MaterialRequestObject curr = iter.next();
+			if (curr.getPos().equals(position)) {
+				iter.remove();
+				pushTo.pushEnd(curr);
+				curr.requestQueue = newQueue;
+			}
+		}
+	}
+
 	/**
 	 * Merges this queue into the given {@link AbstractMaterialRequestPriorityQueue}.
 	 * <p />
@@ -119,6 +134,14 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The new queue where the data of this queue will be merged into.
 	 */
 	public abstract void mergeInto(AbstractMaterialRequestPriorityQueue newQueue);
+
+	protected static void mergeQueues(AbstractMaterialRequestPriorityQueue newQueue, DoubleLinkedList<MaterialRequestObject> currList,
+			DoubleLinkedList<MaterialRequestObject> newList) {
+		for (MaterialRequestObject request : currList) {
+			request.requestQueue = newQueue;
+		}
+		currList.mergeInto(newList);
+	}
 
 	/**
 	 * A helper method that takes one request form a queue.

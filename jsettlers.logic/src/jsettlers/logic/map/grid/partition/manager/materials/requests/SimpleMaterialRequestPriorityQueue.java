@@ -15,7 +15,6 @@
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
@@ -50,15 +49,7 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		SimpleMaterialRequestPriorityQueue newQueue = (SimpleMaterialRequestPriorityQueue) newAbstractQueue;
 
 		for (int queueIdx = 0; queueIdx < queues.length; queueIdx++) {
-			Iterator<MaterialRequestObject> iter = queues[queueIdx].iterator();
-			while (iter.hasNext()) {
-				MaterialRequestObject curr = iter.next();
-				if (curr.getPos().equals(position)) {
-					iter.remove();
-					newQueue.queues[queueIdx].pushEnd(curr);
-					curr.requestQueue = newQueue;
-				}
-			}
+			moveBetweenQueues(position, newQueue, queues[queueIdx], newQueue.queues[queueIdx]);
 		}
 	}
 
@@ -68,13 +59,8 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 
 		SimpleMaterialRequestPriorityQueue newQueue = (SimpleMaterialRequestPriorityQueue) newAbstractQueue;
 
-		for (int queueIdx = 0; queueIdx < queues.length; queueIdx++) {
-			DoubleLinkedList<MaterialRequestObject> currList = queues[queueIdx];
-			DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[queueIdx];
-			for (MaterialRequestObject request : currList) {
-				request.requestQueue = newQueue;
-			}
-			currList.mergeInto(newList);
+		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
+			mergeQueues(newQueue, queues[prioIdx], newQueue.queues[prioIdx]);
 		}
 	}
 
