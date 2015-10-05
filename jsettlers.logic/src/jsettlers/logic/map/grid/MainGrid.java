@@ -830,6 +830,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void spawnDonkey(ShortPoint2D position, byte playerId) {
+			Player player = partitionsGrid.getPlayer(playerId);
+			Movable donkey = new Movable(movablePathfinderGrid, EMovableType.DONKEY, position, player);
+			donkey.leavePosition();
+		}
+
+		@Override
 		public boolean isBuildingAreaAt(short x, short y) {
 			return objectsGrid.isBuildingAt(x, y);
 		}
@@ -1172,6 +1179,12 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean hasPigAt(ShortPoint2D position) {
 			return mapObjectsManager.isPigThere(position);
+		}
+
+		@Override
+		public boolean feedDonkeyAt(ShortPoint2D position) {
+			byte playerId = partitionsGrid.getPartitionAt(position.x, position.y).getPlayerId();
+			return mapObjectsManager.feedDonkeyAt(position, playerId);
 		}
 
 		@Override

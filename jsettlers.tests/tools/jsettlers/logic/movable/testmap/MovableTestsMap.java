@@ -263,6 +263,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
+		public boolean feedDonkeyAt(ShortPoint2D position) {
+			return false;
+		};
+
+		@Override
 		public void placeSmoke(ShortPoint2D position, boolean smokeOn) {
 		}
 
