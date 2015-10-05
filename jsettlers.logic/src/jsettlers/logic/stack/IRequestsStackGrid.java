@@ -17,6 +17,7 @@ package jsettlers.logic.stack;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 
@@ -71,4 +72,13 @@ public interface IRequestsStackGrid extends Serializable {
 	 *            The material that is offered.
 	 */
 	void createOneStockOffer(ShortPoint2D position, EMaterialType materialType);
+
+	/**
+	 * Gets the current default stock materials.
+	 * 
+	 * @param position
+	 *            The position of the stock building.
+	 * @return the materials.
+	 */
+	MaterialSet getDefaultStockMaterials(ShortPoint2D position);
 }

@@ -69,6 +69,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -1560,6 +1561,12 @@ public final class MainGrid implements Serializable {
 			public final void createOneStockOffer(ShortPoint2D position, EMaterialType materialType) {
 				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				partition.addOffer(position, materialType, true);
+			}
+
+			@Override
+			public MaterialSet getDefaultStockMaterials(ShortPoint2D position) {
+				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
+				return partition.getPartitionSettings().getStockMaterials();
 			}
 		}
 

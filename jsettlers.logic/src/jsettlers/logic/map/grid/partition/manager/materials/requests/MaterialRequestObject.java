@@ -123,4 +123,8 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	public boolean isStockRequest() {
 		return false;
 	}
+
+	public boolean isinDelivery() {
+		return inDelivery > 0;
+	}
 }

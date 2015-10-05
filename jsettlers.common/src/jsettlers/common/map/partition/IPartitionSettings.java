@@ -15,6 +15,7 @@
 package jsettlers.common.map.partition;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 
 /**
  * This interface gives access to the settings of a partition.
@@ -43,12 +44,10 @@ public interface IPartitionSettings {
 	EMaterialType getMaterialTypeForPrio(int priorityIdx);
 
 	/**
-	 * Checks if stock buildings accept this material in this partiton.
+	 * Gets the list of materials that stock buildings accept in this partiton.
 	 * 
-	 * @param material
-	 *            The material.
-	 * @return <code>true</code> if they accept this material.
+	 * @return that list.
 	 */
-	boolean getStockAcceptsMaterial(EMaterialType material);
+	MaterialSet getStockMaterials();
 
 }

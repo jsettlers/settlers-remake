@@ -15,13 +15,13 @@
 package jsettlers.logic.buildings.others;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
@@ -37,15 +37,17 @@ import jsettlers.logic.stack.StockBuildingStackGroup;
 public final class StockBuilding extends Building implements IBuilding.IStock {
 	private static final long serialVersionUID = 1L;
 
+	private static final int UPDATE_PERIOD = 5000;
+
 	private final ArrayList<StockBuildingStackGroup> stockStacks = new ArrayList<>();
 
-	private final BitSet acceptedMaterials = new BitSet();
+	private final MaterialSet acceptedMaterials = null;
 
 	public StockBuilding(Player player) {
 		super(EBuildingType.STOCK, player);
 
-		acceptedMaterials.set(EMaterialType.GOLD.ordinal);
-		acceptedMaterials.set(EMaterialType.GEMS.ordinal);
+		// acceptedMaterials.set(EMaterialType.GOLD, true);
+		// acceptedMaterials.set(EMaterialType.GEMS, true);
 	}
 
 	@Override
@@ -59,7 +61,10 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 
 	@Override
 	protected int subTimerEvent() {
-		return -1;
+		if (usesGlobalSettings()) {
+			updateStockStackRequests();
+		}
+		return UPDATE_PERIOD;
 	}
 
 	@Override
@@ -70,14 +75,11 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 			stockStacks.add(new StockBuildingStackGroup(grid, pos, getBuildingType()));
 		}
 		updateStockStackRequests();
-		return -1;
+		return UPDATE_PERIOD;
 	}
 
 	private void updateStockStackRequests() {
-		EMaterialType[] materials = new EMaterialType[acceptedMaterials.cardinality()];
-		for (int i = acceptedMaterials.nextSetBit(0), j = 0; i >= 0; i = acceptedMaterials.nextSetBit(i + 1), j++) {
-			materials[j] = EMaterialType.values[i];
-		}
+		MaterialSet materials = getAcceptedMaterials();
 		for (StockBuildingStackGroup stack : stockStacks) {
 			stack.setAcceptedMaterials(materials);
 		}
@@ -88,7 +90,7 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 		super.killedEvent();
 
 		for (StockBuildingStackGroup stack : stockStacks) {
-			stack.releaseAll();
+			stack.killEvent();
 		}
 	}
 
@@ -99,12 +101,21 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 
 	@Override
 	public boolean acceptsMaterial(EMaterialType material) {
-		return acceptedMaterials.get(material.ordinal);
+		return getAcceptedMaterials().contains(material);
+	}
+
+	private MaterialSet getAcceptedMaterials() {
+		MaterialSet materials;
+		if (acceptedMaterials != null) {
+			materials = acceptedMaterials;
+		} else {
+			materials = getGrid().getRequestStackGrid().getDefaultStockMaterials(getPos());
+		}
+		return materials;
 	}
 
 	@Override
 	public boolean usesGlobalSettings() {
-		// TODO Auto-generated method stub
-		return false;
+		return acceptedMaterials == null;
 	}
 }

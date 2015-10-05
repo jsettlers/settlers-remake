@@ -15,10 +15,10 @@
 package jsettlers.logic.map.grid.partition.manager.settings;
 
 import java.io.Serializable;
-import java.util.BitSet;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 
 /**
@@ -39,7 +39,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
-	private final BitSet acceptedMaterialsInStock = new BitSet();
+	private MaterialSet acceptedMaterialsInStock = new MaterialSet();
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -82,11 +82,11 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	}
 
 	@Override
-	public boolean getStockAcceptsMaterial(EMaterialType material) {
-		return acceptedMaterialsInStock.get(material.ordinal);
+	public MaterialSet getStockMaterials() {
+		return acceptedMaterialsInStock;
 	}
 
 	public void setMaterialAcceptedInStock(EMaterialType materialType, boolean acceptedInStock) {
-		acceptedMaterialsInStock.set(materialType.ordinal, acceptedInStock);
+		acceptedMaterialsInStock = acceptedMaterialsInStock.set(materialType, acceptedInStock);
 	}
 }

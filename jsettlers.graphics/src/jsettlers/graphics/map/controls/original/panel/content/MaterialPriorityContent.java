@@ -23,6 +23,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
@@ -152,8 +153,10 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 					// FIXME: Synchronize!
 					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
 				}
+
+				MaterialSet accepted = data.getPartitionSettings().getStockMaterials();
 				for (EMaterialType m : EMaterialType.values) {
-					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
+					materialsAccepted.set(m.ordinal, accepted.contains(m));
 				}
 				setOrder(newOrder);
 
