@@ -15,7 +15,6 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.common.movable.EAction;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.logic.constants.Constants;
