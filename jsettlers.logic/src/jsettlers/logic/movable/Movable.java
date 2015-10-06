@@ -84,7 +84,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private Path path;
 
 	private float health;
-	private float strength;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
 	private Movable pushedFrom;
@@ -104,7 +103,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.strategy = MovableStrategy.getStrategy(this, movableType);
 		this.movableType = movableType;
 		this.health = movableType.getHealth();
-		this.strength = movableType.getStrength();
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
@@ -137,7 +135,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isMoveToAble() && !strategy.shouldEndActionBeforeMoving()) {
+		if (movableType.isMoveToAble() && strategy.isMoveToAble()) {
 			this.moveToRequest = targetPosition;
 		}
 	}
