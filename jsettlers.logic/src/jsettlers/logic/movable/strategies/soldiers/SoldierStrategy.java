@@ -72,7 +72,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
-			if(!isEnemyAttackable(enemy, isInTower)) {
+			if (!isEnemyAttackable(enemy, isInTower)) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 			} else {
 				hitEnemy(enemy);
@@ -88,8 +88,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			}
 		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getMinSearchDistance(), getMaxSearchDistance
-					(isInTower), !defending);
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getMinSearchDistance(),
+					getMaxSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsave mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
@@ -351,11 +351,6 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		state = ESoldierState.AGGRESSIVE;
-	}
-
-	@Override
-	protected boolean shouldEndActionBeforeMoving() {
-		return state == ESoldierState.HITTING;
 	}
 
 	protected float getCombatStrength() {
