@@ -99,6 +99,8 @@ public final class MaterialsManager implements Serializable {
 		if (request == null) // no request, return
 			return;
 
+		assert !request.isStockRequest() || requestQueues[materialType.ordinal].hasOnlyStockRequests();
+
 		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, request.getPos(), request.isStockRequest());
 
 		assert offer != null : "The offer can't be null here!";

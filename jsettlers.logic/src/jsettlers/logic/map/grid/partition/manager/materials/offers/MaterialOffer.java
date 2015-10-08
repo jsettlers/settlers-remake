@@ -76,4 +76,8 @@ public final class MaterialOffer implements Serializable, ILocatable {
 		return isStockOffer;
 	}
 
+	public void toNormalOffer() {
+		isStockOffer = false;
+	}
+
 }

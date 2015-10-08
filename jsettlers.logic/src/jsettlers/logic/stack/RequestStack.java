@@ -122,6 +122,10 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		return stillNeeded <= 0;
 	}
 
+	protected IRequestsStackGrid getGrid() {
+		return grid;
+	}
+
 	public ShortPoint2D getPosition() {
 		return position;
 	}

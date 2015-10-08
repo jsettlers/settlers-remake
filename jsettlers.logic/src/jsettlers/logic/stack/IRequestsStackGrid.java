@@ -74,6 +74,16 @@ public interface IRequestsStackGrid extends Serializable {
 	void createOneStockOffer(ShortPoint2D position, EMaterialType materialType);
 
 	/**
+	 * Converts the offer at the given position to be a normal offer instead of a stock offer.
+	 * 
+	 * @param pos
+	 *            The position.
+	 * @param materialType
+	 *            The material type.
+	 */
+	void makeStockOffersNormal(ShortPoint2D pos, EMaterialType materialType);
+
+	/**
 	 * Gets the current default stock materials.
 	 * 
 	 * @param position

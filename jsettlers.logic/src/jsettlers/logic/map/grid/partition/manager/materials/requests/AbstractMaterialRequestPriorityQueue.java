@@ -68,6 +68,7 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 		for (int prio = EPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
 			MaterialRequestObject request = getRequestForPrio(prio);
 			if (request != null) {
+				assert !request.isStockRequest() || hasOnlyStockRequests();
 				return request;
 			}
 		}
@@ -187,8 +188,10 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 
 	protected static boolean hasOnlyStockRequests(DoubleLinkedList<MaterialRequestObject> queue) {
 		// TODO: Optimize.
-		for (MaterialRequestObject req : queue) {
-			if (!req.isStockRequest()) {
+		for (MaterialRequestObject request : queue) {
+			int inDelivery = request.inDelivery;
+			int stillNeeded = request.getStillNeeded();
+			if (!request.isStockRequest() && !(stillNeeded >= 0) && !(stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable())) {
 				return false;
 			}
 		}

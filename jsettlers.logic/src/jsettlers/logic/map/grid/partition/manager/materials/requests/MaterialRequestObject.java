@@ -102,7 +102,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract void materialDelivered();
 
 	@Override
-	public final void deliveryAborted() {
+	public void deliveryAborted() {
 		inDelivery--;
 	}
 
@@ -122,6 +122,10 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	 */
 	public boolean isStockRequest() {
 		return false;
+	}
+
+	protected int getInDelivery() {
+		return inDelivery;
 	}
 
 	public boolean isinDelivery() {

@@ -34,7 +34,15 @@ public enum EPriority {
 	STOCK_STARTED(2),
 
 	LOW(3),
-	HIGH(4);
+
+	/**
+	 * A market request.
+	 */
+	MARKET(4),
+
+	MARKET_STARTED(5),
+
+	HIGH(6);
 
 	public static final EPriority[] values = EPriority.values();
 	public static final int NUMBER_OF_PRIORITIES = values.length;

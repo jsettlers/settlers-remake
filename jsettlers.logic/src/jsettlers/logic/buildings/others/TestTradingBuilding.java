@@ -24,6 +24,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.MaterialRequestCount;
 
 public class TestTradingBuilding extends Building implements IBuilding.ITrading {
 
@@ -33,11 +34,8 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	private static final long serialVersionUID = -1760409147232184087L;
 	private boolean isSeaTrading;
 
-	/**
-	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
-	 */
-	private final int[] requestedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 	private ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
+	MaterialRequestCount requestedMaterials = new MaterialRequestCount();
 
 	public TestTradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
 		super(type, player);
@@ -70,7 +68,7 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 
 	@Override
 	public int getRequestedTradingFor(EMaterialType material) {
-		return requestedMaterials[material.ordinal];
+		return requestedMaterials.getRequestedFor(material);
 	}
 
 	@Override
@@ -79,17 +77,7 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	}
 
 	public void changeRequestedMaterial(EMaterialType material, int amount, boolean relative) {
-		long newValue = amount;
-		if (relative) {
-			int old = requestedMaterials[material.ordinal];
-			if (old == Integer.MAX_VALUE) {
-				// infinity stays infinity.
-				return;
-			}
-			newValue += old;
-		}
-
-		requestedMaterials[material.ordinal] = (int) Math.max(0, Math.min(Integer.MAX_VALUE, newValue));
+		requestedMaterials.changeRequestedMaterial(material, amount, relative);
 	}
 
 	public void setWaypoint(WaypointType waypointType, ShortPoint2D position) {

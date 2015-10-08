@@ -418,6 +418,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		this.materialOffers.removeOfferAt(pos, materialType);
 	}
 
+	public void makeStockOffersNormal(ShortPoint2D position, EMaterialType materialType) {
+		this.materialOffers.makeStockOffersNormal(position, materialType);
+	}
+
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
 		byte bestPrio = 0;
 		EMaterialType bestTool = null;

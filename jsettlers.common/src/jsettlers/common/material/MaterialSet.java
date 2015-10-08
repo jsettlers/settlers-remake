@@ -60,7 +60,11 @@ public final class MaterialSet implements Serializable {
 	}
 
 	public boolean contains(EMaterialType material) {
-		return (materials & (1l << material.ordinal)) != 0;
+		return contains(material.ordinal);
+	}
+
+	public boolean contains(int materialId) {
+		return (materials & (1l << materialId)) != 0;
 	}
 
 	public MaterialSet set(EMaterialType material, boolean set) {

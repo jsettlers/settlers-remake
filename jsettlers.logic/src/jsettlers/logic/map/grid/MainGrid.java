@@ -1577,6 +1577,12 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
+			public void makeStockOffersNormal(ShortPoint2D position, EMaterialType materialType) {
+				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
+				partition.makeStockOffersNormal(position, materialType);
+			}
+
+			@Override
 			public MaterialSet getDefaultStockMaterials(ShortPoint2D position) {
 				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				return partition.getPartitionSettings().getStockMaterials();

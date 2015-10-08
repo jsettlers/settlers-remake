@@ -133,6 +133,15 @@ public final class OffersList implements IMaterialCounts, Serializable {
 		return offer;
 	}
 
+	public void makeStockOffersNormal(ShortPoint2D position, EMaterialType materialType) {
+		PositionableList<MaterialOffer> offerSlot = offersLists[materialType.ordinal];
+		MaterialOffer offer = offerSlot.getObjectAt(position);
+
+		if (offer != null) {
+			offer.toNormalOffer();
+		}
+	}
+
 	private void decrementOfferAmount(PositionableList<MaterialOffer> offerSlot, EMaterialType materialType, MaterialOffer offer) {
 		if (offer != null) {
 			if (offer.decAmount() <= 0) { // if the offer is now empty.
