@@ -72,10 +72,10 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
+			hitEnemy(enemy); // after the animation, execute the actual hit.
 			if (!isEnemyAttackable(enemy, isInTower)) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 			} else {
-				hitEnemy(enemy);
 				if (state != ESoldierState.HITTING) {
 					break; // the soldier could have entered an attacked tower
 				}
