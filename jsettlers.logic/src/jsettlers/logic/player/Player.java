@@ -21,7 +21,6 @@ import java.io.Serializable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.player.IManaInformation;
 import jsettlers.graphics.map.IMessenger;
 import jsettlers.graphics.messages.Message;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
@@ -40,7 +39,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private final Team team;
 	private final byte numberOfPlayers;
 
-	private final IManaInformation manaInformation = new ManaInformation();
+	private final ManaInformation manaInformation = new ManaInformation();
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
 	private transient CombatStrengthInformation combatStrengthInfo;
@@ -76,7 +75,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	}
 
 	@Override
-	public IManaInformation getManaInformation() {
+	public ManaInformation getManaInformation() {
 		return manaInformation;
 	}
 
