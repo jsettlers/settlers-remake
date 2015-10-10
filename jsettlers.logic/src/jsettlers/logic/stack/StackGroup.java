@@ -31,18 +31,18 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 		private static final long serialVersionUID = 1062638817799183295L;
 		private StackGroup<StackT> group;
 
-		public GroupedRequestStack(StackGroup<StackT> group, EMaterialType materialType,
-				EPriority priority) {
-			super(group.grid, group.position, materialType, group.buildingType, priority);
+		public GroupedRequestStack(StackGroup<StackT> group, EMaterialType materialType) {
+			super(group.grid, group.position, materialType, group.buildingType, group.getStartedStackPriority());
 			this.group = group;
 		}
 
 		@Override
 		public void deliveryAccepted() {
-			super.deliveryAccepted();
 			if (!canDeliverThisMaterial()) {
-				throw new IllegalStateException("This stack does not accept deliveries.");
+				throw new IllegalStateException("This stack does not accept deliveries. Attempted to deliver to " + this + " but should have been "
+						+ group.getCurrentDeliveredStack());
 			}
+			super.deliveryAccepted();
 			group.setDeliveredStack(this);
 			group.requestCounts.changeDelivered(getMaterialType(), 1);
 		}
@@ -61,6 +61,17 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 		@Override
 		public boolean isActive() {
 			return canDeliverThisMaterial() && !group.requestCounts.isTooMuch(getMaterialType()) && getInDelivery() <= getInDeliveryable();
+		}
+
+		@Override
+		public short getStillNeeded() {
+			short missing = group.requestCounts.getMissingFor(getMaterialType());
+			if (missing == Short.MAX_VALUE) {
+				return missing;
+			} else {
+				// parent assumes this count contains inDelivery.
+				return (short) (missing + getInDelivery());
+			}
 		}
 
 		public boolean isActiveStockStack() {
@@ -82,13 +93,6 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 	 * This is the number of materials the user requested.
 	 */
 	private MaterialRequestCount requestCounts = new MaterialRequestCount();
-
-	// /**
-	// * This is the number of materials we are requesting. While this stack is empty, it is the same as requestCounts.
-	// * <p>
-	// * As soon as this stack is not empty any more, the requestCounts is masked so that only the material we are listening for is there.
-	// */
-	// private MaterialRequestCount activeRequestCounts = requestCounts;
 
 	public StackGroup(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType) {
 		this.grid = grid;
@@ -118,22 +122,32 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 	@Override
 	public void materialCountChanged(EMaterialType material, short oldValue, short newValue) {
 		StackT stack = getStack(material);
+		assert (stack == null) == (oldValue == 0);
 		if (newValue == 0) {
-			if (stack == null) {
-				// nothing to do.
-				return;
+			if (stack != null) {
+				// remove that stack.
+				requestMaterialRemoval(material);
+				stack.releaseRequests();
+				requestStacks.remove(stack);
 			}
-			// remove that stack.
-
-			requestMaterialRemoval(material);
 		} else {
 			if (oldValue == 0) {
-				stack = createStack(material);
-				requestStacks.add(stack);
+				createRequestFor(material);
+			} else {
+				// if this request was unscheduled, we need to re-schedule it.
+				stack.reschedule();
 			}
-			// TODO: Do we need to change request?
 		}
 
+	}
+
+	private void createRequestFor(EMaterialType material) {
+		StackT stack;
+		stack = createStack(material);
+		if (getCurrentDeliveredStack() != null) {
+			stack.setPriority(EPriority.STOPPED);
+		}
+		requestStacks.add(stack);
 	}
 
 	/**
@@ -167,17 +181,14 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 
 		for (StackT stack : requestStacks) {
 			if (stack != currentDeliveredStack) {
-				stack.releaseRequests();
+				stack.setPriority(EPriority.STOPPED);
 			} else {
 				this.currentDeliveredStack = stack;
 				// FIXME: This seems to make bearers drop the material.
-				stack.setPriority(EPriority.STOCK_STARTED);
+				stack.setPriority(getStartedStackPriority());
 			}
 		}
-		requestStacks.clear();
-		if (this.currentDeliveredStack != null) {
-			requestStacks.add(this.currentDeliveredStack);
-		} else {
+		if (this.currentDeliveredStack == null) {
 			throw new IllegalStateException("The active stack is not in the request stacks.");
 		}
 	}
@@ -195,16 +206,17 @@ public abstract class StackGroup<StackT extends GroupedRequestStack<StackT>> imp
 	 * Allow all stacks to re-request the materials.
 	 */
 	private void currentStackInactivated() {
-		currentDeliveredStack.releaseRequests();
 		currentDeliveredStack = null;
-		reAddRequestStacks();
-	}
-
-	private void reAddRequestStacks() {
-		System.out.println("Stock: Added all request stacks at " + position);
+		for (StackT stack : requestStacks) {
+			stack.setPriority(getEmptyStackPriority());
+		}
 	}
 
 	public abstract StackT createStack(EMaterialType m);
+
+	protected abstract EPriority getEmptyStackPriority();
+
+	protected abstract EPriority getStartedStackPriority();
 
 	public void killEvent() {
 		// We simply set all counts to 0. This clears all requests.

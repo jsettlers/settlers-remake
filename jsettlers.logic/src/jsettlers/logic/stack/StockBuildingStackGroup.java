@@ -21,7 +21,7 @@ public class StockBuildingStackGroup extends StackGroup<StockBuildingStack> {
 		private static final long serialVersionUID = 5707770600972786482L;
 
 		public StockBuildingStack(EMaterialType materialType) {
-			super(StockBuildingStackGroup.this, materialType, EPriority.STOCK);
+			super(StockBuildingStackGroup.this, materialType);
 		}
 
 		@Override
@@ -61,6 +61,16 @@ public class StockBuildingStackGroup extends StackGroup<StockBuildingStack> {
 	@Override
 	public StockBuildingStack createStack(EMaterialType m) {
 		return new StockBuildingStack(m);
+	}
+
+	@Override
+	protected EPriority getEmptyStackPriority() {
+		return EPriority.STOCK;
+	}
+
+	@Override
+	protected EPriority getStartedStackPriority() {
+		return EPriority.STOCK_STARTED;
 	}
 
 }

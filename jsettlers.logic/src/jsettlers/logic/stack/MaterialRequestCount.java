@@ -57,7 +57,12 @@ public class MaterialRequestCount {
 	 */
 	public short getMissingFor(EMaterialType material) {
 		short requested = requestedMaterials[material.ordinal];
-		return requested == Short.MAX_VALUE ? requested : (short) Math.max(0, deliveredMaterials[material.ordinal] - requested);
+		if (requested == Short.MAX_VALUE) {
+			return requested;
+		} else {
+			System.out.println("Missing: -" + deliveredMaterials[material.ordinal] + " + " + requested);
+			return (short) Math.max(0, requested - deliveredMaterials[material.ordinal]);
+		}
 	}
 
 	public void changeRequestedMaterial(EMaterialType material, int amount, boolean relative) {

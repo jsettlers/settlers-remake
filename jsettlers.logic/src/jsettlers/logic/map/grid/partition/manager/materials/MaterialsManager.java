@@ -89,7 +89,6 @@ public final class MaterialsManager implements Serializable {
 
 	private void distributeJobForMaterial(EMaterialType materialType) {
 		if (offersList.isEmpty(materialType)
-				|| (requestQueues[materialType.ordinal].hasOnlyStockRequests() && offersList.hasOnlyStockOffers(materialType))
 				|| joblessSupplier.isEmpty()) // no offers? or no jobless? just return
 			return;
 
@@ -99,11 +98,12 @@ public final class MaterialsManager implements Serializable {
 		if (request == null) // no request, return
 			return;
 
-		assert !request.isStockRequest() || requestQueues[materialType.ordinal].hasOnlyStockRequests();
-
 		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, request.getPos(), request.isStockRequest());
 
-		assert offer != null : "The offer can't be null here!";
+		if (offer == null) {
+			// The offer was filtered because we only had stock offers.
+			return;
+		}
 
 		IManagerBearer jobless = joblessSupplier.removeJoblessCloseTo(offer.getPos());
 

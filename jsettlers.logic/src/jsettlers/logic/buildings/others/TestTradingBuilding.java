@@ -14,17 +14,21 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.others;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.IRequestsStackGrid;
 import jsettlers.logic.stack.MaterialRequestCount;
+import jsettlers.logic.stack.TradingBuildingStackGroup;
 
 public class TestTradingBuilding extends Building implements IBuilding.ITrading {
 
@@ -35,7 +39,8 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	private boolean isSeaTrading;
 
 	private ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
-	MaterialRequestCount requestedMaterials = new MaterialRequestCount();
+	private MaterialRequestCount requestedMaterials = new MaterialRequestCount();
+	private ArrayList<TradingBuildingStackGroup> tradingStacks = new ArrayList<>();
 
 	public TestTradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
 		super(type, player);
@@ -59,6 +64,17 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	@Override
 	protected int constructionFinishedEvent() {
 		return -1;
+	}
+
+	@Override
+	protected void createWorkStacks() {
+		IRequestsStackGrid grid = getGrid().getRequestStackGrid();
+		for (RelativeStack stack : getBuildingType().getRequestStacks()) {
+			ShortPoint2D pos = stack.calculatePoint(this.getPos());
+			TradingBuildingStackGroup stackGroup = new TradingBuildingStackGroup(grid, pos, getBuildingType());
+			stackGroup.setRequestCounts(requestedMaterials);
+			tradingStacks.add(stackGroup);
+		}
 	}
 
 	@Override
@@ -110,6 +126,15 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 			drawWaypointLine(false);
 		}
 		super.kill();
+	}
+
+	@Override
+	protected void killedEvent() {
+		super.killedEvent();
+
+		for (TradingBuildingStackGroup stack : tradingStacks) {
+			stack.killEvent();
+		}
 	}
 
 	private void drawWaypointLine(boolean draw) {

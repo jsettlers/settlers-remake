@@ -54,6 +54,7 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The {@link MaterialRequestObject} that shall be inserted.
 	 */
 	public final void insertRequest(MaterialRequestObject materialRequest) {
+		assert materialRequest.requestQueue == null;
 		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType(), materialRequest.isStockRequest()).pushEnd(materialRequest);
 		materialRequest.requestQueue = this;
 	}

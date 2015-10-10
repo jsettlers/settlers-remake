@@ -48,7 +48,9 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		queues = new DoubleLinkedList[EPriority.NUMBER_OF_PRIORITIES][];
 		for (int i = 0; i < queues.length; i++) {
-			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings());
+			if (EPriority.values[i].isBuildingRequestPriority()) {
+				queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings());
+			}
 		}
 		stockQueues = DoubleLinkedList.getArray(EPriority.NUMBER_OF_PRIORITIES);
 
@@ -72,7 +74,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 	@Override
 	protected DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType, boolean stockRequest) {
-		if (stockRequest) {
+		if (!priority.isBuildingRequestPriority()) {
 			return stockQueues[priority.ordinal];
 		} else {
 			int buildingIndex = buildingTypesToIndex[buildingType.ordinal];
@@ -186,8 +188,10 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		final int numberOfBuildings = settings.getNumberOfBuildings();
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
-			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
-				moveBetweenQueues(position, newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
+			if (queues[prioIdx] != null) {
+				for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
+					moveBetweenQueues(position, newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
+				}
 			}
 			moveBetweenQueues(position, newQueue, stockQueues[prioIdx], newQueue.stockQueues[prioIdx]);
 		}
@@ -201,8 +205,10 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		final int numberOfBuildings = settings.getNumberOfBuildings();
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
-			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
-				mergeQueues(newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
+			if (queues[prioIdx] != null) {
+				for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
+					mergeQueues(newQueue, queues[prioIdx][queueIdx], newQueue.queues[prioIdx][queueIdx]);
+				}
 			}
 			mergeQueues(newQueue, stockQueues[prioIdx], newQueue.stockQueues[prioIdx]);
 		}

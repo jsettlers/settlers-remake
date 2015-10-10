@@ -63,4 +63,8 @@ public enum EPriority {
 	public int getPriorityIndex() {
 		return priorityIndex;
 	}
+
+	public boolean isBuildingRequestPriority() {
+		return this == LOW || this == HIGH;
+	}
 }
