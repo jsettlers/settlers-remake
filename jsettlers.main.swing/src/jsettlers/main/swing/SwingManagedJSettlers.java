@@ -148,6 +148,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.CONTROL_ALL = argsMap.containsKey("control-all");
 		CommonConstants.ACTIVATE_ALL_PLAYERS = argsMap.containsKey("activate-all-players");
 		CommonConstants.ENABLE_CONSOLE_LOGGING = argsMap.containsKey("console-output");
+		CommonConstants.ENABLE_AI = !argsMap.containsKey("disable-ai");
 
 		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";

@@ -502,7 +502,7 @@ public class MapObjectDrawer {
 				color, shade);
 
 		if (movable.isSelected()) {
-			drawSelectionMark(viewX, viewY, movable.getHealth());
+			drawSelectionMark(viewX, viewY, movable.getHealth() / movable.getMovableType().getHealth());
 		}
 	}
 
@@ -526,7 +526,7 @@ public class MapObjectDrawer {
 		return x;
 	}
 
-	private void drawSelectionMark(float viewX, float viewY, float health) {
+	private void drawSelectionMark(float viewX, float viewY, float healthPercentage) {
 		float z = context.getDrawBuffer().getZ();
 		context.getDrawBuffer().setZ(MOVABLE_SELECTION_MARKER_Z);
 
@@ -539,7 +539,7 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> sequence =
 				ImageProvider.getInstance().getSettlerSequence(4, 6);
 		int healthId =
-				Math.min((int) ((1 - health) * sequence.length()),
+				Math.min((int) ((1 - healthPercentage) * sequence.length()),
 						sequence.length() - 1);
 		Image healthImage = sequence.getImageSafe(healthId);
 		healthImage.drawAt(context.getGl(), context.getDrawBuffer(), viewX,

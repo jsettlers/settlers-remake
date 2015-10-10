@@ -194,13 +194,16 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *            The center position to start the search.
 	 * @param movable
 	 *            The movable searching an enemy.
-	 * @param searchRadius
-	 *            The radius of the search for enemy attackables.
+	 * @param minSearchRadius
+	 *            The minimum radius of the search for enemy attackables.
+	 * @param maxSearchRadius
+	 *            The maximum radius of the search for enemy attackables.
 	 * @param includeTowers
 	 *            If true, towers are included in the search, if false, only movables are searched.
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
-	public abstract IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short searchRadius, boolean includeTowers);
+	public abstract IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius,
+			boolean includeTowers);
 
 	/**
 	 * Adds an arrow object to the map flying from
