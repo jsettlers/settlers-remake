@@ -996,6 +996,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	final class MovablePathfinderGrid extends AbstractMovableGrid {
+
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
@@ -1283,13 +1284,14 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius, boolean includeTowers) {
+		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
+				final short maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
 
-			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, (short) 1,
-					searchRadius), isBowman, includeTowers);
+			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, minSearchRadius,
+					maxSearchRadius), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
-				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, searchRadius,
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, maxSearchRadius,
 						Constants.TOWER_SEARCH_RADIUS), isBowman, true);
 			}
 

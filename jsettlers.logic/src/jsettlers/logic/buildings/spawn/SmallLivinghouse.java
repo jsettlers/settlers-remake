@@ -29,15 +29,9 @@ public final class SmallLivinghouse extends SpawnBuilding {
 	private static final long serialVersionUID = -6001054088627024255L;
 
 	private static final byte PRODUCE_LIMIT = 10;
-	private static final int PRODUCE_PERIOD = 2000;
 
 	public SmallLivinghouse(Player player) {
 		super(EBuildingType.SMALL_LIVINGHOUSE, player);
-	}
-
-	@Override
-	protected int getProducePeriod() {
-		return PRODUCE_PERIOD;
 	}
 
 	@Override
