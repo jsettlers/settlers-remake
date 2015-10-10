@@ -56,19 +56,18 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 		final int squareDist = dx * dx + dy * dy;
 
-
 		if (isInTower) {
 			return SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist && squareDist <= SQUARE_BOWMAN_IN_TOWER_ATTACK_RADIUS;
 		} else {
-			return SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist &&squareDist <= SQUARE_BOWMAN_ATTACK_RADIUS;
+			return SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist && squareDist <= SQUARE_BOWMAN_ATTACK_RADIUS;
 		}
 	}
 
 	@Override
 	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EAction.ACTION1, BOWMAN_ATTACK_DURATION);
-
-		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer().playerId, getMovableType().getStrength() * getCombatStrength());
+		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer().playerId,
+				getMovableType().getStrength() * getCombatStrength());
 	}
 
 	@Override
@@ -79,6 +78,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	protected short getMaxSearchDistance(boolean isInTower) {
 		return isInTower ? Constants.TOWER_SEARCH_RADIUS : Constants.SOLDIER_SEARCH_RADIUS;
 	}
+
 	@Override
 	protected short getMinSearchDistance() {
 		return Constants.BOWMAN_MIN_ATTACK_DISTANCE;
