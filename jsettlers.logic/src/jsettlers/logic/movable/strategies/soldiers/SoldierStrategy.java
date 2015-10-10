@@ -87,8 +87,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 				}
 			}
 		case SEARCH_FOR_ENEMIES:
+			final short minSearchDistance = getMinSearchDistance();
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getMinSearchDistance(),
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), minSearchDistance,
 					getMaxSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsave mode again.
@@ -98,14 +99,17 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
-				if (getMinSearchDistance() > 0 && !isInTower) {
-					enemy = super.getStrategyGrid().getEnemyInSearchArea(
-							getAttackPosition(), super.getMovable(), (short) 0, getMinSearchDistance(), !defending);
-					if (enemy != null) { // we are in danger because an enemy entered our range where we can't defend
-						EDirection escapeDirection = EDirection.getApproxDirection(enemy.getPos(), getMovable().getPos());
-						getMovable().moveTo(new ShortPoint2D(
-								getMovable().getPos().x + escapeDirection.getGridDeltaX() * getMinSearchDistance() * 2,
-								getMovable().getPos().y + escapeDirection.getGridDeltaY() * getMinSearchDistance() * 2));
+				if (minSearchDistance > 0) {
+					IAttackable toCloseEnemy = super.getStrategyGrid().getEnemyInSearchArea(
+							getAttackPosition(), super.getMovable(), (short) 0, minSearchDistance, !defending);
+					if (toCloseEnemy != null) {
+						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
+							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), getMovable().getPos());
+							super.goInDirection(escapeDirection, false);
+							super.getMovable().moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+
+						} // else { // we are in the tower, so wait and check again next time.
+
 						break;
 					}
 				}
@@ -156,7 +160,6 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 				building = null;
 			}
 			break;
-
 		}
 	}
 
@@ -172,7 +175,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	protected abstract short getMinSearchDistance();
 
-	private ShortPoint2D getAttackPosition() {
+	protected ShortPoint2D getAttackPosition() {
 		return isInTower && isBowman() ? inTowerAttackPosition : super.getPos();
 	}
 
