@@ -12,17 +12,7 @@ public interface IManaInformation {
 
 	byte getLevel(ESoldierType type);
 
-	void upgrade(ESoldierType type);
-
 	byte getNextUpdateProgressPercent();
 
 	byte getMaximumLevel();
-
-	EMovableType getMovableTypeOf(ESoldierType type);
-
-	void increaseMana();
-
-	void increaseManaByBigTemple();
-
-	void stopFutureManaIncreasingByBigTemple();
 }
