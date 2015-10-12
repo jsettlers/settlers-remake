@@ -95,7 +95,14 @@ public class SwingManagedJSettlers {
 		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
-		if (!configFile.isSettlersFolderSet()) {
+		boolean firstRun = true;
+
+		while (!configFile.isSettlersFolderSet() || !trySettingUpResources(configFile)) {
+			if (!firstRun) {
+				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
+			}
+			firstRun = false;
+
 			JFileChooser fileDialog = new JFileChooser();
 			fileDialog.setAcceptAllFileFilterUsed(false);
 			fileDialog.setFileFilter(new FileFilter() {
@@ -133,7 +140,16 @@ public class SwingManagedJSettlers {
 				ex.printStackTrace();
 			}
 		}
-		SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
+	}
+
+	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
+		try {
+			SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
