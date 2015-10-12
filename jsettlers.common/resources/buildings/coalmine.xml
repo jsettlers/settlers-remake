@@ -82,7 +82,7 @@
     <job name="hide"				type="HIDE" 				successjob="waitHome" 			failjob="waitHome" />
     <job name="waitHome" 			type="WAIT" 				successjob="checkHasStackSpace" failjob="hide" 		time="3" />
     
-    <job name="checkHasStackSpace"	type="NOT_FULL" 			successjob="checkHasFood" 		failjob="waitHome"	dx="-1" dy="3" material="COAL" />
+    <job name="checkHasStackSpace"	type="NOT_FULL" 			successjob="checkHasFood" 		failjob="waitHome"	dx="-1" dy="3" />
     <job name="checkHasFood" 		type="TRY_TAKING_FOOD" 		successjob="startMining"		failjob="waitHome"  foodOrder="BREAD,MEAT,FISH"/>
 
     <job name="startMining" 		type="TRY_TAKING_RESOURCE" 	successjob="successfulMining1" 	failjob="failedMining1" />

@@ -122,7 +122,7 @@
 	<job name="start" 		type="WAIT" 			successjob="check1" 		failjob="hide" 		time="1"/>
 
 	<job name="check1" 		type="AVAILABLE" 		successjob="check2" 		failjob="hide" 		dx="2" dy="6" material="TRUNK"/>
-	<job name="check2" 		type="NOT_FULL" 		successjob="show" 			failjob="hide" 		dx="6" dy="2" material="PLANK"/>
+	<job name="check2" 		type="NOT_FULL" 		successjob="show" 			failjob="hide" 		dx="6" dy="2" />
 
 	<job name="show" 		type="SHOW" 			successjob="walk0" 			failjob="hide" 		dx="5" dy="4"/>
 	<job name="walk0" 		type="WALK" 			successjob="walk1" 			failjob="hide" 		direction="SOUTH_EAST"/>

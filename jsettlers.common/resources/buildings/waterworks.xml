@@ -91,7 +91,7 @@
 	<job name="wait_at_home" type="WAIT" successjob="prepareShow1"
 		failjob="prepareShow1" time="1" />
 	<job name="prepareShow1" type="NOT_FULL" successjob="prepareShow2"
-		failjob="wait_at_home" dx="3" dy="5" material="WATER" />
+		failjob="wait_at_home" dx="3" dy="5" />
 	<job name="prepareShow2" type="PRE_SEARCH_IN_AREA" successjob="show"
 		failjob="wait_at_home" search="RIVER" dx="3" dy="3" />
 	<job name="show" type="SHOW" successjob="go_search" failjob="hide"

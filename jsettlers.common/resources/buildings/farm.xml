@@ -153,7 +153,7 @@
 	<job name="hide" 			type="HIDE" 			successjob="start" 			failjob="start"			/>
 
 	<job name="start" 			type="WAIT" 			successjob="check" 			failjob="check" 		time="8.0"/>
-    <job name="check"			type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="6" material="CROP"/>
+    <job name="check"			type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="6"/>
 
 	<job name="presearch1" 		type="PRE_SEARCH" 		successjob="show1" 			failjob="presearch2" 	dx="-1" dy="4" search="CUTTABLE_CORN"/>
 	<job name="presearch2" 		type="PRE_SEARCH" 		successjob="show2" 			failjob="start" 		dx="-1" dy="4" search="PLANTABLE_CORN"/>

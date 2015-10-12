@@ -116,7 +116,7 @@
 	<job name="wait"		type="WAIT" 		successjob="checkA1" 	failjob="checkA1" 	time="1.0" />
 	<job name="checkA1" 	type="AVAILABLE" 	successjob="checkA2" 	failjob="wait" 		dx="-3" dy="2" material="COAL" />
 	<job name="checkA2" 	type="AVAILABLE" 	successjob="checkA3" 	failjob="wait"   	dx="3" dy="3" material="GOLDORE" />
-	<job name="checkA3" 	type="NOT_FULL" 	successjob="leaveHouse" failjob="wait" 	  	dx="4" dy="1" material="GOLD" />
+	<job name="checkA3" 	type="NOT_FULL" 	successjob="leaveHouse" failjob="wait" 	  	dx="4" dy="1" />
 
 	<!-- leave the building -->
 	<job name="leaveHouse" 	type="SHOW" 		successjob="toOre1" 	failjob="gohome" 	direction="SOUTH_EAST" dx="2" dy="1" />
