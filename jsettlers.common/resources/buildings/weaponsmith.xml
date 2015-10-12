@@ -111,7 +111,7 @@
 	<job name="waithome" type="WAIT" time="1" successjob="checkhome1" failjob="checkhome1" />
 	<job name="checkhome1" type="AVAILABLE" material="IRON" dx="3" dy="3" successjob="checkhome2" failjob="waithome" />
 	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2" successjob="checkhome3" failjob="waithome" />
-	<job name="checkhome3" type="NOT_FULL" material="SWORD" dx="4" dy="1" successjob="checkhome4" failjob="waithome" />
+	<job name="checkhome3" type="NOT_FULL" dx="4" dy="1" successjob="checkhome4" failjob="waithome" />
 	<job name="checkhome4" type="POP_WEAPON" successjob="go_to_work1" failjob="waithome" />
 
 	<job name="go_to_work1" type="SHOW" direction="SOUTH_EAST" dx="3" dy="0" successjob="go_to_work2" failjob="waithome" />

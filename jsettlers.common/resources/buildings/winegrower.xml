@@ -91,7 +91,7 @@
 	<job name="hide" 			type="HIDE" 			successjob="start" 			failjob="start"			/>
 	
 	<job name="start" 			type="WAIT" 			successjob="check" 			failjob="check" 		time="8.0"/>
-    <job name="check"			type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="4" material="WINE"/>
+    <job name="check"			type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="4"/>
     
 	<job name="presearch1" 		type="PRE_SEARCH" 		successjob="goHarvesting1" 	failjob="presearch2" 	dx="-1" dy="2" search="HARVESTABLE_WINE"/>
 	<job name="presearch2" 		type="PRE_SEARCH" 		successjob="goPlanting1"	failjob="start" 		dx="-1" dy="2" search="PLANTABLE_WINE"/>

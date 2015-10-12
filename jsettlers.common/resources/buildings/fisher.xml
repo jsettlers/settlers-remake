@@ -80,7 +80,7 @@
 	<!-- wait some time -->
 	<job name="wait_at_home" 	type="WAIT" 					successjob="check" 			failjob="wait_at_home" 	time="1.0"/>
 
-	<job name="check" 			type="NOT_FULL" 				successjob="presearch" 		failjob="hide" 			dx="3" dy="4" material="FISH"/>
+	<job name="check" 			type="NOT_FULL" 				successjob="presearch" 		failjob="hide" 			dx="3" dy="4"/>
 
 	<!-- show -->
 	<job name="presearch" 		type="PRE_SEARCH_IN_AREA" 		successjob="show" 			failjob="wait_at_home" 	dx="2" dy="1" search="FISHABLE"/>

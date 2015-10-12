@@ -118,7 +118,7 @@
     <job name="reset" type="SET_MATERIAL" successjob="wait_at_home" failjob="wait_at_home" material="NO_MATERIAL" />
     <job name="wait_at_home" type="WAIT" successjob="checkcoal" failjob="wait_at_home" time="1" />
 
-    <job name="checkcoal" type="NOT_FULL" successjob="A_reset" failjob="wait_at_home" dx="3" dy="4" material="COAL" />
+    <job name="checkcoal" type="NOT_FULL" successjob="A_reset" failjob="wait_at_home" dx="3" dy="4" />
 
     <job name="A_reset" type="SET_MATERIAL" successjob="A_available" failjob="gohome" material="NO_MATERIAL" />
     <job name="A_available" type="AVAILABLE" successjob="A_show" failjob="wait_at_home" dx="6" dy="4" material="PLANK" />
