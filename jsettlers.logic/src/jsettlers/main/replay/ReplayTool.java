@@ -102,7 +102,7 @@ public class ReplayTool {
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
 			throws IOException {
 		System.out.println("Creating new replay file (" + newReplayFile + ")...");
-		new File(newReplayFile).getParentFile().mkdirs();
+		new File(newReplayFile).getAbsoluteFile().getParentFile().mkdirs();
 
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
 				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings());
