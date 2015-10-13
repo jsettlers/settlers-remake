@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import jsettlers.common.utils.MutableInt;
 import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
@@ -52,10 +53,25 @@ public class ReplayTool {
 		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
-		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().getItems().get(0);
+		MapLoader newSavegame = getNewestSavegame();
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 
 		awaitShutdown(startedGame);
+	}
+
+	private static MapLoader getNewestSavegame() {
+		List<MapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
+		if (savedMaps.isEmpty()) {
+			return null;
+		}
+
+		MapLoader newest = savedMaps.get(0);
+		for (MapLoader map : savedMaps) {
+			if (newest.getCreationDate().before(map.getCreationDate())) {
+				newest = map;
+			}
+		}
+		return newest;
 	}
 
 	private static void awaitShutdown(IStartedGame startedGame) {
