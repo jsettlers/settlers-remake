@@ -446,6 +446,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void kill() {
+		if (this.state == STATE_DESTROYED) {
+			return;
+		}
+
 		System.out.println("building killed");
 
 		if (grid != null) {
