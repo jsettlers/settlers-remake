@@ -180,7 +180,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true, false);
+				playerSettings[i] = new PlayerSetting(true, false, null);
 			}
 		}
 

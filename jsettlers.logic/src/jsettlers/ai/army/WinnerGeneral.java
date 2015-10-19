@@ -16,9 +16,6 @@
  */
 package jsettlers.ai.army;
 
-import java.util.List;
-import java.util.Vector;
-
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
@@ -31,16 +28,24 @@ import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
+import java.util.List;
+import java.util.Vector;
+
 /**
- * This general is named looser because his attacks are no serious danger because he sends no more solders than his opponent has, which gives his
- * opponent the chance to defeat. - When any enemy solder enters his land, he sends all his solders to it to defeat. - He keeps a 10 swordsmen buffer
- * in his land to occupy own towers - He uses the rest of the troops to attack when the attack group minimum size is 10 and the opponent have less
- * soldiers. - He sends at minimum 20 soldiers and maximum as many soldiers as his opoonent has - He preferes bowmens but takes 10 near combat
- * soldiers at minimum to attack in order to occupy enemy towers.
+ * This general is named winner because his attacks and defence should be very hard for human enemies. This should be realized by creating locally
+ * superiority. (You can kill 200 bowmen with just 100 bowmen if you fight 100 vs 20 in loops. This general should lay the focus on some swordsmen
+ * to occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the strongest military unit. It upgrades
+ * bowmen first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3
+ * is reached to get as many level3 bowmen as posibble.
+ * TODO: store bows until level3 is reached
+ * TODO: just produce some swords, 20 spearmen and the rest bows
+ * TODO: group soldiers in direction of enemy groups to defeat them
+ * TODO: group soldiers in direction of enemy groups to attack them
+ * TODO: introduce rush defency by early weaponsmith when enemy rushes
  *
  * @author codingberlin
  */
-public class LooserGeneral implements ArmyGeneral {
+public class WinnerGeneral implements ArmyGeneral {
 	private static final byte MIN_ATTACKER_SIZE = 20;
 	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS = 10;
 	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
@@ -50,7 +55,7 @@ public class LooserGeneral implements ArmyGeneral {
 	private final ITaskScheduler taskScheduler;
 	private final MovableGrid movableGrid;
 
-	public LooserGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+	public WinnerGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		this.aiStatistics = aiStatistics;
 		this.player = player;
 		this.taskScheduler = taskScheduler;
@@ -72,9 +77,9 @@ public class LooserGeneral implements ArmyGeneral {
 
 	@Override
 	public void levyUnits() {
-		if (!upgradeSoldiers(ESoldierType.SWORDSMAN))
+		if (!upgradeSoldiers(ESoldierType.BOWMAN))
 			if (!upgradeSoldiers(ESoldierType.PIKEMAN))
-				upgradeSoldiers(ESoldierType.BOWMAN);
+				upgradeSoldiers(ESoldierType.SWORDSMAN);
 	}
 
 	private boolean upgradeSoldiers(ESoldierType type) {

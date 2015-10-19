@@ -14,56 +14,42 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.army.LooserGeneral;
+import jsettlers.ai.army.WinnerGeneral;
+import jsettlers.ai.economy.EconomyMinister;
+import jsettlers.ai.economy.LooserEconomyMinister;
 import jsettlers.ai.economy.WinnerEconomyMinister;
-import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.common.logging.StopWatch;
+import jsettlers.common.ai.WhatToDoAiType;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
+import jsettlers.logic.map.grid.movable.MovableGrid;
+import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-import jsettlers.network.synchronic.timer.INetworkTimerable;
 
 /**
- * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
- * 
  * @author codingberlin
  */
-public class AiExecutor implements INetworkTimerable {
+public class WhatToDoAiFactory {
 
-	private final List<IWhatToDoAi> whatToDoAis;
-	AiStatistics aiStatistics;
-	StopWatch stopWatch = new StatisticsStopWatch();
-	StopWatch stopWatch2 = new StatisticsStopWatch();
-
-	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
-		aiStatistics = new AiStatistics(mainGrid);
-		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
-		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
-		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
-			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(aiFactory.buildWhatToDoAi(
-						playerSettings[playerId].getAiType(),
-						aiStatistics,
-						mainGrid.getPartitionsGrid().getPlayer(playerId),
-						mainGrid,
-						mainGrid.getMovableGrid(),
-						taskScheduler));
-			}
-		}
+	public IWhatToDoAi buildWhatToDoAi(WhatToDoAiType type, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid,
+			ITaskScheduler
+			taskScheduler) {
+		ArmyGeneral general = determineArmyGeneral(type, aiStatistics, player, movableGrid, taskScheduler);
+		EconomyMinister minister = determineMinister(type);
+		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	@Override
-	public void timerEvent() {
-		stopWatch.restart();
-		aiStatistics.updateStatistics();
-		stopWatch.stop("computerplayer:updateStatistics()");
-		stopWatch2.restart();
-		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-			whatToDoAi.applyRules();
+	private EconomyMinister determineMinister(WhatToDoAiType type) {
+		if (type == WhatToDoAiType.ROMAN_EASY || type == WhatToDoAiType.ROMAN_VERY_HARD) {
+			return new WinnerEconomyMinister();
 		}
-		stopWatch2.stop("computerplayer:applyRules()");
+		return new LooserEconomyMinister();
+	}
+
+	private ArmyGeneral determineArmyGeneral(WhatToDoAiType type, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+		if (type == WhatToDoAiType.ROMAN_HARD || type == WhatToDoAiType.ROMAN_VERY_HARD) {
+			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
+		}
+		return new LooserGeneral(aiStatistics, player, movableGrid, taskScheduler);
 	}
 }

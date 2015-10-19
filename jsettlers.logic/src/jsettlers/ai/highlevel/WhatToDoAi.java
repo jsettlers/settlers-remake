@@ -51,6 +51,7 @@ import java.util.*;
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
+import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -65,12 +66,14 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
- * This WhatToDoAi is a high level KI for romans. It builds a longterm economy with 8 lumberjacks first, then mana, food, weapons and gold economy. It
- * spreads out the land in direction of the prioritized needed resources and builds a toolsmith as late as possible.
+ * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi
+ * takes care against lack of settlers and it builds a toolsmith when needed but as late as possible. Furthermore it builds towers continously to
+ * spread the land. It destroys not needed living houses and stonecutters to get back building materials. Which soldiers to levy and to command the
+ * soldiers is delegated to its armay general.
  *
- * TODOs: Currently it is vulnerable by rushes so adding an early weaponsmith when enemies build fast weaponsmiths could be implemented.
+ * @author codingberling
  */
-public class RomanWhatToDoAi implements IWhatToDoAi {
+public class WhatToDoAi implements IWhatToDoAi {
 
 	public static final int NUMBER_OF_SMALL_LIVINGHOUSE_BEDS = 10;
 	public static final int NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS = 30;
@@ -81,24 +84,26 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
-	private final List<EBuildingType> buildingsToBuild;
 	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
 	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
+	private final EconomyMinister economyMinister;
 
-	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
+			ITaskScheduler
+			taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
+		this.economyMinister = economyMinister;
 		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-		buildingsToBuild = new ArrayList<EBuildingType>();
 		initializeBuildingLists();
-
+		System.out.println(this);
 	}
 
 	private void initializeBuildingLists() {
@@ -124,128 +129,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				buildingIsNeededBy.get(neededBuildingCount.buildingType).add(buildingNeedsEntry.getKey());
 			}
 		}
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(SLAUGHTERHOUSE);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BIG_TEMPLE);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(FISHER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(GOLDMINE);
-		buildingsToBuild.add(GOLDMELT);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(SLAUGHTERHOUSE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
 	}
 
 	@Override
@@ -316,7 +199,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildBuildings() {
-		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) <= 4) {
+		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSides()) {
 			if (buildLivingHouse())
 				return;
 			if (buildTower())
@@ -342,7 +225,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private void buildEconomy() {
 		boolean toolsEconomyNeedsToBeChecked = true;
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
-		for (EBuildingType currentBuildingType : buildingsToBuild) {
+		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild()) {
 
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
@@ -515,6 +398,11 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 			return aiStatistics.getNumberOfMaterialTypeForPlayer(HAMMER, playerId) < requiredPicks;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "Player " + playerId + " with " + economyMinister.toString() + " and " + armyGeneral.toString();
 	}
 
 }

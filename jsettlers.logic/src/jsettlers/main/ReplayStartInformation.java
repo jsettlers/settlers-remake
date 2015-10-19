@@ -69,7 +69,7 @@ public class ReplayStartInformation {
 	public PlayerSetting[] getPlayerSettings() {
 		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
 		for (int i = 0; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(availablePlayers[i], false);
+			playerSettings[i] = new PlayerSetting(availablePlayers[i], false, null);
 		}
 		return playerSettings;
 	}

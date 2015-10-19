@@ -15,6 +15,7 @@
 package jsettlers.main;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.ai.WhatToDoAiType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
@@ -74,9 +75,9 @@ public class StartScreenConnector implements IStartScreen {
 		long randomSeed = 4711L;
 		byte playerId = 0;
 		PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-		playerSettings[playerId] = new PlayerSetting(true, false);
+		playerSettings[playerId] = new PlayerSetting(true, false, null);
 		for (byte i = 0; i < playerSettings.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, CommonConstants.ENABLE_AI && i != playerId);
+			playerSettings[i] = new PlayerSetting(true, CommonConstants.ENABLE_AI && i != playerId, WhatToDoAiType.getTypeByIndex(i));
 		}
 
 		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings);
