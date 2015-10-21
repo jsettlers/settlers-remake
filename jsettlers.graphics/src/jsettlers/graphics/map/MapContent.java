@@ -211,9 +211,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.context.begin(gl);
 			long start = System.currentTimeMillis();
 
-			FloatRectangle screen =
-					this.context.getScreen().getPosition()
-							.bigger(SCREEN_PADDING);
+			FloatRectangle screen = this.context.getScreen().getPosition()
+					.bigger(SCREEN_PADDING);
 			drawBackground(screen);
 			long bgtime = System.currentTimeMillis() - start;
 
@@ -288,8 +287,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					String name = getPlayername(m.getSender()) + ":";
 					Color color = context.getPlayerColor(m.getSender());
 					float width = (float) drawer.getWidth(name);
-					float bright =
-							color.getRed() + color.getGreen() + color.getBlue();
+					float bright = color.getRed() + color.getGreen() + color.getBlue();
 					if (bright < .9f) {
 						// black
 						gl.color(1, 1, 1, .5f);
@@ -352,9 +350,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		framerate.nextFrame();
 		String fps = Labels.getString("map-fps", framerate.getRate());
 		long gametime = playerStatistics.getGameTime() / 1000;
-		String timeString =
-				Labels.getString("map-time", gametime / 60 / 60,
-						(gametime / 60) % 60, (gametime) % 60);
+		String timeString = Labels.getString("map-time", gametime / 60 / 60,
+				(gametime / 60) % 60, (gametime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		double spacing = drawer.getWidth("_");
@@ -405,9 +402,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
 				drawTile(x, y);
 				if (!linePartuallyVisible) {
-					double drawspacey =
-							this.context.getConverter().getViewY(x, y,
-									this.context.getHeight(x, y));
+					double drawspacey = this.context.getConverter().getViewY(x, y,
+							this.context.getHeight(x, y));
 					if (drawspacey > bottomdrawy) {
 						linePartuallyVisible = true;
 					}
@@ -449,54 +445,52 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawDebugColors() {
-		IMapArea tiles =
-				new MapShapeFilter(context.getScreenArea(), map.getWidth(),
-						map.getHeight());
+		IMapArea tiles = new MapShapeFilter(context.getScreenArea(), map.getWidth(),
+				map.getHeight());
 		GLDrawContext gl = this.context.getGl();
 
-		float[] shape =
-				new float[] {
-						0,
-						4,
-						.5f,
-						0,
-						0,
-						-3,
-						2,
-						.5f,
-						0,
-						0,
-						-3,
-						-2,
-						.5f,
-						0,
-						0,
-						0,
-						-4,
-						.5f,
-						0,
-						0,
-						0,
-						-4,
-						.5f,
-						0,
-						0,
-						3,
-						-2,
-						.5f,
-						0,
-						0,
-						3,
-						2,
-						.5f,
-						0,
-						0,
-						0,
-						4,
-						.5f,
-						0,
-						0,
-				};
+		float[] shape = new float[] {
+				0,
+				4,
+				.5f,
+				0,
+				0,
+				-3,
+				2,
+				.5f,
+				0,
+				0,
+				-3,
+				-2,
+				.5f,
+				0,
+				0,
+				0,
+				-4,
+				.5f,
+				0,
+				0,
+				0,
+				-4,
+				.5f,
+				0,
+				0,
+				3,
+				-2,
+				.5f,
+				0,
+				0,
+				3,
+				2,
+				.5f,
+				0,
+				0,
+				0,
+				4,
+				.5f,
+				0,
+				0,
+		};
 
 		for (ShortPoint2D pos : tiles) {
 			short x = pos.x;
@@ -537,8 +531,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			// also set when action was null, to abort drawing.
 			fireActionEvent(event, action);
 		} else if (event instanceof GOKeyEvent) {
-			Action actionForKeyboard =
-					getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
+			Action actionForKeyboard = getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
 			if (actionForKeyboard != null) {
 				fireActionEvent(event, actionForKeyboard);
 			}
@@ -701,31 +694,30 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
-	private final GOEventHandler drawSelectionHandler =
-			new GOModalEventHandler() {
+	private final GOEventHandler drawSelectionHandler = new GOModalEventHandler() {
 
-				@Override
-				public void phaseChanged(GOEvent event) {
-				}
+		@Override
+		public void phaseChanged(GOEvent event) {
+		}
 
-				@Override
-				public void finished(GOEvent event) {
-					updateSelectionArea(
-							((GODrawEvent) event).getDrawPosition(), true);
-				}
+		@Override
+		public void finished(GOEvent event) {
+			updateSelectionArea(
+					((GODrawEvent) event).getDrawPosition(), true);
+		}
 
-				@Override
-				public void aborted(GOEvent event) {
-					abortSelectionArea();
-				}
+		@Override
+		public void aborted(GOEvent event) {
+			abortSelectionArea();
+		}
 
-				@Override
-				public void eventDataChanged(GOEvent event) {
-					updateSelectionArea(
-							((GODrawEvent) event).getDrawPosition(), false);
-				}
+		@Override
+		public void eventDataChanged(GOEvent event) {
+			updateSelectionArea(
+					((GODrawEvent) event).getDrawPosition(), false);
+		}
 
-			};
+	};
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
@@ -824,6 +816,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		switch (action.getActionType()) {
 		case TOGGLE_DEBUG:
 			debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
+			System.out.println("Current debugColorMode: " + debugColorMode);
 			break;
 		case TOGGLE_ORIGINAL_GRAPHICS:
 			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
