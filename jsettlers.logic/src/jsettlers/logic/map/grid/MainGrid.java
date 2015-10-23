@@ -78,6 +78,7 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.MaterialProduction;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
@@ -1627,6 +1628,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
 			return landscapeGrid.getAmountOfResource(resource, positions);
+		}
+
+		@Override
+		public MaterialProduction getMaterialProductionAt(int x, int y) {
+			return partitionsGrid.getMaterialProductionAt(x, y);
 		}
 	}
 

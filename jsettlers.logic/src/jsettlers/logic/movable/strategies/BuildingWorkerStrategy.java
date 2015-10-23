@@ -273,14 +273,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void popWeaponRequestAction() {
-		float random = RandomSingleton.nextF();
-		if (random < 0.5) {
-			poppedMaterial = EMaterialType.SWORD;
-		} else if (random < 0.65) {
-			poppedMaterial = EMaterialType.SPEAR;
-		} else {
-			poppedMaterial = EMaterialType.BOW;
-		}
+		poppedMaterial = building.getMaterialProduction().dropWeapon();
 		jobFinished();
 	}
 

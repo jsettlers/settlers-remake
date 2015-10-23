@@ -153,4 +153,6 @@ public interface IBuildingsGrid {
 
 	int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions);
 
+	MaterialProduction getMaterialProductionAt(int x, int y);
+
 }

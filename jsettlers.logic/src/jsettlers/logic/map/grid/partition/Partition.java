@@ -16,6 +16,7 @@ package jsettlers.logic.map.grid.partition;
 
 import java.io.Serializable;
 
+import jsettlers.logic.buildings.MaterialProduction;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
@@ -30,6 +31,7 @@ public final class Partition extends PartitionManager implements Serializable {
 
 	final short partitionId;
 	final byte playerId;
+	final MaterialProduction materialProduction;
 
 	private int counter = 0;
 	private int xSum = 0;
@@ -39,11 +41,16 @@ public final class Partition extends PartitionManager implements Serializable {
 		super(countListener);
 		this.partitionId = partitionId;
 		this.playerId = playerId;
+		this.materialProduction = new MaterialProduction();
 	}
 
 	public Partition(short partitionId, byte playerId, int size) {
 		this(partitionId, playerId, null);
 		this.counter = size;
+	}
+
+	public MaterialProduction getMaterialProduction() {
+		return materialProduction;
 	}
 
 	void decrement(int x, int y) {
