@@ -19,14 +19,28 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author codingberlin
  */
 public class MaterialProduction implements IMaterialProduction, Serializable {
 	private static final long serialVersionUID = 5315922528738308895L;
+	public static final int MAXIMUM_FUTURE_PRODUCTION = 20;
 
-	private static EMaterialType[] WEAPONS = {EMaterialType.SWORD, EMaterialType.SPEAR, EMaterialType.BOW};
+	private static EMaterialType[] WEAPONS = {
+			EMaterialType.SWORD,
+			EMaterialType.SPEAR,
+			EMaterialType.BOW};
+	private static EMaterialType[] TOOLS = {
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD};
 	private final float[] ratios = new float[EMaterialType.NUMBER_OF_MATERIALS];
 	private final float[] numberOfFutureProducedMaterials = new float[EMaterialType.NUMBER_OF_MATERIALS];
 
@@ -51,16 +65,20 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 	}
 
 	public void increaseNumberOfFutureProducedMaterial(EMaterialType type) {
-		numberOfFutureProducedMaterials[type.ordinal]++;
-		if (numberOfFutureProducedMaterials[type.ordinal] > 20) {
-			numberOfFutureProducedMaterials[type.ordinal] = 20;
-		}
+		setNumberOfFutureProducedMaterial(type, numberOfFutureProducedMaterials[type.ordinal] + 1);
 	}
 
 	public void decreaseNumberOfFutureProducedMaterial(EMaterialType type) {
-		numberOfFutureProducedMaterials[type.ordinal]--;
-		if (numberOfFutureProducedMaterials[type.ordinal] < 0) {
+		setNumberOfFutureProducedMaterial(type, numberOfFutureProducedMaterials[type.ordinal] - 1);
+	}
+
+	public void setNumberOfFutureProducedMaterial(EMaterialType type, float count) {
+		if (count > MAXIMUM_FUTURE_PRODUCTION) {
+			numberOfFutureProducedMaterials[type.ordinal] = MAXIMUM_FUTURE_PRODUCTION;
+		} else if (count < 0) {
 			numberOfFutureProducedMaterials[type.ordinal] = 0;
+		} else {
+			numberOfFutureProducedMaterials[type.ordinal] = count;
 		}
 	}
 
@@ -69,18 +87,26 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 	}
 
 	public EMaterialType dropWeapon() {
+		return dropMaterialOutOfGroup(WEAPONS);
+	}
+
+	public EMaterialType dropTool() {
+		return dropMaterialOutOfGroup(TOOLS);
+	}
+
+	private EMaterialType dropMaterialOutOfGroup(EMaterialType[] materialGroup) {
 		float sumOfFutureProducedWeapons = 0;
-		for (EMaterialType type : WEAPONS) {
+		for (EMaterialType type : materialGroup) {
 			sumOfFutureProducedWeapons += numberOfFutureProducedMaterials[type.ordinal];
 		}
-		float[] weaponRatio = new float[WEAPONS.length];
+		float[] weaponRatio = new float[materialGroup.length];
 		if (sumOfFutureProducedWeapons > 0) {
-			for (int i = 0; i < WEAPONS.length; i++) {
-				weaponRatio[i] = (numberOfFutureProducedMaterials[WEAPONS[i].ordinal] / sumOfFutureProducedWeapons) * 100;
+			for (int i = 0; i < materialGroup.length; i++) {
+				weaponRatio[i] = (numberOfFutureProducedMaterials[materialGroup[i].ordinal] / sumOfFutureProducedWeapons) * 100;
 			}
 		} else {
-			for (int i = 0; i < WEAPONS.length; i++) {
-				weaponRatio[i] = ratios[WEAPONS[i].ordinal] * 100;
+			for (int i = 0; i < materialGroup.length; i++) {
+				weaponRatio[i] = ratios[materialGroup[i].ordinal] * 100;
 			}
 		}
 		int maxRatio = 0;
@@ -88,14 +114,30 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 			maxRatio += ratio;
 		}
 		int random = RandomSingleton.getInt(maxRatio);
-		for (int i = 0; i < WEAPONS.length; i++) {
+		for (int i = 0; i < materialGroup.length; i++) {
 			if (random <= weaponRatio[i]) {
 				decreaseNumberOfFutureProducedMaterial(WEAPONS[i]);
-				return WEAPONS[i];
+				return materialGroup[i];
 			} else {
 				random -= weaponRatio[i];
 			}
 		}
 		return null;
+	}
+
+	public void ensureNeededToolsAreQueueed(Vector<EMaterialType> neededTools) {
+		byte[] toolsCount = new byte[EMaterialType.values.length];
+		for (int i = 0; i < toolsCount.length; i++) {
+			toolsCount[i] = 0;
+		}
+		for (EMaterialType tool : neededTools) {
+			toolsCount[tool.ordinal]++;
+		}
+		for (EMaterialType tool : TOOLS) {
+			if (numberOfFutureProducedMaterials[tool.ordinal] < toolsCount[tool.ordinal]) {
+				setNumberOfFutureProducedMaterial(tool, toolsCount[tool.ordinal]);
+			}
+
+		}
 	}
 }

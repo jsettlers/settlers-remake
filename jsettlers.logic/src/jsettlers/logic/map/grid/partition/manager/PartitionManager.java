@@ -17,6 +17,7 @@ package jsettlers.logic.map.grid.partition.manager;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Vector;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
@@ -25,6 +26,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.MaterialProduction;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
@@ -93,6 +95,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<WorkerCreationRequest>();
 	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<SoilderCreationRequest>();
+	final MaterialProduction materialProduction;
 
 	private boolean stopped = true;
 
@@ -111,6 +114,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				return joblessBearer.isEmpty();
 			}
 		}, materialOffers, settings);
+		this.materialProduction = new MaterialProduction();
 	}
 
 	public void startManager() {
@@ -124,6 +128,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	public boolean isStopped() {
 		return stopped;
+	}
+
+	public MaterialProduction getMaterialProduction() {
+		return materialProduction;
 	}
 
 	public void addOffer(ShortPoint2D position, EMaterialType materialType) {
@@ -266,8 +274,20 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 		handleWorkerCreationRequests();
 		handleSoldierCreationRequest();
+		updateMaterialProduction();
 
 		return SCHEDULING_PERIOD;
+	}
+
+	private void updateMaterialProduction() {
+		Vector<EMaterialType> neededTools = new Vector<EMaterialType>();
+		for (WorkerCreationRequest workerCreationRequest : workerCreationRequests) {
+			if (workerCreationRequest.isRequestAlive() && workerCreationRequest.isToolProductionRequired()) {
+				neededTools.add(workerCreationRequest.requestedMovableType().getTool());
+			}
+		}
+
+		materialProduction.ensureNeededToolsAreQueueed(neededTools);
 	}
 
 	private void handleWorkerRequest() {
@@ -431,6 +451,12 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				bestPrio = prio;
 				bestTool = tool;
 			}
+		}
+
+		if (bestTool != null) {
+			materialProduction.decreaseNumberOfFutureProducedMaterial(bestTool);
+		} else {
+			bestTool = materialProduction.dropTool();
 		}
 
 		return bestTool;
