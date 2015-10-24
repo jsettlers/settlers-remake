@@ -22,6 +22,7 @@ import jsettlers.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
@@ -440,5 +441,9 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	@Override
 	public boolean isBuilding(int x, int y) {
 		return false;
+	}
+
+	@Override public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
+		return null;
 	}
 }

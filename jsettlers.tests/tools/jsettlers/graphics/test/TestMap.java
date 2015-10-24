@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -529,5 +530,10 @@ public class TestMap implements IGraphicsGrid {
 	@Override
 	public boolean isBuilding(int x, int y) {
 		return false;
+	}
+
+	@Override
+	public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
+		return null;
 	}
 }

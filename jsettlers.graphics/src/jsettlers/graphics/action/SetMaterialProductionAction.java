@@ -12,15 +12,57 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.buildings;
+package jsettlers.graphics.action;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * @author codingberlin
+ * @author Andreas Eberle
  */
-public interface IMaterialProduction {
+public class SetMaterialProductionAction extends Action {
 
-	float ratioOfMaterial(EMaterialType type);
-	int numberOfFutureProducedMaterial(EMaterialType type);
+	public enum EMaterialProductionType  {
+		INCREASE,
+		DECREASE,
+		SET_RATIO;
+
+		public static final EMaterialProductionType[] values = EMaterialProductionType.values();
+
+	}
+
+	private final EMaterialType materialType;
+	private final EMaterialProductionType productionType;
+	private final float ratio;
+	private final PositionSupplyer positionSupplyer;
+
+	public SetMaterialProductionAction(PositionSupplyer positionSupplyer, EMaterialType materialType, EMaterialProductionType productionType, float ratio) {
+		super(EActionType.SET_MATERIAL_PRODUCTION);
+		this.materialType = materialType;
+		this.productionType = productionType;
+		this.ratio = ratio;
+		this.positionSupplyer = positionSupplyer;
+	}
+
+	public float getRatio() {
+		return ratio;
+	}
+
+	public EMaterialProductionType getProductionType() {
+		return productionType;
+	}
+
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
+
+	public ShortPoint2D getPosition() {
+		return positionSupplyer.getCurrentPosition();
+	}
+
+	public interface PositionSupplyer {
+		ShortPoint2D getCurrentPosition();
+	}
 }

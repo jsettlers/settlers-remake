@@ -44,6 +44,7 @@ import jsettlers.common.Color;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
@@ -745,6 +746,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBuilding(int x, int y) {
 			return flagsGrid.isBlocked(x, y) && objectsGrid.isBuildingAt(x, y);
+		}
+
+		@Override
+		public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
+			return partitionsGrid.getMaterialProductionAt(position.x, position.y);
 		}
 	}
 
@@ -1762,6 +1768,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public FogOfWar getFogOfWar() {
 			return fogOfWar;
+		}
+
+		@Override
+		public MaterialProduction getMaterialProductionAt(ShortPoint2D position) {
+			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
 	}
 

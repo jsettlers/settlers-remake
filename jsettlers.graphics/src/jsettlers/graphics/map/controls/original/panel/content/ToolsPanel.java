@@ -15,18 +15,27 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
+import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.SetMaterialProductionAction;
+import jsettlers.graphics.action.SetMaterialProductionAction.PositionSupplyer;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIPanel;
 
+import java.util.Arrays;
+
 public class ToolsPanel extends AbstractContentProvider {
-	private static class Row extends UIPanel {
+	private static class Row extends UIPanel implements PositionSupplyer {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
@@ -39,37 +48,23 @@ public class ToolsPanel extends AbstractContentProvider {
 		private final Label lblQuantity;
 		private final UIPanel arrows;
 		private final BarFill barFill;
+		private final EMaterialType type;
 
+		private ShortPoint2D position;
 		int quantity = 0;
 
-		private Row(ImageLink imageLink) {
+		private Row(final EMaterialType materialType) {
+			type = materialType;
 			goodsIcon = new UIPanel();
-			goodsIcon.setBackground(imageLink);
+			goodsIcon.setBackground(materialType.getIcon());
 
 			lblQuantity = new Label(Labels.getString(Integer.toString(quantity)), EFontSize.NORMAL);
 
-			Button upButton = new Button(new ExecutableAction() {
-				@Override
-				public void execute() {
-					quantity++;
-					if (quantity > 20) {
-						quantity = 20;
-					}
-					lblQuantity.setText(Integer.toString(quantity));
-					// TODO add sound effects.
-				}
-			}, null, null, null);
+			Button upButton = new Button(
+					new SetMaterialProductionAction(this, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0), null, null, null);
 
-			Button downButton = new Button(new ExecutableAction() {
-				@Override
-				public void execute() {
-					quantity--;
-					if (quantity < 0) {
-						quantity = 0;
-					}
-					lblQuantity.setText(Integer.toString(quantity));
-				}
-			}, null, null, null);
+			Button downButton = new Button(
+					new SetMaterialProductionAction(this, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0), null, null, null);
 
 			arrows = new UIPanel();
 			arrows.setBackground(arrowsImageLink);
@@ -84,20 +79,31 @@ public class ToolsPanel extends AbstractContentProvider {
 			addChild(arrows, left, 0f, left += arrowsWidth, 1f);
 			addChild(barFill, left + barPaddingLeft, barMerginV, 1f, 1f - barMerginV);
 		}
+
+		public void setMaterialProduction(IMaterialProduction materialProduction, ShortPoint2D position) {
+			quantity = materialProduction.numberOfFutureProducedMaterial(type);
+			lblQuantity.setText(Integer.toString(quantity));
+			barFill.setBarFill(materialProduction.ratioOfMaterial(type));
+			this.position = position;
+		}
+
+		@Override
+		public ShortPoint2D getCurrentPosition() {
+			return position;
+		}
 	}
 
 	private final Row[] rows = {
-			new Row(EMaterialType.HAMMER.getIcon()),
-			new Row(EMaterialType.BLADE.getIcon()),
-			new Row(EMaterialType.PICK.getIcon()),
-			new Row(EMaterialType.AXE.getIcon()),
-			new Row(EMaterialType.SAW.getIcon()),
-			new Row(EMaterialType.SCYTHE.getIcon()),
-			new Row(EMaterialType.FISHINGROD.getIcon()),
-
-			new Row(EMaterialType.SWORD.getIcon()),
-			new Row(EMaterialType.BOW.getIcon()),
-			new Row(EMaterialType.SPEAR.getIcon()),
+			new Row(EMaterialType.HAMMER),
+			new Row(EMaterialType.BLADE),
+			new Row(EMaterialType.PICK),
+			new Row(EMaterialType.AXE),
+			new Row(EMaterialType.SAW),
+			new Row(EMaterialType.SCYTHE),
+			new Row(EMaterialType.FISHINGROD),
+			new Row(EMaterialType.SWORD),
+			new Row(EMaterialType.BOW),
+			new Row(EMaterialType.SPEAR)
 	};
 
 	private static final float contentHeight_px = 216;
@@ -150,5 +156,12 @@ public class ToolsPanel extends AbstractContentProvider {
 	@Override
 	public UIPanel getPanel() {
 		return panel;
+	}
+
+	@Override
+	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+		for (Row row : rows) {
+			row.setMaterialProduction(grid.getMaterialProductionAt(pos), pos);
+		}
 	}
 }

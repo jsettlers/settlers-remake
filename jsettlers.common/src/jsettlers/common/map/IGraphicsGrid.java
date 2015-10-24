@@ -14,10 +14,12 @@
  *******************************************************************************/
 package jsettlers.common.map;
 
+import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This interface specifies the methods needed by jsettlers.graphics to draw the grid and all it's content.
@@ -159,4 +161,6 @@ public interface IGraphicsGrid {
 	 * @return Returns true if the given position is covered by the blocked area of any building, false otherwise.
 	 */
 	boolean isBuilding(int x, int y);
+
+	IMaterialProduction getMaterialProductionAt(ShortPoint2D position);
 }

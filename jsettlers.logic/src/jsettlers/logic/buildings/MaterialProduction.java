@@ -46,12 +46,15 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 	}
 
 	@Override
-	public float numberOfFutureProducedMaterial(EMaterialType type) {
-		return numberOfFutureProducedMaterials[type.ordinal];
+	public int numberOfFutureProducedMaterial(EMaterialType type) {
+		return (int) numberOfFutureProducedMaterials[type.ordinal];
 	}
 
 	public void increaseNumberOfFutureProducedMaterial(EMaterialType type) {
 		numberOfFutureProducedMaterials[type.ordinal]++;
+		if (numberOfFutureProducedMaterials[type.ordinal] > 20) {
+			numberOfFutureProducedMaterials[type.ordinal] = 20;
+		}
 	}
 
 	public void decreaseNumberOfFutureProducedMaterial(EMaterialType type) {

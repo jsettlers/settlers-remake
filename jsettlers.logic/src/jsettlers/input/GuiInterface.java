@@ -249,6 +249,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
+		case SET_MATERIAL_PRODUCTION: {
+			SetMaterialProductionAction a = (SetMaterialProductionAction) action;
+			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, a.getPosition(), a.getMaterialType(), a.getProductionType(), a
+					.getRatio()));
+			break;
+		}
+
 		case NEXT_OF_TYPE:
 			selectNextOfType();
 			break;
