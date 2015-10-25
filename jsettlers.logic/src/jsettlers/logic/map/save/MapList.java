@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.save;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 import jsettlers.common.CommonConstants;
@@ -27,6 +24,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.map.OriginalMapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
@@ -132,6 +130,9 @@ public class MapList implements IMapListerCallable {
 	 *         or null if no map with the given id has been found.
 	 */
 	public MapLoader getMapById(String id) {
+		return (new OriginalMapLoader()).loadOriginalMap(new File("/Users/stephanbauer/Documents/siedler3/Map/MULTI/a.map"));
+		/*
+		TODO: restore this code, when loading original maps is finished
 		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
 		maps.addAll(getFreshMaps().getItems());
 		maps.addAll(getSavedMaps().getItems());
@@ -142,6 +143,7 @@ public class MapList implements IMapListerCallable {
 			}
 		}
 		return null;
+		*/
 	}
 
 	public MapLoader getMapByName(String mapName) {
