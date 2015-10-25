@@ -68,7 +68,7 @@ public class BarFill extends UIPanel {
 		};
 	}
 
-	private float getFillForClick(final float relativex) {
+	protected float getFillForClick(final float relativex) {
 		if (relativex < EMPTY_X) {
 			return 0;
 		} else if (relativex > FULL_X) {

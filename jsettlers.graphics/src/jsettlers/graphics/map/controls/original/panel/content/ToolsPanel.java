@@ -71,7 +71,7 @@ public class ToolsPanel extends AbstractContentProvider {
 			arrows.addChild(upButton, 0f, 0.5f, 1f, 1f);
 			arrows.addChild(downButton, 0f, 0f, 1f, 0.5f);
 
-			barFill = new BarFill();
+			barFill = new SetMaterialProductionRatioBarFill(type, this);
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);

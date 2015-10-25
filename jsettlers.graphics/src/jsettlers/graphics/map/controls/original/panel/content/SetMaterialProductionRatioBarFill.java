@@ -12,59 +12,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.action;
+package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.SetMaterialProductionAction;
 
 /**
  * @author codingberlin
  */
-public class SetMaterialProductionAction extends Action {
+public class SetMaterialProductionRatioBarFill extends BarFill {
 
-	public enum EMaterialProductionType  {
-		INCREASE,
-		DECREASE,
-		SET_RATIO;
+	private final EMaterialType type;
+	private SetMaterialProductionAction.PositionSupplyer positionSupplyer;
 
-		public static final EMaterialProductionType[] values = EMaterialProductionType.values();
-
-	}
-
-	private final EMaterialType materialType;
-	private final EMaterialProductionType productionType;
-	private final float ratio;
-	private final PositionSupplyer positionSupplyer;
-
-	public SetMaterialProductionAction(
-			PositionSupplyer positionSupplyer,
-			EMaterialType materialType,
-			EMaterialProductionType productionType,
-			float ratio) {
-		super(EActionType.SET_MATERIAL_PRODUCTION);
-		this.materialType = materialType;
-		this.productionType = productionType;
-		this.ratio = ratio;
+	SetMaterialProductionRatioBarFill(EMaterialType type, SetMaterialProductionAction.PositionSupplyer positionSupplyer) {
+		super();
+		this.type = type;
 		this.positionSupplyer = positionSupplyer;
 	}
 
-	public float getRatio() {
-		return ratio;
-	}
-
-	public EMaterialProductionType getProductionType() {
-		return productionType;
-	}
-
-	public EMaterialType getMaterialType() {
-		return materialType;
-	}
-
-	public ShortPoint2D getPosition() {
-		return positionSupplyer.getCurrentPosition();
-	}
-
-	public interface PositionSupplyer {
-		ShortPoint2D getCurrentPosition();
+	@Override
+	public Action getAction(final float relativex, float relativey) {
+		return new SetMaterialProductionAction(positionSupplyer, type, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, getFillForClick(relativex));
 	}
 }
