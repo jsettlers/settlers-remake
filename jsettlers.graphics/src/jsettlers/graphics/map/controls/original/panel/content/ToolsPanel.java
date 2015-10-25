@@ -20,22 +20,24 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.SetMaterialProductionAction;
 import jsettlers.graphics.action.SetMaterialProductionAction.PositionSupplyer;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIPanel;
+import jsettlers.graphics.utils.UIUpdater;
 
 import java.util.Arrays;
 
-public class ToolsPanel extends AbstractContentProvider {
-	private static class Row extends UIPanel implements PositionSupplyer {
+public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDataProvider<ToolsPanel.RowUiData> {
+	private final UIUpdater<RowUiData> updater;
+	private IMaterialProduction materialProduction;
+
+	private static class Row extends UIPanel implements PositionSupplyer, UIUpdater.IUpdateReceiver<RowUiData> {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
@@ -80,16 +82,20 @@ public class ToolsPanel extends AbstractContentProvider {
 			addChild(barFill, left + barPaddingLeft, barMerginV, 1f, 1f - barMerginV);
 		}
 
-		public void setMaterialProduction(IMaterialProduction materialProduction, ShortPoint2D position) {
-			quantity = materialProduction.numberOfFutureProducedMaterial(type);
-			lblQuantity.setText(Integer.toString(quantity));
-			barFill.setBarFill(materialProduction.ratioOfMaterial(type));
+		public void setPosition(ShortPoint2D position) {
 			this.position = position;
 		}
 
 		@Override
 		public ShortPoint2D getCurrentPosition() {
 			return position;
+		}
+
+		@Override
+		public void uiUpdate(RowUiData rowUiData) {
+			quantity = rowUiData.getMaterialProduction().numberOfFutureProducedMaterial(type);
+			lblQuantity.setText(Integer.toString(quantity));
+			barFill.setBarFill(rowUiData.getMaterialProduction().ratioOfMaterial(type));
 		}
 	}
 
@@ -146,6 +152,7 @@ public class ToolsPanel extends AbstractContentProvider {
 		for (int r = 0; r < WEAPONS_ROWS; r++, top -= rowHeight) {
 			panel.addChild(rows[itemIdx++], marginH, top - rowHeight, 1f - marginH, top);
 		}
+		updater = UIUpdater.<RowUiData> getUpdater(this, Arrays.asList(rows));
 	}
 
 	@Override
@@ -160,8 +167,37 @@ public class ToolsPanel extends AbstractContentProvider {
 
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+		materialProduction = grid.getMaterialProductionAt(pos);
 		for (Row row : rows) {
-			row.setMaterialProduction(grid.getMaterialProductionAt(pos), pos);
+			row.setPosition(pos);
+		}
+		updater.forceUpdate();
+	}
+
+	@Override
+	public void contentShowing(ActionFireable actionFireable) {
+		updater.start(true);
+	}
+
+	@Override
+	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+		updater.stop();
+	}
+
+	@Override
+	public RowUiData getCurrentUIData() {
+		return new RowUiData(materialProduction);
+	}
+
+	class RowUiData {
+		private final IMaterialProduction materialProduction;
+
+		RowUiData(IMaterialProduction materialProduction) {
+			this.materialProduction = materialProduction;
+		}
+
+		public IMaterialProduction getMaterialProduction() {
+			return materialProduction;
 		}
 	}
 }
