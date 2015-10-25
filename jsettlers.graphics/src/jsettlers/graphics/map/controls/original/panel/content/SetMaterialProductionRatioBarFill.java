@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetMaterialProductionAction;
@@ -23,17 +24,21 @@ import jsettlers.graphics.action.SetMaterialProductionAction;
  */
 public class SetMaterialProductionRatioBarFill extends BarFill {
 
-	private final EMaterialType type;
+	private final EMaterialType materialType;
 	private SetMaterialProductionAction.PositionSupplyer positionSupplyer;
 
-	SetMaterialProductionRatioBarFill(EMaterialType type, SetMaterialProductionAction.PositionSupplyer positionSupplyer) {
+	SetMaterialProductionRatioBarFill(EMaterialType materialType, SetMaterialProductionAction.PositionSupplyer positionSupplyer) {
 		super();
-		this.type = type;
+		this.materialType = materialType;
 		this.positionSupplyer = positionSupplyer;
 	}
 
 	@Override
 	public Action getAction(final float relativex, float relativey) {
-		return new SetMaterialProductionAction(positionSupplyer, type, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, getFillForClick(relativex));
+		return new SetMaterialProductionAction(
+				positionSupplyer.getCurrentPosition(),
+				materialType,
+				SetMaterialProductionAction.EMaterialProductionType.SET_RATIO,
+				getFillForClick(relativex));
 	}
 }

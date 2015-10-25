@@ -28,6 +28,7 @@ import jsettlers.graphics.action.SetMaterialProductionAction.PositionSupplyer;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
 
@@ -55,18 +56,15 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		private ShortPoint2D position;
 		int quantity = 0;
 
-		private Row(final EMaterialType materialType) {
+		public Row(final EMaterialType materialType) {
 			type = materialType;
 			goodsIcon = new UIPanel();
 			goodsIcon.setBackground(materialType.getIcon());
 
 			lblQuantity = new Label(Labels.getString(Integer.toString(quantity)), EFontSize.NORMAL);
 
-			Button upButton = new Button(
-					new SetMaterialProductionAction(this, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE, 0), null, null, null);
-
-			Button downButton = new Button(
-					new SetMaterialProductionAction(this, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE, 0), null, null, null);
+			Button upButton = new SetMaterialProductionButton(this, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE);
+			Button downButton = new SetMaterialProductionButton(this, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE);
 
 			arrows = new UIPanel();
 			arrows.setBackground(arrowsImageLink);
@@ -86,7 +84,6 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 			this.position = position;
 		}
 
-		@Override
 		public ShortPoint2D getCurrentPosition() {
 			return position;
 		}

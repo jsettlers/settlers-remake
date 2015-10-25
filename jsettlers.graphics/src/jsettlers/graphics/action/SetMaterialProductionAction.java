@@ -34,10 +34,10 @@ public class SetMaterialProductionAction extends Action {
 	private final EMaterialType materialType;
 	private final EMaterialProductionType productionType;
 	private final float ratio;
-	private final PositionSupplyer positionSupplyer;
+	private final ShortPoint2D position;
 
 	public SetMaterialProductionAction(
-			PositionSupplyer positionSupplyer,
+			ShortPoint2D position,
 			EMaterialType materialType,
 			EMaterialProductionType productionType,
 			float ratio) {
@@ -45,7 +45,7 @@ public class SetMaterialProductionAction extends Action {
 		this.materialType = materialType;
 		this.productionType = productionType;
 		this.ratio = ratio;
-		this.positionSupplyer = positionSupplyer;
+		this.position = position;
 	}
 
 	public float getRatio() {
@@ -61,7 +61,7 @@ public class SetMaterialProductionAction extends Action {
 	}
 
 	public ShortPoint2D getPosition() {
-		return positionSupplyer.getCurrentPosition();
+		return position;
 	}
 
 	public interface PositionSupplyer {
