@@ -107,7 +107,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return currBest;
 	}
 
-	private T getObjectCloseTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) { // TODO: @Andreas Eberle: check if the acceptor is needed any more
+	public T getObjectCloseTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) { // TODO: @Andreas Eberle: check if the acceptor is needed any more
 		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 

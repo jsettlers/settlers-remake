@@ -81,6 +81,7 @@ public enum EBuildingType {
 	TEMPLE(31),
 	BIG_TEMPLE(32),
 
+	MARKET_PLACE(0),
 	// /**
 	// * Test building for own image files.
 	// */

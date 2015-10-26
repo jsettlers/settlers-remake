@@ -131,4 +131,9 @@ public final class Labels extends AbstractLabels {
 	public static String getProgress(EProgressState loading) {
 		return getString("progress_" + loading);
 	}
+
+	public static String getName(EMaterialType material) {
+		// TODO Auto-generated method stub
+		return "";
+	}
 }

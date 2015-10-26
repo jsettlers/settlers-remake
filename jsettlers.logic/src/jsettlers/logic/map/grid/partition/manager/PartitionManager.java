@@ -127,7 +127,11 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	public void addOffer(ShortPoint2D position, EMaterialType materialType) {
-		materialOffers.addOffer(position, materialType);
+		materialOffers.addOffer(position, materialType, false);
+	}
+
+	public void addOffer(ShortPoint2D position, EMaterialType materialType, boolean isStockOffer) {
+		materialOffers.addOffer(position, materialType, isStockOffer);
 	}
 
 	public void request(EMaterialType materialType, MaterialRequestObject requestObject) {
@@ -306,7 +310,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		EMaterialType tool = movableType.getTool();
 
 		if (tool != EMaterialType.NO_MATERIAL) { // try to create a worker with a tool
-			MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, workerCreationRequest.getPos());
+			MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, workerCreationRequest.getPos(), false);
 
 			if (offer != null) {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
@@ -315,7 +319,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 					return true;
 
 				} else { // no free movable found => return material and add the creation request to the end of the queue
-					materialOffers.addOffer(offer.getPos(), tool);
+					materialOffers.addOffer(offer.getPos(), tool, offer.isStockOffer());
 					return false;
 				}
 
@@ -414,6 +418,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		this.materialOffers.removeOfferAt(pos, materialType);
 	}
 
+	public void makeStockOffersNormal(ShortPoint2D position, EMaterialType materialType) {
+		this.materialOffers.makeStockOffersNormal(position, materialType);
+	}
+
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
 		byte bestPrio = 0;
 		EMaterialType bestTool = null;
@@ -467,4 +475,9 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	public void setMaterialPrioritiesSettings(EMaterialType[] materialTypeForPriority) {
 		settings.setMaterialTypesForPriorities(materialTypeForPriority);
 	}
+
+	public void setMaterialAcceptedInStock(EMaterialType materialType, boolean acceptedInStock) {
+		settings.setMaterialAcceptedInStock(materialType, acceptedInStock);
+	}
+
 }

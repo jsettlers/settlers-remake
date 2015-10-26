@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 
 /**
@@ -38,6 +39,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
+	private MaterialSet acceptedMaterialsInStock = new MaterialSet();
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -75,7 +77,16 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
 
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
-			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
+			this.materialTypeForPriorities[i] = materialTypeForPriority[i];
 		}
+	}
+
+	@Override
+	public MaterialSet getStockMaterials() {
+		return acceptedMaterialsInStock;
+	}
+
+	public void setMaterialAcceptedInStock(EMaterialType materialType, boolean acceptedInStock) {
+		acceptedMaterialsInStock = acceptedMaterialsInStock.set(materialType, acceptedInStock);
 	}
 }

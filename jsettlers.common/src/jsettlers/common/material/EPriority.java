@@ -24,8 +24,25 @@ public enum EPriority {
 	// NOTE: THE STOPPED PRIORITY MUST HAVE priorityIndex == 0
 	STOPPED(0),
 
-	LOW(1),
-	HIGH(2), ;
+	/**
+	 * Stock buildings always receive the unneeded materials.
+	 */
+	STOCK(1),
+	/**
+	 * A stack in a stock that has already been started.
+	 */
+	STOCK_STARTED(2),
+
+	LOW(3),
+
+	/**
+	 * A market request.
+	 */
+	MARKET(4),
+
+	MARKET_STARTED(5),
+
+	HIGH(6);
 
 	public static final EPriority[] values = EPriority.values();
 	public static final int NUMBER_OF_PRIORITIES = values.length;
@@ -45,5 +62,9 @@ public enum EPriority {
 	 */
 	public int getPriorityIndex() {
 		return priorityIndex;
+	}
+
+	public boolean isBuildingRequestPriority() {
+		return this == LOW || this == HIGH;
 	}
 }

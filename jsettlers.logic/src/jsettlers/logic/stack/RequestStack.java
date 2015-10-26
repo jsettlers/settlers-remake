@@ -82,6 +82,15 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		super.updatePriority(priority);
 	}
 
+	/**
+	 * Re-adds this request if it is not in any queue.
+	 */
+	protected final void reschedule() {
+		if (!isInQueue()) {
+			grid.request(materialType, this);
+		}
+	}
+
 	public boolean hasMaterial() {
 		return grid.hasMaterial(position, materialType);
 	}
@@ -120,6 +129,10 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 */
 	public boolean isFullfilled() {
 		return stillNeeded <= 0;
+	}
+
+	protected IRequestsStackGrid getGrid() {
+		return grid;
 	}
 
 	public ShortPoint2D getPosition() {

@@ -15,6 +15,7 @@
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
@@ -41,8 +42,9 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	final void updatePriority(EPriority oldPriority, EPriority newPriority, MaterialRequestObject materialRequest) {
 		EBuildingType buildingType = materialRequest.getBuildingType();
-		getQueue(oldPriority, buildingType).remove(materialRequest);
-		getQueue(newPriority, buildingType).pushFront(materialRequest); // TODO @Andreas Eberle: check if this should be pushEnd()
+		getQueue(oldPriority, buildingType, materialRequest.isStockRequest()).remove(materialRequest);
+		getQueue(newPriority, buildingType, materialRequest.isStockRequest()).pushFront(materialRequest); // TODO @Andreas Eberle: check if this
+																											// should be pushEnd()
 	}
 
 	/**
@@ -52,7 +54,8 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The {@link MaterialRequestObject} that shall be inserted.
 	 */
 	public final void insertRequest(MaterialRequestObject materialRequest) {
-		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType()).pushEnd(materialRequest);
+		assert materialRequest.requestQueue == null;
+		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType(), materialRequest.isStockRequest()).pushEnd(materialRequest);
 		materialRequest.requestQueue = this;
 	}
 
@@ -66,6 +69,7 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 		for (int prio = EPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
 			MaterialRequestObject request = getRequestForPrio(prio);
 			if (request != null) {
+				assert !request.isStockRequest() || hasOnlyStockRequests();
 				return request;
 			}
 		}
@@ -80,10 +84,12 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The priority of the element.
 	 * @param buildingType
 	 *            The type of the building that is requesting.
+	 * @param stockRequest
+	 *            <code>true</code> if this is a stock building request.
 	 * 
 	 * @return Returns the queue for given priority and building type.
 	 */
-	protected abstract DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType);
+	protected abstract DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType, boolean stockRequest);
 
 	/**
 	 * 
@@ -106,6 +112,20 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	public abstract void moveObjectsOfPositionTo(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newQueue);
 
+	protected static void moveBetweenQueues(ShortPoint2D position, AbstractMaterialRequestPriorityQueue newQueue,
+			DoubleLinkedList<MaterialRequestObject> queue,
+			DoubleLinkedList<MaterialRequestObject> pushTo) {
+		Iterator<MaterialRequestObject> iter = queue.iterator();
+		while (iter.hasNext()) {
+			MaterialRequestObject curr = iter.next();
+			if (curr.getPos().equals(position)) {
+				iter.remove();
+				pushTo.pushEnd(curr);
+				curr.requestQueue = newQueue;
+			}
+		}
+	}
+
 	/**
 	 * Merges this queue into the given {@link AbstractMaterialRequestPriorityQueue}.
 	 * <p />
@@ -117,4 +137,65 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	public abstract void mergeInto(AbstractMaterialRequestPriorityQueue newQueue);
 
+	protected static void mergeQueues(AbstractMaterialRequestPriorityQueue newQueue, DoubleLinkedList<MaterialRequestObject> currList,
+			DoubleLinkedList<MaterialRequestObject> newList) {
+		for (MaterialRequestObject request : currList) {
+			request.requestQueue = newQueue;
+		}
+		currList.mergeInto(newList);
+	}
+
+	/**
+	 * A helper method that takes one request form a queue.
+	 * 
+	 * @param queue
+	 *            The queue.
+	 * @return The request or <code>null</code> if none was found.
+	 */
+	protected static MaterialRequestObject getRequestFrom(DoubleLinkedList<MaterialRequestObject> queue) {
+		int numberOfElements = queue.size();
+
+		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
+			MaterialRequestObject request = queue.getFront();
+
+			int inDelivery = request.inDelivery;
+			int stillNeeded = request.getStillNeeded();
+
+			// if the request is done
+			if (stillNeeded <= 0) {
+				request.requestQueue = null;
+				queue.popFront(); // remove the request
+				numberOfElements--;
+			}
+
+			// if all needed are in delivery, or there can not be any more in delivery
+			else if (stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable()) {
+				queue.pushEnd(queue.popFront()); // move the request to the end.
+			}
+
+			// everything fine, take this request
+			else {
+				if (request.isRoundRobinRequest()) {
+					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
+				}
+
+				return request;
+			}
+		}
+		return null;
+	}
+
+	public abstract boolean hasOnlyStockRequests();
+
+	protected static boolean hasOnlyStockRequests(DoubleLinkedList<MaterialRequestObject> queue) {
+		// TODO: Optimize.
+		for (MaterialRequestObject request : queue) {
+			int inDelivery = request.inDelivery;
+			int stillNeeded = request.getStillNeeded();
+			if (!request.isStockRequest() && !(stillNeeded >= 0) && !(stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable())) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -14,11 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.others;
 
+import java.util.ArrayList;
+
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.MaterialSet;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.IRequestsStackGrid;
+import jsettlers.logic.stack.StockBuildingStackGroup;
 
 /**
  * This is a stock building that can store materials.
@@ -26,11 +34,20 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public final class StockBuilding extends Building {
+public final class StockBuilding extends Building implements IBuilding.IStock {
 	private static final long serialVersionUID = 1L;
+
+	private static final int UPDATE_PERIOD = 5000;
+
+	private final ArrayList<StockBuildingStackGroup> stockStacks = new ArrayList<>();
+
+	private final MaterialSet acceptedMaterials = null;
 
 	public StockBuilding(Player player) {
 		super(EBuildingType.STOCK, player);
+
+		// acceptedMaterials.set(EMaterialType.GOLD, true);
+		// acceptedMaterials.set(EMaterialType.GEMS, true);
 	}
 
 	@Override
@@ -44,16 +61,61 @@ public final class StockBuilding extends Building {
 
 	@Override
 	protected int subTimerEvent() {
-		return -1;
+		if (usesGlobalSettings()) {
+			updateStockStackRequests();
+		}
+		return UPDATE_PERIOD;
 	}
 
 	@Override
 	protected int constructionFinishedEvent() {
-		return -1;
+		IRequestsStackGrid grid = getGrid().getRequestStackGrid();
+		for (RelativeStack stack : getBuildingType().getRequestStacks()) {
+			ShortPoint2D pos = stack.calculatePoint(this.getPos());
+			stockStacks.add(new StockBuildingStackGroup(grid, pos, getBuildingType()));
+		}
+		updateStockStackRequests();
+		return UPDATE_PERIOD;
+	}
+
+	private void updateStockStackRequests() {
+		MaterialSet materials = getAcceptedMaterials();
+		for (StockBuildingStackGroup stack : stockStacks) {
+			stack.setAcceptedMaterials(materials);
+		}
+	}
+
+	@Override
+	protected void killedEvent() {
+		super.killedEvent();
+
+		for (StockBuildingStackGroup stack : stockStacks) {
+			stack.killEvent();
+		}
 	}
 
 	@Override
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
+	}
+
+	@Override
+	public boolean acceptsMaterial(EMaterialType material) {
+		return getAcceptedMaterials().contains(material);
+	}
+
+	private MaterialSet getAcceptedMaterials() {
+		MaterialSet materials;
+		if (acceptedMaterials != null) {
+			materials = acceptedMaterials;
+		} else {
+			materials = getGrid().getRequestStackGrid().getDefaultStockMaterials(getPos());
+		}
+		return materials;
+	}
+
+	@Override
+	public boolean usesGlobalSettings() {
+		return acceptedMaterials == null;
 	}
 }

@@ -39,7 +39,10 @@ public enum EGuiAction {
 	 * @see SetMaterialPrioritiesGuiTask
 	 */
 	SET_MATERIAL_PRIORITIES,
-	UPGRADE_SOLDIERS;
+	UPGRADE_SOLDIERS,
+	CHANGE_TRADING,
+	SET_TRADING_WAYPOINT,
+	SET_STOCK_ACEPTS_MATERIAL;
 
 	public static final EGuiAction[] values = values();
 }

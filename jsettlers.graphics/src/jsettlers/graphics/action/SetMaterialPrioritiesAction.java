@@ -22,9 +22,8 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author Andreas Eberle
  */
-public class SetMaterialPrioritiesAction extends Action {
+public class SetMaterialPrioritiesAction extends PointAction {
 
-	private final ShortPoint2D managerPosition;
 	private final EMaterialType[] materialTypeForPriority;
 
 	/**
@@ -37,19 +36,19 @@ public class SetMaterialPrioritiesAction extends Action {
 	 */
 	public SetMaterialPrioritiesAction(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority) {
-		super(EActionType.SET_MATERIAL_PRIORITIES);
+		super(EActionType.SET_MATERIAL_PRIORITIES, managerPosition);
 
 		assert materialTypeForPriority.length == EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS : "The given material types for priorities may only contain droppable materials";
 
-		this.managerPosition = managerPosition;
 		this.materialTypeForPriority = materialTypeForPriority;
 	}
 
 	/**
 	 * @return Returns the position of the manager whose settings will be changed.
 	 */
-	public ShortPoint2D getManagerPosition() {
-		return managerPosition;
+	@Override
+	public ShortPoint2D getPosition() {
+		return super.getPosition();
 	}
 
 	/**

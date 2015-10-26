@@ -25,11 +25,11 @@
 		<image type="GUI" file="3" sequence="198" />
 	</element>
 
-	<element class="SimpleActionButton" width="10" height="10" x="2"
-		y="0">
+	<element class="SimpleActionButton" x="29" width="18"
+		y="221" maxy="239">
 		<action action="NEXT_OF_TYPE" />
-		<image type="GUI" file="3" sequence="230" />
-		<image type="GUI" file="3" sequence="230" />
+		<image type="GUI" file="3" sequence="381" />
+		<image type="GUI" file="3" sequence="381" />
 	</element>
 
 	<element x="9" y="238" maxx="127" maxy="281" id="nameText"

@@ -15,7 +15,6 @@
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
@@ -34,45 +33,13 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 	private final DoubleLinkedList<MaterialRequestObject> queues[] = DoubleLinkedList.getArray(EPriority.NUMBER_OF_PRIORITIES);
 
 	@Override
-	protected DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType) {
+	protected DoubleLinkedList<MaterialRequestObject> getQueue(EPriority priority, EBuildingType buildingType, boolean stockRequest) {
 		return queues[priority.ordinal];
 	}
 
 	@Override
 	protected MaterialRequestObject getRequestForPrio(int prio) {
-		DoubleLinkedList<MaterialRequestObject> queue = queues[prio];
-
-		int numberOfElements = queue.size();
-
-		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
-			MaterialRequestObject request = queue.getFront();
-
-			int inDelivery = request.inDelivery;
-			int stillNeeded = request.getStillNeeded();
-
-			// if the request is done
-			if (stillNeeded <= 0) {
-				request.requestQueue = null;
-				queue.popFront(); // remove the request
-				numberOfElements--;
-			}
-
-			// if all needed are in delivery, or there can not be any more in delivery
-			else if (stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable()) {
-				queue.pushEnd(queue.popFront()); // move the request to the end.
-			}
-
-			// everything fine, take this request
-			else {
-				if (request.isRoundRobinRequest()) {
-					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
-				}
-
-				return request;
-			}
-		}
-
-		return null;
+		return getRequestFrom(queues[prio]);
 	}
 
 	@Override
@@ -82,15 +49,7 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		SimpleMaterialRequestPriorityQueue newQueue = (SimpleMaterialRequestPriorityQueue) newAbstractQueue;
 
 		for (int queueIdx = 0; queueIdx < queues.length; queueIdx++) {
-			Iterator<MaterialRequestObject> iter = queues[queueIdx].iterator();
-			while (iter.hasNext()) {
-				MaterialRequestObject curr = iter.next();
-				if (curr.getPos().equals(position)) {
-					iter.remove();
-					newQueue.queues[queueIdx].pushEnd(curr);
-					curr.requestQueue = newQueue;
-				}
-			}
+			moveBetweenQueues(position, newQueue, queues[queueIdx], newQueue.queues[queueIdx]);
 		}
 	}
 
@@ -100,14 +59,19 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 
 		SimpleMaterialRequestPriorityQueue newQueue = (SimpleMaterialRequestPriorityQueue) newAbstractQueue;
 
-		for (int queueIdx = 0; queueIdx < queues.length; queueIdx++) {
-			DoubleLinkedList<MaterialRequestObject> currList = queues[queueIdx];
-			DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[queueIdx];
-			for (MaterialRequestObject request : currList) {
-				request.requestQueue = newQueue;
-			}
-			currList.mergeInto(newList);
+		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
+			mergeQueues(newQueue, queues[prioIdx], newQueue.queues[prioIdx]);
 		}
+	}
+
+	@Override
+	public boolean hasOnlyStockRequests() {
+		for (DoubleLinkedList<MaterialRequestObject> q : queues) {
+			if (!hasOnlyStockRequests(q)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

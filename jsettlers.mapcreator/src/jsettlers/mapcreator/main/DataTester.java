@@ -14,7 +14,10 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -142,8 +145,17 @@ public class DataTester implements Runnable {
 		data.setPlayers(players);
 		data.setBorders(borders);
 		data.setFailpoints(failpoints);
-		errorList.setErrors(errors);
-		receiver.testResult(result, successful, resultPosition);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					errorList.setErrors(errors);
+					receiver.testResult(result, successful, resultPosition);
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void testForBlockedMapBorders() {
