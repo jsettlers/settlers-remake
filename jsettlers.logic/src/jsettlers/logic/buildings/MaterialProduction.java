@@ -95,31 +95,31 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 	}
 
 	private EMaterialType dropMaterialOutOfGroup(EMaterialType[] materialGroup) {
-		float sumOfFutureProducedWeapons = 0;
+		float sumOfFutureProducedMaterials = 0;
 		for (EMaterialType type : materialGroup) {
-			sumOfFutureProducedWeapons += numberOfFutureProducedMaterials[type.ordinal];
+			sumOfFutureProducedMaterials += numberOfFutureProducedMaterials[type.ordinal];
 		}
-		float[] weaponRatio = new float[materialGroup.length];
-		if (sumOfFutureProducedWeapons > 0) {
+		float[] materialRatio = new float[materialGroup.length];
+		if (sumOfFutureProducedMaterials > 0) {
 			for (int i = 0; i < materialGroup.length; i++) {
-				weaponRatio[i] = (numberOfFutureProducedMaterials[materialGroup[i].ordinal] / sumOfFutureProducedWeapons) * 100;
+				materialRatio[i] = (numberOfFutureProducedMaterials[materialGroup[i].ordinal] / sumOfFutureProducedMaterials) * 100;
 			}
 		} else {
 			for (int i = 0; i < materialGroup.length; i++) {
-				weaponRatio[i] = ratios[materialGroup[i].ordinal] * 100;
+				materialRatio[i] = ratios[materialGroup[i].ordinal] * 100;
 			}
 		}
 		int maxRatio = 0;
-		for (float ratio : weaponRatio) {
+		for (float ratio : materialRatio) {
 			maxRatio += ratio;
 		}
 		int random = RandomSingleton.getInt(maxRatio);
 		for (int i = 0; i < materialGroup.length; i++) {
-			if (random <= weaponRatio[i]) {
-				decreaseNumberOfFutureProducedMaterial(WEAPONS[i]);
+			if (random <= materialRatio[i]) {
+				decreaseNumberOfFutureProducedMaterial(materialGroup[i]);
 				return materialGroup[i];
 			} else {
-				random -= weaponRatio[i];
+				random -= materialRatio[i];
 			}
 		}
 		return null;
