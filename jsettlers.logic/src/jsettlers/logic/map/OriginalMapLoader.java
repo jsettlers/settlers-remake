@@ -26,19 +26,19 @@ public class OriginalMapLoader {
 
 	public class OriginalMapFileContent {
 
-		byte[] mapContent;
+		long[] mapContent;
 
 		public OriginalMapFileContent(File originalMapFile) throws IOException {
 			DataInputStream dis = new DataInputStream(new FileInputStream(originalMapFile));
-			Vector<Byte> mapContent = new Vector<Byte>();
+			Vector<Long> mapContent = new Vector<Long>();
 
 			while (dis.available() > 0) {
-				byte currentByte = (byte) dis.readUnsignedByte();
+				long currentByte = dis.readUnsignedByte();
 				mapContent.add(currentByte);
 			}
 			dis.close();
 
-			this.mapContent = new byte[mapContent.size()];
+			this.mapContent = new long[mapContent.size()];
 			for (int i = 0; i < mapContent.size(); i++) {
 				this.mapContent[i] = mapContent.get(i);
 			}
@@ -60,8 +60,6 @@ public class OriginalMapLoader {
 			int currentChecksum = 0;
 			for (int i = 8; i < count; i+=4) {
 				int currentInt = readBytesFrom(4, i);
-				if (currentInt < 0) {
-				}
 				currentChecksum = ((currentChecksum >> 31) | ((currentChecksum << 1) ^ currentInt));
 				if (currentChecksum == fileChecksum) {
 					System.out.println("Treffer " + i);
@@ -75,6 +73,10 @@ public class OriginalMapLoader {
 			return true;
 		}
 
+	}
+
+	public static void main(String[] args) {
+		(new OriginalMapLoader()).loadOriginalMap(new File("/Users/stephanbauer/Documents/siedler3/Map/MULTI/a.map"));
 	}
 
 }
