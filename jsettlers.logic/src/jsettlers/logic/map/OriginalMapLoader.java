@@ -57,10 +57,13 @@ public class OriginalMapLoader {
 			System.out.println(fileChecksum);
 			int count = mapContent.length - 8;
 
-			int currentChecksum = 0;
+			long currentChecksum = 0;
 			for (int i = 8; i < count; i+=4) {
-				int currentInt = readBytesFrom(4, i);
+				long currentInt = readBytesFrom(4, i);
 				currentChecksum = ((currentChecksum >> 31) | ((currentChecksum << 1) ^ currentInt));
+				if (i < 40) {
+					System.out.println(i + " : " + currentInt + " : " + currentChecksum);
+				}
 				if (currentChecksum == fileChecksum) {
 					System.out.println("Treffer " + i);
 				}
