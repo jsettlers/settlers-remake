@@ -55,7 +55,7 @@ public class OriginalMapLoader {
 		boolean isChecksumValid() {
 			long fileChecksum = readBytesFrom(4, 0);
 			System.out.println(fileChecksum);
-			int count = (mapContent.length/4) - 2;
+			int count = mapContent.length - 8;
 
 			int currentChecksum = 0;
 			for (int i = 8; i < count; i+=4) {
