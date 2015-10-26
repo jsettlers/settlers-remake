@@ -17,8 +17,6 @@ package jsettlers.ai.highlevel;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsettlers.ai.army.LooserGeneral;
-import jsettlers.ai.economy.WinnerEconomyMinister;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.logic.map.grid.MainGrid;

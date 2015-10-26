@@ -17,11 +17,8 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
-import static jsettlers.common.buildings.EBuildingType.BIG_TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.COALMINE;
 import static jsettlers.common.buildings.EBuildingType.FARM;
-import static jsettlers.common.buildings.EBuildingType.FISHER;
-import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
 import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
 import static jsettlers.common.buildings.EBuildingType.IRONMELT;
@@ -38,7 +35,6 @@ import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
-import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
@@ -46,7 +42,11 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
@@ -66,10 +66,10 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
- * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi
- * takes care against lack of settlers and it builds a toolsmith when needed but as late as possible. Furthermore it builds towers continously to
- * spread the land. It destroys not needed living houses and stonecutters to get back building materials. Which soldiers to levy and to command the
- * soldiers is delegated to its armay general.
+ * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes
+ * care against lack of settlers and it builds a toolsmith when needed but as late as possible. Furthermore it builds towers continously to spread the
+ * land. It destroys not needed living houses and stonecutters to get back building materials. Which soldiers to levy and to command the soldiers is
+ * delegated to its armay general.
  *
  * @author codingberling
  */
@@ -91,8 +91,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final EconomyMinister economyMinister;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
-			ITaskScheduler
-			taskScheduler) {
+			ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
@@ -168,26 +167,27 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 
 		// destroy livinghouses
-		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
+		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
+				* NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
 				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
 				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
-		if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
-				.SMALL_LIVINGHOUSE, playerId) > 0) {
+		if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1
+				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
 					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
-		} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
-				.MEDIUM_LIVINGHOUSE, playerId) > 0) {
+		} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1
+				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) > 0) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
 					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
-		} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType
-				.BIG_LIVINGHOUSE, playerId) > 0) {
+		} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1
+				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) > 0) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
 					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
 		}
 
 		// destroy mines
-		for (ShortPoint2D mine: aiStatistics.getDeadMinesOf(playerId)) {
+		for (ShortPoint2D mine : aiStatistics.getDeadMinesOf(playerId)) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, mine));
 		}
 	}
@@ -314,8 +314,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS;
-		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE
-				> futureNumberOfBearers) {
+		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
+				|| aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 3) {
 				return construct(SMALL_LIVINGHOUSE);
