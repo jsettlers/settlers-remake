@@ -32,16 +32,17 @@ import jsettlers.network.synchronic.timer.INetworkTimerable;
 public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
-	AiStatistics aiStatistics;
-	StopWatch stopWatch = new StatisticsStopWatch();
-	StopWatch stopWatch2 = new StatisticsStopWatch();
+	private final AiStatistics aiStatistics;
+	private final StopWatch stopWatch = new StatisticsStopWatch();
+	private final StopWatch stopWatch2 = new StatisticsStopWatch();
 
 	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
-			if (playerSettings[playerId].isAi()) {
+			PlayerSetting playerSetting = playerSettings[playerId];
+			if (playerSetting.isAvailable() && playerSetting.isAi()) {
 				whatToDoAis.add(aiFactory.buildWhatToDoAi(
 						playerSettings[playerId].getAiType(),
 						aiStatistics,

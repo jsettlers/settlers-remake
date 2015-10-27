@@ -20,7 +20,7 @@ import jsettlers.ai.army.WinnerGeneral;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.ai.economy.LooserEconomyMinister;
 import jsettlers.ai.economy.WinnerEconomyMinister;
-import jsettlers.common.ai.WhatToDoAiType;
+import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
@@ -31,7 +31,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	public IWhatToDoAi buildWhatToDoAi(WhatToDoAiType type, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid,
+	public IWhatToDoAi buildWhatToDoAi(EWhatToDoAiType type, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid,
 			ITaskScheduler
 			taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, aiStatistics, player, movableGrid, taskScheduler);
@@ -39,15 +39,15 @@ public class WhatToDoAiFactory {
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(WhatToDoAiType type) {
-		if (type == WhatToDoAiType.ROMAN_EASY || type == WhatToDoAiType.ROMAN_VERY_HARD) {
+	private EconomyMinister determineMinister(EWhatToDoAiType type) {
+		if (type == EWhatToDoAiType.ROMAN_EASY || type == EWhatToDoAiType.ROMAN_VERY_HARD) {
 			return new WinnerEconomyMinister();
 		}
 		return new LooserEconomyMinister();
 	}
 
-	private ArmyGeneral determineArmyGeneral(WhatToDoAiType type, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
-		if (type == WhatToDoAiType.ROMAN_HARD || type == WhatToDoAiType.ROMAN_VERY_HARD) {
+	private ArmyGeneral determineArmyGeneral(EWhatToDoAiType type, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+		if (type == EWhatToDoAiType.ROMAN_HARD || type == EWhatToDoAiType.ROMAN_VERY_HARD) {
 			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
 		}
 		return new LooserGeneral(aiStatistics, player, movableGrid, taskScheduler);

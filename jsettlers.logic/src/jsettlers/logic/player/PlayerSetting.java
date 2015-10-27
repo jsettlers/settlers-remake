@@ -1,24 +1,35 @@
 package jsettlers.logic.player;
 
-import jsettlers.common.ai.WhatToDoAiType;
+import jsettlers.common.ai.EWhatToDoAiType;
 
 /**
  * @author codingberlin
  */
 public class PlayerSetting {
 
-	final boolean isAi;
+	private final boolean isAi;
+	private final EWhatToDoAiType aiType;
+	private boolean isAvailable;
 
-	final WhatToDoAiType aiType;
+	/**
+	 * Creates a new {@link PlayerSetting} object for a human player.
+	 * 
+	 * @param isAvailable
+	 */
+	public PlayerSetting(boolean isAvailable) {
+		this(isAvailable, null);
+	}
 
-	boolean isAvailable;
-
-	public PlayerSetting(boolean isAvailable, boolean isAi, WhatToDoAiType aiType) {
-		if (isAi && aiType == null) {
-			throw new IllegalArgumentException("isAi = true specified but aiType is null.");
-		}
+	/**
+	 * Creates a new {@link PlayerSetting} object for a human player or an AI player.
+	 * 
+	 * @param isAvailable
+	 * @param aiType
+	 *            {@link EWhatToDoAiType} defining the type of the AI player. If <code>null</code>, a human player is assumed.
+	 */
+	public PlayerSetting(boolean isAvailable, EWhatToDoAiType aiType) {
 		this.isAvailable = isAvailable;
-		this.isAi = isAi;
+		this.isAi = (aiType != null);
 		this.aiType = aiType;
 	}
 
@@ -30,12 +41,12 @@ public class PlayerSetting {
 		return isAi;
 	}
 
-	public WhatToDoAiType getAiType() {
+	public EWhatToDoAiType getAiType() {
 		return aiType;
 	}
 
 	@Override
 	public String toString() {
-		return "PlayerSetting(isAvailable: " + isAvailable + ", isAi: " + isAi + ", aiType)" + aiType;
+		return "PlayerSetting(isAvailable: " + isAvailable + ", isAi: " + isAi + ", aiType: " + aiType + ")";
 	}
 }

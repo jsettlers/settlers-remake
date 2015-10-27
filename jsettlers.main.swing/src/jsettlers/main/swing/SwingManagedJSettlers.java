@@ -33,7 +33,7 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.WhatToDoAiType;
+import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
@@ -233,10 +233,10 @@ public class SwingManagedJSettlers {
 				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
 				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-				playerSettings[playerId] = new PlayerSetting(true, false, null);
+				playerSettings[playerId] = new PlayerSetting(true);
 				for (byte i = 0; i < playerSettings.length; i++) {
 					if (i != playerId) {
-						playerSettings[i] = new PlayerSetting(false, CommonConstants.ENABLE_AI && true, WhatToDoAiType.getTypeByIndex(i));
+						playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI && true, EWhatToDoAiType.getTypeByIndex(i));
 					}
 				}
 

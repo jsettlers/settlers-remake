@@ -18,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.WhatToDoAiType;
+import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
@@ -145,11 +145,11 @@ public class MultiplayerGame {
 		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
 
 		for (byte i = 0; i < playersList.getItems().size(); i++) {
-			playerSettings[i] = new PlayerSetting(true, false, null);
+			playerSettings[i] = new PlayerSetting(true);
 		}
 
 		for (byte i = (byte) playersList.getItems().size(); i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, CommonConstants.ENABLE_AI && aiPlayersEnabled, WhatToDoAiType.getTypeByIndex(i));
+			playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI && aiPlayersEnabled, EWhatToDoAiType.getTypeByIndex(i));
 		}
 
 		return playerSettings;
