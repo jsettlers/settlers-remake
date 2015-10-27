@@ -19,7 +19,6 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.player.IManaInformation;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -70,30 +69,28 @@ public class MainPanel extends UIPanel {
 			new TabButton(ContentType.PRODUCTION, BUTTONS_FILE, 243, 255, ""),
 	};
 
-	private final MessageContent quitPrompt =
-			new MessageContent(
-					Labels.getString("game-quit"),
-					Labels.getString("game-quit-cancel"),
-					new ExecutableAction() {
-						@Override
-						public void execute() {
-							setContent(ContentType.BUILD_NORMAL);
-							btnSystem.setActive(false);
-						}
-					},
-					Labels.getString("game-quit-ok"),
-					new Action(EActionType.EXIT)
-			) {
+	private final MessageContent quitPrompt = new MessageContent(
+			Labels.getString("game-quit"),
+			Labels.getString("game-quit-cancel"),
+			new ExecutableAction() {
 				@Override
-				public void contentShowing(ActionFireable actionFireable) {
-					btnSystem.setActive(true);
-				}
-
-				@Override
-				public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+				public void execute() {
+					setContent(ContentType.BUILD_NORMAL);
 					btnSystem.setActive(false);
 				}
-			};
+			},
+			Labels.getString("game-quit-ok"),
+			new Action(EActionType.EXIT)) {
+		@Override
+		public void contentShowing(ActionFireable actionFireable) {
+			btnSystem.setActive(true);
+		}
+
+		@Override
+		public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+			btnSystem.setActive(false);
+		}
+	};
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
@@ -103,6 +100,7 @@ public class MainPanel extends UIPanel {
 	private final Button btnSwords = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
 	private final Button btnSignPost = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 117, 105, "");
 	private final Button btnPots = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 120, 108, "");
+
 	{
 		btnScroll.setActive(true);
 		btnSwords.setActive(true);
@@ -244,12 +242,10 @@ public class MainPanel extends UIPanel {
 				constants.SYSTEM_BUTTON_LEFT,
 				constants.SYSTEM_BUTTON_BOTTOM,
 				constants.SYSTEM_BUTTON_RIGHT,
-				constants.SYSTEM_BUTTON_TOP
-				);
+				constants.SYSTEM_BUTTON_TOP);
 	}
 
-	private void addLowerTabBar()
-	{
+	private void addLowerTabBar() {
 		UIPanel lowerTabBar = new UIPanel();
 		Button[] buttons = new Button[] { btnScroll, btnSwords, btnSignPost, btnPots };
 		int i = 0;
@@ -284,7 +280,8 @@ public class MainPanel extends UIPanel {
 			setContent(new MessageContent(
 					Labels.getString("really_destroy_building"),
 					Labels.getName(EActionType.DESTROY), new Action(
-							EActionType.DESTROY), Labels.getString("abort"),
+							EActionType.DESTROY),
+					Labels.getString("abort"),
 					new Action(EActionType.ABORT)) {
 				@Override
 				public boolean isForSelection() {
@@ -316,7 +313,7 @@ public class MainPanel extends UIPanel {
 		this.grid = grid;
 		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
 				+ screenArea.getLineLength() / 2, screenArea
-				.getLineY(screenArea.getLines() / 2));
+						.getLineY(screenArea.getLines() / 2));
 		sendMapPositionChange();
 	}
 

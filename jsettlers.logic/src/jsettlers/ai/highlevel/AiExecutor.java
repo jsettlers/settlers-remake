@@ -17,7 +17,6 @@ package jsettlers.ai.highlevel;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsettlers.ai.army.LooserGeneral;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.logic.map.grid.MainGrid;
@@ -33,17 +32,24 @@ import jsettlers.network.synchronic.timer.INetworkTimerable;
 public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
-	AiStatistics aiStatistics;
-	StopWatch stopWatch = new StatisticsStopWatch();
-	StopWatch stopWatch2 = new StatisticsStopWatch();
+	private final AiStatistics aiStatistics;
+	private final StopWatch stopWatch = new StatisticsStopWatch();
+	private final StopWatch stopWatch2 = new StatisticsStopWatch();
 
 	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
-			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, new LooserGeneral(aiStatistics,
-						mainGrid.getPartitionsGrid().getPlayer(playerId), mainGrid.getMovableGrid(), taskScheduler), mainGrid, taskScheduler));
+			PlayerSetting playerSetting = playerSettings[playerId];
+			if (playerSetting.isAvailable() && playerSetting.isAi()) {
+				whatToDoAis.add(aiFactory.buildWhatToDoAi(
+						playerSettings[playerId].getAiType(),
+						aiStatistics,
+						mainGrid.getPartitionsGrid().getPlayer(playerId),
+						mainGrid,
+						mainGrid.getMovableGrid(),
+						taskScheduler));
 			}
 		}
 	}

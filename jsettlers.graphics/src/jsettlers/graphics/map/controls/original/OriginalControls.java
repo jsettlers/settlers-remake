@@ -21,7 +21,6 @@ import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.player.IManaInformation;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -68,26 +67,24 @@ public class OriginalControls implements IControls {
 
 		btnChat = new Button(
 				new ExecutableAction() {
-					MessageContent messageContent =
-							new MessageContent(
-									"This is not yet implemented.",
-									"Cancel",
-									new ExecutableAction() {
-										@Override
-										public void execute() {
-											mainPanel.setContent(ContentType.BUILD_NORMAL);
-											btnChat.setActive(false);
-										}
-									},
-									"Ok",
-									new ExecutableAction() {
-										@Override
-										public void execute() {
-											mainPanel.setContent(ContentType.BUILD_NORMAL);
-											btnChat.setActive(false);
-										}
-									}
-							);
+					MessageContent messageContent = new MessageContent(
+							"This is not yet implemented.",
+							"Cancel",
+							new ExecutableAction() {
+						@Override
+						public void execute() {
+							mainPanel.setContent(ContentType.BUILD_NORMAL);
+							btnChat.setActive(false);
+						}
+					},
+							"Ok",
+							new ExecutableAction() {
+						@Override
+						public void execute() {
+							mainPanel.setContent(ContentType.BUILD_NORMAL);
+							btnChat.setActive(false);
+						}
+					});
 
 					@Override
 					public void execute() {
@@ -115,14 +112,12 @@ public class OriginalControls implements IControls {
 				layoutProperties.miniMap.RIGHT_DECORATION_LEFT,
 				0,
 				layoutProperties.miniMap.RIGHT_DECORATION_LEFT + layoutProperties.RIGHT_DECORATION_WIDTH,
-				layoutProperties.MAIN_PANEL_TOP
-				);
+				layoutProperties.MAIN_PANEL_TOP);
 
 		return panel;
 	}
 
-	private void addMiniMap(UIPanel panel)
-	{
+	private void addMiniMap(UIPanel panel) {
 		MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
 		UIPanel minimapbg_left = new UIPanel();
 		minimapbg_left.setBackground(miniMap.LEFT_DECORATION);
@@ -131,29 +126,25 @@ public class OriginalControls implements IControls {
 				miniMap.BUTTON_CHAT_LEFT,
 				miniMap.BUTTON_CHAT_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_CHAT_LEFT + miniMap.BUTTON_WIDTH,
-				miniMap.BUTTON_CHAT_TOP
-				);
+				miniMap.BUTTON_CHAT_TOP);
 		minimapbg_left.addChild(
 				new MinimapOccupiedButton(minimapSettings),
 				miniMap.BUTTON_FEATURES_LEFT,
 				miniMap.BUTTON_FEATURES_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_FEATURES_LEFT + miniMap.BUTTON_WIDTH,
-				miniMap.BUTTON_FEATURES_TOP
-				);
+				miniMap.BUTTON_FEATURES_TOP);
 		minimapbg_left.addChild(
 				new MinimapSettlersButton(minimapSettings),
 				miniMap.BUTTON_SETTLERS_LEFT,
 				miniMap.BUTTON_SETTLERS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_SETTLERS_LEFT + miniMap.BUTTON_WIDTH,
-				miniMap.BUTTON_SETTLERS_TOP
-				);
+				miniMap.BUTTON_SETTLERS_TOP);
 		minimapbg_left.addChild(
 				new MinimapBuildingButton(minimapSettings),
 				miniMap.BUTTON_BUILDINGS_LEFT,
 				miniMap.BUTTON_BUILDINGS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_BUILDINGS_LEFT + miniMap.BUTTON_WIDTH,
-				miniMap.BUTTON_BUILDINGS_TOP
-				);
+				miniMap.BUTTON_BUILDINGS_TOP);
 
 		UIPanel minimapbg_right = new UIPanel();
 		minimapbg_right.setBackground(miniMap.RIGHT_DECORATION);
@@ -220,10 +211,8 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public Action getActionFor(UIPoint position, boolean selecting) {
-		float relativex =
-				(float) position.getX() / this.uiBase.getPosition().getWidth();
-		float relativey =
-				(float) position.getY() / this.uiBase.getPosition().getHeight();
+		float relativex = (float) position.getX() / this.uiBase.getPosition().getWidth();
+		float relativey = (float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
 		if (minimap != null && relativey > layoutProperties.MAIN_PANEL_TOP && getMinimapOffset(position.getY()) < position.getX()) {
 			action = getForMinimap(relativex, relativey, selecting);
@@ -242,15 +231,12 @@ public class OriginalControls implements IControls {
 
 	private Action getForMinimap(float relativex, float relativey,
 			boolean selecting) {
-		float minimapx =
-				(relativex - layoutProperties.miniMap.MAP_LEFT)
-						/ layoutProperties.miniMap.MAP_WIDTH;
-		float minimapy =
-				((relativey - layoutProperties.MAIN_PANEL_TOP)
-						/ (1 - layoutProperties.MAIN_PANEL_TOP) - layoutProperties.miniMap.MAP_BOTTOM)
-						/ layoutProperties.miniMap.MAP_HEIGHT;
-		ShortPoint2D clickPosition =
-				minimap.getClickPositionIfOnMap(minimapx, minimapy);
+		float minimapx = (relativex - layoutProperties.miniMap.MAP_LEFT)
+				/ layoutProperties.miniMap.MAP_WIDTH;
+		float minimapy = ((relativey - layoutProperties.MAIN_PANEL_TOP)
+				/ (1 - layoutProperties.MAIN_PANEL_TOP) - layoutProperties.miniMap.MAP_BOTTOM)
+				/ layoutProperties.miniMap.MAP_HEIGHT;
+		ShortPoint2D clickPosition = minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {
 			if (selecting) {
 				return new PointAction(EActionType.PAN_TO, clickPosition);
@@ -264,10 +250,8 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public String getDescriptionFor(UIPoint position) {
-		float relativex =
-				(float) position.getX() / this.uiBase.getPosition().getWidth();
-		float relativey =
-				(float) position.getY() / this.uiBase.getPosition().getHeight();
+		float relativex = (float) position.getX() / this.uiBase.getPosition().getWidth();
+		float relativey = (float) position.getY() / this.uiBase.getPosition().getHeight();
 		return uiBase.getDescription(relativex, relativey);
 	}
 
@@ -352,7 +336,7 @@ public class OriginalControls implements IControls {
 				if (mainPanel.isSelectionActive()) {
 					mainPanel.setContent(ContentType.EMPTY);
 				}
-			}// else: nothing to do
+			} // else: nothing to do
 		} else {
 			lastSelectionWasNull = false;
 
