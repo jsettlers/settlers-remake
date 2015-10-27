@@ -57,10 +57,10 @@ public class OriginalMapLoader {
 			System.out.println(fileChecksum);
 			int count = mapContent.length - 8;
 
-			long currentChecksum = 0;
+			int currentChecksum = 0;
 			for (int i = 8; i < count; i+=4) {
 				long currentInt = readBytesFrom(4, i);
-				currentChecksum = ((currentChecksum >> 31) | ((currentChecksum << 1) ^ currentInt));
+				currentChecksum = (int) ((currentChecksum * 2) ^ currentInt);
 				if (i < 40) {
 					System.out.println(i + " : " + currentInt + " : " + currentChecksum);
 				}
@@ -79,7 +79,7 @@ public class OriginalMapLoader {
 	}
 
 	public static void main(String[] args) {
-		(new OriginalMapLoader()).loadOriginalMap(new File("/Users/stephanbauer/Documents/siedler3/Map/MULTI/a.map"));
+		(new OriginalMapLoader()).loadOriginalMap(new File("/data/home/sbauer/Downloads/a.map"));
 	}
 
 }
