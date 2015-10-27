@@ -68,7 +68,7 @@ import jsettlers.logic.player.Team;
  */
 public class AiStatistics {
 
-	private static final short BORDER_LAND_WIDTH = 10;
+	private static final short BORDER_LAND_WIDTH = 5;
 	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
 	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 

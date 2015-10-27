@@ -145,23 +145,31 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (stones.size() < 15) {
 			importantResources.add(ImportantResource.STONES);
 		}
+		if (importantResources.size() > 0) {
+			// trees and stone are essential for survival. Build them first with high priority and ignore the rest!
+			return importantResources;
+		}
 		if (rivers.size() < 15) {
 			importantResources.add(ImportantResource.RIVER);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Integer.MAX_VALUE) == null &&
+				aiStatistics.getNearestResourcePointInDefaultPartitionFor(referencePoint, EResourceType.COAL, Integer.MAX_VALUE) != null) {
 			importantResources.add(ImportantResource.COAL);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRONORE, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRONORE, playerId, Integer.MAX_VALUE) == null &&
+				aiStatistics.getNearestResourcePointInDefaultPartitionFor(referencePoint, EResourceType.IRONORE, Integer.MAX_VALUE) != null) {
 			importantResources.add(ImportantResource.IRON);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Integer.MAX_VALUE) == null &&
+				aiStatistics.getNearestResourcePointInDefaultPartitionFor(referencePoint, EResourceType.FISH, Integer.MAX_VALUE) != null) {
 			importantResources.add(ImportantResource.FISH);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLDORE, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLDORE, playerId, Integer.MAX_VALUE) == null &&
+				aiStatistics.getNearestResourcePointInDefaultPartitionFor(referencePoint, EResourceType.GOLDORE, Integer.MAX_VALUE) != null) {
 			importantResources.add(ImportantResource.GOLD);
 		}
 		if (importantResources.size() == 0) {
