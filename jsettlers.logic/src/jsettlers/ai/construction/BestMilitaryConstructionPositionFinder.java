@@ -175,7 +175,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (importantResources.size() == 0) {
 			importantResources.add(ImportantResource.COAL);
 		}
-
 		return importantResources;
 	}
 }
