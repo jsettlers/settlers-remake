@@ -44,29 +44,26 @@ public class OriginalMapLoader {
 			}
 		}
 
-		public int readBytesFrom(int numberOfBytes, int offset) {
+		//- Read Big-Ending INT from Buffer
+		public int readBEIntFrom(int numberOfBytes, int offset) {
 			int result = 0;
-			for (int i = offset; i < offset+numberOfBytes; i++) {
-				result += mapContent[i] << (i - offset) * 8;
+			for (int i = 0; i < numberOfBytes; i++) {
+				result += mapContent[i+offset] << (i << 3);
 			}
 			return result;
 		}
 
 		boolean isChecksumValid() {
-			long fileChecksum = readBytesFrom(4, 0);
+			long fileChecksum = readBEIntFrom(4, 0);
 			System.out.println(fileChecksum);
-			int count = mapContent.length - 8;
+			int count = mapContent.length;
 
 			int currentChecksum = 0;
-			for (int i = 8; i < count; i+=4) {
-				long currentInt = readBytesFrom(4, i);
-				currentChecksum = (int) ((currentChecksum * 2) ^ currentInt);
-				if (i < 40) {
-					System.out.println(i + " : " + currentInt + " : " + currentChecksum);
-				}
-				if (currentChecksum == fileChecksum) {
-					System.out.println("Treffer " + i);
-				}
+			for (int i = 8; i < count ; i+=4) {
+				int currentInt = readBEIntFrom(4, i);
+				
+				//- using: Logic Right-Shift-Operator: >>>
+				currentChecksum = ((currentChecksum >>> 31) | ((currentChecksum << 1) ^ currentInt));
 			}
 
 			if (currentChecksum != fileChecksum) {
@@ -79,7 +76,7 @@ public class OriginalMapLoader {
 	}
 
 	public static void main(String[] args) {
-		(new OriginalMapLoader()).loadOriginalMap(new File("/data/home/sbauer/Downloads/a.map"));
+		(new OriginalMapLoader()).loadOriginalMap(new File("D:\\Spiele\\Siedler3\\Map\\User\\a.map"));
 	}
 
 }
