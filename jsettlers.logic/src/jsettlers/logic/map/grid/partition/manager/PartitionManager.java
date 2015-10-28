@@ -286,8 +286,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				neededTools.add(workerCreationRequest.requestedMovableType().getTool());
 			}
 		}
-
-		materialProduction.ensureNeededToolsAreQueueed(neededTools);
 	}
 
 	private void handleWorkerRequest() {
@@ -451,12 +449,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				bestPrio = prio;
 				bestTool = tool;
 			}
-		}
-
-		if (bestTool != null) {
-			materialProduction.decreaseNumberOfFutureProducedMaterial(bestTool);
-		} else {
-			bestTool = materialProduction.dropTool();
 		}
 
 		return bestTool;
