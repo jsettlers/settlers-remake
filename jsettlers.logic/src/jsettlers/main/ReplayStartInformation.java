@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.main;
 
-import jsettlers.logic.player.PlayerSetting;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * 
@@ -41,7 +41,6 @@ public class ReplayStartInformation {
 		this.playerId = playerId;
 		this.mapName = mapName;
 		this.mapId = mapId;
-
 
 		boolean[] availablePlayers = new boolean[playerSettings.length];
 		for (int i = 0; i < playerSettings.length; i++) {
@@ -69,7 +68,7 @@ public class ReplayStartInformation {
 	public PlayerSetting[] getPlayerSettings() {
 		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
 		for (int i = 0; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(availablePlayers[i], false);
+			playerSettings[i] = new PlayerSetting(availablePlayers[i]);
 		}
 		return playerSettings;
 	}

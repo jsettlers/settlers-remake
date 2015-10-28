@@ -12,66 +12,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.startscreen.interfaces;
+package jsettlers.ai.economy;
 
-import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.buildings.EBuildingType;
+
+import java.util.List;
 
 /**
- * This is a simple implementation of {@link IStartedGame} that allows you to supply a map as a game.
- * 
- * @author michael
+ * @author codingberlin
  */
-public class FakeMapGame implements IStartedGame {
+public interface EconomyMinister {
 
-	public final class NullStatistics implements IStatisticable {
-		@Override
-		public int getGameTime() {
-			return 0;
-		}
+	int getNumberOfParallelConstructionSides();
 
-		@Override
-		public int getNumberOf(EMovableType movableType) {
-			return 0;
-		}
-
-		@Override
-		public int getNumberOf(EMaterialType materialType) {
-			return 0;
-		}
-
-		@Override
-		public int getJoblessBearers() {
-			return 0;
-		}
-	}
-
-	private final IGraphicsGrid map;
-
-	public FakeMapGame(IGraphicsGrid map) {
-		this.map = map;
-	}
-
-	@Override
-	public IGraphicsGrid getMap() {
-		return map;
-	}
-
-	@Override
-	public IStatisticable getPlayerStatistics() {
-		return new NullStatistics();
-	}
-
-	@Override
-	public IInGamePlayer getInGamePlayer() {
-		return null;
-	}
-
-	@Override
-	public void setGameExitListener(IGameExitListener exitListener) {
-	}
+	List<EBuildingType> getBuildingsToBuild();
 
 }

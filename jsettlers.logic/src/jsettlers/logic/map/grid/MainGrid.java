@@ -305,7 +305,16 @@ public final class MainGrid implements Serializable {
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
 
-		return new MapFileHeader(MapType.SAVED_SINGLE, mapName, mapId, "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgImage);
+		return new MapFileHeader(
+				MapType.SAVED_SINGLE,
+				mapName, mapId,
+				"TODO: description",
+				width,
+				height,
+				(short) 1,
+				getPartitionsGrid().getNumberOfPlayers(),
+				new Date(),
+				bgImage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
