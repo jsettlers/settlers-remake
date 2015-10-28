@@ -16,7 +16,6 @@ package jsettlers.logic.map.grid.partition;
 
 import java.io.Serializable;
 
-import jsettlers.logic.buildings.MaterialProduction;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
