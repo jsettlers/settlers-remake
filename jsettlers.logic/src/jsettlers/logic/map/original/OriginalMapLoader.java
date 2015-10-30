@@ -66,6 +66,7 @@ public class OriginalMapLoader extends IMapLoader
 			if (!_mapContent.isChecksumValid())
 			{
 				System.out.println("Checksum of original map was not valid!");
+				return;
 			}
 			
 			_mapContent.loadMapResources();

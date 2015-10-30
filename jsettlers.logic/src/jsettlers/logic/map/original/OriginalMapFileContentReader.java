@@ -101,7 +101,8 @@ public class OriginalMapFileContentReader
 		//- read Checksum from File
 		int fileChecksum = readBEIntFrom(0);
 		
-		int count = _mapContent.length;
+		//- make count a Multiple of four
+		int count = _mapContent.length & 0xFFFFFFF8;
 		int currentChecksum = 0;
 		
 		//- Map Content start at Byte 8
