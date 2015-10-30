@@ -28,8 +28,8 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.IMapLoader;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
@@ -125,7 +125,7 @@ public class MultiplayerGame {
 			public void receivePacket(MatchStartPacket packet) {
 				updatePlayersList(packet.getMatchInfo().getPlayers());
 
-				IMapLoader mapLoader = MapList.getDefaultList().getMapById(packet.getMatchInfo().getMapInfo().getId());
+				MapLoader mapLoader = MapList.getDefaultList().getMapById(packet.getMatchInfo().getMapInfo().getId());
 				long randomSeed = packet.getRandomSeed();
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				byte ownPlayerId = calculatePlayerInfos(availablePlayers);

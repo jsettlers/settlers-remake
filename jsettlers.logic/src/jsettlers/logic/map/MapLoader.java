@@ -20,13 +20,17 @@ import jsettlers.logic.map.original.OriginalMapLoader;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.loader.*;
 
 /**
  * Classes of this interface are to load a game file
  * 
  */
-public abstract class IMapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition{
+public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition{
+	
+	protected MapFileHeader header;
+
 	
 	public static final String MAP_EXTENSION = ".smap";
 	public static final String MAP_EXTENSION_COMPRESSED = ".zmap";
@@ -35,10 +39,10 @@ public abstract class IMapLoader implements IGameCreator, Comparable<MapLoader>,
 	public abstract MapFileHeader getFileHeader();
 	
 	
-	public static IMapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException
+	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException
 	{
 		
-		if (listedMap.getFileName().endsWith(IMapLoader.MAP_EXTENSION_ORIGINAL))
+		if (listedMap.getFileName().endsWith(MapLoader.MAP_EXTENSION_ORIGINAL))
 		{
 			//- original Siedler 3 Map
 			return new OriginalMapLoader(listedMap);
@@ -46,7 +50,7 @@ public abstract class IMapLoader implements IGameCreator, Comparable<MapLoader>,
 		else
 		{
 			//- Siedler 3 Remake Savegame or Map
-			MapFileHeader header = MapLoader.loadHeader(listedMap);
+			MapFileHeader header = RemakeMapLoader.loadHeader(listedMap);
 	
 			switch (header.getType()) {
 			case NORMAL:
@@ -59,4 +63,20 @@ public abstract class IMapLoader implements IGameCreator, Comparable<MapLoader>,
 		}
 
 	}
+	
+	//- Interface: Comparable<MapLoader>
+	@Override
+	public int compareTo(MapLoader o) {
+		MapFileHeader myHeader = header;
+		MapFileHeader otherHeader = o.header;
+		if (myHeader.getType() == MapType.SAVED_SINGLE) {
+			return -myHeader.getCreationDate().compareTo(otherHeader.getCreationDate()); // order by date descending
+		} else {
+			return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
+		}
+	}
+	
+	
+	public abstract IListedMap getFile();
+	
 }

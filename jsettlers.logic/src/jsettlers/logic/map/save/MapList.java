@@ -29,8 +29,8 @@ import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.IMapLoader;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -51,7 +51,7 @@ public class MapList implements IMapListerCallable {
 	 * @return
 	 */
 	public static String getMapExtension() {
-		return CommonConstants.USE_SAVEGAME_COMPRESSION ? IMapLoader.MAP_EXTENSION_COMPRESSED : IMapLoader.MAP_EXTENSION;
+		return CommonConstants.USE_SAVEGAME_COMPRESSION ? MapLoader.MAP_EXTENSION_COMPRESSED : MapLoader.MAP_EXTENSION;
 	}
 
 	private static IMapListFactory mapListFactory = new IMapListFactory() {
@@ -66,8 +66,8 @@ public class MapList implements IMapListerCallable {
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
 
-	private final ChangingList<IMapLoader> freshMaps = new ChangingList<>();
-	private final ChangingList<IMapLoader> savedMaps = new ChangingList<>();
+	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
+	private final ChangingList<MapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
@@ -91,11 +91,11 @@ public class MapList implements IMapListerCallable {
 	@Override
 	public synchronized void foundMap(IListedMap map) {
 		
-		IMapLoader loader = null;
+		MapLoader loader = null;
 
 		try
 		{
-			loader = IMapLoader.getLoaderForListedMap(map);
+			loader = MapLoader.getLoaderForListedMap(map);
 		}
 		catch (MapLoadException e) {
 			System.err.println("Cought exception while loading header for " + map.getFileName());
@@ -113,7 +113,7 @@ public class MapList implements IMapListerCallable {
 
 	}
 
-	public synchronized ChangingList<IMapLoader> getSavedMaps() {
+	public synchronized ChangingList<MapLoader> getSavedMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -121,7 +121,7 @@ public class MapList implements IMapListerCallable {
 		return savedMaps;
 	}
 
-	public synchronized ChangingList<IMapLoader> getFreshMaps() {
+	public synchronized ChangingList<MapLoader> getFreshMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -137,12 +137,12 @@ public class MapList implements IMapListerCallable {
 	 * @return Returns the corresponding {@link MapLoader}<br>
 	 *         or null if no map with the given id has been found.
 	 */
-	public IMapLoader getMapById(String id) {
-		ArrayList<IMapLoader> maps = new ArrayList<IMapLoader>();
+	public MapLoader getMapById(String id) {
+		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
 		maps.addAll(getFreshMaps().getItems());
 		maps.addAll(getSavedMaps().getItems());
 
-		for (IMapLoader curr : maps) {
+		for (MapLoader curr : maps) {
 			if (curr.getMapId().equals(id)) {
 				return curr;
 			}
@@ -151,12 +151,12 @@ public class MapList implements IMapListerCallable {
 
 	}
 
-	public IMapLoader getMapByName(String mapName) {
-		ArrayList<IMapLoader> maps = new ArrayList<IMapLoader>();
+	public MapLoader getMapByName(String mapName) {
+		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
 		maps.addAll(getFreshMaps().getItems());
 		maps.addAll(getSavedMaps().getItems());
 
-		for (IMapLoader curr : maps) {
+		for (MapLoader curr : maps) {
 			if (curr.getMapName().equals(mapName)) {
 				return curr;
 			}

@@ -31,7 +31,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.IMapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
@@ -48,11 +48,11 @@ import jsettlers.logic.player.PlayerSetting;
  * @author michael
  * @author Andreas Eberle
  */
-public abstract class MapLoader extends IMapLoader {
-	private final IListedMap file;
-	private final MapFileHeader header;
-
-	public MapLoader(IListedMap file, MapFileHeader header) {
+public abstract class RemakeMapLoader extends MapLoader {
+	
+	private IListedMap file;
+	
+	public RemakeMapLoader(IListedMap file, MapFileHeader header) {
 		this.file = file;
 		this.header = header;
 	}
@@ -86,7 +86,7 @@ public abstract class MapLoader extends IMapLoader {
 		if (file.isCompressed()) {
 			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 			ZipEntry zipEntry = zipInputStream.getNextEntry();
-			if (!zipEntry.getName().endsWith(IMapLoader.MAP_EXTENSION)) {
+			if (!zipEntry.getName().endsWith(MapLoader.MAP_EXTENSION)) {
 				throw new IOException("Invalid compressed map format!");
 			}
 			inputStream = zipInputStream;
@@ -146,16 +146,6 @@ public abstract class MapLoader extends IMapLoader {
 		return new ArrayList<ILoadableMapPlayer>();
 	}
 
-	@Override
-	public int compareTo(MapLoader o) {
-		MapFileHeader myHeader = header;
-		MapFileHeader otherHeader = o.header;
-		if (myHeader.getType() == MapType.SAVED_SINGLE) {
-			return -myHeader.getCreationDate().compareTo(otherHeader.getCreationDate()); // order by date descending
-		} else {
-			return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
-		}
-	}
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {

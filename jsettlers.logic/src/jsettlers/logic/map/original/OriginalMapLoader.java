@@ -17,8 +17,7 @@ import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.IMapLoader;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.original.OriginalMapFileContent;
@@ -34,9 +33,9 @@ import java.util.Vector;
  * @author codingberlin
  * @author Thomas Zeugner
  */
-public class OriginalMapLoader extends IMapLoader 
+public class OriginalMapLoader extends MapLoader 
 {
-	
+	private IListedMap file;
 	private OriginalMapFileContentReader _mapContent;
 	
 	private Date _CreationDate;
@@ -44,6 +43,8 @@ public class OriginalMapLoader extends IMapLoader
 	
 	public OriginalMapLoader(IListedMap listedMap)
 	{
+		this.file = listedMap;
+		
 		_FileName = listedMap.getFileName();
 		
 		try
@@ -81,7 +82,7 @@ public class OriginalMapLoader extends IMapLoader
 	}
 
 	//------------------------------//
-	//-- Interface IMapLoader --//
+	//-- Interface MapLoader --//
 	@Override
 	public MapFileHeader getFileHeader()
 	{
@@ -89,9 +90,10 @@ public class OriginalMapLoader extends IMapLoader
 	}
 	
 	@Override
-	public int compareTo(MapLoader o) {
-		return (int) (_CreationDate.getTime()/1000);
+	public IListedMap getFile() {
+		return file;
 	}
+	
 	
 	
 	//------------------------------//

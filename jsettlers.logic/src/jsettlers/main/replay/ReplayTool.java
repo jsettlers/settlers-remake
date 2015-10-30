@@ -28,7 +28,7 @@ import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.IMapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.JSettlersGame.GameRunner;
 import jsettlers.main.ReplayStartInformation;
@@ -53,20 +53,20 @@ public class ReplayTool {
 		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
-		IMapLoader newSavegame = getNewestSavegame();
+		MapLoader newSavegame = getNewestSavegame();
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 
 		awaitShutdown(startedGame);
 	}
 
-	private static IMapLoader getNewestSavegame() {
-		List<IMapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
+	private static MapLoader getNewestSavegame() {
+		List<MapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
 		if (savedMaps.isEmpty()) {
 			return null;
 		}
 
-		IMapLoader newest = savedMaps.get(0);
-		for (IMapLoader map : savedMaps) {
+		MapLoader newest = savedMaps.get(0);
+		for (MapLoader map : savedMaps) {
 			if (newest.getCreationDate().before(map.getCreationDate())) {
 				newest = map;
 			}
@@ -115,7 +115,7 @@ public class ReplayTool {
 		return JSettlersGame.loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation);
 	}
 
-	private static void createReplayOfRemainingTasks(IMapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
+	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
 			throws IOException {
 		System.out.println("Creating new replay file (" + newReplayFile + ")...");
 		new File(newReplayFile).getAbsoluteFile().getParentFile().mkdirs();

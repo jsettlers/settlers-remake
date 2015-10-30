@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
-import jsettlers.logic.map.IMapLoader;
+import jsettlers.logic.map.MapLoader;
 
 /**
  * Lists all maps in a directory.
@@ -66,7 +66,7 @@ public class DirectoryMapLister implements IMapLister {
 
 		@Override
 		public boolean isCompressed() {
-			return file.getName().endsWith(IMapLoader.MAP_EXTENSION_COMPRESSED);
+			return file.getName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					String fileName = file.getName();
-					if (fileName.endsWith(IMapLoader.MAP_EXTENSION) || fileName.endsWith(IMapLoader.MAP_EXTENSION_COMPRESSED) || fileName.endsWith(IMapLoader.MAP_EXTENSION_ORIGINAL) ) {
+					if (fileName.endsWith(MapLoader.MAP_EXTENSION) || fileName.endsWith(MapLoader.MAP_EXTENSION_COMPRESSED) || fileName.endsWith(MapLoader.MAP_EXTENSION_ORIGINAL) ) {
 						callback.foundMap(new ListedMapFile(file));
 					}
 				}
@@ -130,7 +130,7 @@ public class DirectoryMapLister implements IMapLister {
 			if (CommonConstants.USE_SAVEGAME_COMPRESSION) {
 				System.out.println("Using savegame compression!");
 				ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-				ZipEntry zipEntry = new ZipEntry(actualName + IMapLoader.MAP_EXTENSION);
+				ZipEntry zipEntry = new ZipEntry(actualName + MapLoader.MAP_EXTENSION);
 				zipOutputStream.putNextEntry(zipEntry);
 
 				return zipOutputStream;

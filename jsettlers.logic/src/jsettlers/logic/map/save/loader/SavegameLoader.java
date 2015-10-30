@@ -32,7 +32,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  * 
  */
-public class SavegameLoader extends MapLoader {
+public class SavegameLoader extends RemakeMapLoader {
 
 	public SavegameLoader(IListedMap file, MapFileHeader header) {
 		super(file, header);
