@@ -237,7 +237,7 @@ public class MapList implements IMapListerCallable {
 
 	public void deleteLoadableGame(MapLoader game) {
 		game.getFile().delete();
-		savedMaps.remove(game);
+		savedMaps.remove(game); //- TODO: or freshMaps.remove ?
 		loadFileList();
 	}
 

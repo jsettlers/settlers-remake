@@ -12,6 +12,8 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs;
+import jsettlers.logic.map.original.OriginalMapFileContent.MapPlayerInfo;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.MAP_START_RESOURCES;
 
 /**
  * @author Thomas Zeugner
@@ -28,16 +30,23 @@ public class OriginalMapFileContentReader
 	}
 	//--------------------------------------------------//
 	
+	
+	
 	public int fileChecksum = 0;
 	public String MapName = "";
 	public int WidthHeight;
 	
-	public int MinPlayers = 1; // TODO
-	public int MaxPlayers = 1; // TODO
+	
+	public boolean isSinglePlayerMap = false;
 	
 	private byte[] _mapContent;
 	private int _fileVersion = 0;
 	private MapResourceInfo[] _resources;
+	
+
+	
+	public MAP_START_RESOURCES StartResources = MAP_START_RESOURCES.SMALL;
+	public OriginalMapFileContent.MapPlayerInfo[] Players;
 	
 	
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException 
@@ -45,6 +54,11 @@ public class OriginalMapFileContentReader
 		//- init Resource Info
 		_resources = new MapResourceInfo[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.length];
 		for(int i=0; i<_resources.length;i++) _resources[i] = new MapResourceInfo();
+		
+		//- init players
+		Players = new MapPlayerInfo[1];
+		Players[0] = new MapPlayerInfo(100,100,"",OriginalMapFileDataStructs.MAP_NATIONS.Nation_Romans );
+
 		
 		
 		//- read File into buffer
@@ -89,10 +103,32 @@ public class OriginalMapFileContentReader
 	//- Read Big-Ending INT from Buffer
 	public int readBEIntFrom(int offset)
 	{
+		if (_mapContent == null) return 0;
 		return  ((_mapContent[offset  ] & 0xFF) << 0) |
 				((_mapContent[offset+1] & 0xFF) << 8) |
 				((_mapContent[offset+2] & 0xFF) << 16) |
 				((_mapContent[offset+3] & 0xFF) << 24);
+	}
+	
+	
+	public String readCStrFrom(int offset, int length)
+	{
+		if (_mapContent == null) return "";
+		if (_mapContent.length <= offset + length) return "";
+		
+		String outStr = "";
+		int pos = offset;
+		
+		for (int i=length; i>0; i--)
+		{
+			byte b = _mapContent[pos];
+			pos++;
+			
+			if (b==0) break;
+			
+			outStr += new String(new byte[] {b}); 
+		}
+		return outStr;
 	}
 	
 	
@@ -102,7 +138,7 @@ public class OriginalMapFileContentReader
 		int fileChecksum = readBEIntFrom(0);
 		
 		//- make count a Multiple of four
-		int count = _mapContent.length & 0xFFFFFFF8;
+		int count = _mapContent.length & 0xFFFFFFFC;
 		int currentChecksum = 0;
 		
 		//- Map Content start at Byte 8
@@ -186,6 +222,11 @@ public class OriginalMapFileContentReader
 		//- checksum is the first DWord in File
 		fileChecksum = readBEIntFrom(0);
 		
+		//- read Map Information
+		MapInfo();
+		PlayerInfo();
+		
+		
 		//- reset
 		WidthHeight=0;
 	
@@ -195,13 +236,105 @@ public class OriginalMapFileContentReader
 		if (FPart.size < 4) return;
 
 		//- uncrypt this resource if necessary
-		if (!doUncrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area)) return ;	
+		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area)) return ;	
 
 		//- file position
 		int pos = FPart.offset;
 		
 		//- height and width are the same
 		WidthHeight = readBEIntFrom(pos);
+	}
+	
+	
+	
+	public void MapInfo()
+	{
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.MapInfo.value];
+		
+		if ((FPart==null) || (FPart.size == 0))
+		{
+			System.err.println("Warning: No Player information available in mapfile!");
+			return;
+		}
+
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.MapInfo)) return;	
+
+		//- file position
+		int pos = FPart.offset;
+		
+		//----------------------------------
+		int MapType = readBEIntFrom(pos);
+		pos += 4;
+			  
+		if (MapType == 1) 
+		{
+			isSinglePlayerMap = true;
+		}
+		else if (MapType == 0)
+		{
+			isSinglePlayerMap = false;
+		}
+		else
+		{
+			System.err.println("wrong value for 'isSinglePlayerMap' "+ Integer.toString(MapType) +" in mapfile!");
+		}
+				 
+
+		//----------------------------------  
+		int PlayerCount = readBEIntFrom(pos);
+		pos += 4;
+		
+		Players = new MapPlayerInfo[PlayerCount];
+		
+		for (int i=0; i<PlayerCount; i++)
+		{
+			Players[i] = new MapPlayerInfo(20+i*10,20+i*10, Integer.toString(i) ,OriginalMapFileDataStructs.MAP_NATIONS.Nation_Romans );
+		}
+		
+		
+		//----------------------------------
+		int StartResourcesValue = readBEIntFrom(pos);
+		pos += 4;
+		
+		this.StartResources = MAP_START_RESOURCES.FromMapValue(StartResourcesValue);
+	}
+	
+	
+	
+	//- Read the Player Info
+	public void PlayerInfo()
+	{
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.PlayerInfo.value];
+		
+		if ((FPart==null) || (FPart.size == 0))
+		{
+			System.err.println("Warning: No Player information available in mapfile!");
+			return;
+		}
+
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.PlayerInfo)) return;	
+
+		//- file position
+		int pos = FPart.offset;
+		
+		for (int i = 0; i < Players.length; i++)
+		{
+			Players[i].Nation = OriginalMapFileDataStructs.MAP_NATIONS.FromMapValue(readBEIntFrom(pos));
+			pos += 4;
+			
+			Players[i].startX = readBEIntFrom(pos);
+			pos += 4;
+			
+			Players[i].startY = readBEIntFrom(pos);
+			pos += 4;
+			
+			Players[i].PName = readCStrFrom(pos, 33);
+			pos += 33;
+			
+			System.out.println("Player "+ Integer.toString(i) +" : "+ Players[i].PName +" @ ("+ Players[i].startX +" , "+ Players[i].startY +")");
+		}
 	}
 	
 	
@@ -219,16 +352,13 @@ public class OriginalMapFileContentReader
 		
 		if (FPart.size == 0)
 		{
-			// TODO Error : ("No area-information available in mapfile!");
+			System.err.println("Warning: No area information available in mapfile!");
 			return mapData;
 		}
 
-		//- uncrypt this resource if necessary
-		if (!doUncrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area))
-		{
-			// TODO Error : error while uncrypting file
-			return mapData;	
-		}
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area)) return mapData;	
+
 
 		//- file position
 		int pos = FPart.offset;
@@ -243,31 +373,45 @@ public class OriginalMapFileContentReader
 		//- points to read
 		int dataCount = WidthHeight * WidthHeight;
 		
-		
-		for (int i = 0; i < dataCount; i++)
+		for (int i=0; i< dataCount; i++)
 		{
-			mapData.setLandscapeHeight(i, _mapContent[pos++]);
-			mapData.setLandscape(i, _mapContent[pos++]);
-			mapData.setMapObject(i, _mapContent[pos++]);
-
-			mapData.setPalyerClaim(i, _mapContent[pos++]);
-
-			mapData.setAccessible(i, _mapContent[pos++]);
-			mapData.setResources(i, _mapContent[pos++]);
+		//for (int y = 0; y < WidthHeight; y++)
+		//{
+		//	for (int x = 0; x < WidthHeight; x++)
+		//	{
+		//		int i = x + (WidthHeight * (WidthHeight - y - 1));
+				
+				mapData.setLandscapeHeight(i, _mapContent[pos++]);
+				mapData.setLandscape(i, _mapContent[pos++]);
+				mapData.setMapObject(i, _mapContent[pos++]);
+	
+				mapData.setPalyerClaim(i, _mapContent[pos++]);
+	
+				mapData.setAccessible(i, _mapContent[pos++]);
+				mapData.setResources(i, _mapContent[pos++]);
+		//	}
+		//}
 		}
-
+		
+		//- add palyers
+		mapData.Players = this.Players;
+		
 		return mapData;
 	}
 	
 	
 	
 	//- uncrypt a resource
-	private boolean doUncrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE type)
+	private boolean doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE type)
 	{
 		int PartId = type.value;
 		if ((PartId <= 0) || (PartId >= OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.length)) return false;
 		
-		if (_mapContent==null) return false;
+		if (_mapContent==null)
+		{
+			System.err.println("Warning: Unable to decrypt map file: no data loaded!");
+			return false;
+		}
 		
 		//- already encrypted
 		if (_resources[PartId].hasBeenDecrypted) return true;
@@ -293,7 +437,11 @@ public class OriginalMapFileContentReader
 			
 			//- next position/byte
 			pos++;
-			if (pos >= _mapContent.length) return false;
+			if (pos >= _mapContent.length)
+			{
+				System.err.println("Error: Unable to decrypt map file: unexpected eof!");
+				return false;
+			}
 				
 			//- calculate next Key
 			key = ((key << 1) & 0xFF) ^ byt;

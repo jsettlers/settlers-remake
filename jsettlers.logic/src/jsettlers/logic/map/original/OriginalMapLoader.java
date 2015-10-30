@@ -106,13 +106,13 @@ public class OriginalMapLoader extends MapLoader
 
 	@Override 
 	public int getMinPlayers() {
-		return _mapContent.MinPlayers;
+		return 1;
 	}
 
 	@Override
 	public int getMaxPlayers()
 	{
-		return _mapContent.MinPlayers;
+		return _mapContent.Players.length;
 	}
 
 	@Override 

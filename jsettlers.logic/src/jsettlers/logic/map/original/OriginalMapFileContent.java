@@ -15,11 +15,39 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs;
 
+
 /**
  * @author Thomas Zeugner
  */
 public class OriginalMapFileContent implements IMapData
 {
+	//--------------------------------------------------//
+	public static class MapPlayerInfo
+	{
+		int startX;
+		int startY;
+		String PName;
+		OriginalMapFileDataStructs.MAP_NATIONS Nation;
+		
+		public MapPlayerInfo(int X, int Y, String PName, int nationInt)
+		{
+			this.startX = X;
+			this.startY = Y;
+			this.PName = PName;
+			this.Nation = OriginalMapFileDataStructs.MAP_NATIONS.FromMapValue(nationInt);
+		}
+		
+		public MapPlayerInfo(int X, int Y, String PName, OriginalMapFileDataStructs.MAP_NATIONS nation)
+		{
+			this.startX = X;
+			this.startY = Y;
+			this.PName = PName;
+			this.Nation = nation;
+		}
+	}
+	
+	//--------------------------------------------------//
+	
 	
 	public int fileChecksum = 0;
 	
@@ -34,6 +62,9 @@ public class OriginalMapFileContent implements IMapData
 	private byte [] _accessible = null ;
 	private byte [] _resources = null;
 
+	public MapPlayerInfo[] Players;
+	
+	
 	public OriginalMapFileContent(int WidthHeight)
 	{
 		setWidthHeight(WidthHeight);
@@ -131,10 +162,12 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos > _dataCount)) return null;
 		
-		if ((x==100) && (y==100))
-		{
-			return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		}
+		//- for debugging:
+		if (Players.length>0) if ((x==Players[0].startX) && (y==Players[0].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (Players.length>1) if ((x==Players[1].startX) && (y==Players[1].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (Players.length>2) if ((x==Players[2].startX) && (y==Players[2].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (Players.length>3) if ((x==Players[3].startX) && (y==Players[3].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		//--------------
 		
 		return _Object[pos];
 	}
@@ -183,13 +216,17 @@ public class OriginalMapFileContent implements IMapData
 	@Override
 	public ShortPoint2D getStartPoint(int player)
 	{
-		return new ShortPoint2D(100,100);
+		if ((player < 0) || (player >= Players.length))
+		{
+			return new ShortPoint2D(100,100);
+		}
+		return new ShortPoint2D(Players[player].startX, Players[player].startY);
 	}
 	
 	@Override
 	public int getPlayerCount()
 	{
-		return 1;
+		return Players.length;
 	}
 	
 

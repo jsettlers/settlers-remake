@@ -1,7 +1,10 @@
 package jsettlers.logic.map.original;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.common.mapobject.EMapObjectType;
 
 /**
  * @author Thomas Zeugner
@@ -55,6 +58,65 @@ public class OriginalMapFileDataStructs
 		
 	}
 	
+	
+	public static enum MAP_NATIONS
+	{
+		Nation_Romans(0),
+		Nation_Egyptians(1),
+		Nation_Asians(2),
+		Nation_Amazons(3),
+		Nation_FreeChoice(255),
+		Nation_NOT_DEFINED(256);
+	
+		public final int Value;
+		
+		
+		MAP_NATIONS(int value)
+		{
+			this.Value = value;
+		}
+		
+		public static MAP_NATIONS FromMapValue(int mapValue)
+		{
+			for (int i=0; i < MAP_NATIONS.values().length; i++)
+			{
+				if (MAP_NATIONS.values()[i].Value == mapValue) return MAP_NATIONS.values()[i];
+			}
+			
+			System.err.println("wrong value for 'MAP_NATIONS' "+ Integer.toString(mapValue) +"!");
+		
+			return MAP_NATIONS.Nation_Romans;
+		}
+	}
+	
+	//--------------------------------------------------//
+	public static enum MAP_START_RESOURCES
+	{
+		SMALL(1),
+		MEDIUM(2),
+		MUCH(3);
+	
+		public final int Value;
+		
+		MAP_START_RESOURCES(int value)
+		{
+			this.Value = value;
+		}
+		
+		public static MAP_START_RESOURCES FromMapValue(int mapValue)
+		{
+			for (int i=0; i<MAP_START_RESOURCES.values().length; i++)
+			{
+				if (MAP_START_RESOURCES.values()[i].Value == mapValue) return MAP_START_RESOURCES.values()[i];
+			}
+			
+			System.err.println("wrong value for 'MAP_START_RESOURCES' "+ Integer.toString(mapValue) +"!");
+			
+			return MAP_START_RESOURCES.SMALL;
+		}
+	}
+	
+
 	//--------------------------------------------------//
 	public static enum MAP_FILE_VERSION
 	{
@@ -62,11 +124,11 @@ public class OriginalMapFileDataStructs
 		DEFAULT (0x0A),
 		AMAZONS (0x0B);
 		
-		public final int typeValue;
+		public final int Value;
 		
 		MAP_FILE_VERSION(int value)
 		{
-			typeValue = value;
+			this.Value = value;
 		}
 	};
 	
@@ -331,7 +393,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_FD(null),
 		UNKNOWN_FE(null),
 		
-		NOT_A_TYPE(null); //- has to bee the last item
+		NOT_A_TYPE(null); //- has to be the last item
 		
 		//- length of [LANDSCAPE_TYPE]
 		public static final int length = 13;
@@ -425,19 +487,19 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_41(null),  //- GAME_OBJECT_REED_BEDS_4 = 65,
 		UNKNOWN_42(null),  //- GAME_OBJECT_REED_BEDS_5 = 66,
 		UNKNOWN_43(null),  //- GAME_OBJECT_REED_BEDS_6 = 67,
-		UNKNOWN_44(null),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
-		UNKNOWN_45(null),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
-		UNKNOWN_46(null),  //- GAME_OBJECT_TREE_ELM_1 = 70,
-		UNKNOWN_47(null),  //- GAME_OBJECT_TREE_ELM_2 = 71,
-		UNKNOWN_48(null),  //- GAME_OBJECT_TREE_OAK_1 = 72,
-		UNKNOWN_49(null),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
-		UNKNOWN_4A(null),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
-		UNKNOWN_4B(null),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
-		UNKNOWN_4C(null),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
-		UNKNOWN_4D(null),  //- //-- unknown: 77
-		UNKNOWN_4E(null),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
-		UNKNOWN_4F(null),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
-		UNKNOWN_50(null),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
+		UNKNOWN_44(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
+		UNKNOWN_45(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
+		UNKNOWN_46(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ELM_1 = 70,
+		UNKNOWN_47(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ELM_2 = 71,
+		UNKNOWN_48(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_OAK_1 = 72,
+		UNKNOWN_49(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
+		UNKNOWN_4A(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
+		UNKNOWN_4B(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
+		UNKNOWN_4C(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
+		UNKNOWN_4D(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- //-- unknown: 77
+		UNKNOWN_4E(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
+		UNKNOWN_4F(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
+		UNKNOWN_50(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
 		UNKNOWN_51(null),  //- //-- unknown: 81
 		UNKNOWN_52(null),  //- //-- unknown: 82
 		UNKNOWN_53(null),  //- //-- unknown: 83
@@ -486,7 +548,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_7E(null),  //- GAME_OBJECT_RES_STONE_12 = 126,
 		UNKNOWN_7F(null),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
-		NOT_A_TYPE(null); //- has to bee the last item
+		NOT_A_TYPE(null); //- has to be the last item
 		
 		//- length of [OBJECT_TYPE]
 		public static final int length = 13;
