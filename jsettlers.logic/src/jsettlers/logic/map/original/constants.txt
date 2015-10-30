@@ -1,0 +1,350 @@
+
+'- Building types
+Public Enum enumBType
+  BType_Lager = 1
+  BType_Holzfaeller = 2
+  BType_Steinbruch = 3
+  BType_Saegewerk = 4
+  BType_Foersterhuette = 5
+  BType_Beobachtungsturm = 6
+  BType_Kohlemine = 7
+  BType_Goldmine = 8
+  BType_Eisenmine = 9
+  BType_Goldschmelze = 10
+  BType_Eisenschmelze = 11
+  BType_Werkzeugschmiede = 12
+  BType_Waffenschmiede = 13
+  BType_Weingut = 14
+  BType_TurmKleiner = 15
+  BType_TurmGrosser = 16
+  BType_Muehle = 17
+  BType_TurmBurg = 18
+  BType_Kasserne = 19
+  BType_Baeckerei = 20
+  BType_Metzger = 21
+  BType_Destille = 22
+  BType_Schweinefarm = 23
+  BType_Getreidefram = 24
+  BType_Fischerhuette = 25
+  BType_WohnhausKlein = 26
+  BType_WohnhausMittel = 27
+  BType_WohnhausGross = 28
+  BType_Schwefelmine = 29
+  BType_Wasserwerk = 30
+  BType_Katapultwerk = 31
+  BType_Werft = 32
+  BType_Anlegestelle = 33
+  BType_Marktplatz = 34
+  BType_Heiler = 35
+  BType_Reisfarm = 36
+  BType_Edelsteinmine = 37
+  BType_Brauerei = 38
+  BType_Koehler = 39
+  BType_Pulvermacherei = 40
+  BType_Pyramide = 41
+  BType_Sphinx = 42
+  BType_GrosserTempel = 43
+  BType_kleinerTempel = 44
+  BType_grosse_Pagode = 45
+  BType_kleine_Pagode = 46
+  BType_Ballistenwerkstatt = 47
+  BType_Kanonenwerkstatt = 48
+  BType_Eselfarm = 49
+  BType_grosser_Gong = 50
+  BType_Impkerei = 51
+  BType_Metwinzerei = 52
+  BType_Labortorium = 53
+  BType_kleiner_Tempel = 54
+  BType_grosser_Tempel = 55
+  BType_SchwefelmineAmazonen = 56
+End Enum
+
+
+'- Resource Types
+Public Enum enumRType
+  RType_Brett = 1
+  RType_Stein = 2
+  RType_Baumstamm = 3
+  RType_Brot = 4
+  RType_Kohle = 5
+  RType_Golderz = 6
+  RType_Eisenerz = 7
+  RType_Fisch = 8
+  RType_Getreide = 9
+  RType_Gold = 10
+  RType_Eisen = 11
+  RType_Schaufel = 12
+  RType_Hammer = 13
+  RType_Axt = 14
+  RType_Spitzhacke = 15
+  RType_Saege = 16
+  RType_Angel = 17
+  RType_Schwert = 18
+  RType_Bogen = 19
+  RType_Speer = 20
+  RType_Wein = 21
+  RType_Mehl = 22
+  RType_Schwein = 23
+  RType_Fleisch = 24
+  RType_Schwefel = 25
+  RType_Wasser = 26
+  RType_Reis = 27
+  RType_Edelsteine = 28
+  RType_Bier = 29
+  RType_Schiesspulver = 30
+  '-unknown
+  RType_Sense = 32
+  RType_Reisschnaps = 33
+  RType_Met = 34
+  RType_Honig = 35
+End Enum
+
+
+
+'- Settler Types
+Public Enum enumSType
+  SType_Traeger = 0
+  SType_Planierer = 1
+  SType_Bauarbeiter = 2
+  SType_Holzfaeller = 3
+  SType_Steinmetz = 4
+  SType_Swordsman1 = 5
+  SType_Saegewerker = 6
+  SType_Foerster = 7
+  SType_Archer1 = 8
+  SType_Schmelzer = 9
+  SType_Minenarbeiter = 10
+  SType_Schmied = 11
+  SType_Mueller = 12
+  SType_Baecker = 13
+  SType_Metzger = 14
+  SType_SpearFighter1 = 15
+  SType_Bauer = 16
+  SType_Fischer = 17
+  SType_Wasserwerker = 18
+  SType_Werftarbeiter = 19
+  '-20 unknown
+  SType_Heiler = 21
+  SType_Geologe = 22
+  SType_Dieb = 23
+  SType_Koehler = 24
+  SType_Schnapsbrenner = 25
+  SType_Brauer = 26
+  SType_Pulvermacher = 27
+  SType_Schweinefarmer = 28
+  SType_Winzer = 29
+  SType_Archer2 = 30
+  SType_SpearFighter2 = 31
+  SType_Swordsman2 = 32
+  SType_Archer3 = 33
+  SType_SpearFighter3 = 34
+  SType_Swordsman3 = 35
+  SType_Prister = 36
+  '- 37 Unknown
+  SType_Reisbauer = 38
+  SType_Esel = 39
+  SType_Pionier = 40
+  SType_Katapult = 41
+  '- 42 Unknown
+  SType_Handelsschiff = 43
+  SType_Faehre = 44
+  SType_Imker = 45
+  SType_Metwinzer = 46
+  SType_Alchemist = 47
+End Enum
+
+
+
+Public Sub initConstants()
+  initConstants_BType
+  initConstants_RType
+  initConstants_SType
+End Sub
+
+Private Sub initConstants_SType()
+  ReDim SType_NameString(256) As String
+  
+  SType_NameString(SType_Traeger) = "Träger"
+  
+  SType_NameString(SType_Swordsman1) = "Gefreiter Schwertkämpfer"
+  SType_NameString(SType_Swordsman2) = "Sergeant Schwertkämpfer"
+  SType_NameString(SType_Swordsman3) = "Hauptmann Schwertkämpfer"
+  
+  SType_NameString(SType_Archer1) = "Gefreiter Bogenschütze"
+  SType_NameString(SType_Archer2) = "Sergeant Bogenschütze"
+  SType_NameString(SType_Archer3) = "Hauptmann Bogenschütze"
+  
+  SType_NameString(SType_SpearFighter1) = "Gefreiter Speerkämpfer"
+  SType_NameString(SType_SpearFighter2) = "Sergeant Speerkämpfer"
+  SType_NameString(SType_SpearFighter3) = "Hauptmann Speerkämpfer"
+  
+  SType_NameString(SType_Holzfaeller) = "Holzfäller"
+  SType_NameString(SType_Steinmetz) = "Steinmetz"
+  SType_NameString(SType_Saegewerker) = "Sägewerker"
+  SType_NameString(SType_Foerster) = "Förster"
+  SType_NameString(SType_Schmelzer) = "Schmelzer"
+  SType_NameString(SType_Minenarbeiter) = "Minenarbeiter"
+  
+  SType_NameString(SType_Schmied) = "Schmied"
+  SType_NameString(SType_Mueller) = "Müller"
+  SType_NameString(SType_Baecker) = "Bäcker"
+  SType_NameString(SType_Metzger) = "Metzger"
+  SType_NameString(SType_Bauer) = "Bauer"
+  
+  
+  SType_NameString(SType_Schweinefarmer) = "Schweinefarmer"
+  SType_NameString(SType_Fischer) = "Fischer"
+  SType_NameString(SType_Wasserwerker) = "Wasserwerker"
+  SType_NameString(SType_Werftarbeiter) = "Werftarbeiter"
+
+  SType_NameString(SType_Planierer) = "Planierer"
+  SType_NameString(SType_Bauarbeiter) = "Bauarbeiter"
+  SType_NameString(SType_Heiler) = "Heiler"
+  SType_NameString(SType_Geologe) = "Geologe"
+  SType_NameString(SType_Dieb) = "Dieb"
+  
+  SType_NameString(SType_Prister) = "Prister"
+  SType_NameString(SType_Pionier) = "Pionier"
+  SType_NameString(SType_Esel) = "Esel"
+  
+  SType_NameString(SType_Koehler) = "Köhler(R)"
+  SType_NameString(SType_Winzer) = "Winzer(R)"
+  
+  SType_NameString(SType_Brauer) = "Brauer(E)"
+  
+  SType_NameString(SType_Schnapsbrenner) = "Schnapsbrenner(A)"
+  SType_NameString(SType_Pulvermacher) = "Pulvermacher(A)"
+  SType_NameString(SType_Reisbauer) = "Reisbauer(A)"
+  
+  SType_NameString(SType_Metwinzer) = "Metwinzer(Z)"
+  SType_NameString(SType_Imker) = "Imker(Z)"
+  SType_NameString(SType_Alchemist) = "Alchemist(Z)"
+  
+  SType_NameString(SType_Katapult) = "Katapult"
+
+  SType_NameString(SType_Handelsschiff) = "Handelsschiff"
+  SType_NameString(SType_Faehre) = "Fähre"
+End Sub
+  
+  
+Private Sub initConstants_RType()
+  ReDim RType_NameString(256) As String
+  
+  RType_NameString(RType_Kohle) = "Kohle"
+  RType_NameString(RType_Eisen) = "Eisen"
+  RType_NameString(RType_Gold) = "Gold"
+  RType_NameString(RType_Eisenerz) = "Eisenerz"
+  RType_NameString(RType_Golderz) = "Golderz"
+  RType_NameString(RType_Edelsteine) = "Edelsteine"
+  RType_NameString(RType_Schwefel) = "Schwefel"
+  
+  RType_NameString(RType_Schaufel) = "Schaufel"
+  RType_NameString(RType_Hammer) = "Hammer"
+  RType_NameString(RType_Axt) = "Axt"
+  RType_NameString(RType_Spitzhacke) = "Spitzhacke"
+  RType_NameString(RType_Saege) = "Säge"
+  RType_NameString(RType_Sense) = "Sense"
+  RType_NameString(RType_Angel) = "Angel"
+       
+  RType_NameString(RType_Schwert) = "Schwert"
+  RType_NameString(RType_Bogen) = "Bogen"
+  RType_NameString(RType_Speer) = "Speer"
+   
+  
+  RType_NameString(RType_Fisch) = "Fisch"
+  
+  RType_NameString(RType_Brett) = "Brett"
+  RType_NameString(RType_Stein) = "Stein"
+  RType_NameString(RType_Baumstamm) = "Baumstämm"
+  RType_NameString(RType_Brot) = "Brot"
+  RType_NameString(RType_Getreide) = "Getreide"
+  RType_NameString(RType_Wein) = "Wein"
+  
+  RType_NameString(RType_Mehl) = "Mehl"
+  RType_NameString(RType_Schwein) = "Schwein"
+  RType_NameString(RType_Fleisch) = "Fleisch"
+  RType_NameString(RType_Wasser) = "Wasser"
+  RType_NameString(RType_Reis) = "Reis"
+  RType_NameString(RType_Bier) = "Bier"
+  
+  RType_NameString(RType_Schiesspulver) = "Schießpulver"
+  RType_NameString(RType_Reisschnaps) = "Reisschnaps"
+  RType_NameString(RType_Met) = "Met"
+  RType_NameString(RType_Honig) = "Honig"
+  End Sub
+
+Private Sub initConstants_BType()
+  ReDim BType_NameString(256) As String
+
+
+  BType_NameString(BType_TurmKleiner) = "großer Turm"
+  BType_NameString(BType_TurmGrosser) = "kleiner Turm"
+  BType_NameString(BType_TurmBurg) = "Burg"
+  
+  BType_NameString(BType_WohnhausKlein) = "kleines Wohnhaus"
+  BType_NameString(BType_WohnhausMittel) = "mittleres Wohnhaus"
+  BType_NameString(BType_WohnhausGross) = "großes Wohnhaus"
+
+
+  BType_NameString(BType_Beobachtungsturm) = "Beobachtungsturm"
+  
+  BType_NameString(BType_Holzfaeller) = "Holzfäller"
+  BType_NameString(BType_Steinbruch) = "Steinbruch"
+  BType_NameString(BType_Saegewerk) = "Sägewerk"
+  BType_NameString(BType_Foersterhuette) = "Försterhütte"
+  BType_NameString(BType_Muehle) = "Mühle"
+  BType_NameString(BType_Baeckerei) = "Bäckerei"
+  BType_NameString(BType_Metzger) = "Metzger"
+  BType_NameString(BType_Schweinefarm) = "Schweinefarm"
+  BType_NameString(BType_Getreidefram) = "Getreidefarm"
+  BType_NameString(BType_Fischerhuette) = "Fischerhütte"
+  BType_NameString(BType_Wasserwerk) = "Wasserwerk"
+  BType_NameString(BType_Eselfarm) = "Eselfarm"
+  
+  BType_NameString(BType_Kohlemine) = "Kohlemine"
+  BType_NameString(BType_Goldmine) = "Goldmine"
+  BType_NameString(BType_Eisenmine) = "Eisenmine"
+  
+  BType_NameString(BType_Goldschmelze) = "Goldschmelze"
+  BType_NameString(BType_Eisenschmelze) = "Eisenschmelze"
+  BType_NameString(BType_Werkzeugschmiede) = "Werkzeugschmiede"
+  BType_NameString(BType_Waffenschmiede) = "Waffenschmiede"
+  BType_NameString(BType_Kasserne) = "Kasserne"
+  BType_NameString(BType_Lager) = "Lager"
+  BType_NameString(BType_Werft) = "Werft"
+  BType_NameString(BType_Anlegestelle) = "Anlegestelle"
+  BType_NameString(BType_Marktplatz) = "Marktplatz"
+  
+  BType_NameString(BType_Katapultwerk) = "Katapultwerkstatt (R)"
+  BType_NameString(BType_Weingut) = "Weingut (R)"
+  BType_NameString(BType_Koehler) = "Köhler (R)"
+  BType_NameString(BType_Heiler) = "Heiler (R)"
+  BType_NameString(BType_GrosserTempel) = "großer Tempel (R)"
+  BType_NameString(BType_kleinerTempel) = "kleiner Tempel (R)"
+  
+
+  BType_NameString(BType_Ballistenwerkstatt) = "Ballistenwerkstatt (E)"
+  BType_NameString(BType_Brauerei) = "Brauerei (E)"
+  BType_NameString(BType_Edelsteinmine) = "Edelsteinmine (E, Z)"
+  BType_NameString(BType_Pyramide) = "Phyramide (E)"
+  BType_NameString(BType_Sphinx) = "Sphinx (E)"
+  
+  BType_NameString(BType_Kanonenwerkstatt) = "Kanonenwerkstatt (A)"
+  BType_NameString(BType_Destille) = "Destille (A)"
+  BType_NameString(BType_Reisfarm) = "Reisfarm (A)"
+  BType_NameString(BType_Schwefelmine) = "Schwefelmine (A)"
+  BType_NameString(BType_Pulvermacherei) = "Pulvermacherei (A)"
+  BType_NameString(BType_grosse_Pagode) = "große Pagode (A)"
+  BType_NameString(BType_kleine_Pagode) = "kleine Pagode (A)"
+  
+  BType_NameString(BType_grosser_Gong) = "großer Gong (Z)"
+  BType_NameString(BType_Impkerei) = "Imkerei (Z)"
+  BType_NameString(BType_Metwinzerei) = "Metwinzerei (Z)"
+  BType_NameString(BType_SchwefelmineAmazonen) = "Schwefelmine (Z)"
+  BType_NameString(BType_Labortorium) = "Labortorium (Z)"
+  BType_NameString(BType_grosser_Tempel) = "großer Tempel (Z)"
+  BType_NameString(BType_kleiner_Tempel) = "kleiner Tempel (Z)"
+End Sub
+
+
+
