@@ -45,7 +45,7 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.IMapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.*;
 import jsettlers.logic.statistics.GameStatistics;
@@ -129,7 +129,7 @@ public class JSettlersGame {
 		DataInputStream replayFileInputStream = new DataInputStream(new FileInputStream(loadableReplayFile));
 		replayStartInformation.deserialize(replayFileInputStream);
 
-		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
+		IMapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
 		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
 				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(), true, false,
 				replayFileInputStream);
@@ -238,6 +238,7 @@ public class JSettlersGame {
 
 				System.setErr(systemErrorStream);
 				System.setOut(systemOutStream);
+				
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
@@ -249,6 +250,7 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
+			
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {

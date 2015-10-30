@@ -45,6 +45,7 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.IMapLoader;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.tests.utils.CountingInputStream;
@@ -99,8 +100,8 @@ public class AutoReplayIT {
 
 	private Path getSavegamePath() {
 		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
-		Path uncompressed = Paths.get(replayPath + MapList.MAP_EXTENSION);
-		Path compressed = Paths.get(replayPath + MapList.COMPRESSED_MAP_EXTENSION);
+		Path uncompressed = Paths.get(replayPath + IMapLoader.MAP_EXTENSION);
+		Path compressed = Paths.get(replayPath + IMapLoader.MAP_EXTENSION_COMPRESSED);
 
 		return Files.exists(uncompressed) ? uncompressed : compressed;
 	}

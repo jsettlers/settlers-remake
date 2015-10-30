@@ -45,6 +45,7 @@ import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
+import jsettlers.logic.map.IMapLoader;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -229,7 +230,7 @@ public class SwingManagedJSettlers {
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
+				IMapLoader mapLoader = IMapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
 				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
 				playerSettings[playerId] = new PlayerSetting(true, false);
