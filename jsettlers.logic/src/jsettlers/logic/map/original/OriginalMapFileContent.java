@@ -8,6 +8,9 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.List;
+import java.util.Vector;
+
 /**
  * @author Thomas Zeugner
  */
@@ -78,11 +81,27 @@ public class OriginalMapFileContent implements IMapData
 		
 		this.height[pos] = height;
 	}
-	
+
+	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
+
 	public void setLandscape(int pos, byte type) {
 		if ((pos<0) || (pos> dataCount)) return;
-		
-		landscapeType[pos] = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type).value;
+
+		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
+
+		//TODO: remove me when Original Maps are finished ---- begin
+		if (!types.contains(originalType)) {
+			types.add(originalType);
+			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
+			if (originalType == OriginalMapFileDataStructs.EOriginalLandscapeType.NOT_A_TYPE) {
+				System.out.println(" (not a type: " + type + ")");
+			}
+			if (originalType.value != null) {
+				System.out.println(" (" + originalType.value + ")");
+			} else System.out.println();
+		}
+		//TODO: remove me when Original Maps are finished ---- end
+		landscapeType[pos] = originalType.value;
 	}
 	
 	public void setMapObject(int pos, byte type) {
