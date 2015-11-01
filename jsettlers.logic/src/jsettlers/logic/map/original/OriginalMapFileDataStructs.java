@@ -376,16 +376,15 @@ public class OriginalMapFileDataStructs
 		NOT_A_TYPE(null); //- has to be the last item
 		
 		//- length of [EOriginalLandscapeType]
-		public static final int length = 13;
 		public final ELandscapeType value;
 		
 		EOriginalLandscapeType(ELandscapeType value) {
 			this.value = value;
 		}
-		
+
 		public static EOriginalLandscapeType getTypeByInt(byte intType) {
 			if (intType <= 0) return NOT_A_TYPE;
-			if (intType >= length) return NOT_A_TYPE;
+			if (intType >= EOriginalLandscapeType.values().length) return NOT_A_TYPE;
 			
 			return EOriginalLandscapeType.values()[intType];
 		}
