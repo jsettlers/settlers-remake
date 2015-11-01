@@ -31,6 +31,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
@@ -47,34 +48,21 @@ import jsettlers.logic.player.PlayerSetting;
  * @author michael
  * @author Andreas Eberle
  */
-public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition {
-	private final IListedMap file;
-	private final MapFileHeader header;
-
-	public MapLoader(IListedMap file, MapFileHeader header) {
+public abstract class RemakeMapLoader extends MapLoader {
+	
+	private IListedMap file;
+	
+	public RemakeMapLoader(IListedMap file, MapFileHeader header) {
 		this.file = file;
 		this.header = header;
 	}
 
-	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException {
-		MapFileHeader header = loadHeader(listedMap);
-
-		switch (header.getType()) {
-		case NORMAL:
-			return new FreshMapLoader(listedMap, header);
-		case SAVED_SINGLE:
-			return new SavegameLoader(listedMap, header);
-		default:
-			throw new MapLoadException("Unkown EMapType: " + header.getType());
-		}
-
-	}
-
+	
 	public MapFileHeader getFileHeader() {
 		return header;
 	}
 
-	private static MapFileHeader loadHeader(IListedMap file) throws MapLoadException {
+	public static MapFileHeader loadHeader(IListedMap file) throws MapLoadException {
 		try (InputStream stream = getMapInputStream(file)) {
 			return MapFileHeader.readFromStream(stream);
 		} catch (IOException e) {
@@ -98,7 +86,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		if (file.isCompressed()) {
 			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 			ZipEntry zipEntry = zipInputStream.getNextEntry();
-			if (!zipEntry.getName().endsWith(MapList.MAP_EXTENSION)) {
+			if (!zipEntry.getName().endsWith(MapLoader.MAP_EXTENSION)) {
 				throw new IOException("Invalid compressed map format!");
 			}
 			inputStream = zipInputStream;
@@ -158,16 +146,6 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		return new ArrayList<ILoadableMapPlayer>();
 	}
 
-	@Override
-	public int compareTo(MapLoader o) {
-		MapFileHeader myHeader = header;
-		MapFileHeader otherHeader = o.header;
-		if (myHeader.getType() == MapType.SAVED_SINGLE) {
-			return -myHeader.getCreationDate().compareTo(otherHeader.getCreationDate()); // order by date descending
-		} else {
-			return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
-		}
-	}
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {

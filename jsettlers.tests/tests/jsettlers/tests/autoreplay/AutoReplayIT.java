@@ -45,7 +45,8 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.tests.utils.CountingInputStream;
 
@@ -99,8 +100,8 @@ public class AutoReplayIT {
 
 	private Path getSavegamePath() {
 		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
-		Path uncompressed = Paths.get(replayPath + MapList.MAP_EXTENSION);
-		Path compressed = Paths.get(replayPath + MapList.COMPRESSED_MAP_EXTENSION);
+		Path uncompressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION);
+		Path compressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION_COMPRESSED);
 
 		return Files.exists(uncompressed) ? uncompressed : compressed;
 	}
@@ -112,8 +113,8 @@ public class AutoReplayIT {
 	private static void compareMapFiles(Path expectedFile, Path actualFile) throws IOException, MapLoadException {
 		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "' (uncompressed!)");
 
-		try (InputStream expectedStream = MapLoader.getMapInputStream(new ListedMapFile(expectedFile.toFile()));
-				CountingInputStream actualStream = new CountingInputStream(MapLoader.getMapInputStream(new ListedMapFile(actualFile.toFile())))) {
+		try (InputStream expectedStream = RemakeMapLoader.getMapInputStream(new ListedMapFile(expectedFile.toFile()));
+				CountingInputStream actualStream = new CountingInputStream(RemakeMapLoader.getMapInputStream(new ListedMapFile(actualFile.toFile())))) {
 			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
 

@@ -79,6 +79,7 @@ public class MapFileHeader {
 	public static enum MapType {
 		NORMAL,
 		SAVED_SINGLE,
+		ORIGINAL
 	}
 
 	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minplayer,

@@ -17,3 +17,5 @@ logs
 /jsettlers.main.swing/*.log
 
 /jsettlers.tests/out
+/jsettlers.main.swing/config.prp
+/jsettlers.mapcreator/config.prp

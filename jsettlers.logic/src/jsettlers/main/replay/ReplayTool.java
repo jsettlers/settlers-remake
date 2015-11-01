@@ -28,7 +28,7 @@ import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.JSettlersGame.GameRunner;
 import jsettlers.main.ReplayStartInformation;
