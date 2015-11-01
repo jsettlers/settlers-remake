@@ -383,7 +383,7 @@ public class OriginalMapFileDataStructs
 		}
 
 		public static EOriginalLandscapeType getTypeByInt(byte intType) {
-			if (intType <= 0) return NOT_A_TYPE;
+			if (intType < 0) return NOT_A_TYPE;
 			if (intType >= EOriginalLandscapeType.values().length) return NOT_A_TYPE;
 			
 			return EOriginalLandscapeType.values()[intType];
