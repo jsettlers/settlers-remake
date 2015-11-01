@@ -53,8 +53,8 @@ public class OriginalMapLoader extends MapLoader
 				getMapName(),
 				getMapId(),
 				getDescription(),
-				(short) mapContent.WidthHeight,
-				(short) mapContent.WidthHeight,
+				(short) mapContent.widthHeight,
+				(short) mapContent.widthHeight,
 				(short)getMinPlayers(),
 				(short)getMaxPlayers(),
 				getCreationDate(),
@@ -81,7 +81,7 @@ public class OriginalMapLoader extends MapLoader
 
 	@Override
 	public int getMaxPlayers() {
-		return mapContent.Players.length;
+		return mapContent.players.length;
 	}
 
 	@Override 
