@@ -32,7 +32,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	protected MapFileHeader header;
 
 	
-	public static final String MAP_EXTENSION = ".smap";
+	public static final String MAP_EXTENSION = ".rmap";
 	public static final String MAP_EXTENSION_COMPRESSED = ".zmap";
 	public static final String MAP_EXTENSION_ORIGINAL = ".map";
 	
