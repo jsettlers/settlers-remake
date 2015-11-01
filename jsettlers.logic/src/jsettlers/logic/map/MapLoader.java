@@ -23,6 +23,8 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.loader.*;
 
+import java.io.IOException;
+
 /**
  * Classes of this interface are to load a game file
  * 
@@ -39,8 +41,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	public abstract MapFileHeader getFileHeader();
 	
 	
-	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException
-	{
+	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException, IOException {
 		
 		if (listedMap.getFileName().endsWith(MapLoader.MAP_EXTENSION_ORIGINAL))
 		{
@@ -77,6 +78,6 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	}
 	
 	
-	public abstract IListedMap getFile();
+	public abstract IListedMap getListedMap();
 	
 }

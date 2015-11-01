@@ -24,13 +24,11 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.original.OriginalMapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -90,27 +88,19 @@ public class MapList implements IMapListerCallable {
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
-		
-		MapLoader loader = null;
+		try {
+			MapLoader loader = MapLoader.getLoaderForListedMap(map);
+			MapType type = loader.getFileHeader().getType();
 
-		try
-		{
-			loader = MapLoader.getLoaderForListedMap(map);
-		}
-		catch (MapLoadException e) {
+			if ((type == MapType.SAVED_SINGLE)) {
+				savedMaps.add(loader);
+			} else {
+				freshMaps.add(loader);
+			}
+		} catch (Exception e) {
 			System.err.println("Cought exception while loading header for " + map.getFileName());
 			e.printStackTrace();
 		}
-		
-		MapType type = loader.getFileHeader().getType();
-		
-		if ((type == MapType.SAVED_SINGLE)) {
-			savedMaps.add(loader);
-		} else {
-			freshMaps.add(loader);
-		}
-			
-
 	}
 
 	public synchronized ChangingList<MapLoader> getSavedMaps() {
@@ -236,7 +226,7 @@ public class MapList implements IMapListerCallable {
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
-		game.getFile().delete();
+		game.getListedMap().delete();
 		savedMaps.remove(game); //- TODO: or freshMaps.remove ?
 		loadFileList();
 	}

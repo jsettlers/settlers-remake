@@ -172,7 +172,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 
-	public IListedMap getFile() {
+	public IListedMap getListedMap() {
 		return file;
 	}
 }

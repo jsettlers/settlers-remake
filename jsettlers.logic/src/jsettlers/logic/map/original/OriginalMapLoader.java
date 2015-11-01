@@ -1,33 +1,21 @@
 package jsettlers.logic.map.original;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.original.OriginalMapFileContent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
-
 
 /**
  * @author codingberlin
@@ -35,73 +23,55 @@ import java.util.Vector;
  */
 public class OriginalMapLoader extends MapLoader 
 {
-	private IListedMap file;
-	private OriginalMapFileContentReader _mapContent;
+	private final IListedMap listedMap;
+	private final OriginalMapFileContentReader mapContent;
+	private final Date creationDate;
+	private final String fileName;
 	
-	private Date _CreationDate;
-	private String _FileName;
+	public OriginalMapLoader(IListedMap listedMap) throws IOException {
+		this.listedMap = listedMap;
+		fileName = listedMap.getFileName();
+		creationDate = new Date(new File(fileName).lastModified());
+		mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
+
+		if (!mapContent.isChecksumValid()) {
+			System.out.println("Checksum of original map was not valid!");
+			return;
+		}
+
+		mapContent.loadMapResources();
+		mapContent.readBasicMapInformation();
+	}
+
+	//---------------------------//
+	//-- Interface MapLoader --//
+	//-------------------------//
+	@Override
+	public MapFileHeader getFileHeader() {
+		return new MapFileHeader(
+				MapFileHeader.MapType.ORIGINAL,
+				getMapName(),
+				getMapId(),
+				getDescription(),
+				(short) mapContent.WidthHeight,
+				(short) mapContent.WidthHeight,
+				(short)getMinPlayers(),
+				(short)getMaxPlayers(),
+				getCreationDate(),
+				getImage());
+	}
 	
-	public OriginalMapLoader(IListedMap listedMap)
-	{
-		this.file = listedMap;
-		
-		_FileName = listedMap.getFileName();
-		
-		try
-		{
-			File file = new File(_FileName);
-			_CreationDate = new Date(file.lastModified());
-		}
-		catch (Exception  e)
-		{
-			_CreationDate = new Date(); //- use now date
-		}
-		
-		
-		try
-		{
-			InputStream originalMapFile = listedMap.getInputStream();
-			
-			_mapContent = new OriginalMapFileContentReader(originalMapFile);		
-			
-			if (!_mapContent.isChecksumValid())
-			{
-				System.out.println("Checksum of original map was not valid!");
-				return;
-			}
-			
-			_mapContent.loadMapResources();
-			
-			_mapContent.readBasicMapInformation();
-			
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+	@Override
+	public IListedMap getListedMap() {
+		return listedMap;
 	}
 
 	//------------------------------//
-	//-- Interface MapLoader --//
-	@Override
-	public MapFileHeader getFileHeader()
-	{
-		return new MapFileHeader(MapFileHeader.MapType.ORIGINAL, getMapName(), getMapId(), getDescription(), (short)_mapContent.WidthHeight, (short)_mapContent.WidthHeight, (short)getMinPlayers(), (short)getMaxPlayers(), getCreationDate(), getImage());
-	}
-	
-	@Override
-	public IListedMap getFile() {
-		return file;
-	}
-	
-	
-	
-	//------------------------------//
 	//-- Interface IMapDefinition --//
+	//------------------------------//
 	@Override
-	public String getMapName()
-	{
-		return _FileName;
+	public String getMapName() {
+		return fileName;
 	}
 
 	@Override 
@@ -110,64 +80,53 @@ public class OriginalMapLoader extends MapLoader
 	}
 
 	@Override
-	public int getMaxPlayers()
-	{
-		return _mapContent.Players.length;
+	public int getMaxPlayers() {
+		return mapContent.Players.length;
 	}
 
 	@Override 
-	public Date getCreationDate()
-	{
-		return _CreationDate;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 	
 	@Override
-	public String getDescription()
-	{
+	public String getDescription() {
 		return ""; //- TODO
 	}
 
 	@Override
-	public short[] getImage()
-	{
+	public short[] getImage() {
 		//- TODO 
 		short[] tmp = new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
 		return tmp;
 	}
 	
 	@Override
-	public String getMapId()
-	{
-		return Integer.toString(_mapContent.fileChecksum);
+	public String getMapId() {
+		return Integer.toString(mapContent.fileChecksum);
 	}
 	
 	@Override
-	public List<ILoadableMapPlayer> getPlayers()
-	{
+	public List<ILoadableMapPlayer> getPlayers() {
 		return new ArrayList<ILoadableMapPlayer>(); //- ToDo
 	}
-	//------------------------------//
-	
-	
-	
-	//------------------------------//
+
+	//----------------------------//
 	//-- Interface IGameCreator --//
+	//----------------------------//
 	
 	@Override
-	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException
-	{
+	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
-		OriginalMapFileContent MapData = _mapContent.readMapData();
+		OriginalMapFileContent MapData = mapContent.readMapData();
 		watch.stop("Loading original map data required");
 
 		byte numberOfPlayers = (byte) getMaxPlayers();
 
-		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS)
-		{
+		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 			
-			for (int i = 0; i < numberOfPlayers; i++)
-			{
+			for (int i = 0; i < numberOfPlayers; i++) {
 				playerSettings[i] = new PlayerSetting(true, false);
 			}
 		}
@@ -176,8 +135,7 @@ public class OriginalMapLoader extends MapLoader
 
 		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
 		
-		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) 
-		{
+		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			playerStates[playerId] = new PlayerState(playerId, new UIState(MapData.getStartPoint(playerId)));
 		}
 
