@@ -376,6 +376,7 @@ public class OriginalMapFileDataStructs
 		NOT_A_TYPE(null); //- has to be the last item
 		
 		//- length of [EOriginalLandscapeType]
+		public static final int length = EOriginalLandscapeType.values().length;
 		public final ELandscapeType value;
 		
 		EOriginalLandscapeType(ELandscapeType value) {
@@ -384,7 +385,7 @@ public class OriginalMapFileDataStructs
 
 		public static EOriginalLandscapeType getTypeByInt(byte intType) {
 			if (intType < 0) return NOT_A_TYPE;
-			if (intType >= EOriginalLandscapeType.values().length) return NOT_A_TYPE;
+			if (intType >= EOriginalLandscapeType.length) return NOT_A_TYPE;
 			
 			return EOriginalLandscapeType.values()[intType];
 		}
@@ -524,17 +525,16 @@ public class OriginalMapFileDataStructs
 
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [EObjectType]
-		public static final int length = 13;
 		public final MapObject value;
+		public static final int length = EObjectType.values().length;
 		
 		EObjectType(MapObject value) {
 			this.value = value;
 		}
 		
 		public static EObjectType getTypeByInt(byte intType) {
-			if (intType <= 0) return NOT_A_TYPE;
-			if (intType >= length) return NOT_A_TYPE;
+			if (intType < 0) return NOT_A_TYPE;
+			if (intType >= EObjectType.length) return NOT_A_TYPE;
 			
 			return EObjectType.values()[intType];
 		}

@@ -106,7 +106,7 @@ public class OriginalMapFileContent implements IMapData
 	
 	public void setMapObject(int pos, byte type) {
 		if ((pos<0) || (pos> dataCount)) return;
-		
+
 		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
 	}
 	
