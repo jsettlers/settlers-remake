@@ -1,6 +1,5 @@
 package jsettlers.common.player;
 
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 
 /**
