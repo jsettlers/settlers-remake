@@ -3,7 +3,6 @@ package jsettlers.logic.map.original;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.mapobject.EMapObjectType;
 
 /**
@@ -12,131 +11,112 @@ import jsettlers.common.mapobject.EMapObjectType;
 public class OriginalMapFileDataStructs 
 {
 	
-	//--------------------------------------------------//
-	public static enum MAP_FILE_PART_TYPE
-	{
+	public enum EMapFilePartType {
 		EOF (0,""), // End of File and Padding
-		MapInfo (1,"Map Info"),
-		PlayerInfo (2,"Player Info"),
-		TeamInfo (3,"Team Info"),
-		Preview (4,"Preview"),
+		MAP_INFO(1,"Map Info"),
+		PLAYER_INFO(2,"Player Info"),
+		TEAM_INFO(3,"Team Info"),
+		PREVIEW(4, "Preview"),
 		UNKNOWN_5 (5,"UNKNOWN_5"),
-		Area (6,"Area"),
-		Settlers (7,"Settlers"),
-		Buildings (8,"Buildings"),
-		Resources (9,"Resources"),
+		AREA(6,"Area"),
+		SETTLERS(7,"Settlers"),
+		BUILDINGS(8,"Buildings"),
+		RESOURCES(9,"Resources"),
 		UNKNOWN_10 (10,"UNKNOWN_10"),
-		QuestText (11,"QuestText"),
-		QuestTip (12,"QuestTip");
+		QUEST_TEXT(11,"QuestText"),
+		QUEST_TIP(12,"QuestTip");
 		
 		//- length of [MapFilePartsTypes]
 		public static final int length = 13;
-		
+
 		public final int value;
 		private final String typeText;
 	
-		
-		MAP_FILE_PART_TYPE(int typeValue, String typeText)
-		{
+		EMapFilePartType(int typeValue, String typeText) {
 			this.value = typeValue;
 			this.typeText = typeText;
 		}
 		
-		public String toString()
-		{
+		public String toString() {
 			return typeText;
 		}
 		
-		public static MAP_FILE_PART_TYPE getTypeByInt(int intType)
-		{
+		public static EMapFilePartType getTypeByInt(int intType) {
 			int val = intType & 0x0000FFFF;
 			if (val <= 0) return EOF;
 			if (val >= length) return EOF;
 			
-			return MAP_FILE_PART_TYPE.values()[val];
+			return EMapFilePartType.values()[val];
 		}
 		
 	}
+
+	//--------------------------------------------------//
+	public enum EMapNations {
+		ROMANS(0),
+		EGYPTIANS(1),
+		ASIANS(2),
+		AMAZONS(3),
+		FREE_CHOICE(255),
+		NOT_DEFINED(256);
 	
-	
-	public static enum MAP_NATIONS
-	{
-		Nation_Romans(0),
-		Nation_Egyptians(1),
-		Nation_Asians(2),
-		Nation_Amazons(3),
-		Nation_FreeChoice(255),
-		Nation_NOT_DEFINED(256);
-	
-		public final int Value;
-		
-		
-		MAP_NATIONS(int value)
-		{
-			this.Value = value;
+		public final int value;
+
+		EMapNations(int value) {
+			this.value = value;
 		}
 		
-		public static MAP_NATIONS FromMapValue(int mapValue)
-		{
-			for (int i=0; i < MAP_NATIONS.values().length; i++)
-			{
-				if (MAP_NATIONS.values()[i].Value == mapValue) return MAP_NATIONS.values()[i];
+		public static EMapNations FromMapValue(int mapValue) {
+			for (int i=0; i < EMapNations.values().length; i++) {
+				if (EMapNations.values()[i].value == mapValue) return EMapNations.values()[i];
 			}
 			
-			System.err.println("wrong value for 'MAP_NATIONS' "+ Integer.toString(mapValue) +"!");
+			System.err.println("wrong value for 'EMapNations' "+ Integer.toString(mapValue) +"!");
 		
-			return MAP_NATIONS.Nation_Romans;
+			return EMapNations.ROMANS;
 		}
 	}
 	
 	//--------------------------------------------------//
-	public static enum MAP_START_RESOURCES
-	{
+	public enum EMapStartResources {
 		SMALL(1),
 		MEDIUM(2),
 		MUCH(3);
 	
-		public final int Value;
+		public final int value;
 		
-		MAP_START_RESOURCES(int value)
-		{
-			this.Value = value;
+		EMapStartResources(int value) {
+			this.value = value;
 		}
 		
-		public static MAP_START_RESOURCES FromMapValue(int mapValue)
+		public static EMapStartResources FromMapValue(int mapValue)
 		{
-			for (int i=0; i<MAP_START_RESOURCES.values().length; i++)
+			for (int i=0; i< EMapStartResources.values().length; i++)
 			{
-				if (MAP_START_RESOURCES.values()[i].Value == mapValue) return MAP_START_RESOURCES.values()[i];
+				if (EMapStartResources.values()[i].value == mapValue) return EMapStartResources.values()[i];
 			}
 			
-			System.err.println("wrong value for 'MAP_START_RESOURCES' "+ Integer.toString(mapValue) +"!");
+			System.err.println("wrong value for 'EMapStartResources' "+ Integer.toString(mapValue) +"!");
 			
-			return MAP_START_RESOURCES.SMALL;
+			return EMapStartResources.SMALL;
 		}
 	}
-	
 
 	//--------------------------------------------------//
-	public static enum MAP_FILE_VERSION
-	{
+	public enum EMapFileVersion {
 		NO_S3_FILE (0x00),
 		DEFAULT (0x0A),
 		AMAZONS (0x0B);
 		
-		public final int Value;
+		public final int value;
 		
-		MAP_FILE_VERSION(int value)
-		{
-			this.Value = value;
+		EMapFileVersion(int value) {
+			this.value = value;
 		}
 	};
-	
 
-	
 	//--------------------------------------------------//
-	public static enum LANDSCAPE_TYPE
-	{
+	public enum EOriginalLandscapeType {
 		UNKNOWN_00(ELandscapeType.WATER1),
 		UNKNOWN_01(ELandscapeType.WATER2),
 		UNKNOWN_02(ELandscapeType.WATER3),
@@ -395,30 +375,25 @@ public class OriginalMapFileDataStructs
 		
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [LANDSCAPE_TYPE]
+		//- length of [EOriginalLandscapeType]
 		public static final int length = 13;
+		public final ELandscapeType value;
 		
-		
-		public ELandscapeType value;
-		
-		LANDSCAPE_TYPE(ELandscapeType value)
-		{
+		EOriginalLandscapeType(ELandscapeType value) {
 			this.value = value;
 		}
 		
-		public static LANDSCAPE_TYPE getTypeByInt(byte intType)
-		{
+		public static EOriginalLandscapeType getTypeByInt(byte intType) {
 			if (intType <= 0) return NOT_A_TYPE;
 			if (intType >= length) return NOT_A_TYPE;
 			
-			return LANDSCAPE_TYPE.values()[intType];
+			return EOriginalLandscapeType.values()[intType];
 		}
 	}
 
 	
 	//--------------------------------------------------//
-	public static enum OBJECT_TYPE
-	{
+	public enum EObjectType {
 		NO_OBJECT(null),  //- 0
 		UNKNOWN_01(null),  //- GAME_OBJECT_BIG_STONE_1 = 1,
 		UNKNOWN_02(null),  //- GAME_OBJECT_BIG_STONE_2 = 2,
@@ -550,25 +525,20 @@ public class OriginalMapFileDataStructs
 
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [OBJECT_TYPE]
+		//- length of [EObjectType]
 		public static final int length = 13;
+		public final MapObject value;
 		
-		
-		public MapObject value;
-		
-		OBJECT_TYPE(MapObject value)
-		{
+		EObjectType(MapObject value) {
 			this.value = value;
 		}
 		
-		public static OBJECT_TYPE getTypeByInt(byte intType)
-		{
+		public static EObjectType getTypeByInt(byte intType) {
 			if (intType <= 0) return NOT_A_TYPE;
 			if (intType >= length) return NOT_A_TYPE;
 			
-			return OBJECT_TYPE.values()[intType];
+			return EObjectType.values()[intType];
 		}
 	}
-	
-	
+
 }

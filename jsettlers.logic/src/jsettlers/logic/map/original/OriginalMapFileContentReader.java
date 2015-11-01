@@ -1,19 +1,9 @@
 package jsettlers.logic.map.original;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-
 import java.io.*;
 
-import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs;
 import jsettlers.logic.map.original.OriginalMapFileContent.MapPlayerInfo;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.MAP_START_RESOURCES;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 
 /**
  * @author Thomas Zeugner
@@ -45,19 +35,19 @@ public class OriginalMapFileContentReader
 	
 
 	
-	public MAP_START_RESOURCES StartResources = MAP_START_RESOURCES.SMALL;
+	public OriginalMapFileDataStructs.EMapStartResources StartResources = EMapStartResources.SMALL;
 	public OriginalMapFileContent.MapPlayerInfo[] Players;
 	
 	
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException 
 	{
 		//- init Resource Info
-		_resources = new MapResourceInfo[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.length];
+		_resources = new MapResourceInfo[OriginalMapFileDataStructs.EMapFilePartType.length];
 		for(int i=0; i<_resources.length;i++) _resources[i] = new MapResourceInfo();
 		
 		//- init players
 		Players = new MapPlayerInfo[1];
-		Players[0] = new MapPlayerInfo(100,100,"",OriginalMapFileDataStructs.MAP_NATIONS.Nation_Romans );
+		Players[0] = new MapPlayerInfo(100,100,"", OriginalMapFileDataStructs.EMapNations.ROMANS);
 
 		
 		
@@ -185,7 +175,8 @@ public class OriginalMapFileContentReader
 			int MapPartPos = FilePos + 8;
 
 			//- debug output
-			System.out.println("@ "+ FilePos +"   size: "+ PartLen +"  Type:"+ PartType +"  Sub:"+ PartTypeSub +"  -> "+  OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.getTypeByInt(PartType).toString() );
+			System.out.println("@ "+ FilePos +"   size: "+ PartLen +"  Type:"+ PartType +"  Sub:"+ PartTypeSub +"  -> "+  OriginalMapFileDataStructs.EMapFilePartType
+					.getTypeByInt(PartType).toString() );
 
 					
 			//- next position in File
@@ -231,12 +222,12 @@ public class OriginalMapFileContentReader
 		WidthHeight=0;
 	
 		//- get resource information for the area 
-		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area.value];
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.EMapFilePartType.AREA.value];
 		if (FPart==null) return;
 		if (FPart.size < 4) return;
 
 		//- uncrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area)) return ;	
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return ;
 
 		//- file position
 		int pos = FPart.offset;
@@ -249,7 +240,7 @@ public class OriginalMapFileContentReader
 	
 	public void MapInfo()
 	{
-		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.MapInfo.value];
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO.value];
 		
 		if ((FPart==null) || (FPart.size == 0))
 		{
@@ -258,7 +249,7 @@ public class OriginalMapFileContentReader
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.MapInfo)) return;	
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO)) return;
 
 		//- file position
 		int pos = FPart.offset;
@@ -289,7 +280,7 @@ public class OriginalMapFileContentReader
 		
 		for (int i=0; i<PlayerCount; i++)
 		{
-			Players[i] = new MapPlayerInfo(20+i*10,20+i*10, Integer.toString(i) ,OriginalMapFileDataStructs.MAP_NATIONS.Nation_Romans );
+			Players[i] = new MapPlayerInfo(20+i*10,20+i*10, Integer.toString(i) , OriginalMapFileDataStructs.EMapNations.ROMANS);
 		}
 		
 		
@@ -297,7 +288,7 @@ public class OriginalMapFileContentReader
 		int StartResourcesValue = readBEIntFrom(pos);
 		pos += 4;
 		
-		this.StartResources = MAP_START_RESOURCES.FromMapValue(StartResourcesValue);
+		this.StartResources = EMapStartResources.FromMapValue(StartResourcesValue);
 	}
 	
 	
@@ -305,7 +296,7 @@ public class OriginalMapFileContentReader
 	//- Read the Player Info
 	public void PlayerInfo()
 	{
-		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.PlayerInfo.value];
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO.value];
 		
 		if ((FPart==null) || (FPart.size == 0))
 		{
@@ -314,14 +305,14 @@ public class OriginalMapFileContentReader
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.PlayerInfo)) return;	
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO)) return;
 
 		//- file position
 		int pos = FPart.offset;
 		
 		for (int i = 0; i < Players.length; i++)
 		{
-			Players[i].Nation = OriginalMapFileDataStructs.MAP_NATIONS.FromMapValue(readBEIntFrom(pos));
+			Players[i].Nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(readBEIntFrom(pos));
 			pos += 4;
 			
 			Players[i].startX = readBEIntFrom(pos);
@@ -347,7 +338,7 @@ public class OriginalMapFileContentReader
 		mapData.fileChecksum = fileChecksum;
 		
 		//- get resource information for the area 
-		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area.value];
+		MapResourceInfo FPart = _resources[OriginalMapFileDataStructs.EMapFilePartType.AREA.value];
 		if (FPart==null) return mapData;
 		
 		if (FPart.size == 0)
@@ -357,7 +348,7 @@ public class OriginalMapFileContentReader
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.Area)) return mapData;	
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return mapData;
 
 
 		//- file position
@@ -402,10 +393,10 @@ public class OriginalMapFileContentReader
 	
 	
 	//- uncrypt a resource
-	private boolean doDecrypt(OriginalMapFileDataStructs.MAP_FILE_PART_TYPE type)
+	private boolean doDecrypt(OriginalMapFileDataStructs.EMapFilePartType type)
 	{
 		int PartId = type.value;
-		if ((PartId <= 0) || (PartId >= OriginalMapFileDataStructs.MAP_FILE_PART_TYPE.length)) return false;
+		if ((PartId <= 0) || (PartId >= OriginalMapFileDataStructs.EMapFilePartType.length)) return false;
 		
 		if (_mapContent==null)
 		{

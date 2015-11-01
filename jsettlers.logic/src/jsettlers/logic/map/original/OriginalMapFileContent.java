@@ -1,11 +1,5 @@
 package jsettlers.logic.map.original;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-
-import java.io.*;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -13,8 +7,6 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs;
-
 
 /**
  * @author Thomas Zeugner
@@ -27,17 +19,17 @@ public class OriginalMapFileContent implements IMapData
 		int startX;
 		int startY;
 		String PName;
-		OriginalMapFileDataStructs.MAP_NATIONS Nation;
+		OriginalMapFileDataStructs.EMapNations Nation;
 		
 		public MapPlayerInfo(int X, int Y, String PName, int nationInt)
 		{
 			this.startX = X;
 			this.startY = Y;
 			this.PName = PName;
-			this.Nation = OriginalMapFileDataStructs.MAP_NATIONS.FromMapValue(nationInt);
+			this.Nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
 		}
 		
-		public MapPlayerInfo(int X, int Y, String PName, OriginalMapFileDataStructs.MAP_NATIONS nation)
+		public MapPlayerInfo(int X, int Y, String PName, OriginalMapFileDataStructs.EMapNations nation)
 		{
 			this.startX = X;
 			this.startY = Y;
@@ -96,14 +88,14 @@ public class OriginalMapFileContent implements IMapData
 	{
 		if ((pos<0) || (pos>_dataCount)) return;
 		
-		_Type[pos] = OriginalMapFileDataStructs.LANDSCAPE_TYPE.getTypeByInt(type).value;
+		_Type[pos] = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type).value;
 	}
 	
 	public void setMapObject(int pos, byte type)
 	{
 		if ((pos<0) || (pos>_dataCount)) return;
 		
-		_Object[pos] = OriginalMapFileDataStructs.OBJECT_TYPE.getTypeByInt(type).value;;
+		_Object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
 	}
 	
 	public void setPalyerClaim(int pos, byte player)
