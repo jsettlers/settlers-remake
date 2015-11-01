@@ -28,7 +28,9 @@ public enum ELandscapeType {
 	DESERTBORDEROUTER(20, new Color(0xff949200), false, false),
 	EARTH(2, new Color(0xffa2653e), false, false), // TODO: color
 	MOUNTAIN(21, new Color(0xff424142), false, false),
-	SNOW(24, new Color(0xffd7fffe), false, true),
+	SNOW(25, new Color(0xffd7fffe), false, true),
+	SNOWINNER(24, new Color(0xffd7fffe), false, true),
+	SNOWBORDER(23, new Color(0xffd7fffe), false, false),
 	SAND(3, new Color(0xff949200), false, false),
 	/**
 	 * Flattened grass (for buildings, paths, ...). Must behave exactly like normal grass does!
