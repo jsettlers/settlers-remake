@@ -140,7 +140,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_14(ELandscapeType.DESERTBORDEROUTER),
 		UNKNOWN_15(ELandscapeType.MOORBORDER),
 		UNKNOWN_16(null),
-		UNKNOWN_17(null),
+		UNKNOWN_17(ELandscapeType.MUDBORDER),
 		UNKNOWN_18(null),
 		UNKNOWN_19(null),
 		UNKNOWN_1A(null),
@@ -261,8 +261,8 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_8D(null),
 		UNKNOWN_8E(null),
 		UNKNOWN_8F(null),
-		UNKNOWN_90(ELandscapeType.MOOR), //- mud ??
-		UNKNOWN_91(null),
+		UNKNOWN_90(ELandscapeType.MUDINNER), //- mud ??
+		UNKNOWN_91(ELandscapeType.MUD),
 		UNKNOWN_92(null),
 		UNKNOWN_93(null),
 		UNKNOWN_94(null),
@@ -383,7 +383,7 @@ public class OriginalMapFileDataStructs
 			this.value = value;
 		}
 
-		public static EOriginalLandscapeType getTypeByInt(byte intType) {
+		public static EOriginalLandscapeType getTypeByInt(short intType) {
 			if (intType < 0) return NOT_A_TYPE;
 			if (intType >= EOriginalLandscapeType.length) return NOT_A_TYPE;
 			
@@ -532,7 +532,7 @@ public class OriginalMapFileDataStructs
 			this.value = value;
 		}
 		
-		public static EObjectType getTypeByInt(byte intType) {
+		public static EObjectType getTypeByInt(short intType) {
 			if (intType < 0) return NOT_A_TYPE;
 			if (intType >= EObjectType.length) return NOT_A_TYPE;
 			

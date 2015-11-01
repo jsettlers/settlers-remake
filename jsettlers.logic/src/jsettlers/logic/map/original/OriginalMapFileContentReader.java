@@ -323,11 +323,9 @@ public class OriginalMapFileContentReader
 		//		int i = x + (widthHeight * (widthHeight - y - 1));
 				
 				mapData.setLandscapeHeight(i, mapContent[pos++]);
-				mapData.setLandscape(i, mapContent[pos++]);
-				mapData.setMapObject(i, mapContent[pos++]);
-	
+				mapData.setLandscape(i, transformToUnsignedByte(mapContent[pos++]));
+				mapData.setMapObject(i, transformToUnsignedByte(mapContent[pos++]));
 				mapData.setPalyerClaim(i, mapContent[pos++]);
-	
 				mapData.setAccessible(i, mapContent[pos++]);
 				mapData.setResources(i, mapContent[pos++]);
 		//	}
@@ -338,6 +336,14 @@ public class OriginalMapFileContentReader
 		mapData.mapPlayerInfos = this.players;
 		
 		return mapData;
+	}
+
+	short transformToUnsignedByte(byte signedByte) {
+		if (signedByte < 0) {
+			return (short) (signedByte & 0xFF);
+		} else {
+			return signedByte;
+		}
 	}
 	
 	//- uncrypt a resource

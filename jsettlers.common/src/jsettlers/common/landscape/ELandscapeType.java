@@ -48,9 +48,12 @@ public enum ELandscapeType {
 	WATER6(12, new Color(0xff000073), true, true),
 	WATER7(11, new Color(0xff000073), true, true),
 	WATER8(10, new Color(0xff000073), true, true),
-	MOOR(7, new Color(0xff0e87cc), false, true), // TODO: color
-	MOORINNER(8, new Color(0xff0e87cc), false, true), // TODO: color
+	MOOR(8, new Color(0xff0e87cc), false, true), // TODO: color
+	MOORINNER(7, new Color(0xff0e87cc), false, true), // TODO: color
 	MOORBORDER(9, new Color(0xff0e87cc), false, false), // TODO: color
+	MUD(5, new Color(0xff0e87cc), false, true), // TODO: color
+	MUDINNER(4, new Color(0xff0e87cc), false, true), // TODO: color
+	MUDBORDER(6, new Color(0xff0e87cc), false, false), // TODO: color
 	FLATTENED_DESERT(217, new Color(0xff949200), false, false),
 	SHARP_FLATTENED_DESERT(217, new Color(0xff949200), false, false),
 	GRAVEL(230, new Color(0xff000000), false, false); // TODO: color

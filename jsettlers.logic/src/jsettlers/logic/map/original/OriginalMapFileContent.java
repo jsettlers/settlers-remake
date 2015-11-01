@@ -84,7 +84,7 @@ public class OriginalMapFileContent implements IMapData
 
 	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
 
-	public void setLandscape(int pos, byte type) {
+	public void setLandscape(int pos, short type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
 		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
@@ -104,7 +104,7 @@ public class OriginalMapFileContent implements IMapData
 		landscapeType[pos] = originalType.value;
 	}
 	
-	public void setMapObject(int pos, byte type) {
+	public void setMapObject(int pos, short type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
 		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
