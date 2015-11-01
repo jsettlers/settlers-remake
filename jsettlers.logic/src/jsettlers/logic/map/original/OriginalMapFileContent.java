@@ -16,25 +16,25 @@ public class OriginalMapFileContent implements IMapData
 	//--------------------------------------------------//
 	public static class MapPlayerInfo
 	{
-		int startX;
-		int startY;
-		String PName;
-		OriginalMapFileDataStructs.EMapNations Nation;
+		public static int startX;
+		public static int startY;
+		public static String playerName;
+		public static OriginalMapFileDataStructs.EMapNations nation;
 		
-		public MapPlayerInfo(int X, int Y, String PName, int nationInt)
+		public MapPlayerInfo(int X, int Y, String playerName, int nationInt)
 		{
 			this.startX = X;
 			this.startY = Y;
-			this.PName = PName;
-			this.Nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
+			this.playerName = playerName;
+			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
 		}
 		
-		public MapPlayerInfo(int X, int Y, String PName, OriginalMapFileDataStructs.EMapNations nation)
+		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation)
 		{
 			this.startX = X;
 			this.startY = Y;
-			this.PName = PName;
-			this.Nation = nation;
+			this.playerName = playerName;
+			this.nation = nation;
 		}
 	}
 	
@@ -44,148 +44,132 @@ public class OriginalMapFileContent implements IMapData
 	public int fileChecksum = 0;
 	
 	//- original maps are squared
-	private int _WidthHeight = 0;
-	private int _dataCount = 0;
+	private int widthHeight = 0;
+	private int dataCount = 0;
 
-	private byte [] _height = null;
-	private ELandscapeType[] _Type = null;
-	private MapObject [] _Object = null ;
-	private byte [] _plyerClaim = null ;
-	private byte [] _accessible = null ;
-	private byte [] _resources = null;
+	private byte [] height = null;
+	private ELandscapeType[] landscapeType = null;
+	private MapObject [] object = null ;
+	private byte [] plyerClaim = null ;
+	private byte [] accessible = null ;
+	private byte [] resources = null;
 
-	public MapPlayerInfo[] Players;
+	public MapPlayerInfo[] mapPlayerInfos;
 	
+	public OriginalMapFileContent(int widthHeight) {
+		setWidthHeight(widthHeight);
+	}
 	
-	public OriginalMapFileContent(int WidthHeight)
-	{
-		setWidthHeight(WidthHeight);
+	public void setWidthHeight(int widthHeight) {
+		this.widthHeight = widthHeight;
+		
+		dataCount = widthHeight * widthHeight;
+		
+		height = new byte[dataCount];
+		landscapeType = new ELandscapeType[dataCount];
+		object = new MapObject[dataCount];
+		plyerClaim = new byte[dataCount];
+		accessible = new byte[dataCount];
+		resources = new byte[dataCount];
+	}
+	
+	public void setLandscapeHeight(int pos, byte height) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		this.height[pos] = height;
+	}
+	
+	public void setLandscape(int pos, byte type) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		landscapeType[pos] = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type).value;
+	}
+	
+	public void setMapObject(int pos, byte type) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
+	}
+	
+	public void setPalyerClaim(int pos, byte player) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		plyerClaim[pos] = player;
+	}
+	
+	public void setAccessible(int pos, byte isAccessible) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		accessible[pos] = isAccessible;
+	}
+	
+	public void setResources(int pos, byte Resources) {
+		if ((pos<0) || (pos> dataCount)) return;
+		
+		resources[pos] = Resources;
 	}
 	
 	
-	public void setWidthHeight(int WidthHeight)
-	{
-		_WidthHeight = WidthHeight;
-		
-		_dataCount = WidthHeight * WidthHeight;
-		
-		_height = new byte[_dataCount];
-		_Type = new ELandscapeType[_dataCount];
-		_Object = new MapObject[_dataCount];
-		_plyerClaim = new byte[_dataCount];
-		_accessible = new byte[_dataCount];
-		_resources = new byte[_dataCount];
-	}
-	
-	public void setLandscapeHeight(int pos, byte height)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_height[pos] = height;
-	}
-	
-	public void setLandscape(int pos, byte type)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_Type[pos] = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type).value;
-	}
-	
-	public void setMapObject(int pos, byte type)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_Object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
-	}
-	
-	public void setPalyerClaim(int pos, byte player)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_plyerClaim[pos] = player;
-	}
-	
-	public void setAccessible(int pos, byte isAccessible)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_accessible[pos] = isAccessible;
-	}
-	
-	public void setResources(int pos, byte Resources)
-	{
-		if ((pos<0) || (pos>_dataCount)) return;
-		
-		_resources[pos] = Resources;
-	}
-	
-	
-	//------------------------------//
+	//------------------------//
 	//-- Interface IMapData --//
+	//------------------------//
 	
 	@Override
-	public int getWidth()
-	{
-		return _WidthHeight;
+	public int getWidth() {
+		return widthHeight;
 	}
 	
 	@Override
-	public int getHeight()
-	{
-		return _WidthHeight;
+	public int getHeight() {
+		return widthHeight;
 	}
 
 	@Override
-	public ELandscapeType getLandscape(int x, int y)
-	{
-		int pos = y * _WidthHeight + x;
+	public ELandscapeType getLandscape(int x, int y) {
+		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > _dataCount)) return ELandscapeType.WATER1;
+		if ((pos < 0) || (pos > dataCount)) return ELandscapeType.WATER1;
 		
-		if (_Type[pos]==null) return ELandscapeType.GRASS;
+		if (landscapeType[pos]==null) return ELandscapeType.GRASS;
 		
-		return _Type[pos];
+		return landscapeType[pos];
 	}
 	
 	@Override
-	public MapObject getMapObject(int x, int y)
-	{
-		int pos = y * _WidthHeight + x;
+	public MapObject getMapObject(int x, int y) {
+		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > _dataCount)) return null;
+		if ((pos < 0) || (pos > dataCount)) return null;
 		
 		//- for debugging:
-		if (Players.length>0) if ((x==Players[0].startX) && (y==Players[0].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (Players.length>1) if ((x==Players[1].startX) && (y==Players[1].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (Players.length>2) if ((x==Players[2].startX) && (y==Players[2].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (Players.length>3) if ((x==Players[3].startX) && (y==Players[3].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (mapPlayerInfos.length>0) if ((x== mapPlayerInfos[0].startX) && (y== mapPlayerInfos[0].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (mapPlayerInfos.length>1) if ((x== mapPlayerInfos[1].startX) && (y== mapPlayerInfos[1].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (mapPlayerInfos.length>2) if ((x== mapPlayerInfos[2].startX) && (y== mapPlayerInfos[2].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
+		if (mapPlayerInfos.length>3) if ((x== mapPlayerInfos[3].startX) && (y== mapPlayerInfos[3].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
 		//--------------
 		
-		return _Object[pos];
+		return object[pos];
 	}
 	
 	@Override
-	public byte getLandscapeHeight(int x, int y)
-	{
-		int pos = y * _WidthHeight + x;
+	public byte getLandscapeHeight(int x, int y) {
+		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > _dataCount)) return 0;
+		if ((pos < 0) || (pos > dataCount)) return 0;
 		
-		return _height[pos];
+		return height[pos];
 	}
 
 	/**
 	 * Gets the amount of resources for a given position. In range 0..127
 	 */
 	@Override
-	public byte getResourceAmount(short x, short y)
-	{
+	public byte getResourceAmount(short x, short y) {
 		return 0;
 	}
 
 	@Override
-	public EResourceType getResourceType(short x, short y)
-	{
+	public EResourceType getResourceType(short x, short y) {
 		return EResourceType.FISH;
 	}
 	
@@ -194,31 +178,28 @@ public class OriginalMapFileContent implements IMapData
 	 * @return The id of the blocked partition the given position belongs to.
 	 */
 	@Override
-	public short getBlockedPartition(short x, short y)
-	{
-		int pos = y * _WidthHeight + x;
+	public short getBlockedPartition(short x, short y) {
+		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > _dataCount)) return 0;
+		if ((pos < 0) || (pos > dataCount)) return 0;
 		
 		//- Player1=1 ... Player2=2 ... noPlayer=0
-		return _plyerClaim[pos];
+		return plyerClaim[pos];
 	}
 	
 	
 	@Override
-	public ShortPoint2D getStartPoint(int player)
-	{
-		if ((player < 0) || (player >= Players.length))
+	public ShortPoint2D getStartPoint(int player) {
+		if ((player < 0) || (player >= mapPlayerInfos.length))
 		{
 			return new ShortPoint2D(100,100);
 		}
-		return new ShortPoint2D(Players[player].startX, Players[player].startY);
+		return new ShortPoint2D(mapPlayerInfos[player].startX, mapPlayerInfos[player].startY);
 	}
 	
 	@Override
-	public int getPlayerCount()
-	{
-		return Players.length;
+	public int getPlayerCount() {
+		return mapPlayerInfos.length;
 	}
 	
 

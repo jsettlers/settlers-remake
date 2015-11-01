@@ -266,7 +266,7 @@ public class OriginalMapFileContentReader
 		int pos = FPart.offset;
 		
 		for (int i = 0; i < players.length; i++) {
-			players[i].Nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(readBEIntFrom(pos));
+			players[i].nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(readBEIntFrom(pos));
 			pos += 4;
 			
 			players[i].startX = readBEIntFrom(pos);
@@ -275,10 +275,10 @@ public class OriginalMapFileContentReader
 			players[i].startY = readBEIntFrom(pos);
 			pos += 4;
 			
-			players[i].PName = readCStrFrom(pos, 33);
+			players[i].playerName = readCStrFrom(pos, 33);
 			pos += 33;
 			
-			System.out.println("Player "+ Integer.toString(i) +" : "+ players[i].PName +" @ ("+ players[i].startX +" , "+ players[i].startY +")");
+			System.out.println("Player "+ Integer.toString(i) +" : "+ players[i].playerName +" @ ("+ players[i].startX +" , "+ players[i].startY +")");
 		}
 	}
 	
@@ -335,7 +335,7 @@ public class OriginalMapFileContentReader
 		}
 		
 		//- add palyers
-		mapData.Players = this.players;
+		mapData.mapPlayerInfos = this.players;
 		
 		return mapData;
 	}
