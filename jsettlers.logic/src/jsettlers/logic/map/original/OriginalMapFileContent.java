@@ -90,7 +90,7 @@ public class OriginalMapFileContent implements IMapData
 		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
 
 		//TODO: remove me when Original Maps are finished ---- begin
-		if (!types.contains(originalType)) {
+		/*if (!types.contains(originalType)) {
 			types.add(originalType);
 			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
 			if (originalType == OriginalMapFileDataStructs.EOriginalLandscapeType.NOT_A_TYPE) {
@@ -99,15 +99,30 @@ public class OriginalMapFileContent implements IMapData
 			if (originalType.value != null) {
 				System.out.println(" (" + originalType.value + ")");
 			} else System.out.println();
-		}
+		}*/
 		//TODO: remove me when Original Maps are finished ---- end
 		landscapeType[pos] = originalType.value;
 	}
-	
+	private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
+
 	public void setMapObject(int pos, short type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
-		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;;
+		OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
+		//TODO: remove me when Original Maps are finished ---- begin
+		if (!mapObjects.contains(originalType)) {
+			mapObjects.add(originalType);
+			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
+			if (originalType == OriginalMapFileDataStructs.EObjectType.NOT_A_TYPE) {
+				System.out.println(" (not a type: " + type + ")");
+			}
+			if (originalType.value != null) {
+				System.out.println(" (" + originalType.value + ")");
+			} else System.out.println();
+		}
+		//TODO: remove me when Original Maps are finished ---- end
+
+		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
 	}
 	
 	public void setPalyerClaim(int pos, byte player) {

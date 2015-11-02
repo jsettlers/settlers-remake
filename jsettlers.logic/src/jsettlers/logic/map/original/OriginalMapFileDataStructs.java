@@ -3,6 +3,8 @@ package jsettlers.logic.map.original;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.mapobject.EMapObjectType;
 
 /**
@@ -461,20 +463,20 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_40(null),  //- GAME_OBJECT_REED_BEDS_3 = 64,
 		UNKNOWN_41(null),  //- GAME_OBJECT_REED_BEDS_4 = 65,
 		UNKNOWN_42(null),  //- GAME_OBJECT_REED_BEDS_5 = 66,
-		UNKNOWN_43(null),  //- GAME_OBJECT_REED_BEDS_6 = 67,
-		UNKNOWN_44(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
-		UNKNOWN_45(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
-		UNKNOWN_46(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ELM_1 = 70,
-		UNKNOWN_47(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ELM_2 = 71,
-		UNKNOWN_48(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_OAK_1 = 72,
-		UNKNOWN_49(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
-		UNKNOWN_4A(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
-		UNKNOWN_4B(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
-		UNKNOWN_4C(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
-		UNKNOWN_4D(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- //-- unknown: 77
-		UNKNOWN_4E(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
-		UNKNOWN_4F(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
-		UNKNOWN_50(new MapDecorationObject(EMapObjectType.TREE_ADULT)),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
+		UNKNOWN_43(null),  //- GAME_OBJEC()T_REED_BEDS_6 = 67,
+		UNKNOWN_44(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
+		UNKNOWN_45(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
+		UNKNOWN_46(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_1 = 70,
+		UNKNOWN_47(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_2 = 71,
+		UNKNOWN_48(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_OAK_1 = 72,
+		UNKNOWN_49(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
+		UNKNOWN_4A(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
+		UNKNOWN_4B(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
+		UNKNOWN_4C(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
+		UNKNOWN_4D(MapTreeObject.getInstance()),  //- //-- unknown: 77
+		UNKNOWN_4E(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
+		UNKNOWN_4F(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
+		UNKNOWN_50(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
 		UNKNOWN_51(null),  //- //-- unknown: 81
 		UNKNOWN_52(null),  //- //-- unknown: 82
 		UNKNOWN_53(null),  //- //-- unknown: 83
@@ -509,19 +511,19 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_70(null),  //- GAME_OBJECT_REEF_MEDIUM = 112,
 		UNKNOWN_71(null),  //- GAME_OBJECT_REEF_LARGE = 113,
 		UNKNOWN_72(null),  //- GAME_OBJECT_REEF_XLARGE = 114,
-		UNKNOWN_73(null),  //- GAME_OBJECT_RES_STONE_01 = 115,
-		UNKNOWN_74(null),  //- GAME_OBJECT_RES_STONE_02 = 116,
-		UNKNOWN_75(null),  //- GAME_OBJECT_RES_STONE_03 = 117,
-		UNKNOWN_76(null),  //- GAME_OBJECT_RES_STONE_04 = 118,
-		UNKNOWN_77(null),  //- GAME_OBJECT_RES_STONE_05 = 119,
-		UNKNOWN_78(null),  //- GAME_OBJECT_RES_STONE_06 = 120,
-		UNKNOWN_79(null),  //- GAME_OBJECT_RES_STONE_07 = 121,
-		UNKNOWN_7A(null),  //- GAME_OBJECT_RES_STONE_08 = 122,
-		UNKNOWN_7B(null),  //- GAME_OBJECT_RES_STONE_09 = 123,
-		UNKNOWN_7C(null),  //- GAME_OBJECT_RES_STONE_10 = 124,
-		UNKNOWN_7D(null),  //- GAME_OBJECT_RES_STONE_11 = 125,
-		UNKNOWN_7E(null),  //- GAME_OBJECT_RES_STONE_12 = 126,
-		UNKNOWN_7F(null),  //- GAME_OBJECT_RES_STONE_13 = 127,
+		UNKNOWN_73(MapStoneObject.getInstance(12)),  //- GAME_OBJECT_RES_STONE_01 = 115,
+		UNKNOWN_74(MapStoneObject.getInstance(11)),  //- GAME_OBJECT_RES_STONE_02 = 116,
+		UNKNOWN_75(MapStoneObject.getInstance(10)),  //- GAME_OBJECT_RES_STONE_03 = 117,
+		UNKNOWN_76(MapStoneObject.getInstance(9)),  //- GAME_OBJECT_RES_STONE_04 = 118,
+		UNKNOWN_77(MapStoneObject.getInstance(8)),  //- GAME_OBJECT_RES_STONE_05 = 119,
+		UNKNOWN_78(MapStoneObject.getInstance(7)),  //- GAME_OBJECT_RES_STONE_06 = 120,
+		UNKNOWN_79(MapStoneObject.getInstance(6)),  //- GAME_OBJECT_RES_STONE_07 = 121,
+		UNKNOWN_7A(MapStoneObject.getInstance(5)),  //- GAME_OBJECT_RES_STONE_08 = 122,
+		UNKNOWN_7B(MapStoneObject.getInstance(4)),  //- GAME_OBJECT_RES_STONE_09 = 123,
+		UNKNOWN_7C(MapStoneObject.getInstance(3)),  //- GAME_OBJECT_RES_STONE_10 = 124,
+		UNKNOWN_7D(MapStoneObject.getInstance(2)),  //- GAME_OBJECT_RES_STONE_11 = 125,
+		UNKNOWN_7E(MapStoneObject.getInstance(1)),  //- GAME_OBJECT_RES_STONE_12 = 126,
+		UNKNOWN_7F(MapStoneObject.getInstance(0)),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
 		NOT_A_TYPE(null); //- has to be the last item
 		
