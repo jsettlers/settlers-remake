@@ -43,7 +43,8 @@ public class NearRequiredBuildingConstructionPositionFinder implements IBestCons
 		List<ShortPoint2D> neededBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(neededBuildingType, playerId);
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
+					playerId, buildingType)) {
 				ShortPoint2D nearestNeededBuilding = AiStatistics.detectNearestPointFromList(point, neededBuildings);
 				int nearestNeededBuildingDistance = 0;
 				if (nearestNeededBuilding != null) {

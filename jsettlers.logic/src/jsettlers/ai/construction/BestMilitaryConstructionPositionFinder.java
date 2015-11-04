@@ -67,7 +67,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		int nearestResourcePointsDistance = Integer.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
+					playerId, buildingType)) {
 				List<ShortPoint2D> nearestResourcePoints = new ArrayList<ShortPoint2D>();
 				if (importantResources.contains(ImportantResource.TREES)) {
 					ShortPoint2D nearestTree = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT,
