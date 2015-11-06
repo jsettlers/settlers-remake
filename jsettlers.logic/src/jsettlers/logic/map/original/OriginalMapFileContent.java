@@ -16,6 +16,8 @@ import java.util.Vector;
  */
 public class OriginalMapFileContent implements IMapData
 {
+	private boolean startTowerMaterialsAndSettlersWereSet = false;
+
 	//--------------------------------------------------//
 	public static class MapPlayerInfo {
 		public int startX;
@@ -54,7 +56,7 @@ public class OriginalMapFileContent implements IMapData
 	private byte [] accessible = null ;
 	private byte [] resources = null;
 
-	public MapPlayerInfo[] mapPlayerInfos;
+	private MapPlayerInfo[] mapPlayerInfos;
 	
 	public OriginalMapFileContent(int widthHeight) {
 		setWidthHeight(widthHeight);
@@ -139,8 +141,12 @@ public class OriginalMapFileContent implements IMapData
 		
 		resources[pos] = Resources;
 	}
-	
-	
+
+	public void setMapPlayerInfos(MapPlayerInfo[] mapPlayerInfos) {
+		this.mapPlayerInfos = mapPlayerInfos;
+		addStartTowerMaterialsAndSettlers();
+	}
+
 	//------------------------//
 	//-- Interface IMapData --//
 	//------------------------//
@@ -172,15 +178,19 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos > dataCount)) return null;
 		
-		for (byte i = 0; i < mapPlayerInfos.length; i++) {
-			if ((x == mapPlayerInfos[i].startX) && (y == mapPlayerInfos[i].startY)) {
-				return new BuildingObject(EBuildingType.TOWER, i);
-			}
-		}
-
 		return object[pos];
 	}
-	
+
+	private void addStartTowerMaterialsAndSettlers() {
+		if (!startTowerMaterialsAndSettlersWereSet) {
+			for (byte playerId = 0; playerId < mapPlayerInfos.length; playerId++) {
+				int towerPosition = mapPlayerInfos[playerId].startY * widthHeight + mapPlayerInfos[playerId].startX;
+				object[towerPosition] =  new BuildingObject(EBuildingType.TOWER, playerId);
+			}
+			startTowerMaterialsAndSettlersWereSet = true;
+		}
+	}
+
 	@Override
 	public byte getLandscapeHeight(int x, int y) {
 		int pos = y * widthHeight + x;

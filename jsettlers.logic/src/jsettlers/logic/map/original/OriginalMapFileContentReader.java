@@ -333,7 +333,7 @@ public class OriginalMapFileContentReader
 		}
 		
 		//- add palyers
-		mapData.mapPlayerInfos = this.players;
+		mapData.setMapPlayerInfos(this.players);
 		
 		return mapData;
 	}
