@@ -32,11 +32,7 @@ import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
  */
 public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	protected final EBuildingType buildingType;
-
-	public BestStoneCutterConstructionPositionFinder(EBuildingType type) {
-		this.buildingType = type;
-	}
+	public BestStoneCutterConstructionPositionFinder() {}
 
 	public static class StoneCutterPositionRater implements AiPositions.PositionRater {
 		private static final int BLOCKS_WORK_AREA_MALUS = 12;

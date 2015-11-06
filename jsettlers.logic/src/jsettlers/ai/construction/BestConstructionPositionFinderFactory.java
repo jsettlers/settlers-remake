@@ -36,7 +36,7 @@ public class BestConstructionPositionFinderFactory {
 	public final IBestConstructionPositionFinder getBestConstructionPositionFinderFor(EBuildingType type) {
 		switch (type) {
 		case STONECUTTER:
-			return new BestStoneCutterConstructionPositionFinder(type);
+			return new BestStoneCutterConstructionPositionFinder();
 		case LUMBERJACK:
 			return new BestLumberJackConstructionPositionFinder(type);
 		case FORESTER:
