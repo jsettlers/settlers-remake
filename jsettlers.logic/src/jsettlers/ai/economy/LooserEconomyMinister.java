@@ -163,8 +163,14 @@ public class LooserEconomyMinister implements EconomyMinister {
 		return 10;
 	}
 
-	@Override public List<EBuildingType> getBuildingsToBuild() {
+	@Override
+	public List<EBuildingType> getBuildingsToBuild() {
 		return buildingsToBuild;
+	}
+
+	@Override
+	public byte getMidGameNumberOfStoneCutters() {
+		return 3;
 	}
 
 	@Override

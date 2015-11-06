@@ -168,8 +168,14 @@ public class WinnerEconomyMinister implements EconomyMinister {
 		return 5;
 	}
 
-	@Override public List<EBuildingType> getBuildingsToBuild() {
+	@Override
+	public List<EBuildingType> getBuildingsToBuild() {
 		return buildingsToBuild;
+	}
+
+	@Override
+	public byte getMidGameNumberOfStoneCutters() {
+		return 5;
 	}
 
 	@Override
