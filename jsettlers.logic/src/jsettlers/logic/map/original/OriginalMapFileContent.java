@@ -18,10 +18,10 @@ public class OriginalMapFileContent implements IMapData
 {
 	//--------------------------------------------------//
 	public static class MapPlayerInfo {
-		public static int startX;
-		public static int startY;
-		public static String playerName;
-		public static OriginalMapFileDataStructs.EMapNations nation;
+		public int startX;
+		public int startY;
+		public String playerName;
+		public OriginalMapFileDataStructs.EMapNations nation;
 		
 		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
 			this.startX = X;
@@ -172,13 +172,12 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos > dataCount)) return null;
 		
-		//- for debugging:
-		if (mapPlayerInfos.length>0) if ((x== mapPlayerInfos[0].startX) && (y== mapPlayerInfos[0].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (mapPlayerInfos.length>1) if ((x== mapPlayerInfos[1].startX) && (y== mapPlayerInfos[1].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (mapPlayerInfos.length>2) if ((x== mapPlayerInfos[2].startX) && (y== mapPlayerInfos[2].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		if (mapPlayerInfos.length>3) if ((x== mapPlayerInfos[3].startX) && (y== mapPlayerInfos[3].startY)) return new BuildingObject(EBuildingType.TOWER, (byte)0);
-		//--------------
-		
+		for (byte i = 0; i < mapPlayerInfos.length; i++) {
+			if ((x == mapPlayerInfos[i].startX) && (y == mapPlayerInfos[i].startY)) {
+				return new BuildingObject(EBuildingType.TOWER, i);
+			}
+		}
+
 		return object[pos];
 	}
 	
