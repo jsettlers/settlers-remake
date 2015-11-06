@@ -78,7 +78,7 @@ public class StartScreenConnector implements IStartScreen {
 		playerSettings[playerId] = new PlayerSetting(true);
 		for (byte i = 0; i < playerSettings.length; i++) {
 			if (i != playerId) {
-				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, EWhatToDoAiType.getTypeByIndex(i));
+				playerSettings[i] = new PlayerSetting(true, CommonConstants.ENABLE_AI ? EWhatToDoAiType.getTypeByIndex(i) : null);
 			}
 		}
 

@@ -41,7 +41,7 @@ public class OriginalMapFileContentReader
 	
 	private byte[] mapContent;
 	private int fileVersion = 0;
-	public OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.SMALL;
+	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
 	public OriginalMapFileContent.MapPlayerInfo[] players;
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
@@ -347,8 +347,8 @@ public class OriginalMapFileContentReader
 		}
 		
 		//- add palyers
-		mapData.setMapPlayerInfos(this.players);
-		
+		mapData.setMapPlayerInfos(this.players, startResources);
+
 		return mapData;
 	}
 
@@ -404,5 +404,8 @@ public class OriginalMapFileContentReader
 		resources[PartId].hasBeenDecrypted = true;
 		return true;
 	}
-	
+
+	public EMapStartResources getStartResources() {
+		return startResources;
+	}
 }
