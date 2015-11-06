@@ -6,8 +6,14 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -186,6 +192,25 @@ public class OriginalMapFileContent implements IMapData
 			for (byte playerId = 0; playerId < mapPlayerInfos.length; playerId++) {
 				int towerPosition = mapPlayerInfos[playerId].startY * widthHeight + mapPlayerInfos[playerId].startX;
 				object[towerPosition] =  new BuildingObject(EBuildingType.TOWER, playerId);
+				List<MapObject> mapObjects = EStartMapObjectsType.generateStackObjects(EStartMapObjectsType.HIGH_GOODS);
+				mapObjects.addAll(EStartMapObjectsType.generateMovableObjects(EStartMapObjectsType.HIGH_GOODS, playerId));
+
+				List<RelativePoint> towerTiles = Arrays.asList(EBuildingType.TOWER.getProtectedTiles());
+
+				//RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 4);
+				RelativePoint relativeMapObjectPoint = new RelativePoint(-1, 2);
+				for (MapObject currentMapObject : mapObjects) {
+					do {
+						int mapObjectPosition = relativeMapObjectPoint.calculateY(mapPlayerInfos[playerId].startY)
+								* widthHeight + relativeMapObjectPoint.calculateX(mapPlayerInfos[playerId].startX);
+						if (object[mapObjectPosition] == null && !towerTiles.contains(relativeMapObjectPoint)) {
+							object[mapObjectPosition] = currentMapObject;
+							relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
+							break;
+						}
+						relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
+					} while (true);
+				}
 			}
 			startTowerMaterialsAndSettlersWereSet = true;
 		}
@@ -241,10 +266,15 @@ public class OriginalMapFileContent implements IMapData
 	public int getPlayerCount() {
 		return mapPlayerInfos.length;
 	}
-	
 
-
-
-	
-	
+	private RelativePoint nextPointOnSpiral(RelativePoint previousPoint) {
+		short previousX = previousPoint.getDx();
+		short previousY = previousPoint.getDy();
+		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
+		if (previousX == basis && previousY > basis * -1) return new RelativePoint(previousX, previousY-1);
+		if (previousX == basis *-1 && previousY <= basis) return new RelativePoint(previousX, previousY+1);
+		if (previousX < basis && previousY == basis) return new RelativePoint(previousX+1, previousY);
+		if (previousX > basis *-1 && previousY == basis *-1) return new RelativePoint(previousX-1, previousY);
+		return null;
+	}
 }
