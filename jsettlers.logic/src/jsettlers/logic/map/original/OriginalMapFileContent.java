@@ -17,23 +17,20 @@ import java.util.Vector;
 public class OriginalMapFileContent implements IMapData
 {
 	//--------------------------------------------------//
-	public static class MapPlayerInfo
-	{
+	public static class MapPlayerInfo {
 		public static int startX;
 		public static int startY;
 		public static String playerName;
 		public static OriginalMapFileDataStructs.EMapNations nation;
 		
-		public MapPlayerInfo(int X, int Y, String playerName, int nationInt)
-		{
+		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
 			this.startX = X;
 			this.startY = Y;
 			this.playerName = playerName;
 			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
 		}
 		
-		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation)
-		{
+		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation) {
 			this.startX = X;
 			this.startY = Y;
 			this.playerName = playerName;

@@ -183,8 +183,8 @@ public class OriginalMapFileContentReader
 		fileChecksum = readBEIntFrom(0);
 		
 		//- read Map Information
-		MapInfo();
-		PlayerInfo();
+		readMapInfo();
+		readPlayerInfo();
 
 		//- reset
 		widthHeight = 0;
@@ -206,7 +206,7 @@ public class OriginalMapFileContentReader
 	
 	
 	
-	public void MapInfo() {
+	public void readMapInfo() {
 		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO.value];
 		
 		if ((FPart==null) || (FPart.size == 0)) {
@@ -251,7 +251,7 @@ public class OriginalMapFileContentReader
 	}
 
 	//- Read the Player Info
-	public void PlayerInfo() {
+	public void readPlayerInfo() {
 		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO.value];
 		
 		if ((FPart==null) || (FPart.size == 0)) {
