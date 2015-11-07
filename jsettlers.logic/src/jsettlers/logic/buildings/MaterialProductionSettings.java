@@ -14,30 +14,30 @@
  *******************************************************************************/
 package jsettlers.logic.buildings;
 
-import jsettlers.common.buildings.IMaterialProduction;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.network.synchronic.random.RandomSingleton;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import jsettlers.common.buildings.IMaterialProductionSettings;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.network.synchronic.random.RandomSingleton;
+
 /**
  * @author codingberlin
  */
-public class MaterialProduction implements IMaterialProduction, Serializable {
+public class MaterialProductionSettings implements IMaterialProductionSettings, Serializable {
 	private static final long serialVersionUID = 5315922528738308895L;
 	public static final int MAXIMUM_FUTURE_PRODUCTION = 20;
 
 	private static EMaterialType[] WEAPONS = {
 			EMaterialType.SWORD,
 			EMaterialType.SPEAR,
-			EMaterialType.BOW};
+			EMaterialType.BOW };
 	private static List<EMaterialType> WEAPONS_LIST = Arrays.asList(WEAPONS);
 	private final float[] ratios = new float[EMaterialType.NUMBER_OF_MATERIALS];
 	private final float[] numberOfFutureProducedMaterials = new float[EMaterialType.NUMBER_OF_MATERIALS];
 
-	public MaterialProduction() {
+	public MaterialProductionSettings() {
 		for (EMaterialType type : EMaterialType.values) {
 			ratios[type.ordinal] = 0;
 			numberOfFutureProducedMaterials[type.ordinal] = 0;
@@ -85,11 +85,11 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 		ratios[type.ordinal] = ratio;
 	}
 
-	public EMaterialType dropWeapon() {
-		return dropMaterialOutOfGroup(WEAPONS);
+	public EMaterialType getWeaponToProduce() {
+		return getMaterialOfGroupToProduce(WEAPONS);
 	}
 
-	private EMaterialType dropMaterialOutOfGroup(EMaterialType[] materialGroup) {
+	private EMaterialType getMaterialOfGroupToProduce(EMaterialType[] materialGroup) {
 		float sumOfFutureProducedMaterials = 0;
 		for (EMaterialType type : materialGroup) {
 			sumOfFutureProducedMaterials += numberOfFutureProducedMaterials[type.ordinal];
@@ -119,5 +119,4 @@ public class MaterialProduction implements IMaterialProduction, Serializable {
 		}
 		return null;
 	}
-
 }

@@ -47,7 +47,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.MaterialProduction;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
@@ -551,7 +551,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].deadMines;
 	}
 
-	public MaterialProduction getMaterialProduction(byte playerId) {
+	public MaterialProductionSettings getMaterialProduction(byte playerId) {
 		return playerStatistics[playerId].materialProduction;
 	}
 
@@ -573,7 +573,7 @@ public class AiStatistics {
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
-		private MaterialProduction materialProduction;
+		private MaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();

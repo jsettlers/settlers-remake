@@ -14,8 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import java.util.Arrays;
+
 import go.graphics.text.EFontSize;
-import jsettlers.common.buildings.IMaterialProduction;
+import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -32,11 +34,9 @@ import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
 
-import java.util.Arrays;
-
 public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDataProvider<ToolsPanel.RowUiData> {
 	private final UIUpdater<RowUiData> updater;
-	private IMaterialProduction materialProduction;
+	private IMaterialProductionSettings materialProduction;
 
 	private static class Row extends UIPanel implements PositionSupplyer, UIUpdater.IUpdateReceiver<RowUiData> {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
@@ -84,6 +84,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 			this.position = position;
 		}
 
+		@Override
 		public ShortPoint2D getCurrentPosition() {
 			return position;
 		}
@@ -164,7 +165,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		materialProduction = grid.getMaterialProductionAt(pos);
+		materialProduction = grid.getPartitionData(pos.x, pos.y).getPartitionSettings().getMaterialProductionSettings();
 		for (Row row : rows) {
 			row.setPosition(pos);
 		}
@@ -187,13 +188,13 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 	}
 
 	class RowUiData {
-		private final IMaterialProduction materialProduction;
+		private final IMaterialProductionSettings materialProduction;
 
-		RowUiData(IMaterialProduction materialProduction) {
+		RowUiData(IMaterialProductionSettings materialProduction) {
 			this.materialProduction = materialProduction;
 		}
 
-		public IMaterialProduction getMaterialProduction() {
+		public IMaterialProductionSettings getMaterialProduction() {
 			return materialProduction;
 		}
 	}

@@ -16,7 +16,6 @@ package jsettlers.mapcreator.mapview;
 
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -24,7 +23,6 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
@@ -124,9 +122,4 @@ public class MapGraphics implements IGraphicsGrid {
 	public boolean isBuilding(int x, int y) {
 		return false;
 	}
-
-	@Override public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
-		return null;
-	}
-
 }

@@ -26,7 +26,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.MaterialProduction;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
@@ -95,7 +95,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<WorkerCreationRequest>();
 	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<SoilderCreationRequest>();
-	final MaterialProduction materialProduction;
 
 	private boolean stopped = true;
 
@@ -114,7 +113,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				return joblessBearer.isEmpty();
 			}
 		}, materialOffers, settings);
-		this.materialProduction = new MaterialProduction();
 	}
 
 	public void startManager() {
@@ -130,8 +128,8 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return stopped;
 	}
 
-	public MaterialProduction getMaterialProduction() {
-		return materialProduction;
+	public MaterialProductionSettings getMaterialProduction() {
+		return settings.getMaterialProductionSettings();
 	}
 
 	public void addOffer(ShortPoint2D position, EMaterialType materialType) {

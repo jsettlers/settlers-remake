@@ -44,7 +44,6 @@ import jsettlers.common.Color;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
@@ -79,7 +78,7 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.MaterialProduction;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
@@ -755,11 +754,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBuilding(int x, int y) {
 			return flagsGrid.isBlocked(x, y) && objectsGrid.isBuildingAt(x, y);
-		}
-
-		@Override
-		public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
-			return partitionsGrid.getMaterialProductionAt(position.x, position.y);
 		}
 	}
 
@@ -1646,7 +1640,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public MaterialProduction getMaterialProductionAt(int x, int y) {
+		public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
 			return partitionsGrid.getMaterialProductionAt(x, y);
 		}
 	}
@@ -1780,7 +1774,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public MaterialProduction getMaterialProductionAt(ShortPoint2D position) {
+		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
 			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
 	}

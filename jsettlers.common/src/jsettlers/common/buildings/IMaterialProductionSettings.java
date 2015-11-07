@@ -19,8 +19,9 @@ import jsettlers.common.material.EMaterialType;
 /**
  * @author codingberlin
  */
-public interface IMaterialProduction {
+public interface IMaterialProductionSettings {
 
 	float ratioOfMaterial(EMaterialType type);
+
 	int numberOfFutureProducedMaterial(EMaterialType type);
 }

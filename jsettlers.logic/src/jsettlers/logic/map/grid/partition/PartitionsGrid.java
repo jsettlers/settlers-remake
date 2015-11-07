@@ -46,7 +46,7 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
-import jsettlers.logic.buildings.MaterialProduction;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
@@ -159,7 +159,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return partitionObjects[partitions[x + y * width]];
 	}
 
-	public MaterialProduction getMaterialProductionAt(int x, int y) {
+	public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
 		return getPartitionAt(x, y).getMaterialProduction();
 	}
 

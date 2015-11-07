@@ -24,7 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
-import jsettlers.logic.buildings.MaterialProduction;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
 /**
@@ -137,5 +137,5 @@ public interface IGuiInputGrid {
 
 	FogOfWar getFogOfWar();
 
-	MaterialProduction getMaterialProductionAt(ShortPoint2D position);
+	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
 }

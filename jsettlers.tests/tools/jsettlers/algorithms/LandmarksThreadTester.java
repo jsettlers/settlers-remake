@@ -20,7 +20,6 @@ import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.buildings.IMaterialProduction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -111,13 +110,13 @@ public class LandmarksThreadTester {
 	// for (short y = HEIGHT - 1; y >= 0; y--) {
 	// printSpaces(y * 10);
 	// for (short x = 0; x < WIDTH; x++) {
-	// System.out.print("      (" + x + "|" + y + ")");
+	// System.out.print(" (" + x + "|" + y + ")");
 	// if (map.isBlocked(x, y)) {
 	// System.out.print("b");
 	// } else {
 	// System.out.print(" ");
 	// }
-	// System.out.print("|" + map.getPartitionAt(x, y) + "      ");
+	// System.out.print("|" + map.getPartitionAt(x, y) + " ");
 	// }
 	// System.out.println();
 	// }
@@ -224,11 +223,6 @@ public class LandmarksThreadTester {
 		@Override
 		public boolean isBuilding(int x, int y) {
 			return false;
-		}
-
-		@Override
-		public IMaterialProduction getMaterialProductionAt(ShortPoint2D position) {
-			return null;
 		}
 	}
 }
