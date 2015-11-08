@@ -51,6 +51,9 @@ public class OriginalMapFileContentReader
 	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
 	public OriginalMapFileContent.MapPlayerInfo[] players;
 
+	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
+	
+	
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		//- init Resource Info
 		resources = new LinkedList<MapResourceInfo>();
@@ -98,7 +101,27 @@ public class OriginalMapFileContentReader
 				((mapContent[offset+3] & 0xFF) << 24);
 	}
 	
+	//- Read Big-Ending 2 Byte Number from Buffer
+	public int readBEWordFrom(int offset) {
+		if (mapContent == null) return 0;
+		return  ((mapContent[offset  ] & 0xFF) << 0) |
+				((mapContent[offset+1] & 0xFF) << 8);
+	}
 	
+	//- read the Higher 4-Bit of the buffer
+	public int readHighNibbleFrom(int offset) {
+		if (mapContent == null) return 0;
+		return (mapContent[offset] << 4) & 0x0F;
+	}
+	
+	//- read the Lower 4-Bit of the buffer
+	public int readLowNibbleFrom(int offset) {
+		if (mapContent == null) return 0;
+		return (mapContent[offset]) & 0x0F;
+		
+	}
+
+	//- read a C-Style String from Buffer (ends with the first \0)
 	public String readCStrFrom(int offset, int length) {
 		if (mapContent == null) return "";
 		if (mapContent.length <= offset + length) return "";
@@ -117,6 +140,21 @@ public class OriginalMapFileContentReader
 		return outStr;
 	}
 	
+	//- returns a File Resources
+	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type)
+	{
+		Iterator<MapResourceInfo> iterator = resources.iterator();
+		
+		while(iterator.hasNext()){
+			MapResourceInfo element = (MapResourceInfo) iterator.next();
+			
+			if (element.PartType == type) return element;
+		}
+		
+		System.err.println("Error: findResource("+ type +") failed!");
+		
+		return null;
+	}
 	
 	boolean isChecksumValid() {
 		//- read Checksum from File
@@ -227,22 +265,10 @@ public class OriginalMapFileContentReader
 	}
 	
 	
-	//- returns the Index of a File Resources
-	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type)
-	{
-		Iterator<MapResourceInfo> iterator = resources.iterator();
-		
-		while(iterator.hasNext()){
-			MapResourceInfo element = (MapResourceInfo) iterator.next();
-			
-			if (element.PartType == type) return element;
-		}
-		
-		System.err.println("Error: findResource("+ type +") failed!");
-		
-		return null;
-	}
+
 	
+	
+	//- Read some common information from the map-file
 	public void readMapInfo() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO);
 		
@@ -258,6 +284,7 @@ public class OriginalMapFileContentReader
 		int pos = FPart.offset;
 		
 		//----------------------------------
+		//- read mapType (single / multiplayer map?)
 		int MapType = readBEIntFrom(pos);
 		pos += 4;
 			  
@@ -269,7 +296,8 @@ public class OriginalMapFileContentReader
 			System.err.println("wrong value for 'isSinglePlayerMap' "+ Integer.toString(MapType) +" in mapfile!");
 		}
 
-		//----------------------------------  
+		//---------------------------------- 
+		//- read Player count
 		int PlayerCount = readBEIntFrom(pos);
 		pos += 4;
 		
@@ -281,12 +309,78 @@ public class OriginalMapFileContentReader
 		
 		
 		//----------------------------------
+		//- read start resources
 		int StartResourcesValue = readBEIntFrom(pos);
 		pos += 4;
 		
 		this.startResources = EMapStartResources.FromMapValue(StartResourcesValue);
 	}
 
+	
+	//- Read some common information from the map-file
+	public boolean readBuildings() {
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
+		
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS)) return false;
+
+		//- file position
+		int pos = FPart.offset;
+		
+		//- Number of buildings
+		int BuildinsCount = readBEIntFrom(pos);
+		pos += 4;
+		
+		//- safety check
+		if ((BuildinsCount * 12 > FPart.size) || (BuildinsCount < 0)) {
+			System.err.println("wrong number of buildings in map File: "+ BuildinsCount);
+		    BuildinsCount = 0;
+		    return false;
+		}
+		
+		
+		//- read all Buildings
+		for (int i = 0 ; i < BuildinsCount; i++) {
+		 
+	        int party = readByteFrom(pos++); //- Party starts with 0
+	        int BType = readByteFrom(pos++);
+	        int x_pos = readBEWordFrom(pos);  pos+=2;
+	        int y_pos = readBEWordFrom(pos);  pos+=2;
+	        
+	        //- maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
+	        int notUsed = readByteFrom(pos++);
+	        
+	        //-----------
+			//- number of soldier in building is saved as 4-Bit (=Nibble):
+			int countSword1 = readHighNibbleFrom(pos);
+			int countSword2 = readLowNibbleFrom(pos);
+			pos++;
+			
+			int countArcher2 = readHighNibbleFrom(pos);
+			int countArcher3 = readLowNibbleFrom(pos);
+			pos++;
+			
+			int countSword3 = readHighNibbleFrom(pos);
+			int countArcher1 = readLowNibbleFrom(pos);
+			pos++;
+			
+			int countSpear3 = readHighNibbleFrom(pos);
+			int countNotUsed = readLowNibbleFrom(pos);
+			pos++;
+			
+			int countSpear1 = readHighNibbleFrom(pos);
+			int countSpear2 = readLowNibbleFrom(pos);
+			pos++;
+
+			//-------------
+	        //- update data                              
+			mapData.setBuilding(x_pos, y_pos, BType, party, countSword1, countSword2, countSword3, countArcher1, countArcher2, countArcher3, countSpear1, countSpear2, countSpear3);
+		}
+		
+		return true;
+	}
+	
+	
 	//- Read the Player Info
 	public void readPlayerInfo() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
@@ -322,22 +416,22 @@ public class OriginalMapFileContentReader
 	
 	
 	//- Reads in the Map Data and returns a IMapData
-	public OriginalMapFileContent readMapData() {
-		OriginalMapFileContent mapData = new OriginalMapFileContent(0);
+	public boolean readMapData() {
+		
 		
 		mapData.fileChecksum = fileChecksum;
 		
 		//- get resource information for the area 
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
-		if (FPart==null) return mapData;
+		if (FPart==null) return false;
 		
 		if (FPart.size == 0) {
 			System.err.println("Warning: No area information available in mapfile!");
-			return mapData;
+			return false;
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return mapData;
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return false;
 
 		//- file position
 		int pos = FPart.offset;
@@ -353,7 +447,7 @@ public class OriginalMapFileContentReader
 		int dataCount = WidthHeight * WidthHeight;
 		
 		for (int i=0; i< dataCount; i++) {
-			mapData.setLandscapeHeight(i, mapContent[pos++]);
+			mapData.setLandscapeHeight(i, readByteFrom(pos++));
 			mapData.setLandscape(i, readByteFrom(pos++));
 			mapData.setMapObject(i, readByteFrom(pos++));
 			mapData.setPalyerClaim(i, mapContent[pos++]);
@@ -364,7 +458,7 @@ public class OriginalMapFileContentReader
 		//- add palyers
 		mapData.setMapPlayerInfos(this.players, startResources);
 
-		return mapData;
+		return true;
 	}
 
 

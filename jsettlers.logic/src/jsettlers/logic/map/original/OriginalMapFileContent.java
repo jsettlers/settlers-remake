@@ -22,6 +22,7 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -95,10 +96,17 @@ public class OriginalMapFileContent implements IMapData
 		resources = new byte[dataCount];
 	}
 	
-	public void setLandscapeHeight(int pos, byte height) {
+	public void setLandscapeHeight(int pos, int height) {
 		if ((pos<0) || (pos> dataCount)) return;
 		
-		this.height[pos] = height;
+		//- apply scaling of remake to original...
+		height = height / 2;
+		
+		// TODO: original maps can be higher then 127!
+		if (height>127) height=127;
+		if (height<0) height=0;
+		
+		this.height[pos] = (byte)height;
 	}
 
 	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
@@ -134,7 +142,7 @@ public class OriginalMapFileContent implements IMapData
 		if (!mapObjects.contains(originalType)) {
 			mapObjects.add(originalType);
 			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
-			if (originalType == OriginalMapFileDataStructs.EObjectType.NOT_A_TYPE) {
+			if (originalType == OriginalMapFileDataStructs.EObjectType.NO_OBJECT) {
 				System.out.println(" (not a type: " + type + ")");
 			}
 			if (originalType.value != null) {
@@ -146,20 +154,37 @@ public class OriginalMapFileContent implements IMapData
 		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
 	}
 	
+	
+	
+	public void setBuilding(int x, int y, int BType, int party, int countSword1, int countSword2, int countSword3, int countArcher1, int countArcher2, int countArcher3, int countSpear1, int countSpear2, int countSpear3) {
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos > dataCount)) return;
+		
+		EMapBuildingType BuildingType = EMapBuildingType.getTypeByInt(BType);
+		
+		if (BuildingType == EMapBuildingType.NOT_A_BUILDING) return;
+		if (BuildingType.value != null) {
+			mapObject[pos] = new BuildingObject(BuildingType.value, (byte)party);
+		}
+	}
+	
+
+	
 	public void setPalyerClaim(int pos, byte player) {
-		if ((pos<0) || (pos> dataCount)) return;
+		if ((pos < 0) || (pos > dataCount)) return;
 		
 		plyerClaim[pos] = player;
 	}
 	
 	public void setAccessible(int pos, byte isAccessible) {
-		if ((pos<0) || (pos> dataCount)) return;
+		if ((pos < 0) || (pos > dataCount)) return;
 		
 		accessible[pos] = isAccessible;
 	}
 	
 	public void setResources(int pos, byte Resources) {
-		if ((pos<0) || (pos> dataCount)) return;
+		if ((pos < 0) || (pos > dataCount)) return;
 		
 		resources[pos] = Resources;
 	}

@@ -132,7 +132,14 @@ public class OriginalMapLoader extends MapLoader
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
-		OriginalMapFileContent MapData = mapContent.readMapData();
+		
+		//- read the landscape
+		mapContent.readMapData();
+		//- read the buildings
+		mapContent.readBuildings();
+		
+		OriginalMapFileContent MapData = mapContent.mapData;
+		
 		watch.stop("Loading original map data required");
 
 		byte numberOfPlayers = (byte) getMaxPlayers();

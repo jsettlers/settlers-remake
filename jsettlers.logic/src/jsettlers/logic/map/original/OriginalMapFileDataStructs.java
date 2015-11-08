@@ -14,11 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.*;
+import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+
 
 import java.util.List;
 import java.util.Vector;
@@ -240,8 +242,8 @@ public class OriginalMapFileDataStructs
 
 	//--------------------------------------------------//
 	public enum EOriginalLandscapeType {
-		WATER1(ELandscapeType.WATER1),
-		WATER2(ELandscapeType.WATER2),
+		WATER1(ELandscapeType.WATER1), //- value = 0x00
+		WATER2(ELandscapeType.WATER2), //- value = 0x01
 		WATER3(ELandscapeType.WATER3),
 		WATER4(ELandscapeType.WATER4),
 		WATER5(ELandscapeType.WATER5),
@@ -320,7 +322,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_4D(null),
 		UNKNOWN_4E(null),
 		UNKNOWN_4F(null),
-		MOORINNER(ELandscapeType.MOORINNER), //- swamp ??
+		MOORINNER(ELandscapeType.MOORINNER),
 		MOOR(ELandscapeType.MOOR),
 		UNKNOWN_52(null),
 		UNKNOWN_53(null),
@@ -384,7 +386,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_8D(null),
 		UNKNOWN_8E(null),
 		UNKNOWN_8F(null),
-		MUDINNER(ELandscapeType.MUDINNER), //- mud ??
+		MUDINNER(ELandscapeType.MUDINNER),
 		MUD(ELandscapeType.MUD),
 		UNKNOWN_92(null),
 		UNKNOWN_93(null),
@@ -498,8 +500,8 @@ public class OriginalMapFileDataStructs
 		
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [EOriginalLandscapeType]
-		public static final int length = EOriginalLandscapeType.values().length;
+		//- length of [EOriginalLandscapeType] without NOT_A_TYPE
+		public static final int length = EOriginalLandscapeType.values().length - 1;
 		public final ELandscapeType value;
 		
 		EOriginalLandscapeType(ELandscapeType value) {
@@ -514,6 +516,90 @@ public class OriginalMapFileDataStructs
 		}
 	}
 
+	
+
+	public enum EMapBuildingType {
+		
+		NOT_A_BUILDING(null), //- 0 is not defined
+		
+		STOCK(EBuildingType.STOCK),
+		LUMBERJACK(EBuildingType.LUMBERJACK),
+		STONECUTTER(EBuildingType.STONECUTTER),
+		SAWMILL(EBuildingType.SAWMILL),
+		FORESTER(EBuildingType.FORESTER),
+		LOOKOUT_TOWER(EBuildingType.LOOKOUT_TOWER),
+		COALMINE(EBuildingType.COALMINE),
+		GOLDMINE(EBuildingType.GOLDMINE),
+		IRONMINE(EBuildingType.IRONMINE),
+		GOLDMELT(EBuildingType.GOLDMELT),
+		Eisenschmelze(EBuildingType.IRONMELT),
+		TOOLSMITH(EBuildingType.TOOLSMITH),
+		WEAPONSMITH(EBuildingType.WEAPONSMITH),
+		WINEGROWER(EBuildingType.WINEGROWER),
+		TOWER(EBuildingType.TOWER),
+		TOWER_BIG(EBuildingType.BIG_TOWER),
+		Muehle(EBuildingType.MILL),
+		CASTLE(EBuildingType.CASTLE),
+		BARRACK(EBuildingType.BARRACK),
+		BAKER(EBuildingType.BAKER),
+		Metzger(EBuildingType.SLAUGHTERHOUSE),
+		Destille(null),
+		PIG_FARM(EBuildingType.PIG_FARM),
+		FARM(EBuildingType.FARM),
+		FISHER(EBuildingType.FISHER),
+		LIVINGHOUSE_SMALL(EBuildingType.SMALL_LIVINGHOUSE),
+		LIVINGHOUSE_MEDIUM(EBuildingType.MEDIUM_LIVINGHOUSE),
+		LIVINGHOUSE_BIG(EBuildingType.BIG_LIVINGHOUSE),
+		Schwefelmine(null),
+		WATERWORKS(EBuildingType.WATERWORKS),
+		Katapultwerk(null),
+		DOCKYARD(EBuildingType.DOCKYARD),
+		HARBUR(EBuildingType.HARBUR),
+		Marktplatz(null),
+		HOSPITAL(EBuildingType.HOSPITAL),
+		Reisfarm(null),
+		Edelsteinmine(null),
+		Brauerei(null),
+		CHARCOAL_BURNER(EBuildingType.CHARCOAL_BURNER),
+		Pulvermacherei(null),
+		Pyramide(null),
+		Sphinx(null),
+		BIG_TEMPLE(EBuildingType.BIG_TEMPLE),
+		TEMPLE(EBuildingType.TEMPLE),
+		grosse_Pagode(null),
+		kleine_Pagode(null),
+		Ballistenwerkstatt(null),
+		Kanonenwerkstatt(null),
+		DONKEY_FARM(EBuildingType.DONKEY_FARM),
+		grosser_Gong(null),
+		Impkerei(null),
+		Metwinzerei(null),
+		Labortorium(null),
+		kleiner_Tempel(null),
+		grosser_Tempel(null),
+		SchwefelmineAmazonen(null),
+		
+		END_OF_LIST(null); //- has to be the last item
+		
+		
+		//- length of [EBuildingType] (without END_OF_LIST)
+		public static final int length = EBuildingType.values().length-1;
+		public final EBuildingType value;
+		
+		EMapBuildingType(EBuildingType value) {
+			this.value = value;
+		}
+		
+		public static EMapBuildingType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_BUILDING;
+			if (type >= EMapBuildingType.length) return NOT_A_BUILDING;
+			
+			return EMapBuildingType.values()[type];
+		}
+		
+	}
+	
+	
 	
 	//--------------------------------------------------//
 	public enum EObjectType {
@@ -646,18 +732,18 @@ public class OriginalMapFileDataStructs
 		RES_STONE_12(MapStoneObject.getInstance(1)),  //- GAME_OBJECT_RES_STONE_12 = 126,
 		RES_STONE_13(MapStoneObject.getInstance(0)),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
-		NOT_A_TYPE(null); //- has to be the last item
+		END_OF_LIST(null); //- has to be the last item
 		
 		public final MapObject value;
-		public static final int length = EObjectType.values().length;
+		public static final int length = EObjectType.values().length - 1;
 		
 		EObjectType(MapObject value) {
 			this.value = value;
 		}
 		
 		public static EObjectType getTypeByInt(int type) {
-			if (type < 0) return NOT_A_TYPE;
-			if (type >= EObjectType.length) return NOT_A_TYPE;
+			if (type < 0) return NO_OBJECT;
+			if (type >= EObjectType.length) return NO_OBJECT;
 			
 			return EObjectType.values()[type];
 		}
