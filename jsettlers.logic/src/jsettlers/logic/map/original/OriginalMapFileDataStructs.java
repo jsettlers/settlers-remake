@@ -240,14 +240,14 @@ public class OriginalMapFileDataStructs
 
 	//--------------------------------------------------//
 	public enum EOriginalLandscapeType {
-		UNKNOWN_00(ELandscapeType.WATER1),
-		UNKNOWN_01(ELandscapeType.WATER2),
-		UNKNOWN_02(ELandscapeType.WATER3),
-		UNKNOWN_03(ELandscapeType.WATER4),
-		UNKNOWN_04(ELandscapeType.WATER5),
-		UNKNOWN_05(ELandscapeType.WATER6),
-		UNKNOWN_06(ELandscapeType.WATER7),
-		UNKNOWN_07(ELandscapeType.WATER8),
+		WATER1(ELandscapeType.WATER1),
+		WATER2(ELandscapeType.WATER2),
+		WATER3(ELandscapeType.WATER3),
+		WATER4(ELandscapeType.WATER4),
+		WATER5(ELandscapeType.WATER5),
+		WATER6(ELandscapeType.WATER6),
+		WATER7(ELandscapeType.WATER7),
+		WATER8(ELandscapeType.WATER8),
 		UNKNOWN_08(null),
 		UNKNOWN_09(null),
 		UNKNOWN_0A(null),
@@ -256,14 +256,14 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_0D(null),
 		UNKNOWN_0E(null),
 		UNKNOWN_0F(null),
-		UNKNOWN_10(ELandscapeType.GRASS),
-		UNKNOWN_11(ELandscapeType.MOUNTAINBORDEROUTER),
+		GRASS(ELandscapeType.GRASS),
+		MOUNTAINBORDEROUTER(ELandscapeType.MOUNTAINBORDEROUTER),
 		UNKNOWN_12(null),
 		UNKNOWN_13(null),
-		UNKNOWN_14(ELandscapeType.DESERTBORDEROUTER),
-		UNKNOWN_15(ELandscapeType.MOORBORDER),
+		DESERTBORDEROUTER(ELandscapeType.DESERTBORDEROUTER),
+		MOORBORDER(ELandscapeType.MOORBORDER),
 		UNKNOWN_16(null),
-		UNKNOWN_17(ELandscapeType.MUDBORDER),
+		MUDBORDER(ELandscapeType.MUDBORDER),
 		UNKNOWN_18(null),
 		UNKNOWN_19(null),
 		UNKNOWN_1A(null),
@@ -272,10 +272,10 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_1D(null),
 		UNKNOWN_1E(null),
 		UNKNOWN_1F(null),
-		UNKNOWN_20(ELandscapeType.MOUNTAIN),
-		UNKNOWN_21(ELandscapeType.MOUNTAINBORDER),
+		MOUNTAIN(ELandscapeType.MOUNTAIN),
+		MOUNTAINBORDER(ELandscapeType.MOUNTAINBORDER),
 		UNKNOWN_22(null),
-		UNKNOWN_23(ELandscapeType.SNOWBORDER),
+		SNOWBORDER(ELandscapeType.SNOWBORDER),
 		UNKNOWN_24(null),
 		UNKNOWN_25(null),
 		UNKNOWN_26(null),
@@ -288,7 +288,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_2D(null),
 		UNKNOWN_2E(null),
 		UNKNOWN_2F(null),
-		UNKNOWN_30(ELandscapeType.SAND),
+		SAND(ELandscapeType.SAND),
 		UNKNOWN_31(null),
 		UNKNOWN_32(null),
 		UNKNOWN_33(null),
@@ -304,8 +304,8 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_3D(null),
 		UNKNOWN_3E(null),
 		UNKNOWN_3F(null),
-		UNKNOWN_40(ELandscapeType.DESERT),
-		UNKNOWN_41(ELandscapeType.DESERTBORDER),
+		DESERT(ELandscapeType.DESERT),
+		DESERTBORDER(ELandscapeType.DESERTBORDER),
 		UNKNOWN_42(null),
 		UNKNOWN_43(null),
 		UNKNOWN_44(null),
@@ -320,8 +320,8 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_4D(null),
 		UNKNOWN_4E(null),
 		UNKNOWN_4F(null),
-		UNKNOWN_50(ELandscapeType.MOORINNER), //- swamp ??
-		UNKNOWN_51(ELandscapeType.MOOR),
+		MOORINNER(ELandscapeType.MOORINNER), //- swamp ??
+		MOOR(ELandscapeType.MOOR),
 		UNKNOWN_52(null),
 		UNKNOWN_53(null),
 		UNKNOWN_54(null),
@@ -336,10 +336,10 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_5D(null),
 		UNKNOWN_5E(null),
 		UNKNOWN_5F(null),
-		UNKNOWN_60(ELandscapeType.RIVER1),
-		UNKNOWN_61(ELandscapeType.RIVER2),
-		UNKNOWN_62(ELandscapeType.RIVER3),
-		UNKNOWN_63(ELandscapeType.RIVER4),
+		RIVER1(ELandscapeType.RIVER1),
+		RIVER2(ELandscapeType.RIVER2),
+		RIVER3(ELandscapeType.RIVER3),
+		RIVER4(ELandscapeType.RIVER4),
 		UNKNOWN_64(null),
 		UNKNOWN_65(null),
 		UNKNOWN_66(null),
@@ -368,8 +368,8 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_7D(null),
 		UNKNOWN_7E(null),
 		UNKNOWN_7F(null),
-		UNKNOWN_80(ELandscapeType.SNOWINNER),
-		UNKNOWN_81(ELandscapeType.SNOW),
+		SNOWINNER(ELandscapeType.SNOWINNER),
+		SNOW(ELandscapeType.SNOW),
 		UNKNOWN_82(null),
 		UNKNOWN_83(null),
 		UNKNOWN_84(null),
@@ -384,8 +384,8 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_8D(null),
 		UNKNOWN_8E(null),
 		UNKNOWN_8F(null),
-		UNKNOWN_90(ELandscapeType.MUDINNER), //- mud ??
-		UNKNOWN_91(ELandscapeType.MUD),
+		MUDINNER(ELandscapeType.MUDINNER), //- mud ??
+		MUD(ELandscapeType.MUD),
 		UNKNOWN_92(null),
 		UNKNOWN_93(null),
 		UNKNOWN_94(null),
@@ -506,11 +506,11 @@ public class OriginalMapFileDataStructs
 			this.value = value;
 		}
 
-		public static EOriginalLandscapeType getTypeByInt(short intType) {
-			if (intType < 0) return NOT_A_TYPE;
-			if (intType >= EOriginalLandscapeType.length) return NOT_A_TYPE;
+		public static EOriginalLandscapeType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_TYPE;
+			if (type >= EOriginalLandscapeType.length) return NOT_A_TYPE;
 			
-			return EOriginalLandscapeType.values()[intType];
+			return EOriginalLandscapeType.values()[type];
 		}
 	}
 
@@ -585,19 +585,19 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_41(null),  //- GAME_OBJECT_REED_BEDS_4 = 65,
 		UNKNOWN_42(null),  //- GAME_OBJECT_REED_BEDS_5 = 66,
 		UNKNOWN_43(null),  //- GAME_OBJEC()T_REED_BEDS_6 = 67,
-		UNKNOWN_44(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
-		UNKNOWN_45(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
-		UNKNOWN_46(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_1 = 70,
-		UNKNOWN_47(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_2 = 71,
-		UNKNOWN_48(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_OAK_1 = 72,
-		UNKNOWN_49(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
-		UNKNOWN_4A(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
-		UNKNOWN_4B(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
-		UNKNOWN_4C(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
-		UNKNOWN_4D(MapTreeObject.getInstance()),  //- //-- unknown: 77
-		UNKNOWN_4E(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
-		UNKNOWN_4F(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
-		UNKNOWN_50(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
+		TREE_BIRCH_1(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
+		TREE_BIRCH_2(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
+		TREE_ELM_1(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_1 = 70,
+		TREE_ELM_2(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_2 = 71,
+		TREE_OAK_1(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_OAK_1 = 72,
+		TREE_UNKNOWN_1(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
+		TREE_UNKNOWN_2(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
+		TREE_UNKNOWN_3(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
+		TREE_UNKNOWN_4(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
+		TREE_UNKNOWN_5(MapTreeObject.getInstance()),  //- //-- unknown: 77
+		TREE_ARECACEAE_1(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
+		TREE_ARECACEAE_2(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
+		TREE_UNKNOWN_6(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_6 = 80,
 		UNKNOWN_51(null),  //- //-- unknown: 81
 		UNKNOWN_52(null),  //- //-- unknown: 82
 		UNKNOWN_53(null),  //- //-- unknown: 83
@@ -632,19 +632,19 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_70(null),  //- GAME_OBJECT_REEF_MEDIUM = 112,
 		UNKNOWN_71(null),  //- GAME_OBJECT_REEF_LARGE = 113,
 		UNKNOWN_72(null),  //- GAME_OBJECT_REEF_XLARGE = 114,
-		UNKNOWN_73(MapStoneObject.getInstance(12)),  //- GAME_OBJECT_RES_STONE_01 = 115,
-		UNKNOWN_74(MapStoneObject.getInstance(11)),  //- GAME_OBJECT_RES_STONE_02 = 116,
-		UNKNOWN_75(MapStoneObject.getInstance(10)),  //- GAME_OBJECT_RES_STONE_03 = 117,
-		UNKNOWN_76(MapStoneObject.getInstance(9)),  //- GAME_OBJECT_RES_STONE_04 = 118,
-		UNKNOWN_77(MapStoneObject.getInstance(8)),  //- GAME_OBJECT_RES_STONE_05 = 119,
-		UNKNOWN_78(MapStoneObject.getInstance(7)),  //- GAME_OBJECT_RES_STONE_06 = 120,
-		UNKNOWN_79(MapStoneObject.getInstance(6)),  //- GAME_OBJECT_RES_STONE_07 = 121,
-		UNKNOWN_7A(MapStoneObject.getInstance(5)),  //- GAME_OBJECT_RES_STONE_08 = 122,
-		UNKNOWN_7B(MapStoneObject.getInstance(4)),  //- GAME_OBJECT_RES_STONE_09 = 123,
-		UNKNOWN_7C(MapStoneObject.getInstance(3)),  //- GAME_OBJECT_RES_STONE_10 = 124,
-		UNKNOWN_7D(MapStoneObject.getInstance(2)),  //- GAME_OBJECT_RES_STONE_11 = 125,
-		UNKNOWN_7E(MapStoneObject.getInstance(1)),  //- GAME_OBJECT_RES_STONE_12 = 126,
-		UNKNOWN_7F(MapStoneObject.getInstance(0)),  //- GAME_OBJECT_RES_STONE_13 = 127,
+		RES_STONE_01(MapStoneObject.getInstance(12)),  //- GAME_OBJECT_RES_STONE_01 = 115,
+		RES_STONE_02(MapStoneObject.getInstance(11)),  //- GAME_OBJECT_RES_STONE_02 = 116,
+		RES_STONE_03(MapStoneObject.getInstance(10)),  //- GAME_OBJECT_RES_STONE_03 = 117,
+		RES_STONE_04(MapStoneObject.getInstance(9)),  //- GAME_OBJECT_RES_STONE_04 = 118,
+		RES_STONE_05(MapStoneObject.getInstance(8)),  //- GAME_OBJECT_RES_STONE_05 = 119,
+		RES_STONE_06(MapStoneObject.getInstance(7)),  //- GAME_OBJECT_RES_STONE_06 = 120,
+		RES_STONE_07(MapStoneObject.getInstance(6)),  //- GAME_OBJECT_RES_STONE_07 = 121,
+		RES_STONE_08(MapStoneObject.getInstance(5)),  //- GAME_OBJECT_RES_STONE_08 = 122,
+		RES_STONE_09(MapStoneObject.getInstance(4)),  //- GAME_OBJECT_RES_STONE_09 = 123,
+		RES_STONE_10(MapStoneObject.getInstance(3)),  //- GAME_OBJECT_RES_STONE_10 = 124,
+		RES_STONE_11(MapStoneObject.getInstance(2)),  //- GAME_OBJECT_RES_STONE_11 = 125,
+		RES_STONE_12(MapStoneObject.getInstance(1)),  //- GAME_OBJECT_RES_STONE_12 = 126,
+		RES_STONE_13(MapStoneObject.getInstance(0)),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
 		NOT_A_TYPE(null); //- has to be the last item
 		
@@ -655,11 +655,11 @@ public class OriginalMapFileDataStructs
 			this.value = value;
 		}
 		
-		public static EObjectType getTypeByInt(short intType) {
-			if (intType < 0) return NOT_A_TYPE;
-			if (intType >= EObjectType.length) return NOT_A_TYPE;
+		public static EObjectType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_TYPE;
+			if (type >= EObjectType.length) return NOT_A_TYPE;
 			
-			return EObjectType.values()[intType];
+			return EObjectType.values()[type];
 		}
 	}
 

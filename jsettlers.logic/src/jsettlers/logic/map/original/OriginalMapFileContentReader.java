@@ -17,7 +17,13 @@ package jsettlers.logic.map.original;
 import java.io.*;
 
 import jsettlers.logic.map.original.OriginalMapFileContent.MapPlayerInfo;
+import jsettlers.logic.map.original.OriginalMapFileContentReader.MapResourceInfo;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
  * @author Thomas Zeugner
@@ -26,6 +32,7 @@ public class OriginalMapFileContentReader
 {
 	//--------------------------------------------------//
 	public static class MapResourceInfo {
+		OriginalMapFileDataStructs.EMapFilePartType PartType;
 		public int offset=0;
 		public int size=0;
 		public int cryptKey=0;
@@ -33,7 +40,7 @@ public class OriginalMapFileContentReader
 	}
 	//--------------------------------------------------//
 
-	private final MapResourceInfo[] resources;
+	private final List<MapResourceInfo> resources;
 
 	public int fileChecksum = 0;
 	public int widthHeight;
@@ -46,8 +53,7 @@ public class OriginalMapFileContentReader
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		//- init Resource Info
-		resources = new MapResourceInfo[OriginalMapFileDataStructs.EMapFilePartType.length];
-		for(int i=0; i< resources.length;i++) resources[i] = new MapResourceInfo();
+		resources = new LinkedList<MapResourceInfo>();
 		
 		//- init players
 		players = new MapPlayerInfo[1];
@@ -75,14 +81,11 @@ public class OriginalMapFileContentReader
 	    }
 	}
 
-	//- Read Big-Ending INT from Buffer
-	public int readBEIntFrom(int numberOfBytes, int offset) {
-		int result = 0;
-		for (int i = 0; i < numberOfBytes; i++) {
-			//-                     ( signed byte 2 unsigned int )
-			result = result | ((int)( mapContent[i+offset] & 0xFF) << (i << 3));
-		}
-		return result;
+	
+	//- Read UNSIGNED Byte from Buffer
+	public int readByteFrom(int offset) {
+		if (mapContent == null) return 0;
+		return  mapContent[offset] & 0xFF;
 	}
 	
 	
@@ -171,11 +174,16 @@ public class OriginalMapFileContentReader
 			FilePos = FilePos + PartLen;
 
 			//- save the values
-			if ((PartType > 0) && (PartType < resources.length) && (PartLen>=0)) {
-				resources[PartType].cryptKey = PartType;
-				resources[PartType].hasBeenDecrypted = false;
-				resources[PartType].offset = MapPartPos;
-				resources[PartType].size = PartLen - 8;
+			if ((PartType > 0) && (PartType < OriginalMapFileDataStructs.EMapFilePartType.length) && (PartLen>=0)) {
+				MapResourceInfo newRes = new MapResourceInfo();
+				
+				newRes.PartType = OriginalMapFileDataStructs.EMapFilePartType.getTypeByInt(PartType);
+				newRes.cryptKey = PartType;
+				newRes.hasBeenDecrypted = false;
+				newRes.offset = MapPartPos;
+				newRes.size = PartLen - 8;
+				
+				resources.add(newRes);
 			}
 
 		}
@@ -204,7 +212,7 @@ public class OriginalMapFileContentReader
 		widthHeight = 0;
 	
 		//- get resource information for the area 
-		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.AREA.value];
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
 		if (FPart==null) return;
 		if (FPart.size < 4) return;
 
@@ -219,9 +227,24 @@ public class OriginalMapFileContentReader
 	}
 	
 	
+	//- returns the Index of a File Resources
+	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type)
+	{
+		Iterator<MapResourceInfo> iterator = resources.iterator();
+		
+		while(iterator.hasNext()){
+			MapResourceInfo element = (MapResourceInfo) iterator.next();
+			
+			if (element.PartType == type) return element;
+		}
+		
+		System.err.println("Error: findResource("+ type +") failed!");
+		
+		return null;
+	}
 	
 	public void readMapInfo() {
-		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO.value];
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO);
 		
 		if ((FPart==null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -266,7 +289,7 @@ public class OriginalMapFileContentReader
 
 	//- Read the Player Info
 	public void readPlayerInfo() {
-		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO.value];
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
 		
 		if ((FPart==null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -305,7 +328,7 @@ public class OriginalMapFileContentReader
 		mapData.fileChecksum = fileChecksum;
 		
 		//- get resource information for the area 
-		MapResourceInfo FPart = resources[OriginalMapFileDataStructs.EMapFilePartType.AREA.value];
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
 		if (FPart==null) return mapData;
 		
 		if (FPart.size == 0) {
@@ -330,20 +353,12 @@ public class OriginalMapFileContentReader
 		int dataCount = WidthHeight * WidthHeight;
 		
 		for (int i=0; i< dataCount; i++) {
-		//for (int y = 0; y < widthHeight; y++)
-		//{
-		//	for (int x = 0; x < widthHeight; x++)
-		//	{
-		//		int i = x + (widthHeight * (widthHeight - y - 1));
-				
-				mapData.setLandscapeHeight(i, mapContent[pos++]);
-				mapData.setLandscape(i, transformToUnsignedByte(mapContent[pos++]));
-				mapData.setMapObject(i, transformToUnsignedByte(mapContent[pos++]));
-				mapData.setPalyerClaim(i, mapContent[pos++]);
-				mapData.setAccessible(i, mapContent[pos++]);
-				mapData.setResources(i, mapContent[pos++]);
-		//	}
-		//}
+			mapData.setLandscapeHeight(i, mapContent[pos++]);
+			mapData.setLandscape(i, readByteFrom(pos++));
+			mapData.setMapObject(i, readByteFrom(pos++));
+			mapData.setPalyerClaim(i, mapContent[pos++]);
+			mapData.setAccessible(i, mapContent[pos++]);
+			mapData.setResources(i, mapContent[pos++]);
 		}
 		
 		//- add palyers
@@ -352,36 +367,31 @@ public class OriginalMapFileContentReader
 		return mapData;
 	}
 
-	short transformToUnsignedByte(byte signedByte) {
-		if (signedByte < 0) {
-			return (short) (signedByte & 0xFF);
-		} else {
-			return signedByte;
-		}
-	}
+
 	
 	//- uncrypt a resource
 	private boolean doDecrypt(OriginalMapFileDataStructs.EMapFilePartType type) {
-		int PartId = type.value;
-		if ((PartId <= 0) || (PartId >= OriginalMapFileDataStructs.EMapFilePartType.length)) return false;
 		
-		if (mapContent ==null) {
+		MapResourceInfo FPart = findResource(type);
+		if (FPart == null) return false;
+		
+		if (mapContent == null) {
 			System.err.println("Warning: Unable to decrypt map file: no data loaded!");
 			return false;
 		}
 		
 		//- already encrypted
-		if (resources[PartId].hasBeenDecrypted) return true;
+		if (FPart.hasBeenDecrypted) return true;
 		
 		//- length of data
-		int length = resources[PartId].size;
+		int length = FPart.size;
 		if (length <= 0) return true;
 		
 		//- start of data
-		int pos = resources[PartId].offset;
+		int pos = FPart.offset;
 		
 		//- init the key
-		int key = (resources[PartId].cryptKey & 0xFF);
+		int key = (FPart.cryptKey & 0xFF);
 		
 		for (int i = length; i > 0; i--) {
 			//- read one byte
@@ -401,7 +411,7 @@ public class OriginalMapFileContentReader
 			key = ((key << 1) & 0xFF) ^ byt;
 		}
 
-		resources[PartId].hasBeenDecrypted = true;
+		FPart.hasBeenDecrypted = true;
 		return true;
 	}
 

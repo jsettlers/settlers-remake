@@ -71,7 +71,7 @@ public class OriginalMapFileContent implements IMapData
 
 	private byte [] height = null;
 	private ELandscapeType[] landscapeType = null;
-	private MapObject [] object = null ;
+	private MapObject [] mapObject = null ;
 	private byte [] plyerClaim = null ;
 	private byte [] accessible = null ;
 	private byte [] resources = null;
@@ -89,7 +89,7 @@ public class OriginalMapFileContent implements IMapData
 		
 		height = new byte[dataCount];
 		landscapeType = new ELandscapeType[dataCount];
-		object = new MapObject[dataCount];
+		mapObject = new MapObject[dataCount];
 		plyerClaim = new byte[dataCount];
 		accessible = new byte[dataCount];
 		resources = new byte[dataCount];
@@ -103,7 +103,7 @@ public class OriginalMapFileContent implements IMapData
 
 	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
 
-	public void setLandscape(int pos, short type) {
+	public void setLandscape(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
 		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
@@ -122,9 +122,11 @@ public class OriginalMapFileContent implements IMapData
 		//TODO: remove me when Original Maps are finished ---- end
 		landscapeType[pos] = originalType.value;
 	}
+	
+	
 	private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
 
-	public void setMapObject(int pos, short type) {
+	public void setMapObject(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
 		OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
@@ -141,7 +143,7 @@ public class OriginalMapFileContent implements IMapData
 		}
 		//TODO: remove me when Original Maps are finished ---- end
 
-		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
+		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
 	}
 	
 	public void setPalyerClaim(int pos, byte player) {
@@ -172,7 +174,7 @@ public class OriginalMapFileContent implements IMapData
 		if (!startTowerMaterialsAndSettlersWereSet) {
 			for (byte playerId = 0; playerId < mapPlayerInfos.length; playerId++) {
 				int towerPosition = mapPlayerInfos[playerId].startY * widthHeight + mapPlayerInfos[playerId].startX;
-				object[towerPosition] =  new BuildingObject(EBuildingType.TOWER, playerId);
+				mapObject[towerPosition] =  new BuildingObject(EBuildingType.TOWER, playerId);
 				List<MapObject> mapObjects = EMapStartResources.generateStackObjects(mapStartResources);
 				mapObjects.addAll(EMapStartResources.generateMovableObjects(mapStartResources, playerId));
 
@@ -184,8 +186,8 @@ public class OriginalMapFileContent implements IMapData
 					do {
 						int mapObjectPosition = relativeMapObjectPoint.calculateY(mapPlayerInfos[playerId].startY)
 								* widthHeight + relativeMapObjectPoint.calculateX(mapPlayerInfos[playerId].startX);
-						if (object[mapObjectPosition] == null && !towerTiles.contains(relativeMapObjectPoint)) {
-							object[mapObjectPosition] = currentMapObject;
+						if (mapObject[mapObjectPosition] == null && !towerTiles.contains(relativeMapObjectPoint)) {
+							mapObject[mapObjectPosition] = currentMapObject;
 							relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
 							break;
 						}
@@ -239,7 +241,7 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos > dataCount)) return null;
 		
-		return object[pos];
+		return mapObject[pos];
 	}
 
 	@Override
@@ -283,6 +285,7 @@ public class OriginalMapFileContent implements IMapData
 	public ShortPoint2D getStartPoint(int player) {
 		if ((player < 0) || (player >= mapPlayerInfos.length))
 		{
+			System.out.print("Error: not a player for getStartPoint("+ player +")");
 			return new ShortPoint2D(100,100);
 		}
 		return new ShortPoint2D(mapPlayerInfos[player].startX, mapPlayerInfos[player].startY);
