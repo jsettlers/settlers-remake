@@ -289,7 +289,7 @@ public class OriginalMapFileContent implements IMapData
 			this.startX = X;
 			this.startY = Y;
 			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
+			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
 		}
 
 		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation) {

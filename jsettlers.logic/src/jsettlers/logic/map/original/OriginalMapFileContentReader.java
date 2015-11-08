@@ -280,7 +280,7 @@ public class OriginalMapFileContentReader
 		int pos = FPart.offset;
 		
 		for (int i = 0; i < players.length; i++) {
-			players[i].nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(readBEIntFrom(pos));
+			players[i].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(readBEIntFrom(pos));
 			pos += 4;
 			
 			players[i].startX = readBEIntFrom(pos);
