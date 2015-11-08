@@ -37,44 +37,19 @@ public class OriginalMapFileContent implements IMapData
 {
 	private boolean startTowerMaterialsAndSettlersWereSet = false;
 	private EMapStartResources mapStartResources;
-
-	//--------------------------------------------------//
-	public static class MapPlayerInfo {
-		public int startX;
-		public int startY;
-		public String playerName;
-		public OriginalMapFileDataStructs.EMapNations nation;
-		
-		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
-			this.startX = X;
-			this.startY = Y;
-			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
-		}
-		
-		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation) {
-			this.startX = X;
-			this.startY = Y;
-			this.playerName = playerName;
-			this.nation = nation;
-		}
-	}
-	
-	//--------------------------------------------------//
-	
-	
 	public int fileChecksum = 0;
 	
 	//- original maps are squared
 	private int widthHeight = 0;
 	private int dataCount = 0;
 
-	private byte [] height = null;
-	private ELandscapeType[] landscapeType = null;
-	private MapObject [] object = null ;
-	private byte [] plyerClaim = null ;
-	private byte [] accessible = null ;
-	private byte [] resources = null;
+	private byte[] height;
+	private ELandscapeType[] landscapeType;
+	private MapObject[] object;
+	private byte[] plyerClaim;
+	private byte[] accessible;
+	private EResourceType[] resourceTypes;
+	private byte[] resourceAmounts;
 
 	private MapPlayerInfo[] mapPlayerInfos;
 	
@@ -92,7 +67,8 @@ public class OriginalMapFileContent implements IMapData
 		object = new MapObject[dataCount];
 		plyerClaim = new byte[dataCount];
 		accessible = new byte[dataCount];
-		resources = new byte[dataCount];
+		resourceTypes = new EResourceType[dataCount];
+		resourceAmounts = new byte[dataCount];
 	}
 	
 	public void setLandscapeHeight(int pos, byte height) {
@@ -129,7 +105,7 @@ public class OriginalMapFileContent implements IMapData
 
 		OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
 		//TODO: remove me when Original Maps are finished ---- begin
-		if (!mapObjects.contains(originalType)) {
+		/*if (!mapObjects.contains(originalType)) {
 			mapObjects.add(originalType);
 			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
 			if (originalType == OriginalMapFileDataStructs.EObjectType.NOT_A_TYPE) {
@@ -138,7 +114,7 @@ public class OriginalMapFileContent implements IMapData
 			if (originalType.value != null) {
 				System.out.println(" (" + originalType.value + ")");
 			} else System.out.println();
-		}
+		}*/
 		//TODO: remove me when Original Maps are finished ---- end
 
 		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
@@ -156,10 +132,11 @@ public class OriginalMapFileContent implements IMapData
 		accessible[pos] = isAccessible;
 	}
 	
-	public void setResources(int pos, byte Resources) {
+	public void setResources(int pos, byte resource) {
 		if ((pos<0) || (pos> dataCount)) return;
 		
-		resources[pos] = Resources;
+		resourceTypes[pos] = OriginalMapFileDataStructs.getResourceTypeFrom(resource);
+		resourceAmounts[pos] = OriginalMapFileDataStructs.getResourceAmountFrom(resource);
 	}
 
 	public void setMapPlayerInfos(MapPlayerInfo[] mapPlayerInfos, EMapStartResources startResources) {
@@ -256,12 +233,20 @@ public class OriginalMapFileContent implements IMapData
 	 */
 	@Override
 	public byte getResourceAmount(short x, short y) {
-		return 0;
+		int pos = y * widthHeight + x;
+
+		if ((pos < 0) || (pos > dataCount)) return 0;
+
+		return resourceAmounts[pos];
 	}
 
 	@Override
 	public EResourceType getResourceType(short x, short y) {
-		return EResourceType.FISH;
+		int pos = y * widthHeight + x;
+
+		if ((pos < 0) || (pos > dataCount)) return null;
+
+		return resourceTypes[pos];
 	}
 	
 	/**
@@ -292,4 +277,29 @@ public class OriginalMapFileContent implements IMapData
 	public int getPlayerCount() {
 		return mapPlayerInfos.length;
 	}
+
+	//--------------------------------------------------//
+	public static class MapPlayerInfo {
+		public int startX;
+		public int startY;
+		public String playerName;
+		public OriginalMapFileDataStructs.EMapNations nation;
+
+		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
+			this.startX = X;
+			this.startY = Y;
+			this.playerName = playerName;
+			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
+		}
+
+		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation) {
+			this.startX = X;
+			this.startY = Y;
+			this.playerName = playerName;
+			this.nation = nation;
+		}
+	}
+
+	//--------------------------------------------------//
+
 }
