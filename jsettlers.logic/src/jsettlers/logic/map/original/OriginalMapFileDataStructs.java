@@ -659,6 +659,80 @@ public class OriginalMapFileDataStructs
 		
 	}
 	
+	public enum EMapSettlersType {
+		
+		NOT_A_SETTLER(null), //- 0 is not defined
+		
+		BEARER(EMovableType.BEARER),
+		Planierer(null),
+		Bauarbeiter(null),
+		LUMBERJACK(EMovableType.LUMBERJACK),
+		STONECUTTER(EMovableType.STONECUTTER),
+		SWORDSMAN_L1(EMovableType.SWORDSMAN_L1),
+		SAWMILLER(EMovableType.SAWMILLER),
+		FORESTER(EMovableType.FORESTER),
+		BOWMAN_L1(EMovableType.BOWMAN_L1),
+		Schmelzer(null),
+		Minenarbeiter(null),
+		SMITH(EMovableType.SMITH),
+		MILLER(EMovableType.MILLER),
+		BAKER(EMovableType.BAKER),
+		Metzger(null),
+		PIKEMAN_L1(EMovableType.PIKEMAN_L1),
+		FARMER(EMovableType.FARMER),
+		FISHERMAN(EMovableType.FISHERMAN),
+		WATERWORKER(EMovableType.WATERWORKER),
+		Werftarbeiter(null),
+		UNKNOWN_20(null),
+		HEALER(EMovableType.HEALER),
+		GEOLOGIST(EMovableType.GEOLOGIST),
+		THIEF(EMovableType.THIEF),
+		CHARCOAL_BURNER(EMovableType.CHARCOAL_BURNER),
+		Schnapsbrenner(null),
+		Brauer(null),
+		Pulvermacher(null),
+		Schweinefarmer(null),
+		Winzer(null),
+		BOWMAN_L2(EMovableType.BOWMAN_L2),
+		PIKEMAN_L2(EMovableType.PIKEMAN_L2),
+		SWORDSMAN_L2(EMovableType.SWORDSMAN_L2),
+		BOWMAN_L3(EMovableType.BOWMAN_L3),
+		PIKEMAN_L3(EMovableType.PIKEMAN_L3),
+		SWORDSMAN_L3(EMovableType.SWORDSMAN_L3),
+		MAGE(EMovableType.MAGE),
+		UNKNOWN_37(null),
+		Reisbauer(null),
+		DONKEY(EMovableType.DONKEY),
+		Pionier(null),
+		Katapult(null),
+		UNKNOWN_42(null),
+		Handelsschiff(null),
+		Faehre(null),
+		Imker(null),
+		Metwinzer(null),
+		Alchemist(null),
+		
+		END_OF_LIST(null); //- has to be the last item
+		
+		
+		//- length of [EMapSettlersType] (without END_OF_LIST)
+		public static final int length = EBuildingType.values().length-1;
+		public final EMovableType value;
+		
+		EMapSettlersType(EMovableType value) {
+			this.value = value;
+		}
+		
+		public static EMapSettlersType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_SETTLER;
+			if (type >= EMapSettlersType.length) return NOT_A_SETTLER;
+			
+			return EMapSettlersType.values()[type];
+		}
+		
+	}
+	
+	
 	
 	//--------------------------------------------------//
 	public enum EObjectType {

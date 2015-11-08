@@ -95,7 +95,7 @@ public class OriginalMapLoader extends MapLoader
 
 	@Override
 	public int getMaxPlayers() {
-		return mapContent.players.length;
+		return mapContent.mapData.getPlayerCount();
 	}
 
 	@Override 
@@ -137,10 +137,16 @@ public class OriginalMapLoader extends MapLoader
 		mapContent.readMapData();
 		//- read Stacks
 		mapContent.readStacks();
+		//- read Settlers
+		mapContent.readSettlers();
 		//- read the buildings
 		mapContent.readBuildings();
+		//- add palyer resources
+		mapContent.addStartTowerMaterialsAndSettlers();
 		
 		OriginalMapFileContent MapData = mapContent.mapData;
+		
+
 		
 		watch.stop("Loading original map data required");
 
