@@ -93,7 +93,8 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		public void uiUpdate(RowUiData rowUiData) {
 			quantity = rowUiData.getMaterialProduction().numberOfFutureProducedMaterial(type);
 			lblQuantity.setText(Integer.toString(quantity));
-			barFill.setBarFill(rowUiData.getMaterialProduction().ratioOfMaterial(type));
+			barFill.setBarFill(rowUiData.getMaterialProduction().configuredRatioOfMaterial(type),
+					rowUiData.getMaterialProduction().resultingRatioOfMaterial(type));
 		}
 	}
 

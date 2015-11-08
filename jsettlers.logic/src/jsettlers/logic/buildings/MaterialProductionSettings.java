@@ -48,8 +48,25 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 	}
 
 	@Override
-	public float ratioOfMaterial(EMaterialType type) {
+	public float configuredRatioOfMaterial(EMaterialType type) {
 		return ratios[type.ordinal];
+	}
+
+	@Override
+	public float resultingRatioOfMaterial(EMaterialType type) {
+		if (WEAPONS_LIST.contains(type)) {
+			float allWeapons = 0;
+			for (EMaterialType currentWeapon : WEAPONS_LIST) {
+				allWeapons += configuredRatioOfMaterial(currentWeapon);
+			}
+			if (allWeapons == 0) {
+				return 0;
+			}
+			return (configuredRatioOfMaterial(type) / allWeapons);
+		}
+
+		//This line is for other materials than weapons to prevent Exceptions
+		return 0;
 	}
 
 	@Override
