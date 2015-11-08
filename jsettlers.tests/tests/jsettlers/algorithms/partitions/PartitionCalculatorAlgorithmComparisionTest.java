@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 
 import jsettlers.TestUtils;
-import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;

@@ -20,7 +20,6 @@ import jsettlers.common.Color;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.network.synchronic.random.RandomSingleton;

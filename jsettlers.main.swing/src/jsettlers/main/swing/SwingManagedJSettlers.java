@@ -47,6 +47,7 @@ import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -94,6 +95,7 @@ public class SwingManagedJSettlers {
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName)
 			throws FileNotFoundException, IOException {
 		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+		MapList.setOriginalSettlersFolder(configFile.getOriginalSettlersFolder());
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		boolean firstRun = true;
@@ -186,6 +188,7 @@ public class SwingManagedJSettlers {
 	 * Creates a new SWING GUI for the game.
 	 * 
 	 * @param argsList
+	 * @param originalSettlersFolder
 	 * @return
 	 * @throws IOException
 	 * @throws FileNotFoundException
