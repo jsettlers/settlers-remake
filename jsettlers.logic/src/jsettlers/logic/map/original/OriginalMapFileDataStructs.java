@@ -41,7 +41,7 @@ public class OriginalMapFileDataStructs
 		AREA(6,"Area"),
 		SETTLERS(7,"Settlers"),
 		BUILDINGS(8,"Buildings"),
-		RESOURCES(9,"Resources"),
+		STACKS(9,"Stacks"),
 		UNKNOWN_10 (10,"UNKNOWN_10"),
 		QUEST_TEXT(11,"QuestText"),
 		QUEST_TIP(12,"QuestTip");
@@ -599,6 +599,65 @@ public class OriginalMapFileDataStructs
 		
 	}
 	
+	public enum EMapStackType {
+		
+		NOT_A_STACK(null), //- 0 is not defined
+		
+		PLANK(EMaterialType.PLANK),
+		STONE(EMaterialType.STONE),
+		Baumstamm(EMaterialType.TRUNK),
+		BREAD(EMaterialType.BREAD),
+		COAL(EMaterialType.COAL),
+		GOLDORE(EMaterialType.GOLDORE),
+		IRONORE(EMaterialType.IRONORE),
+		FISH(EMaterialType.FISH),
+		CROP(EMaterialType.CROP),
+		GOLD(EMaterialType.GOLD),
+		IRON(EMaterialType.IRON),
+		Schaufel(null),
+		HAMMER(EMaterialType.HAMMER),
+		AXE(EMaterialType.AXE),
+		PICK(EMaterialType.PICK),
+		SAW(EMaterialType.SAW),
+		FISHINGROD(EMaterialType.FISHINGROD),
+		SWORD(EMaterialType.SWORD),
+		BOW(EMaterialType.BOW),
+		SPEAR(EMaterialType.SPEAR),
+		Wein(null),
+		FLOUR(EMaterialType.FLOUR),
+		PIG(EMaterialType.PIG),
+		MEAT(EMaterialType.MEAT),
+		SULFUR(EMaterialType.SULFUR),
+		WATER(EMaterialType.WATER),
+		RICE(EMaterialType.RICE),
+		GEMS(EMaterialType.GEMS),
+		Bier(null),
+		Schiesspulver(null),
+		unknown(null),
+		SCYTHE(EMaterialType.SCYTHE),
+		Reisschnaps(null),
+		Met(null),
+		HONEY(EMaterialType.HONEY),
+		
+		END_OF_LIST(null); //- has to be the last item
+		
+		
+		//- length of [EBuildingType] (without END_OF_LIST)
+		public static final int length = EBuildingType.values().length-1;
+		public final EMaterialType value;
+		
+		EMapStackType(EMaterialType value) {
+			this.value = value;
+		}
+		
+		public static EMapStackType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_STACK;
+			if (type >= EMapBuildingType.length) return NOT_A_STACK;
+			
+			return EMapStackType.values()[type];
+		}
+		
+	}
 	
 	
 	//--------------------------------------------------//

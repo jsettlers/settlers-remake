@@ -135,6 +135,8 @@ public class OriginalMapLoader extends MapLoader
 		
 		//- read the landscape
 		mapContent.readMapData();
+		//- read Stacks
+		mapContent.readStacks();
 		//- read the buildings
 		mapContent.readBuildings();
 		

@@ -160,6 +160,8 @@ public class OriginalMapFileContentReader
 		//- read Checksum from File
 		int fileChecksum = readBEIntFrom(0);
 		
+		mapData.fileChecksum = fileChecksum;
+		
 		//- make count a Multiple of four
 		int count = mapContent.length & 0xFFFFFFFC;
 		int currentChecksum = 0;
@@ -317,7 +319,7 @@ public class OriginalMapFileContentReader
 	}
 
 	
-	//- Read some common information from the map-file
+	//- read buildings from the map-file
 	public boolean readBuildings() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
 		
@@ -342,15 +344,15 @@ public class OriginalMapFileContentReader
 		//- read all Buildings
 		for (int i = 0 ; i < BuildinsCount; i++) {
 		 
-	        int party = readByteFrom(pos++); //- Party starts with 0
-	        int BType = readByteFrom(pos++);
-	        int x_pos = readBEWordFrom(pos);  pos+=2;
-	        int y_pos = readBEWordFrom(pos);  pos+=2;
-	        
-	        //- maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
-	        int notUsed = readByteFrom(pos++);
-	        
-	        //-----------
+			int party = readByteFrom(pos++); //- Party starts with 0
+			int BType = readByteFrom(pos++);
+			int x_pos = readBEWordFrom(pos);  pos+=2;
+			int y_pos = readBEWordFrom(pos);  pos+=2;
+			
+			//- maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
+			int notUsed = readByteFrom(pos++);
+			
+			//-----------
 			//- number of soldier in building is saved as 4-Bit (=Nibble):
 			int countSword1 = readHighNibbleFrom(pos);
 			int countSword2 = readLowNibbleFrom(pos);
@@ -375,6 +377,51 @@ public class OriginalMapFileContentReader
 			//-------------
 	        //- update data                              
 			mapData.setBuilding(x_pos, y_pos, BType, party, countSword1, countSword2, countSword3, countArcher1, countArcher2, countArcher3, countSpear1, countSpear2, countSpear3);
+		}
+		
+		return true;
+	}
+	
+	
+	
+	//- Read stacks from the map-file
+	public boolean readStacks() {
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.STACKS);
+		
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.STACKS)) return false;
+
+		//- file position
+		int pos = FPart.offset;
+		
+		//- Number of buildings
+		int StackCount = readBEIntFrom(pos);
+		pos += 4;
+		
+		//- safety check
+		if ((StackCount * 8 > FPart.size) || (StackCount < 0)) {
+			System.err.println("wrong number of stacks in map File: "+ StackCount);
+			StackCount = 0;
+		    return false;
+		}
+		
+		
+		//- read all Stacks
+		for (int i = 0 ; i < StackCount; i++) {
+		 
+			int x_pos = readBEWordFrom(pos);  pos+=2;
+			int y_pos = readBEWordFrom(pos);  pos+=2;
+			
+			int SType = readByteFrom(pos++);
+			int count = readByteFrom(pos++);
+			
+			//- maybe: padding to size of 8 (2 INTs)
+			int unknown = readBEWordFrom(pos);  pos+=2;
+			
+			
+			//-------------
+	        //- update data                              
+			mapData.setStack(x_pos, y_pos, SType, count);
 		}
 		
 		return true;
@@ -415,11 +462,8 @@ public class OriginalMapFileContentReader
 	
 	
 	
-	//- Reads in the Map Data and returns a IMapData
+	//- Reads in the Map Data
 	public boolean readMapData() {
-		
-		
-		mapData.fileChecksum = fileChecksum;
 		
 		//- get resource information for the area 
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);

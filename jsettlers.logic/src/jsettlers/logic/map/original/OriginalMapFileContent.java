@@ -20,9 +20,12 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.StackObject;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStackType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -169,6 +172,20 @@ public class OriginalMapFileContent implements IMapData
 		}
 	}
 	
+	
+	
+	public void setStack(int x, int y, int SType, int count) {
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos > dataCount)) return;
+		
+		EMapStackType StackType = EMapStackType.getTypeByInt(SType);
+		
+		if (StackType == EMapStackType.NOT_A_STACK) return;
+		if (StackType.value != null) {
+			mapObject[pos] = new StackObject(StackType.value, count);
+		}
+	}
 
 	
 	public void setPalyerClaim(int pos, byte player) {
