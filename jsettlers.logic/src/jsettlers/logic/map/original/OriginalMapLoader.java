@@ -16,12 +16,15 @@ package jsettlers.logic.map.original;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.map.save.FreshMapSerializer;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.save.loader.FreshMapData;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.map.grid.MainGrid;
@@ -189,5 +192,40 @@ public class OriginalMapLoader extends MapLoader
 		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 
+	
+	@Override
+	public IMapData getMapData() throws MapLoadException {
+		
+		try
+		{
+			//- the map buffer of the class may is closed and need to reopen! 
+			mapContent.reOpen(this.listedMap.getInputStream());
+		}
+		catch (Exception e)
+		{
+			throw new MapLoadException(e);
+		}
+		
+		//- load all common map information
+		mapContent.loadMapResources();
+		mapContent.readBasicMapInformation();
+		
+		//- read the landscape
+		mapContent.readMapData();
+		//- read Stacks
+		mapContent.readStacks();
+		//- read Settlers
+		mapContent.readSettlers();
+		//- read the buildings
+		mapContent.readBuildings();
+		//- add player resources
+		mapContent.addStartTowerMaterialsAndSettlers();
+		
+		OriginalMapFileContent MapData = mapContent.mapData;
+		MapData.calculateBlockedPartitions();
 
+		return MapData;
+		
+	}
+	
 }

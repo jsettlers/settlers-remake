@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map;
 
+import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.logic.map.original.OriginalMapLoader;
@@ -94,5 +95,13 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	
 	
 	public abstract IListedMap getListedMap();
+	
+	/**
+	 * Gets the map data for this loader, if the data is available.
+	 * 
+	 * @return
+	 */
+	public abstract IMapData getMapData() throws MapLoadException;
+	
 	
 }

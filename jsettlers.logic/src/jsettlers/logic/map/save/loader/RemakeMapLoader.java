@@ -110,12 +110,6 @@ public abstract class RemakeMapLoader extends MapLoader {
 		return header.getCreationDate();
 	}
 
-	/**
-	 * Gets the map data for this loader, if the data is available.
-	 * 
-	 * @return
-	 */
-	public abstract IMapData getMapData() throws MapLoadException;
 
 	@Override
 	public String toString() {
