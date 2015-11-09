@@ -247,9 +247,9 @@ public class OriginalMapFileDataStructs {
 		COAL (EResourceType.COAL),
 		IRONORE(EResourceType.IRONORE),
 		GOLDORE(EResourceType.GOLDORE),
-		GEMS(null),
-		SULFUR(null),
-		
+		GEMS(EResourceType.GEMSTONE),
+		SULFUR(EResourceType.BRIMSTONE),
+
 		NOT_A_RESOURCE_TYPE (null);
 		
 		public final EResourceType value;
@@ -909,32 +909,5 @@ public class OriginalMapFileDataStructs {
 			
 			return EObjectType.values()[type];
 		}
-	}
-
-	public static EResourceType getResourceTypeFrom(byte originalResource) {
-		if (originalResource == 0
-				|| originalResource == 16
-				|| originalResource == 32
-				|| originalResource == 48
-				|| originalResource == 64
-				|| originalResource == 80) {
-			return EResourceType.NOTHING;
-		} else if (originalResource <= 15) {
-			return EResourceType.FISH;
-		} else if (originalResource <= 31) {
-			return EResourceType.COAL;
-		} else if (originalResource <= 47) {
-			return EResourceType.IRONORE;
-		} else if (originalResource <= 63){
-			return EResourceType.GOLDORE;
-		} else if (originalResource <= 79){
-			return EResourceType.GEMSTONE;
-		} else {
-			return EResourceType.BRIMSTONE;
-		}
-	}
-
-	public static byte getResourceAmountFrom(float resource) {
-		return (byte) (((resource % 16) / 15f) * 100f);
 	}
 }
