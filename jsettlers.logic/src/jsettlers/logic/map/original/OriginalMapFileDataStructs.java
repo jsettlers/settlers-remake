@@ -243,14 +243,14 @@ public class OriginalMapFileDataStructs {
 
 	//--------------------------------------------------//
 	public enum EMapResources {
+		
 		FISH (EResourceType.FISH),
 		COAL (EResourceType.COAL),
 		IRONORE(EResourceType.IRONORE),
 		GOLDORE(EResourceType.GOLDORE),
 		GEMS(EResourceType.GEMSTONE),
 		SULFUR(EResourceType.BRIMSTONE),
-
-		NOT_A_RESOURCE_TYPE (null);
+		NOT_A_RESOURCE_TYPE (EResourceType.NOTHING);
 		
 		public final EResourceType value;
 		

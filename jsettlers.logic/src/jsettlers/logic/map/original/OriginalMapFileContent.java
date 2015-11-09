@@ -264,14 +264,19 @@ public class OriginalMapFileContent implements IMapData
 	
 	public void setResources(int pos, int ResourcesType, int ResourcesAmount) {
 		if ((pos < 0) || (pos >= dataCount)) return;
-		
+
 		EMapResources RType = EMapResources.getTypeByInt(ResourcesType);
-		if (RType == EMapResources.NOT_A_RESOURCE_TYPE) return;
 		
-		if (ResourcesType==0) return;
-		
-		resources[pos] = RType.value;
-		resourceAmount[pos] = (byte)ResourcesAmount;
+		if ((RType == EMapResources.NOT_A_RESOURCE_TYPE) || ((ResourcesType == 0) && (ResourcesAmount == 0)))
+		{
+			resources[pos] = null;
+			resourceAmount[pos] = 0;
+		}
+		else
+		{
+			resources[pos] = RType.value;
+			resourceAmount[pos] = (byte)Math.min(127,(ResourcesAmount * 8.5)); //- TODO : need to be scaled?? : current value range [0..15]
+		}
 	}
 
 
@@ -341,7 +346,7 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
-		if (resources[pos]==null) return 0;
+		if (resources[pos] == null) return 0;
 		
 		return resourceAmount[pos];
 	}
@@ -350,9 +355,10 @@ public class OriginalMapFileContent implements IMapData
 	public EResourceType getResourceType(short x, short y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos >= dataCount)) return EResourceType.FISH;
+		if ((pos < 0) || (pos >= dataCount)) return EResourceType.NOTHING;
 		
-		if (resources[pos]==null) return EResourceType.FISH;
+		if (resources[pos] == null) return EResourceType.NOTHING;
+		
 		return resources[pos];
 	}
 	
