@@ -52,9 +52,13 @@ public class OriginalMapLoader extends MapLoader
 			System.out.println("Checksum of original map was not valid!");
 			return;
 		}
-
+		
+		//- read all important information from file
 		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation();
+		
+		//- free the DataBuffer
+		mapContent.FreeBuffer();
 	}
 
 	//---------------------------//
@@ -132,6 +136,20 @@ public class OriginalMapLoader extends MapLoader
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
+		
+		try
+		{
+			//- the map buffer of the class may is closed and need to reopen! 
+			mapContent.reOpen(this.listedMap.getInputStream());
+		}
+		catch (Exception e)
+		{
+			System.err.println("Error: "+ e.getMessage());
+		}
+		
+		//- load all common map information
+		mapContent.loadMapResources();
+		mapContent.readBasicMapInformation();
 		
 		//- read the landscape
 		mapContent.readMapData();

@@ -275,7 +275,18 @@ public class OriginalMapFileContent implements IMapData
 	}
 
 
-
+	//- free the Arrays
+	public void FreeBuffer()
+	{
+		dataCount = 0;
+		height = null;
+		landscapeType = null;
+		mapObject = null;
+		plyerClaim = null;
+		accessible = null;
+		resources = null;
+		resourceAmount = null;
+	}
 	
 	//------------------------//
 	//-- Interface IMapData --//

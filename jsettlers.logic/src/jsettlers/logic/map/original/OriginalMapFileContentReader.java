@@ -74,8 +74,10 @@ public class OriginalMapFileContentReader
 
 
 	//- read the whole stream and returns it
-	public static byte[] getBytesFromInputStream(InputStream is) throws IOException {
-	    try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
+	public static byte[] getBytesFromInputStream(InputStream is) throws IOException{
+		
+		//- read file to buffer
+		try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
 	        byte[] buffer = new byte[0xFFFF];
 	
 	        for (int len; (len = is.read(buffer)) != -1;) {
@@ -145,6 +147,7 @@ public class OriginalMapFileContentReader
 		}
 		return outStr;
 	}
+	
 	
 	//- returns a File Resources
 	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type)
@@ -237,6 +240,35 @@ public class OriginalMapFileContentReader
 		return true;
 	}
 
+	//- freeing the internal buffers
+	public void FreeBuffer()
+	{
+		System.out.println("Free Buffer.");
+		mapContent = null;
+		mapData.FreeBuffer();
+	}
+	
+	
+	public void reOpen(InputStream originalMapFile)
+	{
+		//- read File into buffer
+		try
+		{
+			mapContent = getBytesFromInputStream(originalMapFile);
+		}
+		catch (Exception e)
+		{
+			System.err.println("Error: "+ e.getMessage());
+		}
+		
+		//- reset Crypt Info
+		Iterator<MapResourceInfo> iterator = resources.iterator();
+		
+		while(iterator.hasNext()){
+			MapResourceInfo element = (MapResourceInfo) iterator.next();
+			element.hasBeenDecrypted = false;
+		}
+	}
 	
 	public void readBasicMapInformation() {
 		//- Reset
