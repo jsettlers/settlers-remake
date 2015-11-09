@@ -157,7 +157,7 @@ public class OriginalMapFileContent implements IMapData
 		}*/
 		//TODO: remove me when Original Maps are finished ---- end
 
-		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
+		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).getNewInstance();
 	}
 	
 	public void setPlayerCount(int count)
