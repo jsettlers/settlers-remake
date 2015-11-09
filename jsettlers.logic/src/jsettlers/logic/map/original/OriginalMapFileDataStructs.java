@@ -43,7 +43,7 @@ public class OriginalMapFileDataStructs {
 		SETTLERS(7,"Settlers"),
 		BUILDINGS(8,"Buildings"),
 		STACKS(9,"Stacks"),
-		UNKNOWN_10 (10,"UNKNOWN_10"),
+		UNKNOWN_10 (10,"UNKNOWN_10"), //- maybe the winning conditions
 		QUEST_TEXT(11,"QuestText"),
 		QUEST_TIP(12,"QuestTip");
 		
@@ -255,13 +255,16 @@ public class OriginalMapFileDataStructs {
 		
 		public final EResourceType value;
 		
+		//- length of THIS enum (without NOT_A_TYPE)
+		public static final int length = EMapResources.values().length - 1;
+		
 		EMapResources(EResourceType value) {
 			this.value = value;
 		}
 		
 		public static EMapResources getTypeByInt(int type) {
 			if (type < 0) return NOT_A_RESOURCE_TYPE;
-			if (type >= EOriginalLandscapeType.length) return NOT_A_RESOURCE_TYPE;
+			if (type >= EMapResources.length) return NOT_A_RESOURCE_TYPE;
 			
 			return EMapResources.values()[type];
 		}
@@ -530,7 +533,7 @@ public class OriginalMapFileDataStructs {
 		
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [EOriginalLandscapeType] without NOT_A_TYPE
+		//- length of THIS enum (without END_OF_LIST)
 		public static final int length = EOriginalLandscapeType.values().length - 1;
 		public final ELandscapeType value;
 		
@@ -612,8 +615,8 @@ public class OriginalMapFileDataStructs {
 		END_OF_LIST(null); //- has to be the last item
 		
 		
-		//- length of [EBuildingType] (without END_OF_LIST)
-		public static final int length = EBuildingType.values().length-1;
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapBuildingType.values().length-1;
 		public final EBuildingType value;
 		
 		EMapBuildingType(EBuildingType value) {
@@ -672,8 +675,8 @@ public class OriginalMapFileDataStructs {
 		END_OF_LIST(null); //- has to be the last item
 		
 		
-		//- length of [EBuildingType] (without END_OF_LIST)
-		public static final int length = EBuildingType.values().length-1;
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapStackType.values().length-1;
 		public final EMaterialType value;
 		
 		EMapStackType(EMaterialType value) {
@@ -743,8 +746,8 @@ public class OriginalMapFileDataStructs {
 		NOT_A_SETTLER(null);
 		
 		
-		//- length of [EMapSettlersType] (without END_OF_LIST)
-		public static final int length = EBuildingType.values().length-1;
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapSettlersType.values().length-1;
 		public final EMovableType value;
 		
 		EMapSettlersType(EMovableType value) {
@@ -774,14 +777,14 @@ public class OriginalMapFileDataStructs {
 		NO_OBJECT(null, 0),  //- 0
 		
 		// TODO: EMapObjectTypeType.DECORATION does not work!
-		UNKNOWN_01(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_1 = 1,
-		UNKNOWN_02(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_2 = 2,
-		UNKNOWN_03(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_3 = 3,
-		UNKNOWN_04(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_4 = 4,
-		UNKNOWN_05(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_5 = 5,
-		UNKNOWN_06(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_6 = 6,
-		UNKNOWN_07(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_7 = 7,
-		UNKNOWN_08(EMapObjectTypeType.DECORATION, EMapObjectType.TREE_DEAD),  //- GAME_OBJECT_BIG_STONE_8 = 8,
+		UNKNOWN_01(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_1 = 1,
+		UNKNOWN_02(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_2 = 2,
+		UNKNOWN_03(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_3 = 3,
+		UNKNOWN_04(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_4 = 4,
+		UNKNOWN_05(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_5 = 5,
+		UNKNOWN_06(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_6 = 6,
+		UNKNOWN_07(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_7 = 7,
+		UNKNOWN_08(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_8 = 8,
 		UNKNOWN_09(null, 0),  //- GAME_OBJECT_STONE_1 = 9,
 		UNKNOWN_0A(null, 0),  //- GAME_OBJECT_STONE_2 = 10,
 		UNKNOWN_0B(null, 0),  //- GAME_OBJECT_STONE_3 = 11,
@@ -857,7 +860,7 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_51(null, 0),  //- //-- unknown: 81
 		UNKNOWN_52(null, 0),  //- //-- unknown: 82
 		UNKNOWN_53(null, 0),  //- //-- unknown: 83
-		UNKNOWN_54(null, 0),  //- GAME_OBJECT_TREE_SMALL = 84,
+		UNKNOWN_54(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_SMALL = 84,
 		UNKNOWN_55(null, 0),  //- //-- unknown...
 		UNKNOWN_56(null, 0),  //- //-- unknown...
 		UNKNOWN_57(null, 0),  //- //-- unknown...
