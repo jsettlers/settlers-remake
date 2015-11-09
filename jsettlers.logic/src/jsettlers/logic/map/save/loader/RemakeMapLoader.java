@@ -29,15 +29,11 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
@@ -114,12 +110,6 @@ public abstract class RemakeMapLoader extends MapLoader {
 		return header.getCreationDate();
 	}
 
-	/**
-	 * Gets the map data for this loader, if the data is available.
-	 * 
-	 * @return
-	 */
-	public abstract IMapData getMapData() throws MapLoadException;
 
 	@Override
 	public String toString() {

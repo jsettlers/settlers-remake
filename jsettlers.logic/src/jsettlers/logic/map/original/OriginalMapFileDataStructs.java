@@ -14,11 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
+import jsettlers.common.map.object.*;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.object.*;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapNations;
 
 import java.util.List;
 import java.util.Vector;
@@ -39,8 +42,8 @@ public class OriginalMapFileDataStructs {
 		AREA(6,"Area"),
 		SETTLERS(7,"Settlers"),
 		BUILDINGS(8,"Buildings"),
-		RESOURCES(9,"Resources"),
-		UNKNOWN_10 (10,"UNKNOWN_10"),
+		STACKS(9,"Stacks"),
+		UNKNOWN_10 (10,"UNKNOWN_10"), //- maybe the winning conditions
 		QUEST_TEXT(11,"QuestText"),
 		QUEST_TIP(12,"QuestTip");
 		
@@ -84,7 +87,7 @@ public class OriginalMapFileDataStructs {
 			this.value = value;
 		}
 		
-		public static EMapNations fromMapValue(int mapValue) {
+		public static EMapNations FromMapValue(int mapValue) {
 			for (int i=0; i < EMapNations.values().length; i++) {
 				if (EMapNations.values()[i].value == mapValue) return EMapNations.values()[i];
 			}
@@ -93,6 +96,7 @@ public class OriginalMapFileDataStructs {
 		
 			return EMapNations.ROMANS;
 		}
+
 	}
 	
 	//--------------------------------------------------//
@@ -239,15 +243,46 @@ public class OriginalMapFileDataStructs {
 	};
 
 	//--------------------------------------------------//
+	public enum EMapResources {
+		
+		FISH (EResourceType.FISH),
+		COAL (EResourceType.COAL),
+		IRONORE(EResourceType.IRONORE),
+		GOLDORE(EResourceType.GOLDORE),
+		GEMS(EResourceType.GEMSTONE),
+		SULFUR(EResourceType.BRIMSTONE),
+		NOT_A_RESOURCE_TYPE (EResourceType.NOTHING);
+		
+		public final EResourceType value;
+		
+		//- length of THIS enum (without NOT_A_TYPE)
+		public static final int length = EMapResources.values().length - 1;
+		
+		EMapResources(EResourceType value) {
+			this.value = value;
+		}
+		
+		public static EMapResources getTypeByInt(int type) {
+			if (type < 0) return NOT_A_RESOURCE_TYPE;
+			if (type >= EMapResources.length) return NOT_A_RESOURCE_TYPE;
+			
+			return EMapResources.values()[type];
+		}
+	};
+	
+	  
+	  
+	
+	//--------------------------------------------------//
 	public enum EOriginalLandscapeType {
-		UNKNOWN_00(ELandscapeType.WATER1),
-		UNKNOWN_01(ELandscapeType.WATER2),
-		UNKNOWN_02(ELandscapeType.WATER3),
-		UNKNOWN_03(ELandscapeType.WATER4),
-		UNKNOWN_04(ELandscapeType.WATER5),
-		UNKNOWN_05(ELandscapeType.WATER6),
-		UNKNOWN_06(ELandscapeType.WATER7),
-		UNKNOWN_07(ELandscapeType.WATER8),
+		WATER1(ELandscapeType.WATER1), //- value = 0x00
+		WATER2(ELandscapeType.WATER2), //- value = 0x01
+		WATER3(ELandscapeType.WATER3),
+		WATER4(ELandscapeType.WATER4),
+		WATER5(ELandscapeType.WATER5),
+		WATER6(ELandscapeType.WATER6),
+		WATER7(ELandscapeType.WATER7),
+		WATER8(ELandscapeType.WATER8),
 		UNKNOWN_08(null),
 		UNKNOWN_09(null),
 		UNKNOWN_0A(null),
@@ -256,14 +291,14 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_0D(null),
 		UNKNOWN_0E(null),
 		UNKNOWN_0F(null),
-		UNKNOWN_10(ELandscapeType.GRASS),
-		UNKNOWN_11(ELandscapeType.MOUNTAINBORDEROUTER),
+		GRASS(ELandscapeType.GRASS),
+		MOUNTAINBORDEROUTER(ELandscapeType.MOUNTAINBORDEROUTER),
 		UNKNOWN_12(null),
 		UNKNOWN_13(null),
-		UNKNOWN_14(ELandscapeType.DESERTBORDEROUTER),
-		UNKNOWN_15(ELandscapeType.MOORBORDER),
+		DESERTBORDEROUTER(ELandscapeType.DESERTBORDEROUTER),
+		MOORBORDER(ELandscapeType.MOORBORDER),
 		UNKNOWN_16(null),
-		UNKNOWN_17(ELandscapeType.MUDBORDER),
+		MUDBORDER(ELandscapeType.MUDBORDER),
 		UNKNOWN_18(null),
 		UNKNOWN_19(null),
 		UNKNOWN_1A(null),
@@ -272,10 +307,10 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_1D(null),
 		UNKNOWN_1E(null),
 		UNKNOWN_1F(null),
-		UNKNOWN_20(ELandscapeType.MOUNTAIN),
-		UNKNOWN_21(ELandscapeType.MOUNTAINBORDER),
+		MOUNTAIN(ELandscapeType.MOUNTAIN),
+		MOUNTAINBORDER(ELandscapeType.MOUNTAINBORDER),
 		UNKNOWN_22(null),
-		UNKNOWN_23(ELandscapeType.SNOWBORDER),
+		SNOWBORDER(ELandscapeType.SNOWBORDER),
 		UNKNOWN_24(null),
 		UNKNOWN_25(null),
 		UNKNOWN_26(null),
@@ -288,7 +323,7 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_2D(null),
 		UNKNOWN_2E(null),
 		UNKNOWN_2F(null),
-		UNKNOWN_30(ELandscapeType.SAND),
+		SAND(ELandscapeType.SAND),
 		UNKNOWN_31(null),
 		UNKNOWN_32(null),
 		UNKNOWN_33(null),
@@ -304,8 +339,8 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_3D(null),
 		UNKNOWN_3E(null),
 		UNKNOWN_3F(null),
-		UNKNOWN_40(ELandscapeType.DESERT),
-		UNKNOWN_41(ELandscapeType.DESERTBORDER),
+		DESERT(ELandscapeType.DESERT),
+		DESERTBORDER(ELandscapeType.DESERTBORDER),
 		UNKNOWN_42(null),
 		UNKNOWN_43(null),
 		UNKNOWN_44(null),
@@ -320,8 +355,8 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_4D(null),
 		UNKNOWN_4E(null),
 		UNKNOWN_4F(null),
-		UNKNOWN_50(ELandscapeType.MOORINNER), //- swamp ??
-		UNKNOWN_51(ELandscapeType.MOOR),
+		MOORINNER(ELandscapeType.MOORINNER),
+		MOOR(ELandscapeType.MOOR),
 		UNKNOWN_52(null),
 		UNKNOWN_53(null),
 		UNKNOWN_54(null),
@@ -336,10 +371,10 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_5D(null),
 		UNKNOWN_5E(null),
 		UNKNOWN_5F(null),
-		UNKNOWN_60(ELandscapeType.RIVER1),
-		UNKNOWN_61(ELandscapeType.RIVER2),
-		UNKNOWN_62(ELandscapeType.RIVER3),
-		UNKNOWN_63(ELandscapeType.RIVER4),
+		RIVER1(ELandscapeType.RIVER1),
+		RIVER2(ELandscapeType.RIVER2),
+		RIVER3(ELandscapeType.RIVER3),
+		RIVER4(ELandscapeType.RIVER4),
 		UNKNOWN_64(null),
 		UNKNOWN_65(null),
 		UNKNOWN_66(null),
@@ -368,8 +403,8 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_7D(null),
 		UNKNOWN_7E(null),
 		UNKNOWN_7F(null),
-		UNKNOWN_80(ELandscapeType.SNOWINNER),
-		UNKNOWN_81(ELandscapeType.SNOW),
+		SNOWINNER(ELandscapeType.SNOWINNER),
+		SNOW(ELandscapeType.SNOW),
 		UNKNOWN_82(null),
 		UNKNOWN_83(null),
 		UNKNOWN_84(null),
@@ -384,8 +419,8 @@ public class OriginalMapFileDataStructs {
 		UNKNOWN_8D(null),
 		UNKNOWN_8E(null),
 		UNKNOWN_8F(null),
-		UNKNOWN_90(ELandscapeType.MUDINNER), //- mud ??
-		UNKNOWN_91(ELandscapeType.MUD),
+		MUDINNER(ELandscapeType.MUDINNER),
+		MUD(ELandscapeType.MUD),
 		UNKNOWN_92(null),
 		UNKNOWN_93(null),
 		UNKNOWN_94(null),
@@ -498,195 +533,425 @@ public class OriginalMapFileDataStructs {
 		
 		NOT_A_TYPE(null); //- has to be the last item
 		
-		//- length of [EOriginalLandscapeType]
-		public static final int length = EOriginalLandscapeType.values().length;
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EOriginalLandscapeType.values().length - 1;
 		public final ELandscapeType value;
 		
 		EOriginalLandscapeType(ELandscapeType value) {
 			this.value = value;
 		}
 
-		public static EOriginalLandscapeType getTypeByInt(short intType) {
-			if (intType < 0) return NOT_A_TYPE;
-			if (intType >= EOriginalLandscapeType.length) return NOT_A_TYPE;
+		public static EOriginalLandscapeType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_TYPE;
+			if (type >= EOriginalLandscapeType.length) return NOT_A_TYPE;
 			
-			return EOriginalLandscapeType.values()[intType];
+			return EOriginalLandscapeType.values()[type];
 		}
 	}
 
 	
-	//--------------------------------------------------//
-	public enum EObjectType {
-		NO_OBJECT(null),  //- 0
-		UNKNOWN_01(null),  //- GAME_OBJECT_BIG_STONE_1 = 1,
-		UNKNOWN_02(null),  //- GAME_OBJECT_BIG_STONE_2 = 2,
-		UNKNOWN_03(null),  //- GAME_OBJECT_BIG_STONE_3 = 3,
-		UNKNOWN_04(null),  //- GAME_OBJECT_BIG_STONE_4 = 4,
-		UNKNOWN_05(null),  //- GAME_OBJECT_BIG_STONE_5 = 5,
-		UNKNOWN_06(null),  //- GAME_OBJECT_BIG_STONE_6 = 6,
-		UNKNOWN_07(null),  //- GAME_OBJECT_BIG_STONE_7 = 7,
-		UNKNOWN_08(null),  //- GAME_OBJECT_BIG_STONE_8 = 8,
-		UNKNOWN_09(null),  //- GAME_OBJECT_STONE_1 = 9,
-		UNKNOWN_0A(null),  //- GAME_OBJECT_STONE_2 = 10,
-		UNKNOWN_0B(null),  //- GAME_OBJECT_STONE_3 = 11,
-		UNKNOWN_0C(null),  //- GAME_OBJECT_STONE_4 = 12,
-		UNKNOWN_0D(null),  //- GAME_OBJECT_BOUNDERY_STONE_1 = 13,
-		UNKNOWN_0E(null),  //- GAME_OBJECT_BOUNDERY_STONE_2 = 14,
-		UNKNOWN_0F(null),  //- GAME_OBJECT_BOUNDERY_STONE_3 = 15,
-		UNKNOWN_10(null),  //- GAME_OBJECT_BOUNDERY_STONE_4 = 16,
-		UNKNOWN_11(null),  //- GAME_OBJECT_BOUNDERY_STONE_5 = 17,
-		UNKNOWN_12(null),  //- GAME_OBJECT_BOUNDERY_STONE_6 = 18,
-		UNKNOWN_13(null),  //- GAME_OBJECT_BOUNDERY_STONE_7 = 19,
-		UNKNOWN_14(null),  //- GAME_OBJECT_BOUNDERY_STONE_8 = 20,
-		UNKNOWN_15(null),  //- GAME_OBJECT_SMALL_STONE_1 = 21,
-		UNKNOWN_16(null),  //- GAME_OBJECT_SMALL_STONE_2 = 22,
-		UNKNOWN_17(null),  //- GAME_OBJECT_SMALL_STONE_3 = 23,
-		UNKNOWN_18(null),  //- GAME_OBJECT_SMALL_STONE_4 = 24,
-		UNKNOWN_19(null),  //- GAME_OBJECT_SMALL_STONE_5 = 25,
-		UNKNOWN_1A(null),  //- GAME_OBJECT_SMALL_STONE_6 = 26,
-		UNKNOWN_1B(null),  //- GAME_OBJECT_SMALL_STONE_7 = 27,
-		UNKNOWN_1C(null),  //- GAME_OBJECT_SMALL_STONE_8 = 28,
-		UNKNOWN_1D(null),  //- GAME_OBJECT_WRECK_1 = 29,
-		UNKNOWN_1E(null),  //- GAME_OBJECT_WRECK_2 = 30,
-		UNKNOWN_1F(null),  //- GAME_OBJECT_WRECK_3 = 31,
-		UNKNOWN_20(null),  //- GAME_OBJECT_WRECK_4 = 32,
-		UNKNOWN_21(null),  //- GAME_OBJECT_WRECK_5 = 33,
-		UNKNOWN_22(null),  //- GAME_OBJECT_GRAVE = 34,
-		UNKNOWN_23(null),  //- GAME_OBJECT_PLANT_SMALL_1 = 35,
-		UNKNOWN_24(null),  //- GAME_OBJECT_PLANT_SMALL_2 = 36,
-		UNKNOWN_25(null),  //- GAME_OBJECT_PLANT_SMALL_3 = 37,
-		UNKNOWN_26(null),  //- GAME_OBJECT_MUSHROOM_1 = 38,
-		UNKNOWN_27(null),  //- GAME_OBJECT_MUSHROOM_2 = 39,
-		UNKNOWN_28(null),  //- GAME_OBJECT_MUSHROOM_3 = 40,
-		UNKNOWN_29(null),  //- GAME_OBJECT_TREE_STUMP_1 = 41,
-		UNKNOWN_2A(null),  //- GAME_OBJECT_TREE_STUMP_2 = 42,
-		UNKNOWN_2B(null),  //- GAME_OBJECT_TREE_DEAD_1 = 43,
-		UNKNOWN_2C(null),  //- GAME_OBJECT_TREE_DEAD_2 = 44,
-		UNKNOWN_2D(null),  //- GAME_OBJECT_CACTUS_1 = 45,
-		UNKNOWN_2E(null),  //- GAME_OBJECT_CACTUS_2 = 46,
-		UNKNOWN_2F(null),  //- GAME_OBJECT_CACTUS_3 = 47,
-		UNKNOWN_30(null),  //- GAME_OBJECT_CACTUS_4 = 48,
-		UNKNOWN_31(null),  //- GAME_OBJECT_BONES = 49,
-		UNKNOWN_32(null),  //- GAME_OBJECT_FLOWER_1 = 50,
-		UNKNOWN_33(null),  //- GAME_OBJECT_FLOWER_2 = 51,
-		UNKNOWN_34(null),  //- GAME_OBJECT_FLOWER_3 = 52,
-		UNKNOWN_35(null),  //- GAME_OBJECT_STRUB_SMALL_1 = 53,
-		UNKNOWN_36(null),  //- GAME_OBJECT_STRUB_SMALL_2 = 54,
-		UNKNOWN_37(null),  //- GAME_OBJECT_STRUB_SMALL_3 = 55,
-		UNKNOWN_38(null),  //- GAME_OBJECT_STRUB_SMALL_4 = 56,
-		UNKNOWN_39(null),  //- GAME_OBJECT_STRUB_1 = 57,
-		UNKNOWN_3A(null),  //- GAME_OBJECT_STRUB_2 = 58,
-		UNKNOWN_3B(null),  //- GAME_OBJECT_STRUB_3 = 59,
-		UNKNOWN_3C(null),  //- GAME_OBJECT_STRUB_4 = 60,
-		UNKNOWN_3D(null),  //- GAME_OBJECT_STRUB_5 = 61,
-		UNKNOWN_3E(null),  //- GAME_OBJECT_REED_BEDS_1 = 62,
-		UNKNOWN_3F(null),  //- GAME_OBJECT_REED_BEDS_2 = 63,
-		UNKNOWN_40(null),  //- GAME_OBJECT_REED_BEDS_3 = 64,
-		UNKNOWN_41(null),  //- GAME_OBJECT_REED_BEDS_4 = 65,
-		UNKNOWN_42(null),  //- GAME_OBJECT_REED_BEDS_5 = 66,
-		UNKNOWN_43(null),  //- GAME_OBJEC()T_REED_BEDS_6 = 67,
-		UNKNOWN_44(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
-		UNKNOWN_45(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
-		UNKNOWN_46(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_1 = 70,
-		UNKNOWN_47(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ELM_2 = 71,
-		UNKNOWN_48(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_OAK_1 = 72,
-		UNKNOWN_49(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
-		UNKNOWN_4A(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
-		UNKNOWN_4B(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
-		UNKNOWN_4C(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
-		UNKNOWN_4D(MapTreeObject.getInstance()),  //- //-- unknown: 77
-		UNKNOWN_4E(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
-		UNKNOWN_4F(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
-		UNKNOWN_50(MapTreeObject.getInstance()),  //- GAME_OBJECT_TREE_UNKNOWN_5 = 80,
-		UNKNOWN_51(null),  //- //-- unknown: 81
-		UNKNOWN_52(null),  //- //-- unknown: 82
-		UNKNOWN_53(null),  //- //-- unknown: 83
-		UNKNOWN_54(null),  //- GAME_OBJECT_TREE_SMALL = 84,
-		UNKNOWN_55(null),  //- //-- unknown...
-		UNKNOWN_56(null),  //- //-- unknown...
-		UNKNOWN_57(null),  //- //-- unknown...
-		UNKNOWN_58(null),  //- //-- unknown...
-		UNKNOWN_59(null),  //- //-- unknown...
-		UNKNOWN_5A(null),  //- //-- unknown...
-		UNKNOWN_5B(null),  //- //-- unknown...
-		UNKNOWN_5C(null),  //- //-- unknown...
-		UNKNOWN_5D(null),  //- //-- unknown...
-		UNKNOWN_5E(null),  //- //-- unknown...
-		UNKNOWN_5F(null),  //- //-- unknown...
-		UNKNOWN_60(null),  //- //-- unknown...
-		UNKNOWN_61(null),  //- //-- unknown...
-		UNKNOWN_62(null),  //- //-- unknown...
-		UNKNOWN_63(null),  //- //-- unknown...
-		UNKNOWN_64(null),  //- //-- unknown...
-		UNKNOWN_65(null),  //- //-- unknown...
-		UNKNOWN_66(null),  //- //-- unknown...
-		UNKNOWN_67(null),  //- //-- unknown...
-		UNKNOWN_68(null),  //- //-- unknown...
-		UNKNOWN_69(null),  //- //-- unknown...
-		UNKNOWN_6A(null),  //- //-- unknown...
-		UNKNOWN_6B(null),  //- //-- unknown...
-		UNKNOWN_6C(null),  //- //-- unknown...
-		UNKNOWN_6D(null),  //- //-- unknown...
-		UNKNOWN_6E(null),  //- //-- unknown...
-		UNKNOWN_6F(null),  //- GAME_OBJECT_REEF_SMALL = 111,
-		UNKNOWN_70(null),  //- GAME_OBJECT_REEF_MEDIUM = 112,
-		UNKNOWN_71(null),  //- GAME_OBJECT_REEF_LARGE = 113,
-		UNKNOWN_72(null),  //- GAME_OBJECT_REEF_XLARGE = 114,
-		UNKNOWN_73(MapStoneObject.getInstance(12)),  //- GAME_OBJECT_RES_STONE_01 = 115,
-		UNKNOWN_74(MapStoneObject.getInstance(11)),  //- GAME_OBJECT_RES_STONE_02 = 116,
-		UNKNOWN_75(MapStoneObject.getInstance(10)),  //- GAME_OBJECT_RES_STONE_03 = 117,
-		UNKNOWN_76(MapStoneObject.getInstance(9)),  //- GAME_OBJECT_RES_STONE_04 = 118,
-		UNKNOWN_77(MapStoneObject.getInstance(8)),  //- GAME_OBJECT_RES_STONE_05 = 119,
-		UNKNOWN_78(MapStoneObject.getInstance(7)),  //- GAME_OBJECT_RES_STONE_06 = 120,
-		UNKNOWN_79(MapStoneObject.getInstance(6)),  //- GAME_OBJECT_RES_STONE_07 = 121,
-		UNKNOWN_7A(MapStoneObject.getInstance(5)),  //- GAME_OBJECT_RES_STONE_08 = 122,
-		UNKNOWN_7B(MapStoneObject.getInstance(4)),  //- GAME_OBJECT_RES_STONE_09 = 123,
-		UNKNOWN_7C(MapStoneObject.getInstance(3)),  //- GAME_OBJECT_RES_STONE_10 = 124,
-		UNKNOWN_7D(MapStoneObject.getInstance(2)),  //- GAME_OBJECT_RES_STONE_11 = 125,
-		UNKNOWN_7E(MapStoneObject.getInstance(1)),  //- GAME_OBJECT_RES_STONE_12 = 126,
-		UNKNOWN_7F(MapStoneObject.getInstance(0)),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
-		NOT_A_TYPE(null); //- has to be the last item
+	public enum EMapBuildingType {
 		
-		public final MapObject value;
-		public static final int length = EObjectType.values().length;
+		NOT_A_BUILDING(null), //- 0 is not defined
 		
-		EObjectType(MapObject value) {
+		STOCK(EBuildingType.STOCK),
+		LUMBERJACK(EBuildingType.LUMBERJACK),
+		STONECUTTER(EBuildingType.STONECUTTER),
+		SAWMILL(EBuildingType.SAWMILL),
+		FORESTER(EBuildingType.FORESTER),
+		LOOKOUT_TOWER(EBuildingType.LOOKOUT_TOWER),
+		COALMINE(EBuildingType.COALMINE),
+		GOLDMINE(EBuildingType.GOLDMINE),
+		IRONMINE(EBuildingType.IRONMINE),
+		GOLDMELT(EBuildingType.GOLDMELT),
+		Eisenschmelze(EBuildingType.IRONMELT),
+		TOOLSMITH(EBuildingType.TOOLSMITH),
+		WEAPONSMITH(EBuildingType.WEAPONSMITH),
+		WINEGROWER(EBuildingType.WINEGROWER),
+		TOWER(EBuildingType.TOWER),
+		TOWER_BIG(EBuildingType.BIG_TOWER),
+		Muehle(EBuildingType.MILL),
+		CASTLE(EBuildingType.CASTLE),
+		BARRACK(EBuildingType.BARRACK),
+		BAKER(EBuildingType.BAKER),
+		Metzger(EBuildingType.SLAUGHTERHOUSE),
+		Destille(null),
+		PIG_FARM(EBuildingType.PIG_FARM),
+		FARM(EBuildingType.FARM),
+		FISHER(EBuildingType.FISHER),
+		LIVINGHOUSE_SMALL(EBuildingType.SMALL_LIVINGHOUSE),
+		LIVINGHOUSE_MEDIUM(EBuildingType.MEDIUM_LIVINGHOUSE),
+		LIVINGHOUSE_BIG(EBuildingType.BIG_LIVINGHOUSE),
+		Schwefelmine(null),
+		WATERWORKS(EBuildingType.WATERWORKS),
+		Katapultwerk(null),
+		DOCKYARD(EBuildingType.DOCKYARD),
+		HARBUR(EBuildingType.HARBUR),
+		Marktplatz(null),
+		HOSPITAL(EBuildingType.HOSPITAL),
+		Reisfarm(null),
+		Edelsteinmine(null),
+		Brauerei(null),
+		CHARCOAL_BURNER(EBuildingType.CHARCOAL_BURNER),
+		Pulvermacherei(null),
+		Pyramide(null),
+		Sphinx(null),
+		BIG_TEMPLE(EBuildingType.BIG_TEMPLE), // TODO : does not work?!
+		TEMPLE(EBuildingType.TEMPLE),
+		grosse_Pagode(null),
+		kleine_Pagode(null),
+		Ballistenwerkstatt(null),
+		Kanonenwerkstatt(null),
+		DONKEY_FARM(EBuildingType.DONKEY_FARM),
+		grosser_Gong(null),
+		Impkerei(null),
+		Metwinzerei(null),
+		Labortorium(null),
+		kleiner_Tempel(null),
+		grosser_Tempel(null),
+		SchwefelmineAmazonen(null),
+		
+		END_OF_LIST(null); //- has to be the last item
+		
+		
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapBuildingType.values().length-1;
+		public final EBuildingType value;
+		
+		EMapBuildingType(EBuildingType value) {
 			this.value = value;
 		}
 		
-		public static EObjectType getTypeByInt(short intType) {
-			if (intType < 0) return NOT_A_TYPE;
-			if (intType >= EObjectType.length) return NOT_A_TYPE;
+		public static EMapBuildingType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_BUILDING;
+			if (type >= EMapBuildingType.length) return NOT_A_BUILDING;
 			
-			return EObjectType.values()[intType];
+			return EMapBuildingType.values()[type];
 		}
+		
 	}
-
-	public static EResourceType getResourceTypeFrom(byte originalResource) {
-		if (originalResource == 0
-				|| originalResource == 16
-				|| originalResource == 32
-				|| originalResource == 48
-				|| originalResource == 64
-				|| originalResource == 80) {
-			return EResourceType.NOTHING;
-		} else if (originalResource <= 15) {
-			return EResourceType.FISH;
-		} else if (originalResource <= 31) {
-			return EResourceType.COAL;
-		} else if (originalResource <= 47) {
-			return EResourceType.IRONORE;
-		} else if (originalResource <= 63){
-			return EResourceType.GOLDORE;
-		} else if (originalResource <= 79){
-			return EResourceType.GEMSTONE;
-		} else {
-			return EResourceType.BRIMSTONE;
+	
+	public enum EMapStackType {
+		
+		NOT_A_STACK(null), //- 0 is not defined
+		
+		PLANK(EMaterialType.PLANK),
+		STONE(EMaterialType.STONE),
+		Baumstamm(EMaterialType.TRUNK),
+		BREAD(EMaterialType.BREAD),
+		COAL(EMaterialType.COAL),
+		GOLDORE(EMaterialType.GOLDORE),
+		IRONORE(EMaterialType.IRONORE),
+		FISH(EMaterialType.FISH),
+		CROP(EMaterialType.CROP),
+		GOLD(EMaterialType.GOLD),
+		IRON(EMaterialType.IRON),
+		SPADE(EMaterialType.BLADE),
+		HAMMER(EMaterialType.HAMMER),
+		AXE(EMaterialType.AXE),
+		PICK(EMaterialType.PICK),
+		SAW(EMaterialType.SAW),
+		FISHINGROD(EMaterialType.FISHINGROD),
+		SWORD(EMaterialType.SWORD),
+		BOW(EMaterialType.BOW),
+		SPEAR(EMaterialType.SPEAR),
+		WINE(EMaterialType.WINE),
+		FLOUR(EMaterialType.FLOUR),
+		PIG(EMaterialType.PIG),
+		MEAT(EMaterialType.MEAT),
+		SULFUR(EMaterialType.SULFUR),
+		WATER(EMaterialType.WATER),
+		RICE(EMaterialType.RICE),
+		GEMS(EMaterialType.GEMS),
+		KEG(EMaterialType.KEG),
+		Schiesspulver(null),
+		unknown(null),
+		SCYTHE(EMaterialType.SCYTHE),
+		Reisschnaps(null),
+		Met(null),
+		HONEY(EMaterialType.HONEY),
+		
+		END_OF_LIST(null); //- has to be the last item
+		
+		
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapStackType.values().length-1;
+		public final EMaterialType value;
+		
+		EMapStackType(EMaterialType value) {
+			this.value = value;
 		}
+		
+		public static EMapStackType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_STACK;
+			if (type >= EMapBuildingType.length) return NOT_A_STACK;
+			
+			return EMapStackType.values()[type];
+		}
+		
 	}
+	
+	public enum EMapSettlersType {
+		
+		BEARER(EMovableType.BEARER),
+		DIGGER(EMovableType.DIGGER),
+		BRICKLAYER(EMovableType.BRICKLAYER),
+		LUMBERJACK(EMovableType.LUMBERJACK),
+		STONECUTTER(EMovableType.STONECUTTER),
+		SWORDSMAN_L1(EMovableType.SWORDSMAN_L1),
+		SAWMILLER(EMovableType.SAWMILLER),
+		FORESTER(EMovableType.FORESTER),
+		BOWMAN_L1(EMovableType.BOWMAN_L1),
+		MELTER(EMovableType.MELTER),
+		MINER(EMovableType.MINER),
+		SMITH(EMovableType.SMITH),
+		MILLER(EMovableType.MILLER),
+		BAKER(EMovableType.BAKER),
+		BUTCHER(EMovableType.SLAUGHTERER),
+		PIKEMAN_L1(EMovableType.PIKEMAN_L1),
+		FARMER(EMovableType.FARMER),
+		FISHERMAN(EMovableType.FISHERMAN),
+		WATERWORKER(EMovableType.WATERWORKER),
+		Werftarbeiter(null),
+		UNKNOWN_20(null),
+		HEALER(EMovableType.HEALER),
+		GEOLOGIST(EMovableType.GEOLOGIST),
+		THIEF(EMovableType.THIEF),
+		CHARCOAL_BURNER(EMovableType.CHARCOAL_BURNER),
+		Schnapsbrenner(null),
+		Brauer(null),
+		Pulvermacher(null),
+		PIG_FARMER(EMovableType.PIG_FARMER),
+		WINEGROWER(EMovableType.WINEGROWER),
+		BOWMAN_L2(EMovableType.BOWMAN_L2),
+		PIKEMAN_L2(EMovableType.PIKEMAN_L2),
+		SWORDSMAN_L2(EMovableType.SWORDSMAN_L2),
+		BOWMAN_L3(EMovableType.BOWMAN_L3),
+		PIKEMAN_L3(EMovableType.PIKEMAN_L3),
+		SWORDSMAN_L3(EMovableType.SWORDSMAN_L3),
+		MAGE(EMovableType.MAGE),
+		UNKNOWN_37(null),
+		Reisbauer(null),
+		DONKEY(EMovableType.DONKEY),
+		PIONEER(EMovableType.PIONEER),
+		Katapult(null),
+		UNKNOWN_42(null),
+		Handelsschiff(null),
+		Faehre(null),
+		Imker(null),
+		Metwinzer(null),
+		Alchemist(null),
+		
+		NOT_A_SETTLER(null);
+		
+		
+		//- length of THIS enum (without END_OF_LIST)
+		public static final int length = EMapSettlersType.values().length-1;
+		public final EMovableType value;
+		
+		EMapSettlersType(EMovableType value) {
+			this.value = value;
+		}
+		
+		public static EMapSettlersType getTypeByInt(int type) {
+			if (type < 0) return NOT_A_SETTLER;
+			if (type >= EMapSettlersType.length) return NOT_A_SETTLER;
+			
+			return EMapSettlersType.values()[type];
+		}
+		
+	}
+	
+	//--------------------------------------------------//
+	public enum EMapObjectTypeType {
+		DECORATION,
+		STONE,
+		TREE
+	}
+	
+	
+	//--------------------------------------------------//
+	public enum EObjectType {
+	
+		NO_OBJECT(null, 0),  //- 0
+		
+		// TODO: EMapObjectTypeType.DECORATION does not work!
+		UNKNOWN_01(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_1 = 1,
+		UNKNOWN_02(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_2 = 2,
+		UNKNOWN_03(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_3 = 3,
+		UNKNOWN_04(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_4 = 4,
+		UNKNOWN_05(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_5 = 5,
+		UNKNOWN_06(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_6 = 6,
+		UNKNOWN_07(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_7 = 7,
+		UNKNOWN_08(EMapObjectTypeType.DECORATION, EMapObjectType.STONE),  //- GAME_OBJECT_BIG_STONE_8 = 8,
+		UNKNOWN_09(null, 0),  //- GAME_OBJECT_STONE_1 = 9,
+		UNKNOWN_0A(null, 0),  //- GAME_OBJECT_STONE_2 = 10,
+		UNKNOWN_0B(null, 0),  //- GAME_OBJECT_STONE_3 = 11,
+		UNKNOWN_0C(null, 0),  //- GAME_OBJECT_STONE_4 = 12,
+		UNKNOWN_0D(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_1 = 13,
+		UNKNOWN_0E(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_2 = 14,
+		UNKNOWN_0F(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_3 = 15,
+		UNKNOWN_10(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_4 = 16,
+		UNKNOWN_11(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_5 = 17,
+		UNKNOWN_12(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_6 = 18,
+		UNKNOWN_13(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_7 = 19,
+		UNKNOWN_14(null, 0),  //- GAME_OBJECT_BOUNDERY_STONE_8 = 20,
+		UNKNOWN_15(null, 0),  //- GAME_OBJECT_SMALL_STONE_1 = 21,
+		UNKNOWN_16(null, 0),  //- GAME_OBJECT_SMALL_STONE_2 = 22,
+		UNKNOWN_17(null, 0),  //- GAME_OBJECT_SMALL_STONE_3 = 23,
+		UNKNOWN_18(null, 0),  //- GAME_OBJECT_SMALL_STONE_4 = 24,
+		UNKNOWN_19(null, 0),  //- GAME_OBJECT_SMALL_STONE_5 = 25,
+		UNKNOWN_1A(null, 0),  //- GAME_OBJECT_SMALL_STONE_6 = 26,
+		UNKNOWN_1B(null, 0),  //- GAME_OBJECT_SMALL_STONE_7 = 27,
+		UNKNOWN_1C(null, 0),  //- GAME_OBJECT_SMALL_STONE_8 = 28,
+		UNKNOWN_1D(null, 0),  //- GAME_OBJECT_WRECK_1 = 29,
+		UNKNOWN_1E(null, 0),  //- GAME_OBJECT_WRECK_2 = 30,
+		UNKNOWN_1F(null, 0),  //- GAME_OBJECT_WRECK_3 = 31,
+		UNKNOWN_20(null, 0),  //- GAME_OBJECT_WRECK_4 = 32,
+		UNKNOWN_21(null, 0),  //- GAME_OBJECT_WRECK_5 = 33,
+		UNKNOWN_22(null, 0),  //- GAME_OBJECT_GRAVE = 34,
+		UNKNOWN_23(null, 0),  //- GAME_OBJECT_PLANT_SMALL_1 = 35,
+		UNKNOWN_24(null, 0),  //- GAME_OBJECT_PLANT_SMALL_2 = 36,
+		UNKNOWN_25(null, 0),  //- GAME_OBJECT_PLANT_SMALL_3 = 37,
+		UNKNOWN_26(null, 0),  //- GAME_OBJECT_MUSHROOM_1 = 38,
+		UNKNOWN_27(null, 0),  //- GAME_OBJECT_MUSHROOM_2 = 39,
+		UNKNOWN_28(null, 0),  //- GAME_OBJECT_MUSHROOM_3 = 40,
+		UNKNOWN_29(null, 0),  //- GAME_OBJECT_TREE_STUMP_1 = 41,
+		UNKNOWN_2A(null, 0),  //- GAME_OBJECT_TREE_STUMP_2 = 42,
+		UNKNOWN_2B(null, 0),  //- GAME_OBJECT_TREE_DEAD_1 = 43,
+		UNKNOWN_2C(null, 0),  //- GAME_OBJECT_TREE_DEAD_2 = 44,
+		UNKNOWN_2D(null, 0),  //- GAME_OBJECT_CACTUS_1 = 45,
+		UNKNOWN_2E(null, 0),  //- GAME_OBJECT_CACTUS_2 = 46,
+		UNKNOWN_2F(null, 0),  //- GAME_OBJECT_CACTUS_3 = 47,
+		UNKNOWN_30(null, 0),  //- GAME_OBJECT_CACTUS_4 = 48,
+		UNKNOWN_31(null, 0),  //- GAME_OBJECT_BONES = 49,
+		UNKNOWN_32(null, 0),  //- GAME_OBJECT_FLOWER_1 = 50,
+		UNKNOWN_33(null, 0),  //- GAME_OBJECT_FLOWER_2 = 51,
+		UNKNOWN_34(null, 0),  //- GAME_OBJECT_FLOWER_3 = 52,
+		UNKNOWN_35(null, 0),  //- GAME_OBJECT_STRUB_SMALL_1 = 53,
+		UNKNOWN_36(null, 0),  //- GAME_OBJECT_STRUB_SMALL_2 = 54,
+		UNKNOWN_37(null, 0),  //- GAME_OBJECT_STRUB_SMALL_3 = 55,
+		UNKNOWN_38(null, 0),  //- GAME_OBJECT_STRUB_SMALL_4 = 56,
+		UNKNOWN_39(null, 0),  //- GAME_OBJECT_STRUB_1 = 57,
+		UNKNOWN_3A(null, 0),  //- GAME_OBJECT_STRUB_2 = 58,
+		UNKNOWN_3B(null, 0),  //- GAME_OBJECT_STRUB_3 = 59,
+		UNKNOWN_3C(null, 0),  //- GAME_OBJECT_STRUB_4 = 60,
+		UNKNOWN_3D(null, 0),  //- GAME_OBJECT_STRUB_5 = 61,
+		UNKNOWN_3E(null, 0),  //- GAME_OBJECT_REED_BEDS_1 = 62,
+		UNKNOWN_3F(null, 0),  //- GAME_OBJECT_REED_BEDS_2 = 63,
+		UNKNOWN_40(null, 0),  //- GAME_OBJECT_REED_BEDS_3 = 64,
+		UNKNOWN_41(null, 0),  //- GAME_OBJECT_REED_BEDS_4 = 65,
+		UNKNOWN_42(null, 0),  //- GAME_OBJECT_REED_BEDS_5 = 66,
+		UNKNOWN_43(null, 0),  //- GAME_OBJEC()T_REED_BEDS_6 = 67,
+		TREE_BIRCH_1(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_BIRCH_1 = 68,
+		TREE_BIRCH_2(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_BIRCH_2 = 69,
+		TREE_ELM_1(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_ELM_1 = 70,
+		TREE_ELM_2(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_ELM_2 = 71,
+		TREE_OAK_1(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_OAK_1 = 72,
+		TREE_UNKNOWN_1(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_UNKNOWN_1 = 73,
+		TREE_UNKNOWN_2(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_UNKNOWN_2 = 74,
+		TREE_UNKNOWN_3(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_UNKNOWN_3 = 75,
+		TREE_UNKNOWN_4(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_UNKNOWN_4 = 76,
+		TREE_UNKNOWN_5(EMapObjectTypeType.TREE, 0),  //- //-- unknown: 77
+		TREE_ARECACEAE_1(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_ARECACEAE_1 = 78,
+		TREE_ARECACEAE_2(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_ARECACEAE_2 = 79,
+		TREE_UNKNOWN_6(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_UNKNOWN_6 = 80,
+		UNKNOWN_51(null, 0),  //- //-- unknown: 81
+		UNKNOWN_52(null, 0),  //- //-- unknown: 82
+		UNKNOWN_53(null, 0),  //- //-- unknown: 83
+		UNKNOWN_54(EMapObjectTypeType.TREE, 0),  //- GAME_OBJECT_TREE_SMALL = 84,
+		UNKNOWN_55(null, 0),  //- //-- unknown...
+		UNKNOWN_56(null, 0),  //- //-- unknown...
+		UNKNOWN_57(null, 0),  //- //-- unknown...
+		UNKNOWN_58(null, 0),  //- //-- unknown...
+		UNKNOWN_59(null, 0),  //- //-- unknown...
+		UNKNOWN_5A(null, 0),  //- //-- unknown...
+		UNKNOWN_5B(null, 0),  //- //-- unknown...
+		UNKNOWN_5C(null, 0),  //- //-- unknown...
+		UNKNOWN_5D(null, 0),  //- //-- unknown...
+		UNKNOWN_5E(null, 0),  //- //-- unknown...
+		UNKNOWN_5F(null, 0),  //- //-- unknown...
+		UNKNOWN_60(null, 0),  //- //-- unknown...
+		UNKNOWN_61(null, 0),  //- //-- unknown...
+		UNKNOWN_62(null, 0),  //- //-- unknown...
+		UNKNOWN_63(null, 0),  //- //-- unknown...
+		UNKNOWN_64(null, 0),  //- //-- unknown...
+		UNKNOWN_65(null, 0),  //- //-- unknown...
+		UNKNOWN_66(null, 0),  //- //-- unknown...
+		UNKNOWN_67(null, 0),  //- //-- unknown...
+		UNKNOWN_68(null, 0),  //- //-- unknown...
+		UNKNOWN_69(null, 0),  //- //-- unknown...
+		UNKNOWN_6A(null, 0),  //- //-- unknown...
+		UNKNOWN_6B(null, 0),  //- //-- unknown...
+		UNKNOWN_6C(null, 0),  //- //-- unknown...
+		UNKNOWN_6D(null, 0),  //- //-- unknown...
+		UNKNOWN_6E(null, 0),  //- //-- unknown...
+		UNKNOWN_6F(null, 0),  //- GAME_OBJECT_REEF_SMALL = 111,
+		UNKNOWN_70(null, 0),  //- GAME_OBJECT_REEF_MEDIUM = 112,
+		UNKNOWN_71(null, 0),  //- GAME_OBJECT_REEF_LARGE = 113,
+		UNKNOWN_72(null, 0),  //- GAME_OBJECT_REEF_XLARGE = 114,
+		RES_STONE_01(EMapObjectTypeType.STONE, 12),  //- GAME_OBJECT_RES_STONE_01 = 115,
+		RES_STONE_02(EMapObjectTypeType.STONE, 11),  //- GAME_OBJECT_RES_STONE_02 = 116,
+		RES_STONE_03(EMapObjectTypeType.STONE, 10),  //- GAME_OBJECT_RES_STONE_03 = 117,
+		RES_STONE_04(EMapObjectTypeType.STONE,  9),  //- GAME_OBJECT_RES_STONE_04 = 118,
+		RES_STONE_05(EMapObjectTypeType.STONE,  8),  //- GAME_OBJECT_RES_STONE_05 = 119,
+		RES_STONE_06(EMapObjectTypeType.STONE,  7),  //- GAME_OBJECT_RES_STONE_06 = 120,
+		RES_STONE_07(EMapObjectTypeType.STONE,  6),  //- GAME_OBJECT_RES_STONE_07 = 121,
+		RES_STONE_08(EMapObjectTypeType.STONE,  5),  //- GAME_OBJECT_RES_STONE_08 = 122,
+		RES_STONE_09(EMapObjectTypeType.STONE,  4),  //- GAME_OBJECT_RES_STONE_09 = 123,
+		RES_STONE_10(EMapObjectTypeType.STONE,  3),  //- GAME_OBJECT_RES_STONE_10 = 124,
+		RES_STONE_11(EMapObjectTypeType.STONE,  2),  //- GAME_OBJECT_RES_STONE_11 = 125,
+		RES_STONE_12(EMapObjectTypeType.STONE,  1),  //- GAME_OBJECT_RES_STONE_12 = 126,
+		RES_STONE_13(EMapObjectTypeType.STONE,  0),  //- GAME_OBJECT_RES_STONE_13 = 127,
 
-	public static byte getResourceAmountFrom(float resource) {
-		return (byte) (((resource % 16) / 15f) * 100f);
+		END_OF_LIST(null, 0); //- has to be the last item
+		
+		public final EMapObjectTypeType type;
+		public final int style;
+		
+		public static final int length = EObjectType.values().length - 1;
+		
+		EObjectType(EMapObjectTypeType type, int style) {
+			this.type = type;
+			this.style = style;
+		}
+		
+		EObjectType(EMapObjectTypeType type, EMapObjectType style) {
+			this.type = type;
+			this.style = style.ordinal();
+		}
+		
+		public static EObjectType getTypeByInt(int type) {
+			if (type < 0) return NO_OBJECT;
+			if (type >= EObjectType.length) return NO_OBJECT;
+			
+			return EObjectType.values()[type];
+		}
+		
+		public MapObject getNewInstance()
+		{
+			if (type == null) return null;
+			
+			switch(type)
+			{
+				case DECORATION:
+					if (style < 0) return null;
+					if (style >= EMapObjectType.values().length) return null;
+					
+					//- TODO: does not work?!
+					return new MapDecorationObject(EMapObjectType.values()[style]);
+					
+				case STONE:
+					return MapStoneObject.getInstance(style);
+					
+				case TREE:
+					return MapTreeObject.getInstance();
+					
+				default:
+					return null;
+			}
+		}
+		
 	}
 }

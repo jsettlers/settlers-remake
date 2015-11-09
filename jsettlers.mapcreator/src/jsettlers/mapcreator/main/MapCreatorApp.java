@@ -42,10 +42,11 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class MapCreatorApp {

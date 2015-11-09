@@ -14,20 +14,24 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
-import jsettlers.common.buildings.EBuildingType;
+import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.position.RelativePoint;
+import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapResources;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapSettlersType;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStackType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.BitSet;
 
-import static jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 
 /**
  * @author Thomas Zeugner
@@ -35,23 +39,49 @@ import static jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartR
  */
 public class OriginalMapFileContent implements IMapData
 {
-	private boolean startTowerMaterialsAndSettlersWereSet = false;
-	private EMapStartResources mapStartResources;
+	
+	//--------------------------------------------------//
+	public static class MapPlayerInfo {
+		public int startX;
+		public int startY;
+		public String playerName;
+		public OriginalMapFileDataStructs.EMapNations nation;
+		
+		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
+			this.startX = X;
+			this.startY = Y;
+			this.playerName = playerName;
+			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
+		}
+		
+		public MapPlayerInfo(int X, int Y) {
+			this.startX = X;
+			this.startY = Y;
+			this.playerName = "";
+			this.nation = OriginalMapFileDataStructs.EMapNations.ROMANS;
+		}
+	}
+	
+	//--------------------------------------------------//
+	
+	
 	public int fileChecksum = 0;
 	
 	//- original maps are squared
 	private int widthHeight = 0;
 	private int dataCount = 0;
 
-	private byte[] height;
-	private ELandscapeType[] landscapeType;
-	private MapObject[] object;
-	private byte[] plyerClaim;
-	private byte[] accessible;
-	private EResourceType[] resourceTypes;
-	private byte[] resourceAmounts;
-
+	private byte [] height = null;
+	private ELandscapeType[] landscapeType = null;
+	private MapObject [] mapObject = null ;
+	//private byte [] plyerClaim = null ;
+	private byte [] accessible = null ;
+	private EResourceType [] resources = null;
+	private byte [] resourceAmount = null;
+	private short[] blockedPartitions = null;
+	
 	private MapPlayerInfo[] mapPlayerInfos;
+	
 	
 	public OriginalMapFileContent(int widthHeight) {
 		setWidthHeight(widthHeight);
@@ -64,22 +94,30 @@ public class OriginalMapFileContent implements IMapData
 		
 		height = new byte[dataCount];
 		landscapeType = new ELandscapeType[dataCount];
-		object = new MapObject[dataCount];
-		plyerClaim = new byte[dataCount];
+		mapObject = new MapObject[dataCount];
+		//plyerClaim = new byte[dataCount];
 		accessible = new byte[dataCount];
-		resourceTypes = new EResourceType[dataCount];
-		resourceAmounts = new byte[dataCount];
+		resources = new EResourceType[dataCount];
+		resourceAmount = new byte[dataCount];
+		blockedPartitions = new short[dataCount];
 	}
 	
-	public void setLandscapeHeight(int pos, byte height) {
+	
+	public void setLandscapeHeight(int pos, int height) {
 		if ((pos<0) || (pos> dataCount)) return;
 		
-		this.height[pos] = height;
+		//- apply scaling of remake to original...
+		height = height / 2;
+		
+		// TODO: original maps can be higher then 127!
+		if (height>Byte.MAX_VALUE) height=Byte.MAX_VALUE;
+		if (height<0) height=0;
+		
+		this.height[pos] = (byte)height;
 	}
 
-	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
-
-	public void setLandscape(int pos, short type) {
+	
+	public void setLandscape(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
 		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
@@ -98,17 +136,19 @@ public class OriginalMapFileContent implements IMapData
 		//TODO: remove me when Original Maps are finished ---- end
 		landscapeType[pos] = originalType.value;
 	}
-	private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
+	
+	
+	//private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
 
-	public void setMapObject(int pos, short type) {
+	public void setMapObject(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
-		OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
+		//OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
 		//TODO: remove me when Original Maps are finished ---- begin
 		/*if (!mapObjects.contains(originalType)) {
 			mapObjects.add(originalType);
 			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
-			if (originalType == OriginalMapFileDataStructs.EObjectType.NOT_A_TYPE) {
+			if (originalType == OriginalMapFileDataStructs.EObjectType.NO_OBJECT) {
 				System.out.println(" (not a type: " + type + ")");
 			}
 			if (originalType.value != null) {
@@ -117,74 +157,134 @@ public class OriginalMapFileContent implements IMapData
 		}*/
 		//TODO: remove me when Original Maps are finished ---- end
 
-		object[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
+		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).getNewInstance();
 	}
 	
-	public void setPalyerClaim(int pos, byte player) {
-		if ((pos<0) || (pos> dataCount)) return;
+	public void setPlayerCount(int count)
+	{
+		mapPlayerInfos = new MapPlayerInfo[count];
 		
-		plyerClaim[pos] = player;
+		for (int i=0; i < count; i++) {
+			mapPlayerInfos[i] = new MapPlayerInfo(20+i*10,20+i*10);
+		}
 	}
+	
+	
+	public void setPlayer(int index, int x, int y, int NationType, String PlayerName)
+	{
+		System.out.println("Player "+ Integer.toString(index) +" : "+ PlayerName +" @ ("+ x +" , "+ y +")");
+		
+		if ((index < 0) || (index >= mapPlayerInfos.length)) return;
+		
+		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(NationType);
+		mapPlayerInfos[index].startX = x;
+		mapPlayerInfos[index].startY = y;
+		mapPlayerInfos[index].playerName = PlayerName;
+	}
+	
+	public void setPlayer(int index, int x, int y, OriginalMapFileDataStructs.EMapNations NationType, String PlayerName)
+	{
+		if ((index < 0) || (index >= mapPlayerInfos.length)) return;
+		
+		mapPlayerInfos[index].nation = NationType;
+		mapPlayerInfos[index].startX = x;
+		mapPlayerInfos[index].startY = y;
+		mapPlayerInfos[index].playerName = PlayerName;
+	}
+	
+	
+	public void setMapObject(int x, int y, MapObject newMapObject)	{
+		
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return;
+		
+
+		mapObject[pos] = newMapObject;
+	}
+	
+	public void setBuilding(int x, int y, int BType, int party, int countSword1, int countSword2, int countSword3, int countArcher1, int countArcher2, int countArcher3, int countSpear1, int countSpear2, int countSpear3) {
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return;
+		
+		EMapBuildingType BuildingType = EMapBuildingType.getTypeByInt(BType);
+		
+		if (BuildingType == EMapBuildingType.NOT_A_BUILDING) return;
+		if (BuildingType.value != null) {
+			mapObject[pos] = new BuildingObject(BuildingType.value, (byte)party);
+		}
+	}
+	
+	public void setSettler(int x, int y, int SType, int party) {
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return;
+		
+		EMapSettlersType SettlerType = EMapSettlersType.getTypeByInt(SType);
+		
+		if (SettlerType == EMapSettlersType.NOT_A_SETTLER) return;
+		if (SettlerType.value != null) {
+			mapObject[pos] = new MovableObject(SettlerType.value, (byte)party);
+		}
+	}
+	
+	
+	
+	public void setStack(int x, int y, int SType, int count) {
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return;
+		
+		EMapStackType StackType = EMapStackType.getTypeByInt(SType);
+		
+		if (StackType == EMapStackType.NOT_A_STACK) return;
+		if (StackType.value != null) {
+			mapObject[pos] = new StackObject(StackType.value, count);
+		}
+	}
+
+	
 	
 	public void setAccessible(int pos, byte isAccessible) {
-		if ((pos<0) || (pos> dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		accessible[pos] = isAccessible;
 	}
 	
-	public void setResources(int pos, byte resource) {
-		if ((pos<0) || (pos> dataCount)) return;
+	
+	public void setResources(int pos, int ResourcesType, int ResourcesAmount) {
+		if ((pos < 0) || (pos >= dataCount)) return;
+
+		EMapResources RType = EMapResources.getTypeByInt(ResourcesType);
 		
-		resourceTypes[pos] = OriginalMapFileDataStructs.getResourceTypeFrom(resource);
-		resourceAmounts[pos] = OriginalMapFileDataStructs.getResourceAmountFrom(resource);
-	}
-
-	public void setMapPlayerInfos(MapPlayerInfo[] mapPlayerInfos, EMapStartResources startResources) {
-		this.mapPlayerInfos = mapPlayerInfos;
-		this.mapStartResources = startResources;
-		addStartTowerMaterialsAndSettlers();
-	}
-
-	private void addStartTowerMaterialsAndSettlers() {
-		if (!startTowerMaterialsAndSettlersWereSet) {
-			for (byte playerId = 0; playerId < mapPlayerInfos.length; playerId++) {
-				int towerPosition = mapPlayerInfos[playerId].startY * widthHeight + mapPlayerInfos[playerId].startX;
-				object[towerPosition] =  new BuildingObject(EBuildingType.TOWER, playerId);
-				List<MapObject> mapObjects = EMapStartResources.generateStackObjects(mapStartResources);
-				mapObjects.addAll(EMapStartResources.generateMovableObjects(mapStartResources, playerId));
-
-				List<RelativePoint> towerTiles = Arrays.asList(EBuildingType.TOWER.getProtectedTiles());
-
-				//RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 4);
-				RelativePoint relativeMapObjectPoint = new RelativePoint(-1, 2);
-				for (MapObject currentMapObject : mapObjects) {
-					do {
-						int mapObjectPosition = relativeMapObjectPoint.calculateY(mapPlayerInfos[playerId].startY)
-								* widthHeight + relativeMapObjectPoint.calculateX(mapPlayerInfos[playerId].startX);
-						if (object[mapObjectPosition] == null && !towerTiles.contains(relativeMapObjectPoint)) {
-							object[mapObjectPosition] = currentMapObject;
-							relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
-							break;
-						}
-						relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
-					} while (true);
-				}
-			}
-			startTowerMaterialsAndSettlersWereSet = true;
+		if ((RType == EMapResources.NOT_A_RESOURCE_TYPE) || ((ResourcesType == 0) && (ResourcesAmount == 0)))
+		{
+			resources[pos] = null;
+			resourceAmount[pos] = 0;
+		}
+		else
+		{
+			resources[pos] = RType.value;
+			resourceAmount[pos] = (byte)Math.min(127,(ResourcesAmount * 8.5)); //- TODO : need to be scaled?? : current value range [0..15]
 		}
 	}
 
-	private RelativePoint nextPointOnSpiral(RelativePoint previousPoint) {
-		short previousX = previousPoint.getDx();
-		short previousY = previousPoint.getDy();
-		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
-		if (previousX == basis && previousY > basis * -1) return new RelativePoint(previousX, previousY-1);
-		if (previousX == basis *-1 && previousY <= basis) return new RelativePoint(previousX, previousY+1);
-		if (previousX < basis && previousY == basis) return new RelativePoint(previousX+1, previousY);
-		if (previousX > basis *-1 && previousY == basis *-1) return new RelativePoint(previousX-1, previousY);
-		return null;
-	}
 
+	//- free the Arrays
+	public void FreeBuffer()
+	{
+		dataCount = 0;
+		height = null;
+		landscapeType = null;
+		mapObject = null;
+		blockedPartitions = null;
+		accessible = null;
+		resources = null;
+		resourceAmount = null;
+	}
+	
+	
 	//------------------------//
 	//-- Interface IMapData --//
 	//------------------------//
@@ -203,7 +303,7 @@ public class OriginalMapFileContent implements IMapData
 	public ELandscapeType getLandscape(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return ELandscapeType.WATER1;
+		if ((pos < 0) || (pos >= dataCount)) return ELandscapeType.WATER1;
 		
 		if (landscapeType[pos]==null) return ELandscapeType.GRASS;
 		
@@ -214,16 +314,16 @@ public class OriginalMapFileContent implements IMapData
 	public MapObject getMapObject(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return null;
+		if ((pos < 0) || (pos >= dataCount)) return null;
 		
-		return object[pos];
+		return mapObject[pos];
 	}
 
 	@Override
 	public byte getLandscapeHeight(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return 0;
+		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
 		return height[pos];
 	}
@@ -234,19 +334,23 @@ public class OriginalMapFileContent implements IMapData
 	@Override
 	public byte getResourceAmount(short x, short y) {
 		int pos = y * widthHeight + x;
-
-		if ((pos < 0) || (pos > dataCount)) return 0;
-
-		return resourceAmounts[pos];
+		
+		if ((pos < 0) || (pos >= dataCount)) return 0;
+		
+		if (resources[pos] == null) return 0;
+		
+		return resourceAmount[pos];
 	}
 
 	@Override
 	public EResourceType getResourceType(short x, short y) {
 		int pos = y * widthHeight + x;
-
-		if ((pos < 0) || (pos > dataCount)) return null;
-
-		return resourceTypes[pos];
+		
+		if ((pos < 0) || (pos >= dataCount)) return EResourceType.NOTHING;
+		
+		if (resources[pos] == null) return EResourceType.NOTHING;
+		
+		return resources[pos];
 	}
 	
 	/**
@@ -257,17 +361,44 @@ public class OriginalMapFileContent implements IMapData
 	public short getBlockedPartition(short x, short y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return 0;
+		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
-		//- Player1=1 ... Player2=2 ... noPlayer=0
-		return plyerClaim[pos];
+		return blockedPartitions[pos];
 	}
 	
 	
+	public void calculateBlockedPartitions() {
+		MilliStopWatch watch = new MilliStopWatch();
+
+		BitSet notBlockedSet = new BitSet(dataCount);
+		
+		for (int pos = 0; pos < dataCount; pos++)
+		{
+			notBlockedSet.set(pos, !landscapeType[pos].isBlocking);
+		}
+		
+
+		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, widthHeight, widthHeight, notBlockedSet,
+				IBlockingProvider.DEFAULT_IMPLEMENTATION);
+		partitionCalculator.calculatePartitions();
+
+
+		for (short y = 0; y < widthHeight; y++) {
+			for (short x = 0; x < widthHeight; x++) {
+				blockedPartitions[x + widthHeight * y] = partitionCalculator.getPartitionAt(x, y);
+			}
+		}
+
+		watch.stop("Calculating partitions needed");
+		System.out.println("found " + partitionCalculator.getNumberOfPartitions() + " partitions.");
+	}
+	
+
 	@Override
 	public ShortPoint2D getStartPoint(int player) {
 		if ((player < 0) || (player >= mapPlayerInfos.length))
 		{
+			System.out.print("Error: not a player for getStartPoint("+ player +")");
 			return new ShortPoint2D(100,100);
 		}
 		return new ShortPoint2D(mapPlayerInfos[player].startX, mapPlayerInfos[player].startY);
@@ -277,29 +408,5 @@ public class OriginalMapFileContent implements IMapData
 	public int getPlayerCount() {
 		return mapPlayerInfos.length;
 	}
-
-	//--------------------------------------------------//
-	public static class MapPlayerInfo {
-		public int startX;
-		public int startY;
-		public String playerName;
-		public OriginalMapFileDataStructs.EMapNations nation;
-
-		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
-			this.startX = X;
-			this.startY = Y;
-			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
-		}
-
-		public MapPlayerInfo(int X, int Y, String playerName, OriginalMapFileDataStructs.EMapNations nation) {
-			this.startX = X;
-			this.startY = Y;
-			this.playerName = playerName;
-			this.nation = nation;
-		}
-	}
-
-	//--------------------------------------------------//
 
 }

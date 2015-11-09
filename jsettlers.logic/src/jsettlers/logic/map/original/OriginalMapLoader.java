@@ -16,6 +16,7 @@ package jsettlers.logic.map.original;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
@@ -52,9 +53,13 @@ public class OriginalMapLoader extends MapLoader
 			System.out.println("Checksum of original map was not valid!");
 			return;
 		}
-
+		
+		//- read all important information from file
 		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation();
+		
+		//- free the DataBuffer
+		mapContent.FreeBuffer();
 	}
 
 	//---------------------------//
@@ -95,7 +100,7 @@ public class OriginalMapLoader extends MapLoader
 
 	@Override
 	public int getMaxPlayers() {
-		return mapContent.players.length;
+		return mapContent.mapData.getPlayerCount();
 	}
 
 	@Override 
@@ -132,7 +137,36 @@ public class OriginalMapLoader extends MapLoader
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
-		OriginalMapFileContent MapData = mapContent.readMapData();
+		
+		try
+		{
+			//- the map buffer of the class may is closed and need to reopen! 
+			mapContent.reOpen(this.listedMap.getInputStream());
+		}
+		catch (Exception e)
+		{
+			System.err.println("Error: "+ e.getMessage());
+		}
+		
+		//- load all common map information
+		mapContent.loadMapResources();
+		mapContent.readBasicMapInformation();
+		
+		//- read the landscape
+		mapContent.readMapData();
+		//- read Stacks
+		mapContent.readStacks();
+		//- read Settlers
+		mapContent.readSettlers();
+		//- read the buildings
+		mapContent.readBuildings();
+		//- add player resources
+		mapContent.addStartTowerMaterialsAndSettlers();
+		
+		OriginalMapFileContent MapData = mapContent.mapData;
+		MapData.calculateBlockedPartitions();
+
+		
 		watch.stop("Loading original map data required");
 
 		byte numberOfPlayers = (byte) getMaxPlayers();
@@ -156,5 +190,40 @@ public class OriginalMapLoader extends MapLoader
 		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 
+	
+	@Override
+	public IMapData getMapData() throws MapLoadException {
+		
+		try
+		{
+			//- the map buffer of the class may is closed and need to reopen! 
+			mapContent.reOpen(this.listedMap.getInputStream());
+		}
+		catch (Exception e)
+		{
+			throw new MapLoadException(e);
+		}
+		
+		//- load all common map information
+		mapContent.loadMapResources();
+		mapContent.readBasicMapInformation();
+		
+		//- read the landscape
+		mapContent.readMapData();
+		//- read Stacks
+		mapContent.readStacks();
+		//- read Settlers
+		mapContent.readSettlers();
+		//- read the buildings
+		mapContent.readBuildings();
+		//- add player resources
+		mapContent.addStartTowerMaterialsAndSettlers();
+		
+		OriginalMapFileContent MapData = mapContent.mapData;
+		MapData.calculateBlockedPartitions();
 
+		return MapData;
+		
+	}
+	
 }

@@ -1,5 +1,4 @@
-#This properties are used for development
-
-#Specifies the folder where the resources can be found. NOTE: The path needs to end with a slash ( / )
+#Updated settlers-folder with dialog.
+#Sun Nov 08 15:40:56 CET 2015
 resources-folder=../jsettlers.common/resources/
-settlers-folder=/Users/stephanbauer/Documents/siedler3
+settlers-folder=D\:\\Spiele\\Siedler3
