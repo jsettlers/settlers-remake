@@ -20,17 +20,17 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapNations;
 
 import java.util.List;
 import java.util.Vector;
 
 /**
  * @author Thomas Zeugner
+ * @author codingberlin
  */
-public class OriginalMapFileDataStructs 
-{
-	
+public class OriginalMapFileDataStructs {
+
 	public enum EMapFilePartType {
 		EOF (0,""), // End of File and Padding
 		MAP_INFO(1,"Map Info"),
@@ -95,6 +95,7 @@ public class OriginalMapFileDataStructs
 		
 			return EMapNations.ROMANS;
 		}
+
 	}
 	
 	//--------------------------------------------------//
@@ -910,4 +911,30 @@ public class OriginalMapFileDataStructs
 		}
 	}
 
+	public static EResourceType getResourceTypeFrom(byte originalResource) {
+		if (originalResource == 0
+				|| originalResource == 16
+				|| originalResource == 32
+				|| originalResource == 48
+				|| originalResource == 64
+				|| originalResource == 80) {
+			return EResourceType.NOTHING;
+		} else if (originalResource <= 15) {
+			return EResourceType.FISH;
+		} else if (originalResource <= 31) {
+			return EResourceType.COAL;
+		} else if (originalResource <= 47) {
+			return EResourceType.IRONORE;
+		} else if (originalResource <= 63){
+			return EResourceType.GOLDORE;
+		} else if (originalResource <= 79){
+			return EResourceType.GEMSTONE;
+		} else {
+			return EResourceType.BRIMSTONE;
+		}
+	}
+
+	public static byte getResourceAmountFrom(float resource) {
+		return (byte) (((resource % 16) / 15f) * 100f);
+	}
 }

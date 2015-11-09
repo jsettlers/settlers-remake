@@ -55,13 +55,15 @@ public class OriginalMapFileContentReader
 	private byte[] mapContent;
 	private int fileVersion = 0;
 	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
-
+	private InputStream MapFileStream;
 
 	
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
 	
 	
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
+		this.MapFileStream = originalMapFile;
+		
 		//- init Resource Info
 		resources = new LinkedList<MapResourceInfo>();
 		
@@ -69,7 +71,7 @@ public class OriginalMapFileContentReader
 		mapData.setPlayerCount(1);
 
 		//- read File into buffer
-		mapContent = getBytesFromInputStream(originalMapFile);
+		mapContent = getBytesFromInputStream(this.MapFileStream);
 	}
 
 

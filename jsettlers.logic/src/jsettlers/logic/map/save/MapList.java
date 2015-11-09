@@ -42,6 +42,8 @@ import jsettlers.logic.timer.RescheduleTimer;
  */
 public class MapList implements IMapListerCallable {
 
+	private static File originalSettlersFolder;
+
 	/**
 	 * Gives the currently used map extension for saving a map.
 	 * 
@@ -53,8 +55,8 @@ public class MapList implements IMapListerCallable {
 
 	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
-		public MapList getMapList() {
-			return new MapList(ResourceManager.getSaveDirectory());
+		public MapList getMapList(File originalSettlersFolder) {
+			return new MapList(ResourceManager.getSaveDirectory(), originalSettlersFolder);
 		}
 	};
 
@@ -62,25 +64,49 @@ public class MapList implements IMapListerCallable {
 
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
+	private final IMapLister originalMultiDir;
+	private final IMapLister originalSingleDir;
+	private final IMapLister originalUserDir;
 
 	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
 	private final ChangingList<MapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
-	public MapList(File dir) {
-		this(new DirectoryMapLister(new File(dir, "maps")), new DirectoryMapLister(new File(dir, "save")));
+	public MapList(File dir, File originalSettlersDir) {
+		this(new DirectoryMapLister(new File(dir, "maps")),
+			new DirectoryMapLister(new File(dir, "save")),
+			new DirectoryMapLister(new File(originalSettlersDir, "map/MULTI")),
+			new DirectoryMapLister(new File(originalSettlersDir, "map/SINGLE")),
+			new DirectoryMapLister(new File(originalSettlersDir, "map/User")));
 	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
+		this(mapsDir, saveDir, null, null, null);
+	}
+
+	public MapList(IMapLister mapsDir, IMapLister saveDir, IMapLister originalMultiDir, IMapLister originalSingleDir, IMapLister originalUserDir) {
 		this.mapsDir = mapsDir;
 		this.saveDir = saveDir;
+		this.originalMultiDir = originalMultiDir;
+		this.originalSingleDir = originalSingleDir;
+		this.originalUserDir = originalUserDir;
 	}
 
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
 
+		if (originalMultiDir != null) {
+			originalMultiDir.listMaps(this);
+		}
+		if (originalUserDir != null) {
+			originalUserDir.listMaps(this);
+		}
+		if (originalSingleDir != null) {
+			originalSingleDir.listMaps(this);
+		}
+		originalUserDir.listMaps(this);
 		mapsDir.listMaps(this);
 		saveDir.listMaps(this);
 	}
@@ -216,12 +242,17 @@ public class MapList implements IMapListerCallable {
 	 * gets the list of the default directory.
 	 * 
 	 * @return
+	 * @param originalSettlersFolder
 	 */
 	public static synchronized MapList getDefaultList() {
 		if (defaultList == null) {
-			defaultList = mapListFactory.getMapList();
+			defaultList = mapListFactory.getMapList(MapList.originalSettlersFolder);
 		}
 		return defaultList;
+	}
+
+	public static void setOriginalSettlersFolder(File originalSettlersFolder) {
+		MapList.originalSettlersFolder = originalSettlersFolder;
 	}
 
 	public void deleteLoadableGame(MapLoader game) {

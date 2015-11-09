@@ -31,7 +31,6 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;

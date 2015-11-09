@@ -17,8 +17,6 @@ package jsettlers.algorithms.partitions;
 import java.util.BitSet;
 
 import jsettlers.TestUtils;
-import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;

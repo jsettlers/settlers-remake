@@ -78,6 +78,10 @@ public class ConfigurationPropertiesFile {
 		return properties.getProperty(SETTLERS_FOLDER);
 	}
 
+	public File getOriginalSettlersFolder() {
+		return new File(getSettlersFolderValue());
+	}
+
 	public String[] getSndFolders() {
 		return getFolders("SND", "snd", "Snd");
 	}

@@ -132,14 +132,14 @@ public class OriginalMapFileContent implements IMapData
 	}
 	
 	
-	private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
+	//private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
 
 	public void setMapObject(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
-		OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
+		//OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
 		//TODO: remove me when Original Maps are finished ---- begin
-		if (!mapObjects.contains(originalType)) {
+		/*if (!mapObjects.contains(originalType)) {
 			mapObjects.add(originalType);
 			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
 			if (originalType == OriginalMapFileDataStructs.EObjectType.NO_OBJECT) {
@@ -148,7 +148,7 @@ public class OriginalMapFileContent implements IMapData
 			if (originalType.value != null) {
 				System.out.println(" (" + originalType.value + ")");
 			} else System.out.println();
-		}
+		}*/
 		//TODO: remove me when Original Maps are finished ---- end
 
 		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).value;
@@ -288,6 +288,7 @@ public class OriginalMapFileContent implements IMapData
 		resourceAmount = null;
 	}
 	
+	
 	//------------------------//
 	//-- Interface IMapData --//
 	//------------------------//
@@ -384,4 +385,5 @@ public class OriginalMapFileContent implements IMapData
 	public int getPlayerCount() {
 		return mapPlayerInfos.length;
 	}
+
 }
