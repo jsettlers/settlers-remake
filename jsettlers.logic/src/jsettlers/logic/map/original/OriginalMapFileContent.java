@@ -14,8 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
+import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -27,8 +30,7 @@ import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapResources;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapSettlersType;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStackType;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.BitSet;
 
 
 /**
@@ -72,12 +74,14 @@ public class OriginalMapFileContent implements IMapData
 	private byte [] height = null;
 	private ELandscapeType[] landscapeType = null;
 	private MapObject [] mapObject = null ;
-	private byte [] plyerClaim = null ;
+	//private byte [] plyerClaim = null ;
 	private byte [] accessible = null ;
 	private EResourceType [] resources = null;
 	private byte [] resourceAmount = null;
+	private short[] blockedPartitions = null;
 	
 	private MapPlayerInfo[] mapPlayerInfos;
+	
 	
 	public OriginalMapFileContent(int widthHeight) {
 		setWidthHeight(widthHeight);
@@ -91,11 +95,13 @@ public class OriginalMapFileContent implements IMapData
 		height = new byte[dataCount];
 		landscapeType = new ELandscapeType[dataCount];
 		mapObject = new MapObject[dataCount];
-		plyerClaim = new byte[dataCount];
+		//plyerClaim = new byte[dataCount];
 		accessible = new byte[dataCount];
 		resources = new EResourceType[dataCount];
 		resourceAmount = new byte[dataCount];
+		blockedPartitions = new short[dataCount];
 	}
+	
 	
 	public void setLandscapeHeight(int pos, int height) {
 		if ((pos<0) || (pos> dataCount)) return;
@@ -239,7 +245,8 @@ public class OriginalMapFileContent implements IMapData
 	}
 
 	
-	public void setPalyerClaim(int pos, int player) {
+	/*
+	 public void setPalyerClaim(int pos, int player) {
 		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		if ((player > 120) || (player < 0))
@@ -255,12 +262,14 @@ public class OriginalMapFileContent implements IMapData
 		
 		
 	}
+	*/
 	
 	public void setAccessible(int pos, byte isAccessible) {
 		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		accessible[pos] = isAccessible;
 	}
+	
 	
 	public void setResources(int pos, int ResourcesType, int ResourcesAmount) {
 		if ((pos < 0) || (pos >= dataCount)) return;
@@ -287,7 +296,7 @@ public class OriginalMapFileContent implements IMapData
 		height = null;
 		landscapeType = null;
 		mapObject = null;
-		plyerClaim = null;
+		blockedPartitions = null;
 		accessible = null;
 		resources = null;
 		resourceAmount = null;
@@ -372,11 +381,37 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
-		//- Player1=1 ... Player2=2 ... noPlayer=0
-		return plyerClaim[pos]; // TODO: Bug? setting: getBlockedPartition(x,y) to plyerClaim[pos]; leads to no border is shown 
+		return blockedPartitions[pos];
 	}
 	
 	
+	public void calculateBlockedPartitions() {
+		MilliStopWatch watch = new MilliStopWatch();
+
+		BitSet notBlockedSet = new BitSet(dataCount);
+		
+		for (int pos = 0; pos < dataCount; pos++)
+		{
+			notBlockedSet.set(pos, !landscapeType[pos].isBlocking);
+		}
+		
+
+		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, widthHeight, widthHeight, notBlockedSet,
+				IBlockingProvider.DEFAULT_IMPLEMENTATION);
+		partitionCalculator.calculatePartitions();
+
+
+		for (short y = 0; y < widthHeight; y++) {
+			for (short x = 0; x < widthHeight; x++) {
+				blockedPartitions[x + widthHeight * y] = partitionCalculator.getPartitionAt(x, y);
+			}
+		}
+
+		watch.stop("Calculating partitions needed");
+		System.out.println("found " + partitionCalculator.getNumberOfPartitions() + " partitions.");
+	}
+	
+
 	@Override
 	public ShortPoint2D getStartPoint(int player) {
 		if ((player < 0) || (player >= mapPlayerInfos.length))

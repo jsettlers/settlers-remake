@@ -457,7 +457,7 @@ public class OriginalMapFileContentReader
 			pos++;
 
 			//-------------
-	        //- update data                              
+			//- update data                              
 			mapData.setBuilding(x_pos, y_pos, BType, party, countSword1, countSword2, countSword3, countArcher1, countArcher2, countArcher3, countSpear1, countSpear2, countSpear3);
 		}
 		
@@ -507,7 +507,7 @@ public class OriginalMapFileContentReader
 			
 			
 			//-------------
-	        //- update data                              
+			//- update data                              
 			mapData.setStack(x_pos, y_pos, SType, count);
 		}
 		
@@ -628,12 +628,11 @@ public class OriginalMapFileContentReader
 			mapData.setLandscapeHeight(i, readByteFrom(pos++));
 			mapData.setLandscape(i, readByteFrom(pos++));
 			mapData.setMapObject(i, readByteFrom(pos++));
-			mapData.setPalyerClaim(i, readByteFrom(pos++));
+			int PalyerClaim = readByteFrom(pos++); //- which Player is the owner of this position
 			mapData.setAccessible(i, mapContent[pos++]);
 			
 			mapData.setResources(i, readHighNibbleFrom(pos), readLowNibbleFrom(pos));
 			pos++;
-
 		}
 		
 

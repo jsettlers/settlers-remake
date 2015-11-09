@@ -163,7 +163,7 @@ public class OriginalMapLoader extends MapLoader
 		mapContent.addStartTowerMaterialsAndSettlers();
 		
 		OriginalMapFileContent MapData = mapContent.mapData;
-		
+		MapData.calculateBlockedPartitions();
 
 		
 		watch.stop("Loading original map data required");
