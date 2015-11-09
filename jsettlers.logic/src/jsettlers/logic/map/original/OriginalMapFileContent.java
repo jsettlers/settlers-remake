@@ -37,8 +37,7 @@ import java.util.Vector;
  */
 public class OriginalMapFileContent implements IMapData
 {
-
-
+	
 	//--------------------------------------------------//
 	public static class MapPlayerInfo {
 		public int startX;
@@ -240,10 +239,21 @@ public class OriginalMapFileContent implements IMapData
 	}
 
 	
-	public void setPalyerClaim(int pos, byte player) {
+	public void setPalyerClaim(int pos, int player) {
 		if ((pos < 0) || (pos >= dataCount)) return;
 		
-		plyerClaim[pos] = player;
+		if ((player > 120) || (player < 0))
+		{
+			//- no player
+			plyerClaim[pos] = 0;
+		}
+		else
+		{
+			//- Player 0 => 1
+			plyerClaim[pos] = (byte)(player + 1);
+		}
+		
+		
 	}
 	
 	public void setAccessible(int pos, byte isAccessible) {
@@ -262,8 +272,6 @@ public class OriginalMapFileContent implements IMapData
 		
 		resources[pos] = RType.value;
 		resourceAmount[pos] = (byte)ResourcesAmount;
-		
-		
 	}
 
 
@@ -347,7 +355,7 @@ public class OriginalMapFileContent implements IMapData
 		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
 		//- Player1=1 ... Player2=2 ... noPlayer=0
-		return plyerClaim[pos];
+		return plyerClaim[pos]; // TODO: Bug? setting: getBlockedPartition(x,y) to plyerClaim[pos]; leads to no border is shown 
 	}
 	
 	

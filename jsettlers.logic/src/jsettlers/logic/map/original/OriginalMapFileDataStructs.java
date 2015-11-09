@@ -692,7 +692,7 @@ public class OriginalMapFileDataStructs
 		NOT_A_SETTLER(null), //- 0 is not defined
 		
 		BEARER(EMovableType.BEARER),
-		Planierer(null),
+		Planierer(EMovableType.DIGGER),
 		Bauarbeiter(null),
 		LUMBERJACK(EMovableType.LUMBERJACK),
 		STONECUTTER(EMovableType.STONECUTTER),
@@ -705,7 +705,7 @@ public class OriginalMapFileDataStructs
 		SMITH(EMovableType.SMITH),
 		MILLER(EMovableType.MILLER),
 		BAKER(EMovableType.BAKER),
-		Metzger(null),
+		BUTCHER(EMovableType.SLAUGHTERER),
 		PIKEMAN_L1(EMovableType.PIKEMAN_L1),
 		FARMER(EMovableType.FARMER),
 		FISHERMAN(EMovableType.FISHERMAN),
@@ -731,7 +731,7 @@ public class OriginalMapFileDataStructs
 		UNKNOWN_37(null),
 		Reisbauer(null),
 		DONKEY(EMovableType.DONKEY),
-		Pionier(null),
+		PIONEER(EMovableType.PIONEER),
 		Katapult(null),
 		UNKNOWN_42(null),
 		Handelsschiff(null),

@@ -157,8 +157,6 @@ public class OriginalMapFileContentReader
 			if (element.PartType == type) return element;
 		}
 		
-		System.err.println("Error: findResource("+ type +") failed!");
-		
 		return null;
 	}
 	
@@ -257,16 +255,20 @@ public class OriginalMapFileContentReader
 		readMapInfo();
 		readPlayerInfo();
 
+		readMapQuestText();
+		readMapQuestTip();
+		
 		//- reset
 		widthHeight = 0;
 	
 		//- get resource information for the area 
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
-		if (FPart==null) return;
+		
+		if (FPart == null) return;
 		if (FPart.size < 4) return;
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return;
+		if (!doDecrypt(FPart)) return;
 
 		//- file position
 		int pos = FPart.offset;
@@ -276,7 +278,41 @@ public class OriginalMapFileContentReader
 	}
 	
 	
+	public String readMapQuestText()
+	{
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TEXT);
+		
+		if ((FPart==null) || (FPart.size == 0)) return "";
 
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(FPart)) return "";
+		
+		//- read Text
+		String quest = readCStrFrom(FPart.offset, FPart.size);
+		
+		System.out.println("Quest: "+ quest);
+		
+		return quest;
+	}
+	
+	
+	public String readMapQuestTip()
+	{
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TIP);
+		
+		if ((FPart==null) || (FPart.size == 0)) return "";
+
+		//- Decrypt this resource if necessary
+		if (!doDecrypt(FPart)) return "";
+	
+		//- read Text
+		String tip = readCStrFrom(FPart.offset, FPart.size);
+		
+		System.out.println("Tip: "+ tip);
+		
+		return tip;
+	}
+	
 	
 	//- Read some common information from the map-file
 	public void readMapInfo() {
@@ -288,7 +324,7 @@ public class OriginalMapFileContentReader
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO)) return;
+		if (!doDecrypt(FPart)) return;
 
 		//- file position
 		int pos = FPart.offset;
@@ -329,8 +365,13 @@ public class OriginalMapFileContentReader
 		
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
 		
+		if ((FPart==null) || (FPart.size == 0)) {
+			System.err.println("Warning: No Buildings available in mapfile!");
+			return false;
+		}
+		
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS)) return false;
+		if (!doDecrypt(FPart)) return false;
 
 		//- file position
 		int pos = FPart.offset;
@@ -395,8 +436,13 @@ public class OriginalMapFileContentReader
 	public boolean readStacks() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.STACKS);
 		
+		if ((FPart==null) || (FPart.size == 0)) {
+			System.err.println("Warning: No Stacks available in mapfile!");
+			return false;
+		}
+		
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.STACKS)) return false;
+		if (!doDecrypt(FPart)) return false;
 
 		//- file position
 		int pos = FPart.offset;
@@ -439,8 +485,14 @@ public class OriginalMapFileContentReader
 	public boolean readSettlers() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.SETTLERS);
 		
+		if ((FPart==null) || (FPart.size == 0)) {
+			System.err.println("Warning: No Settlers available in mapfile!");
+			return false;
+		}
+
+		
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.SETTLERS)) return false;
+		if (!doDecrypt(FPart)) return false;
 
 		//- file position
 		int pos = FPart.offset;
@@ -480,13 +532,13 @@ public class OriginalMapFileContentReader
 	public void readPlayerInfo() {
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
 		
-		if ((FPart==null) || (FPart.size == 0)) {
+		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
 			return;
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO)) return;
+		if (!doDecrypt(FPart)) return;
 
 		//- file position
 		int pos = FPart.offset;
@@ -516,15 +568,14 @@ public class OriginalMapFileContentReader
 		
 		//- get resource information for the area 
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
-		if (FPart==null) return false;
 		
-		if (FPart.size == 0) {
+		if ((FPart==null) || (FPart.size == 0)) {
 			System.err.println("Warning: No area information available in mapfile!");
 			return false;
 		}
 
 		//- Decrypt this resource if necessary
-		if (!doDecrypt(OriginalMapFileDataStructs.EMapFilePartType.AREA)) return false;
+		if (!doDecrypt(FPart)) return false;
 
 		//- file position
 		int pos = FPart.offset;
@@ -543,7 +594,7 @@ public class OriginalMapFileContentReader
 			mapData.setLandscapeHeight(i, readByteFrom(pos++));
 			mapData.setLandscape(i, readByteFrom(pos++));
 			mapData.setMapObject(i, readByteFrom(pos++));
-			mapData.setPalyerClaim(i, mapContent[pos++]);
+			mapData.setPalyerClaim(i, readByteFrom(pos++));
 			mapData.setAccessible(i, mapContent[pos++]);
 			
 			mapData.setResources(i, readHighNibbleFrom(pos), readLowNibbleFrom(pos));
@@ -624,9 +675,8 @@ public class OriginalMapFileContentReader
 	
 	
 	//- Decrypt a resource
-	private boolean doDecrypt(OriginalMapFileDataStructs.EMapFilePartType type) {
+	private boolean doDecrypt(MapResourceInfo FPart) {
 		
-		MapResourceInfo FPart = findResource(type);
 		if (FPart == null) return false;
 		
 		if (mapContent == null) {
