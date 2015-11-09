@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
@@ -22,20 +21,15 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.original.OriginalMapFileContent.MapPlayerInfo;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapResources;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapSettlersType;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStackType;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import static jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 
 /**
  * @author Thomas Zeugner
@@ -81,8 +75,9 @@ public class OriginalMapFileContent implements IMapData
 	private MapObject [] mapObject = null ;
 	private byte [] plyerClaim = null ;
 	private byte [] accessible = null ;
-	private byte [] resources = null;
-
+	private EResourceType [] resources = null;
+	private byte [] resourceAmount = null;
+	
 	private MapPlayerInfo[] mapPlayerInfos;
 	
 	public OriginalMapFileContent(int widthHeight) {
@@ -99,7 +94,8 @@ public class OriginalMapFileContent implements IMapData
 		mapObject = new MapObject[dataCount];
 		plyerClaim = new byte[dataCount];
 		accessible = new byte[dataCount];
-		resources = new byte[dataCount];
+		resources = new EResourceType[dataCount];
+		resourceAmount = new byte[dataCount];
 	}
 	
 	public void setLandscapeHeight(int pos, int height) {
@@ -115,8 +111,7 @@ public class OriginalMapFileContent implements IMapData
 		this.height[pos] = (byte)height;
 	}
 
-	private List<OriginalMapFileDataStructs.EOriginalLandscapeType> types = new Vector<OriginalMapFileDataStructs.EOriginalLandscapeType>();
-
+	
 	public void setLandscape(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
 
@@ -197,7 +192,7 @@ public class OriginalMapFileContent implements IMapData
 		
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 
 		mapObject[pos] = newMapObject;
@@ -206,7 +201,7 @@ public class OriginalMapFileContent implements IMapData
 	public void setBuilding(int x, int y, int BType, int party, int countSword1, int countSword2, int countSword3, int countArcher1, int countArcher2, int countArcher3, int countSpear1, int countSpear2, int countSpear3) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		EMapBuildingType BuildingType = EMapBuildingType.getTypeByInt(BType);
 		
@@ -219,7 +214,7 @@ public class OriginalMapFileContent implements IMapData
 	public void setSettler(int x, int y, int SType, int party) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		EMapSettlersType SettlerType = EMapSettlersType.getTypeByInt(SType);
 		
@@ -234,7 +229,7 @@ public class OriginalMapFileContent implements IMapData
 	public void setStack(int x, int y, int SType, int count) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		EMapStackType StackType = EMapStackType.getTypeByInt(SType);
 		
@@ -246,26 +241,30 @@ public class OriginalMapFileContent implements IMapData
 
 	
 	public void setPalyerClaim(int pos, byte player) {
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		plyerClaim[pos] = player;
 	}
 	
 	public void setAccessible(int pos, byte isAccessible) {
-		if ((pos < 0) || (pos > dataCount)) return;
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
 		accessible[pos] = isAccessible;
 	}
 	
-	public void setResources(int pos, byte Resources) {
-		if ((pos < 0) || (pos > dataCount)) return;
+	public void setResources(int pos, int ResourcesType, int ResourcesAmount) {
+		if ((pos < 0) || (pos >= dataCount)) return;
 		
-		resources[pos] = Resources;
+		EMapResources RType = EMapResources.getTypeByInt(ResourcesType);
+		if (RType == EMapResources.NOT_A_RESOURCE_TYPE) return;
+		
+		if (ResourcesType==0) return;
+		
+		resources[pos] = RType.value;
+		resourceAmount[pos] = (byte)ResourcesAmount;
+		
+		
 	}
-
-	//public void setMapPlayers(MapPlayerInfo[] mapPlayerInfos) {
-	//	this.mapPlayerInfos = mapPlayerInfos;
-	//}
 
 
 
@@ -288,7 +287,7 @@ public class OriginalMapFileContent implements IMapData
 	public ELandscapeType getLandscape(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return ELandscapeType.WATER1;
+		if ((pos < 0) || (pos >= dataCount)) return ELandscapeType.WATER1;
 		
 		if (landscapeType[pos]==null) return ELandscapeType.GRASS;
 		
@@ -299,7 +298,7 @@ public class OriginalMapFileContent implements IMapData
 	public MapObject getMapObject(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return null;
+		if ((pos < 0) || (pos >= dataCount)) return null;
 		
 		return mapObject[pos];
 	}
@@ -308,7 +307,7 @@ public class OriginalMapFileContent implements IMapData
 	public byte getLandscapeHeight(int x, int y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return 0;
+		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
 		return height[pos];
 	}
@@ -318,12 +317,23 @@ public class OriginalMapFileContent implements IMapData
 	 */
 	@Override
 	public byte getResourceAmount(short x, short y) {
-		return 0;
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return 0;
+		
+		if (resources[pos]==null) return 0;
+		
+		return resourceAmount[pos];
 	}
 
 	@Override
 	public EResourceType getResourceType(short x, short y) {
-		return EResourceType.FISH;
+		int pos = y * widthHeight + x;
+		
+		if ((pos < 0) || (pos >= dataCount)) return EResourceType.FISH;
+		
+		if (resources[pos]==null) return EResourceType.FISH;
+		return resources[pos];
 	}
 	
 	/**
@@ -334,7 +344,7 @@ public class OriginalMapFileContent implements IMapData
 	public short getBlockedPartition(short x, short y) {
 		int pos = y * widthHeight + x;
 		
-		if ((pos < 0) || (pos > dataCount)) return 0;
+		if ((pos < 0) || (pos >= dataCount)) return 0;
 		
 		//- Player1=1 ... Player2=2 ... noPlayer=0
 		return plyerClaim[pos];

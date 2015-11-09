@@ -20,9 +20,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.logic.map.original.OriginalMapFileContent.MapPlayerInfo;
-import jsettlers.logic.map.original.OriginalMapFileContentReader.MapResourceInfo;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -120,7 +117,7 @@ public class OriginalMapFileContentReader
 	//- read the Higher 4-Bit of the buffer
 	public int readHighNibbleFrom(int offset) {
 		if (mapContent == null) return 0;
-		return (mapContent[offset] << 4) & 0x0F;
+		return (mapContent[offset] >> 4) & 0x0F;
 	}
 	
 	//- read the Lower 4-Bit of the buffer
@@ -246,7 +243,7 @@ public class OriginalMapFileContentReader
 	public void readBasicMapInformation() {
 		//- Reset
 		fileChecksum = 0;
-		widthHeight =0;
+		widthHeight = 0;
 		hasBuildings = false;
 		
 		//- safety checks
@@ -548,7 +545,10 @@ public class OriginalMapFileContentReader
 			mapData.setMapObject(i, readByteFrom(pos++));
 			mapData.setPalyerClaim(i, mapContent[pos++]);
 			mapData.setAccessible(i, mapContent[pos++]);
-			mapData.setResources(i, mapContent[pos++]);
+			
+			mapData.setResources(i, readHighNibbleFrom(pos), readLowNibbleFrom(pos));
+			pos++;
+
 		}
 		
 
@@ -561,19 +561,22 @@ public class OriginalMapFileContentReader
 		if (hasBuildings) return;
 		
 		//- only do this once
-		if (startTowerMaterialsAndSettlersWereSet) return;
-			
+		if (startTowerMaterialsAndSettlersWereSet) return;	
 		startTowerMaterialsAndSettlersWereSet = true;
+		
 		int playerCount = mapData.getPlayerCount();
 		
 		for (byte playerId = 0; playerId < playerCount; playerId++) {
 			ShortPoint2D startPoint = mapData.getStartPoint(playerId);
 			
+			//- add the start Tower for this player
 			mapData.setMapObject(startPoint.x, startPoint.y, new BuildingObject(EBuildingType.TOWER, (byte)playerId));
 			
+			//- list of all objects that have to be added for this player
 			List<MapObject> mapObjects = EMapStartResources.generateStackObjects(startResources);
 			mapObjects.addAll(EMapStartResources.generateMovableObjects(startResources, playerId));
 
+			//- blocking area of the tower
 			List<RelativePoint> towerTiles = Arrays.asList(EBuildingType.TOWER.getProtectedTiles());
 
 			//RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 4);
@@ -595,7 +598,7 @@ public class OriginalMapFileContentReader
 					if (mapData.getMapObject(x, y) == null) {
 						//- add Object
 						mapData.setMapObject(x, y, currentMapObject);
-						
+						//- break DO: next object...
 						break;
 					}
 				} while (true);
@@ -606,11 +609,15 @@ public class OriginalMapFileContentReader
 	private RelativePoint nextPointOnSpiral(RelativePoint previousPoint) {
 		short previousX = previousPoint.getDx();
 		short previousY = previousPoint.getDy();
+		
 		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
-		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY-1);
-		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY+1);
-		if (previousX < basis && previousY == basis) return new RelativePoint(previousX+1, previousY);
-		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX-1, previousY);
+		
+		//- always jump 2 to add padding between the objects
+		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY - 2);
+		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY + 2);
+		if (previousX < basis && previousY == basis) return new RelativePoint(previousX + 2, previousY);
+		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX - 2, previousY);
+		
 		return null;
 	}
 	

@@ -141,7 +141,7 @@ public class OriginalMapLoader extends MapLoader
 		mapContent.readSettlers();
 		//- read the buildings
 		mapContent.readBuildings();
-		//- add palyer resources
+		//- add player resources
 		mapContent.addStartTowerMaterialsAndSettlers();
 		
 		OriginalMapFileContent MapData = mapContent.mapData;

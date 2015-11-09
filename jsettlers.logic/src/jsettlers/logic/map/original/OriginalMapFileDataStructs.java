@@ -16,8 +16,8 @@ package jsettlers.logic.map.original;
 
 import jsettlers.common.map.object.*;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 
@@ -240,6 +240,34 @@ public class OriginalMapFileDataStructs
 		}
 	};
 
+	//--------------------------------------------------//
+	public enum EMapResources {
+		FISH (EResourceType.FISH),
+		COAL (EResourceType.COAL),
+		IRONORE(EResourceType.IRONORE),
+		GOLDORE(EResourceType.GOLDORE),
+		GEMS(null),
+		SULFUR(null),
+		
+		NOT_A_RESOURCE_TYPE (null);
+		
+		public final EResourceType value;
+		
+		EMapResources(EResourceType value) {
+			this.value = value;
+		}
+		
+		public static EMapResources getTypeByInt(int type) {
+			if (type < 0) return NOT_A_RESOURCE_TYPE;
+			if (type >= EOriginalLandscapeType.length) return NOT_A_RESOURCE_TYPE;
+			
+			return EMapResources.values()[type];
+		}
+	};
+	
+	  
+	  
+	
 	//--------------------------------------------------//
 	public enum EOriginalLandscapeType {
 		WATER1(ELandscapeType.WATER1), //- value = 0x00

@@ -37,19 +37,20 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	public static final String MAP_EXTENSION = ".rmap";
 	public static final String MAP_EXTENSION_COMPRESSED = ".zmap";
 	public static final String MAP_EXTENSION_ORIGINAL = ".map";
+	public static final String MAP_EXTENSION_ORIGINAL_MAP_EDITOR = ".edm";
 	
 	public abstract MapFileHeader getFileHeader();
 	
+
 	
 	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException, IOException {
 		
-		if (listedMap.getFileName().endsWith(MapLoader.MAP_EXTENSION_ORIGINAL))
-		{
+		if ((checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL) )
+			|| (checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL_MAP_EDITOR) ))	{
 			//- original Siedler 3 Map
 			return new OriginalMapLoader(listedMap);
 		}
-		else
-		{
+		else {
 			//- Siedler 3 Remake Savegame or Map
 			MapFileHeader header = RemakeMapLoader.loadHeader(listedMap);
 	
@@ -63,6 +64,20 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 			}
 		}
 
+	}
+	
+	public static boolean checkExtention(String filename, String Extention)
+	{
+		if (filename == null) return false;
+		return filename.toLowerCase().endsWith(Extention.toLowerCase());
+	}
+	
+	public static boolean isExtentionKnown(String filename) {
+		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL)) return true;
+		if (checkExtention(filename, MAP_EXTENSION)) return true;
+		if (checkExtention(filename, MAP_EXTENSION_COMPRESSED)) return true;
+		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL_MAP_EDITOR)) return true;
+		return false;
 	}
 	
 	//- Interface: Comparable<MapLoader>
