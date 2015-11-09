@@ -110,7 +110,7 @@ public class OriginalMapFileContent implements IMapData
 		height = height / 2;
 		
 		// TODO: original maps can be higher then 127!
-		if (height>127) height=127;
+		if (height>Byte.MAX_VALUE) height=Byte.MAX_VALUE;
 		if (height<0) height=0;
 		
 		this.height[pos] = (byte)height;
@@ -245,24 +245,6 @@ public class OriginalMapFileContent implements IMapData
 	}
 
 	
-	/*
-	 public void setPalyerClaim(int pos, int player) {
-		if ((pos < 0) || (pos >= dataCount)) return;
-		
-		if ((player > 120) || (player < 0))
-		{
-			//- no player
-			plyerClaim[pos] = 0;
-		}
-		else
-		{
-			//- Player 0 => 1
-			plyerClaim[pos] = (byte)(player + 1);
-		}
-		
-		
-	}
-	*/
 	
 	public void setAccessible(int pos, byte isAccessible) {
 		if ((pos < 0) || (pos >= dataCount)) return;

@@ -593,7 +593,7 @@ public class OriginalMapFileDataStructs {
 		Pulvermacherei(null),
 		Pyramide(null),
 		Sphinx(null),
-		BIG_TEMPLE(EBuildingType.BIG_TEMPLE),
+		BIG_TEMPLE(EBuildingType.BIG_TEMPLE), // TODO : does not work?!
 		TEMPLE(EBuildingType.TEMPLE),
 		grosse_Pagode(null),
 		kleine_Pagode(null),
@@ -643,7 +643,7 @@ public class OriginalMapFileDataStructs {
 		CROP(EMaterialType.CROP),
 		GOLD(EMaterialType.GOLD),
 		IRON(EMaterialType.IRON),
-		Schaufel(null),
+		SPADE(EMaterialType.BLADE),
 		HAMMER(EMaterialType.HAMMER),
 		AXE(EMaterialType.AXE),
 		PICK(EMaterialType.PICK),
@@ -652,7 +652,7 @@ public class OriginalMapFileDataStructs {
 		SWORD(EMaterialType.SWORD),
 		BOW(EMaterialType.BOW),
 		SPEAR(EMaterialType.SPEAR),
-		Wein(null),
+		WINE(EMaterialType.WINE),
 		FLOUR(EMaterialType.FLOUR),
 		PIG(EMaterialType.PIG),
 		MEAT(EMaterialType.MEAT),
@@ -660,7 +660,7 @@ public class OriginalMapFileDataStructs {
 		WATER(EMaterialType.WATER),
 		RICE(EMaterialType.RICE),
 		GEMS(EMaterialType.GEMS),
-		Bier(null),
+		KEG(EMaterialType.KEG),
 		Schiesspulver(null),
 		unknown(null),
 		SCYTHE(EMaterialType.SCYTHE),
@@ -690,19 +690,17 @@ public class OriginalMapFileDataStructs {
 	
 	public enum EMapSettlersType {
 		
-		NOT_A_SETTLER(null), //- 0 is not defined
-		
 		BEARER(EMovableType.BEARER),
-		Planierer(EMovableType.DIGGER),
-		Bauarbeiter(null),
+		DIGGER(EMovableType.DIGGER),
+		BRICKLAYER(EMovableType.BRICKLAYER),
 		LUMBERJACK(EMovableType.LUMBERJACK),
 		STONECUTTER(EMovableType.STONECUTTER),
 		SWORDSMAN_L1(EMovableType.SWORDSMAN_L1),
 		SAWMILLER(EMovableType.SAWMILLER),
 		FORESTER(EMovableType.FORESTER),
 		BOWMAN_L1(EMovableType.BOWMAN_L1),
-		Schmelzer(null),
-		Minenarbeiter(null),
+		MELTER(EMovableType.MELTER),
+		MINER(EMovableType.MINER),
 		SMITH(EMovableType.SMITH),
 		MILLER(EMovableType.MILLER),
 		BAKER(EMovableType.BAKER),
@@ -720,8 +718,8 @@ public class OriginalMapFileDataStructs {
 		Schnapsbrenner(null),
 		Brauer(null),
 		Pulvermacher(null),
-		Schweinefarmer(null),
-		Winzer(null),
+		PIG_FARMER(EMovableType.PIG_FARMER),
+		WINEGROWER(EMovableType.WINEGROWER),
 		BOWMAN_L2(EMovableType.BOWMAN_L2),
 		PIKEMAN_L2(EMovableType.PIKEMAN_L2),
 		SWORDSMAN_L2(EMovableType.SWORDSMAN_L2),
@@ -741,7 +739,7 @@ public class OriginalMapFileDataStructs {
 		Metwinzer(null),
 		Alchemist(null),
 		
-		END_OF_LIST(null); //- has to be the last item
+		NOT_A_SETTLER(null);
 		
 		
 		//- length of [EMapSettlersType] (without END_OF_LIST)
