@@ -76,9 +76,9 @@ public class MapList implements IMapListerCallable {
 	public MapList(File dir, File originalSettlersDir) {
 		this(new DirectoryMapLister(new File(dir, "maps")),
 			new DirectoryMapLister(new File(dir, "save")),
-			new DirectoryMapLister(new File(originalSettlersDir, "map/MULTI")),
-			new DirectoryMapLister(new File(originalSettlersDir, "map/SINGLE")),
-			new DirectoryMapLister(new File(originalSettlersDir, "map/User")));
+			new DirectoryMapLister(new File(originalSettlersDir, "Map/MULTI")),
+			new DirectoryMapLister(new File(originalSettlersDir, "Map/SINGLE")),
+			new DirectoryMapLister(new File(originalSettlersDir, "Map/User")));
 	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
