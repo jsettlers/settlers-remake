@@ -27,6 +27,7 @@ import jsettlers.graphics.ui.UIPanel;
  * This is a bar that is filled
  * 
  * @author michael
+ * @author codingberlin
  *
  */
 public class BarFill extends UIPanel {
@@ -37,7 +38,8 @@ public class BarFill extends UIPanel {
 	private static final float FULL_X = .93f;
 
 	private ExecutableAction listener;
-	private float value = 0;
+	private float barFillPercentage = 0;
+	private float descriptionPercentage = 0;
 
 	public BarFill() {
 		setBackground(barImageLink);
@@ -47,7 +49,7 @@ public class BarFill extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		gl.color(0f, 0.78f, 0.78f, 1f);
 		FloatRectangle position = getPosition();
-		float fillx = value < .01f ? 0 : value > .99f ? 1 : EMPTY_X * (1 - value) + FULL_X * value;
+		float fillx = barFillPercentage < .01f ? 0 : barFillPercentage > .99f ? 1 : EMPTY_X * (1 - barFillPercentage) + FULL_X * barFillPercentage;
 		float maxx = position.getMinX() * (1 - fillx) + position.getMaxX() * fillx;
 		gl.fillQuad(position.getMinX(), position.getMinY(), maxx, position.getMaxY());
 
@@ -60,7 +62,7 @@ public class BarFill extends UIPanel {
 		return new ExecutableAction() {
 			@Override
 			public void execute() {
-				setBarFill(relativeFill);
+				setBarFill(relativeFill, relativeFill);
 				if (listener != null) {
 					listener.execute();
 				}
@@ -68,7 +70,7 @@ public class BarFill extends UIPanel {
 		};
 	}
 
-	private float getFillForClick(final float relativex) {
+	protected float getFillForClick(final float relativex) {
 		if (relativex < EMPTY_X) {
 			return 0;
 		} else if (relativex > FULL_X) {
@@ -80,7 +82,15 @@ public class BarFill extends UIPanel {
 
 	@Override
 	public String getDescription(float relativex, float relativey) {
-		return Math.round(value * 100) + "%";
+		return Math.round(descriptionPercentage * 100) + "%";
+	}
+
+	/**
+	 *
+	 * @return A value from 0 to 1 indicating the proportion of the bar filled.
+	 */
+	public float getBarFillPercentage() {
+		return barFillPercentage;
 	}
 
 	public void setAction(ExecutableAction action) {
@@ -89,24 +99,21 @@ public class BarFill extends UIPanel {
 
 	/**
 	 *
-	 * @return A value from 0 to 1 indicating the proportion of the bar filled.
+	 * @param descriptionPercentage
+	 *            expects a barFillPercentage in the range 0.0 to 1.0. barFillPercentages outside this range will be clamped.
 	 */
-	public float getValue() {
-		return value;
-	}
-
-	/**
-	 *
-	 * @param percentage
-	 *            expects a value in the range 0.0 to 1.0. Values outside this range will be clamped.
-	 */
-	public void setBarFill(float percentage) {
-		if (percentage < 0) {
-			percentage = 0;
+	public void setBarFill(float barFillPercentage, float descriptionPercentage) {
+		if (descriptionPercentage < 0) {
+			descriptionPercentage = 0;
+		} else if (descriptionPercentage > 1) {
+			descriptionPercentage = 1;
 		}
-		else if (percentage > 1) {
-			percentage = 1;
+		if (barFillPercentage < 0) {
+			barFillPercentage = 0;
+		} else if (barFillPercentage > 1) {
+			barFillPercentage = 1;
 		}
-		value = percentage;
+		this.descriptionPercentage = descriptionPercentage;
+		this.barFillPercentage = barFillPercentage;
 	}
 }

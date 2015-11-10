@@ -17,6 +17,7 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -75,6 +76,11 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			super.placeFlag(true);
 			super.createWorkStacks();
 		}
+	}
+
+	@Override
+	public MaterialProductionSettings getMaterialProduction() {
+		return getGrid().getMaterialProductionAt(getPos().x, getPos().y);
 	}
 
 	@Override

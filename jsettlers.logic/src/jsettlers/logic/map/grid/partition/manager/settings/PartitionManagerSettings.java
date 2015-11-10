@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 
 /**
@@ -30,6 +31,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	private static final long serialVersionUID = -6269898822727665606L;
 
 	private static final DistributionSettingsForMaterial[] defaultSettings = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
+
 	static {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.values[i]);
@@ -38,6 +40,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
+	private final MaterialProductionSettings materialProductionSettings;
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -53,6 +56,8 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 				settingsOfMaterials[i] = defaultSettings[i];
 			}
 		}
+
+		materialProductionSettings = new MaterialProductionSettings();
 	}
 
 	@Override
@@ -77,5 +82,10 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
 			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
 		}
+	}
+
+	@Override
+	public MaterialProductionSettings getMaterialProductionSettings() {
+		return materialProductionSettings;
 	}
 }

@@ -64,10 +64,10 @@ public class DistributionPanel extends AbstractContentProvider {
 					public void execute() {
 						float total = 0f;
 						for (ConfigurationPanelRow r : rows) {
-							total += r.barFill.getValue();
+							total += r.barFill.getBarFillPercentage();
 						}
 						for (ConfigurationPanelRow r : rows) {
-							int percentage = (int) (100 * (r.barFill.getValue() / total));
+							int percentage = (int) (100 * (r.barFill.getBarFillPercentage() / total));
 							r.setPercentage(percentage);
 						}
 					}
