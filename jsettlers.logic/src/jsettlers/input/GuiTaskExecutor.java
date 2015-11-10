@@ -32,6 +32,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
@@ -137,6 +138,22 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
 			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
+		}
+
+		case SET_MATERIAL_PRODUCTION: {
+			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
+			switch (task.getProductionType()) {
+			case INCREASE:
+				grid.getMaterialProductionAt(task.getPosition()).increaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				break;
+			case DECREASE:
+				grid.getMaterialProductionAt(task.getPosition()).decreaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				break;
+			case SET_RATIO:
+				grid.getMaterialProductionAt(task.getPosition()).setRatioOfMaterial(task.getMaterialType(), task.getRatio());
+				break;
+			}
+			break;
 		}
 
 		default:

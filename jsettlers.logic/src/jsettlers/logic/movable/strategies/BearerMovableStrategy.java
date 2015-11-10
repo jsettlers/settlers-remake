@@ -57,6 +57,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		switch (state) {
 		case JOBLESS: // TODO @Andreas think about new state for NewMovable to turn of downcall for action when it's not needed
 			break;
+
 		case INIT_CONVERT_WITH_TOOL_JOB:
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
@@ -77,6 +78,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 				handleJobFailed(true);
 			}
 			break;
+
 		case TAKING:
 			if (workerCreationRequest != null) { // we handle a convert with tool job
 				state = EBearerState.DEAD_OBJECT;
@@ -89,8 +91,8 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 					handleJobFailed(true);
 				}
 			}
-
 			break;
+
 		case GOING_TO_REQUEST:
 			if (super.getPos().equals(request.getPos())) {
 				state = EBearerState.DROPPING;
@@ -99,6 +101,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 				handleJobFailed(true);
 			}
 			break;
+
 		case DROPPING:
 			request.deliveryFulfilled();
 			request = null;

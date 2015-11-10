@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
+
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
-
-import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 
 /**
  * Assumptions: stones are placed as groups at the map, never alone without other stones
@@ -32,7 +31,8 @@ import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
  */
 public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	public BestStoneCutterConstructionPositionFinder() {}
+	public BestStoneCutterConstructionPositionFinder() {
+	}
 
 	public static class StoneCutterPositionRater implements AiPositions.PositionRater {
 		private static final int BLOCKS_WORK_AREA_MALUS = 12;
@@ -76,7 +76,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 					return RATE_INVALID;
 				}
 
-				//ShortPoint2D nearestStonePosition = objects.getNearestPoint(p, Math.min(workradius, currentBestRating - score), null);
+				// ShortPoint2D nearestStonePosition = objects.getNearestPoint(p, Math.min(workradius, currentBestRating - score), null);
 				ShortPoint2D nearestStonePosition = objects.getNearestPoint(p, workradius, null);
 				if (nearestStonePosition == null) {
 					return RATE_INVALID;

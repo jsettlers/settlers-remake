@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import static jsettlers.common.buildings.EBuildingType.FARM;
-import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
-import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
@@ -36,7 +33,6 @@ import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
@@ -48,6 +44,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
@@ -231,16 +228,6 @@ public class AiStatistics {
 		if (landscape.isRiver()) {
 			playerStatistic.rivers.addNoCollission(x, y);
 		}
-		Movable movable = movableGrid.getMovableAt(x, y);
-		if (movable != null) {
-			EMovableType movableType = movable.getMovableType();
-			List<ShortPoint2D> movables = playerStatistic.movablePositions.get(movableType);
-			if (movables == null) {
-				movables = new ArrayList<>();
-				playerStatistic.movablePositions.put(movableType, movables);
-			}
-			movables.add(new ShortPoint2D(x, y));
-		}
 	}
 
 	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
@@ -303,6 +290,8 @@ public class AiStatistics {
 			}
 			if (referencePosition != null) {
 				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
+				playerStatistics[playerId].materialProduction = partitionsGrid.getPartitionAt(referencePosition.x, referencePosition.y)
+						.getMaterialProduction();
 				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
@@ -568,6 +557,10 @@ public class AiStatistics {
 		return playerStatistics[playerId].deadMines;
 	}
 
+	public MaterialProductionSettings getMaterialProduction(byte playerId) {
+		return playerStatistics[playerId].materialProduction;
+	}
+
 	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
@@ -588,6 +581,7 @@ public class AiStatistics {
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
+		private MaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
