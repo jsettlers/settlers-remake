@@ -39,7 +39,7 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 				if (!aiStatistics.southIsFreeForPlayer(p, playerId)) {
 					score += NO_WORK_AREA_MALUS;
 				}
-				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p)) {
+				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p, playerId, buildingType)) {
 					score += BLOCKS_WORK_AREA_MALUS;
 				}
 

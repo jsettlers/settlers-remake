@@ -27,4 +27,5 @@ public interface EconomyMinister {
 
 	List<EBuildingType> getBuildingsToBuild();
 
+	byte getMidGameNumberOfStoneCutters();
 }
