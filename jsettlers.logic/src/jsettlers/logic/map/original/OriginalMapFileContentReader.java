@@ -663,8 +663,7 @@ public class OriginalMapFileContentReader
 			//- blocking area of the tower
 			List<RelativePoint> towerTiles = Arrays.asList(EBuildingType.TOWER.getProtectedTiles());
 
-			//RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 4);
-			RelativePoint relativeMapObjectPoint = new RelativePoint(-1, 2);
+			RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 3);
 			
 			for (MapObject currentMapObject : mapObjects) {
 				do {
@@ -696,11 +695,10 @@ public class OriginalMapFileContentReader
 		
 		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
 		
-		//- always jump 2 to add padding between the objects
-		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY - 2);
-		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY + 2);
-		if (previousX < basis && previousY == basis) return new RelativePoint(previousX + 2, previousY);
-		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX - 2, previousY);
+		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY - 1);
+		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY + 1);
+		if (previousX < basis && previousY == basis) return new RelativePoint(previousX + 1, previousY);
+		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX - 1, previousY);
 		
 		return null;
 	}

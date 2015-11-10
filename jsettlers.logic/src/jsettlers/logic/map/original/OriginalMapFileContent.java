@@ -106,12 +106,12 @@ public class OriginalMapFileContent implements IMapData
 	public void setLandscapeHeight(int pos, int height) {
 		if ((pos<0) || (pos> dataCount)) return;
 		
-		//- apply scaling of remake to original...
-		height = height / 2;
+		//- apply scaling to original for remake...
+		height = height / 3;
 		
 		// TODO: original maps can be higher then 127!
-		if (height>Byte.MAX_VALUE) height=Byte.MAX_VALUE;
-		if (height<0) height=0;
+		if (height > Byte.MAX_VALUE) height = Byte.MAX_VALUE;
+		if (height < 0) height = 0;
 		
 		this.height[pos] = (byte)height;
 	}
@@ -165,7 +165,8 @@ public class OriginalMapFileContent implements IMapData
 		mapPlayerInfos = new MapPlayerInfo[count];
 		
 		for (int i=0; i < count; i++) {
-			mapPlayerInfos[i] = new MapPlayerInfo(20+i*10,20+i*10);
+			//- init new player with "random" start position
+			mapPlayerInfos[i] = new MapPlayerInfo(20 + i * 10, 20 + i * 10);
 		}
 	}
 	
@@ -199,7 +200,6 @@ public class OriginalMapFileContent implements IMapData
 		
 		if ((pos < 0) || (pos >= dataCount)) return;
 		
-
 		mapObject[pos] = newMapObject;
 	}
 	
@@ -266,7 +266,8 @@ public class OriginalMapFileContent implements IMapData
 		else
 		{
 			resources[pos] = RType.value;
-			resourceAmount[pos] = (byte)Math.min(127,(ResourcesAmount * 8.5)); //- TODO : need to be scaled?? : current value range [0..15]
+			//- TODO : need to be scaled?? : original map Rang range [0..15] (4 Bit) -> Remake [0..127] (7 Bit)?
+			resourceAmount[pos] = (byte)Math.min(127, (ResourcesAmount * Byte.MAX_VALUE / 15)); 
 		}
 	}
 
