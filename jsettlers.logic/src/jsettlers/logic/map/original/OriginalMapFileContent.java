@@ -173,7 +173,7 @@ public class OriginalMapFileContent implements IMapData
 	
 	public void setPlayer(int index, int x, int y, int NationType, String PlayerName)
 	{
-		System.out.println("Player "+ Integer.toString(index) +" : "+ PlayerName +" @ ("+ x +" , "+ y +")");
+		//System.out.println("Player "+ Integer.toString(index) +" : "+ PlayerName +" @ ("+ x +" , "+ y +")");
 		
 		if ((index < 0) || (index >= mapPlayerInfos.length)) return;
 		
