@@ -150,7 +150,8 @@ public class UIList<T> implements UIElement {
 				}
 			} else {
 				final float halfNumberOfDisplayedItems = (int) (0.5f / itemheight);
-				final int destinationOffset = (int) ((1 - relativey) * items.size() - halfNumberOfDisplayedItems);
+				final int destinationOffset = (int) ((1 - relativey) * items.size()
+						- halfNumberOfDisplayedItems); // subtract this to get the center of the scrollbar where the player klicked.
 
 				return new ExecutableAction() {
 					@Override
