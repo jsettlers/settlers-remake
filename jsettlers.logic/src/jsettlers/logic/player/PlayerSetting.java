@@ -1,5 +1,6 @@
 package jsettlers.logic.player;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 
 /**
@@ -48,5 +49,20 @@ public class PlayerSetting {
 	@Override
 	public String toString() {
 		return "PlayerSetting(isAvailable: " + isAvailable + ", isAi: " + isAi + ", aiType: " + aiType + ")";
+	}
+
+	public static PlayerSetting[] createDefaultSettings(byte playerId, byte maxPlayers) {
+		playerId = CommonConstants.ENABLE_AI && CommonConstants.ALL_AI ? -1 : playerId;
+		PlayerSetting[] playerSettings = new PlayerSetting[maxPlayers];
+
+		for (byte i = 0; i < playerSettings.length; i++) {
+			if (i == playerId) {
+				playerSettings[playerId] = new PlayerSetting(true);
+			} else {
+				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, EWhatToDoAiType.getTypeByIndex(i));
+			}
+		}
+
+		return playerSettings;
 	}
 }

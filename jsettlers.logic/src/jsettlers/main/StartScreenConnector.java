@@ -23,7 +23,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
@@ -74,14 +74,7 @@ public class StartScreenConnector implements IStartScreen {
 		MapLoader mapLoader = mapList.getMapById(mapId);
 		long randomSeed = 4711L;
 		byte playerId = 0;
-		PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-		playerSettings[playerId] = new PlayerSetting(true);
-		for (byte i = 0; i < playerSettings.length; i++) {
-			if (i != playerId) {
-				playerSettings[i] = new PlayerSetting(true, CommonConstants.ENABLE_AI ? EWhatToDoAiType.getTypeByIndex(i) : null);
-			}
-		}
-
+		PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings);
 		return game.start();
 	}

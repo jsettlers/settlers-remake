@@ -139,6 +139,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
 			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
 		}
+			break;
 
 		case SET_MATERIAL_PRODUCTION: {
 			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
