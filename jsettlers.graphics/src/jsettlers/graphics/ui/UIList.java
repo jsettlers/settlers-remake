@@ -149,24 +149,21 @@ public class UIList<T> implements UIElement {
 					return null;
 				}
 			} else {
-				// relative to list height
-				int destCenterItem = (int) ((1 - relativey) * items.size());
-				int currentCenterItem = (int) (listoffset + .5f / itemheight);
-
-				final int toScroll = destCenterItem - currentCenterItem;
+				final float halfNumberOfDisplayedItems = (int) (0.5f / itemheight);
+				final int destinationOffset = (int) ((1 - relativey) * items.size() - halfNumberOfDisplayedItems);
 
 				return new ExecutableAction() {
 					@Override
 					public void execute() {
-						scrollBy(toScroll);
+						scrollBy(destinationOffset);
 					}
 				};
 			}
 		}
 	}
 
-	protected void scrollBy(int toScroll) {
-		listoffset += itemheight * toScroll;
+	protected void scrollBy(int offset) {
+		listoffset = itemheight * offset;
 	}
 
 	private class SelectAction extends ExecutableAction {
