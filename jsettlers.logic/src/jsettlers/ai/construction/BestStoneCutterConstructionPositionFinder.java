@@ -14,9 +14,12 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
+
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.common.buildings.EBuildingType;
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Assumptions: stones are placed as groups at the map, never alone without other stones
@@ -26,14 +29,78 @@ import jsettlers.common.buildings.EBuildingType;
  * 
  * @author codingberlin
  */
-public class BestStoneCutterConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
+public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
-		super(buildingType);
+	public BestStoneCutterConstructionPositionFinder() {
 	}
 
-	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
-		return aiStatistics.getStonesForPlayer(playerId);
+	public static class StoneCutterPositionRater implements AiPositions.PositionRater {
+		private static final int BLOCKS_WORK_AREA_MALUS = 12;
+		private static final int NEAR_OTHER_STONE_CUTTER_MALUS = 8;
+		private final AbstractConstructionMarkableMap constructionMap;
+		private final AiStatistics aiStatistics;
+		private final byte playerId;
+		private final AiPositions objects;
+
+		public StoneCutterPositionRater(
+				AbstractConstructionMarkableMap constructionMap, AiStatistics aiStatistics, byte playerId, AiPositions stones) {
+			this.constructionMap = constructionMap;
+			this.aiStatistics = aiStatistics;
+			this.playerId = playerId;
+			this.objects = stones;
+		}
+
+		@Override
+		public int rate(int x, int y, int currentBestRating) {
+			if (!constructionMap.canConstructAt((short) x, (short) y, STONECUTTER, playerId)) {
+				return RATE_INVALID;
+			} else {
+				int score = 0;
+				ShortPoint2D p = new ShortPoint2D(x, y);
+
+				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p, playerId, STONECUTTER)) {
+					score += BLOCKS_WORK_AREA_MALUS;
+				}
+				if (score >= currentBestRating) {
+					return RATE_INVALID;
+				}
+
+				short workradius = STONECUTTER.getWorkradius();
+				for (ShortPoint2D otherStoneCutterPositions : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
+					if (otherStoneCutterPositions.getOnGridDistTo(p) <= workradius) {
+						score += NEAR_OTHER_STONE_CUTTER_MALUS;
+						break;
+					}
+				}
+				if (score >= currentBestRating) {
+					return RATE_INVALID;
+				}
+
+				// ShortPoint2D nearestStonePosition = objects.getNearestPoint(p, Math.min(workradius, currentBestRating - score), null);
+				ShortPoint2D nearestStonePosition = objects.getNearestPoint(p, workradius, null);
+				if (nearestStonePosition == null) {
+					return RATE_INVALID;
+				}
+
+				int treeDistance = nearestStonePosition.getOnGridDistTo(p);
+				if (treeDistance >= workradius) {
+					return RATE_INVALID;
+				}
+				score += treeDistance;
+				return score;
+			}
+		}
+	}
+
+	@Override
+	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
+		if (stones.size() == 0) {
+			return null;
+		}
+		AiPositions.PositionRater rater = new StoneCutterPositionRater(constructionMap, aiStatistics, playerId, stones);
+
+		return aiStatistics.getLandForPlayer(playerId).getBestRatedPoint(rater);
 	}
 
 }

@@ -42,7 +42,8 @@ public class BestFisherConstructionPositionFinder implements IBestConstructionPo
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		int fishDistance = Integer.MAX_VALUE;
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
+					playerId, buildingType)) {
 				ShortPoint2D fishPosition = aiStatistics.getNearestResourcePointForPlayer(point, FISH, playerId, fishDistance);
 				if (fishPosition != null) {
 					fishDistance = point.getOnGridDistTo(fishPosition);

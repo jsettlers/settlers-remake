@@ -12,36 +12,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.map.partition;
+package jsettlers.common.buildings;
 
-import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
 
 /**
- * This interface gives access to the settings of a partition.
- * 
- * @author Andreas Eberle
- * 
+ * @author codingberlin
  */
-public interface IPartitionSettings {
+public interface IMaterialProductionSettings {
 
 	/**
-	 * This method gives access to the material distribution settings of the partition.
-	 * 
-	 * @param materialType
-	 * @return Returns the distribution settings for the given {@link EMaterialType}.
+	 * This returns the configured ratio of the material which means how much the material bar is filled.
 	 */
-	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
-
-	IMaterialProductionSettings getMaterialProductionSettings();
+	float configuredRatioOfMaterial(EMaterialType type);
 
 	/**
-	 * This method gives the {@link EMaterialType} for the given priority index.
-	 * 
-	 * @param priorityIdx
-	 *            The priority for which to return the {@link EMaterialType}.<br>
-	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
-	 * @return Returns the {@link EMaterialType} with the given priority.
+	 * This returns the resulting ratio of the material in relation to the other weapons.
+	 * E.g. when you have 100% swords, 100% bows and 100% spears this would return 0.33f for bows.
 	 */
-	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+	float resultingRatioOfMaterial(EMaterialType type);
+
+	int numberOfFutureProducedMaterial(EMaterialType type);
 }

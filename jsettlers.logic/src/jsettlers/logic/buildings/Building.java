@@ -453,19 +453,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		System.out.println("building killed");
 
 		if (grid != null) {
-			killedEvent(); // this makes only sense if the building has been placed on the grid.
-
 			grid.removeBuildingAt(pos);
 			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
 					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
 			placeAdditionalMapObjects(grid, pos, false);
 			placeFlag(false);
 			placeReusableMaterials();
+
+			killedEvent();
 		}
 
-		allBuildings.remove(this);
-
 		releaseRequestStacks();
+		allBuildings.remove(this);
 		this.state = STATE_DESTROYED;
 	}
 

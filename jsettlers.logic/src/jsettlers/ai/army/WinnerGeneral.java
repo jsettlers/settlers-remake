@@ -18,6 +18,7 @@ package jsettlers.ai.army;
 
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
@@ -38,7 +39,6 @@ import java.util.Vector;
  * bowmen first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3
  * is reached to get as many level3 bowmen as posibble.
  * TODO: store bows until level3 is reached
- * TODO: just produce some swords, 20 spearmen and the rest bows
  * TODO: group soldiers in direction of enemy groups to defeat them
  * TODO: group soldiers in direction of enemy groups to attack them
  * TODO: introduce rush defency by early weaponsmith when enemy rushes
@@ -48,6 +48,7 @@ import java.util.Vector;
 public class WinnerGeneral implements ArmyGeneral {
 	private static final byte MIN_ATTACKER_SIZE = 20;
 	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS = 10;
+	private static final byte RUSH_DEFENSE_SPEARMEN = 20;
 	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
 
 	private final AiStatistics aiStatistics;
@@ -80,6 +81,23 @@ public class WinnerGeneral implements ArmyGeneral {
 		if (!upgradeSoldiers(ESoldierType.BOWMAN))
 			if (!upgradeSoldiers(ESoldierType.PIKEMAN))
 				upgradeSoldiers(ESoldierType.SWORDSMAN);
+		int numberOfMissingSwordsmen = Math.max(0, SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, player.playerId).size()
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId).size()
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId).size());
+		aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SWORD, numberOfMissingSwordsmen);
+		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS/2) {
+			aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SPEAR, 0);
+		} else {
+			int numberOfMissingSpearmen = Math.max(0, RUSH_DEFENSE_SPEARMEN
+					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId).size()
+					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId).size()
+					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId).size());
+			aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SPEAR, numberOfMissingSpearmen);
+		}
+		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.SWORD, 0f);
+		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.SPEAR, 0f);
+		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.BOW, 1f);
 	}
 
 	private boolean upgradeSoldiers(ESoldierType type) {

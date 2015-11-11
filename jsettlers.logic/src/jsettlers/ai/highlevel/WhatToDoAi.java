@@ -56,10 +56,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.*;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
@@ -80,6 +77,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int NUMBER_OF_BIG_LIVINGHOUSE_BEDS = 100;
 	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
 	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 5;
+	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -159,12 +157,27 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void destroyBuildings() {
-		// destroy stonecutters
+		// destroy stonecutters or set their work areas
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			if (aiStatistics.getBuildingAt(stoneCutterPosition).cannotWork()) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
+				int numberOfStoneCutters = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
+				if (numberOfStoneCutters == 1) {
+					ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId).getNearestPoint(stoneCutterPosition);
+					if (nearestStone != null) {
+						taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
+					} // else wait and check again (next interval maybe there is a new or occupied tower)
+				} else {
+					ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId)
+							.getNearestPoint(stoneCutterPosition, STONECUTTER.getWorkradius() * MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR, null);
+					if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
+						taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
+					} else {
+						taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
+						break; // destroy only one stone cutter
+					}
+				}
 			}
-		}
+		 }
 
 		// destroy livinghouses
 		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)

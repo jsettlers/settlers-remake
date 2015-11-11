@@ -12,36 +12,59 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.map.partition;
+package jsettlers.graphics.action;
 
-import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This interface gives access to the settings of a partition.
- * 
- * @author Andreas Eberle
- * 
+ * @author codingberlin
  */
-public interface IPartitionSettings {
+public class SetMaterialProductionAction extends Action {
 
-	/**
-	 * This method gives access to the material distribution settings of the partition.
-	 * 
-	 * @param materialType
-	 * @return Returns the distribution settings for the given {@link EMaterialType}.
-	 */
-	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
+	public enum EMaterialProductionType  {
+		INCREASE,
+		DECREASE,
+		SET_RATIO;
 
-	IMaterialProductionSettings getMaterialProductionSettings();
+		public static final EMaterialProductionType[] values = EMaterialProductionType.values();
 
-	/**
-	 * This method gives the {@link EMaterialType} for the given priority index.
-	 * 
-	 * @param priorityIdx
-	 *            The priority for which to return the {@link EMaterialType}.<br>
-	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
-	 * @return Returns the {@link EMaterialType} with the given priority.
-	 */
-	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+	}
+
+	private final EMaterialType materialType;
+	private final EMaterialProductionType productionType;
+	private final float ratio;
+	private final ShortPoint2D position;
+
+	public SetMaterialProductionAction(
+			ShortPoint2D position,
+			EMaterialType materialType,
+			EMaterialProductionType productionType,
+			float ratio) {
+		super(EActionType.SET_MATERIAL_PRODUCTION);
+		this.materialType = materialType;
+		this.productionType = productionType;
+		this.ratio = ratio;
+		this.position = position;
+	}
+
+	public float getRatio() {
+		return ratio;
+	}
+
+	public EMaterialProductionType getProductionType() {
+		return productionType;
+	}
+
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
+
+	public ShortPoint2D getPosition() {
+		return position;
+	}
+
+	public interface PositionSupplyer {
+		ShortPoint2D getCurrentPosition();
+	}
 }

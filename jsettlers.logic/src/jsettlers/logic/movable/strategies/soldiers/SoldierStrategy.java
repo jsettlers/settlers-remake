@@ -86,13 +86,14 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 					break; // don't directly walk on the enemy's position, because there may be others to walk in first
 				}
 			}
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 		case SEARCH_FOR_ENEMIES:
 			final short minSearchDistance = getMinSearchDistance();
 			IAttackable oldEnemy = enemy;
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), minSearchDistance,
 					getMaxSearchDistance(isInTower), !defending);
 
-			// check if we have a new enemy. If so, go in unsave mode again.
+			// check if we have a new enemy. If so, go in unsafe mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
 				inSaveGotoMode = false;
 			}
@@ -118,18 +119,19 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 					defending = false;
 				}
 				changeStateTo(ESoldierState.AGGRESSIVE);
-				break;
-			}
 
-			if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
+			} else if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
 				changeStateTo(ESoldierState.HITTING);
+
 			} else if (!isInTower) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 				goToEnemy(enemy);
+
 			} else {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+
 			}
 
 			break;

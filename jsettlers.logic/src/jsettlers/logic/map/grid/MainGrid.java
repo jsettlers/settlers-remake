@@ -78,6 +78,7 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
@@ -1644,6 +1645,11 @@ public final class MainGrid implements Serializable {
 		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
 			return landscapeGrid.getAmountOfResource(resource, positions);
 		}
+
+		@Override
+		public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
+			return partitionsGrid.getMaterialProductionAt(x, y);
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {
@@ -1772,6 +1778,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public FogOfWar getFogOfWar() {
 			return fogOfWar;
+		}
+
+		@Override
+		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
+			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
 	}
 

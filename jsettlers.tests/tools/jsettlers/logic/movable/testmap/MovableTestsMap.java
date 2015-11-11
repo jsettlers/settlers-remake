@@ -360,7 +360,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			return ELandscapeType.GRASS;
 		}
 
-		@Override public IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius,
+		@Override
+		public IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius,
 				boolean includeTowers) {
 			return null;
 		}
