@@ -41,7 +41,8 @@ public class OriginalMapFileContent implements IMapData {
 
 	//heigh of original maps are 0..225 and of remake 0..127
 	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
-	
+	private final static float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
+
 	//--------------------------------------------------//
 	public static class MapPlayerInfo {
 		public int startX;
@@ -251,22 +252,17 @@ public class OriginalMapFileContent implements IMapData {
 		accessible[pos] = isAccessible;
 	}
 	
-	
-	public void setResources(int pos, int ResourcesType, int ResourcesAmount) {
+	public void setResources(int pos, int resourcesType, int resourcesAmount) {
 		if ((pos < 0) || (pos >= dataCount)) return;
 
-		EMapResources RType = EMapResources.getTypeByInt(ResourcesType);
+		EMapResources mapResources = EMapResources.getTypeByInt(resourcesType);
 		
-		if ((RType == EMapResources.NOT_A_RESOURCE_TYPE) || ((ResourcesType == 0) && (ResourcesAmount == 0)))
-		{
-			resources[pos] = null;
+		if (resourcesAmount == 0) {
+			resources[pos] = EResourceType.NOTHING;
 			resourceAmount[pos] = 0;
-		}
-		else
-		{
-			resources[pos] = RType.value;
-			//- TODO : need to be scaled?? : original map Rang range [0..15] (4 Bit) -> Remake [0..127] (7 Bit)?
-			resourceAmount[pos] = (byte)Math.min(127, (ResourcesAmount * Byte.MAX_VALUE / 15)); 
+		} else {
+			resources[pos] = mapResources.value;
+			resourceAmount[pos] = (byte) Math.round(((float) resourcesAmount) * ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR);
 		}
 	}
 
