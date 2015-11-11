@@ -50,7 +50,7 @@ public class OriginalMapLoader extends MapLoader
 		mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
 
 		if (!mapContent.isChecksumValid()) {
-			System.out.println("Checksum of original map was not valid!");
+			System.out.println("Checksum of original map ("+ fileName +") was not valid!");
 			return;
 		}
 		

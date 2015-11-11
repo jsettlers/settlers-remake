@@ -20,6 +20,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -75,7 +76,7 @@ public class OriginalMapFileContentReader
 	}
 
 
-	//- read the whole stream and returns it
+	//- reads the whole stream and returns it as BYTE-Array
 	public static byte[] getBytesFromInputStream(InputStream is) throws IOException{
 		
 		//- read file to buffer
@@ -139,11 +140,11 @@ public class OriginalMapFileContentReader
 		String outStr = "";
 		int pos = offset;
 		
-		for (int i=length; i>0; i--) {
+		for (int i = length; i > 0; i--) {
 			byte b = mapContent[pos];
 			pos++;
 			
-			if (b==0) break;
+			if (b == 0) break;
 			
 			outStr += new String(new byte[] {b}); 
 		}
@@ -165,14 +166,14 @@ public class OriginalMapFileContentReader
 		return null;
 	}
 	
-	//- calc the checksum of the file and compares it
+	//- calculates the checksum of the file and compares it
 	boolean isChecksumValid() {
 		//- read Checksum from File
 		int fileChecksum = readBEIntFrom(0);
 		
 		mapData.fileChecksum = fileChecksum;
 		
-		//- make count a Multiple of four
+		//- make "count" a Multiple of four
 		int count = mapContent.length & 0xFFFFFFFC;
 		int currentChecksum = 0;
 		
@@ -196,7 +197,7 @@ public class OriginalMapFileContentReader
 		fileVersion = readBEIntFrom(4);
 		
 		//- check if the Version is compatible?
-		if ((fileVersion != 0x0A) && (fileVersion != 0x0B)) return false;
+		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value)) return false;
 		
 		//- Data lenght
 		int DataLenght = mapContent.length;
@@ -217,8 +218,7 @@ public class OriginalMapFileContentReader
 			int MapPartPos = FilePos + 8;
 
 			//- debug output
-			System.out.println("@ "+ FilePos +"   size: "+ PartLen +"  Type:"+ PartType +"  Sub:"+ PartTypeSub +"  -> "+  OriginalMapFileDataStructs.EMapFilePartType
-					.getTypeByInt(PartType).toString() );
+			//System.out.println("@ "+ FilePos +"   size: "+ PartLen +"  Type:"+ PartType +"  Sub:"+ PartTypeSub +"  -> "+  OriginalMapFileDataStructs.EMapFilePartType		.getTypeByInt(PartType).toString() );
 
 			//- next position in File
 			FilePos = FilePos + PartLen;
@@ -245,7 +245,7 @@ public class OriginalMapFileContentReader
 	//- freeing the internal buffers
 	public void FreeBuffer()
 	{
-		System.out.println("Free Buffer.");
+		//System.out.println("Freeing Buffer.");
 		mapContent = null;
 		mapData.FreeBuffer();
 	}
@@ -663,8 +663,7 @@ public class OriginalMapFileContentReader
 			//- blocking area of the tower
 			List<RelativePoint> towerTiles = Arrays.asList(EBuildingType.TOWER.getProtectedTiles());
 
-			//RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 4);
-			RelativePoint relativeMapObjectPoint = new RelativePoint(-1, 2);
+			RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 3);
 			
 			for (MapObject currentMapObject : mapObjects) {
 				do {
@@ -696,11 +695,10 @@ public class OriginalMapFileContentReader
 		
 		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
 		
-		//- always jump 2 to add padding between the objects
-		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY - 2);
-		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY + 2);
-		if (previousX < basis && previousY == basis) return new RelativePoint(previousX + 2, previousY);
-		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX - 2, previousY);
+		if (previousX == basis && previousY > -basis) return new RelativePoint(previousX, previousY - 1);
+		if (previousX == -basis && previousY <= basis) return new RelativePoint(previousX, previousY + 1);
+		if (previousX < basis && previousY == basis) return new RelativePoint(previousX + 1, previousY);
+		if (previousX > -basis && previousY == -basis) return new RelativePoint(previousX - 1, previousY);
 		
 		return null;
 	}
