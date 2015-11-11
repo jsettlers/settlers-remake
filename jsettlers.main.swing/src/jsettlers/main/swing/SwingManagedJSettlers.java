@@ -33,7 +33,6 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
@@ -166,6 +165,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.ACTIVATE_ALL_PLAYERS = argsMap.containsKey("activate-all-players");
 		CommonConstants.ENABLE_CONSOLE_LOGGING = argsMap.containsKey("console-output");
 		CommonConstants.ENABLE_AI = !argsMap.containsKey("disable-ai");
+		CommonConstants.ALL_AI = argsMap.containsKey("all-ai");
 
 		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
@@ -232,14 +232,7 @@ public class SwingManagedJSettlers {
 			if (loadableReplayFile == null) {
 				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
-				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-				playerSettings[playerId] = new PlayerSetting(true);
-				for (byte i = 0; i < playerSettings.length; i++) {
-					if (i != playerId) {
-						playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI && true, EWhatToDoAiType.getTypeByIndex(i));
-					}
-				}
-
+				PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
