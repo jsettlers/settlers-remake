@@ -37,8 +37,10 @@ import java.util.BitSet;
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public class OriginalMapFileContent implements IMapData
-{
+public class OriginalMapFileContent implements IMapData {
+
+	//heigh of original maps are 0..225 and of remake 0..127
+	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
 	
 	//--------------------------------------------------//
 	public static class MapPlayerInfo {
@@ -101,16 +103,13 @@ public class OriginalMapFileContent implements IMapData
 		resourceAmount = new byte[dataCount];
 		blockedPartitions = new short[dataCount];
 	}
-	
-	
+
+
 	public void setLandscapeHeight(int pos, int height) {
 		if ((pos<0) || (pos> dataCount)) return;
-		
-		//- apply scaling to original for remake...
-		height = height / 3;
-		
-		// TODO: original maps can be higher then 127!
-		if (height > Byte.MAX_VALUE) height = Byte.MAX_VALUE;
+
+		//- apply scaling from original to remake
+		height = Math.round((float) height * ORIGINAL_TO_REMAKE_HEIGHT_FACTOR);
 		if (height < 0) height = 0;
 		
 		this.height[pos] = (byte)height;
