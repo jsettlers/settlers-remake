@@ -845,6 +845,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return; // can't convert to bearer if the ground does not belong to the player
 		}
 
+		if (newMovableType == EMovableType.PIKEMAN_L1) {
+			System.out.println();
+		}
+
+		this.health = (this.health * newMovableType.getHealth()) / this.movableType.getHealth();
 		this.movableType = newMovableType;
 		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
 	}
