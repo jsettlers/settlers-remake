@@ -26,17 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerListModel;
+import javax.swing.*;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
@@ -65,8 +55,9 @@ public class MapCreatorApp {
 		JPanel newMap = createNewMapPanel();
 		JPanel open = createOpenMapPanel();
 		JPanel root = new JPanel();
-		root.add(newMap);
-		root.add(open);
+		root.setLayout(new BorderLayout());
+		root.add(newMap, BorderLayout.WEST);
+		root.add(open, BorderLayout.CENTER);
 
 		selectMapFrame = new JFrame("Select map");
 		selectMapFrame.add(root);
@@ -106,7 +97,7 @@ public class MapCreatorApp {
 				return super.getListCellRendererComponent(mapList, displayName, index, isSelected, cellHasFocus);
 			}
 		});
-		panel.add(mapList);
+		panel.add(new JScrollPane(mapList));
 
 		JButton button = new JButton("Open");
 		button.addActionListener(new ActionListener() {
