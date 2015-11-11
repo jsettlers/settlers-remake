@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.main;
 
-import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
@@ -23,7 +21,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
