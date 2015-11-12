@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.map.partition;
 
+import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
 
 /**
@@ -31,6 +32,8 @@ public interface IPartitionSettings {
 	 * @return Returns the distribution settings for the given {@link EMaterialType}.
 	 */
 	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
+
+	IMaterialProductionSettings getMaterialProductionSettings();
 
 	/**
 	 * This method gives the {@link EMaterialType} for the given priority index.
@@ -50,5 +53,4 @@ public interface IPartitionSettings {
 	 * @return <code>true</code> if they accept this material.
 	 */
 	boolean getStockAcceptsMaterial(EMaterialType material);
-
 }

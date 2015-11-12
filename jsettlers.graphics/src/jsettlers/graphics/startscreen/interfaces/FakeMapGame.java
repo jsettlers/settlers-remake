@@ -17,10 +17,7 @@ package jsettlers.graphics.startscreen.interfaces;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.ESoldierType;
-import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.player.IManaInformation;
 import jsettlers.common.statistics.IStatisticable;
 
 /**
@@ -70,63 +67,7 @@ public class FakeMapGame implements IStartedGame {
 
 	@Override
 	public IInGamePlayer getInGamePlayer() {
-		return new IInGamePlayer() {
-			@Override
-			public IManaInformation getManaInformation() {
-				return new IManaInformation() {
-					@Override
-					public void upgrade(ESoldierType type) {
-					}
-
-					@Override
-					public void stopFutureManaIncreasingByBigTemple() {
-					}
-
-					@Override
-					public boolean isUpgradePossible(ESoldierType type) {
-						return false;
-					}
-
-					@Override
-					public void increaseManaByBigTemple() {
-					}
-
-					@Override
-					public void increaseMana() {
-					}
-
-					@Override
-					public byte getNextUpdateProgressPercent() {
-						return 0;
-					}
-
-					@Override
-					public EMovableType getMovableTypeOf(ESoldierType type) {
-						return EMovableType.SWORDSMAN_L1;
-					}
-
-					@Override
-					public byte getMaximumLevel() {
-						return 0;
-					}
-
-					@Override
-					public byte getLevel(ESoldierType type) {
-						return 0;
-					}
-				};
-			}
-
-			@Override
-			public ICombatStrengthInformation getCombatStrengthInformation() {
-				return new ICombatStrengthInformation() {
-					@Override
-					public float getCombatStrength(boolean ownLand) {
-						return 0;
-					}
-				};
-			}
-		};
+		return null;
 	}
 
 	@Override

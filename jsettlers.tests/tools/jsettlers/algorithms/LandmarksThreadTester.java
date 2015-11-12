@@ -110,13 +110,13 @@ public class LandmarksThreadTester {
 	// for (short y = HEIGHT - 1; y >= 0; y--) {
 	// printSpaces(y * 10);
 	// for (short x = 0; x < WIDTH; x++) {
-	// System.out.print("      (" + x + "|" + y + ")");
+	// System.out.print(" (" + x + "|" + y + ")");
 	// if (map.isBlocked(x, y)) {
 	// System.out.print("b");
 	// } else {
 	// System.out.print(" ");
 	// }
-	// System.out.print("|" + map.getPartitionAt(x, y) + "      ");
+	// System.out.print("|" + map.getPartitionAt(x, y) + " ");
 	// }
 	// System.out.println();
 	// }

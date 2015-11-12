@@ -15,7 +15,6 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.common.movable.EAction;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.logic.constants.Constants;
@@ -43,7 +42,8 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
-		return EDirection.getDirection(super.getPos(), enemy.getPos()) != null;
+		short maxDistance = (short) Math.max(Math.abs(super.getPos().x - enemy.getPos().x), Math.abs(super.getPos().y - enemy.getPos().y));
+		return (maxDistance == 1 || (EMovableType.isPikeman(super.getMovableType()) && maxDistance == 2));
 	}
 
 	@Override
@@ -53,11 +53,17 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
-		enemy.receiveHit(getCombatStrength() * 0.1f, super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
+		enemy.receiveHit(super.getMovableType().getStrength() * getCombatStrength(), super.getPos(), super.getPlayer().playerId);
+		// decrease the enemy's health
 	}
 
 	@Override
-	protected short getSearchDistance(boolean isInTower) {
+	protected short getMaxSearchDistance(boolean isInTower) {
 		return Constants.SOLDIER_SEARCH_RADIUS;
+	}
+
+	@Override
+	protected short getMinSearchDistance() {
+		return 0;
 	}
 }

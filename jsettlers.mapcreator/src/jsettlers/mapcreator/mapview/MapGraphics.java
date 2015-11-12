@@ -122,5 +122,4 @@ public class MapGraphics implements IGraphicsGrid {
 	public boolean isBuilding(int x, int y) {
 		return false;
 	}
-
 }

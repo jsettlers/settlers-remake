@@ -447,6 +447,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void kill() {
+		if (this.state == STATE_DESTROYED) {
+			return;
+		}
+
 		System.out.println("building killed");
 
 		if (grid != null) {
@@ -456,14 +460,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			placeAdditionalMapObjects(grid, pos, false);
 			placeFlag(false);
 			placeReusableMaterials();
+
+			killedEvent();
 		}
 
-		allBuildings.remove(this);
-
 		releaseRequestStacks();
+		allBuildings.remove(this);
 		this.state = STATE_DESTROYED;
-
-		killedEvent();
 	}
 
 	private void placeReusableMaterials() {

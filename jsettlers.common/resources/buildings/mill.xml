@@ -78,8 +78,8 @@
 	<job name="hide" 		type="HIDE" 		successjob="start" 		failjob="start" 		/>
 
 	<job name="start" 		type="WAIT" 		successjob="checkflour" failjob="hide" 		time="3.0" />
-	<job name="checkflour" 	type="NOT_FULL" 	successjob="checkcrop" 	failjob="hide" 		dx="-2" dy="1" 	material="FLOUR" />
-	<job name="checkcrop" 	type="AVAILABLE" 	successjob="show" 		failjob="hide" 		dx="2" 	dy="2" 	material="CROP" />
+	<job name="checkflour" 	type="NOT_FULL" 	successjob="checkcrop" 	failjob="hide" 		dx="-2" dy="1" />
+	<job name="checkcrop" 	type="AVAILABLE" 	successjob="show" 		failjob="hide" 		dx="2" 	dy="2" material="CROP" />
 	<job name="show" 		type="SHOW" 		successjob="go_to_crop" failjob="hide" 		dx="-1" dy="1" />
 
 	<job name="go_to_crop" 	type="GO_TO" 		successjob="take" 		failjob="gohome" 	dx="2" dy="2" />

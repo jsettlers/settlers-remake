@@ -31,7 +31,6 @@ public final class BigTemple extends SpawnBuilding {
 	private static final int PRODUCE_PERIOD_TICK = 30000;
 	private static final int PRODUCE_PERIOD = 600000;
 	private int nextProduceMillis = 0;
-	private boolean iIncreasedMana = false;
 
 	public BigTemple(Player player) {
 		super(EBuildingType.BIG_TEMPLE, player);
@@ -41,26 +40,24 @@ public final class BigTemple extends SpawnBuilding {
 	protected final int subTimerEvent() {
 		nextProduceMillis -= PRODUCE_PERIOD_TICK;
 		if (nextProduceMillis <= 0) {
-			int nextEventMillis =  super.subTimerEvent();
+			int nextEventMillis = super.subTimerEvent();
 			if (nextEventMillis == PRODUCE_PERIOD_TICK) { // priest was not prevented from spawning
 				nextProduceMillis = PRODUCE_PERIOD;
 			}
 			return nextEventMillis;
-		} else {
-			return getProducePeriod();
 		}
+		return getProducePeriod();
 	}
 
 	@Override
 	protected int constructionFinishedEvent() {
 		getPlayer().getManaInformation().increaseManaByBigTemple();
-		iIncreasedMana = true;
 		return super.constructionFinishedEvent();
 	}
 
 	@Override
 	protected void killedEvent() {
-		if (iIncreasedMana) {
+		if (super.isConstructionFinished()) {
 			// prevent the player from building temples and immediately destroy them to get back the material for more temples to get fast Level3
 			getPlayer().getManaInformation().stopFutureManaIncreasingByBigTemple();
 		}
@@ -80,5 +77,4 @@ public final class BigTemple extends SpawnBuilding {
 	protected byte getProduceLimit() {
 		return PRODUCE_LIMIT;
 	}
-
 }

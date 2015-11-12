@@ -72,44 +72,66 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
-			hitEnemy(enemy);
-			if (state != ESoldierState.HITTING) {
-				break; // the soldier could have entered an attacked tower
-			}
-
-			if (enemy.getHealth() <= 0) {
-				enemy = null;
+			hitEnemy(enemy); // after the animation, execute the actual hit.
+			if (!isEnemyAttackable(enemy, isInTower)) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
-				break; // don't directly walk on the enemy's position, because there may be others to walk in first
-			}
-		case SEARCH_FOR_ENEMIES:
-			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getSearchDistance(isInTower), !defending);
+			} else {
+				if (state != ESoldierState.HITTING) {
+					break; // the soldier could have entered an attacked tower
+				}
 
-			// check if we have a new enemy. If so, go in unsave mode again.
+				if (enemy.getHealth() <= 0) {
+					enemy = null;
+					changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+					break; // don't directly walk on the enemy's position, because there may be others to walk in first
+				}
+			}
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		case SEARCH_FOR_ENEMIES:
+			final short minSearchDistance = getMinSearchDistance();
+			IAttackable oldEnemy = enemy;
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), minSearchDistance,
+					getMaxSearchDistance(isInTower), !defending);
+
+			// check if we have a new enemy. If so, go in unsafe mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
 				inSaveGotoMode = false;
 			}
 
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
+				if (minSearchDistance > 0) {
+					IAttackable toCloseEnemy = super.getStrategyGrid().getEnemyInSearchArea(
+							getAttackPosition(), super.getMovable(), (short) 0, minSearchDistance, !defending);
+					if (toCloseEnemy != null) {
+						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
+							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), getMovable().getPos());
+							super.goInDirection(escapeDirection, false);
+							super.getMovable().moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+
+						} // else { // we are in the tower, so wait and check again next time.
+
+						break;
+					}
+				}
 				if (defending) {
 					building.towerDefended(this);
 					defending = false;
 				}
 				changeStateTo(ESoldierState.AGGRESSIVE);
-				break;
-			}
 
-			if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
+			} else if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
 				changeStateTo(ESoldierState.HITTING);
+
 			} else if (!isInTower) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 				goToEnemy(enemy);
+
 			} else {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+
 			}
 
 			break;
@@ -140,7 +162,6 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 				building = null;
 			}
 			break;
-
 		}
 	}
 
@@ -152,9 +173,11 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		}
 	}
 
-	protected abstract short getSearchDistance(boolean isInTower);
+	protected abstract short getMaxSearchDistance(boolean isInTower);
 
-	private ShortPoint2D getAttackPosition() {
+	protected abstract short getMinSearchDistance();
+
+	protected ShortPoint2D getAttackPosition() {
 		return isInTower && isBowman() ? inTowerAttackPosition : super.getPos();
 	}
 

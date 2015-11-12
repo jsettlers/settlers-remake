@@ -72,12 +72,7 @@ public class StartScreenConnector implements IStartScreen {
 		MapLoader mapLoader = mapList.getMapById(mapId);
 		long randomSeed = 4711L;
 		byte playerId = 0;
-		PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-		playerSettings[playerId] = new PlayerSetting(true, false);
-		for (byte i = 0; i < playerSettings.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, i != playerId);
-		}
-
+		PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings);
 		return game.start();
 	}

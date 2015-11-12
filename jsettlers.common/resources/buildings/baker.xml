@@ -90,7 +90,7 @@
 	<job name="A_wait" type="WAIT" successjob="check1" failjob="A_wait" time="1"/>
 	<job name="check1" type="AVAILABLE" successjob="check2" failjob="A_wait" dx="3" dy="4" material="FLOUR"/>
 	<job name="check2" type="AVAILABLE" successjob="check3" failjob="A_wait" dx="4" dy="2" material="WATER"/>
-	<job name="check3" type="NOT_FULL" successjob="A_show" failjob="A_wait" material="BREAD" dx="-2" dy="1"/>
+	<job name="check3" type="NOT_FULL" successjob="A_show" failjob="A_wait" dx="-2" dy="1"/>
 
 	<!-- go take flour -->
 	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="3" dy="2" />

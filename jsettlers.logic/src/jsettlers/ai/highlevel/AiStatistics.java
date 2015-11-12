@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import static jsettlers.common.buildings.EBuildingType.FARM;
-import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
-import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
@@ -36,7 +33,6 @@ import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
@@ -45,8 +41,11 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
@@ -68,7 +67,7 @@ import jsettlers.logic.player.Team;
  */
 public class AiStatistics {
 
-	private static final short BORDER_LAND_WIDTH = 10;
+	private static final short BORDER_LAND_WIDTH = 5;
 	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
 	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 
@@ -150,6 +149,10 @@ public class AiStatistics {
 					&& mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
 				playerStatistic.deadMines.addNoCollission(mine.getPos().x, mine.getPos().y);
 			}
+		} else if (type == EBuildingType.WINEGROWER) {
+			playerStatistic.wineGrowerWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
+		} else if (type == EBuildingType.FARM) {
+			playerStatistic.farmWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
 		}
 	}
 
@@ -225,16 +228,6 @@ public class AiStatistics {
 		if (landscape.isRiver()) {
 			playerStatistic.rivers.addNoCollission(x, y);
 		}
-		Movable movable = movableGrid.getMovableAt(x, y);
-		if (movable != null) {
-			EMovableType movableType = movable.getMovableType();
-			List<ShortPoint2D> movables = playerStatistic.movablePositions.get(movableType);
-			if (movables == null) {
-				movables = new ArrayList<>();
-				playerStatistic.movablePositions.put(movableType, movables);
-			}
-			movables.add(new ShortPoint2D(x, y));
-		}
 	}
 
 	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
@@ -297,6 +290,8 @@ public class AiStatistics {
 			}
 			if (referencePosition != null) {
 				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
+				playerStatistics[playerId].materialProduction = partitionsGrid.getPartitionAt(referencePosition.x, referencePosition.y)
+						.getMaterialProduction();
 				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
@@ -424,21 +419,24 @@ public class AiStatistics {
 		return playerStatistics[playerId].numberOfNotOccupiedTowers;
 	}
 
-	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point) {
-		return pointIsBlocked((point.x), (short) (point.y - 12))
-				|| pointIsBlocked((short) (point.x - 5), (short) (point.y - 12))
-				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 12))
-				|| pointIsBlocked((point.x), (short) (point.y - 6))
-				|| pointIsBlocked((short) (point.x - 5), (short) (point.y - 6))
-				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 6));
-	}
+	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
 
-	private boolean pointIsBlocked(short x, short y) {
-		IBuilding building = objectsGrid.getBuildingAt(x, y);
-		if (building != null && (building.getBuildingType() == LUMBERJACK || building.getBuildingType() == FARM
-				|| building.getBuildingType() == WINEGROWER)) {
-			return true;
+		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].wineGrowerWorkAreas) {
+			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkradius()) {
+					return true;
+				}
+			}
 		}
+
+		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].farmWorkAreas) {
+			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkradius()) {
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 
@@ -559,11 +557,17 @@ public class AiStatistics {
 		return playerStatistics[playerId].deadMines;
 	}
 
+	public MaterialProductionSettings getMaterialProduction(byte playerId) {
+		return playerStatistics[playerId].materialProduction;
+	}
+
 	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
+		private List<ShortPoint2D> farmWorkAreas;
+		private List<ShortPoint2D> wineGrowerWorkAreas;
 		private short partitionIdToBuildOn;
 		private IPartitionData materials;
 		private AiPositions landToBuildOn;
@@ -577,6 +581,7 @@ public class AiStatistics {
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
+		private MaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
@@ -591,6 +596,8 @@ public class AiStatistics {
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+			farmWorkAreas = new Vector<ShortPoint2D>();
+			wineGrowerWorkAreas = new Vector<ShortPoint2D>();
 			clearIntegers();
 		}
 
@@ -605,6 +612,8 @@ public class AiStatistics {
 			landToBuildOn.clear();
 			borderLandNextToFreeLand.clear();
 			movablePositions.clear();
+			farmWorkAreas.clear();
+			wineGrowerWorkAreas.clear();
 			clearIntegers();
 		}
 

@@ -149,7 +149,7 @@
 	<job name="hide" type="HIDE" successjob="wait" failjob="wait" />
 
 	<job name="wait" type="WAIT" time="3" successjob="stackNotFull" failjob="stackNotFull" />
-	<job name="stackNotFull" type="NOT_FULL" dx="-1" dy="4" material="PIG" successjob="PIG1_isKillable" failjob="checkcrop" />
+	<job name="stackNotFull" type="NOT_FULL" dx="-1" dy="4" successjob="PIG1_isKillable" failjob="checkcrop" />
 
 	<job name="PIG1_isKillable" type="PIG_IS_ADULT" dx="2" dy="2" successjob="killPig1Show1" failjob="PIG2_isKillable" />
 	<job name="PIG2_isKillable" type="PIG_IS_ADULT" dx="2" dy="1" successjob="killPig2Show1" failjob="PIG3_isKillable" />

@@ -46,7 +46,8 @@ public class BestFarmAndWineGrowerConstructionPositionFinder implements IBestCon
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
+					playerId, buildingType)
 					&& aiStatistics.southIsFreeForPlayer(point, playerId)) {
 				ShortPoint2D nearestDiggerPosition = AiStatistics.detectNearestPointFromList(point, diggers);
 				int nearestDiggerDistance = 0;

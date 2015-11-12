@@ -40,6 +40,7 @@ import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.action.SetMaterialProductionAction;
 import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
@@ -57,6 +58,7 @@ import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
@@ -278,6 +280,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
 			// TODO @Andreas: implement this.
 			System.err.println("Not implemented: " + a);
+			break;
+		}
+
+		case SET_MATERIAL_PRODUCTION: {
+			SetMaterialProductionAction a = (SetMaterialProductionAction) action;
+			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, a.getPosition(), a.getMaterialType(), a.getProductionType(), a
+					.getRatio()));
 			break;
 		}
 

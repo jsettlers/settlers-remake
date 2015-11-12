@@ -261,19 +261,20 @@ public enum EActionType {
 	SET_MATERIAL_PRIORITIES,
 
 	/**
-	 * Sets if the material should be placed in stock or not.
-	 * 
-	 * @see SetMaterialShouldUseStockAction
-	 */
-	SET_MATERIAL_STOCK_ACCEPTED,
-
-	/**
 	 * Focus a UI Input
 	 */
 	FOCUS,
 
 	NEXT_OF_TYPE,
 	UPGRADE_SOLDIERS,
+	SET_MATERIAL_PRODUCTION,
+
+	/**
+	 * Sets if the material should be placed in stock or not.
+	 * 
+	 * @see SetMaterialShouldUseStockAction
+	 */
+	SET_MATERIAL_STOCK_ACCEPTED,
 
 	/**
 	 * Add as many soldiers to this building as possible.
@@ -328,4 +329,5 @@ public enum EActionType {
 	 * @see ChangeTradingRequestAction
 	 */
 	CHANGE_TRADING_REQUEST
+
 }

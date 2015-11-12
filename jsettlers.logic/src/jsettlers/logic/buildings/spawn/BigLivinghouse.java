@@ -28,15 +28,9 @@ public final class BigLivinghouse extends SpawnBuilding {
 	private static final long serialVersionUID = -6442369297239688436L;
 
 	private static final byte PRODUCE_LIMIT = 100;
-	private static final int PRODUCE_PERIOD = 2000;
 
 	public BigLivinghouse(Player player) {
 		super(EBuildingType.BIG_LIVINGHOUSE, player);
-	}
-
-	@Override
-	protected int getProducePeriod() {
-		return PRODUCE_PERIOD;
 	}
 
 	@Override

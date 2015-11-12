@@ -24,6 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
 /**
@@ -124,6 +125,8 @@ public interface IGuiInputGrid {
 	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority);
 
+
+
 	short getBlockedPartition(ShortPoint2D pos);
 
 	boolean isBlocked(ShortPoint2D potentialTargetPos);
@@ -133,4 +136,6 @@ public interface IGuiInputGrid {
 	byte getNumberOfPlayers();
 
 	FogOfWar getFogOfWar();
+
+	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
 }

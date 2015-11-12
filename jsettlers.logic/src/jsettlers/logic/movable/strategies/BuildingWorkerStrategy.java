@@ -34,7 +34,6 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * 
@@ -289,14 +288,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void popWeaponRequestAction() {
-		float random = RandomSingleton.nextF();
-		if (random < 0.5) {
-			poppedMaterial = EMaterialType.SWORD;
-		} else if (random < 0.65) {
-			poppedMaterial = EMaterialType.SPEAR;
-		} else {
-			poppedMaterial = EMaterialType.BOW;
-		}
+		poppedMaterial = building.getMaterialProduction().getWeaponToProduce();
 		jobFinished();
 	}
 

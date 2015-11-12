@@ -79,6 +79,7 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
@@ -304,7 +305,16 @@ public final class MainGrid implements Serializable {
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
 
-		return new MapFileHeader(MapType.SAVED_SINGLE, mapName, mapId, "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgImage);
+		return new MapFileHeader(
+				MapType.SAVED_SINGLE,
+				mapName, mapId,
+				"TODO: description",
+				width,
+				height,
+				(short) 1,
+				getPartitionsGrid().getNumberOfPlayers(),
+				new Date(),
+				bgImage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
@@ -995,6 +1005,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	final class MovablePathfinderGrid extends AbstractMovableGrid {
+
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
@@ -1282,13 +1293,14 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius, boolean includeTowers) {
+		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
+				final short maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
 
-			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, (short) 1,
-					searchRadius), isBowman, includeTowers);
+			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, minSearchRadius,
+					maxSearchRadius), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
-				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, searchRadius,
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, maxSearchRadius,
 						Constants.TOWER_SEARCH_RADIUS), isBowman, true);
 			}
 
@@ -1662,6 +1674,11 @@ public final class MainGrid implements Serializable {
 		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
 			return landscapeGrid.getAmountOfResource(resource, positions);
 		}
+
+		@Override
+		public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
+			return partitionsGrid.getMaterialProductionAt(x, y);
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {
@@ -1790,6 +1807,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public FogOfWar getFogOfWar() {
 			return fogOfWar;
+		}
+
+		@Override
+		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
+			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
 	}
 

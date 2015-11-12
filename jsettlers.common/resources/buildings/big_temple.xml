@@ -148,17 +148,16 @@
 
 	<door dx="0" dy="2" />
 
-	<constructionStack dx="1" dy="7" material="PLANK" buildrequired="6" />
-	<constructionStack dx="5" dy="9" material="PLANK" buildrequired="8" />
-	<constructionStack dx="6" dy="7" material="STONE" buildrequired="8" />
+	<constructionStack dx="5" dy="6" material="STONE" buildrequired="8" />
+	<constructionStack dx="0" dy="6" material="PLANK" buildrequired="8" />
+	<constructionStack dx="5" dy="9" material="PLANK" buildrequired="6" />
 
-	<bricklayer dx="2" dy="7" direction="NORTH_EAST" />
-	<bricklayer dx="4" dy="8" direction="NORTH_EAST" />
 	<bricklayer dx="-2" dy="4" direction="NORTH_EAST" />
-	<bricklayer dx="-4" dy="1" direction="NORTH_EAST" />
-	<bricklayer dx="6" dy="2" direction="NORTH_WEST" />
-	<bricklayer dx="6" dy="0" direction="NORTH_WEST" />
-	<bricklayer dx="5" dy="3" direction="NORTH_WEST" />
+	<bricklayer dx="2" dy="7" direction="NORTH_EAST" />
+	<bricklayer dx="0" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="7" dy="2" direction="NORTH_WEST" />
+	<bricklayer dx="6" dy="3" direction="NORTH_WEST" />
+	<bricklayer dx="6" dy="5" direction="NORTH_WEST" />
 
 	<flag dx="1" dy="7" />
 
@@ -170,6 +169,8 @@
 	<buildmark dx="-1" dy="5" />
 	<buildmark dx="1" dy="7" />
 	<buildmark dx="1" dy="5" />
+
+
 
 	<image file="14" for="GUI" type="GUI" sequence="105" image="0"/>
 	<image file="13" type="SETTLER" for="FINAL" image="0" sequence="32"/>

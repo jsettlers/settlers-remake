@@ -46,4 +46,11 @@ public abstract class CommonConstants {
 	public static boolean CONTROL_ALL = false;
 
 	public static boolean USE_SAVEGAME_COMPRESSION = false;
+
+	public static boolean ENABLE_AI = true;
+
+	/**
+	 * Use only ai players for single player.
+	 */
+	public static boolean ALL_AI;
 }

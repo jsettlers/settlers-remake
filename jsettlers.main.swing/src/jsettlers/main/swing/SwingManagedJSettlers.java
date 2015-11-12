@@ -95,7 +95,14 @@ public class SwingManagedJSettlers {
 		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
-		if (!configFile.isSettlersFolderSet()) {
+		boolean firstRun = true;
+
+		while (!configFile.isSettlersFolderSet() || !trySettingUpResources(configFile)) {
+			if (!firstRun) {
+				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
+			}
+			firstRun = false;
+
 			JFileChooser fileDialog = new JFileChooser();
 			fileDialog.setAcceptAllFileFilterUsed(false);
 			fileDialog.setFileFilter(new FileFilter() {
@@ -133,7 +140,16 @@ public class SwingManagedJSettlers {
 				ex.printStackTrace();
 			}
 		}
-		SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
+	}
+
+	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
+		try {
+			SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
@@ -148,6 +164,8 @@ public class SwingManagedJSettlers {
 		CommonConstants.CONTROL_ALL = argsMap.containsKey("control-all");
 		CommonConstants.ACTIVATE_ALL_PLAYERS = argsMap.containsKey("activate-all-players");
 		CommonConstants.ENABLE_CONSOLE_LOGGING = argsMap.containsKey("console-output");
+		CommonConstants.ENABLE_AI = !argsMap.containsKey("disable-ai");
+		CommonConstants.ALL_AI = argsMap.containsKey("all-ai");
 
 		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
@@ -214,14 +232,7 @@ public class SwingManagedJSettlers {
 			if (loadableReplayFile == null) {
 				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
-				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
-				playerSettings[playerId] = new PlayerSetting(true, false);
-				for (byte i = 0; i < playerSettings.length; i++) {
-					if (i != playerId) {
-						playerSettings[i] = new PlayerSetting(false, true);
-					}
-				}
-
+				PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();

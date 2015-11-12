@@ -83,7 +83,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private ShortPoint2D moveToRequest = null;
 	private Path path;
 
-	private float health = 1.0f;
+	private float health;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
 	private Movable pushedFrom;
@@ -102,6 +102,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.player = player;
 		this.strategy = MovableStrategy.getStrategy(this, movableType);
 		this.movableType = movableType;
+		this.health = movableType.getHealth();
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
@@ -279,7 +280,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
 
-		if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
+		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
+		if (blockingMovable == null) { // if we can go on to the next step
 			if (!grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is invalid
 				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
 				if (newPath == null) { // no path found
@@ -296,9 +298,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			goSinglePathStep();
 		} else { // step not possible, so try it next time
 			movableAction = EAction.NO_ACTION;
-			boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
+			boolean pushedSuccessful = blockingMovable.push(this);
 			if (!pushedSuccessful) {
 				path = strategy.findWayAroundObstacle(direction, position, path);
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} else if (movableAction == EAction.NO_ACTION) {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} // else: push initiated our next step
@@ -842,6 +845,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return; // can't convert to bearer if the ground does not belong to the player
 		}
 
+		this.health = (this.health * newMovableType.getHealth()) / this.movableType.getHealth();
 		this.movableType = newMovableType;
 		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
 	}
