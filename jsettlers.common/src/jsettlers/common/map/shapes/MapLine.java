@@ -25,7 +25,6 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Michael Zangl
  */
 public class MapLine implements IMapArea {
-
 	private static final long serialVersionUID = -5934808006015795383L;
 
 	private class LineIterator implements Iterator<ShortPoint2D> {
@@ -52,11 +51,10 @@ public class MapLine implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-
 	}
 
-	private ShortPoint2D start;
-	private ShortPoint2D end;
+	private final ShortPoint2D start;
+	private final ShortPoint2D end;
 
 	public MapLine(ShortPoint2D start, ShortPoint2D end) {
 		this.start = start;
@@ -78,5 +76,4 @@ public class MapLine implements IMapArea {
 	public Iterator<ShortPoint2D> iterator() {
 		return new LineIterator();
 	}
-
 }

@@ -60,10 +60,9 @@
 
 	<door dx="0" dy="0" />
 
-	<constructionStack dx="0" dy="3" material="PLANK"
-		buildrequired="1" />
-	<constructionStack dx="2" dy="3" material="STONE"
-		buildrequired="3" />
+	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="1" />
+	<constructionStack dx="2" dy="3" material="STONE" buildrequired="3" />
+	
 	<requestStack dx="-2" dy="0" material="NO_MATERIAL" />
 	<requestStack dx="0" dy="2" material="NO_MATERIAL" />
 	<requestStack dx="2" dy="2" material="NO_MATERIAL" />
