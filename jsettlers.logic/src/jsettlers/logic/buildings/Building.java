@@ -617,14 +617,16 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MARKET_PLACE:
 			return new TestTradingBuilding(type, player, false);
-		case HARBUR:
+		case HARBOR:
 			return new TestTradingBuilding(type, player, true);
+
+		case BIG_TEMPLE:
+			return new BigTemple(player);
 
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
+		case DOCKYARD:
 			return new DefaultBuilding(type, player);
-		case BIG_TEMPLE:
-			return new BigTemple(player);
 
 		default:
 			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);

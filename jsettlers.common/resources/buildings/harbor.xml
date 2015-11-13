@@ -76,8 +76,8 @@
 
 	<door dx="2" dy="0" />
 
-	<constructionStack dx="3" dy="4" material="STONE"
-		buildrequired="4" />
+	<constructionStack dx="3" dy="4" material="STONE" buildrequired="4" />
+	
 	<requestStack dx="-2" dy="3" material="NO_MATERIAL" />
 	<requestStack dx="0" dy="6" material="NO_MATERIAL" />
 	<requestStack dx="1" dy="4" material="NO_MATERIAL" />
