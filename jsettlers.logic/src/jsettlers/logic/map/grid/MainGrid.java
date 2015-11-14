@@ -739,8 +739,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final byte getVisibleStatus(int x, int y) {
-			return 100; // TODO : reset if Original Map is Working
-			//return fogOfWar.getVisibleStatus(x, y);
+			return fogOfWar.getVisibleStatus(x, y);
 		}
 
 		@Override
