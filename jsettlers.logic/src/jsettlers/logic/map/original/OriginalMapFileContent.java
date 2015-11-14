@@ -39,9 +39,8 @@ import java.util.BitSet;
  */
 public class OriginalMapFileContent implements IMapData {
 
-	//- Heigh of original maps are 0..225 and of remake 0..127 -> x = 127f / 225f;
-	//-  but remake allows much higher mountains -> x = 0.3
-	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 0.3f; 
+	//- Heigh of original maps are 0..225 and of remake 0..127
+	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 255f;
 	private final static float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
 
 	//--------------------------------------------------//
