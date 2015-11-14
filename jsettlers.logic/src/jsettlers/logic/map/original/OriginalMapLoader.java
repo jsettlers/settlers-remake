@@ -68,7 +68,7 @@ public class OriginalMapLoader extends MapLoader
 	@Override
 	public MapFileHeader getFileHeader() {
 		return new MapFileHeader(
-				MapFileHeader.MapType.ORIGINAL,
+				MapFileHeader.MapType.NORMAL,
 				getMapName(),
 				getMapId(),
 				getDescription(),
@@ -90,7 +90,7 @@ public class OriginalMapLoader extends MapLoader
 	//------------------------------//
 	@Override
 	public String getMapName() {
-		return fileName;
+		return fileName; //.replaceFirst("[.][^.]+$", "").replace('_', ' ');
 	}
 
 	@Override 
@@ -110,7 +110,7 @@ public class OriginalMapLoader extends MapLoader
 	
 	@Override
 	public String getDescription() {
-		return ""; //- TODO
+		return mapContent.readMapQuestText();
 	}
 
 	@Override

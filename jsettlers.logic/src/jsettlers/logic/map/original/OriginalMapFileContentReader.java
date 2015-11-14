@@ -58,6 +58,8 @@ public class OriginalMapFileContentReader
 	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
 	private InputStream MapFileStream;
 
+	private String mapQuestTip = null;
+	private String mapQuestText = null;
 	
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
 	
@@ -312,8 +314,10 @@ public class OriginalMapFileContentReader
 	}
 	
 	
-	public String readMapQuestText()
+	public String readMapQuestText() 
 	{
+		if (mapQuestText != null) return mapQuestText;
+		
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TEXT);
 		
 		if ((FPart==null) || (FPart.size == 0)) return "";
@@ -322,16 +326,18 @@ public class OriginalMapFileContentReader
 		if (!doDecrypt(FPart)) return "";
 		
 		//- read Text
-		String quest = readCStrFrom(FPart.offset, FPart.size);
+		mapQuestText = readCStrFrom(FPart.offset, FPart.size);
+
+		//System.out.println("Quest: "+ mapQuestText);
 		
-		System.out.println("Quest: "+ quest);
-		
-		return quest;
+		return mapQuestText;
 	}
 	
 	
-	public String readMapQuestTip()
-	{
+	public String readMapQuestTip() {
+		
+		if (mapQuestTip != null) return mapQuestTip;
+		
 		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TIP);
 		
 		if ((FPart==null) || (FPart.size == 0)) return "";
@@ -340,11 +346,11 @@ public class OriginalMapFileContentReader
 		if (!doDecrypt(FPart)) return "";
 	
 		//- read Text
-		String tip = readCStrFrom(FPart.offset, FPart.size);
+		mapQuestTip = readCStrFrom(FPart.offset, FPart.size);
 		
-		System.out.println("Tip: "+ tip);
+		//System.out.println("Tip: "+ mapQuestTip);
 		
-		return tip;
+		return mapQuestTip;
 	}
 	
 	
@@ -711,7 +717,7 @@ public class OriginalMapFileContentReader
 		if (FPart == null) return false;
 		
 		if (mapContent == null) {
-			System.err.println("Warning: Unable to decrypt map file: no data loaded!");
+			System.err.println("OriginalMapFile-Warning: Unable to decrypt map file: no data loaded!");
 			return false;
 		}
 		
