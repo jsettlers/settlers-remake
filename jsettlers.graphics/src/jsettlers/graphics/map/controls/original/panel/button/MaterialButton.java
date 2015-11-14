@@ -36,7 +36,7 @@ public class MaterialButton extends Button {
 	private final UIPanel selected = new UIPanel();
 
 	public MaterialButton(Action action, EMaterialType material) {
-		super(action, material.getIcon(), material.getIcon(), Labels.getName(material));
+		super(action, material.getIcon(), material.getIcon(), Labels.getName(material, false));
 		this.material = material;
 		setBackground(material.getIcon());
 		addChild(dot, .1f, .6f, .4f, .9f);
