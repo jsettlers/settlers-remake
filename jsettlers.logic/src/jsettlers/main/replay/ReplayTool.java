@@ -74,7 +74,7 @@ public class ReplayTool {
 		return newest;
 	}
 
-	private static void awaitShutdown(IStartedGame startedGame) {
+	public static void awaitShutdown(IStartedGame startedGame) {
 		final MutableInt gameStopped = new MutableInt(0);
 
 		startedGame.setGameExitListener(new IGameExitListener() {
@@ -100,7 +100,7 @@ public class ReplayTool {
 
 	}
 
-	private static IStartedGame waitForGameStartup(IStartingGame game) {
+	public static IStartedGame waitForGameStartup(IStartingGame game) {
 		DummyStartingGameListener startingGameListener = new DummyStartingGameListener();
 		game.setListener(startingGameListener);
 		return startingGameListener.waitForGameStartup();
