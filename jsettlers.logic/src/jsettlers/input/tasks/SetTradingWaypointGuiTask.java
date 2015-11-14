@@ -27,10 +27,10 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 	private ShortPoint2D position;
 
 	public SetTradingWaypointGuiTask() {
-		super();
 	}
 
-	public SetTradingWaypointGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D buildingPos, WaypointType waypointType, ShortPoint2D position) {
+	public SetTradingWaypointGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D buildingPos, WaypointType waypointType,
+			ShortPoint2D position) {
 		super(guiAction, playerId, buildingPos);
 		this.waypointType = waypointType;
 		this.position = position;

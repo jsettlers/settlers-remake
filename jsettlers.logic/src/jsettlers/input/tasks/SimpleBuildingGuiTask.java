@@ -50,13 +50,13 @@ public class SimpleBuildingGuiTask extends SimpleGuiTask {
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
-		SimpleGuiTask.serializePosition(dos, buildingPos);
+		serializePosition(dos, buildingPos);
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		buildingPos = SimpleGuiTask.deserializePosition(dis);
+		buildingPos = deserializePosition(dis);
 	}
 
 	@Override

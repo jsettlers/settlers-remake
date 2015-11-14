@@ -25,18 +25,14 @@ import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
  * @author Michael Zangl
  */
 public class DonkeyMapObject extends AbstractObjectsManagerObject implements IPlayerable {
-
 	private static final long serialVersionUID = -3400083703317328589L;
 
 	public static final float FEED_TIME = 60;
-
-	private static final int FEED_TIMES = 4;
-
-	private boolean feedable;
-
-	private int feedTimes;
+	private static final byte FEED_TIMES = 4;
 
 	private final byte playerId;
+	private boolean feedable;
+	private byte feedTimes;
 
 	public DonkeyMapObject(ShortPoint2D pos, byte playerId) {
 		super(pos);
@@ -78,8 +74,9 @@ public class DonkeyMapObject extends AbstractObjectsManagerObject implements IPl
 			feedable = false;
 			feedTimes++;
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	public boolean isFullyFed() {

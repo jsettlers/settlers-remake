@@ -31,6 +31,9 @@ public class ChangeTradingRequestGuiTask extends SimpleBuildingGuiTask {
 	private int amount;
 	private boolean relative;
 
+	public ChangeTradingRequestGuiTask() {
+	}
+
 	public ChangeTradingRequestGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D bildingPos, EMaterialType material, int amount,
 			boolean relative) {
 		super(guiAction, playerId, bildingPos);

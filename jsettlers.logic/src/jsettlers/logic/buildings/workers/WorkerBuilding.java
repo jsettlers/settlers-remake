@@ -15,12 +15,13 @@
 package jsettlers.logic.buildings.workers;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -41,8 +42,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	/**
 	 * Points where we need to clean up pigs or donkeys.
 	 */
-	private final HashSet<ShortPoint2D> cleanupPositions = new HashSet<>();
-	private final HashSet<EMapObjectType> cleanupTypes = new HashSet<>();
+	private final Set<ShortPoint2D> cleanupPositions = new HashSet<>();
+	private final Set<EMapObjectType> cleanupTypes = new HashSet<>();
 
 	public WorkerBuilding(EBuildingType type, Player player) {
 		super(type, player);
