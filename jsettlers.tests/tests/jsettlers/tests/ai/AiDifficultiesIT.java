@@ -16,6 +16,7 @@ package jsettlers.tests.ai;
 
 import jsettlers.TestUtils;
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
@@ -38,6 +39,7 @@ public class AiDifficultiesIT {
 	public static final int MAXIMUM_TIME = 1000 * 60 * 300;
 
 	static {
+		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		TestUtils.setupResourcesManager();
 	}
 
@@ -76,15 +78,21 @@ public class AiDifficultiesIT {
 			MatchConstants.clock.fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
 			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 1) == 0) {
-				fail(expectedWinner + " was defeated by " + expectedLooser);
+				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock.getTime() > MAXIMUM_TIME) {
-				fail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (MAXIMUM_TIME / 60)
-						+ " minutes");
+				ReplayTool.awaitShutdown(startedGame);
+				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (MAXIMUM_TIME / 60000)
+						+ " minutes", startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
-		System.out.println(MatchConstants.clock.getTime());
 		ReplayTool.awaitShutdown(startedGame);
+
+	}
+
+	private void stopAndFail(String reason, IStartedGame startedGame) {
+		ReplayTool.awaitShutdown(startedGame);
+		fail(reason);
 	}
 
 }
