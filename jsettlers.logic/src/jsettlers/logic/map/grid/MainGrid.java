@@ -164,6 +164,14 @@ public final class MainGrid implements Serializable {
 		initAdditional();
 	}
 
+	public boolean isWinePlantable(ShortPoint2D point) {
+		return movablePathfinderGrid.pathfinderGrid.isWinePlantable(point.x, point.y);
+	}
+
+	public boolean isCornPlantable(ShortPoint2D point) {
+		return movablePathfinderGrid.pathfinderGrid.isCornPlantable(point.x, point.y);
+	}
+
 	private void initAdditional() {
 		this.graphicsGrid = new GraphicsGrid();
 		this.constructionMarksGrid = new ConstructionMarksGrid();
