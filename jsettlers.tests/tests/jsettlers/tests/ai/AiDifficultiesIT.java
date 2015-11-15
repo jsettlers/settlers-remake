@@ -16,8 +16,8 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import jsettlers.common.logging.StatisticsStopWatch;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -48,7 +48,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 90 * MINUTES);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 120 * MINUTES);
 	}
 
 	@Test
@@ -56,8 +56,8 @@ public class AiDifficultiesIT {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 80 * MINUTES);
 	}
 
-	@Test
-	@Ignore //TODO Unignore me when Very Hard is able to defeat Hard
+	@Test //TODO
+	@Ignore("Unignore me when Very Hard is able to defeat Hard")
 	public void veryHardShouldConquerHard() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 70 * MINUTES);
 	}
@@ -81,8 +81,8 @@ public class AiDifficultiesIT {
 		 fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
 				 + "soldiers were produced. Some code changes make the AI weaker.");
 		}
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 200);
-		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 200);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 1000);
+		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 1000);
 	}
 
 	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser, int maximumTimeToWin) {
@@ -114,12 +114,12 @@ public class AiDifficultiesIT {
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
 		ReplayTool.awaitShutdown(startedGame);
 
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 250);
-		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 200);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 1000);
+		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 1000);
 	}
 
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
-		System.out.println(description + "" + stopWatch);
+		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
 			fail(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
 					+ "caused the AI to have a worse runtime performance.");
