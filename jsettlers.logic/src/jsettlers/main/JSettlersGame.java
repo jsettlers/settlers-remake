@@ -88,6 +88,9 @@ public class JSettlersGame {
 			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
+		System.out.println("OS version: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
+				+ System.getProperty("os.version"));
+		System.out.println("Java version: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(playerSettings) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
