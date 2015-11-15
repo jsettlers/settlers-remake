@@ -214,15 +214,15 @@ public class JSettlersGame {
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
 						this, playerId, multiplayer);
 				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
-																	// ConstructionMarksThread
-				// has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
+				// ConstructionMarksThread has it's mapArea variable initialized via the EActionType.SCREEN_CHANGE event.
 
-				gameClock.startExecution();
+				AiExecutor aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
+				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
+
+				gameClock.startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT! =================================
 				gameRunning = true;
 
 				startingGameListener.startFinished();
-				AiExecutor aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
-				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
 				synchronized (stopMutex) {
 					while (!stopped) {
