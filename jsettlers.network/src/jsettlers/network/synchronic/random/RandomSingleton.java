@@ -59,6 +59,10 @@ public final class RandomSingleton extends Random {
 		return uniIns;
 	}
 
+	public static boolean getBoolean() {
+		return getInt(0, 1) == 0;
+	}
+
 	/**
 	 * @param min
 	 * @param max
