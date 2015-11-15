@@ -17,7 +17,7 @@
     <!-- ================================= 
           target: buildLayouts              
          ================================= -->
-    <target name="buildLayouts" depends="loadLib" description="Builds the UI layout files from their xml representation">
+    <target name="buildLayouts" depends="loadLib,clean" description="Builds the UI layout files from their xml representation">
         <convertLayout sourceXMLDirectory="./res/layout" genDirectory="./gen"/>
     </target>
 	
@@ -31,4 +31,8 @@
     	<taskdef name="convertLayout" classname="jsettlers.graphics.ui.generate.LayoutConverter" classpath="./build/.buildScripts/" />
     </target>
 
-</project>
+	<target name="clean">
+		<delete dir="./gen" />
+		<mkdir dir="./gen"/>
+	</target>
+ </project>
