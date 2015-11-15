@@ -16,10 +16,13 @@ package jsettlers.logic.player;
 
 import jsettlers.common.player.IEndgameStatistic;
 
+import java.io.Serializable;
+
 /**
  * @author codingberlin
  */
-public class EndgameStatistic implements IEndgameStatistic {
+public class EndgameStatistic implements IEndgameStatistic, Serializable {
+	private static final long serialVersionUID = -1352905249487671842L;
 
 	private ManaInformation manaInformation;
 	private short amountOfProducedSoldiers = 0;
