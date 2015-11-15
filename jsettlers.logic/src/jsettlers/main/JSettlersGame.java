@@ -35,7 +35,11 @@ import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.*;
+import jsettlers.graphics.startscreen.interfaces.EGameError;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
@@ -47,7 +51,7 @@ import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.player.*;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -109,7 +113,8 @@ public class JSettlersGame {
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
+			PlayerSetting[] playerSettings) {
 		this(mapCreator, randomSeed, networkConnector, playerId, playerSettings, CommonConstants.CONTROL_ALL, true, null);
 	}
 
@@ -208,7 +213,8 @@ public class JSettlersGame {
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
 						this, playerId, multiplayer);
-				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
+				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
+																	// ConstructionMarksThread
 				// has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
 
 				gameClock.startExecution();
@@ -327,6 +333,10 @@ public class JSettlersGame {
 		@Override
 		public IInGamePlayer getInGamePlayer() {
 			return mainGrid.getPartitionsGrid().getPlayer(playerId);
+		}
+
+		public boolean isStopped() {
+			return stopped;
 		}
 
 		@Override

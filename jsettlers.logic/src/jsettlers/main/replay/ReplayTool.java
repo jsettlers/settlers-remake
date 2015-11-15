@@ -90,14 +90,13 @@ public class ReplayTool {
 		((GameRunner) startedGame).stopGame();
 
 		synchronized (gameStopped) {
-			while (gameStopped.value == 0) {
+			while (gameStopped.value == 0 && !startedGame.isStopped()) {
 				try {
 					gameStopped.wait();
 				} catch (InterruptedException e) {
 				}
 			}
 		}
-
 	}
 
 	public static IStartedGame waitForGameStartup(IStartingGame game) {

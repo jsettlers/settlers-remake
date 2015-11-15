@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.tests.ai;
 
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import jsettlers.TestUtils;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
@@ -27,9 +31,6 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.network.client.OfflineNetworkConnector;
-import org.junit.Test;
-
-import static org.junit.Assert.fail;
 
 /**
  * @author codingberlin
@@ -81,13 +82,11 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock.getTime() > MAXIMUM_TIME) {
-				ReplayTool.awaitShutdown(startedGame);
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (MAXIMUM_TIME / 60000)
 						+ " minutes", startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
 		ReplayTool.awaitShutdown(startedGame);
-
 	}
 
 	private void stopAndFail(String reason, IStartedGame startedGame) {
