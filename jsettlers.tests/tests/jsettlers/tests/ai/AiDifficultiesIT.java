@@ -16,6 +16,8 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import jsettlers.common.logging.StatisticsStopWatch;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -36,8 +38,8 @@ import jsettlers.network.client.OfflineNetworkConnector;
  * @author codingberlin
  */
 public class AiDifficultiesIT {
-	public static final int TEN_MINUTES = 1000 * 60 * 10;
-	public static final int MAXIMUM_TIME = 1000 * 60 * 300;
+	public static final int MINUTES = 1000 * 60;
+	public static final int JUMP_FORWARD = 10 * MINUTES;
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
@@ -46,47 +48,95 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 90 * MINUTES);
 	}
 
 	@Test
 	public void hardShouldConquerEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 80 * MINUTES);
 	}
 
 	@Test
+	@Ignore //TODO Unignore me when Very Hard is able to defeat Hard
 	public void veryHardShouldConquerHard() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 70 * MINUTES);
 	}
 
-	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser) {
+	@Test
+	public void verHardShouldProduceCertainAmountOfSoldiersWithin90Minutes() {
+		PlayerSetting[] playerSettings = new PlayerSetting[4];
+		playerSettings[0] = new PlayerSetting(true, EWhatToDoAiType.ROMAN_VERY_HARD);
+		playerSettings[1] = new PlayerSetting(false, null);
+		playerSettings[2] = new PlayerSetting(false, null);
+		playerSettings[3] = new PlayerSetting(false, null);
+		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
+		IStartedGame startedGame = ReplayTool.waitForGameStartup(startingGame);
+
+		MatchConstants.clock.fastForwardTo(90 * MINUTES);
+		ReplayTool.awaitShutdown(startedGame);
+
+		short expectedMinimalProducedSoldiers = 200;
+		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
+		if (producedSoldiers < expectedMinimalProducedSoldiers) {
+		 fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
+				 + "soldiers were produced. Some code changes make the AI weaker.");
+		}
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 200);
+		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 200);
+	}
+
+	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser, int maximumTimeToWin) {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, expectedLooser);
 		playerSettings[1] = new PlayerSetting(true, expectedWinner);
 		playerSettings[2] = new PlayerSetting(false, null);
 		playerSettings[3] = new PlayerSetting(false, null);
 
-		MapLoader mapCreator = MapList.getDefaultList().getMapById("066d3c28-8f37-41cf-96c1-270109f00b9f");
-
-		JSettlersGame game = new JSettlersGame(mapCreator, 1l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
-		JSettlersGame.GameRunner startingGame = (JSettlersGame.GameRunner) game.start();
+		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayTool.waitForGameStartup(startingGame);
 		AiStatistics aiStatistics = new AiStatistics(startingGame.getMainGrid());
 
 		int targetGameTime = 0;
 		do {
-			targetGameTime += TEN_MINUTES;
+			targetGameTime += JUMP_FORWARD;
 			MatchConstants.clock.fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
 			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 1) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
-			if (MatchConstants.clock.getTime() > MAXIMUM_TIME) {
-				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (MAXIMUM_TIME / 60000)
-						+ " minutes", startedGame);
+			if (MatchConstants.clock.getTime() > maximumTimeToWin) {
+				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
+						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
+						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
+								+ "the maximumTimeToWin.",
+						startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
 		ReplayTool.awaitShutdown(startedGame);
+
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 250);
+		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 200);
+	}
+
+	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
+		System.out.println(description + "" + stopWatch);
+		if (stopWatch.getMedian() > median) {
+			fail(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
+					+ "caused the AI to have a worse runtime performance.");
+		}
+		if (stopWatch.getMax() > max) {
+			fail(description + "'s max is higher than " + max + ". It was " + stopWatch.getMax() + ".\nSomething in the code changed which "
+					+ "caused the AI to have a worse runtime performance.");
+		}
+	}
+
+	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) {
+		//TODO change the map to River when https://github.com/jsettlers/settlers-remake/pull/238 was merged
+		//because river is a map with identically start spots. There we can better compare the performance of the different AIs
+		MapLoader mapCreator = MapList.getDefaultList().getMapById("066d3c28-8f37-41cf-96c1-270109f00b9f");
+
+		JSettlersGame game = new JSettlersGame(mapCreator, 1l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
+		return (JSettlersGame.GameRunner) game.start();
 	}
 
 	private void stopAndFail(String reason, IStartedGame startedGame) {

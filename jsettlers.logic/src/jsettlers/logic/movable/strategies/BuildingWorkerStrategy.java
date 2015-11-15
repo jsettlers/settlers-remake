@@ -304,6 +304,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void dropAction(EMaterialType materialType) {
 		super.drop(materialType);
+		if (materialType == EMaterialType.GOLD) {
+			getPlayer().getEndgameStatistic().incrementAmountOfProducedGold();
+		}
 		jobFinished();
 	}
 

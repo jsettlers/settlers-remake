@@ -17,12 +17,9 @@ package jsettlers.common.player;
 /**
  * @author codingberlin
  */
-public interface IInGamePlayer {
+public interface IEndgameStatistic {
 
-	IManaInformation getManaInformation();
-
-	ICombatStrengthInformation getCombatStrengthInformation();
-
-	IEndgameStatistic getEndgameStatistic();
-
+	short getAmountOfProducedSoldiers();
+	short getAmountOfProducedMana();
+	short getAmountOfProducedGold();
 }

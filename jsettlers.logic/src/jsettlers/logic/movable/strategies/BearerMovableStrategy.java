@@ -130,6 +130,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 				this.state = EBearerState.DEAD_OBJECT;
 				super.convertTo(movableType);
 				super.goToPos(barrack.getSoldierTargetPosition());
+				getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
 			}
 			break;
 
