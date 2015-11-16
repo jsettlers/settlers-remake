@@ -14,13 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.workers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
@@ -42,8 +43,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	/**
 	 * Points where we need to clean up pigs or donkeys.
 	 */
-	private final Set<ShortPoint2D> cleanupPositions = new HashSet<>();
-	private final Set<EMapObjectType> cleanupTypes = new HashSet<>();
+	private List<Tuple<ShortPoint2D, EMapObjectType>> cleanupPositions = null;
 
 	public WorkerBuilding(EBuildingType type, Player player) {
 		super(type, player);
@@ -111,11 +111,13 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			this.worker.buildingDestroyed();
 			this.worker = null;
 		}
-		for (ShortPoint2D pos : cleanupPositions) {
-			for (EMapObjectType t : cleanupTypes) {
-				getGrid().getMapObjectsManager().removeMapObjectType(pos.x, pos.y, t);
+
+		if (cleanupPositions != null) {
+			for (Tuple<ShortPoint2D, EMapObjectType> cleanup : cleanupPositions) {
+				getGrid().getMapObjectsManager().removeMapObjectType(cleanup.e1.x, cleanup.e1.y, cleanup.e2);
 			}
 		}
+		super.killedEvent();
 	}
 
 	@Override
@@ -135,7 +137,15 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 	@Override
 	public void addMapObjectCleanupPosition(ShortPoint2D pos, EMapObjectType objectType) {
-		cleanupPositions.add(pos);
-		cleanupTypes.add(objectType);
+		if (cleanupPositions == null) {
+			cleanupPositions = new ArrayList<>();
+		}
+
+		for (Tuple<ShortPoint2D, EMapObjectType> cleanup : cleanupPositions) {
+			if (cleanup.e1.equals(pos) && cleanup.e2 == objectType) {
+				return;
+			}
+		}
+		cleanupPositions.add(new Tuple<>(pos, objectType));
 	}
 }
