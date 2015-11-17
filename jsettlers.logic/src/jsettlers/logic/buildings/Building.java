@@ -41,6 +41,7 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
+import jsettlers.logic.buildings.others.TestTradingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
@@ -573,6 +574,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new SmallLivinghouse(player);
 		case CHARCOAL_BURNER:
 		case BAKER:
+		case DONKEY_FARM:
 		case FARM:
 		case FORESTER:
 		case GOLDMELT:
@@ -613,10 +615,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case TEMPLE:
 			return new TempleBuilding(player);
 
-		case LOOKOUT_TOWER:
-			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
+		case MARKET_PLACE:
+			return new TestTradingBuilding(type, player, false);
+		case HARBOR:
+			return new TestTradingBuilding(type, player, true);
+
 		case BIG_TEMPLE:
 			return new BigTemple(player);
+
+		case HOSPITAL:
+		case LOOKOUT_TOWER:
+		case DOCKYARD:
+			return new DefaultBuilding(type, player);
 
 		default:
 			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);

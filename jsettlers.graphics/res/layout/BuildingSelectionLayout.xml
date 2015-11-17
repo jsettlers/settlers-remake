@@ -1,40 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE element SYSTEM "layout.dtd">
-<element
-	class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel"
-	x="9" y="219" maxx="127" maxy="435" id="background">
-	<element
-		class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.PriorityButton"
+
+<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
+	<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.PriorityButton"
 		x="11" y="221" maxx="29" maxy="239" id="priority">
 		<image type="GUI" file="3" sequence="192" />
 		<image type="GUI" file="3" sequence="195" />
 		<image type="GUI" file="3" sequence="378" />
 	</element>
 
-	<element class="SimpleActionButton" x="59" y="221" maxx="77"
-		maxy="239" id="workRadius">
+	<element class="SimpleActionButton" x="59" y="221" maxx="77" maxy="239" id="workRadius">
 		<action action="ASK_SET_WORK_AREA" />
 		<image type="GUI" file="3" sequence="201" />
 		<image type="GUI" file="3" sequence="201" />
 	</element>
 
-	<element class="SimpleActionButton" x="107" y="221" maxx="125"
-		maxy="239">
+	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
 		<action action="ASK_DESTROY" />
 		<image type="GUI" file="3" sequence="198" />
 		<image type="GUI" file="3" sequence="198" />
 	</element>
 
-	<element class="SimpleActionButton" width="10" height="10" x="2"
-		y="0">
+	<element class="SimpleActionButton" x="29" width="18" y="221" maxy="239">
 		<action action="NEXT_OF_TYPE" />
-		<image type="GUI" file="3" sequence="230" />
-		<image type="GUI" file="3" sequence="230" />
+		<image type="GUI" file="3" sequence="381" />
+		<image type="GUI" file="3" sequence="381" />
 	</element>
 
-	<element x="9" y="238" maxx="127" maxy="281" id="nameText"
-		class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel">
-	</element>
+	<element x="9" y="238" maxx="127" maxy="281" id="nameText" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel" />
 
 	<element class="Label" x="9" y="378" maxx="127" maxy="397" id="materialText">
 		<localized label=""/>
@@ -44,5 +37,4 @@
 	<element x="9" y="398" maxx="127" maxy="427" id="materialArea">
 		<!-- Split at 416 -->
 	</element>
-
 </element>

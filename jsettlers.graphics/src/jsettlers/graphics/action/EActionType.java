@@ -267,5 +267,67 @@ public enum EActionType {
 
 	NEXT_OF_TYPE,
 	UPGRADE_SOLDIERS,
-	SET_MATERIAL_PRODUCTION
+	SET_MATERIAL_PRODUCTION,
+
+	/**
+	 * Sets if the material should be placed in stock or not.
+	 * 
+	 * @see SetMaterialShouldUseStockAction
+	 */
+	SET_MATERIAL_STOCK_ACCEPTED,
+
+	/**
+	 * Add as many soldiers to this building as possible.
+	 */
+	SOLDIERS_ALL,
+	/**
+	 * Only put one soldier in this building.
+	 */
+	SOLDIERS_ONE,
+	/**
+	 * Add one more soldier of this type to the building
+	 * 
+	 * @see SoldierAction
+	 */
+	SOLDIERS_MORE,
+	/**
+	 * Add one more soldier of this type to the building
+	 * 
+	 * @see SoldierAction
+	 */
+	SOLDIERS_LESS,
+
+	/**
+	 * Ask the user to select a trading waypoint.
+	 * 
+	 * @see AskSetTradingWaypointAction
+	 */
+	ASK_SET_TRADING_WAYPOINT,
+
+	/**
+	 * Set the trading waypoint for the current selection.
+	 * 
+	 * @see SetTradingWaypointAction
+	 */
+	SET_TRADING_WAYPOINT,
+
+	/**
+	 * Ask the user to set the dock position.
+	 */
+	ASK_SET_DOCK,
+
+	/**
+	 * Set the dock position.
+	 * 
+	 * @see PointAction
+	 */
+	SET_DOCK,
+
+	/**
+	 * Changes the amount of materials that should be traded from the current trading building.
+	 * 
+	 * @see ChangeTradingRequestAction
+	 */
+	CHANGE_TRADING_REQUEST
+
 }
