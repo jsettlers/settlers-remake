@@ -298,12 +298,11 @@ public class AiStatistics {
 	}
 
 	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, short x, short y) {
-		Partition myPartition = partitionsGrid.getPartitionAt(x, y);
 		for (EDirection dir : EDirection.values) {
 			int lx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
 			int ly = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
 			if (mainGrid.isInBounds(lx, ly)) {
-				if (partitionsGrid.getPartitionAt(lx, ly) != myPartition) {
+				if (partitionsGrid.isDefaultPartition(partitionsGrid.getPartitionIdAt(lx, ly))) {
 					playerStatistic.borderLandNextToFreeLand.addNoCollission(x, y);
 					break;
 				}

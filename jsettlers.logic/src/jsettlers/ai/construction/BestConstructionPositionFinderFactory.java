@@ -48,8 +48,9 @@ public class BestConstructionPositionFinderFactory {
 		case CASTLE:
 			return new BestMilitaryConstructionPositionFinder(type);
 		case FARM:
+			return new BestFarmConstructionPositionFinder();
 		case WINEGROWER:
-			return new BestFarmAndWineGrowerConstructionPositionFinder(type);
+			return new BestWinegrowerConstructionPositionFinder();
 		case COALMINE:
 			return new BestMineConstructionPositionFinder(type, COAL);
 		case IRONMINE:
