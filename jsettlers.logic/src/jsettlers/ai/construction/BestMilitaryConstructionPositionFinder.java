@@ -26,6 +26,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.network.synchronic.random.AiRandomSingleton;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
@@ -191,7 +192,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			importantResources.add(ImportantResource.GOLD);
 		}
 		// 50 : 50 chance to spread the land or to go for more resources
-		if (importantResources.size() == 0 && RandomSingleton.getBoolean() == true) {
+		if (importantResources.size() == 0 && AiRandomSingleton.nextBoolean() == true) {
 			importantResources.add(ImportantResource.GOLD);
 			importantResources.add(ImportantResource.IRON);
 			importantResources.add(ImportantResource.COAL);

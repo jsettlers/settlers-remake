@@ -57,6 +57,7 @@ import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.INetworkConnector;
+import jsettlers.network.synchronic.random.AiRandomSingleton;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
@@ -180,6 +181,7 @@ public class JSettlersGame {
 				IGameClock gameClock = MatchConstants.clock = networkConnector.getGameClock();
 				gameClock.setReplayLogStream(replayFileStream);
 				RandomSingleton.load(randomSeed);
+				AiRandomSingleton.load(randomSeed);
 				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
