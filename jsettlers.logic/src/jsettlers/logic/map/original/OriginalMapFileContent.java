@@ -120,40 +120,11 @@ public class OriginalMapFileContent implements IMapData {
 
 		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
 
-		//TODO: remove me when Original Maps are finished ---- begin
-		/*if (!types.contains(originalType)) {
-			types.add(originalType);
-			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
-			if (originalType == OriginalMapFileDataStructs.EOriginalLandscapeType.NOT_A_TYPE) {
-				System.out.println(" (not a type: " + type + ")");
-			}
-			if (originalType.value != null) {
-				System.out.println(" (" + originalType.value + ")");
-			} else System.out.println();
-		}*/
-		//TODO: remove me when Original Maps are finished ---- end
 		landscapeType[pos] = originalType.value;
 	}
 	
-	
-	//private List<OriginalMapFileDataStructs.EObjectType> mapObjects = new Vector<OriginalMapFileDataStructs.EObjectType>();
-
 	public void setMapObject(int pos, int type) {
 		if ((pos<0) || (pos> dataCount)) return;
-
-		//OriginalMapFileDataStructs.EObjectType originalType = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type);
-		//TODO: remove me when Original Maps are finished ---- begin
-		/*if (!mapObjects.contains(originalType)) {
-			mapObjects.add(originalType);
-			System.out.print("#" + originalType + "(" + (pos % widthHeight) + "|" + (pos / widthHeight) + ")");
-			if (originalType == OriginalMapFileDataStructs.EObjectType.NO_OBJECT) {
-				System.out.println(" (not a type: " + type + ")");
-			}
-			if (originalType.value != null) {
-				System.out.println(" (" + originalType.value + ")");
-			} else System.out.println();
-		}*/
-		//TODO: remove me when Original Maps are finished ---- end
 
 		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).getNewInstance();
 	}
