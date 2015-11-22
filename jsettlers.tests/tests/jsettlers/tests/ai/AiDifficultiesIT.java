@@ -47,7 +47,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test //TODO
-	@Ignore("Unignore me when Very Hard is able to defeat Hard")
+	@Ignore("Unignore me when easy is able to defeat very easy")
 	public void easyShouldConquerVeryEasy() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 120 * MINUTES);
 	}
