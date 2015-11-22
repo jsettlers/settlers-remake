@@ -71,6 +71,8 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 			EBuildingType.MEDIUM_LIVINGHOUSE,
 			EBuildingType.BIG_LIVINGHOUSE,
 			EBuildingType.STOCK,
+			EBuildingType.MARKET_PLACE,
+			EBuildingType.HARBOR,
 			EBuildingType.TEMPLE,
 			EBuildingType.BIG_TEMPLE
 	};

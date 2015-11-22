@@ -68,6 +68,9 @@ public class UIPanel implements UIElement {
 	 */
 	public void addChild(UIElement child, float left, float bottom,
 			float right, float top) {
+		if (child == null) {
+			throw new NullPointerException();
+		}
 		this.children.add(new ChildLink(child, left, bottom, right, top));
 		if (attached) {
 			child.onAttach();

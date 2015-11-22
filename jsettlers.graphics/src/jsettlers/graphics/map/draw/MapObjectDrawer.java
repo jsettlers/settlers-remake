@@ -184,7 +184,7 @@ public class MapObjectDrawer {
 		if (type == EMapObjectType.ARROW) {
 			drawArrow(context, (IArrowMapObject) object, color);
 		} else {
-		    float z;
+			float z;
 
 			switch (type) {
 
@@ -299,10 +299,10 @@ public class MapObjectDrawer {
 				break;
 
 			case CONSTRUCTION_MARK:
-                z = context.getDrawBuffer().getZ();
-                context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
+				z = context.getDrawBuffer().getZ();
+				context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
 				drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
-                context.getDrawBuffer().setZ(z);
+				context.getDrawBuffer().setZ(z);
 				break;
 
 			case FLAG_ROOF:
@@ -317,11 +317,11 @@ public class MapObjectDrawer {
 				break;
 
 			case PLACEMENT_BUILDING:
-                z = context.getDrawBuffer().getZ();
-                context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
-                drawBuilding(x, y, (IBuilding) object, color);
-                context.getDrawBuffer().setZ(z);
-			    break;
+				z = context.getDrawBuffer().getZ();
+				context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
+				drawBuilding(x, y, (IBuilding) object, color);
+				context.getDrawBuffer().setZ(z);
+				break;
 
 			case STACK_OBJECT:
 				drawStack(x, y, (IStackMapObject) object, color);
@@ -365,6 +365,13 @@ public class MapObjectDrawer {
 					int step = i % seq.length();
 					draw(seq.getImageSafe(step), x, y, color);
 				}
+			}
+				break;
+
+			case DONKEY: {
+				int i = (getAnimationStep(x, y) / 20) % 6;
+				Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
+				draw(image, x, y, getColor(object), color);
 			}
 				break;
 

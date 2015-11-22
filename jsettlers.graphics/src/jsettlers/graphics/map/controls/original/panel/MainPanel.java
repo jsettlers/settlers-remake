@@ -22,9 +22,12 @@ import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.SetTradingWaypointAction;
+import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -256,26 +259,68 @@ public class MainPanel extends UIPanel {
 		this.addChild(lowerTabBar, 0, constants.LOWER_TABS_BOTTOM, 1, constants.LOWER_TABS_TOP);
 	}
 
+	/**
+	 * A special panel that si displayed to the user while the user should select a point.
+	 * 
+	 * @author Michael Zangl
+	 */
+	public static class SelectPointMessage extends MessageContent {
+		public SelectPointMessage(String message) {
+			super(message, null, null,
+					Labels.getString("abort"), new Action(EActionType.ABORT));
+		}
+
+		@Override
+		public boolean isForSelection() {
+			return true;
+		}
+	}
+
 	public Action catchAction(Action action) {
 		action = activeContent.catchAction(action);
 		// TODO: Abort on MOVE_TO-action.
-		if (action.getActionType() == EActionType.ASK_SET_WORK_AREA) {
+		EActionType type = action.getActionType();
+		switch (type) {
+		case MOVE_TO:
+		case SET_DOCK:
+		case SET_TRADING_WAYPOINT:
+		case SET_WORK_AREA:
+			if (activeContent instanceof SelectPointMessage) {
+				goBack();
+			}
+			return action;
+		case ASK_SET_DOCK:
 			goBackContent = activeContent;
-			setContent(new MessageContent(
-					Labels.getString("click_set_workcenter"), null, null,
-					Labels.getString("abort"), new Action(EActionType.ABORT)) {
+			setContent(new SelectPointMessage(
+					Labels.getString("click_set_dock")) {
+				@Override
+				public PointAction getSelectAction(ShortPoint2D position) {
+					return new PointAction(EActionType.SET_DOCK, position);
+				}
+			});
+			return null;
+		case ASK_SET_WORK_AREA:
+			goBackContent = activeContent;
+			setContent(new SelectPointMessage(
+					Labels.getString("click_set_workcenter")) {
 				@Override
 				public PointAction getSelectAction(ShortPoint2D position) {
 					return new PointAction(EActionType.SET_WORK_AREA, position);
 				}
-
+			});
+			return null;
+		case ASK_SET_TRADING_WAYPOINT:
+			goBackContent = activeContent;
+			final WaypointType wp = ((AskSetTradingWaypointAction) action).getWaypoint();
+			setContent(new SelectPointMessage(
+					Labels.getString("click_set_trading_waypoint_" + wp)) {
 				@Override
-				public boolean isForSelection() {
-					return true;
+				public PointAction getSelectAction(ShortPoint2D position) {
+					return new SetTradingWaypointAction(wp, position);
 				}
 			});
 			return null;
-		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
+		case ASK_DESTROY:
 			goBackContent = activeContent;
 			setContent(new MessageContent(
 					Labels.getString("really_destroy_building"),
@@ -289,13 +334,13 @@ public class MainPanel extends UIPanel {
 				}
 			});
 			return null;
-		} else if (action.getActionType() == EActionType.ABORT) {
+		case ABORT:
 			goBack();
 			return action;
-		} else if (action.getActionType() == EActionType.EXECUTABLE) {
+		case EXECUTABLE:
 			((ExecutableAction) action).execute();
 			return null;
-		} else {
+		default:
 			return action;
 		}
 	}

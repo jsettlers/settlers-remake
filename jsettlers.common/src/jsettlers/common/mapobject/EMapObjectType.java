@@ -100,10 +100,10 @@ public enum EMapObjectType {
 	 */
 	BUILDING,
 
-    /**
-     * Type to represent the Building shown when placing for construction.
-     */
-    PLACEMENT_BUILDING,
+	/**
+	 * Type to represent the Building shown when placing for construction.
+	 */
+	PLACEMENT_BUILDING,
 
 	/**
 	 * Simple smoke
@@ -114,6 +114,10 @@ public enum EMapObjectType {
 	 * A pig. Progress is ignored.
 	 */
 	PIG,
+	/**
+	 * A donkey (in the donkey farm)
+	 */
+	DONKEY,
 
 	/**
 	 * cloud of smoke when a building get's torn down.

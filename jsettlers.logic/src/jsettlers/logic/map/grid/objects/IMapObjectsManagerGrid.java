@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
 
 public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
@@ -51,4 +52,6 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 	boolean isBuildingAreaAt(short x, short y);
 
 	boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes);
+
+	void spawnDonkey(ShortPoint2D position, byte playerId);
 }
