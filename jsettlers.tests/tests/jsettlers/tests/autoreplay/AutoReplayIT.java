@@ -42,7 +42,9 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
+import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.MapLoader;
@@ -58,6 +60,13 @@ public class AutoReplayIT {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 
 		TestUtils.setupResourcesManager();
+		MapList.setDefaultListFactory(new IMapListFactory() {
+			@Override
+			public MapList getMapList(File originalSettlersFolder) {
+				File resourceDir = ResourceManager.getSaveDirectory();
+				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps")), new DebugMapLister(new File(resourceDir, "save")));
+			}
+		});
 	}
 
 	private static final String remainingReplay = "out/remainingReplay.log";
@@ -122,7 +131,7 @@ public class AutoReplayIT {
 
 			int e, a;
 			while (((e = expectedStream.read()) != -1) & ((a = actualStream.read()) != -1)) {
-				assertEquals("difference at (uncompressed) byte " + (actualStream.getByteCounter() - 1), a, e);
+				assertEquals("difference at (uncompressed) byte " + actualStream.getByteCounter(), e, a);
 			}
 			assertEquals("files have different lengths (uncompressed)", e, a);
 		}

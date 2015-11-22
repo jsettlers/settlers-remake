@@ -64,6 +64,11 @@ public class LayoutSourceGenerator {
 			writer.println("package " + packageName + ";");
 		}
 		writer.println();
+		writer.println("import java.util.ArrayList;");
+		writer.println("import java.util.Collection;");
+		writer.println("import jsettlers.graphics.ui.UIElement;");
+		writer.println("import jsettlers.graphics.ui.UIPanel;");
+		writer.println();
 		writer.println("public class " + name + " {");
 		writer.println(getField("_root", defaultRoot));
 		writeIdsOfTo(writer, defaultRoot);
@@ -84,6 +89,24 @@ public class LayoutSourceGenerator {
 
 		writeAndAssignRoot(writer, defaultRoot);
 
+		writer.println("}");
+
+		writer.println("public <T> Collection<T> getAll(Class<T> ofType) {");
+		writer.println("ArrayList<T> list = new ArrayList<>();");
+		writer.println("collectAll(ofType, _root, list);");
+		writer.println("return list;");
+		writer.println("}");
+		writer.println();
+		writer.println("@SuppressWarnings(\"unchecked\")");
+		writer.println("private <T> void collectAll(Class<T> ofType, UIPanel root, ArrayList<T> list) {");
+		writer.println("for (UIElement c : root.getChildren()) {");
+		writer.println("if (ofType.isAssignableFrom(c.getClass())) {");
+		writer.println("list.add((T) c);");
+		writer.println("}");
+		writer.println("if (c instanceof UIPanel) {");
+		writer.println("collectAll(ofType, (UIPanel) c, list);");
+		writer.println("}");
+		writer.println("}");
 		writer.println("}");
 		writer.println("}");
 	}

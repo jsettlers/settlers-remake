@@ -587,7 +587,7 @@ public class OriginalMapFileDataStructs {
 		WATERWORKS(EBuildingType.WATERWORKS),
 		Katapultwerk(null),
 		DOCKYARD(EBuildingType.DOCKYARD),
-		HARBUR(EBuildingType.HARBUR),
+		HARBOR(EBuildingType.HARBOR),
 		Marktplatz(null),
 		HOSPITAL(EBuildingType.HOSPITAL),
 		Reisfarm(null),

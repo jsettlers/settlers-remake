@@ -80,12 +80,18 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
 
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
-			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
+			this.materialTypeForPriorities[i] = materialTypeForPriority[i];
 		}
 	}
 
 	@Override
 	public MaterialProductionSettings getMaterialProductionSettings() {
 		return materialProductionSettings;
+	}
+
+	@Override
+	public boolean getStockAcceptsMaterial(EMaterialType material) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 }

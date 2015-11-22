@@ -193,4 +193,17 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DoubleLinkedList [size=");
+		builder.append(size);
+		for (T e : this) {
+			builder.append(", ");
+			builder.append(e.toString());
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

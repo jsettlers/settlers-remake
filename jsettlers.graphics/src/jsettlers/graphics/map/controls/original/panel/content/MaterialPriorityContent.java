@@ -17,22 +17,22 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import go.graphics.GLDrawContext;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.image.Image;
-import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
+import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
+import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
+import jsettlers.graphics.ui.layout.MaterialPriorityLayout;
 
 /**
  * This panel lets the user select the priorities in which the materials should be transported by settlers.
@@ -40,20 +40,24 @@ import jsettlers.graphics.ui.UIPanel;
  * @author michael
  */
 public class MaterialPriorityContent extends AbstractContentProvider {
+	public static class MaterialPriorityButton extends MaterialButton {
 
-	private static final int COLUMNS = 6;
-	private static final float RELATIVE_BUTTONHEIGHT = .06f;
+		public MaterialPriorityButton(MaterialPriorityPanel panel, EMaterialType material) {
+			super(new SelectMaterialAction(panel, material), material);
+		}
+	}
 
-	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
-
-	private static final OriginalImageLink ALL_UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
-	private static final OriginalImageLink ALL_DOWN_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
-	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 225, 0);
-	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 228, 0);
-
-	private static final float ROWHEIGHT = .1f;
-
-	private class MaterialPriorityPanel extends UIPanel {
+	/**
+	 * Displays an ordered list of materials.
+	 * 
+	 * @author Michael Zangl
+	 */
+	public static class MaterialPriorityPanel extends UIPanel {
+		private static final int COLUMNS = 6;
+		private static final int ROWS = 5;
+		private static final float BUTTON_HEIGHT_RELATIVE_TO_ROW = 18f / (269 - 236);
+		private static final float BUTTON_WIDTH = 1f / COLUMNS;
+		private static final float BUTTON_HEIGHT = 1f / ROWS * BUTTON_HEIGHT_RELATIVE_TO_ROW;
 
 		/**
 		 * Points on which materials can be placed.
@@ -66,6 +70,16 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * This is a mapping: {@link EMaterialType} -> label position
 		 */
 		private final AnimateablePosition[] positions = new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
+		private final MaterialPriorityButton[] buttons = new MaterialPriorityButton[EMaterialType.NUMBER_OF_MATERIALS];
+
+		/**
+		 * The order that is currently displayed.
+		 */
+		private EMaterialType[] order = new EMaterialType[0];
+
+		private ShortPoint2D currentPos;
+		private IGraphicsGrid currentGrid;
+		private EMaterialType selected;
 
 		public MaterialPriorityPanel() {
 			addRowPositions(0, true);
@@ -74,220 +88,235 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			addRowPositions(3, false);
 			addRowPositions(4, true);
 
-			updateDisplayedData();
-
-			addChild(new ReorderButton(-1000, ALL_UP_IMAGE, ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
-			addChild(new ReorderButton((-1), UP_IMAGE, UP_IMAGE, "one up"), .6f, .1f, .75f, .18f);
-			addChild(new ReorderButton((1), DOWN_IMAGE, DOWN_IMAGE, "one down"), .45f, .1f, .6f, .18f);
-			addChild(new ReorderButton((1000), ALL_DOWN_IMAGE, ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
+			for (EMaterialType material : EMaterialType.DROPPABLE_MATERIALS) {
+				buttons[material.ordinal] = new MaterialPriorityButton(this, material);
+			}
 		}
 
 		private void addRowPositions(int rowIndex, boolean descent) {
 			for (int column = 0; column < COLUMNS; column++) {
 				int index = rowIndex * COLUMNS + column;
 				if (index < xpoints.length) {
-					xpoints[index] = (float) (descent ? (column + 1) : (COLUMNS - column)) / (COLUMNS + 2);
-					ypoints[index] = .8f - rowIndex * ROWHEIGHT - (float) column / (COLUMNS - 1) * (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
+					xpoints[index] = (float) (descent ? column : (COLUMNS - column - 1)) / COLUMNS;
+					float inRowY = (float) column / (COLUMNS - 1) * (1 - BUTTON_HEIGHT_RELATIVE_TO_ROW) + BUTTON_HEIGHT_RELATIVE_TO_ROW;
+					ypoints[index] = 1 - (rowIndex + inRowY) / ROWS;
 				}
 			}
 		}
 
-		private void updateDisplayedData() {
-			Arrays.fill(positions, null);
-			for (int i = 0; i < order.length; i++) {
-				EMaterialType material = order[i];
-				positions[material.ordinal] = new AnimateablePosition(xpoints[i], ypoints[i]);
+		public synchronized void setOrder(EMaterialType[] orderIn) {
+			if (orderIn == null) {
+				order = null;
+				return;
 			}
+			EMaterialType[] newOrder = Arrays.copyOf(orderIn, orderIn.length);
+			// and we assume they contain the same elements
+			for (int i = 0; i < newOrder.length; i++) {
+				if (order == null || order.length <= i || newOrder[i] != order[i]) {
+					EMaterialType material = newOrder[i];
+					setToPosition(material, i);
+				}
+			}
+			this.order = newOrder;
 		}
 
-		private void setToPosition(EMaterialType type, int newindex) {
-			positions[type.ordinal()].setPosition(xpoints[newindex], ypoints[newindex]);
+		private void setToPosition(EMaterialType material, int newindex) {
+			AnimateablePosition pos = positions[material.ordinal];
+			if (pos == null) {
+				positions[material.ordinal] = new AnimateablePosition(xpoints[newindex], ypoints[newindex]);
+			} else {
+				pos.setPosition(xpoints[newindex], ypoints[newindex]);
+			}
 		}
 
 		@Override
 		public synchronized void drawAt(GLDrawContext gl) {
-			super.drawAt(gl);
-			gl.color(1, 1, 1, 1);
-
 			updatePositions();
+			super.drawAt(gl);
+		}
 
-			gl.glPushMatrix();
-			FloatRectangle position = getPosition();
-			gl.glTranslatef(position.getMinX(), position.getMinY(), 0);
-			gl.glScalef(position.getWidth(), position.getHeight(), 1);
-
-			for (EMaterialType mat : order) {
-				int i = mat.ordinal();
-				drawButton(gl, positions[i].getX(), positions[i].getY(), mat);
-			}
-			gl.glPopMatrix();
+		private IPartitionData getPartitonData() {
+			return currentGrid == null ? null : currentGrid.getPartitionData(currentPos.x, currentPos.y);
 		}
 
 		private void updatePositions() {
-			if (currentGrid != null) {
-				IPartitionData partitionData = currentGrid.getPartitionData(currentPos.x, currentPos.y);
-				if (partitionData != null) {
-					IPartitionSettings partitionSettings = partitionData.getPartitionSettings();
-					for (int i = 0; i < order.length; i++) {
-						EMaterialType should = partitionSettings.getMaterialTypeForPrio(i);
-						if (order[i] != should) {
-							setToPosition(should, i);
-							order[i] = should;
-						}
-					}
+			IPartitionData data = getPartitonData();
+			if (data == null) {
+				setOrder(null);
+				removeAll();
+			} else {
+				EMaterialType[] newOrder = new EMaterialType[EMaterialType.DROPPABLE_MATERIALS.length];
+				BitSet materialsAccepted = new BitSet();
+
+				for (int i = 0; i < newOrder.length; i++) {
+					// FIXME: Synchronize!
+					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
+				}
+				for (EMaterialType m : EMaterialType.values) {
+					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
+				}
+				setOrder(newOrder);
+
+				for (EMaterialType material : newOrder) {
+					MaterialPriorityButton button = buttons[material.ordinal];
+					AnimateablePosition position = positions[material.ordinal];
+
+					button.setDotColor(materialsAccepted.get(button.getMaterial().ordinal) ? DotColor.GREEN : DotColor.RED);
+					removeChild(button);
+					addChild(button, position.getX(), position.getY(), position.getX() + BUTTON_WIDTH, position.getY() + BUTTON_HEIGHT);
 				}
 			}
 		}
 
-		@Override
-		public synchronized Action getAction(float relativex, float relativey) {
-			Action action = super.getAction(relativex, relativey);
-			if (action == null) {
-				for (int i = 0; i < positions.length; i++) {
-					AnimateablePosition pos = positions[i];
-					if (pos != null) {
-						float x = pos.getX();
-						float y = pos.getY();
-						if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
-								&& relativey >= y
-								&& relativey < y + RELATIVE_BUTTONHEIGHT) {
-							return new SelectMaterialAction(EMaterialType.values[i]);
-						}
-					}
+		/**
+		 * Sets the selected material type.
+		 *
+		 * @param eMaterialType
+		 */
+		public void selectMaterial(EMaterialType selected) {
+			this.selected = selected;
+			for (MaterialPriorityButton b : buttons) {
+				if (b != null) {
+					b.setSelected(b.getMaterial() == selected);
 				}
 			}
-			return action;
+		}
+
+		public synchronized EMaterialType[] reorder(EMaterialType type, int desiredNewPosition) {
+			int oldPos = indexOf(type);
+			EMaterialType[] newOrder = order.clone();
+			if (oldPos < 0) {
+				return newOrder;
+			}
+			int newPos = Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
+
+			if (newPos > oldPos) {
+				for (int i = oldPos; i < newPos; i++) {
+					newOrder[i] = newOrder[i + 1];
+				}
+			} else {
+				for (int i = oldPos; i > newPos; i--) {
+					newOrder[i] = newOrder[i - 1];
+				}
+			}
+			newOrder[newPos] = type;
+			return newOrder;
+		}
+
+		public int indexOf(EMaterialType type) {
+			int oldPos = -1;
+			for (int i = 0; i < order.length; i++) {
+				if (order[i] == type) {
+					oldPos = i;
+				}
+			}
+			return oldPos;
+		}
+
+		public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+			currentPos = pos;
+			currentGrid = grid;
+		}
+
+		public EMaterialType getSelected() {
+			return selected;
+		}
+
+		public ShortPoint2D getMapPosition() {
+			return currentPos;
 		}
 	}
 
-	private class SelectMaterialAction extends ExecutableAction {
+	private static class SelectMaterialAction extends ExecutableAction {
 		private final EMaterialType eMaterialType;
+		private final MaterialPriorityPanel panel;
 
-		public SelectMaterialAction(EMaterialType eMaterialType) {
+		public SelectMaterialAction(MaterialPriorityPanel panel, EMaterialType eMaterialType) {
+			this.panel = panel;
 			this.eMaterialType = eMaterialType;
 		}
 
 		@Override
 		public void execute() {
-			selectMaterial(eMaterialType);
+			panel.selectMaterial(eMaterialType);
 		}
 
 	}
 
-	private class ReorderButton extends Button {
+	public static class ReorderButton extends Button {
 
-		private final int add;
+		private MaterialPriorityPanel panel;
+		private int add = 0;
 
-		public ReorderButton(int add, OriginalImageLink image,
-				OriginalImageLink active, String description) {
-			super(null, image, active, description);
-			this.add = add;
+		public ReorderButton(ImageLink image, String description) {
+			super(null, image, image, description);
 		}
 
 		@Override
 		public Action getAction() {
-			return createChangeorderAction(add);
+			if (panel == null) {
+				return null;
+			}
+			EMaterialType selected = panel.getSelected();
+			ShortPoint2D mapPosition = panel.getMapPosition();
+			if (selected == null || mapPosition == null) {
+				return null;
+			}
+			EMaterialType[] order = panel.reorder(selected, panel.indexOf(selected) + add);
+			return new SetMaterialPrioritiesAction(mapPosition, order);
 		}
 	}
 
-	private EMaterialType[] order = new EMaterialType[0];
+	public static class ChangeAcceptButton extends Button {
+		private MaterialPriorityPanel panel;
+		private boolean accept;
 
-	private EMaterialType selected = null;
-	private ShortPoint2D currentPos;
-	private IGraphicsGrid currentGrid;
+		public ChangeAcceptButton(ImageLink image, String description) {
+			super(null, image, image, description);
+		}
 
-	private final MaterialPriorityPanel panel = new MaterialPriorityPanel();
+		@Override
+		public Action getAction() {
+			if (panel == null) {
+				return null;
+			}
+			EMaterialType selected = panel.getSelected();
+			ShortPoint2D mapPosition = panel.getMapPosition();
+			if (selected == null || mapPosition == null) {
+				return null;
+			}
+			return new SetMaterialStockAcceptedAction(mapPosition, selected, accept);
+		}
+	}
+
+	private final MaterialPriorityLayout layout;
+
+	public MaterialPriorityContent() {
+		layout = new MaterialPriorityLayout();
+
+		layout.stock_accept.panel = layout.panel;
+		layout.stock_accept.accept = true;
+		layout.stock_reject.panel = layout.panel;
+		layout.stock_reject.accept = false;
+
+		layout.all_up.panel = layout.panel;
+		layout.all_up.add = -100;
+		layout.one_up.panel = layout.panel;
+		layout.one_up.add = -1;
+		layout.one_down.panel = layout.panel;
+		layout.one_down.add = 1;
+		layout.all_down.panel = layout.panel;
+		layout.all_down.add = 100;
+	}
 
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		currentPos = pos;
-		this.currentGrid = grid;
-		IPartitionData partitionData = grid.getPartitionData(pos.x, pos.y);
-		if (partitionData != null) {
-			IPartitionSettings partitionSettings = partitionData.getPartitionSettings();
-			order = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-			for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
-				order[i] = partitionSettings.getMaterialTypeForPrio(i);
-			}
-			System.out.println("Using map pos: " + pos + " => " + Arrays.deepToString(order));
-		} else {
-			order = new EMaterialType[0];
-		}
-		// TODO: Only call if we left/entered partition.
-		panel.updateDisplayedData();
-	}
-
-	protected synchronized Action createChangeorderAction(final int add) {
-		EMaterialType[] types = reorderSelected(add);
-		if (types.length > 0 && currentPos != null) {
-			System.out.println("New order for " + currentPos + ": " + Arrays.deepToString(types));
-			return new SetMaterialPrioritiesAction(currentPos, types);
-		} else {
-			return null;
-		}
-	}
-
-	protected synchronized EMaterialType[] reorderSelected(int add) {
-		for (int i = 0; i < order.length; i++) {
-			if (order[i] == selected) {
-				return reorder(selected, i + add);
-			}
-		}
-		return order;
-	}
-
-	private EMaterialType[] reorder(EMaterialType type, int desiredNewPosition) {
-		int oldPos = -1;
-		for (int i = 0; i < order.length; i++) {
-			if (order[i] == type) {
-				oldPos = i;
-			}
-		}
-		if (oldPos < 0) {
-			return order;
-		}
-		EMaterialType[] newOrder = order.clone();
-		int newPos = Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
-
-		if (newPos > oldPos) {
-			for (int i = oldPos; i < newPos; i++) {
-				newOrder[i] = newOrder[i + 1];
-			}
-		} else {
-			for (int i = oldPos; i > newPos; i--) {
-				newOrder[i] = newOrder[i - 1];
-			}
-		}
-		newOrder[desiredNewPosition] = type;
-		return newOrder;
-	}
-
-	private void drawButton(GLDrawContext gl, float x, float y, EMaterialType materialType) {
-
-		Image iamgeLink = ImageProvider.getInstance().getImage(materialType.getIcon());
-		// TODO: add 1 or 2 for bigger gui
-		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
-
-		if (selected == materialType) {
-			ImageProvider
-					.getInstance()
-					.getImage(new OriginalImageLink(EImageLinkType.GUI, 3, 339, 0))
-					.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
-		}
+		layout.panel.showMapPosition(pos, grid);
 	}
 
 	@Override
 	public UIPanel getPanel() {
-		return panel;
-	}
-
-	/**
-	 * Sets the selected material type.
-	 *
-	 * @param eMaterialType
-	 */
-	public synchronized void selectMaterial(EMaterialType eMaterialType) {
-		selected = eMaterialType;
+		return layout._root;
 	}
 
 	@Override

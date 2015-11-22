@@ -106,7 +106,6 @@ public class MapList implements IMapListerCallable {
 		if (originalSingleDir != null) {
 			originalSingleDir.listMaps(this);
 		}
-		originalUserDir.listMaps(this);
 		mapsDir.listMaps(this);
 		saveDir.listMaps(this);
 	}

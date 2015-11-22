@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,6 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import jsettlers.buildingcreator.editor.map.BuildingtestMap;
 import jsettlers.buildingcreator.editor.map.PseudoTile;
@@ -63,17 +65,22 @@ import jsettlers.main.swing.SwingManagedJSettlers;
  * 
  * @author michael
  */
-public class BuildingCreatorApp implements IMapInterfaceListener {
+public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private BuildingDefinition definition;
-	private final BuildingtestMap map;
+	private BuildingtestMap map;
 
 	private ToolType tool = ToolType.SET_BLOCKED;
 	private JLabel positionDisplayer;
 	private JFrame window;
+	private HashMap<String, String> argsMap;
 
 	private BuildingCreatorApp(HashMap<String, String> argsMap) throws FileNotFoundException, IOException {
+		this.argsMap = argsMap;
 		SwingManagedJSettlers.setupResourceManagers(argsMap, "../jsettlers.main.swing/config.prp");
+	}
 
+	@Override
+	public void run() {
 		EBuildingType type = askType();
 
 		definition = new BuildingDefinition(type);
@@ -173,12 +180,21 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 				buildingTypes, null);
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		new BuildingCreatorApp(MainUtils.createArgumentsMap(args));
+	public static void main(String[] args) throws FileNotFoundException, IOException, InvocationTargetException, InterruptedException {
+		SwingUtilities.invokeAndWait(new BuildingCreatorApp(MainUtils.createArgumentsMap(args)));
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(final Action action) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				doAction(action);
+			}
+		});
+	}
+
+	private void doAction(Action action) {
 		if (action instanceof PointAction) {
 			PointAction sAction = (PointAction) action;
 			ShortPoint2D pos = sAction.getPosition();

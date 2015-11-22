@@ -20,9 +20,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
+import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
@@ -33,11 +35,13 @@ import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
+import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.others.TestTradingBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -138,6 +142,26 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
 			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
+		}
+			break;
+
+		case CHANGE_TRADING: {
+			ChangeTradingRequestGuiTask task = (ChangeTradingRequestGuiTask) guiTask;
+			ShortPoint2D buildingPos = task.getBuildingPos();
+			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
+			if (building instanceof TestTradingBuilding) {
+				((TestTradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
+			}
+		}
+			break;
+
+		case SET_TRADING_WAYPOINT: {
+			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
+			ShortPoint2D buildingPos = task.getBuildingPos();
+			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
+			if (building instanceof TestTradingBuilding) {
+				((TestTradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
+			}
 		}
 			break;
 

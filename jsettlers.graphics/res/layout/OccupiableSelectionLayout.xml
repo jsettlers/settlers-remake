@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
+	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
+		<action action="ASK_DESTROY" />
+		<image type="GUI" file="3" sequence="198" />
+		<image type="GUI" file="3" sequence="198" />
+	</element>
+
+	<element class="SimpleActionButton" x="11" width="18" y="221" maxy="239">
+		<action action="NEXT_OF_TYPE" />
+		<image type="GUI" file="3" sequence="381" />
+		<image type="GUI" file="3" sequence="381" />
+	</element>
+	
+	<element x="9" y="219" maxx="127" maxy="232" id="nameText" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel">
+	</element>
+
+	<element x="11" y="284" maxx="125" height="36" id="infantry_places">
+		<element x="11" y="284" width="24" height="36"/>
+		<element x="29" y="284" width="24" height="36"/>
+		<element x="47" y="284" width="24" height="36"/>
+		<element x="65" y="284" width="24" height="36"/>
+		<element x="83" y="284" width="24" height="36"/>
+		<element x="101" y="284" width="24" height="36"/>
+	</element>
+
+	<element x="11" y="284" maxx="125" height="36" id="infantry_missing">
+		<element x="11" y="284" width="18" height="18"/>
+		<element x="29" y="284" width="18" height="18"/>
+		<element x="47" y="284" width="18" height="18"/>
+		<element x="65" y="284" width="18" height="18"/>
+		<element x="83" y="284" width="18" height="18"/>
+		<element x="101" y="284" width="18" height="18"/>
+	</element>
+
+	<element x="47" y="236" maxx="161" height="36" id="bowman_places">
+		<element x="47" y="236" width="24" height="36"/>
+		<element x="65" y="236" width="24" height="36"/>
+		<element x="83" y="236" width="24" height="36"/>
+		<element x="101" y="236" width="24" height="36"/>
+		<element x="119" y="236" width="24" height="36"/>
+		<element x="137" y="236" width="24" height="36"/>
+	</element>
+	
+	<element x="47" y="236" maxx="161" height="36" id="bowman_missing">
+		<element x="47" y="236" width="18" height="18"/>
+		<element x="65" y="236" width="18" height="18"/>
+		<element x="83" y="236" width="18" height="18"/>
+		<element x="101" y="236" width="18" height="18"/>
+		<element x="119" y="236" width="18" height="18"/>
+		<element x="137" y="236" width="18" height="18"/>
+	</element>
+	
+	<element x="14" y="374" width="18" height="18" class="SimpleActionButton">
+		<action action="SOLDIERS_ALL" />
+		<image type="GUI" file="3" sequence="39" />
+	</element>
+
+	<element x="14" y="410" width="18" height="18" class="SimpleActionButton">
+		<action action="SOLDIERS_ONE" />
+		<image type="GUI" file="3" sequence="42" />
+	</element>
+	
+	<element x="43" y="374" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_MORE" />
+		<soldierType soldierType="SWORDSMAN"/>
+		<image type="GUI" file="3" sequence="27" />
+	</element>
+	
+	<element x="43" y="392" width="18" maxy="410" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierCount">
+		<soldierType soldierType="SWORDSMAN"/>
+	</element>
+	
+	<element x="43" y="410" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_LESS" />
+		<soldierType soldierType="SWORDSMAN"/>
+		<image type="GUI" file="3" sequence="36" />
+	</element>
+	
+	<element x="73" y="374" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_MORE" />
+		<soldierType soldierType="BOWMAN"/>
+		<image type="GUI" file="3" sequence="21" />
+	</element>
+	
+	<element x="73" y="392" width="18" maxy="410" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierCount">
+		<soldierType soldierType="BOWMAN"/>
+	</element>
+	
+	<element x="73" y="410" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_LESS" />
+		<soldierType soldierType="BOWMAN"/>
+		<image type="GUI" file="3" sequence="30" />
+	</element>
+	
+	<element x="103" y="374" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_MORE" />
+		<soldierType soldierType="PIKEMAN"/>
+		<image type="GUI" file="3" sequence="24" />
+	</element>
+	
+	<element x="103" y="392" width="18" maxy="410" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierCount">
+		<soldierType soldierType="PIKEMAN"/>
+	</element>
+	
+	<element x="103" y="410" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
+		<action action="SOLDIERS_LESS" />
+		<soldierType soldierType="PIKEMAN"/>
+		<image type="GUI" file="3" sequence="34" />
+	</element>
+</element>

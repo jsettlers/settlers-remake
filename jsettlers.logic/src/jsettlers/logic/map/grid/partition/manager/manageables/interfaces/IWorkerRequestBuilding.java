@@ -16,6 +16,7 @@ package jsettlers.logic.map.grid.partition.manager.manageables.interfaces;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
@@ -64,4 +65,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	boolean tryTakingResource();
 
 	void setCannotWork(boolean cannotWork);
+
+	void addMapObjectCleanupPosition(ShortPoint2D pos, EMapObjectType objectType);
 }

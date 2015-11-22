@@ -45,14 +45,14 @@ import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
 
 public class DatFileTester {
-	private static final DatFileType TYPE = DatFileType.RGB565;
+	private static final DatFileType TYPE = DatFileType.RGB555;
 	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%" + TYPE.getFileSuffix();
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.f8007e01f.dat";
 
-	private static int datFileIndex = 2;
+	private static int datFileIndex = 14;
 
 	private AdvancedDatFileReader reader;
 

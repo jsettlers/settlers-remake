@@ -62,6 +62,7 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
+import jsettlers.common.map.shapes.MapLine;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -162,6 +163,14 @@ public final class MainGrid implements Serializable {
 		this.buildingsGrid = new BuildingsGrid();
 
 		initAdditional();
+	}
+
+	public boolean isWinePlantable(ShortPoint2D point) {
+		return movablePathfinderGrid.pathfinderGrid.isWinePlantable(point.x, point.y);
+	}
+
+	public boolean isCornPlantable(ShortPoint2D point) {
+		return movablePathfinderGrid.pathfinderGrid.isCornPlantable(point.x, point.y);
 	}
 
 	private void initAdditional() {
@@ -710,8 +719,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -841,6 +850,13 @@ public final class MainGrid implements Serializable {
 				movable.receiveHit(arrow.getHitStrength(), arrow.getSourcePos(), arrow.getShooterPlayerId());
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
+		}
+
+		@Override
+		public void spawnDonkey(ShortPoint2D position, byte playerId) {
+			Player player = partitionsGrid.getPlayer(playerId);
+			Movable donkey = new Movable(movablePathfinderGrid, EMovableType.DONKEY, position, player);
+			donkey.leavePosition();
 		}
 
 		@Override
@@ -1187,6 +1203,12 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean hasPigAt(ShortPoint2D position) {
 			return mapObjectsManager.isPigThere(position);
+		}
+
+		@Override
+		public boolean feedDonkeyAt(ShortPoint2D position) {
+			byte playerId = partitionsGrid.getPartitionAt(position.x, position.y).getPlayerId();
+			return mapObjectsManager.feedDonkeyAt(position, playerId);
 		}
 
 		@Override
@@ -1610,6 +1632,28 @@ public final class MainGrid implements Serializable {
 			}
 			for (ShortPoint2D pos : getCircle(workAreaCenter, .25f * radius)) {
 				addOrRemoveMarkObject(buildingPartition, draw, pos, 0f);
+			}
+		}
+
+		@Override
+		public void drawTradingPathLine(ShortPoint2D start, ShortPoint2D[] waypoints, boolean draw) {
+			ShortPoint2D last = start;
+			float progress = 0;
+			for (ShortPoint2D wp : waypoints) {
+				progress += 1f / (waypoints.length - 1);
+				if (wp == null) {
+					continue;
+				}
+				MapLine baseLine = new MapLine(last, wp);
+				MapShapeFilter line = new MapShapeFilter(baseLine, width, height);
+				for (ShortPoint2D pos : line) {
+					if (draw) {
+						mapObjectsManager.addBuildingWorkAreaObject(pos, progress);
+					} else {
+						mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
+					}
+				}
+				last = wp;
 			}
 		}
 

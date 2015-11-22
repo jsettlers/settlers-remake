@@ -29,11 +29,40 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.graphics.action.*;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ChangeTradingRequestAction;
+import jsettlers.graphics.action.ConvertAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.ScreenChangeAction;
+import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
+import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.action.SetMaterialProductionAction;
+import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
+import jsettlers.graphics.action.SetTradingWaypointAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.UIState;
-import jsettlers.input.tasks.*;
+import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MovableGuiTask;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
+import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SetMaterialProductionGuiTask;
+import jsettlers.input.tasks.SetTradingWaypointGuiTask;
+import jsettlers.input.tasks.SimpleGuiTask;
+import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -190,9 +219,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		case SET_WORK_AREA:
-			if (currentSelection.getSize() > 0) {
-				setBuildingWorkArea(((PointAction) action).getPosition());
-			}
+			setBuildingWorkArea(((PointAction) action).getPosition());
 			break;
 
 		case DESTROY:
@@ -245,7 +272,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
-			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getManagerPosition(), a.getMaterialTypeForPriority()));
+			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getPosition(), a.getMaterialTypeForPriority()));
+			break;
+		}
+
+		case SET_MATERIAL_STOCK_ACCEPTED: {
+			SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
+			// TODO @Andreas: implement this.
+			System.err.println("Not implemented: " + a);
 			break;
 		}
 
@@ -260,10 +294,30 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			selectNextOfType();
 			break;
 
-		case UPGRADE_SOLDIERS:
+		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersAction a = (UpgradeSoldiersAction) action;
 			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
 			break;
+		}
+
+		case CHANGE_TRADING_REQUEST: {
+			ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
+				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPos(), a.getMaterial(),
+						a.getAmount(), a.isRelative()));
+			}
+			break;
+		}
+
+		case SET_TRADING_WAYPOINT: {
+			ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
+						a.getWaypoint(), a.getPosition()));
+			}
+		}
 
 		case ABORT:
 			break;
@@ -314,7 +368,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
-		ISelectable selected = currentSelection.iterator().next();
+		ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
 			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
 		}

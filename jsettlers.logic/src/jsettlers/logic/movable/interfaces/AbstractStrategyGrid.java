@@ -126,6 +126,8 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract boolean isPigAdult(ShortPoint2D position);
 
+	public abstract boolean feedDonkeyAt(ShortPoint2D position);
+
 	/**
 	 * Show smoke or remove it at the given position.
 	 * 
