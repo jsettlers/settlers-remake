@@ -74,13 +74,14 @@ public enum EBuildingType {
 	BARRACK(34),
 
 	DOCKYARD(45),
-	HARBUR(44),
+	HARBOR(44),
 	STOCK(-1),
 	// 27: katapult
 
 	TEMPLE(31),
 	BIG_TEMPLE(32),
 
+	MARKET_PLACE(0),
 	// /**
 	// * Test building for own image files.
 	// */

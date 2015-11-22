@@ -29,6 +29,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IInformable;
+import jsettlers.logic.objects.DonkeyMapObject;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
@@ -493,6 +494,29 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	public boolean isPigAdult(ShortPoint2D pos) {
 		AbstractHexMapObject pig = grid.getMapObject(pos.x, pos.y, EMapObjectType.PIG);
 		return pig != null && pig.canBeCut();
+	}
+
+	public boolean feedDonkeyAt(ShortPoint2D position, byte playerId) {
+		AbstractHexMapObject object = grid.getMapObject(position.x, position.y, EMapObjectType.DONKEY);
+		DonkeyMapObject donkey;
+		boolean result;
+		if (object != null) {
+			donkey = (DonkeyMapObject) object;
+			result = donkey.feed();
+		} else {
+			donkey = new DonkeyMapObject(position, playerId);
+			addMapObject(position, donkey);
+			result = true;
+		}
+
+		if (donkey.isFullyFed()) {
+			// release it to the world.
+			grid.spawnDonkey(position, playerId);
+			removeMapObjectType(position.x, position.y, EMapObjectType.DONKEY);
+		} else {
+			timingQueue.add(new TimeEvent(donkey, DonkeyMapObject.FEED_TIME, false));
+		}
+		return result;
 	}
 
 	public void addWaves(short x, short y) {

@@ -1727,7 +1727,7 @@ public class Background implements IGraphicsBackgroundListener {
 		} else {
 			int height1 = context.getHeight(x, y - 1);
 			int height2 = context.getHeight(x, y);
-			float fcolor = 0.9f + (height1 - height2) * .1f;
+			float fcolor = 0.85f + (height1 - height2) * .15f;
 			if (fcolor > 1.0f) {
 				fcolor = 1.0f;
 			} else if (fcolor < 0.4f) {

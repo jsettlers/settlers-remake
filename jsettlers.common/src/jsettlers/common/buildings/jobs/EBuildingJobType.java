@@ -289,4 +289,10 @@ public enum EBuildingJobType {
 	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or {@link #POP_WEAPON}
 	 */
 	DROP_POPPED,
+
+	/**
+	 * Let a donkey at the given position grow. This fails if the donkey cannot grow yet. A donkey can grow at a specific interval. After several
+	 * grows, it will be converted to a movable. If there is no donkey yet, one will appear.
+	 */
+	GROW_DONKEY,
 }

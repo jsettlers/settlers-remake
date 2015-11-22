@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
+	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
+		<action action="ASK_DESTROY" />
+		<image type="GUI" file="3" sequence="198" />
+		<image type="GUI" file="3" sequence="198" />
+	</element>
+
+	<element class="SimpleActionButton" x="11" width="18" y="221" maxy="239">
+		<action action="NEXT_OF_TYPE" />
+		<image type="GUI" file="3" sequence="381" />
+		<image type="GUI" file="3" sequence="381" />
+	</element>
+
+	<element x="9" y="219" maxx="127" maxy="232" id="nameText" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel">
+	</element>
+
+	<element x="20" y="239" maxx="115" maxy="251" id="landTradingPath" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.LandTradingPath">
+		<image type="GUI" file="3" sequence="372" />
+	</element>
+	<element x="20" y="239" maxx="115" maxy="251" id="seaTradingPath" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SeaTradingPath">
+		<image type="GUI" file="3" sequence="375" />
+	</element>
+
+	<!-- ROW 1 -->
+	<element x="14" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PLANK" />
+	</element>
+	<element x="14" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PLANK" />
+	</element>
+	<element x="32" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="STONE" />
+	</element>
+	<element x="32" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="STONE" />
+	</element>
+	<element x="50" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="TRUNK" />
+	</element>
+	<element x="50" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="TRUNK" />
+	</element>
+	<element x="68" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="COAL" />
+	</element>
+	<element x="68" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="COAL" />
+	</element>
+	<element x="86" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="IRONORE" />
+	</element>
+	<element x="86" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="IRONORE" />
+	</element>
+	<element x="104" y="254" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="GOLDORE" />
+	</element>
+	<element x="104" y="272" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="GOLDORE" />
+	</element>
+
+	<!-- ROW 2 -->
+	<element x="14" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="IRON" />
+	</element>
+	<element x="14" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="IRON" />
+	</element>
+	<element x="32" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="HAMMER" />
+	</element>
+	<element x="32" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="HAMMER" />
+	</element>
+	<element x="50" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="BLADE" />
+	</element>
+	<element x="50" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="BLADE" />
+	</element>
+	<element x="68" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="AXE" />
+	</element>
+	<element x="68" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="AXE" />
+	</element>
+	<element x="86" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="SAW" />
+	</element>
+	<element x="86" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="SAW" />
+	</element>
+	<element x="104" y="281" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PICK" />
+	</element>
+	<element x="104" y="299" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PICK" />
+	</element>
+
+	<!-- ROW 3 -->
+	<element x="14" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="FISHINGROD" />
+	</element>
+	<element x="14" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="FISHINGROD" />
+	</element>
+	<element x="32" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="SCYTHE" />
+	</element>
+	<element x="32" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="SCYTHE" />
+	</element>
+	<element x="50" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="SWORD" />
+	</element>
+	<element x="50" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="SWORD" />
+	</element>
+	<element x="68" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="BOW" />
+	</element>
+	<element x="68" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="BOW" />
+	</element>
+	<element x="86" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="SPEAR" />
+	</element>
+	<element x="86" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="SPEAR" />
+	</element>
+	<element x="104" y="308" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="STONE" />
+	</element>
+	<element x="104" y="326" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="STONE" />
+	</element>
+
+	<!-- ROW 4 -->
+	<element x="14" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="FISH" />
+	</element>
+	<element x="14" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="FISH" />
+	</element>
+	<element x="32" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PIG" />
+	</element>
+	<element x="32" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PIG" />
+	</element>
+	<element x="50" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="MEAT" />
+	</element>
+	<element x="50" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="MEAT" />
+	</element>
+	<element x="68" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="CROP" />
+	</element>
+	<element x="68" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="CROP" />
+	</element>
+	<element x="86" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="FLOUR" />
+	</element>
+	<element x="86" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="FLOUR" />
+	</element>
+	<element x="104" y="335" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="BREAD" />
+	</element>
+	<element x="104" y="353" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="BREAD" />
+	</element>
+
+	<!-- ROW 5 -->
+	<element x="14" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="WATER" />
+	</element>
+	<element x="14" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="WATER" />
+	</element>
+	<element x="32" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="WINE" />
+	</element>
+	<element x="32" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="WINE" />
+	</element>
+	<element x="50" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PLANK" />
+	</element>
+	<element x="50" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PLANK" />
+	</element>
+	<element x="68" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="STONE" />
+	</element>
+	<element x="68" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="STONE" />
+	</element>
+	<element x="86" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="RICE" />
+	</element>
+	<element x="86" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="RICE" />
+	</element>
+	<element x="104" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="STONE" />
+	</element>
+	<element x="104" y="380" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="STONE" />
+	</element>
+
+	<!-- ROW 6 -->
+	<element x="14" y="389" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="GOLD" />
+	</element>
+	<element x="14" y="407" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="GOLD" />
+	</element>
+	<element x="32" y="389" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="GEMS" />
+	</element>
+	<element x="32" y="407" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="GEMS" />
+	</element>
+	<element x="50" y="389" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PLANK" />
+	</element>
+	<element x="50" y="407" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PLANK" />
+	</element>
+	<element x="68" y="389" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="STONE" />
+	</element>
+	<element x="68" y="407" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="STONE" />
+	</element>
+	<element x="86" y="389" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialButton">
+		<material material="PLANK" />
+	</element>
+	<element x="86" y="407" width="18" height="7" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingMaterialCount">
+		<material material="PLANK" />
+	</element>
+
+	<!-- Buttons -->
+	<element x="11" y="416" width="18" height="18" id="tradeAll" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="384" />
+		<localized label=""/>
+	</element>
+	<element x="29" y="416" width="18" height="18" id="tradeNone" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="387" />
+		<localized label=""/>
+	</element>
+	
+	<element x="53" y="416" width="18" height="18" id="tradeMore5" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="219" />
+		<localized label=""/>
+	</element>
+	<element x="71" y="416" width="18" height="18" id="tradeMore" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="225" />
+		<localized label=""/>
+	</element>
+	<element x="89" y="416" width="18" height="18" id="tradeLess" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="228" />
+		<localized label=""/>
+	</element>
+	<element x="107" y="416" width="18" height="18" id="tradeLess5" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.TradingButton">
+		<image type="GUI" file="3" sequence="222" />
+		<localized label=""/>
+	</element>
+</element>

@@ -128,6 +128,15 @@ public final class SelectionSet implements ISelectionSet {
 		}
 	}
 
+	/**
+	 * Gets the single selected element if we are only selecting one single element.
+	 * 
+	 * @return That element. <code>null</code> if multiple or no elements are selected.
+	 */
+	public ISelectable getSingle() {
+		return set.size() == 1 ? set.get(0) : null;
+	}
+
 	@Override
 	public String toString() {
 		final int maxLen = 10;
