@@ -47,9 +47,9 @@ public class AiDifficultiesIT {
 	}
 
 	@Test //TODO
-	@Ignore("Unignore me when easy is able to defeat very easy")
+	@Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 120 * MINUTES);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 300 * MINUTES);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test //TODO
-	@Ignore("Unignore me when Very Hard is able to defeat Hard")
+	@Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
 	public void veryHardShouldConquerHard() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 300 * MINUTES);
 	}
@@ -113,6 +113,8 @@ public class AiDifficultiesIT {
 						startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
+		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock.getTime() / 60000) +
+				" minutes.");
 		ReplayTool.awaitShutdown(startedGame);
 
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 3000);
