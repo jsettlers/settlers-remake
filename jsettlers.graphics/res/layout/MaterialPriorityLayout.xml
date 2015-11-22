@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+
+<element x="9" y="219" maxx="127" maxy="435">
+	<element class="Label" x="9" maxx="127" y="219" maxy="234">
+		<localized label="stock_title" />
+		<font-size size="NORMAL" />
+	</element>
+
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.MaterialPriorityPanel" x="14" maxx="122" y="236" height="165" id="panel" />
+
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton" x="11" y="410" width="18" height="18"
+		id="stock_accept">
+		<image type="GUI" file="3" sequence="213" />
+		<localized label=""/>
+	</element>
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton" x="29" y="410" width="18" height="18" id="stock_reject">
+		<image type="GUI" file="3" sequence="216" />
+		<localized label=""/>
+	</element>
+
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" x="53" y="410" width="18" height="18" id="all_up">
+		<image type="GUI" file="3" sequence="219" />
+		<localized label=""/>
+	</element>
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" x="71" y="410" width="18" height="18" id="one_up">
+		<image type="GUI" file="3" sequence="225" />
+		<localized label=""/>
+	</element>
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" x="89" y="410" width="18" height="18" id="one_down">
+		<image type="GUI" file="3" sequence="228" />
+		<localized label=""/>
+	</element>
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" x="107" y="410" width="18" height="18" id="all_down">
+		<image type="GUI" file="3" sequence="222" />
+		<localized label=""/>
+	</element>
+</element>

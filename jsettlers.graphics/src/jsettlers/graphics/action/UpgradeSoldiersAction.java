@@ -20,16 +20,9 @@ import jsettlers.common.movable.ESoldierType;
  * @author codingberlin
  * @author Andreas Eberle
  */
-public class UpgradeSoldiersAction extends Action {
-
-	private final ESoldierType soldierType;
+public class UpgradeSoldiersAction extends SoldierAction {
 
 	public UpgradeSoldiersAction(ESoldierType soldierType) {
-		super(EActionType.UPGRADE_SOLDIERS);
-		this.soldierType = soldierType;
-	}
-
-	public ESoldierType getSoldierType() {
-		return soldierType;
+		super(EActionType.UPGRADE_SOLDIERS, soldierType);
 	}
 }

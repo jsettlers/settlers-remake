@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.utils;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -24,7 +25,9 @@ import java.util.Comparator;
  * @param <S>
  * @param <T>
  */
-public class Tuple<S, T> {
+public class Tuple<S, T> implements Serializable {
+	private static final long serialVersionUID = -1637245486740963305L;
+
 	public final S e1;
 	public final T e2;
 

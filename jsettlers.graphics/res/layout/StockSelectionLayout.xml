@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
+	<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.PriorityButton" x="11" y="221" maxx="29" maxy="239" id="priority">
+		<image type="GUI" file="3" sequence="192" />
+		<image type="GUI" file="3" sequence="195" />
+		<image type="GUI" file="3" sequence="378" />
+	</element>
+
+	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
+		<action action="ASK_DESTROY" />
+		<image type="GUI" file="3" sequence="198" />
+		<image type="GUI" file="3" sequence="198" />
+	</element>
+
+	<element class="SimpleActionButton" x="29" width="18" y="221" maxy="239">
+		<action action="NEXT_OF_TYPE" />
+		<image type="GUI" file="3" sequence="381" />
+		<image type="GUI" file="3" sequence="381" />
+	</element>
+
+	<element x="9" y="219" maxx="127" maxy="232" id="nameText" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel">
+	</element>
+
+	<!-- row 1 -->
+	<element x="14" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="PLANK" />
+	</element>
+	<element x="32" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="STONE" />
+	</element>
+	<element x="50" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="TRUNK" />
+	</element>
+	<element x="68" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="COAL" />
+	</element>
+	<element x="86" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="IRONORE" />
+	</element>
+	<element x="104" y="326" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLDORE" />
+	</element>
+	
+	<!-- row 2 -->
+	<element x="14" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="IRON" />
+	</element>
+	<element x="32" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="HAMMER" />
+	</element>
+	<element x="50" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="BLADE" />
+	</element>
+	<element x="68" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="AXE" />
+	</element>
+	<element x="86" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="SAW" />
+	</element>
+	<element x="104" y="344" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="PICK" />
+	</element>
+	
+	<!-- row 3 -->
+	<element x="14" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="FISHINGROD" />
+	</element>
+	<element x="32" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="SCYTHE" />
+	</element>
+	<element x="50" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="SWORD" />
+	</element>
+	<element x="68" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="BOW" />
+	</element>
+	<element x="86" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="SPEAR" />
+	</element>
+	<element x="104" y="362" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLDORE" />
+	</element>
+	
+	<!-- row 4 -->
+	<element x="14" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="FISH" />
+	</element>
+	<element x="32" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="PIG" />
+	</element>
+	<element x="50" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="MEAT" />
+	</element>
+	<element x="68" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="CROP" />
+	</element>
+	<element x="86" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="FLOUR" />
+	</element>
+	<element x="104" y="380" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="BREAD" />
+	</element>
+	
+	<!-- row 5 -->
+	<element x="14" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="WATER" />
+	</element>
+	<element x="32" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="WINE" />
+	</element>
+	<element x="50" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLDORE" />
+	</element>
+	<element x="68" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="KEG" />
+	</element>
+	<element x="86" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="RICE" />
+	</element>
+	<element x="104" y="398" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLDORE" />
+	</element>
+	
+	<!-- row 6 -->
+	<element x="14" y="416" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLD" />
+	</element>
+	<element x="32" y="416" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GEMS" />
+	</element>
+	<element x="50" y="416" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="SULFUR" />
+	</element>
+	<element x="68" y="416" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+		<material material="GOLDORE" />
+	</element>
+</element>

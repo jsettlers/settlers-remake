@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EAction;
@@ -212,6 +213,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		case SMOKE_ON:
 		case SMOKE_OFF: {
 			super.getStrategyGrid().placeSmoke(getCurrentJobPos(), currentJob.getType() == EBuildingJobType.SMOKE_ON);
+			building.addMapObjectCleanupPosition(getCurrentJobPos(), EMapObjectType.SMOKE);
 			jobFinished();
 			break;
 		}
@@ -253,6 +255,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			popWeaponRequestAction();
 			break;
 
+		case GROW_DONKEY:
+			growDonkeyAction();
+			break;
 		}
 	}
 
@@ -268,7 +273,18 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
 		super.getStrategyGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
+		building.addMapObjectCleanupPosition(pos, EMapObjectType.PIG);
 		jobFinished();
+	}
+
+	private void growDonkeyAction() {
+		ShortPoint2D pos = getCurrentJobPos();
+		if (super.getStrategyGrid().feedDonkeyAt(pos)) {
+			building.addMapObjectCleanupPosition(pos, EMapObjectType.DONKEY);
+			jobFinished();
+		} else {
+			jobFailed();
+		}
 	}
 
 	private void popWeaponRequestAction() {
