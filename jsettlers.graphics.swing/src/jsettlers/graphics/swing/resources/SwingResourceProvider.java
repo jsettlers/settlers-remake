@@ -27,7 +27,7 @@ public class SwingResourceProvider implements IResourceProvider {
 	private final String resourcesFolder;
 
 	public SwingResourceProvider(File file) {
-		this.resourcesFolder = file.getPath() + file.separator;
+		this.resourcesFolder = file.getPath() + File.separator;
 	}
 
 	@Override
