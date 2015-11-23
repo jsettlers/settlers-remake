@@ -74,4 +74,8 @@ public class FakeMapGame implements IStartedGame {
 	public void setGameExitListener(IGameExitListener exitListener) {
 	}
 
+	@Override
+	public boolean isStopped() {
+		return false;
+	}
 }
