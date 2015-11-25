@@ -96,6 +96,10 @@ public class ManaInformation implements Serializable, IManaInformation {
 		return MAXIMUM_LEVEL;
 	}
 
+	public short getAmountOfMana() {
+		return mana;
+	}
+
 	private byte sanitizePercent(float percent) {
 		if (percent == 0) {
 			return 0;
