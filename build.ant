@@ -17,8 +17,12 @@
 	<target name="runAutoReplayIT">
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="autoReplayIT" />
 	</target>
+
+	<target name="runAiDifficultiesIT">
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="aiDifficultiesIT" />
+	</target>
 	
-	<target name="buildAll" depends="runUnitTests,runAutoReplayIT,buildSwing,buildDedicatedServer" />
+	<target name="buildAll" depends="runUnitTests,runAutoReplayIT,runAiDifficultiesIT,buildSwing,buildDedicatedServer" />
 
 	<target name="clean">
 		<ant antfile="go.graphics/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />

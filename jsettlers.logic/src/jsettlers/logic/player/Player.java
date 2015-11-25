@@ -41,6 +41,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private final ManaInformation manaInformation = new ManaInformation();
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
+	private final EndgameStatistic endgameStatistic = new EndgameStatistic(manaInformation);
 
 	private transient CombatStrengthInformation combatStrengthInfo;
 	private transient IMessenger messenger;
@@ -82,6 +83,11 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	@Override
 	public ICombatStrengthInformation getCombatStrengthInformation() {
 		return this.combatStrengthInfo;
+	}
+
+	@Override
+	public EndgameStatistic getEndgameStatistic() {
+		return endgameStatistic;
 	}
 
 	private int getAmountOf(EMaterialType materialType) {

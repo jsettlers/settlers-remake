@@ -162,4 +162,15 @@
 		</junit>
 	</target>
 
+	<target name="aiDifficultiesIT" depends="build">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+			<formatter type="brief" usefile="false" />
+			<classpath refid="jsettlers.tests.classpath" />
+
+			<batchtest>
+				<fileset dir="tests" includes="**/AiDifficultiesIT.java" />
+			</batchtest>
+		</junit>
+	</target>
+
 </project>
