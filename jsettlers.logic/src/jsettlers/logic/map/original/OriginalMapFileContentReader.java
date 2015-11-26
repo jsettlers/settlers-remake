@@ -51,8 +51,7 @@ public class OriginalMapFileContentReader
 	public int widthHeight;
 	public boolean isSinglePlayerMap = false;
 	private boolean hasBuildings = false;
-	private boolean startTowerMaterialsAndSettlersWereSet = false;
-	
+
 	private byte[] mapContent;
 	private int fileVersion = 0;
 	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
@@ -155,8 +154,7 @@ public class OriginalMapFileContentReader
 	
 	
 	//- returns a File Resources
-	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type)
-	{
+	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type) {
 		Iterator<MapResourceInfo> iterator = resources.iterator();
 		
 		while(iterator.hasNext()){
@@ -253,15 +251,11 @@ public class OriginalMapFileContentReader
 	}
 	
 	
-	public void reOpen(InputStream originalMapFile)
-	{
+	public void reOpen(InputStream originalMapFile) {
 		//- read File into buffer
-		try
-		{
+		try {
 			mapContent = getBytesFromInputStream(originalMapFile);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.err.println("Error: "+ e.getMessage());
 		}
 		
@@ -649,10 +643,6 @@ public class OriginalMapFileContentReader
 	public void addStartTowerMaterialsAndSettlers() {
 		//- only if there are no buildings
 		if (hasBuildings) return;
-		
-		//- only do this once
-		if (startTowerMaterialsAndSettlersWereSet) return;	
-		startTowerMaterialsAndSettlersWereSet = true;
 		
 		int playerCount = mapData.getPlayerCount();
 		

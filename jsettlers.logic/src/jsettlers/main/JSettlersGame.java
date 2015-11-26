@@ -46,6 +46,7 @@ import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
@@ -158,8 +159,18 @@ public class JSettlersGame {
 
 	public void stop() {
 		synchronized (stopMutex) {
+			printEndgameStatistic();
 			stopped = true;
 			stopMutex.notifyAll();
+		}
+	}
+
+	//TODO remove me when an EndgameStatistic screen exists.
+	private void printEndgameStatistic() {
+		PartitionsGrid partitionsGrid = gameRunner.getMainGrid().getPartitionsGrid();
+		System.out.println("Endgame statistic:");
+		for (byte playerId = 0; playerId < partitionsGrid.getNumberOfPlayers(); playerId++) {
+			System.out.println("Player " + playerId + ": " + partitionsGrid.getPlayer(playerId).getEndgameStatistic());
 		}
 	}
 
@@ -171,6 +182,7 @@ public class JSettlersGame {
 		private float progress;
 		private IGameExitListener exitListener;
 		private boolean gameRunning;
+		private AiExecutor aiExecutor;
 
 		@Override
 		public void run() {
@@ -219,7 +231,7 @@ public class JSettlersGame {
 				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
 				// ConstructionMarksThread has it's mapArea variable initialized via the EActionType.SCREEN_CHANGE event.
 
-				AiExecutor aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
+				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
 				gameClock.startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT! =================================
@@ -260,6 +272,10 @@ public class JSettlersGame {
 				}
 			}
 			
+		}
+
+		public AiExecutor getAiExecutor() {
+			return aiExecutor;
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
@@ -338,6 +354,10 @@ public class JSettlersGame {
 		@Override
 		public IInGamePlayer getInGamePlayer() {
 			return mainGrid.getPartitionsGrid().getPlayer(playerId);
+		}
+
+		public boolean isStopped() {
+			return stopped;
 		}
 
 		@Override

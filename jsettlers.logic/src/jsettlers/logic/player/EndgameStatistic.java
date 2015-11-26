@@ -12,63 +12,54 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.logging;
+package jsettlers.logic.player;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import jsettlers.common.player.IEndgameStatistic;
+
+import java.io.Serializable;
 
 /**
- * This class implements a simple stop watch that records the time in milliseconds and prints
- * the average, mean, min and max of all measured measurements.
- *
  * @author codingberlin
  */
-public class StatisticsStopWatch extends StopWatch {
+public class EndgameStatistic implements IEndgameStatistic, Serializable {
+	private static final long serialVersionUID = -1352905249487671842L;
 
-	private final List<Long> measurements = new Vector<Long>();
+	private ManaInformation manaInformation;
+	private short amountOfProducedSoldiers = 0;
+	private short amountOfProducedGold = 0;
 
-	@Override
-	public long now() {
-		return System.currentTimeMillis();
+	public EndgameStatistic(ManaInformation manaInformation) {
+		this.manaInformation = manaInformation;
 	}
 
 	@Override
-	protected String getUnit() {
-		return "ms";
+	public short getAmountOfProducedSoldiers() {
+		return amountOfProducedSoldiers;
 	}
 
 	@Override
-	public void stop(String leadingText) {
-		measurements.add(getDiff());
-		Collections.sort(measurements);
+	public short getAmountOfProducedMana() {
+		return manaInformation.getAmountOfMana();
+	}
+
+	@Override
+	public short getAmountOfProducedGold() {
+		return amountOfProducedGold;
+	}
+
+	public void incrementAmountOfProducedSoldiers() {
+		amountOfProducedSoldiers++;
+	}
+
+	public void incrementAmountOfProducedGold() {
+		amountOfProducedGold++;
 	}
 
 	@Override
 	public String toString() {
-		return " -> number of measurements: " + measurements.size()
-				+ ", min: " + measurements.get(0) + " " + getUnit()
-				+ ", average: " + calculateAverage(measurements) + " " + getUnit()
-				+ ", median: " + getMedian() + " " + getUnit()
-				+ ", max: " + getMax() + " " + getUnit();
-	}
 
-	public long getMedian() {
-		return measurements.get((int) Math.floor(measurements.size() / 2));
-	}
-
-	public long getMax() {
-		return measurements.get(measurements.size() - 1);
-	}
-
-	private double calculateAverage(List<Long> measurements) {
-		long sum = 0;
-		if(!measurements.isEmpty()) {
-			for (Long measurement : measurements) {
-				sum += measurement;
-			}
-			return sum / measurements.size();
-		}
-		return sum;
+		return "amountOfProducedSoldiers: " + amountOfProducedSoldiers +
+				", amountOfProducedGold: " + amountOfProducedGold +
+				", amountOfProducedMana: " + getAmountOfProducedMana();
 	}
 }

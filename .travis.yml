@@ -11,5 +11,6 @@ env:
   - TARGET=runAutoReplayIT
   - TARGET=buildDedicatedServer
   - TARGET=buildSwing
+  - TARGET=runAiDifficultiesIT
 
 script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET

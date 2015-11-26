@@ -33,8 +33,8 @@ public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	private final AiStatistics aiStatistics;
-	private final StopWatch stopWatch = new StatisticsStopWatch();
-	private final StopWatch stopWatch2 = new StatisticsStopWatch();
+	private final StatisticsStopWatch updateStatisticsStopWatch = new StatisticsStopWatch();
+	private final StatisticsStopWatch applyRulesStopWatch = new StatisticsStopWatch();
 
 	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
@@ -56,13 +56,21 @@ public class AiExecutor implements INetworkTimerable {
 
 	@Override
 	public void timerEvent() {
-		stopWatch.restart();
+		updateStatisticsStopWatch.restart();
 		aiStatistics.updateStatistics();
-		stopWatch.stop("computerplayer:updateStatistics()");
-		stopWatch2.restart();
+		updateStatisticsStopWatch.stop("computerplayer:updateStatistics()");
+		applyRulesStopWatch.restart();
 		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
 			whatToDoAi.applyRules();
 		}
-		stopWatch2.stop("computerplayer:applyRules()");
+		applyRulesStopWatch.stop("computerplayer:applyRules()");
+	}
+
+	public StatisticsStopWatch getUpdateStatisticsStopWatch() {
+		return updateStatisticsStopWatch;
+	}
+
+	public StatisticsStopWatch getApplyRulesStopWatch() {
+		return applyRulesStopWatch;
 	}
 }

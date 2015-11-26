@@ -42,4 +42,6 @@ public interface IStartedGame {
 	IInGamePlayer getInGamePlayer();
 
 	void setGameExitListener(IGameExitListener exitListener);
+
+	boolean isStopped();
 }

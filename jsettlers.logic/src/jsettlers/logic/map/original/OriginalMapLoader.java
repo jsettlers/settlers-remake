@@ -138,13 +138,11 @@ public class OriginalMapLoader extends MapLoader
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 		
-		try
-		{
+		try {
 			//- the map buffer of the class may is closed and need to reopen! 
 			mapContent.reOpen(this.listedMap.getInputStream());
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			System.err.println("Error: "+ e.getMessage());
 		}
 		
@@ -194,13 +192,11 @@ public class OriginalMapLoader extends MapLoader
 	@Override
 	public IMapData getMapData() throws MapLoadException {
 		
-		try
-		{
+		try {
 			//- the map buffer of the class may is closed and need to reopen! 
 			mapContent.reOpen(this.listedMap.getInputStream());
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			throw new MapLoadException(e);
 		}
 		
