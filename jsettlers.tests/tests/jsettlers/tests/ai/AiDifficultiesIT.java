@@ -17,10 +17,13 @@ package jsettlers.tests.ai;
 import static org.junit.Assert.fail;
 
 import jsettlers.common.logging.StatisticsStopWatch;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IMapListFactory;
+import jsettlers.logic.map.save.MapList;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -31,7 +34,6 @@ import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayTool;
@@ -44,45 +46,31 @@ import java.io.IOException;
  * @author codingberlin
  */
 public class AiDifficultiesIT {
-	public static final int MINUTES = 1000 * 60;
-	public static final int JUMP_FORWARD = 10 * MINUTES;
+	private static final int MINUTES = 1000 * 60;
+	private static final int JUMP_FORWARD = 10 * MINUTES;
 
 	static {
-		try {
-			CommonConstants.ENABLE_CONSOLE_LOGGING = true;
-			TestUtils.setupResourcesManager();
-			MapList.setOriginalSettlersFolder((new ConfigurationPropertiesFile(new File("../jsettlers.main.swing/config.prp")))
-					.getOriginalSettlersFolder());
-			MapList.setDefaultListFactory(new IMapListFactory() {
-				@Override
-				public MapList getMapList(File originalSettlersFolder) {
-					return new MapList(ResourceManager.getSaveDirectory(), originalSettlersFolder);
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test //TODO
-	@Ignore("balance easy and very easy to get the test green!")
-	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 100 * MINUTES);
+		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		TestUtils.setupResourcesManager();
 	}
 
 	@Test
-	public void hardShouldConquerEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 60 * MINUTES);
-	}
-
-	@Test //TODO
-	@Ignore("Make very hard stronger to get the test green!")
-	public void veryHardShouldConquerHard() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 100 * MINUTES);
+	public void easyShouldConquerVeryEasy() throws IOException, MapLoadException {
+		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 90 * MINUTES);
 	}
 
 	@Test
-	public void veryHardShouldProduceCertainAmountOfSoldiersWithin90Minutes() {
+	public void hardShouldConquerEasy() throws IOException, MapLoadException {
+		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 70 * MINUTES);
+	}
+
+	@Test
+	public void veryHardShouldConquerHard() throws IOException, MapLoadException {
+		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 90 * MINUTES);
+	}
+
+	@Test
+	public void veryHardShouldProduceCertainAmountOfSoldiersWithin90Minutes() throws IOException, MapLoadException {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, EWhatToDoAiType.ROMAN_VERY_HARD);
 		playerSettings[1] = new PlayerSetting(false, null);
@@ -94,7 +82,7 @@ public class AiDifficultiesIT {
 		MatchConstants.clock.fastForwardTo(90 * MINUTES);
 		ReplayTool.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 290;
+		short expectedMinimalProducedSoldiers = 180;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
@@ -104,7 +92,8 @@ public class AiDifficultiesIT {
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
 	}
 
-	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser, int maximumTimeToWin) {
+	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser, int maximumTimeToWin)
+			throws IOException, MapLoadException {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, expectedLooser);
 		playerSettings[1] = new PlayerSetting(true, expectedWinner);
@@ -151,10 +140,9 @@ public class AiDifficultiesIT {
 		}
 	}
 
-	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) {
-		MapLoader mapCreator = MapList.getDefaultList().getMapByName("A640-4-River.map");
-
-		JSettlersGame game = new JSettlersGame(mapCreator, 1l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
+	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) throws IOException, MapLoadException {
+		MapLoader mapCreator = MapList.getDefaultList().getMapById("066d3c28-8f37-41cf-96c1-270109f00b9f");
+		JSettlersGame game = new JSettlersGame(mapCreator, 2l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 
