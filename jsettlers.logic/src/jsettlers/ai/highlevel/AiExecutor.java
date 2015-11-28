@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.common.logging.StopWatch;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.network.client.interfaces.ITaskScheduler;
