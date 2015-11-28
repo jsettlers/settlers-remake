@@ -26,12 +26,12 @@ import java.util.Random;
  * @author Andreas Eberle
  * 
  */
-public final class RandomSingleton extends Random {
+public class RandomSingleton extends Random {
 	private static final long serialVersionUID = 3067260303483403560L;
 
 	private static RandomSingleton uniIns;
 
-	private RandomSingleton(long seed) {
+	protected RandomSingleton(long seed) {
 		super(seed);
 	}
 
@@ -60,7 +60,7 @@ public final class RandomSingleton extends Random {
 	}
 
 	public static boolean getBoolean() {
-		return getInt(0, 1) == 0;
+		return uniIns.nextBoolean();
 	}
 
 	/**

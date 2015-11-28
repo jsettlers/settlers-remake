@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import jsettlers.ai.AiRandomSingleton;
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -26,8 +27,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.network.synchronic.random.AiRandomSingleton;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * Assumptions: the most needed land are mountains with resources for military production
@@ -192,7 +191,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			importantResources.add(ImportantResource.GOLD);
 		}
 		// 50 : 50 chance to spread the land or to go for more resources
-		if (importantResources.size() == 0 && AiRandomSingleton.nextBoolean() == true) {
+		if (importantResources.size() == 0 && AiRandomSingleton.getBoolean() == true) {
 			importantResources.add(ImportantResource.GOLD);
 			importantResources.add(ImportantResource.IRON);
 			importantResources.add(ImportantResource.COAL);

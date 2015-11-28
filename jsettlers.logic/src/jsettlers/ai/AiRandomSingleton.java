@@ -12,26 +12,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.network.synchronic.random;
+package jsettlers.ai;
 
-import java.util.Random;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This is a special AiRandomSingleton which is used only at the Host (in multiplayer games) so it does not influence the RandomSingleton which is
  * used at all player machines.
  *
  * @author codingberlin
+ * @author Andreas Eberle
  */
-public class AiRandomSingleton {
+public class AiRandomSingleton extends RandomSingleton {
+	private static final long serialVersionUID = 3967459419465102437L;
 
-	private static Random random;
-
-	public static void load(long seed) {
-		random = new Random(seed);
+	public AiRandomSingleton(long seed) {
+		super(seed);
 	}
-
-	public static boolean nextBoolean() {
-		return random.nextBoolean();
-	}
-
 }
