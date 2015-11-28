@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import jsettlers.ai.AiRandomSingleton;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -92,6 +93,7 @@ public class GameSerializer {
 				oos.writeInt(MatchConstants.clock.getTime());
 				oos.writeObject(grid);
 				RandomSingleton.serialize(oos);
+				AiRandomSingleton.serialize(oos);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;
@@ -114,6 +116,7 @@ public class GameSerializer {
 				MatchConstants.clock.setTime(ois.readInt());
 				grid = (MainGrid) ois.readObject();
 				RandomSingleton.deserialize(ois);
+				AiRandomSingleton.deserialize(ois);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;
