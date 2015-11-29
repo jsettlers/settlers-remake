@@ -40,8 +40,8 @@ public class MovableTestWindow {
 
 	private MovableTestWindow() throws InterruptedException {
 
-		MatchConstants.clock = new NetworkTimer(true);
-		MatchConstants.clock.startExecution();
+		MatchConstants.setClock(new NetworkTimer(true));
+		MatchConstants.clock().startExecution();
 		RandomSingleton.load(1000);
 
 		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
@@ -60,13 +60,13 @@ public class MovableTestWindow {
 					movable.moveTo(((PointAction) action).getPosition());
 					break;
 				case SPEED_FASTER:
-					MatchConstants.clock.multiplyGameSpeed(1.2f);
+					MatchConstants.clock().multiplyGameSpeed(1.2f);
 					break;
 				case SPEED_SLOWER:
-					MatchConstants.clock.multiplyGameSpeed(1 / 1.2f);
+					MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
 					break;
 				case FAST_FORWARD:
-					MatchConstants.clock.fastForward();
+					MatchConstants.clock().fastForward();
 					break;
 				default:
 					break;

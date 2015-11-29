@@ -73,7 +73,7 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayTool.waitForGameStartup(startingGame);
 
-		MatchConstants.clock.fastForwardTo(90 * MINUTES);
+		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 		ReplayTool.awaitShutdown(startedGame);
 
 		short expectedMinimalProducedSoldiers = 100;
@@ -100,12 +100,12 @@ public class AiDifficultiesIT {
 		int targetGameTime = 0;
 		do {
 			targetGameTime += JUMP_FORWARD;
-			MatchConstants.clock.fastForwardTo(targetGameTime);
+			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
 			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 1) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
-			if (MatchConstants.clock.getTime() > maximumTimeToWin) {
+			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
@@ -113,7 +113,7 @@ public class AiDifficultiesIT {
 						startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
-		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock.getTime() / 60000) +
+		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
 		ReplayTool.awaitShutdown(startedGame);
 

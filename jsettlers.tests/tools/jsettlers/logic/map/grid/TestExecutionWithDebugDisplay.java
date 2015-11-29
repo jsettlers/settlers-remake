@@ -32,7 +32,7 @@ public class TestExecutionWithDebugDisplay {
 		TestUtils.setupResourcesManager();
 		RandomSingleton.load(0);
 
-		MatchConstants.clock = new NetworkTimer(true);
+		MatchConstants.setClock(new NetworkTimer(true));
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);

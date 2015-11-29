@@ -34,7 +34,7 @@ public class PigObject extends AbstractHexMapObject {
 	private final int starttime;
 
 	public PigObject() {
-		starttime = MatchConstants.clock.getTime();
+		starttime = MatchConstants.clock().getTime();
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class PigObject extends AbstractHexMapObject {
 
 	@Override
 	public boolean canBeCut() {
-		return (MatchConstants.clock.getTime() - starttime) > LIVE_TIME;
+		return (MatchConstants.clock().getTime() - starttime) > LIVE_TIME;
 	}
 
 }

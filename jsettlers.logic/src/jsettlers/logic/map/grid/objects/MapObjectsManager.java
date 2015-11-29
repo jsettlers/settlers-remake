@@ -81,7 +81,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			return -1;
 		}
 
-		int gameTime = MatchConstants.clock.getTime();
+		int gameTime = MatchConstants.clock().getTime();
 
 		TimeEvent curr = null;
 		curr = timingQueue.peek();
@@ -545,7 +545,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		protected TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
 			this.mapObject = mapObject;
 			this.shouldRemove = shouldRemove;
-			this.eventTime = (int) (MatchConstants.clock.getTime() + duration * 1000);
+			this.eventTime = (int) (MatchConstants.clock().getTime() + duration * 1000);
 		}
 
 		public boolean isOutDated(int gameTime) {

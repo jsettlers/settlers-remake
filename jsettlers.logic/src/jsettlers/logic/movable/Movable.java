@@ -173,7 +173,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		case DROP:
 		case PATHING:
 		case WAITING:
-			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
+			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock().getTime();
 			if (remainingAnimationTime > 0) {
 				return remainingAnimationTime;
 			}
@@ -408,7 +408,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
-			if (animationStartTime + animationDuration <= MatchConstants.clock.getTime() && this.path.hasNextStep()) {
+			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
 				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
@@ -495,7 +495,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void playAnimation(EAction movableAction, short duration) {
-		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationStartTime = MatchConstants.clock().getTime();
 		this.animationDuration = duration;
 		this.movableAction = movableAction;
 	}
@@ -792,7 +792,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 	@Override
 	public final float getMoveProgress() {
-		return ((float) (MatchConstants.clock.getTime() - animationStartTime)) / animationDuration;
+		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
 	}
 
 	@Override

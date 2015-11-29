@@ -14,6 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.constants;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Random;
+
 import jsettlers.network.client.interfaces.IGameClock;
 
 /**
@@ -22,11 +27,6 @@ import jsettlers.network.client.interfaces.IGameClock;
  * 
  */
 public final class MatchConstants {
-	private MatchConstants() {
-	}
-
-	public static IGameClock clock;
-
 	/**
 	 * if true, the user will be able to see other players people and buildings
 	 */
@@ -38,4 +38,42 @@ public final class MatchConstants {
 	public static boolean ENABLE_ALL_PLAYER_SELECTION = false;
 
 	public static boolean ENABLE_FOG_OF_WAR_DISABLING = false;
+
+	private MatchConstants() {
+	}
+
+	private static IGameClock clock;
+	private static Random gameRandom;
+	private static Random aiRandom;
+
+	public static void init(IGameClock clock, long randomSeed) {
+		MatchConstants.clock = clock;
+		MatchConstants.gameRandom = new Random(randomSeed);
+		MatchConstants.aiRandom = new Random(randomSeed);
+	}
+
+	public static IGameClock clock() {
+		return clock;
+	}
+
+	public static Random random() {
+		return gameRandom;
+	}
+
+	public static Random aiRandom() {
+		return aiRandom;
+	}
+
+	public static void serialize(ObjectOutputStream oos) throws IOException {
+		oos.writeInt(clock.getTime());
+		oos.writeObject(gameRandom);
+		oos.writeObject(aiRandom);
+	}
+
+	public static void deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		clock.setTime(ois.readInt());
+		gameRandom = (Random) ois.readObject();
+		aiRandom = (Random) ois.readObject();
+	}
+
 }

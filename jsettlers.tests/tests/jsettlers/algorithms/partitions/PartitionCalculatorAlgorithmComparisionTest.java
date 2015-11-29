@@ -44,7 +44,7 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 		TestUtils.setupResourcesManager();
 		RandomSingleton.load(0);
 
-		MatchConstants.clock = new NetworkTimer(true);
+		MatchConstants.setClock(new NetworkTimer(true));
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
