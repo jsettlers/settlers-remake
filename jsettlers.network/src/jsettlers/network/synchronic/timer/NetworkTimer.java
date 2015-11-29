@@ -156,12 +156,9 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			for (ScheduledTimerable curr : timerables) {
 				curr.checkExecution(TIME_SLICE);
 			}
-		} catch (InterruptedException e) {
-
 		} catch (Throwable t) {
 			System.err.println("WARNING: Networking Timer catched Throwable!!!");
 			t.printStackTrace();
-			throw t;
 		}
 	}
 
