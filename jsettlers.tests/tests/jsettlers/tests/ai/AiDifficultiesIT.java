@@ -16,8 +16,6 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
-import jsettlers.common.logging.StatisticsStopWatch;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -25,6 +23,7 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
@@ -46,8 +45,8 @@ public class AiDifficultiesIT {
 		TestUtils.setupResourcesManager();
 	}
 
-	@Test //TODO
-	@Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
+	@Test // TODO
+	// @Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
 	public void easyShouldConquerVeryEasy() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 300 * MINUTES);
 	}
@@ -57,8 +56,8 @@ public class AiDifficultiesIT {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 80 * MINUTES);
 	}
 
-	@Test //TODO
-	@Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
+	@Test // TODO
+	// @Ignore("This test fails due to unoccupyable tower. When this is fixed unignore the test")
 	public void veryHardShouldConquerHard() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 300 * MINUTES);
 	}
@@ -79,8 +78,8 @@ public class AiDifficultiesIT {
 		short expectedMinimalProducedSoldiers = 100;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
-		 fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
-				 + "soldiers were produced. Some code changes make the AI weaker.");
+			fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
+					+ "soldiers were produced. Some code changes make the AI weaker.");
 		}
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 2500);
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
@@ -109,7 +108,7 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
-								+ "the maximumTimeToWin.",
+						+ "the maximumTimeToWin.",
 						startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
@@ -134,8 +133,8 @@ public class AiDifficultiesIT {
 	}
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) {
-		//TODO change the map to River when https://github.com/jsettlers/settlers-remake/pull/238 was merged
-		//because river is a map with identically start spots. There we can better compare the performance of the different AIs
+		// TODO change the map to River when https://github.com/jsettlers/settlers-remake/pull/238 was merged
+		// because river is a map with identically start spots. There we can better compare the performance of the different AIs
 		MapLoader mapCreator = MapList.getDefaultList().getMapById("066d3c28-8f37-41cf-96c1-270109f00b9f");
 
 		JSettlersGame game = new JSettlersGame(mapCreator, 1l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
