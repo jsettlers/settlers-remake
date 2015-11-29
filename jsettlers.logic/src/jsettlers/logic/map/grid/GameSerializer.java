@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.ai.AiRandomSingleton;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
@@ -90,10 +88,8 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				oos.writeInt(MatchConstants.clock.getTime());
+				MatchConstants.serialize(oos);
 				oos.writeObject(grid);
-				RandomSingleton.serialize(oos);
-				AiRandomSingleton.serialize(oos);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;
@@ -113,10 +109,8 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				MatchConstants.clock.setTime(ois.readInt());
+				MatchConstants.deserialize(ois);
 				grid = (MainGrid) ois.readObject();
-				RandomSingleton.deserialize(ois);
-				AiRandomSingleton.deserialize(ois);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;

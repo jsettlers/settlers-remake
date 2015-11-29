@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import jsettlers.ai.AiRandomSingleton;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
@@ -58,7 +57,6 @@ import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class can start a Thread that loads and sets up a game and wait's for its termination.
@@ -191,8 +189,6 @@ public class JSettlersGame {
 
 				MatchConstants.init(networkConnector.getGameClock(), randomSeed);
 				MatchConstants.clock().setReplayLogStream(createReplayFileStream());
-				RandomSingleton.load(randomSeed);
-				AiRandomSingleton.load(randomSeed);
 				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);

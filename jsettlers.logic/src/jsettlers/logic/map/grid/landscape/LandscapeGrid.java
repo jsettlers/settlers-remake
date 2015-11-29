@@ -27,9 +27,9 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.flags.IProtectedProvider;
 import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListener;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.
@@ -315,7 +315,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 			return; // do not unflatten mountain or desert.
 		}
 
-		this.temporaryFlatened[x + y * width] = (byte) (40 + RandomSingleton.nextF() * 80);
+		this.temporaryFlatened[x + y * width] = (byte) (40 + MatchConstants.random().nextFloat() * 80);
 		this.flattenedResetter.addPosition(x, y);
 	}
 

@@ -23,9 +23,9 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.RelativeToRealPointIterable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.player.Player;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This is a mine building. It's ground won't be flattened.
@@ -65,7 +65,7 @@ public final class MineBuilding extends ResourceBuilding {
 	@Override
 	public boolean tryTakingResource() {
 		RelativePoint[] blockedPositions = super.getBuildingType().getBlockedTiles();
-		int randomPositionIndex = RandomSingleton.getInt(blockedPositions.length);
+		int randomPositionIndex = MatchConstants.random().nextInt(blockedPositions.length);
 		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
 
 		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());

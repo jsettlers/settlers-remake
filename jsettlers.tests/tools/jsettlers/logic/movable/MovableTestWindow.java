@@ -27,7 +27,6 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
-import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
@@ -39,10 +38,8 @@ public class MovableTestWindow {
 	}
 
 	private MovableTestWindow() throws InterruptedException {
-
-		MatchConstants.setClock(new NetworkTimer(true));
+		MatchConstants.init(new NetworkTimer(true), 1000);
 		MatchConstants.clock().startExecution();
-		RandomSingleton.load(1000);
 
 		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
 		MapInterfaceConnector connector = TestUtils.openTestWindow(grid);

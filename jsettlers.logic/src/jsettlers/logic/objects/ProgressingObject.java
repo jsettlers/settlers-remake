@@ -17,7 +17,6 @@ package jsettlers.logic.objects;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * 
@@ -66,7 +65,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	 */
 	protected final void setDurationWithVariation(float duration) {
 		this.duration = (int) (duration * 1000);
-		this.startTime = MatchConstants.clock().getTime() - RandomSingleton.getInt(0, (int) (duration * 100));
+		this.startTime = MatchConstants.clock().getTime() - MatchConstants.random().nextInt((int) (duration * 100));
 	}
 
 	/**

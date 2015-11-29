@@ -17,7 +17,6 @@ package jsettlers.logic.constants;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Random;
 
 import jsettlers.network.client.interfaces.IGameClock;
 
@@ -43,24 +42,24 @@ public final class MatchConstants {
 	}
 
 	private static IGameClock clock;
-	private static Random gameRandom;
-	private static Random aiRandom;
+	private static ExtendedRandom gameRandom;
+	private static ExtendedRandom aiRandom;
 
 	public static void init(IGameClock clock, long randomSeed) {
 		MatchConstants.clock = clock;
-		MatchConstants.gameRandom = new Random(randomSeed);
-		MatchConstants.aiRandom = new Random(randomSeed);
+		MatchConstants.gameRandom = new ExtendedRandom(randomSeed);
+		MatchConstants.aiRandom = new ExtendedRandom(randomSeed);
 	}
 
 	public static IGameClock clock() {
 		return clock;
 	}
 
-	public static Random random() {
+	public static ExtendedRandom random() {
 		return gameRandom;
 	}
 
-	public static Random aiRandom() {
+	public static ExtendedRandom aiRandom() {
 		return aiRandom;
 	}
 
@@ -72,8 +71,8 @@ public final class MatchConstants {
 
 	public static void deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		clock.setTime(ois.readInt());
-		gameRandom = (Random) ois.readObject();
-		aiRandom = (Random) ois.readObject();
+		gameRandom = (ExtendedRandom) ois.readObject();
+		aiRandom = (ExtendedRandom) ois.readObject();
 	}
 
 }

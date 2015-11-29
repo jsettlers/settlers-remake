@@ -35,6 +35,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
@@ -45,7 +46,6 @@ import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
@@ -170,7 +170,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		public void addJobless(IManageableBearer bearer) {
 			if (!materials.isEmpty()) {
 				ShortPoint2D source = materials.pop();
-				final ShortPoint2D targetPos = new ShortPoint2D(RandomSingleton.getInt(0, width - 1), RandomSingleton.getInt(0, height - 1));
+				final ShortPoint2D targetPos = new ShortPoint2D(MatchConstants.random().nextInt(width), MatchConstants.random().nextInt(height));
 				bearer.deliver(materialTypeMap[source.x][source.y], source, new IMaterialRequest() {
 
 					@Override
