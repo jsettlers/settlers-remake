@@ -114,7 +114,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	@Override
 	public void action(Action action) {
 		if (action.getActionType() != EActionType.SCREEN_CHANGE) {
-			System.out.println("action(Action): " + action.getActionType() + "   at game time: " + MatchConstants.clock.getTime());
+			System.out.println("action(Action): " + action.getActionType() + "   at game time: " + MatchConstants.clock().getTime());
 		}
 
 		switch (action.getActionType()) {

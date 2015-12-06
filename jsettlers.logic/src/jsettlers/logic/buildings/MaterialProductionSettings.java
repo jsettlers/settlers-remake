@@ -20,7 +20,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.network.synchronic.random.RandomSingleton;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * @author codingberlin
@@ -65,7 +65,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 			return (configuredRatioOfMaterial(type) / allWeapons);
 		}
 
-		//This line is for other materials than weapons to prevent Exceptions
+		// This line is for other materials than weapons to prevent Exceptions
 		return 0;
 	}
 
@@ -125,7 +125,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 		for (float ratio : materialRatio) {
 			maxRatio += ratio;
 		}
-		int random = RandomSingleton.getInt(maxRatio);
+		int random = MatchConstants.random().nextInt(maxRatio);
 		for (int i = 0; i < materialGroup.length; i++) {
 			if (random <= materialRatio[i]) {
 				decreaseNumberOfFutureProducedMaterial(materialGroup[i]);

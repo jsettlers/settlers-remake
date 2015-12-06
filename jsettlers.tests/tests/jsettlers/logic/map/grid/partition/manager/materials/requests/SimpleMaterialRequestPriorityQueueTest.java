@@ -22,14 +22,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.junit.Test;
+
 import jsettlers.TestUtils;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.network.synchronic.random.RandomSingleton;
-
-import org.junit.Test;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This is a test for the {@link MaterialsForBuildingsRequestPrioQueue} data structure.
@@ -39,7 +39,7 @@ import org.junit.Test;
  */
 public class SimpleMaterialRequestPriorityQueueTest {
 	static {
-		RandomSingleton.load(1000);
+		MatchConstants.init(null, 1000);
 	}
 
 	@Test

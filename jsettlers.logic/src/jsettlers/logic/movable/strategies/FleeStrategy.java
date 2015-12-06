@@ -18,9 +18,9 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * 
@@ -50,9 +50,9 @@ public class FleeStrategy extends MovableStrategy {
 			} else {
 				EDirection currentDirection = super.getMovable().getDirection();
 				EDirection newDirection;
-				if (turnNextTime || RandomSingleton.nextF() < 0.10) {
+				if (turnNextTime || MatchConstants.random().nextFloat() < 0.10) {
 					turnNextTime = false;
-					newDirection = currentDirection.getNeighbor(RandomSingleton.getInt(-1, 1));
+					newDirection = currentDirection.getNeighbor(MatchConstants.random().nextInt(-1, 1));
 				} else {
 					newDirection = currentDirection;
 				}
@@ -61,7 +61,7 @@ public class FleeStrategy extends MovableStrategy {
 
 				if (super.getStrategyGrid().isFreePosition(newPos)) {
 					super.goInDirection(newDirection, true);
-					turnNextTime = RandomSingleton.getInt(7) == 0;
+					turnNextTime = MatchConstants.random().nextInt(7) == 0;
 				} else {
 					super.lookInDirection(newDirection);
 					turnNextTime = true;

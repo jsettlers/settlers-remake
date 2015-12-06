@@ -47,7 +47,6 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * Central Movable class of JSettlers.
@@ -104,7 +103,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.movableType = movableType;
 		this.health = movableType.getHealth();
 
-		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
+		this.direction = EDirection.values[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
 
 		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
@@ -145,7 +144,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return;
 		}
 
-		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
+		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
@@ -173,7 +172,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		case DROP:
 		case PATHING:
 		case WAITING:
-			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
+			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock().getTime();
 			if (remainingAnimationTime > 0) {
 				return remainingAnimationTime;
 			}
@@ -335,7 +334,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			if (flockToDecentralize()) {
 				return animationDuration;
 			} else {
-				int turnDirection = RandomSingleton.getInt(-8, 8);
+				int turnDirection = MatchConstants.random().nextInt(-8, 8);
 				if (Math.abs(turnDirection) <= 1) {
 					lookInDirection(direction.getNeighbor(turnDirection));
 				}
@@ -353,7 +352,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private boolean flockToDecentralize() {
 		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.x, position.y);
 
-		EDirection randomDirection = direction.getNeighbor(RandomSingleton.getInt(-1, 1));
+		EDirection randomDirection = direction.getNeighbor(MatchConstants.random().nextInt(-1, 1));
 		int dx = randomDirection.gridDeltaX + decentVector.x;
 		int dy = randomDirection.gridDeltaY + decentVector.y;
 
@@ -408,7 +407,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
-			if (animationStartTime + animationDuration <= MatchConstants.clock.getTime() && this.path.hasNextStep()) {
+			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
 				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
@@ -452,7 +451,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private boolean goToRandomDirection(Movable pushingMovable) {
-		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
+		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
 		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
@@ -495,7 +494,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void playAnimation(EAction movableAction, short duration) {
-		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationStartTime = MatchConstants.clock().getTime();
 		this.animationDuration = duration;
 		this.movableAction = movableAction;
 	}
@@ -792,7 +791,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 	@Override
 	public final float getMoveProgress() {
-		return ((float) (MatchConstants.clock.getTime() - animationStartTime)) / animationDuration;
+		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
 	}
 
 	@Override

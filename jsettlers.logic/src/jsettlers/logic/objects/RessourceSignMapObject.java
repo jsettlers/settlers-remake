@@ -17,8 +17,8 @@ package jsettlers.logic.objects;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	private static final long serialVersionUID = -7248748388147081545L;
@@ -63,7 +63,7 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	}
 
 	public static final float getLivetime() {
-		return RandomSingleton.nextF() * MAX_RANDOM_LIVETIME + MINIMUM_LIVETIME;
+		return MatchConstants.random().nextFloat() * MAX_RANDOM_LIVETIME + MINIMUM_LIVETIME;
 	}
 
 }

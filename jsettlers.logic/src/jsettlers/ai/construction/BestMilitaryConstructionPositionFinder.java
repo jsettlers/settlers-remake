@@ -26,6 +26,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * Assumptions: the most needed land are mountains with resources for military production
@@ -66,11 +67,13 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 		int nearestResourcePointsDistance = Integer.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		List<ShortPoint2D> towerPositions = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId);
+		ShortPoint2D centerOfPlayer = calculateCenterOfPlayer(aiStatistics, playerId);
 		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
 					playerId, buildingType)) {
-				if (importantResources != null) {
+				if (importantResources.isEmpty()) {
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, centerOfPlayer.getOnGridDistTo(point)));
+				} else {
 					List<ShortPoint2D> nearestResourcePoints = new ArrayList<ShortPoint2D>();
 					if (importantResources.contains(ImportantResource.TREES)) {
 						ShortPoint2D nearestTree = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT,
@@ -131,18 +134,22 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 						nearestResourcePointsDistance = maximumDistanceOfResourcesOfThisPoint;
 						scoredConstructionPositions.add(new ScoredConstructionPosition(point, score));
 					}
-				} else {
-					int otherTowerDistance = 0;
-					ShortPoint2D nearestTowerPoint = AiStatistics.detectNearestPointFromList(point, towerPositions);
-					if (nearestTowerPoint != null) {
-						otherTowerDistance = point.getOnGridDistTo(nearestTowerPoint);
-					}
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, -otherTowerDistance));
 				}
 			}
 		}
 
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
+	}
+
+	private ShortPoint2D calculateCenterOfPlayer(AiStatistics aiStatistics, byte playerId) {
+		List<ShortPoint2D> towers = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId);
+		int centerX = 0;
+		int centerY = 0;
+		for (ShortPoint2D tower : towers) {
+			centerX += tower.x;
+			centerY += tower.y;
+		}
+		return new ShortPoint2D(centerX / towers.size(), centerY / towers.size());
 	}
 
 	private Set<ImportantResource> detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
@@ -182,6 +189,12 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLDORE, playerId, Integer.MAX_VALUE) == null &&
 				aiStatistics.getNearestResourcePointInDefaultPartitionFor(referencePoint, EResourceType.GOLDORE, Integer.MAX_VALUE) != null) {
 			importantResources.add(ImportantResource.GOLD);
+		}
+		// 50 : 50 chance to spread the land or to go for more resources
+		if (importantResources.size() == 0 && MatchConstants.aiRandom().nextBoolean() == true) {
+			importantResources.add(ImportantResource.GOLD);
+			importantResources.add(ImportantResource.IRON);
+			importantResources.add(ImportantResource.COAL);
 		}
 		return importantResources;
 	}

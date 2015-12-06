@@ -18,11 +18,11 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class DiggerStrategy extends MovableStrategy implements IManageableDigger {
 	private static final long serialVersionUID = 1581926355853324624L;
@@ -101,7 +101,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	private ShortPoint2D getDiggablePosition() {
 		RelativePoint[] blockedTiles = requester.getBuildingType().getProtectedTiles();
 		ShortPoint2D buildingPos = requester.getPos();
-		int offset = RandomSingleton.getInt(0, blockedTiles.length - 1);
+		int offset = MatchConstants.random().nextInt(blockedTiles.length);
 
 		for (int i = 0; i < blockedTiles.length; i++) {
 			ShortPoint2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);

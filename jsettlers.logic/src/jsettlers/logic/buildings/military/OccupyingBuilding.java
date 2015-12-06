@@ -40,12 +40,12 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.player.Player;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This is a tower building that can request soldiers and let them defend the tower.
@@ -97,7 +97,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	protected final int constructionFinishedEvent() {
 		setAttackableTowerObject(true);
-		return TIMER_PERIOD + RandomSingleton.getInt(0, 200); // adding random prevents simultaneous scan after map creation
+		return TIMER_PERIOD + MatchConstants.random().nextInt(200); // adding random prevents simultaneous scan after map creation
 	}
 
 	private void setAttackableTowerObject(boolean set) {
