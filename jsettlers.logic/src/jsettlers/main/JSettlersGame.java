@@ -56,9 +56,7 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
-import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.INetworkConnector;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class can start a Thread that loads and sets up a game and wait's for its termination.
@@ -165,7 +163,7 @@ public class JSettlersGame {
 		}
 	}
 
-	//TODO remove me when an EndgameStatistic screen exists.
+	// TODO remove me when an EndgameStatistic screen exists.
 	private void printEndgameStatistic() {
 		PartitionsGrid partitionsGrid = gameRunner.getMainGrid().getPartitionsGrid();
 		System.out.println("Endgame statistic:");
@@ -187,14 +185,10 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
-
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
-				DataOutputStream replayFileStream = createReplayFileStream();
-
-				IGameClock gameClock = MatchConstants.clock = networkConnector.getGameClock();
-				gameClock.setReplayLogStream(replayFileStream);
-				RandomSingleton.load(randomSeed);
+				MatchConstants.init(networkConnector.getGameClock(), randomSeed);
+				MatchConstants.clock().setReplayLogStream(createReplayFileStream());
 				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
@@ -204,10 +198,10 @@ public class JSettlersGame {
 				mainGrid = gridWithUiState.getMainGrid();
 				PlayerState playerState = gridWithUiState.getPlayerState(playerId);
 
-				RescheduleTimer.schedule(gameClock); // schedule timer
+				RescheduleTimer.schedule(MatchConstants.clock()); // schedule timer
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
-				statistics = new GameStatistics(gameClock);
+				statistics = new GameStatistics(MatchConstants.clock());
 
 				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
@@ -219,22 +213,23 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
 
 				if (replayFileInputStream != null) {
-					gameClock.loadReplayLogFromStream(replayFileInputStream);
+					MatchConstants.clock().loadReplayLogFromStream(replayFileInputStream);
 				}
 
 				networkConnector.setStartFinished(true);
 				waitForAllPlayersStartFinished(networkConnector);
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
-				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerId, multiplayer);
+				GuiInterface guiInterface = new GuiInterface(connector, MatchConstants.clock(), networkConnector.getTaskScheduler(),
+						mainGrid.getGuiInputGrid(), this, playerId, multiplayer);
 				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that
 				// ConstructionMarksThread has it's mapArea variable initialized via the EActionType.SCREEN_CHANGE event.
 
 				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
-				gameClock.startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT! =================================
+				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT!
+															// =================================
 				gameRunning = true;
 
 				startingGameListener.startFinished();
@@ -249,7 +244,7 @@ public class JSettlersGame {
 				}
 
 				networkConnector.shutdown();
-				gameClock.stopExecution();
+				MatchConstants.clock().stopExecution();
 				connector.shutdown();
 				mainGrid.stopThreads();
 				guiInterface.stop();
@@ -356,6 +351,7 @@ public class JSettlersGame {
 			return mainGrid.getPartitionsGrid().getPlayer(playerId);
 		}
 
+		@Override
 		public boolean isStopped() {
 			return stopped;
 		}

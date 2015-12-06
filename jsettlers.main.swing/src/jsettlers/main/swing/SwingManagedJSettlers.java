@@ -250,7 +250,7 @@ public class SwingManagedJSettlers {
 					} catch (InterruptedException e) {
 					}
 				}
-				MatchConstants.clock.fastForwardTo(targetGameTime);
+				MatchConstants.clock().fastForwardTo(targetGameTime);
 			}
 		} else {
 			content.goToStartScreen("");

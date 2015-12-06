@@ -17,7 +17,7 @@ package jsettlers.algorithms.path.area;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.network.synchronic.random.RandomSingleton;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * 
@@ -51,8 +51,8 @@ public final class InAreaFinder {
 	public final ShortPoint2D find(IPathCalculatable requester, short centerX, short centerY, short searchRadius, ESearchType searched) {
 
 		for (int i = 0; i < 100; i++) {
-			double angle = RandomSingleton.nextD() * 2 * Math.PI; // get an angle in the interval [0, 2PI]
-			double radius = Math.pow(RandomSingleton.nextD(), 3.9) * searchRadius; // get a radius in the interval [0, pixelRadius]
+			double angle = MatchConstants.random().nextDouble() * 2 * Math.PI; // get an angle in the interval [0, 2PI]
+			double radius = Math.pow(MatchConstants.random().nextDouble(), 3.9) * searchRadius; // get a radius in the interval [0, pixelRadius]
 
 			short tileX = (short) (Math.cos(angle) * radius + centerX);
 			short tileY = (short) (Math.sin(angle) * radius + centerY);

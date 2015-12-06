@@ -24,7 +24,6 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 /**
@@ -36,9 +35,7 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
 		TestUtils.setupSwingResources();
-		RandomSingleton.load(0);
-
-		MatchConstants.clock = new NetworkTimer(true);
+		MatchConstants.init(new NetworkTimer(true), 0);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);

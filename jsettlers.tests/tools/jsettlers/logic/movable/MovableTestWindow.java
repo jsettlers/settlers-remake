@@ -27,7 +27,6 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
-import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
@@ -39,10 +38,8 @@ public class MovableTestWindow {
 	}
 
 	private MovableTestWindow() throws InterruptedException {
-
-		MatchConstants.clock = new NetworkTimer(true);
-		MatchConstants.clock.startExecution();
-		RandomSingleton.load(1000);
+		MatchConstants.init(new NetworkTimer(true), 1000);
+		MatchConstants.clock().startExecution();
 
 		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
 		MapInterfaceConnector connector = TestUtils.openTestWindow(grid);
@@ -60,13 +57,13 @@ public class MovableTestWindow {
 					movable.moveTo(((PointAction) action).getPosition());
 					break;
 				case SPEED_FASTER:
-					MatchConstants.clock.multiplyGameSpeed(1.2f);
+					MatchConstants.clock().multiplyGameSpeed(1.2f);
 					break;
 				case SPEED_SLOWER:
-					MatchConstants.clock.multiplyGameSpeed(1 / 1.2f);
+					MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
 					break;
 				case FAST_FORWARD:
-					MatchConstants.clock.fastForward();
+					MatchConstants.clock().fastForward();
 					break;
 				default:
 					break;

@@ -12,49 +12,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.objects;
+package jsettlers.logic.constants;
 
-import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
+import java.util.Random;
 
 /**
- * A pig that can be placed on the map. it can be "cut" after some time (that means can be cut return true).
+ * Extended version of java.util.Random with some more functions.
  * 
- * @author michael
+ * @author Andreas Eberle
+ *
  */
-public class PigObject extends AbstractHexMapObject {
-	private static final long serialVersionUID = -3554691277157393770L;
+public class ExtendedRandom extends Random {
+	private static final long serialVersionUID = -2814532519838158362L;
+
+	public ExtendedRandom(long seed) {
+		super(seed);
+	}
 
 	/**
-	 * Time a pig lives in ms
+	 * Returns a random number in the interval [min, max].
+	 * 
+	 * @param min
+	 *            Minimum value (inclusive)
+	 * @param max
+	 *            Maximum value (inclusive)
+	 * @return
 	 */
-	private static final int LIVE_TIME = 60000;
-
-	private final int starttime;
-
-	public PigObject() {
-		starttime = MatchConstants.clock().getTime();
+	public int nextInt(int min, int max) {
+		return min + nextInt(max - min + 1);
 	}
-
-	@Override
-	public EMapObjectType getObjectType() {
-		return EMapObjectType.PIG;
-	}
-
-	@Override
-	public float getStateProgress() {
-		return 0;
-	}
-
-	@Override
-	public boolean cutOff() {
-		return false;
-	}
-
-	@Override
-	public boolean canBeCut() {
-		return (MatchConstants.clock().getTime() - starttime) > LIVE_TIME;
-	}
-
 }

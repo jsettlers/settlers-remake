@@ -1745,8 +1745,8 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException {
-			boolean savedPausingState = MatchConstants.clock.isPausing();
-			MatchConstants.clock.setPausing(true);
+			boolean savedPausingState = MatchConstants.clock().isPausing();
+			MatchConstants.clock().setPausing(true);
 			try {
 				Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
 			} catch (InterruptedException e) {
@@ -1756,7 +1756,7 @@ public final class MainGrid implements Serializable {
 			MapList list = MapList.getDefaultList();
 			list.saveMap(playerStates, MainGrid.this);
 
-			MatchConstants.clock.setPausing(savedPausingState);
+			MatchConstants.clock().setPausing(savedPausingState);
 		}
 
 		@Override

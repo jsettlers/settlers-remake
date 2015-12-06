@@ -50,7 +50,6 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IStackSizeSupplier;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.
@@ -81,7 +80,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			return -1;
 		}
 
-		int gameTime = MatchConstants.clock.getTime();
+		int gameTime = MatchConstants.clock().getTime();
 
 		TimeEvent curr = null;
 		curr = timingQueue.peek();
@@ -279,7 +278,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayerId, hitStrength);
 		addMapObject(attackedPos, arrow);
 		schedule(arrow, arrow.getEndTime(), false);
-		schedule(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true);
+		schedule(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + MatchConstants.random().nextFloat()), true);
 	}
 
 	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, Player player) {
@@ -545,7 +544,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		protected TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
 			this.mapObject = mapObject;
 			this.shouldRemove = shouldRemove;
-			this.eventTime = (int) (MatchConstants.clock.getTime() + duration * 1000);
+			this.eventTime = (int) (MatchConstants.clock().getTime() + duration * 1000);
 		}
 
 		public boolean isOutDated(int gameTime) {

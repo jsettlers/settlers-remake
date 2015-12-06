@@ -24,7 +24,7 @@ import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
-import jsettlers.network.synchronic.random.RandomSingleton;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class is an advanced priority queue for material requests. The requests are served according to the settings. The settings specify the
@@ -129,7 +129,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 	}
 
 	private int getRandomStartIndex() {
-		float randomNumber = RandomSingleton.nextF();
+		float randomNumber = MatchConstants.random().nextFloat();
 		float sum = 0;
 
 		int numberOfBuildings = settings.getNumberOfBuildings();
