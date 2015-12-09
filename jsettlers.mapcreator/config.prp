@@ -1,4 +1,7 @@
-#Updated settlers-folder with dialog.
-#Mon Nov 09 16:15:29 CET 2015
+#This properties are used for development
+
+#Specifies the folder where the resources can be found. NOTE: The path needs to end with a slash ( / )
 resources-folder=../jsettlers.common/resources/
-settlers-folder=D\:\\Spiele\\Siedler3
+
+#Folder containing the folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
+settlers-folder=
