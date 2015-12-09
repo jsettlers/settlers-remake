@@ -71,7 +71,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		return filename.toLowerCase().endsWith(Extention.toLowerCase());
 	}
 
-	public static boolean isExtentionKnown(String filename) {
+	public static boolean isExtensionKnown(String filename) {
 		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL))
 			return true;
 		if (checkExtention(filename, MAP_EXTENSION))

@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import jsettlers.common.resources.IResourceProvider;
 import android.content.Context;
 import android.content.res.AssetManager;
+import jsettlers.common.resources.IResourceProvider;
 
 public class ResourceProvider implements IResourceProvider {
-	private final File saveDir;
+	private final File resourcesDirectory;
 	private final AssetManager manager;
 
 	/**
@@ -35,13 +35,13 @@ public class ResourceProvider implements IResourceProvider {
 	private static final String[] fixedResources = new String[] { "images",
 			"localization", "buildings" };
 
-	public ResourceProvider(Context context, File saveDir) {
-		this.saveDir = saveDir;
+	public ResourceProvider(Context context, File resourcesDirectory, File jsettlersDirectory) {
+		this.resourcesDirectory = resourcesDirectory;
 		manager = context.getAssets();
 	}
 
 	@Override
-	public InputStream getFile(String name) throws IOException {
+	public InputStream getResourcesFileStream(String name) throws IOException {
 		String[] parts = name.split("/");
 		boolean searchUserFile = true;
 		for (int i = 0; i < fixedResources.length; i++) {
@@ -49,10 +49,10 @@ public class ResourceProvider implements IResourceProvider {
 				searchUserFile = false;
 			}
 		}
-		File file = searchUserFile ? searchFileIn(saveDir, parts) : null;
+		File file = searchUserFile ? searchFileIn(resourcesDirectory, parts) : null;
 
 		if (searchUserFile) {
-			file = searchFileIn(saveDir, parts);
+			file = searchFileIn(resourcesDirectory, parts);
 			if (file != null) {
 				return new FileInputStream(file);
 			}
@@ -76,7 +76,7 @@ public class ResourceProvider implements IResourceProvider {
 
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
-		File outFile = new File(saveDir.getAbsolutePath() + "/" + name);
+		File outFile = new File(resourcesDirectory.getAbsolutePath() + "/" + name);
 		System.err.println("--------------------------------"
 				+ outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
@@ -84,13 +84,13 @@ public class ResourceProvider implements IResourceProvider {
 	}
 
 	@Override
-	public File getSaveDirectory() {
-		return saveDir;
+	public File getResourcesDirectory() {
+		return resourcesDirectory;
 	}
 
 	@Override
-	public File getTempDirectory() {
-		return saveDir;
+	public File getOriginalMapsDirectory() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
 }

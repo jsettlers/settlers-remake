@@ -33,8 +33,7 @@ public class ConfigurationPropertiesFile {
 	private final File configFile;
 	private final Properties properties;
 
-	public ConfigurationPropertiesFile(File file) throws FileNotFoundException,
-			IOException {
+	public ConfigurationPropertiesFile(File file) throws FileNotFoundException, IOException {
 		this.configFile = file;
 
 		Properties defaultProperties = new Properties();
@@ -46,7 +45,7 @@ public class ConfigurationPropertiesFile {
 		}
 	}
 
-	public File getResourcesFolder() {
+	public File getResourcesDirectory() {
 		String property = properties.getProperty("resources-folder");
 		File dir = new File(property);
 		if (!dir.isAbsolute()) {
@@ -78,7 +77,7 @@ public class ConfigurationPropertiesFile {
 		return properties.getProperty(SETTLERS_FOLDER);
 	}
 
-	public File getOriginalSettlersFolder() {
+	public File getOriginalSettlersDirectory() {
 		return new File(getSettlersFolderValue());
 	}
 
@@ -107,5 +106,9 @@ public class ConfigurationPropertiesFile {
 
 	private void saveConfigFile(String updateMessage) throws IOException, FileNotFoundException {
 		properties.store(new FileOutputStream(configFile), updateMessage);
+	}
+
+	public File getOriginalMapsDirectory() {
+		return new File(getOriginalSettlersDirectory(), "Map");
 	}
 }

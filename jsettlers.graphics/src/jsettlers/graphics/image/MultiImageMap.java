@@ -59,7 +59,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	public MultiImageMap(int width, int height, String id) {
 		this.width = width;
 		this.height = height;
-		File root = new File(ResourceManager.getSaveDirectory(), "cache");
+		File root = new File(ResourceManager.getResourcesDirectory(), "cache");
 		cacheFile = new File(root, "cache-" + id);
 	}
 

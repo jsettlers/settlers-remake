@@ -14,8 +14,8 @@ import jsettlers.logic.map.save.MapFileHeader;
  */
 public class DebugMapLister extends DirectoryMapLister {
 
-	public DebugMapLister(File directory) {
-		super(directory);
+	public DebugMapLister(File directory, boolean createIfMissing) {
+		super(directory, createIfMissing);
 	}
 
 	@Override

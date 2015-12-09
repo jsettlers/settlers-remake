@@ -73,7 +73,7 @@ public final class SettlerImageMap {
 				new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
 
 		try {
-			InputStream file = ResourceManager.getFile("images/movables.txt");
+			InputStream file = ResourceManager.getResourcesFileStream("images/movables.txt");
 			readFromFile(file);
 		} catch (IOException e) {
 			System.err.println("Error reading image file. "

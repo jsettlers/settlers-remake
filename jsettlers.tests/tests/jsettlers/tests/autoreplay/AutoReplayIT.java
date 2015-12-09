@@ -42,12 +42,12 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.tests.utils.CountingInputStream;
@@ -62,9 +62,10 @@ public class AutoReplayIT {
 		TestUtils.setupResourcesManager();
 		MapList.setDefaultListFactory(new IMapListFactory() {
 			@Override
-			public MapList getMapList(File originalSettlersFolder) {
-				File resourceDir = ResourceManager.getSaveDirectory();
-				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps")), new DebugMapLister(new File(resourceDir, "save")));
+			public MapList getMapList() {
+				File resourceDir = ResourceManager.getResourcesDirectory();
+				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps"), false),
+						new DebugMapLister(new File(resourceDir, "save"), true));
 			}
 		});
 	}
@@ -123,7 +124,8 @@ public class AutoReplayIT {
 		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "' (uncompressed!)");
 
 		try (InputStream expectedStream = RemakeMapLoader.getMapInputStream(new ListedMapFile(expectedFile.toFile()));
-				CountingInputStream actualStream = new CountingInputStream(RemakeMapLoader.getMapInputStream(new ListedMapFile(actualFile.toFile())))) {
+				CountingInputStream actualStream = new CountingInputStream(
+						RemakeMapLoader.getMapInputStream(new ListedMapFile(actualFile.toFile())))) {
 			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
 
@@ -147,7 +149,7 @@ public class AutoReplayIT {
 	}
 
 	private static Path findSavegameFile() throws IOException { // TODO implement better way to find the correct savegame
-		Path saveDirPath = new File(ResourceManager.getSaveDirectory(), "save").toPath();
+		Path saveDirPath = new File(ResourceManager.getResourcesDirectory(), "save").toPath();
 
 		final Path[] newestFile = new Path[1];
 		final String mapExtension = MapList.getMapExtension();

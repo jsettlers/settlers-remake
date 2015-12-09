@@ -44,9 +44,8 @@ import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -93,10 +92,9 @@ public class SwingManagedJSettlers {
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName)
 			throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
-		MapList.setOriginalSettlersFolder(configFile.getOriginalSettlersFolder());
-		SwingResourceLoader.setupResourcesManager(configFile);
 
+		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+		SwingResourceLoader.setupResourcesManager(configFile);
 		boolean firstRun = true;
 
 		while (!configFile.isSettlersFolderSet() || !trySettingUpResources(configFile)) {
@@ -141,6 +139,10 @@ public class SwingManagedJSettlers {
 				JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
 				ex.printStackTrace();
 			}
+		}
+
+		if (!firstRun) { // the dialog was shown => settlers folder might have changed
+			SwingResourceLoader.setupResourcesManager(configFile);
 		}
 	}
 

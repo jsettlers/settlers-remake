@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.save;
 
-import java.io.File;
-
 public interface IMapListFactory {
-	MapList getMapList(File originalSettlersFolder);
+	MapList getMapList();
 }

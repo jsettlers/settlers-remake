@@ -47,7 +47,7 @@ public class ImageIndexFile {
 	}
 
 	private void load() throws IOException {
-		final DataInputStream in = new DataInputStream(new BufferedInputStream(ResourceManager.getFile("images/texturemap")));
+		final DataInputStream in = new DataInputStream(new BufferedInputStream(ResourceManager.getResourcesFileStream("images/texturemap")));
 
 		ArrayList<ImageIndexTexture> textures = new ArrayList<ImageIndexTexture>();
 
@@ -73,7 +73,7 @@ public class ImageIndexFile {
 			float vmax = (float) in.readShort() / 0x7fff;
 
 			while (textureFileNumber >= textures.size()) {
-				InputStream inputStream = ResourceManager.getFile("images/" + textures.size());
+				InputStream inputStream = ResourceManager.getResourcesFileStream("images/" + textures.size());
 				textures.add(new ImageIndexTexture(inputStream));
 			}
 

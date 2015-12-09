@@ -70,18 +70,17 @@ public class DirectoryMapLister implements IMapLister {
 		}
 	}
 
-	public DirectoryMapLister(File directory) {
+	public DirectoryMapLister(File directory, boolean createIfMissing) {
 		this.directory = directory;
-		if (!directory.exists()) {
+		if (createIfMissing && !directory.exists()) {
 			directory.mkdirs();
 		}
 	}
 
 	@Override
 	public void listMaps(final IMapListerCallable callback) {
-		File[] files = directory.listFiles();
-		if (files == null) {
-			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
+		if (directory == null || !directory.isDirectory() || directory.listFiles() == null) {
+			return;
 		}
 
 		try {
@@ -90,7 +89,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					String fileName = file.getName();
-					if (MapLoader.isExtentionKnown(fileName)) {
+					if (MapLoader.isExtensionKnown(fileName)) {
 						callback.foundMap(new ListedMapFile(file));
 					}
 				}

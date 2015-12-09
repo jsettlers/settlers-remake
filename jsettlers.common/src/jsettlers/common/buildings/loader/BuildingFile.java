@@ -114,14 +114,14 @@ public class BuildingFile implements BuildingJobDataProvider {
 				@Override
 				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(ResourceManager.getFile(DATA_DIR + BUILDING_DTD));
+						return new InputSource(ResourceManager.getResourcesFileStream(DATA_DIR + BUILDING_DTD));
 					} else {
 						return null;
 					}
 				}
 			});
 
-			InputStream stream = ResourceManager.getFile(DATA_DIR + buildingName.toLowerCase() + ".xml");
+			InputStream stream = ResourceManager.getResourcesFileStream(DATA_DIR + buildingName.toLowerCase() + ".xml");
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
 			System.err.println("Error loading building file for " + buildingName + ":" + e.getMessage());

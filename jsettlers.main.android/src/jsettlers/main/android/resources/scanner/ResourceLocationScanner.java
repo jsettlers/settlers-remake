@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.DatFileType;
@@ -11,10 +15,6 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.android.resources.AndroidMapListFactory;
 import jsettlers.main.android.resources.ResourceProvider;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 
 public class ResourceLocationScanner {
 	private static final String PREFERENCE = "external-files-path";
@@ -26,10 +26,11 @@ public class ResourceLocationScanner {
 
 	public boolean scanForResources() {
 		File storage = Environment.getExternalStorageDirectory();
-		File jsettlersdir = new File(storage, "JSettlers");
+		File jsettlersDirectory = new File(storage, "JSettlers");
 		ArrayList<File> files = new ArrayList<File>();
-		files.add(context.getExternalFilesDir(null)); // <- output dir, always writable
-		files.add(jsettlersdir);
+		File outputDirectory = context.getExternalFilesDir(null); // <- output dir, always writable
+		files.add(outputDirectory);
+		files.add(jsettlersDirectory);
 		files.add(storage);
 		String path = PreferenceManager.getDefaultSharedPreferences(context).getString(PREFERENCE, "");
 		if (!path.isEmpty()) {
@@ -46,7 +47,7 @@ public class ResourceLocationScanner {
 		}
 		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), files.get(0)));
 
-		ResourceProvider provider = new ResourceProvider(context, files.get(0));
+		ResourceProvider provider = new ResourceProvider(context, outputDirectory, jsettlersDirectory);
 		ResourceManager.setProvider(provider);
 		return true;
 	}
