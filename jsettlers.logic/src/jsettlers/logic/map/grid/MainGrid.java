@@ -537,12 +537,12 @@ public final class MainGrid implements Serializable {
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
 					&& !objectsGrid.hasMapObjectType(x, y,
-						EMapObjectType.FOUND_COAL,
-						EMapObjectType.FOUND_IRON,
-						EMapObjectType.FOUND_GOLD,
-						EMapObjectType.FOUND_NOTHING,
-						EMapObjectType.FOUND_GEMSTONE,
-						EMapObjectType.FOUND_BRIMSTONE);
+							EMapObjectType.FOUND_COAL,
+							EMapObjectType.FOUND_IRON,
+							EMapObjectType.FOUND_GOLD,
+							EMapObjectType.FOUND_NOTHING,
+							EMapObjectType.FOUND_GEMSTONE,
+							EMapObjectType.FOUND_BRIMSTONE);
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
@@ -719,8 +719,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);

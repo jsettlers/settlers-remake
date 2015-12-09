@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map;
 
+import java.io.IOException;
+
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
@@ -22,39 +24,35 @@ import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.loader.*;
-
-import java.io.IOException;
+import jsettlers.logic.map.save.loader.FreshMapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.logic.map.save.loader.SavegameLoader;
 
 /**
  * Classes of this interface are to load a game file
  * 
  */
-public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition{
-	
+public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition {
+
 	protected MapFileHeader header;
 
-	
 	public static final String MAP_EXTENSION = ".rmap";
 	public static final String MAP_EXTENSION_COMPRESSED = ".zmap";
 	public static final String MAP_EXTENSION_ORIGINAL = ".map";
 	public static final String MAP_EXTENSION_ORIGINAL_MAP_EDITOR = ".edm";
-	
-	public abstract MapFileHeader getFileHeader();
-	
 
-	
+	public abstract MapFileHeader getFileHeader();
+
 	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException, IOException {
-		
-		if ((checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL) )
-			|| (checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL_MAP_EDITOR) ))	{
-			//- original Siedler 3 Map
+
+		if ((checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL))
+				|| (checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL_MAP_EDITOR))) {
+			// - original Siedler 3 Map
 			return new OriginalMapLoader(listedMap);
-		}
-		else {
-			//- Siedler 3 Remake Savegame or Map
+		} else {
+			// - Siedler 3 Remake Savegame or Map
 			MapFileHeader header = RemakeMapLoader.loadHeader(listedMap);
-	
+
 			switch (header.getType()) {
 			case NORMAL:
 				return new FreshMapLoader(listedMap, header);
@@ -66,22 +64,26 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		}
 
 	}
-	
-	public static boolean checkExtention(String filename, String Extention)
-	{
-		if (filename == null) return false;
+
+	public static boolean checkExtention(String filename, String Extention) {
+		if (filename == null)
+			return false;
 		return filename.toLowerCase().endsWith(Extention.toLowerCase());
 	}
-	
+
 	public static boolean isExtentionKnown(String filename) {
-		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL)) return true;
-		if (checkExtention(filename, MAP_EXTENSION)) return true;
-		if (checkExtention(filename, MAP_EXTENSION_COMPRESSED)) return true;
-		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL_MAP_EDITOR)) return true;
+		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL))
+			return true;
+		if (checkExtention(filename, MAP_EXTENSION))
+			return true;
+		if (checkExtention(filename, MAP_EXTENSION_COMPRESSED))
+			return true;
+		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL_MAP_EDITOR))
+			return true;
 		return false;
 	}
-	
-	//- Interface: Comparable<MapLoader>
+
+	// - Interface: Comparable<MapLoader>
 	@Override
 	public int compareTo(MapLoader o) {
 		MapFileHeader myHeader = header;
@@ -92,16 +94,14 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 			return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
 		}
 	}
-	
-	
+
 	public abstract IListedMap getListedMap();
-	
+
 	/**
 	 * Gets the map data for this loader, if the data is available.
 	 * 
 	 * @return
 	 */
 	public abstract IMapData getMapData() throws MapLoadException;
-	
-	
+
 }

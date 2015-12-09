@@ -14,7 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.map.save;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import jsettlers.common.CommonConstants;
@@ -23,11 +26,11 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -75,10 +78,10 @@ public class MapList implements IMapListerCallable {
 
 	public MapList(File dir, File originalSettlersDir) {
 		this(new DirectoryMapLister(new File(dir, "maps")),
-			new DirectoryMapLister(new File(dir, "save")),
-			new DirectoryMapLister(new File(originalSettlersDir, "Map/MULTI")),
-			new DirectoryMapLister(new File(originalSettlersDir, "Map/SINGLE")),
-			new DirectoryMapLister(new File(originalSettlersDir, "Map/User")));
+				new DirectoryMapLister(new File(dir, "save")),
+				new DirectoryMapLister(new File(originalSettlersDir, "Map/MULTI")),
+				new DirectoryMapLister(new File(originalSettlersDir, "Map/SINGLE")),
+				new DirectoryMapLister(new File(originalSettlersDir, "Map/User")));
 	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
@@ -256,7 +259,7 @@ public class MapList implements IMapListerCallable {
 
 	public void deleteLoadableGame(MapLoader game) {
 		game.getListedMap().delete();
-		savedMaps.remove(game); //- TODO: or freshMaps.remove ?
+		savedMaps.remove(game); // - TODO: or freshMaps.remove ?
 		loadFileList();
 	}
 
