@@ -20,14 +20,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Vector;
+import java.util.*;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -69,6 +62,8 @@ public class AiStatistics {
 	private static final short BORDER_LAND_WIDTH = 5;
 	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
 	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
+	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
+			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE};
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
@@ -169,11 +164,11 @@ public class AiStatistics {
 		playerStatistic.numberOfTotalBuildings++;
 		if (building.getStateProgress() < 1f) {
 			playerStatistic.numberOfNotFinishedBuildings++;
-			if (building.getBuildingType() == EBuildingType.TOWER) {
-				playerStatistic.numberOfNotOccupiedTowers++;
+			if (building.getBuildingType().isMilitaryBuilding()) {
+				playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
 			}
-		} else if (building.getBuildingType() == EBuildingType.TOWER && !building.isOccupied()) {
-			playerStatistic.numberOfNotOccupiedTowers++;
+		} else if (building.getBuildingType().isMilitaryBuilding() && !building.isOccupied()) {
+			playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
 		}
 	}
 
@@ -282,11 +277,13 @@ public class AiStatistics {
 	private void updatePartitionIdsToBuildOn() {
 		for (byte playerId = 0; playerId < playerStatistics.length; playerId++) {
 			ShortPoint2D referencePosition = null;
-			if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId) > 0) {
-				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId).get(0);
-			} else if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, playerId) > 0) {
-				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId).get(0);
+			for (EBuildingType referenceFinderBuildingType : REFERENCE_POINT_FINDER_BUILDING_ORDER) {
+				if (getTotalNumberOfBuildingTypeForPlayer(referenceFinderBuildingType, playerId) > 0) {
+					referencePosition = getBuildingPositionsOfTypeForPlayer(referenceFinderBuildingType, playerId).get(0);
+					break;
+				}
 			}
+
 			if (referencePosition != null) {
 				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
 				playerStatistics[playerId].materialProduction = partitionsGrid.getPartitionAt(referencePosition.x, referencePosition.y)
@@ -309,19 +306,19 @@ public class AiStatistics {
 		}
 	}
 
-	public List<ShortPoint2D> getHinterlandTowerPositionsOfPlayer(byte playerId) {
-		List<ShortPoint2D> hinterlandTowerPositions = new ArrayList<ShortPoint2D>();
-		for (ShortPoint2D towerPosition : getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId)) {
-			Building tower = getBuildingAt(towerPosition);
-			if (isTowerInHinterland(tower, playerId)) {
-				hinterlandTowerPositions.add(towerPosition);
+	public List<ShortPoint2D> getHinterlandMilitaryBuildingPositionsOfPlayer(byte playerId) {
+		List<ShortPoint2D> hinterlandMilitaryBuildingPositions = new ArrayList<ShortPoint2D>();
+		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), playerId)) {
+			Building militaryBuilding = getBuildingAt(militaryBuildingPosition);
+			if (isMilitaryBuildingInHinterland(militaryBuilding, playerId)) {
+				hinterlandMilitaryBuildingPositions.add(militaryBuildingPosition);
 			}
 		}
-		return hinterlandTowerPositions;
+		return hinterlandMilitaryBuildingPositions;
 	}
 
-	private boolean isTowerInHinterland(Building tower, byte playerId) {
-		for (ShortPoint2D occupiedPosition : new MapCircle(tower.getPos(), CommonConstants.TOWER_RADIUS)) {
+	private boolean isMilitaryBuildingInHinterland(Building militaryBuilding, byte playerId) {
+		for (ShortPoint2D occupiedPosition : new MapCircle(militaryBuilding.getPos(), CommonConstants.TOWER_RADIUS)) {
 			if (getBorderLandNextToFreeLandForPlayer(playerId).contains(occupiedPosition)
 					&& partitionsGrid.getTowerCountAt(occupiedPosition.x, occupiedPosition.y) == 1) {
 				return false;
@@ -397,6 +394,14 @@ public class AiStatistics {
 		return playerStatistics[playerId].buildingPositions.get(type);
 	}
 
+	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EBuildingType[] buildingTypes, byte playerId) {
+		List<ShortPoint2D> buildingPositions = new Vector<ShortPoint2D>();
+		for (EBuildingType buildingType : buildingTypes) {
+			buildingPositions.addAll(getBuildingPositionsOfTypeForPlayer(buildingType, playerId));
+		}
+		return buildingPositions;
+	}
+
 	public AiPositions getStonesForPlayer(byte playerId) {
 		return playerStatistics[playerId].stones;
 	}
@@ -413,8 +418,8 @@ public class AiStatistics {
 		return playerStatistics[playerId].borderLandNextToFreeLand;
 	}
 
-	public int getNumberOfNotOccupiedTowers(short playerId) {
-		return playerStatistics[playerId].numberOfNotOccupiedTowers;
+	public int getNumberOfNotOccupiedMilitaryBuildings(short playerId) {
+		return playerStatistics[playerId].numberOfNotOccupiedMilitaryBuildingss;
 	}
 
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
@@ -578,7 +583,7 @@ public class AiStatistics {
 		private AiPositions deadMines;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
-		private int numberOfNotOccupiedTowers;
+		private int numberOfNotOccupiedMilitaryBuildingss;
 		private MaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
@@ -621,7 +626,7 @@ public class AiStatistics {
 			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
-			numberOfNotOccupiedTowers = 0;
+			numberOfNotOccupiedMilitaryBuildingss = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 
