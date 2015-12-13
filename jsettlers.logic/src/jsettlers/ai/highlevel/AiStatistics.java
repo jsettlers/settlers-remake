@@ -175,8 +175,12 @@ public class AiStatistics {
 			if (building.getBuildingType().isMilitaryBuilding()) {
 				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
 			}
-		} else if (building.getBuildingType().isMilitaryBuilding() && !building.isOccupied()) {
-			playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
+		} else if (building.getBuildingType().isMilitaryBuilding()) {
+			if (building.isOccupied()) {
+				playerStatistic.isAlive = true;
+			} else {
+				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
+			}
 		}
 	}
 
@@ -576,7 +580,12 @@ public class AiStatistics {
 		return playerStatistics[playerId].referencePosition;
 	}
 
+	public boolean isAlive(byte playerId) {
+		return playerStatistics[playerId].isAlive;
+	}
+
 	private static class PlayerStatistic {
+		boolean isAlive;
 		ShortPoint2D referencePosition;
 		int[] totalBuildingsNumbers;
 		int[] buildingsNumbers;
@@ -618,6 +627,7 @@ public class AiStatistics {
 		}
 
 		public void clearAll() {
+			isAlive = false;
 			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();

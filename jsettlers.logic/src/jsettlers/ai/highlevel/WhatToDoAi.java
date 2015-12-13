@@ -130,11 +130,13 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
-		destroyBuildings();
-		buildBuildings();
-		armyGeneral.levyUnits();
-		armyGeneral.commandTroops();
-		occupyMilitaryBuildings();
+		if (aiStatistics.isAlive(playerId)) {
+			destroyBuildings();
+			buildBuildings();
+			armyGeneral.levyUnits();
+			armyGeneral.commandTroops();
+			occupyMilitaryBuildings();
+		}
 	}
 
 	private void occupyMilitaryBuildings() {
