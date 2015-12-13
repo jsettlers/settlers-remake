@@ -42,11 +42,7 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
@@ -138,16 +134,18 @@ public class WhatToDoAi implements IWhatToDoAi {
 		buildBuildings();
 		armyGeneral.levyUnits();
 		armyGeneral.commandTroops();
-		occupyTowers();
+		occupyMilitaryBuildings();
 	}
 
-	private void occupyTowers() {
-		for (ShortPoint2D towerPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId)) {
-			OccupyingBuilding tower = (OccupyingBuilding) aiStatistics.getBuildingAt(towerPosition);
-			if (tower.getStateProgress() == 1 && !tower.isOccupied()) {
-				ShortPoint2D door = tower.getDoor();
+	private void occupyMilitaryBuildings() {
+		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(
+				EBuildingType.getMilitaryBuildings(), playerId)) {
+
+			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
+			if (militaryBuilding.getStateProgress() == 1 && !militaryBuilding.isOccupied()) {
+				ShortPoint2D door = militaryBuilding.getDoor();
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				if (soldier != null && tower.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
+				if (soldier != null && militaryBuilding.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
 					sendMovableTo(soldier, door);
 				}
 			}
@@ -209,9 +207,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	private void destroyHinterlandTowers() {
-		for (ShortPoint2D towerPositions : aiStatistics.getHinterlandTowerPositionsOfPlayer(playerId)) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, towerPositions));
+	private void destroyHinterlandMilitaryBuildings() {
+		for (ShortPoint2D militaryBuildingPositions : aiStatistics.getHinterlandMilitaryBuildingPositionsOfPlayer(playerId)) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, militaryBuildingPositions));
 		}
 	}
 
@@ -251,7 +249,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
 					if (buildToolsEconomy()) {
 						return;
-					}
+					} 
 					toolsEconomyNeedsToBeChecked = false;
 				}
 				if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingType)
@@ -316,8 +314,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private boolean buildTower() {
 		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1
-				&& aiStatistics.getNumberOfNotOccupiedTowers(playerId) == 0) {
-			destroyHinterlandTowers();
+				&& aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0) {
+			destroyHinterlandMilitaryBuildings();
 			return construct(TOWER);
 		}
 		return false;
@@ -365,7 +363,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
-			if (type == TOWER) {
+			if (type.isMilitaryBuilding()) {
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
 				if (soldier != null) {
 					sendMovableTo(soldier, position);
