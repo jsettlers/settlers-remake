@@ -167,8 +167,12 @@ public class AiStatistics {
 			if (building.getBuildingType().isMilitaryBuilding()) {
 				playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
 			}
-		} else if (building.getBuildingType().isMilitaryBuilding() && !building.isOccupied()) {
-			playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
+		} else if (building.getBuildingType().isMilitaryBuilding()) {
+			if (building.isOccupied()) {
+				playerStatistic.isAlive = true;
+			} else {
+				playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
+			}
 		}
 	}
 
@@ -564,7 +568,12 @@ public class AiStatistics {
 		return playerStatistics[playerId].materialProduction;
 	}
 
+	public boolean isAlive(byte playerId) {
+		return playerStatistics[playerId].isAlive;
+	}
+
 	class PlayerStatistic {
+		private boolean isAlive;
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
@@ -605,6 +614,7 @@ public class AiStatistics {
 		}
 
 		public void clearAll() {
+			isAlive = false;
 			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
