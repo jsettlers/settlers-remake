@@ -132,7 +132,7 @@ public class AiDifficultiesIT {
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) {
 		MapLoader mapCreator = MapList.getDefaultList().getMapById("066d3c28-8f37-41cf-96c1-270109f00b9f");
-		JSettlersGame game = new JSettlersGame(mapCreator, 2l, new OfflineNetworkConnector(), (byte) 0, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), (byte) 0, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 
