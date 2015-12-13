@@ -116,8 +116,7 @@ public class OriginalMapLoader extends MapLoader {
 	@Override
 	public short[] getImage() {
 		// - TODO
-		short[] tmp = new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
-		return tmp;
+		return new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
 	}
 
 	@Override

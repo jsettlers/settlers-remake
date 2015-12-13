@@ -149,16 +149,6 @@ public class OriginalMapFileContent implements IMapData {
 		mapPlayerInfos[index].playerName = PlayerName;
 	}
 
-	public void setPlayer(int index, int x, int y, OriginalMapFileDataStructs.EMapNations NationType, String PlayerName) {
-		if ((index < 0) || (index >= mapPlayerInfos.length))
-			return;
-
-		mapPlayerInfos[index].nation = NationType;
-		mapPlayerInfos[index].startX = x;
-		mapPlayerInfos[index].startY = y;
-		mapPlayerInfos[index].playerName = PlayerName;
-	}
-
 	public void setMapObject(int x, int y, MapObject newMapObject) {
 
 		int pos = y * widthHeight + x;

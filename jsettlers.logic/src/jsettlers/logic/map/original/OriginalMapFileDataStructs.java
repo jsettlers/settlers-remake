@@ -266,7 +266,7 @@ public class OriginalMapFileDataStructs {
 		EMapFileVersion(int value) {
 			this.value = value;
 		}
-	};
+	}
 
 	// --------------------------------------------------//
 	public enum EMapResources {
@@ -296,7 +296,7 @@ public class OriginalMapFileDataStructs {
 
 			return EMapResources.values()[type];
 		}
-	};
+	}
 
 	// --------------------------------------------------//
 	public enum EOriginalLandscapeType {
