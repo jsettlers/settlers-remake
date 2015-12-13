@@ -49,16 +49,16 @@ public class OriginalMapFileContent implements IMapData {
 		public String playerName;
 		public OriginalMapFileDataStructs.EMapNations nation;
 
-		public MapPlayerInfo(int X, int Y, String playerName, int nationInt) {
-			this.startX = X;
-			this.startY = Y;
+		public MapPlayerInfo(int x, int y, String playerName, int nationInt) {
+			this.startX = x;
+			this.startY = y;
 			this.playerName = playerName;
 			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
 		}
 
-		public MapPlayerInfo(int X, int Y) {
-			this.startX = X;
-			this.startY = Y;
+		public MapPlayerInfo(int x, int y) {
+			this.startX = x;
+			this.startY = y;
 			this.playerName = "";
 			this.nation = OriginalMapFileDataStructs.EMapNations.ROMANS;
 		}
@@ -130,9 +130,6 @@ public class OriginalMapFileContent implements IMapData {
 
 	public void setPlayerCount(int count) {
 		mapPlayerInfos = new MapPlayerInfo[count];
-		int Foo;
-		Foo = 2;
-		System.out.println(Foo);
 
 		for (int i = 0; i < count; i++) {
 			// - init new player with "random" start position
@@ -140,16 +137,16 @@ public class OriginalMapFileContent implements IMapData {
 		}
 	}
 
-	public void setPlayer(int index, int x, int y, int NationType, String PlayerName) {
-		// System.out.println("Player "+ Integer.toString(index) +" : "+ PlayerName +" @ ("+ x +" , "+ y +")");
+	public void setPlayer(int index, int x, int y, int nationType, String playerName) {
+		// System.out.println("Player "+ Integer.toString(index) +" : "+ playerName +" @ ("+ x +" , "+ y +")");
 
 		if ((index < 0) || (index >= mapPlayerInfos.length))
 			return;
 
-		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(NationType);
+		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationType);
 		mapPlayerInfos[index].startX = x;
 		mapPlayerInfos[index].startY = y;
-		mapPlayerInfos[index].playerName = PlayerName;
+		mapPlayerInfos[index].playerName = playerName;
 	}
 
 	public void setMapObject(int x, int y, MapObject newMapObject) {
@@ -162,49 +159,49 @@ public class OriginalMapFileContent implements IMapData {
 		mapObject[pos] = newMapObject;
 	}
 
-	public void setBuilding(int x, int y, int BType, int party, int countSword1, int countSword2, int countSword3, int countArcher1, int countArcher2,
+	public void setBuilding(int x, int y, int buildingType, int party, int countSword1, int countSword2, int countSword3, int countArcher1, int countArcher2,
 			int countArcher3, int countSpear1, int countSpear2, int countSpear3) {
 		int pos = y * widthHeight + x;
 
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapBuildingType BuildingType = EMapBuildingType.getTypeByInt(BType);
+		EMapBuildingType mapBuildingType = EMapBuildingType.getTypeByInt(buildingType);
 
-		if (BuildingType == EMapBuildingType.NOT_A_BUILDING)
+		if (mapBuildingType == EMapBuildingType.NOT_A_BUILDING)
 			return;
-		if (BuildingType.value != null) {
-			mapObject[pos] = new BuildingObject(BuildingType.value, (byte) party);
+		if (mapBuildingType.value != null) {
+			mapObject[pos] = new BuildingObject(mapBuildingType.value, (byte) party);
 		}
 	}
 
-	public void setSettler(int x, int y, int SType, int party) {
+	public void setSettler(int x, int y, int settlerType, int party) {
 		int pos = y * widthHeight + x;
 
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapSettlersType SettlerType = EMapSettlersType.getTypeByInt(SType);
+		EMapSettlersType mapSettlerType = EMapSettlersType.getTypeByInt(settlerType);
 
-		if (SettlerType == EMapSettlersType.NOT_A_SETTLER)
+		if (mapSettlerType == EMapSettlersType.NOT_A_SETTLER)
 			return;
-		if (SettlerType.value != null) {
-			mapObject[pos] = new MovableObject(SettlerType.value, (byte) party);
+		if (mapSettlerType.value != null) {
+			mapObject[pos] = new MovableObject(mapSettlerType.value, (byte) party);
 		}
 	}
 
-	public void setStack(int x, int y, int SType, int count) {
+	public void setStack(int x, int y, int stackType, int count) {
 		int pos = y * widthHeight + x;
 
 		if ((pos < 0) || (pos >= dataCount))
 			return;
 
-		EMapStackType StackType = EMapStackType.getTypeByInt(SType);
+		EMapStackType mapStackType = EMapStackType.getTypeByInt(stackType);
 
-		if (StackType == EMapStackType.NOT_A_STACK)
+		if (mapStackType == EMapStackType.NOT_A_STACK)
 			return;
-		if (StackType.value != null) {
-			mapObject[pos] = new StackObject(StackType.value, count);
+		if (mapStackType.value != null) {
+			mapObject[pos] = new StackObject(mapStackType.value, count);
 		}
 	}
 

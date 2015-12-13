@@ -17,7 +17,6 @@ package jsettlers.tests.ai;
 import static org.junit.Assert.fail;
 
 import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import org.junit.Test;
@@ -33,8 +32,6 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.network.client.OfflineNetworkConnector;
-
-import java.io.IOException;
 
 /**
  * @author codingberlin

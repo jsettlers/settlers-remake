@@ -159,8 +159,8 @@ public class OriginalMapLoader extends MapLoader {
 		// - add player resources
 		mapContent.addStartTowerMaterialsAndSettlers();
 
-		OriginalMapFileContent MapData = mapContent.mapData;
-		MapData.calculateBlockedPartitions();
+		OriginalMapFileContent mapData = mapContent.mapData;
+		mapData.calculateBlockedPartitions();
 
 		watch.stop("Loading original map data required");
 
@@ -174,12 +174,12 @@ public class OriginalMapLoader extends MapLoader {
 			}
 		}
 
-		MainGrid mainGrid = new MainGrid(getMapId(), getMapName(), MapData, playerSettings);
+		MainGrid mainGrid = new MainGrid(getMapId(), getMapName(), mapData, playerSettings);
 
 		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
 
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
-			playerStates[playerId] = new PlayerState(playerId, new UIState(MapData.getStartPoint(playerId)));
+			playerStates[playerId] = new PlayerState(playerId, new UIState(mapData.getStartPoint(playerId)));
 		}
 
 		return new MainGridWithUiSettings(mainGrid, playerStates);
@@ -210,10 +210,10 @@ public class OriginalMapLoader extends MapLoader {
 		// - add player resources
 		mapContent.addStartTowerMaterialsAndSettlers();
 
-		OriginalMapFileContent MapData = mapContent.mapData;
-		MapData.calculateBlockedPartitions();
+		OriginalMapFileContent mapData = mapContent.mapData;
+		mapData.calculateBlockedPartitions();
 
-		return MapData;
+		return mapData;
 
 	}
 
