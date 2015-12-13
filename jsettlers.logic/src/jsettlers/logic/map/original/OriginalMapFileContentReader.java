@@ -426,8 +426,7 @@ public class OriginalMapFileContentReader {
 			int y_pos = readBEWordFrom(pos);
 			pos += 2;
 
-			// not used - maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
-			readByteFrom(pos++);
+			pos++; // not used - maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
 
 			// -----------
 			// - number of soldier in building is saved as 4-Bit (=Nibble):
@@ -444,7 +443,7 @@ public class OriginalMapFileContentReader {
 			pos++;
 
 			int countSpear3 = readHighNibbleFrom(pos);
-			readLowNibbleFrom(pos); // not used count
+			// low nibble is a not used count
 			pos++;
 
 			int countSpear1 = readHighNibbleFrom(pos);
@@ -497,8 +496,7 @@ public class OriginalMapFileContentReader {
 			int SType = readByteFrom(pos++);
 			int count = readByteFrom(pos++);
 
-			readBEWordFrom(pos); // not used - maybe: padding to size of 8 (2 INTs)
-			pos += 2;
+			pos += 2; // not used - maybe: padding to size of 8 (2 INTs)
 
 			// -------------
 			// - update data
