@@ -119,7 +119,7 @@ public class OriginalMapFileDataStructs {
 			this.value = value;
 		}
 
-		public static EMapStartResources FromMapValue(int mapValue) {
+		public static EMapStartResources fromMapValue(int mapValue) {
 			for (int i = 0; i < EMapStartResources.values().length; i++) {
 				if (EMapStartResources.values()[i].value == mapValue)
 					return EMapStartResources.values()[i];

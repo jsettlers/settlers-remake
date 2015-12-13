@@ -59,7 +59,7 @@ public class OriginalMapLoader extends MapLoader {
 		mapContent.readBasicMapInformation();
 
 		// - free the DataBuffer
-		mapContent.FreeBuffer();
+		mapContent.freeBuffer();
 	}
 
 	// ---------------------------//
