@@ -53,7 +53,7 @@ public class OriginalMapFileContent implements IMapData {
 			this.startX = X;
 			this.startY = Y;
 			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(nationInt);
+			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
 		}
 
 		public MapPlayerInfo(int X, int Y) {
@@ -130,6 +130,9 @@ public class OriginalMapFileContent implements IMapData {
 
 	public void setPlayerCount(int count) {
 		mapPlayerInfos = new MapPlayerInfo[count];
+		int Foo;
+		Foo = 2;
+		System.out.println(Foo);
 
 		for (int i = 0; i < count; i++) {
 			// - init new player with "random" start position
@@ -143,7 +146,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((index < 0) || (index >= mapPlayerInfos.length))
 			return;
 
-		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.FromMapValue(NationType);
+		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(NationType);
 		mapPlayerInfos[index].startX = x;
 		mapPlayerInfos[index].startY = y;
 		mapPlayerInfos[index].playerName = PlayerName;
@@ -228,7 +231,7 @@ public class OriginalMapFileContent implements IMapData {
 	}
 
 	// - free the Arrays
-	public void FreeBuffer() {
+	public void freeBuffer() {
 		dataCount = 0;
 		height = null;
 		landscapeType = null;

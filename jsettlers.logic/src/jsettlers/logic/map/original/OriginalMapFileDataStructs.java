@@ -94,7 +94,7 @@ public class OriginalMapFileDataStructs {
 			this.value = value;
 		}
 
-		public static EMapNations FromMapValue(int mapValue) {
+		public static EMapNations fromMapValue(int mapValue) {
 			for (int i = 0; i < EMapNations.values().length; i++) {
 				if (EMapNations.values()[i].value == mapValue)
 					return EMapNations.values()[i];

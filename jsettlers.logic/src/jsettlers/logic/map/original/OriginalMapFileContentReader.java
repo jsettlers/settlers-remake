@@ -34,7 +34,7 @@ import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResource
  */
 public class OriginalMapFileContentReader {
 	// --------------------------------------------------//
-	public static class mapResourceInfo {
+	public static class MapResourceInfo {
 		OriginalMapFileDataStructs.EMapFilePartType partType;
 		public int offset = 0;
 		public int size = 0;
@@ -43,7 +43,7 @@ public class OriginalMapFileContentReader {
 	}
 	// --------------------------------------------------//
 
-	private final List<mapResourceInfo> resources;
+	private final List<MapResourceInfo> resources;
 
 	public int fileChecksum = 0;
 	public int widthHeight;
@@ -60,7 +60,7 @@ public class OriginalMapFileContentReader {
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		// - init Resource Info
-		resources = new LinkedList<mapResourceInfo>();
+		resources = new LinkedList<MapResourceInfo>();
 
 		// - init players
 		mapData.setPlayerCount(1);
@@ -150,8 +150,8 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - returns a File Resources
-	private mapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type) {
-		for (mapResourceInfo element : resources) {
+	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type) {
+		for (MapResourceInfo element : resources) {
 			if (element.partType == type)
 				return element;
 		}
@@ -219,7 +219,7 @@ public class OriginalMapFileContentReader {
 
 			// - save the values
 			if ((partType > 0) && (partType < OriginalMapFileDataStructs.EMapFilePartType.length) && (partLen >= 0)) {
-				mapResourceInfo newRes = new mapResourceInfo();
+				MapResourceInfo newRes = new MapResourceInfo();
 
 				newRes.partType = OriginalMapFileDataStructs.EMapFilePartType.getTypeByInt(partType);
 				newRes.cryptKey = partType;
@@ -239,7 +239,7 @@ public class OriginalMapFileContentReader {
 	public void freeBuffer() {
 		// System.out.println("Freeing Buffer.");
 		mapContent = null;
-		mapData.FreeBuffer();
+		mapData.freeBuffer();
 	}
 
 	public void reOpen(InputStream originalMapFile) {
@@ -252,7 +252,7 @@ public class OriginalMapFileContentReader {
 
 		// - reset Crypt Info
 
-		for (mapResourceInfo element : resources) {
+		for (MapResourceInfo element : resources) {
 			element.hasBeenDecrypted = false;
 		}
 	}
@@ -283,7 +283,7 @@ public class OriginalMapFileContentReader {
 		widthHeight = 0;
 
 		// - get resource information for the area
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
 
 		if (FPart == null)
 			return;
@@ -305,7 +305,7 @@ public class OriginalMapFileContentReader {
 		if (mapQuestText != null)
 			return mapQuestText;
 
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TEXT);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TEXT);
 
 		if ((FPart == null) || (FPart.size == 0))
 			return "";
@@ -327,7 +327,7 @@ public class OriginalMapFileContentReader {
 		if (mapQuestTip != null)
 			return mapQuestTip;
 
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TIP);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TIP);
 
 		if ((FPart == null) || (FPart.size == 0))
 			return "";
@@ -346,7 +346,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read some common information from the map-file
 	public void readMapInfo() {
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO);
 
 		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -390,7 +390,7 @@ public class OriginalMapFileContentReader {
 	public boolean readBuildings() {
 		hasBuildings = false;
 
-		mapResourceInfo fPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
+		MapResourceInfo fPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
 
 		if ((fPart == null) || (fPart.size == 0)) {
 			System.err.println("Warning: No Buildings available in mapfile!");
@@ -461,7 +461,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read stacks from the map-file
 	public boolean readStacks() {
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.STACKS);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.STACKS);
 
 		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Stacks available in mapfile!");
@@ -508,7 +508,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read settlers from the map-file
 	public boolean readSettlers() {
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.SETTLERS);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.SETTLERS);
 
 		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Settlers available in mapfile!");
@@ -553,7 +553,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read the Player Info
 	public void readPlayerInfo() {
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
 
 		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -589,7 +589,7 @@ public class OriginalMapFileContentReader {
 	// - Reads in the Map Data / Landscape and MapObjects like trees
 	public boolean readMapData() {
 		// - get resource information for the area
-		mapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
+		MapResourceInfo FPart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
 
 		if ((FPart == null) || (FPart.size == 0)) {
 			System.err.println("Warning: No area information available in mapfile!");
@@ -693,7 +693,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - Decrypt a resource
-	private boolean doDecrypt(mapResourceInfo FPart) {
+	private boolean doDecrypt(MapResourceInfo FPart) {
 
 		if (FPart == null)
 			return false;
