@@ -28,8 +28,7 @@
     <target name="loadLib">
         <mkdir dir="./build/.buildScripts" />
         <javac srcdir="./build:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/gen:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/jsettlers.common/gen:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
-        <copy file="${workspace}/jsettlers.graphics.swing/src/jsettlers/graphics/swing/resources/defaultConfig.prp" tofile="./build/.buildScripts/jsettlers/graphics/swing/resources/defaultConfig.prp" />
-    	<taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath="./build/.buildScripts/" />
+        <taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath="./build/.buildScripts/" />
     </target>
 
 </project>
