@@ -19,10 +19,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.content.res.AssetManager;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.IMapLister;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapList;
 
 public class AndroidAssetsMapLister implements IMapLister {
 	public static final class AndroidAssetMap implements IListedMap {
@@ -52,7 +52,7 @@ public class AndroidAssetsMapLister implements IMapLister {
 
 		@Override
 		public boolean isCompressed() {
-			return path.endsWith(MapList.COMPRESSED_MAP_EXTENSION);
+			return path.endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class AndroidAssetsMapLister implements IMapLister {
 	public void listMaps(IMapListerCallable callable) {
 		try {
 			for (String s : manager.list(prefix)) {
-				if (s.endsWith(MapList.MAP_EXTENSION)) {
+				if (s.endsWith(MapLoader.MAP_EXTENSION)) {
 					callable.foundMap(new AndroidAssetMap(manager, prefix + "/" + s));
 				}
 			}
