@@ -18,7 +18,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Class to cluster util functions concerning the main classes.
@@ -34,15 +33,13 @@ public final class MainUtils {
 
 	public static OptionableProperties loadOptions(String[] args) {
 		File optionsFile = new File(OPTIONS_FILE_NAME);
-		Properties fileOptions = null;
+		OptionableProperties options = new OptionableProperties();
 		if (optionsFile.exists()) {
 			System.out.println("Found default command line options file. Starting to read.");
 			try {
-				fileOptions = new Properties();
-				fileOptions.load(new BufferedInputStream(new FileInputStream(optionsFile)));
+				options.load(new BufferedInputStream(new FileInputStream(optionsFile)));
 				System.out.println("Default command line options file successfully read.");
 			} catch (IOException e) {
-				fileOptions = null;
 				System.err.println("Failed to read default command line options file.");
 				e.printStackTrace();
 			}
@@ -50,9 +47,7 @@ public final class MainUtils {
 			System.out.println("No default command line options file found.");
 		}
 
-		OptionableProperties options = new OptionableProperties(fileOptions);
 		options.loadArguments(args);
-
 		System.out.println("Options loaded: " + options.toString());
 
 		return options;

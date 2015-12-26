@@ -33,6 +33,7 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
@@ -166,6 +167,10 @@ public class SwingManagedJSettlers {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
 		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
 		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
+
+		if (options.containsKey("fixed-ai-type")) {
+			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));
+		}
 
 		if (options.isOptionSet("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";

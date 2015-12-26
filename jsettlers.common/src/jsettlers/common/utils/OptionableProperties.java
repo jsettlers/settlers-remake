@@ -32,8 +32,8 @@ public class OptionableProperties extends Properties {
 	public OptionableProperties() {
 	}
 
-	public OptionableProperties(Properties fileOptions) {
-		super(fileOptions);
+	public OptionableProperties(Properties defaults) {
+		super(defaults);
 	}
 
 	public boolean isOptionSet(String key) {
