@@ -4,9 +4,10 @@
 	<!-- set global properties for this build -->
 	<property name="swingTarget" location="target" />
 	<property name="targetLocation" location="${swingTarget}/swing" />
-	<property name="targetResources" location="${targetLocation}/JSettlers/resources" />
+	<property name="targetJSettlersLocation" location="${targetLocation}/JSettlers" />
+	<property name="targetResources" location="${targetJSettlersLocation}/resources" />
 	<property name="targetLibFolderName" value="libs" />
-	<property name="targetLibs" location="${targetLocation}/JSettlers/${targetLibFolderName}" />
+	<property name="targetLibs" location="${targetJSettlersLocation}/${targetLibFolderName}" />
 
 	<property name="targetZip" location="${swingTarget}/JSettlers.zip" />
 	<property name="targetTar" location="${swingTarget}/JSettlers.tar.bz2" />
@@ -14,6 +15,7 @@
 
 	<property name="sourceResources" location="jsettlers.common/resources" />
 	<property name="sourceLibs" location="go.graphics.swing/libs" />
+	<property name="optionsFileLocation" location="jsettlers.main.swing/options.prp" />
 
 
 	<!-- define targets -->
@@ -21,7 +23,7 @@
 	<target name="createSwingJar" depends="clean,copyLibs">
 		<ant antfile="jsettlers.main.swing/build/build.ant" useNativeBasedir="true" inheritAll="false" target="build" />
 
-		<jar destfile="${targetLocation}/JSettlers/JSettlers.jar">
+		<jar destfile="${targetJSettlersLocation}/JSettlers.jar">
 			<manifest>
 				<attribute name="Main-Class" value="jsettlers.main.swing.SwingManagedJSettlers" />
 				<attribute name="Class-Path" value=". ${targetLibFolderName}/gluegen-rt.jar ${targetLibFolderName}/jogl-all.jar" />
@@ -38,9 +40,10 @@
 	</target>
 
 
-	<target name="copySwingResources">
-		<delete dir="${targetResources}" />
-
+	<target name="copySwingResources" depends="clean">
+		<copy todir="${targetJSettlersLocation}">
+			<fileset file="${optionsFileLocation}" />
+		</copy>
 		<copy todir="${targetResources}/buildings">
 			<fileset dir="${sourceResources}/buildings" />
 		</copy>
