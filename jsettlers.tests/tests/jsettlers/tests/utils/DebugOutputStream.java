@@ -1,4 +1,4 @@
-package jsettlers.tests.autoreplay;
+package jsettlers.tests.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;

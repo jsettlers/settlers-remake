@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.tests.autoreplay;
+package jsettlers.tests.replay;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,6 +50,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.replay.ReplayTool;
 import jsettlers.tests.utils.CountingInputStream;
+import jsettlers.tests.utils.DebugMapLister;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -68,8 +69,8 @@ public class AutoReplayIT {
 		});
 	}
 
-	private static final String remainingReplay = "out/remainingReplay.log";
-	private static final Object lock = new Object();
+	private static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
+	private static final Object ONLY_ONE_TEST_AT_A_TIME_LOCK = new Object();
 
 	@Parameters(name = "{index}: {0} : {1}")
 	public static Collection<Object[]> replaySets() {
@@ -97,7 +98,7 @@ public class AutoReplayIT {
 
 	@Test
 	public void testReplay() throws IOException, MapLoadException {
-		synchronized (lock) {
+		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
 			Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
 			Path expectedFile = getSavegamePath();
 
@@ -138,7 +139,7 @@ public class AutoReplayIT {
 
 	private static Path replayAndGetSavegame(Path replayPath, int targetTimeMinutes) throws IOException {
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-		ReplayTool.replayAndCreateSavegame(replayPath.toFile(), targetTimeMinutes * 60 * 1000, remainingReplay);
+		ReplayTool.replayAndCreateSavegame(replayPath.toFile(), targetTimeMinutes * 60 * 1000, REMAINING_REPLAY_FILENAME);
 
 		Path savegameFile = findSavegameFile();
 		System.out.println("Replayed: " + replayPath + " and created savegame: " + savegameFile);
