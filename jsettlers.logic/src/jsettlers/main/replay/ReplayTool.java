@@ -26,7 +26,6 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
@@ -40,19 +39,18 @@ import jsettlers.network.client.interfaces.INetworkConnector;
 public class ReplayTool {
 
 	public static MapLoader replayAndGetSavegame(File replayFile, int targetTimeMinutes, String remainingReplayFileName) throws IOException {
-		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-		ReplayTool.replayAndCreateSavegame(replayFile, targetTimeMinutes * 60 * 1000, remainingReplayFileName);
+		ReplayTool.replayAndCreateSavegame(replayFile, targetTimeMinutes, remainingReplayFileName);
 
 		MapLoader savegameFile = getNewestSavegame();
 		System.out.println("Replayed: " + replayFile + " and created savegame: " + savegameFile);
 		return savegameFile;
 	}
 
-	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
+	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMinutes, String newReplayFile) throws IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
-		playGameToTargetTimeAndGetSavegame(targetGameTimeMs, networkConnector, game);
+		playGameToTargetTimeAndGetSavegame(targetGameTimeMinutes, networkConnector, game);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
 		MapLoader newSavegame = getNewestSavegame();
@@ -65,8 +63,9 @@ public class ReplayTool {
 		return networkConnector;
 	}
 
-	public static MapLoader playGameToTargetTimeAndGetSavegame(int targetGameTimeMs, OfflineNetworkConnector networkConnector, JSettlersGame game)
-			throws IOException {
+	public static MapLoader playGameToTargetTimeAndGetSavegame(int targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
+			JSettlersGame game) throws IOException {
+		final int targetGameTimeMs = targetGameTimeMinutes * 60 * 1000;
 		IStartingGame startingGame = game.start();
 		IStartedGame startedGame = waitForGameStartup(startingGame);
 

@@ -94,7 +94,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					String fileName = file.getName();
-					if (fileName.endsWith(MapList.MAP_EXTENSION) || fileName.endsWith(MapList.COMPRESSED_MAP_EXTENSION)) {
+					if (!file.isDirectory() && fileName.endsWith(MapList.MAP_EXTENSION) || fileName.endsWith(MapList.COMPRESSED_MAP_EXTENSION)) {
 						callback.foundMap(new ListedMapFile(file));
 					}
 				}

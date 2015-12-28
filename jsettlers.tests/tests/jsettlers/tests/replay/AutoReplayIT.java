@@ -14,12 +14,9 @@
  *******************************************************************************/
 package jsettlers.tests.replay;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -37,14 +34,13 @@ import jsettlers.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.IMapListFactory;
-import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.replay.ReplayTool;
-import jsettlers.tests.utils.CountingInputStream;
 import jsettlers.tests.utils.DebugMapLister;
 
 @RunWith(Parameterized.class)
@@ -53,6 +49,7 @@ public class AutoReplayIT {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
+		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 
 		TestUtils.setupResourcesManager();
 		MapList.setDefaultListFactory(new IMapListFactory() {
@@ -97,7 +94,7 @@ public class AutoReplayIT {
 			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = getReferenceSavegamePath();
 
-			compareMapFiles(expectedSavegame, actualSavegame);
+			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
 			actualSavegame.getFile().delete();
 		}
 	}
@@ -114,24 +111,6 @@ public class AutoReplayIT {
 		return new File("resources/autoreplay/" + folderName + "/replay.log");
 	}
 
-	private static void compareMapFiles(MapLoader expectedSavegame, MapLoader actualSavegame) throws IOException, MapLoadException {
-		System.out.println("Comparing expected '" + expectedSavegame + "' with actual '" + actualSavegame + "' (uncompressed!)");
-
-		try (InputStream expectedStream = MapLoader.getMapInputStream(expectedSavegame.getFile());
-				CountingInputStream actualStream = new CountingInputStream(MapLoader.getMapInputStream(actualSavegame.getFile()))) {
-			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
-			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
-
-			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
-
-			int e, a;
-			while (((e = expectedStream.read()) != -1) & ((a = actualStream.read()) != -1)) {
-				assertEquals("difference at (uncompressed) byte " + actualStream.getByteCounter(), e, a);
-			}
-			assertEquals("files have different lengths (uncompressed)", e, a);
-		}
-	}
-
 	public static void main(String[] args) throws IOException, MapLoadException {
 		System.out.println("Creating reference files for replays...");
 
@@ -144,7 +123,7 @@ public class AutoReplayIT {
 			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {
-				compareMapFiles(expectedSavegame, newSavegame);
+				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
 				newSavegame.getFile().delete();
 			} catch (AssertionError | NoSuchFileException | FileNotFoundException ex) { // if the files are not equal, replace the existing one.

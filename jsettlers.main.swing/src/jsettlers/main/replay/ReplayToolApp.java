@@ -38,7 +38,7 @@ public class ReplayToolApp {
 		SwingManagedJSettlers.loadDebugSettings(argsMap);
 		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(argsMap, "config.prp"));
 
-		int targetGameTime = Integer.valueOf(argsMap.get("targetTime")) * 60 * 1000;
+		int targetGameTimeMinutes = Integer.valueOf(argsMap.get("targetTime"));
 
 		String replayFileString = argsMap.get("replayFile");
 		if (replayFileString == null)
@@ -47,7 +47,7 @@ public class ReplayToolApp {
 		if (!replayFile.exists())
 			throw new FileNotFoundException("Found replayFile parameter, but file can not be found: " + replayFile);
 
-		ReplayTool.replayAndCreateSavegame(replayFile, targetGameTime, "replayForSavegame.log");
+		ReplayTool.replayAndCreateSavegame(replayFile, targetGameTimeMinutes, "replayForSavegame.log");
 
 		Thread.sleep(2000);
 		System.exit(0);

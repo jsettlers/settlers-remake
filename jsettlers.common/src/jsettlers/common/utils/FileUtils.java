@@ -23,21 +23,27 @@ public class FileUtils {
 		void visitFile(File file) throws IOException;
 	}
 
-	public static void walkFileTree(File directory, IFileVisitor fileVisitor) throws IOException {
-		if (directory == null) {
+	public static void walkFileTree(File file, IFileVisitor fileVisitor) throws IOException {
+		if (file == null) {
 			return;
 		}
 
-		File[] files = directory.listFiles();
-		if (files == null) {
-			return;
-		}
-
-		for (File file : files) {
-			fileVisitor.visitFile(file);
-			if (file.isDirectory()) {
-				walkFileTree(file, fileVisitor);
+		File[] files = file.listFiles();
+		if (files != null) {
+			for (File child : files) {
+				walkFileTree(child, fileVisitor);
 			}
 		}
+
+		fileVisitor.visitFile(file);
+	}
+
+	public static void deleteRecursively(File file) throws IOException {
+		walkFileTree(file, new IFileVisitor() {
+			@Override
+			public void visitFile(File file) throws IOException {
+				file.delete();
+			}
+		});
 	}
 }
