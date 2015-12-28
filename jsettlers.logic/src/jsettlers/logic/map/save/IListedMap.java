@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.save;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,4 +47,11 @@ public interface IListedMap {
 	 * @return Returns true if this is a compressed map file.
 	 */
 	boolean isCompressed();
+
+	/**
+	 * Returns the File object of this {@link IListedMap} file if possible.
+	 * 
+	 * @return
+	 */
+	File getFile();
 }

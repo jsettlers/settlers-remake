@@ -67,6 +67,11 @@ public class DirectoryMapLister implements IMapLister {
 		public boolean isCompressed() {
 			return file.getName().endsWith(MapList.COMPRESSED_MAP_EXTENSION);
 		}
+
+		@Override
+		public File getFile() {
+			return file;
+		}
 	}
 
 	public DirectoryMapLister(File directory) {
