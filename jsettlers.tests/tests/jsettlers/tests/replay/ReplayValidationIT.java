@@ -85,7 +85,7 @@ public class ReplayValidationIT {
 	}
 
 	private File findNewestReplayFile() throws IOException {
-		File[] newestReplay = new File[1];
+		final File[] newestReplay = new File[1];
 
 		FileUtils.walkFileTree(new File(ResourceManager.getSaveDirectory(), "logs"), new IFileVisitor() {
 			private long newestModificationTime;
