@@ -15,10 +15,8 @@
 package jsettlers.tests.replay;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -89,7 +87,7 @@ public class AutoReplayIT {
 	}
 
 	@Test
-	public void testReplay() throws IOException, MapLoadException {
+	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
 			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = getReferenceSavegamePath();
@@ -111,7 +109,7 @@ public class AutoReplayIT {
 		return new File("resources/autoreplay/" + folderName + "/replay.log");
 	}
 
-	public static void main(String[] args) throws IOException, MapLoadException {
+	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException {
 		System.out.println("Creating reference files for replays...");
 
 		for (Object[] replaySet : replaySets()) {
@@ -126,7 +124,7 @@ public class AutoReplayIT {
 				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
 				newSavegame.getFile().delete();
-			} catch (AssertionError | NoSuchFileException | FileNotFoundException ex) { // if the files are not equal, replace the existing one.
+			} catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
 				Files.move(Paths.get(newSavegame.getFile().getFile().toString()), Paths.get(expectedSavegame.getFile().getFile().toString()),
 						StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + newSavegame + "'");

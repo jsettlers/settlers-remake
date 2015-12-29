@@ -38,7 +38,7 @@ import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
 
-	public static MapLoader replayAndGetSavegame(File replayFile, int targetTimeMinutes, String remainingReplayFileName) throws IOException {
+	public static MapLoader replayAndGetSavegame(File replayFile, float targetTimeMinutes, String remainingReplayFileName) throws IOException {
 		ReplayTool.replayAndCreateSavegame(replayFile, targetTimeMinutes, remainingReplayFileName);
 
 		MapLoader savegameFile = getNewestSavegame();
@@ -46,7 +46,7 @@ public class ReplayTool {
 		return savegameFile;
 	}
 
-	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMinutes, String newReplayFile) throws IOException {
+	public static void replayAndCreateSavegame(File replayFile, float targetGameTimeMinutes, String newReplayFile) throws IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
@@ -63,9 +63,9 @@ public class ReplayTool {
 		return networkConnector;
 	}
 
-	public static MapLoader playGameToTargetTimeAndGetSavegame(int targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
+	public static MapLoader playGameToTargetTimeAndGetSavegame(float targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
 			JSettlersGame game) throws IOException {
-		final int targetGameTimeMs = targetGameTimeMinutes * 60 * 1000;
+		final int targetGameTimeMs = (int) (targetGameTimeMinutes * 60 * 1000);
 		IStartingGame startingGame = game.start();
 		IStartedGame startedGame = waitForGameStartup(startingGame);
 
@@ -127,10 +127,8 @@ public class ReplayTool {
 
 	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector,
 			ReplayStartInformation replayStartInformation) throws IOException {
-		File loadableReplayFile = replayFile;
-		System.out.println("Found loadable replay file. Started loading it: " + loadableReplayFile);
-
-		return JSettlersGame.loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation);
+		System.out.println("Found loadable replay file. Started loading it: " + replayFile);
+		return JSettlersGame.loadFromReplayFile(replayFile, networkConnector, replayStartInformation);
 	}
 
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)

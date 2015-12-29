@@ -22,9 +22,10 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class SetMaterialProductionAction extends Action {
 
-	public enum EMaterialProductionType  {
+	public enum EMaterialProductionType {
 		INCREASE,
 		DECREASE,
+		SET,
 		SET_RATIO;
 
 		public static final EMaterialProductionType[] values = EMaterialProductionType.values();

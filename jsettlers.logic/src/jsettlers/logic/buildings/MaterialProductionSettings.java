@@ -35,7 +35,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 			EMaterialType.BOW };
 	private static List<EMaterialType> WEAPONS_LIST = Arrays.asList(WEAPONS);
 	private final float[] ratios = new float[EMaterialType.NUMBER_OF_MATERIALS];
-	private final float[] numberOfFutureProducedMaterials = new float[EMaterialType.NUMBER_OF_MATERIALS];
+	private final int[] numberOfFutureProducedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
 	public MaterialProductionSettings() {
 		for (EMaterialType type : EMaterialType.values) {
@@ -71,7 +71,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 
 	@Override
 	public int numberOfFutureProducedMaterial(EMaterialType type) {
-		return (int) numberOfFutureProducedMaterials[type.ordinal];
+		return numberOfFutureProducedMaterials[type.ordinal];
 	}
 
 	public void increaseNumberOfFutureProducedMaterial(EMaterialType type) {
@@ -82,7 +82,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 		setNumberOfFutureProducedMaterial(type, numberOfFutureProducedMaterials[type.ordinal] - 1);
 	}
 
-	public void setNumberOfFutureProducedMaterial(EMaterialType type, float count) {
+	public void setNumberOfFutureProducedMaterial(EMaterialType type, int count) {
 		if (!WEAPONS_LIST.contains(type)) {
 			return;
 		}

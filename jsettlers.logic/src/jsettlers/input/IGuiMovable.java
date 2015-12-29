@@ -15,9 +15,9 @@
 package jsettlers.input;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IIDable;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.logic.movable.interfaces.IIDable;
 
 /**
  * 

@@ -27,7 +27,7 @@ import jsettlers.common.sound.ISoundable;
  * @author Andreas Eberle
  * 
  */
-public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable {
+public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable, IIDable {
 	public EMovableType getMovableType();
 
 	public EAction getAction();

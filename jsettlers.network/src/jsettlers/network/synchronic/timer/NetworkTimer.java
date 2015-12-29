@@ -201,13 +201,13 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	 *
 	 * @param timerable
 	 *            {@link INetworkTimerable} to be scheduled.
-	 * @param delay
+	 * @param period
 	 *            delay of the given {@link INetworkTimerable}.
 	 */
 	@Override
-	public void schedule(INetworkTimerable timerable, short delay) {
+	public void schedule(INetworkTimerable timerable, short period) {
 		synchronized (newTimerables) {
-			newTimerables.add(new ScheduledTimerable(timerable, delay));
+			newTimerables.add(new ScheduledTimerable(timerable, period));
 		}
 	}
 
@@ -289,8 +289,9 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 
 	@Override
 	public void scheduleSyncTasksPacket(SyncTasksPacket tasksPacket) {
-		assert maxAllowedLockstep == Integer.MAX_VALUE || maxAllowedLockstep + 1 == tasksPacket.getLockstepNumber() : "received unlock for wrong step! current max allowed: "
-				+ maxAllowedLockstep + " new: " + tasksPacket.getLockstepNumber();
+		assert maxAllowedLockstep == Integer.MAX_VALUE
+				|| maxAllowedLockstep + 1 == tasksPacket.getLockstepNumber() : "received unlock for wrong step! current max allowed: "
+						+ maxAllowedLockstep + " new: " + tasksPacket.getLockstepNumber();
 
 		if (!tasksPacket.getTasks().isEmpty()) {
 			synchronized (tasks) {

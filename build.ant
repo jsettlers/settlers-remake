@@ -17,6 +17,10 @@
 	<target name="runAutoReplayIT">
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="autoReplayIT" />
 	</target>
+	
+	<target name="runReplayValidationIT">
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="replayValidationIT" />
+	</target>
 
 	<target name="runAiDifficultiesIT">
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="aiDifficultiesIT" />

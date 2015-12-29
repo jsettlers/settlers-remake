@@ -116,4 +116,9 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	public ESelectionType getSelectionType() {
 		return ESelectionType.PEOPLE;
 	}
+
+	@Override
+	public int getID() {
+		return 0;
+	}
 }

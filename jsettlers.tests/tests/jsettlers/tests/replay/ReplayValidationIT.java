@@ -36,7 +36,7 @@ import jsettlers.main.replay.ReplayTool;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.tests.utils.DebugMapLister;
 
-public class ReplayWorkingIT {
+public class ReplayValidationIT {
 	private static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
 
 	static {
@@ -57,8 +57,8 @@ public class ReplayWorkingIT {
 	}
 
 	@Test
-	public void testIfReplayIsEqualToOriginalPlay() throws IOException, MapLoadException {
-		final int targetTimeMinutes = 1;
+	public void testIfReplayIsEqualToOriginalPlay() throws IOException, MapLoadException, ClassNotFoundException {
+		final float targetTimeMinutes = 60f;
 		final String mapName = "mountain lake";
 
 		OfflineNetworkConnector networkConnector = ReplayTool.createPausingOfflineNetworkConnector();
