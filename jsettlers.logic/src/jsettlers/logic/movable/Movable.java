@@ -280,20 +280,23 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (!grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is invalid
+			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+				goSinglePathStep();
+
+			} else { // next position is invalid
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+
 				if (newPath == null) { // no path found
 					setState(EMovableState.DOING_NOTHING);
 					movableAction = EAction.NO_ACTION;
 					strategy.pathAborted(path.getTargetPos()); // inform strategy
 					path = null;
-					return;
 				} else {
 					this.path = newPath; // continue with new path
 				}
 			}
 
-			goSinglePathStep();
 		} else { // step not possible, so try it next time
 			movableAction = EAction.NO_ACTION;
 			boolean pushedSuccessful = blockingMovable.push(this);
