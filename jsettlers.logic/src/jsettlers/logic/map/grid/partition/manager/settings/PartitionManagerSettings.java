@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.settings;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -70,11 +68,6 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	@Override
 	public DistributionSettingsForMaterial getDistributionSettings(final EMaterialType materialType) {
 		return settingsOfMaterials[materialType.ordinal];
-	}
-
-	private void writeObject(ObjectOutputStream ois) throws IOException {
-		ois.defaultWriteObject();
-		ois.flush();
 	}
 
 	/**
