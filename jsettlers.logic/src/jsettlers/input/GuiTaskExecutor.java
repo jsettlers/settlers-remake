@@ -172,7 +172,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			case DECREASE:
 				grid.getMaterialProductionAt(task.getPosition()).decreaseNumberOfFutureProducedMaterial(task.getMaterialType());
 				break;
-			case SET:
+			case SET_PRODUCTION:
 				grid.getMaterialProductionAt(task.getPosition()).setNumberOfFutureProducedMaterial(task.getMaterialType(), (int) task.getRatio());
 				break;
 			case SET_RATIO:

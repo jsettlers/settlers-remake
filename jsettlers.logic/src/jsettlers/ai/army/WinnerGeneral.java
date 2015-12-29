@@ -102,7 +102,7 @@ public class WinnerGeneral implements ArmyGeneral {
 	private void setNumberOfFutureProducedMaterial(byte playerId, EMaterialType materialType, int numberToProduce) {
 		if (aiStatistics.getMaterialProduction(playerId).numberOfFutureProducedMaterial(materialType) != numberToProduce) {
 			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
-					EMaterialProductionType.SET, numberToProduce));
+					EMaterialProductionType.SET_PRODUCTION, numberToProduce));
 		}
 	}
 
