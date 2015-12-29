@@ -1,0 +1,13 @@
+#### This file can be used to always set command line options
+#### To use one of the options, reove the # in front of the option and set the desired value.
+#### Lines starting with more than one # are not options but comments! Don't uncomment them.
+
+### UI Options =======================================
+# locale = en_en
+
+
+### AI Options =======================================
+# disable-ai = true
+# all-ai = true
+## possible options: ROMAN_VERY_EASY, ROMAN_EASY, ROMAN_HARD, ROMAN_VERY_HARD
+# fixed-ai-type = ROMAN_VERY_HARD

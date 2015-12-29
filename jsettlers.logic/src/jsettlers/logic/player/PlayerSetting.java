@@ -1,5 +1,7 @@
 package jsettlers.logic.player;
 
+import java.util.Arrays;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 
@@ -59,9 +61,16 @@ public class PlayerSetting {
 			if (i == playerId) {
 				playerSettings[playerId] = new PlayerSetting(true);
 			} else {
-				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, EWhatToDoAiType.getTypeByIndex(i));
+				EWhatToDoAiType aiType;
+				if (CommonConstants.FIXED_AI_TYPE != null) {
+					aiType = CommonConstants.FIXED_AI_TYPE;
+				} else {
+					aiType = EWhatToDoAiType.getTypeByIndex(i);
+				}
+				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, aiType);
 			}
 		}
+		System.out.println("created player settings: " + Arrays.toString(playerSettings));
 
 		return playerSettings;
 	}

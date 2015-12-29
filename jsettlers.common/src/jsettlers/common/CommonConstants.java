@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common;
 
+import jsettlers.common.ai.EWhatToDoAiType;
+
 public abstract class CommonConstants {
 	public static final int FOG_OF_WAR_VISIBLE = 100;
 	public static final int FOG_OF_WAR_EXPLORED = 50;
@@ -53,4 +55,9 @@ public abstract class CommonConstants {
 	 * Use only ai players for single player.
 	 */
 	public static boolean ALL_AI;
+
+	/**
+	 * If set, only this AI type is used.
+	 */
+	public static EWhatToDoAiType FIXED_AI_TYPE;
 }

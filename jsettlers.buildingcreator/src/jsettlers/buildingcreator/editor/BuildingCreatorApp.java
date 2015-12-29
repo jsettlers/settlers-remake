@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
-import go.graphics.swing.sound.SwingSoundPlayer;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -24,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -38,6 +35,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.buildingcreator.editor.map.BuildingtestMap;
 import jsettlers.buildingcreator.editor.map.PseudoTile;
 import jsettlers.common.Color;
@@ -50,6 +48,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MainUtils;
+import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -72,11 +71,9 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private ToolType tool = ToolType.SET_BLOCKED;
 	private JLabel positionDisplayer;
 	private JFrame window;
-	private HashMap<String, String> argsMap;
 
-	private BuildingCreatorApp(HashMap<String, String> argsMap) throws FileNotFoundException, IOException {
-		this.argsMap = argsMap;
-		SwingManagedJSettlers.setupResourceManagers(argsMap, "../jsettlers.main.swing/config.prp");
+	private BuildingCreatorApp(OptionableProperties options) throws FileNotFoundException, IOException {
+		SwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
 	}
 
 	@Override
@@ -181,7 +178,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, InvocationTargetException, InterruptedException {
-		SwingUtilities.invokeAndWait(new BuildingCreatorApp(MainUtils.createArgumentsMap(args)));
+		SwingUtilities.invokeAndWait(new BuildingCreatorApp(MainUtils.loadOptions(args)));
 	}
 
 	@Override
