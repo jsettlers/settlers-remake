@@ -49,6 +49,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	protected IWorkerRequestBuilding building;
 
 	private boolean done;
+	private boolean killed;
 
 	private EMaterialType poppedMaterial;
 	private int searchFailedCtr = 0;
@@ -445,14 +446,18 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
+		killed = true;
 		dropCurrentMaterial();
-
-		if (building != null) {
-			building.leaveBuilding(this);
-		}
 
 		if (isJobless()) {
 			super.getStrategyGrid().removeJobless(this);
+		} else {
+			super.enableNothingToDoAction(true);
+			currentJob = null;
+		}
+
+		if (building != null) {
+			building.leaveBuilding(this);
 		}
 	}
 
@@ -461,5 +466,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (currentJob != null) {
 			jobFailed();
 		}
+	}
+
+	@Override
+	public boolean isAlive() {
+		return !killed;
+		// return true;
 	}
 }

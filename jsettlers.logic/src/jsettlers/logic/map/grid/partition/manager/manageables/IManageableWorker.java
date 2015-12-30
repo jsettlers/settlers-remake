@@ -17,6 +17,11 @@ package jsettlers.logic.map.grid.partition.manager.manageables;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 
+/**
+ * 
+ * @author Andreas Eberle
+ *
+ */
 public interface IManageableWorker extends IManageable {
 
 	EMovableType getMovableType();
@@ -24,5 +29,7 @@ public interface IManageableWorker extends IManageable {
 	void setWorkerJob(IWorkerRequestBuilding building);
 
 	void buildingDestroyed();
+
+	boolean isAlive();
 
 }
