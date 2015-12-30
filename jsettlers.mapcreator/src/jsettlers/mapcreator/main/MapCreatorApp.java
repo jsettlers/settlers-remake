@@ -56,7 +56,7 @@ public class MapCreatorApp {
 	private final JFrame selectMapFrame;
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(MainUtils.createArgumentsMap(args), "config.prp");
+		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args), "config.prp");
 		new MapCreatorApp();
 	}
 
