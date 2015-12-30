@@ -294,6 +294,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 					path = null;
 				} else {
 					this.path = newPath; // continue with new path
+					if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+						goSinglePathStep();
+					}
 				}
 			}
 
