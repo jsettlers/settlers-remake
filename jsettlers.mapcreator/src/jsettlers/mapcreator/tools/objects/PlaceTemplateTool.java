@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.objects;
 
+import javax.swing.Icon;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -122,6 +124,12 @@ public class PlaceTemplateTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx) {
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

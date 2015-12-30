@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import javax.swing.Icon;
+
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
@@ -102,6 +104,12 @@ public class FixHeightsTool implements Tool {
 	@Override
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

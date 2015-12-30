@@ -1,0 +1,4 @@
+
+http://tango.freedesktop.org/
+http://tango.freedesktop.org/Tango_Icon_Library
+License: Public Domain

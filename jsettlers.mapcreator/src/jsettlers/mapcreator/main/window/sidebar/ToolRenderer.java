@@ -12,33 +12,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main.tools;
+package jsettlers.mapcreator.main.window.sidebar;
 
-import java.awt.Color;
 import java.awt.Component;
 
-import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import jsettlers.mapcreator.tools.ToolNode;
 
-public class ToolRenderer implements TreeCellRenderer {
+/**
+ * Renderer for tools
+ * 
+ * @author Andreas Butti
+ */
+public class ToolRenderer extends DefaultTreeCellRenderer {
+	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean selected, boolean expanded, boolean arg4, int arg5, boolean arg6) {
-		String name = "";
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
 		if (value instanceof ToolNode) {
-			name = ((ToolNode) value).getName();
+			ToolNode node = (ToolNode) value;
+			setText(node.getName());
+			if (node.getIcon() != null) {
+				setIcon(node.getIcon());
+			}
 		}
-		JTextField jTextField = new JTextField(name);
-		if (selected) {
-			jTextField.setForeground(Color.WHITE);
-			jTextField.setBackground(new Color(0x0343df));
-		}
-		jTextField.setBorder(null);
-		return jTextField;
+
+		return this;
 	}
 
 }

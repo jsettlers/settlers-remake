@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import javax.swing.Icon;
+
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
@@ -79,6 +81,12 @@ public class PlaceResource implements Tool, ResourceTool {
 
 	@Override
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

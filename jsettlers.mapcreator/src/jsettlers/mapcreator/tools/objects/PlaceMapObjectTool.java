@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.objects;
 
+import javax.swing.Icon;
+
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
@@ -82,5 +84,11 @@ public class PlaceMapObjectTool implements Tool {
 
 	@Override
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

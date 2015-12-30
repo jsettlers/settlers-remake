@@ -37,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -207,12 +208,14 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		// toolbar
 		initToolbar();
 
+		JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, root, sidebar);
 		// window
-		window.add(root, BorderLayout.CENTER);
-		window.add(sidebar, BorderLayout.EAST);
+		window.add(splitter, BorderLayout.CENTER);
+		splitter.setDividerLocation(1000);
 
-		window.pack();
+		// window.pack();
 		window.setSize(1200, 800);
+		window.invalidate();
 
 		window.setFilename(header.getName());
 
@@ -222,7 +225,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		connector = mapContent.getInterfaceConnector();
 		region.setContent(mapContent);
 
-		new Timer().schedule(new TimerTask() {
+		new Timer(true).schedule(new TimerTask() {
 			@Override
 			public void run() {
 				region.requestRedraw();
@@ -249,8 +252,14 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 					if (result == JOptionPane.YES_OPTION) {
 						save();
 						window.dispose();
+
+						// TODO dispose all window, make all threads deamon, then remove this exit!
+						System.exit(0);
 					} else if (result == JOptionPane.NO_OPTION) {
 						window.dispose();
+
+						// TODO dispose all window, make all threads deamon, then remove this exit!
+						System.exit(0);
 					}
 					// else: cancel, do nothing
 				}

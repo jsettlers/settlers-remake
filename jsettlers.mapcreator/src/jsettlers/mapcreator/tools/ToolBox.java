@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import javax.swing.Icon;
+
 /**
  * This is a tool that only holds some more tools.
  * 
@@ -36,5 +38,11 @@ public class ToolBox implements ToolNode {
 
 	public ToolNode[] getTools() {
 		return tools;
+	}
+
+	@Override
+	public Icon getIcon() {
+		// use default icon
+		return null;
 	}
 }

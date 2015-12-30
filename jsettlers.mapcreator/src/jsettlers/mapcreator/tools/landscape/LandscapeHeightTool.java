@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import javax.swing.Icon;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -71,5 +73,11 @@ public class LandscapeHeightTool implements Tool {
 		influences = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(influences, start, start);
 		carry = new double[map.getWidth()][map.getHeight()];
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

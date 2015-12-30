@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main.tools;
+package jsettlers.mapcreator.main.window.sidebar;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,11 +24,12 @@ import javax.swing.event.ChangeListener;
 import jsettlers.mapcreator.tools.shapes.ShapeProperty;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
+/**
+ * Slider property
+ * 
+ * @author Andreas Butti
+ */
 public class ShapePropertyEditor extends JPanel {
-
-	/**
-     * 
-     */
 	private static final long serialVersionUID = -9178084228962216713L;
 
 	public ShapePropertyEditor(final ShapeType shape, final ShapeProperty property) {

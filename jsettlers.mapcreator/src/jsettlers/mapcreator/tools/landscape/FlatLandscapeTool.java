@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import javax.swing.Icon;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -68,9 +70,8 @@ public class FlatLandscapeTool implements Tool {
 				}
 				int oldheight = map.getLandscapeHeight(x, y);
 				double influence = influencefactor * influences[x][y] / Byte.MAX_VALUE;
-				int newheight =
-						(int) (influence * desired + (1 - influence)
-								* old[x][y]);
+				int newheight = (int) (influence * desired + (1 - influence)
+						* old[x][y]);
 				if (desired < old[x][y]) {
 					if (newheight < oldheight) {
 						map.setHeight(x, y, newheight);
@@ -94,5 +95,11 @@ public class FlatLandscapeTool implements Tool {
 			}
 		}
 
+	}
+
+	@Override
+	public Icon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -90,49 +90,49 @@ public abstract class EditorFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("open", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("save-as", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("export-image", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("map-settings", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("manual", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("about", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
+				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 	}
