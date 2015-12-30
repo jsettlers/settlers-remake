@@ -12,23 +12,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.tests.autoreplay;
-
-import static org.junit.Assert.assertEquals;
+package jsettlers.tests.replay;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -45,11 +36,10 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.IMapListFactory;
-import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.replay.ReplayTool;
-import jsettlers.tests.utils.CountingInputStream;
+import jsettlers.tests.utils.DebugMapLister;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -57,6 +47,7 @@ public class AutoReplayIT {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
+		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 
 		TestUtils.setupResourcesManager();
 		MapList.setDefaultListFactory(new IMapListFactory() {
@@ -68,8 +59,8 @@ public class AutoReplayIT {
 		});
 	}
 
-	private static final String remainingReplay = "out/remainingReplay.log";
-	private static final Object lock = new Object();
+	private static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
+	private static final Object ONLY_ONE_TEST_AT_A_TIME_LOCK = new Object();
 
 	@Parameters(name = "{index}: {0} : {1}")
 	public static Collection<Object[]> replaySets() {
@@ -96,79 +87,29 @@ public class AutoReplayIT {
 	}
 
 	@Test
-	public void testReplay() throws IOException, MapLoadException {
-		synchronized (lock) {
-			Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
-			Path expectedFile = getSavegamePath();
+	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
+		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
+			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader expectedSavegame = getReferenceSavegamePath();
 
-			compareMapFiles(expectedFile, savegameFile);
-			Files.delete(savegameFile);
+			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
+			actualSavegame.getFile().delete();
 		}
 	}
 
-	private Path getSavegamePath() {
+	private MapLoader getReferenceSavegamePath() throws MapLoadException {
 		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
 		Path uncompressed = Paths.get(replayPath + MapList.MAP_EXTENSION);
 		Path compressed = Paths.get(replayPath + MapList.COMPRESSED_MAP_EXTENSION);
 
-		return Files.exists(uncompressed) ? uncompressed : compressed;
+		return MapLoader.getLoaderForListedMap(new ListedMapFile((Files.exists(uncompressed) ? uncompressed : compressed).toFile()));
 	}
 
-	private Path getReplayPath() {
-		return Paths.get("resources/autoreplay/" + folderName + "/replay.log");
+	private File getReplayFile() {
+		return new File("resources/autoreplay/" + folderName + "/replay.log");
 	}
 
-	private static void compareMapFiles(Path expectedFile, Path actualFile) throws IOException, MapLoadException {
-		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "' (uncompressed!)");
-
-		try (InputStream expectedStream = MapLoader.getMapInputStream(new ListedMapFile(expectedFile.toFile()));
-				CountingInputStream actualStream = new CountingInputStream(MapLoader.getMapInputStream(new ListedMapFile(actualFile.toFile())))) {
-			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
-			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
-
-			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
-
-			int e, a;
-			while (((e = expectedStream.read()) != -1) & ((a = actualStream.read()) != -1)) {
-				assertEquals("difference at (uncompressed) byte " + actualStream.getByteCounter(), e, a);
-			}
-			assertEquals("files have different lengths (uncompressed)", e, a);
-		}
-	}
-
-	private static Path replayAndGetSavegame(Path replayPath, int targetTimeMinutes) throws IOException {
-		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-		ReplayTool.replayAndCreateSavegame(replayPath.toFile(), targetTimeMinutes * 60 * 1000, remainingReplay);
-
-		Path savegameFile = findSavegameFile();
-		System.out.println("Replayed: " + replayPath + " and created savegame: " + savegameFile);
-		return savegameFile;
-	}
-
-	private static Path findSavegameFile() throws IOException { // TODO implement better way to find the correct savegame
-		Path saveDirPath = new File(ResourceManager.getSaveDirectory(), "save").toPath();
-
-		final Path[] newestFile = new Path[1];
-		final String mapExtension = MapList.getMapExtension();
-
-		Files.walkFileTree(saveDirPath, new SimpleFileVisitor<Path>() {
-			private FileTime newestCreationTime = null;
-
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				if (file.toString().endsWith(mapExtension)
-						&& (newestCreationTime == null || newestCreationTime.compareTo(attrs.creationTime()) < 0)) {
-					newestCreationTime = attrs.creationTime();
-					newestFile[0] = file;
-				}
-				return super.visitFile(file, attrs);
-			}
-		});
-
-		return newestFile[0];
-	}
-
-	public static void main(String[] args) throws IOException, MapLoadException {
+	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException {
 		System.out.println("Creating reference files for replays...");
 
 		for (Object[] replaySet : replaySets()) {
@@ -176,16 +117,17 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			Path newSavegame = AutoReplayIT.replayAndGetSavegame(replayIT.getReplayPath(), targetTimeMinutes);
-			Path expectedSavegamePath = replayIT.getSavegamePath();
+			MapLoader newSavegame = ReplayTool.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {
-				compareMapFiles(expectedSavegamePath, newSavegame);
+				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
-				Files.delete(newSavegame);
-			} catch (AssertionError | NoSuchFileException | FileNotFoundException ex) { // if the files are not equal, replace the existing one.
-				Files.move(newSavegame, expectedSavegamePath, StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("Replacing reference file '" + expectedSavegamePath + "' with new savegame '" + newSavegame + "'");
+				newSavegame.getFile().delete();
+			} catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
+				Files.move(Paths.get(newSavegame.getFile().getFile().toString()), Paths.get(expectedSavegame.getFile().getFile().toString()),
+						StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + newSavegame + "'");
 			}
 		}
 	}

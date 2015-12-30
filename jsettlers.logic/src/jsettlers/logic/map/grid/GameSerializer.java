@@ -19,7 +19,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
@@ -88,7 +87,6 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				MatchConstants.serialize(oos);
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -109,7 +107,6 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				MatchConstants.deserialize(ois);
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();

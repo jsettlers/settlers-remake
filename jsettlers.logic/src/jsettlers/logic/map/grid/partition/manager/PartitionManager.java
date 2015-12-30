@@ -78,7 +78,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final PartitionManagerSettings settings = new PartitionManagerSettings();
 
-	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 	private final OffersList materialOffers;
 
@@ -289,8 +288,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	private void handleWorkerRequest() {
 		WorkerRequest workerRequest = workerRequests.poll();
 		if (workerRequest != null) {
-			movableTypeAcceptor.movableType = workerRequest.movableType;
-			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), movableTypeAcceptor);
+			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), new MovableTypeAcceptor(workerRequest.movableType));
 
 			if (worker != null) {
 				worker.setWorkerJob(workerRequest.building);
