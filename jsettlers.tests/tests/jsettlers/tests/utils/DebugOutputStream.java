@@ -1,4 +1,4 @@
-package jsettlers.tests.autoreplay;
+package jsettlers.tests.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,8 +15,8 @@ public class DebugOutputStream extends OutputStream {
 	@Override
 	public void write(int b) throws IOException {
 		byteCounter++;
-		if (byteCounter >= 4233202 && byteCounter <= 4233212) {
-			// System.out.println();
+		if (byteCounter == 492198) {
+			System.out.println();
 		}
 		outputStream.write(b);
 	}

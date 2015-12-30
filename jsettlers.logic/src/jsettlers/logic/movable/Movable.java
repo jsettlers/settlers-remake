@@ -41,7 +41,6 @@ import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.IDebugable;
-import jsettlers.logic.movable.interfaces.IIDable;
 import jsettlers.logic.movable.strategies.FleeStrategy;
 import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
@@ -54,7 +53,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  * 
  */
-public final class Movable implements IScheduledTimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+public final class Movable implements IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
