@@ -22,7 +22,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.windows.EditorFrame;
+import jsettlers.mapcreator.main.window.EditorFrame;
 
 /**
  * Action to display errors, display error count as text

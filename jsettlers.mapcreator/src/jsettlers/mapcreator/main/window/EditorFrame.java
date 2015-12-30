@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main.windows;
+package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
