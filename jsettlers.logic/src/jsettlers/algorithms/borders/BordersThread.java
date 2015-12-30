@@ -81,8 +81,12 @@ public class BordersThread implements Runnable {
 				byte neighborPlayer = grid.getPlayerIdAt(currNeighborX, currNeighborY);
 				boolean neighborIsBorder = false;
 
-				if (neighborPlayer != player && grid.getBlockedPartition(currNeighborX, currNeighborY) > 0) {
+				if (neighborPlayer != player) {
 					isBorder = true;
+				}
+
+				if (grid.getBlockedPartition(currNeighborX, currNeighborY) <= 0) {
+					continue; // this neighbor is in the sea => it can never be set.
 				}
 
 				if (neighborPlayer >= 0) { // this position is occupied by a player
