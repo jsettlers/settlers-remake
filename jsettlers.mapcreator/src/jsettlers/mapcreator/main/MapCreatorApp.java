@@ -37,6 +37,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
@@ -48,17 +50,15 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
+/**
+ * Entry point for Map Editor application
+ */
 public class MapCreatorApp {
 	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", null, "", (short) 300, (short) 300, (short) 1,
 			(short) 10, null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	private static final String[] GROUND_TYPES = new String[] { ELandscapeType.WATER8.toString(), ELandscapeType.GRASS.toString(),
 			ELandscapeType.DRY_GRASS.toString(), ELandscapeType.SNOW.toString(), ELandscapeType.DESERT.toString(), };
 	private final JFrame selectMapFrame;
-
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args), "config.prp");
-		new MapCreatorApp();
-	}
 
 	private MapCreatorApp() {
 		JPanel newMap = createNewMapPanel();
@@ -161,4 +161,34 @@ public class MapCreatorApp {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Sets the look and feel to "Nimbus", looks the same for all platforms, and should be available on all plattforms
+	 */
+	private static void loadLookAndFeel() {
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// could not be loaded, ignore error
+		}
+	}
+
+	/**
+	 * Main
+	 * 
+	 * @param args
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args), "config.prp");
+		loadLookAndFeel();
+		new MapCreatorApp();
+	}
+
 }

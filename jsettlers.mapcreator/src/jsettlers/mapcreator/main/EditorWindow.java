@@ -100,6 +100,7 @@ import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
 import jsettlers.mapcreator.main.tools.ShapePropertyEditor;
 import jsettlers.mapcreator.main.tools.ToolRenderer;
 import jsettlers.mapcreator.main.tools.ToolTreeModel;
+import jsettlers.mapcreator.main.windows.EditorFrame;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsWindow;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -380,7 +381,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private ShowErrorsButton showErrorsButton;
 
-	private JFrame window;
+	private EditorFrame window;
 
 	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
@@ -406,7 +407,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	}
 
 	public void buildMapEditingWindow() {
-		window = new JFrame("map editor");
+		window = new EditorFrame();
+		window.initMenubarAndToolbar();
 		JPanel root = new JPanel();
 		root.setLayout(new BorderLayout(10, 10));
 

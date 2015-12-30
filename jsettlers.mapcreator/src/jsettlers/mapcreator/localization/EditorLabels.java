@@ -40,6 +40,7 @@ public class EditorLabels extends AbstractLabels {
 	@Override
 	protected InputStream getLocaleStream(LocaleSuffix locale) throws IOException {
 		String filename = locale.getFileName("labels", ".properties");
+
 		InputStream stream = EditorLabels.class.getResourceAsStream(filename);
 		if (stream == null) {
 			throw new FileNotFoundException(filename);
