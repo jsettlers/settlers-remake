@@ -14,31 +14,33 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main.error;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.mapcreator.main.windows.EditorFrame;
 
-public class ShowErrorsButton extends JButton implements ActionListener, ListDataListener {
-	/**
-     * 
-     */
+/**
+ * Action to display errors, display error count as text
+ * 
+ * @author Andreas Butti
+ */
+public class ShowErrorsAction extends AbstractAction implements ListDataListener {
 	private static final long serialVersionUID = -1759142509787969743L;
+
 	private final ErrorList list;
 	private final IScrollToAble scrollTo;
 	private ErrorsWindow window = null;
 
-	public ShowErrorsButton(ErrorList list, IScrollToAble scrollTo) {
-		super(EditorLabels.getLabel("errors"));
+	public ShowErrorsAction(ErrorList list, IScrollToAble scrollTo) {
 		this.list = list;
 		this.scrollTo = scrollTo;
-		addActionListener(this);
 		list.addListDataListener(this);
+		putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
 	}
 
 	@Override
@@ -51,17 +53,12 @@ public class ShowErrorsButton extends JButton implements ActionListener, ListDat
 	}
 
 	@Override
-	public Color getForeground() {
-		if (isEnabled()) {
-			return Color.RED;
-		} else {
-			return super.getForeground();
-		}
-	}
-
-	@Override
 	public void contentsChanged(ListDataEvent arg0) {
-		setText(String.format(EditorLabels.getLabel("errors_n"), list.getSize()));
+		if (list.getSize() == 0) {
+			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
+		} else {
+			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getSize()));
+		}
 	}
 
 	@Override

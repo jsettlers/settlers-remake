@@ -11,12 +11,16 @@ import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 
@@ -25,7 +29,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
  * 
  * @author Andreas Butti
  */
-public class EditorFrame extends JFrame {
+public abstract class EditorFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -37,6 +41,11 @@ public class EditorFrame extends JFrame {
 	 * Shortcut configuration
 	 */
 	private Properties shortcut = new Properties();
+
+	/**
+	 * Display icon AND text in toolbar, default display only icon and text as tooltip
+	 */
+	public static final String DISPLAY_TEXT_IN_TOOLBAR = "display-text-in-toolbar";
 
 	/**
 	 * Constructor
@@ -64,90 +73,77 @@ public class EditorFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("new", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("open", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		registerAction("save", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("save-as", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("export-image", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		registerAction("undo", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		registerAction("redo", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("map-settings", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("zoom-in", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("zoom-out", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("zoom100", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		registerAction("statistic", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("manual", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 		registerAction("about", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showConfirmDialog(null, "Action not implemented");
 			}
 		});
 	}
@@ -164,7 +160,7 @@ public class EditorFrame extends JFrame {
 		ActionMap actionMap = ((JPanel) this.getContentPane()).getActionMap();
 
 		// try to load icon, if any
-		URL icon = getClass().getResource("icons/" + actionName + ".png");
+		URL icon = EditorFrame.class.getResource("icons/" + actionName + ".png");
 		if (icon != null) {
 			action.putValue(Action.SMALL_ICON, new ImageIcon(icon));
 		}
@@ -172,6 +168,26 @@ public class EditorFrame extends JFrame {
 		action.putValue(Action.NAME, EditorLabels.getLabel("action." + actionName));
 
 		actionMap.put(actionName, action);
+	}
+
+	/**
+	 * Enable / disable an action
+	 * 
+	 * @param actionName
+	 *            Action name
+	 * @param enable
+	 *            enabled / disabled
+	 */
+	public void enableAction(String actionName, boolean enable) {
+		ActionMap actionMap = ((JPanel) this.getContentPane()).getActionMap();
+
+		Action action = actionMap.get(actionName);
+		if (action == null) {
+			System.err.println("Could not find action \"" + action + "\" to enable / disable");
+			return;
+		}
+
+		action.setEnabled(enable);
 	}
 
 	/**
@@ -201,6 +217,9 @@ public class EditorFrame extends JFrame {
 			}
 			JMenu menu = new JMenu(EditorLabels.getLabel("menu." + menuName));
 
+			// because of the open gl context
+			menu.getPopupMenu().setLightWeightPopupEnabled(false);
+
 			for (String menuAction : menuconfig.getProperty("menu." + menuName, "").split(",")) {
 				menuAction = menuAction.trim();
 				if (menuAction.isEmpty()) {
@@ -217,6 +236,8 @@ public class EditorFrame extends JFrame {
 					}
 
 					JMenuItem it = menu.add(action);
+
+					// TODO change listener!
 					it.setText((String) action.getValue(Action.NAME));
 
 					String shortcut = this.shortcut.getProperty(menuAction);
@@ -250,6 +271,10 @@ public class EditorFrame extends JFrame {
 
 			if ("---".equals(toolName)) {
 				tb.addSeparator();
+			} else if ("player-spinner".equals(toolName)) {
+				tb.add(new JLabel(EditorLabels.getLabel("current-player")));
+				JSpinner playerSpinner = createPlayerSelectSpinner();
+				tb.add(playerSpinner);
 			} else {
 				Action action = actionMap.get(toolName);
 				if (action == null) {
@@ -257,12 +282,30 @@ public class EditorFrame extends JFrame {
 					continue;
 				}
 				JButton bt = tb.add(action);
+
+				// TODO change listener!
+				Boolean displayTextInToolbar = (Boolean) action.getValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR);
+				if (displayTextInToolbar != null && displayTextInToolbar) {
+					bt.setText((String) action.getValue(Action.NAME));
+				} else {
+					bt.setToolTipText((String) action.getValue(Action.NAME));
+				}
+
 				bt.setName((String) action.getValue(Action.NAME));
+				bt.setVerticalTextPosition(SwingConstants.CENTER);
+				bt.setHorizontalTextPosition(SwingConstants.RIGHT);
 			}
 		}
 
 		add(tb, BorderLayout.NORTH);
 	}
+
+	/**
+	 * Create the player selection
+	 * 
+	 * @return JSpinner
+	 */
+	protected abstract JSpinner createPlayerSelectSpinner();
 
 	/**
 	 * TODO Call with name

@@ -18,8 +18,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,20 +30,18 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -94,7 +90,7 @@ import jsettlers.mapcreator.main.action.DrawLineAction;
 import jsettlers.mapcreator.main.action.EndDrawingAction;
 import jsettlers.mapcreator.main.action.StartDrawingAction;
 import jsettlers.mapcreator.main.error.IScrollToAble;
-import jsettlers.mapcreator.main.error.ShowErrorsButton;
+import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
 import jsettlers.mapcreator.main.tools.ShapePropertyEditor;
@@ -359,8 +355,6 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private ShortPoint2D testFailPoint = null;
 
-	private JButton undoButton;
-
 	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
 
 	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
@@ -369,19 +363,13 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private MapInterfaceConnector connector;
 
-	private JLabel testResult;
-
-	private JButton startGameButton;
-
 	private MapFileHeader header;
 
-	private JButton saveButton;
-
-	private JButton redoButton;
-
-	private ShowErrorsButton showErrorsButton;
+	private ShowErrorsAction showErrorsButton;
 
 	private EditorFrame window;
+
+	private AbstractAction gotoErrorAction;
 
 	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
@@ -407,7 +395,24 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	}
 
 	public void buildMapEditingWindow() {
-		window = new EditorFrame();
+		window = new EditorFrame() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected JSpinner createPlayerSelectSpinner() {
+				final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
+				JSpinner playerSpinner = new JSpinner(model);
+				playerSpinner.addChangeListener(new ChangeListener() {
+					@Override
+					public void stateChanged(ChangeEvent e) {
+						currentPlayer = model.getNumber().byteValue();
+					}
+				});
+				return playerSpinner;
+			}
+
+		};
+		registerActions();
 		window.initMenubarAndToolbar();
 		JPanel root = new JPanel();
 		root.setLayout(new BorderLayout(10, 10));
@@ -422,14 +427,13 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		panel.setFocusable(true);
 		root.add(panel, BorderLayout.CENTER);
 
+		// toolbar
+		initToolbar();
+
 		// menu
 		JPanel menu = createMenu();
 		menu.setPreferredSize(new Dimension(300, 800));
 		root.add(menu, BorderLayout.EAST);
-
-		// toolbar
-		JToolBar toolbar = createToolbar();
-		root.add(toolbar, BorderLayout.NORTH);
 
 		// window
 		window.add(root);
@@ -453,95 +457,87 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		connector.addListener(this);
 	}
 
-	private JToolBar createToolbar() {
-		JToolBar bar = new JToolBar();
+	/**
+	 * Register toolbar / menubar actions
+	 */
+	private void registerActions() {
+		window.registerAction("save", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 
-		saveButton = new JButton(EditorLabels.getLabel("save"));
-		saveButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				save();
 			}
 		});
-		saveButton.setEnabled(false);
-		bar.add(saveButton);
 
-		undoButton = new JButton(EditorLabels.getLabel("undo"));
-		undoButton.addActionListener(new ActionListener() {
+		window.registerAction("undo", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				undo();
 			}
 		});
-		undoButton.setEnabled(false);
-		bar.add(undoButton);
+		window.registerAction("redo", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 
-		redoButton = new JButton(EditorLabels.getLabel("redo"));
-		redoButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				redo();
 			}
 		});
-		redoButton.setEnabled(false);
-		bar.add(redoButton);
 
-		showErrorsButton = new ShowErrorsButton(dataTester.getErrorList(), this);
-		bar.add(showErrorsButton);
+		window.registerAction("statistic", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 
-		testResult = new JLabel();
-		testResult.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
+				new StatisticsWindow(data);
+			}
+		});
+		window.registerAction("map-settings", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editSettings();
+			}
+		});
+
+		window.registerAction("play", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				play();
+			}
+		});
+
+		// TODO update after register action!!!
+		showErrorsButton = new ShowErrorsAction(dataTester.getErrorList(), this);
+		window.registerAction("show-errors", showErrorsButton);
+
+		this.gotoErrorAction = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			{
+				putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (testFailPoint != null) {
 					connector.scrollTo(testFailPoint, true);
 				}
 			}
-		});
-		bar.add(testResult);
+		};
+		window.registerAction("goto-error", gotoErrorAction);
+	}
 
-		bar.add(Box.createGlue());
-
-		bar.add(new JLabel(EditorLabels.getLabel("current-player")));
-		final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
-		JSpinner playerSpinner = new JSpinner(model);
-		playerSpinner.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				currentPlayer = model.getNumber().byteValue();
-			}
-		});
-		playerSpinner.setPreferredSize(new Dimension(50, 1));
-		playerSpinner.setMaximumSize(new Dimension(50, 40));
-		bar.add(playerSpinner);
-
-		JButton statistics = new JButton(EditorLabels.getLabel("statistics"));
-		statistics.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new StatisticsWindow(data);
-			}
-		});
-		bar.add(statistics);
-
-		JButton editSettings = new JButton(EditorLabels.getLabel("settings"));
-		editSettings.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				editSettings();
-			}
-		});
-		bar.add(editSettings);
-
-		startGameButton = new JButton("Play");
-		startGameButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				play();
-			}
-		});
-		bar.add(startGameButton);
-		return bar;
+	private void initToolbar() {
+		window.enableAction("save", false);
+		window.enableAction("undo", false);
+		window.enableAction("redo", false);
 	}
 
 	protected void editSettings() {
@@ -581,8 +577,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
 		} catch (Throwable e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(saveButton, e.getMessage());
+			ErrorDisplay.displayError(e, "Error saving");
 		}
 	}
 
@@ -645,11 +640,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			MapDataDelta inverse = data.apply(delta);
 
 			redoDeltas.addLast(inverse);
-			redoButton.setEnabled(true);
+			window.enableAction("redo", true);
 		}
 		if (undoDeltas.isEmpty()) {
-			undoButton.setEnabled(false);
-			saveButton.setEnabled(false);
+			window.enableAction("undo", false);
+			window.enableAction("save", false);
 		}
 	}
 
@@ -660,11 +655,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			MapDataDelta inverse = data.apply(delta);
 
 			undoDeltas.addLast(inverse);
-			undoButton.setEnabled(true);
-			saveButton.setEnabled(true);
+			window.enableAction("undo", true);
+			window.enableAction("save", true);
 		}
 		if (redoDeltas.isEmpty()) {
-			redoButton.setEnabled(false);
+			window.enableAction("redo", false);
 		}
 	}
 
@@ -679,9 +674,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		}
 		undoDeltas.add(delta);
 		redoDeltas.clear();
-		undoButton.setEnabled(true);
-		redoButton.setEnabled(false);
-		saveButton.setEnabled(true);
+		window.enableAction("undo", true);
+		window.enableAction("redo", false);
+
+		window.enableAction("save", true);
 	}
 
 	private JPanel createMenu() {
@@ -836,8 +832,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	@Override
 	public void testResult(String result, boolean allowed, ShortPoint2D failPoint) {
 		testFailPoint = failPoint;
-		startGameButton.setEnabled(allowed);
-		testResult.setText(result);
+		window.enableAction("play", allowed);
+		gotoErrorAction.putValue(javax.swing.Action.NAME, result);
 		showErrorsButton.setEnabled(!allowed);
 	}
 
