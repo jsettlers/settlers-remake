@@ -2,6 +2,10 @@ package jsettlers.mapcreator.main.windows;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.Properties;
 
@@ -52,11 +56,22 @@ public abstract class EditorFrame extends JFrame {
 	 */
 	public EditorFrame() {
 		super();
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setFilename("unnamed");
 
 		setLayout(new BorderLayout());
 
 		registerActions();
+
+		addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				ActionMap actionMap = ((JPanel) getContentPane()).getActionMap();
+				Action quitAction = actionMap.get("quit");
+				quitAction.actionPerformed(new ActionEvent(this, 0, "quit"));
+			}
+		});
 	}
 
 	/**
@@ -67,15 +82,10 @@ public abstract class EditorFrame extends JFrame {
 		createToolbar();
 	}
 
+	/**
+	 * Register actions
+	 */
 	private void registerActions() {
-		// TODO !!!!!!!!!!!!!
-		registerAction("quit", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
-			}
-		});
 		registerAction("new", new AbstractAction() {
 
 			@Override
@@ -105,27 +115,6 @@ public abstract class EditorFrame extends JFrame {
 			}
 		});
 		registerAction("map-settings", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("zoom-in", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("zoom-out", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showConfirmDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("zoom100", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -235,9 +224,17 @@ public abstract class EditorFrame extends JFrame {
 						continue;
 					}
 
-					JMenuItem it = menu.add(action);
+					final JMenuItem it = menu.add(action);
 
-					// TODO change listener!
+					action.addPropertyChangeListener(new PropertyChangeListener() {
+
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							if (Action.NAME.equals(evt.getPropertyName())) {
+								it.setText((String) evt.getNewValue());
+							}
+						}
+					});
 					it.setText((String) action.getValue(Action.NAME));
 
 					String shortcut = this.shortcut.getProperty(menuAction);
@@ -276,28 +273,51 @@ public abstract class EditorFrame extends JFrame {
 				JSpinner playerSpinner = createPlayerSelectSpinner();
 				tb.add(playerSpinner);
 			} else {
-				Action action = actionMap.get(toolName);
+				final Action action = actionMap.get(toolName);
 				if (action == null) {
 					System.err.println("Action \"" + toolName + "\" not found!");
 					continue;
 				}
-				JButton bt = tb.add(action);
+				final JButton bt = tb.add(action);
 
-				// TODO change listener!
-				Boolean displayTextInToolbar = (Boolean) action.getValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR);
-				if (displayTextInToolbar != null && displayTextInToolbar) {
-					bt.setText((String) action.getValue(Action.NAME));
-				} else {
-					bt.setToolTipText((String) action.getValue(Action.NAME));
-				}
+				action.addPropertyChangeListener(new PropertyChangeListener() {
 
-				bt.setName((String) action.getValue(Action.NAME));
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (Action.NAME.equals(evt.getPropertyName())) {
+							setButtonText(bt, action);
+						}
+					}
+				});
+
+				setButtonText(bt, action);
+
 				bt.setVerticalTextPosition(SwingConstants.CENTER);
 				bt.setHorizontalTextPosition(SwingConstants.RIGHT);
 			}
 		}
 
 		add(tb, BorderLayout.NORTH);
+	}
+
+	/**
+	 * Set the text of a button
+	 * 
+	 * @param bt
+	 *            Button
+	 * @param action
+	 *            Action
+	 */
+	private void setButtonText(JButton bt, Action action) {
+
+		Boolean displayTextInToolbar = (Boolean) action.getValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR);
+		if (displayTextInToolbar != null && displayTextInToolbar) {
+			bt.setText((String) action.getValue(Action.NAME));
+		} else {
+			bt.setToolTipText((String) action.getValue(Action.NAME));
+		}
+
+		bt.setName((String) action.getValue(Action.NAME));
 	}
 
 	/**
@@ -308,8 +328,6 @@ public abstract class EditorFrame extends JFrame {
 	protected abstract JSpinner createPlayerSelectSpinner();
 
 	/**
-	 * TODO Call with name
-	 * 
 	 * @param filename
 	 *            Filename to display in the header
 	 */

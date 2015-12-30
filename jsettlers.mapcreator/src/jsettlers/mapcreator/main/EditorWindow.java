@@ -36,7 +36,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -353,6 +352,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private byte currentPlayer = 0;
 
+	/**
+	 * Last failure point to jump to
+	 */
 	private ShortPoint2D testFailPoint = null;
 
 	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
@@ -363,14 +365,32 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private MapInterfaceConnector connector;
 
+	/**
+	 * Header of the current open map
+	 */
 	private MapFileHeader header;
 
 	private ShowErrorsAction showErrorsButton;
 
+	/**
+	 * Window displayed
+	 */
 	private EditorFrame window;
 
 	private AbstractAction gotoErrorAction;
 
+	/**
+	 * Open GL Contents (Drawing)
+	 */
+	private MapContent mapContent;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param header
+	 *            Header of the file to open
+	 * @param ground
+	 */
 	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
 		short width = header.getWidth();
@@ -421,11 +441,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		Area area = new Area();
 		final Region region = new Region(Region.POSITION_CENTER);
 		area.add(region);
-		AreaContainer panel = new AreaContainer(area);
-		panel.setPreferredSize(new Dimension(640, 480));
-		panel.requestFocusInWindow();
-		panel.setFocusable(true);
-		root.add(panel, BorderLayout.CENTER);
+		AreaContainer displayPanel = new AreaContainer(area);
+		displayPanel.setPreferredSize(new Dimension(640, 480));
+		displayPanel.requestFocusInWindow();
+		displayPanel.setFocusable(true);
+		root.add(displayPanel, BorderLayout.CENTER);
 
 		// toolbar
 		initToolbar();
@@ -439,13 +459,14 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		window.add(root);
 		window.pack();
 		window.setSize(1200, 800);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setVisible(true);
+
+		window.setFilename(header.getName());
+
 		window.setLocationRelativeTo(null);
 
-		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
-		connector = content.getInterfaceConnector();
-		region.setContent(content);
+		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
+		connector = mapContent.getInterfaceConnector();
+		region.setContent(mapContent);
 
 		new Timer().schedule(new TimerTask() {
 			@Override
@@ -455,12 +476,58 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		}, 50, 50);
 
 		connector.addListener(this);
+		window.setVisible(true);
 	}
 
 	/**
 	 * Register toolbar / menubar actions
 	 */
 	private void registerActions() {
+		window.registerAction("quit", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (undoDeltas.isEmpty()) {
+					window.dispose();
+				} else {
+					int result = JOptionPane.showConfirmDialog(window, "Save changes?", "JSettler", JOptionPane.YES_NO_CANCEL_OPTION);
+					if (result == JOptionPane.YES_OPTION) {
+						save();
+						window.dispose();
+					} else if (result == JOptionPane.NO_OPTION) {
+						window.dispose();
+					}
+					// else: cancel, do nothing
+				}
+			}
+		});
+
+		window.registerAction("zoom-in", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapContent.zoomIn();
+			}
+		});
+		window.registerAction("zoom-out", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapContent.zoomOut();
+			}
+		});
+		window.registerAction("zoom100", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapContent.zoom100();
+			}
+		});
+
 		window.registerAction("save", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 
@@ -513,9 +580,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			}
 		});
 
-		// TODO update after register action!!!
 		showErrorsButton = new ShowErrorsAction(dataTester.getErrorList(), this);
 		window.registerAction("show-errors", showErrorsButton);
+
+		// update text, after registerAction
+		showErrorsButton.contentsChanged(null);
 
 		this.gotoErrorAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
