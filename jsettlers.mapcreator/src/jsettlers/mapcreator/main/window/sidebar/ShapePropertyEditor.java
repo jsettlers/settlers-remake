@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -31,17 +32,34 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * @author Andreas Butti
  */
 public class ShapePropertyEditor extends JPanel {
-	private static final long serialVersionUID = -9178084228962216713L;
+	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Border
+	 */
+	private TitledBorder titleBorder;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param shape
+	 *            Shape
+	 * @param property
+	 *            Property to edit
+	 */
 	public ShapePropertyEditor(final ShapeType shape, final ShapeProperty property) {
 		setLayout(new BorderLayout());
-
-		setBorder(BorderFactory.createTitledBorder(property.getName()));
+		titleBorder = BorderFactory.createTitledBorder(property.getName());
+		setBorder(titleBorder);
 		final JSlider slider = new JSlider(1, 50, shape.getProperty(property));
 		slider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(final ChangeEvent arg0) {
-				shape.setProperty(property, slider.getModel().getValue());
+				int value = slider.getModel().getValue();
+				shape.setProperty(property, value);
+
+				titleBorder.setTitle(property.getName() + " [" + value + "]");
+				ShapePropertyEditor.this.repaint();
 			}
 		});
 		add(slider, BorderLayout.CENTER);
