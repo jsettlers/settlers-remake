@@ -72,6 +72,7 @@ import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFileDialog;
+import jsettlers.mapcreator.main.window.OpenExistingDialog;
 import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
@@ -265,21 +266,55 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	}
 
 	/**
-	 * Create a new map, close the existing one
+	 * Create a new map editor instance, with a action property file
+	 * 
+	 * @param file
+	 *            File to use
+	 * @throws IOException
 	 */
-	private void createNewFile() {
-		if (!checkSaved()) {
-			return;
-		}
+	private void createNewMapEditorInstanceWithActionFile(File file) throws IOException {
+		String[] args = new String[] { "java", "-splash:splash.png", "-classpath", System.getProperty("java.class.path"),
+				MapCreatorApp.class.getName(),
+				"--actionconfig=" + file.getAbsolutePath(), "--delete-actionconfig=true" };
+		startProcess(args, "game");
+	}
 
-		NewFileDialog dlg = new NewFileDialog(window);
+	/**
+	 * Open an existing file
+	 */
+	private void openExistingFile() {
+		OpenExistingDialog dlg = new OpenExistingDialog(window);
 		dlg.setVisible(true);
 
 		if (!dlg.isConfirmed()) {
 			return;
 		}
 
-		dataTester.dispose();
+		try {
+			File temp = File.createTempFile("jsettler-action", ".properties");
+
+			ActionPropertie prop = new ActionPropertie();
+			prop.setAction("open");
+			prop.setMapId(dlg.getSelectedMapId());
+			prop.saveToFile(temp);
+
+			createNewMapEditorInstanceWithActionFile(temp);
+
+		} catch (IOException e) {
+			ErrorDisplay.displayError(e, "Failed to start game");
+		}
+	}
+
+	/**
+	 * Create a new map
+	 */
+	private void createNewFile() {
+		NewFileDialog dlg = new NewFileDialog(window);
+		dlg.setVisible(true);
+
+		if (!dlg.isConfirmed()) {
+			return;
+		}
 
 		MapFileHeader header = dlg.getHeader();
 
@@ -298,10 +333,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 			prop.saveToFile(temp);
 
-			String[] args = new String[] { "java", "-splash:splash.png", "-classpath", System.getProperty("java.class.path"),
-					MapCreatorApp.class.getName(),
-					"--actionconfig=" + temp.getAbsolutePath(), "--delete-actionconfig=true" };
-			startProcess(args, "game");
+			createNewMapEditorInstanceWithActionFile(temp);
 		} catch (IOException e) {
 			ErrorDisplay.displayError(e, "Failed to start game");
 		}
@@ -359,6 +391,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				createNewFile();
+			}
+		});
+		window.registerAction("open", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openExistingFile();
 			}
 		});
 

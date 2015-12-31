@@ -1,16 +1,9 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -21,7 +14,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
  * @author Andreas Butti
  *
  */
-public abstract class SettingsDialog extends JDialog {
+public abstract class SettingsDialog extends AbstractOkCancelDialog {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -43,15 +36,9 @@ public abstract class SettingsDialog extends JDialog {
 	public SettingsDialog(JFrame parent, MapFileHeader header) {
 		super(parent);
 		setTitle(EditorLabels.getLabel("settings.header"));
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-		setLayout(new BorderLayout());
-
 		this.header = header;
 		headerEditor = new MapHeaderEditorPanel(header, false);
 		add(headerEditor, BorderLayout.CENTER);
-
-		initButton();
 
 		pack();
 		setLocationRelativeTo(parent);
@@ -66,46 +53,15 @@ public abstract class SettingsDialog extends JDialog {
 	 */
 	public abstract void applyNewHeader(MapFileHeader header);
 
-	/**
-	 * Initialize buttons
-	 */
-	private void initButton() {
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		JButton btOk = new JButton(EditorLabels.getLabel("OK"));
-		btOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				MapFileHeader nheader = headerEditor.getHeader();
-				if (nheader.getWidth() != header.getWidth() || nheader.getHeight() != header.getHeight()) {
-					JOptionPane.showMessageDialog(SettingsDialog.this, "Widh and height are fixed.", "Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				applyNewHeader(nheader);
-				dispose();
-			}
-		});
-
-		JButton btCancel = new JButton(EditorLabels.getLabel("Cancel"));
-		btCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-
-		buttonPanel.add(btCancel);
-		buttonPanel.add(btOk);
-
-		Dimension size = btOk.getPreferredSize();
-		if (btCancel.getPreferredSize().width > size.width) {
-			size.width = btCancel.getPreferredSize().width;
+	@Override
+	protected boolean doOkAction() {
+		MapFileHeader nheader = headerEditor.getHeader();
+		if (nheader.getWidth() != header.getWidth() || nheader.getHeight() != header.getHeight()) {
+			JOptionPane.showMessageDialog(SettingsDialog.this, "Widh and height are fixed.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-		btOk.setPreferredSize(size);
-		btCancel.setPreferredSize(size);
-
-		add(buttonPanel, BorderLayout.SOUTH);
+		applyNewHeader(nheader);
+		return true;
 	}
 
 }

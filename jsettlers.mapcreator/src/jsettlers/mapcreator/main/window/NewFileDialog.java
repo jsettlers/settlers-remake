@@ -1,16 +1,10 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -24,7 +18,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
  * 
  * @author Andreas Butti
  */
-public class NewFileDialog extends JDialog {
+public class NewFileDialog extends AbstractOkCancelDialog {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -50,11 +44,6 @@ public class NewFileDialog extends JDialog {
 	private final MapHeaderEditorPanel headerEditor;
 
 	/**
-	 * If the user pressed OK
-	 */
-	private boolean confirmed = false;
-
-	/**
 	 * Constructor
 	 * 
 	 * @param parent
@@ -63,9 +52,6 @@ public class NewFileDialog extends JDialog {
 	public NewFileDialog(JFrame parent) {
 		super(parent);
 		setTitle(EditorLabels.getLabel("newfile.header"));
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-		setLayout(new BorderLayout());
 
 		Box configurationPanel = Box.createVerticalBox();
 		this.headerEditor = new MapHeaderEditorPanel(DEFAULT, true);
@@ -83,7 +69,6 @@ public class NewFileDialog extends JDialog {
 
 		add(configurationPanel, BorderLayout.CENTER);
 
-		initButton();
 		pack();
 		setLocationRelativeTo(parent);
 		setModal(true);
@@ -101,49 +86,5 @@ public class NewFileDialog extends JDialog {
 	 */
 	public MapFileHeader getHeader() {
 		return headerEditor.getHeader();
-	}
-
-	/**
-	 * @return If the user pressed OK
-	 */
-	public boolean isConfirmed() {
-		return confirmed;
-	}
-
-	/**
-	 * Initialize buttons
-	 */
-	private void initButton() {
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		JButton btOk = new JButton(EditorLabels.getLabel("OK"));
-		btOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				confirmed = true;
-				dispose();
-			}
-		});
-
-		JButton btCancel = new JButton(EditorLabels.getLabel("Cancel"));
-		btCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-
-		buttonPanel.add(btCancel);
-		buttonPanel.add(btOk);
-
-		Dimension size = btOk.getPreferredSize();
-		if (btCancel.getPreferredSize().width > size.width) {
-			size.width = btCancel.getPreferredSize().width;
-		}
-		btOk.setPreferredSize(size);
-		btCancel.setPreferredSize(size);
-
-		add(buttonPanel, BorderLayout.SOUTH);
 	}
 }

@@ -137,13 +137,6 @@ public abstract class EditorFrame extends JFrame {
 			}
 		});
 
-		registerAction("open", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
 		registerAction("save-as", new AbstractAction() {
 
 			@Override
