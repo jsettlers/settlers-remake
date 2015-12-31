@@ -1,11 +1,15 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -27,6 +31,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.mapcreator.main.ErrorDisplay;
 
 /**
  * Editor JFrame, Main Wndow
@@ -86,6 +91,28 @@ public abstract class EditorFrame extends JFrame {
 	 * Register actions
 	 */
 	private void registerActions() {
+		registerAction("manual", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI("http://www.settlers-android-clone.com/the-map-editor/"));
+				} catch (IOException | URISyntaxException e1) {
+					ErrorDisplay.displayError(e1, "Could not open URL");
+				}
+			}
+		});
+		registerAction("about", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AboutDialog dlg = new AboutDialog(EditorFrame.this);
+				dlg.setVisible(true);
+			}
+		});
+
 		registerAction("new", new AbstractAction() {
 
 			@Override
@@ -115,20 +142,6 @@ public abstract class EditorFrame extends JFrame {
 			}
 		});
 		registerAction("map-settings", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("manual", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("about", new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

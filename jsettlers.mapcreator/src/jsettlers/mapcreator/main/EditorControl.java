@@ -84,7 +84,12 @@ import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.landscape.ResourceTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class EditorWindow implements IMapInterfaceListener, ActionFireable, TestResultReceiver, IPlayerSetter, IScrollToAble {
+/**
+ * Controller for map editing
+ * 
+ * @author Andreas Butti
+ */
+public class EditorControl implements IMapInterfaceListener, ActionFireable, TestResultReceiver, IPlayerSetter, IScrollToAble {
 
 	private static final int MAX_UNDO = 100;
 
@@ -137,7 +142,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 		@Override
 		protected void changeTool(Tool lastPathComponent) {
-			EditorWindow.this.changeTool(lastPathComponent);
+			EditorControl.this.changeTool(lastPathComponent);
 		}
 
 	};
@@ -149,7 +154,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	 *            Header of the file to open
 	 * @param ground
 	 */
-	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
+	public EditorControl(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
 		short width = header.getWidth();
 		short height = header.getHeight();
@@ -162,7 +167,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		dataTester.start();
 	}
 
-	public EditorWindow(MapLoader loader) throws MapLoadException {
+	public EditorControl(MapLoader loader) throws MapLoadException {
 		data = new MapData(loader.getMapData());
 		header = loader.getFileHeader();
 		map = new MapGraphics(data);
@@ -247,6 +252,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			public void actionPerformed(ActionEvent e) {
 				if (undoDeltas.isEmpty()) {
 					window.dispose();
+					// TODO dispose all window, make all threads deamon, then remove this exit!
+					System.exit(0);
 				} else {
 					int result = JOptionPane.showConfirmDialog(window, "Save changes?", "JSettler", JOptionPane.YES_NO_CANCEL_OPTION);
 					if (result == JOptionPane.YES_OPTION) {

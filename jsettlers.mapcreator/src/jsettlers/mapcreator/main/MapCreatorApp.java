@@ -139,7 +139,7 @@ public class MapCreatorApp {
 		createMapButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new EditorWindow(headerEditor.getHeader(), ELandscapeType.valueOf(groundType.getValue().toString()));
+				new EditorControl(headerEditor.getHeader(), ELandscapeType.valueOf(groundType.getValue().toString()));
 				close();
 			}
 		});
@@ -154,7 +154,7 @@ public class MapCreatorApp {
 
 	protected void loadMap(MapLoader value) {
 		try {
-			new EditorWindow(value);
+			new EditorControl(value);
 			close();
 		} catch (MapLoadException e) {
 			JOptionPane.showMessageDialog(selectMapFrame, e.getMessage());

@@ -1,13 +1,14 @@
 package jsettlers.mapcreator.main.window.sidebar;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -413,13 +414,17 @@ public abstract class Sidebar extends JPanel implements IPlayerSetter {
 		toolshelf.setRootVisible(false);
 
 		JPanel shape = new JPanel();
-		shape.setLayout(new BoxLayout(shape, BoxLayout.Y_AXIS));
-		shape.setBorder(BorderFactory.createTitledBorder(EditorLabels.getLabel("shapes")));
+		shape.setLayout(new GridLayout(0, 1));
+		JLabel headerLabel = new JLabel(EditorLabels.getLabel("shapes"));
+		headerLabel.setFont(headerLabel.getFont().deriveFont(Font.BOLD));
+		shape.add(headerLabel);
 		shapeButtons = new JPanel();
+		shapeButtons.setLayout(new GridLayout(0, 1));
 		shape.add(shapeButtons);
 		shapeSettings = new JPanel();
+		shapeSettings.setLayout(new GridLayout(0, 1));
 		shape.add(shapeSettings);
-		add(shape, BorderLayout.NORTH);
+		add(shape, BorderLayout.SOUTH);
 	}
 
 	protected abstract void changeTool(Tool lastPathComponent);
@@ -449,7 +454,6 @@ public abstract class Sidebar extends JPanel implements IPlayerSetter {
 				shapeGroup.add(button);
 				shapeButtons.add(button);
 			}
-			shapeButtons.setLayout(new BoxLayout(shapeButtons, BoxLayout.PAGE_AXIS));
 		}
 
 		shapeButtons.revalidate();
@@ -462,7 +466,6 @@ public abstract class Sidebar extends JPanel implements IPlayerSetter {
 	 *            Shape
 	 */
 	public void setShape(ShapeType shape) {
-		// updateShapeButtons();
 		shapeSettings.removeAll();
 		if (shape != null) {
 			for (ShapeProperty property : shape.getProperties()) {
