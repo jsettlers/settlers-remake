@@ -33,7 +33,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -72,6 +71,7 @@ import jsettlers.mapcreator.main.error.IScrollToAble;
 import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
+import jsettlers.mapcreator.main.window.NewFileDialog;
 import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
@@ -93,11 +93,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
-	private final MapData data;
-	private final MapGraphics map;
+	private MapData data;
+	private MapGraphics map;
 	private Tool tool = null;
 
-	private byte currentPlayer = 0;
+	/**
+	 * Currently selected player
+	 */
+	private int currentPlayer = 0;
 
 	/**
 	 * Last failure point to jump to
@@ -108,7 +111,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
-	private final DataTester dataTester;
+	/**
+	 * Check for errros
+	 */
+	private DataTester dataTester;
 
 	private MapInterfaceConnector connector;
 
@@ -148,6 +154,11 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	private Sidebar sidebar = new Sidebar(toolSidebar);
 
 	/**
+	 * Timer for redrawing
+	 */
+	private final Timer redrawTimer = new Timer(true);
+
+	/**
 	 * Constructor
 	 * 
 	 * @param header
@@ -155,36 +166,49 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 * @param ground
 	 */
 	public EditorControl(MapFileHeader header, ELandscapeType ground) {
-		this.header = header;
-		short width = header.getWidth();
-		short height = header.getHeight();
-		short playerCount = header.getMaxPlayer();
-		data = new MapData(width, height, playerCount, ground);
-		map = new MapGraphics(data);
-
-		dataTester = new DataTester(data, this);
-		init();
+		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
 	}
 
 	public EditorControl(MapLoader loader) throws MapLoadException {
-		data = new MapData(loader.getMapData());
-		header = loader.getFileHeader();
-		map = new MapGraphics(data);
-		dataTester = new DataTester(data, this);
-		init();
+		MapData data = new MapData(loader.getMapData());
+		MapFileHeader header = loader.getFileHeader();
+		init(header, data);
 	}
 
 	/**
 	 * Initialize editor, called from constructor
+	 * 
+	 * @param header
+	 *            Header to use
+	 * @param mapData
+	 *            Map to use
 	 */
-	private void init() {
+	private void init(MapFileHeader header, MapData mapData) {
+		this.header = header;
+		this.data = mapData;
+
+		map = new MapGraphics(data);
+		dataTester = new DataTester(data, this);
 		buildMapEditingWindow();
 		dataTester.start();
 		sidebar.initErrorTab(dataTester.getErrorList(), this);
 	}
 
 	public void buildMapEditingWindow() {
-		window = new EditorFrame() {
+		JPanel root = new JPanel();
+		root.setLayout(new BorderLayout(10, 10));
+
+		// map
+		Area area = new Area();
+		final Region region = new Region(Region.POSITION_CENTER);
+		area.add(region);
+		AreaContainer displayPanel = new AreaContainer(area);
+		displayPanel.setMinimumSize(new Dimension(640, 480));
+		displayPanel.requestFocusInWindow();
+		displayPanel.setFocusable(true);
+		root.add(displayPanel, BorderLayout.CENTER);
+
+		window = new EditorFrame(root, sidebar) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -203,26 +227,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		};
 		registerActions();
 		window.initMenubarAndToolbar();
-		JPanel root = new JPanel();
-		root.setLayout(new BorderLayout(10, 10));
-
-		// map
-		Area area = new Area();
-		final Region region = new Region(Region.POSITION_CENTER);
-		area.add(region);
-		AreaContainer displayPanel = new AreaContainer(area);
-		displayPanel.setMinimumSize(new Dimension(640, 480));
-		displayPanel.requestFocusInWindow();
-		displayPanel.setFocusable(true);
-		root.add(displayPanel, BorderLayout.CENTER);
 
 		// toolbar
 		initToolbar();
-
-		JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, root, sidebar);
-		// window
-		window.add(splitter, BorderLayout.CENTER);
-		splitter.setDividerLocation(1000);
 
 		// window.pack();
 		window.setSize(1200, 800);
@@ -230,13 +237,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 		window.setFilename(header.getName());
 
+		// center on screen
 		window.setLocationRelativeTo(null);
 
 		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = mapContent.getInterfaceConnector();
 		region.setContent(mapContent);
 
-		new Timer(true).schedule(new TimerTask() {
+		redrawTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				region.requestRedraw();
@@ -248,6 +256,62 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	}
 
 	/**
+	 * Quit this editor instance
+	 */
+	private void quit() {
+		redrawTimer.cancel();
+		dataTester.dispose();
+		window.dispose();
+	}
+
+	/**
+	 * Create a new map, close the existing one
+	 */
+	private void createNewFile() {
+		if (!checkSaved()) {
+			return;
+		}
+
+		NewFileDialog dlg = new NewFileDialog(window);
+		dlg.setVisible(true);
+
+		if (!dlg.isConfirmed()) {
+			return;
+		}
+
+		dataTester.dispose();
+
+		MapFileHeader header = dlg.getHeader();
+		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), dlg.getGroundTypes()));
+
+		// EditorControl control = new EditorControl(dlg.getHeader(), dlg.getGroundTypes());
+		// control.window.setLocation(window.getLocation());
+		// control.window.setSize(window.getSize());
+		// control.window.getSplitter().setDividerLocation(window.getSplitter().getDividerLocation());
+	}
+
+	/**
+	 * Check if saved, if not ask user
+	 * 
+	 * @return true to continue, false to cancel
+	 */
+	private boolean checkSaved() {
+		if (undoDeltas.isEmpty()) {
+			return true;
+		} else {
+			int result = JOptionPane.showConfirmDialog(window, "Save changes?", "JSettler", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (result == JOptionPane.YES_OPTION) {
+				save();
+				return true;
+			} else if (result == JOptionPane.NO_OPTION) {
+				return true;
+			}
+			// cancel
+			return false;
+		}
+	}
+
+	/**
 	 * Register toolbar / menubar actions
 	 */
 	private void registerActions() {
@@ -256,26 +320,19 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (undoDeltas.isEmpty()) {
-					window.dispose();
+				if (checkSaved()) {
+					quit();
 					// TODO dispose all window, make all threads deamon, then remove this exit!
 					System.exit(0);
-				} else {
-					int result = JOptionPane.showConfirmDialog(window, "Save changes?", "JSettler", JOptionPane.YES_NO_CANCEL_OPTION);
-					if (result == JOptionPane.YES_OPTION) {
-						save();
-						window.dispose();
-
-						// TODO dispose all window, make all threads deamon, then remove this exit!
-						System.exit(0);
-					} else if (result == JOptionPane.NO_OPTION) {
-						window.dispose();
-
-						// TODO dispose all window, make all threads deamon, then remove this exit!
-						System.exit(0);
-					}
-					// else: cancel, do nothing
 				}
+			}
+		});
+		window.registerAction("new", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createNewFile();
 			}
 		});
 
@@ -613,7 +670,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	}
 
 	@Override
-	public byte getActivePlayer() {
+	public int getActivePlayer() {
 		return currentPlayer;
 	}
 

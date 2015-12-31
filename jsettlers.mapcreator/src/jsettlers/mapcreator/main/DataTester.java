@@ -39,8 +39,11 @@ public class DataTester implements Runnable {
 	private boolean retest = true;
 	private final MapData data;
 
-	// onyl used from test thread
+	/**
+	 * only used from test thread
+	 */
 	private boolean successful;
+
 	private String result;
 	private ShortPoint2D resultPosition;
 	private final TestResultReceiver receiver;
@@ -49,21 +52,48 @@ public class DataTester implements Runnable {
 	private final ErrorList errorList;
 	private ArrayList<Error> errors = new ArrayList<Error>();
 
+	/**
+	 * Thread for testing
+	 */
+	private Thread thread;
+
+	/**
+	 * Running flag
+	 */
+	private boolean running = true;
+
 	public DataTester(MapData data, TestResultReceiver receiver) {
 		this.data = data;
 		this.receiver = receiver;
 		errorList = new ErrorList();
 	}
 
-	public void start() {
-		new Thread(this, "data tester").start();
+	public synchronized void start() {
+		running = true;
+		this.thread = new Thread(this, "data tester");
+		thread.start();
+	}
+
+	/**
+	 * Release all resources
+	 */
+	public void dispose() {
+		running = false;
+		synchronized (this) {
+			notifyAll();
+		}
+		try {
+			thread.join(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void run() {
-		while (true) {
+		while (running) {
 			synchronized (this) {
-				while (!retest) {
+				while (!retest && running) {
 					try {
 						this.wait();
 					} catch (InterruptedException e) {
@@ -71,6 +101,11 @@ public class DataTester implements Runnable {
 				}
 				retest = false;
 			}
+
+			if (!running) {
+				return;
+			}
+
 			try {
 				doTest();
 			} catch (Throwable e) {

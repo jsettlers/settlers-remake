@@ -14,6 +14,15 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
+/**
+ * Interface to get current active player
+ * 
+ * @author Andreas Butti
+ *
+ */
 public interface IPlayerSetter {
-	byte getActivePlayer();
+	/**
+	 * @return Active player
+	 */
+	public int getActivePlayer();
 }

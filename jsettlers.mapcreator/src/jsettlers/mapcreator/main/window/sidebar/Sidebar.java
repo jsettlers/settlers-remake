@@ -22,7 +22,7 @@ public class Sidebar extends JTabbedPane {
 	/**
 	 * Interface to scroll to position
 	 */
-	private JScrollPane scrolErrorList;
+	private JScrollPane scrolErrorList = null;
 
 	/**
 	 * Sidebar with the tools

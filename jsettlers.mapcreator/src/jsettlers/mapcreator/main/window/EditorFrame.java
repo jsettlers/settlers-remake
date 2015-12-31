@@ -18,6 +18,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -26,6 +27,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -52,14 +54,24 @@ public abstract class EditorFrame extends JFrame {
 	private Properties shortcut = new Properties();
 
 	/**
+	 * Split editor / sidebar
+	 */
+	private JSplitPane splitter;
+
+	/**
 	 * Display icon AND text in toolbar, default display only icon and text as tooltip
 	 */
 	public static final String DISPLAY_TEXT_IN_TOOLBAR = "display-text-in-toolbar";
 
 	/**
 	 * Constructor
+	 * 
+	 * @param root
+	 *            Root panel
+	 * @param sidebar
+	 *            Sidebar panel
 	 */
-	public EditorFrame() {
+	public EditorFrame(JComponent root, JComponent sidebar) {
 		super();
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setFilename("unnamed");
@@ -77,6 +89,18 @@ public abstract class EditorFrame extends JFrame {
 				quitAction.actionPerformed(new ActionEvent(this, 0, "quit"));
 			}
 		});
+
+		this.splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, root, sidebar);
+		add(splitter, BorderLayout.CENTER);
+		splitter.setDividerLocation(1000);
+
+	}
+
+	/**
+	 * @return Split editor / sidebar
+	 */
+	public JSplitPane getSplitter() {
+		return splitter;
 	}
 
 	/**
@@ -113,13 +137,6 @@ public abstract class EditorFrame extends JFrame {
 			}
 		});
 
-		registerAction("new", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
 		registerAction("open", new AbstractAction() {
 
 			@Override

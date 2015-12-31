@@ -19,12 +19,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,12 +41,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
+import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
@@ -180,16 +186,119 @@ public class MapCreatorApp {
 	}
 
 	/**
+	 * Set Up an exception handler for uncatcht exception
+	 */
+	private static void setupDefaultExceptionHandler() {
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+			@Override
+			public void uncaughtException(final Thread t, final Throwable e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						ErrorDisplay.displayError(e, "Unhandled error in Thread " + t.getName());
+					}
+				});
+			}
+		});
+	}
+
+	/**
+	 * Startup from action properties
+	 * 
+	 * @param options
+	 *            Options
+	 * @return true on success
+	 */
+	private static boolean startupFromAction(OptionableProperties options) {
+		try {
+			String actionconfig = options.getProperty("actionconfig");
+			if (actionconfig != null) {
+				Properties prop = new Properties();
+				prop.load(new FileInputStream(actionconfig));
+				String action = prop.getProperty("action");
+
+				if (!"open".equals(action) && !"new".equals(action)) {
+					return false;
+				}
+
+				if (Boolean.parseBoolean(options.getProperty("delete-actionconfig"))) {
+					new File(actionconfig).delete();
+				}
+
+				if ("new".equals(action)) {
+					// Sample property file:
+					// action=new
+					// map-name=OpenTest 1
+					// lanscape-type=GRASS
+					// width=100
+					// height=100
+					// min-player=1
+					// max-player=3
+
+					String mapName = prop.getProperty("map-name");
+					String lanscapeType = prop.getProperty("lanscape-type");
+					int width = Integer.parseInt(prop.getProperty("width"));
+					int height = Integer.parseInt(prop.getProperty("height"));
+					int minPlayer = Integer.parseInt(prop.getProperty("min-player"));
+					int maxPlayer = Integer.parseInt(prop.getProperty("max-player"));
+					MapFileHeader header = new MapFileHeader(MapType.NORMAL, mapName, null, "", (short) width, (short) height, (short) minPlayer,
+							(short) maxPlayer, null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
+
+					new EditorControl(header, ELandscapeType.valueOf(lanscapeType));
+
+				} else {
+					String mapId = prop.getProperty("map-id");
+					List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
+					MapLoader toOpenMap = null;
+					for (MapLoader m : maps) {
+						if (mapId.equals(m.getMapId())) {
+							toOpenMap = m;
+							break;
+						}
+					}
+
+					if (toOpenMap == null) {
+						JOptionPane.showMessageDialog(null, "Could not find map with ID \"" + mapId + "\"", "JSettler", JOptionPane.ERROR_MESSAGE,
+								null);
+						return false;
+					}
+
+					new EditorControl(toOpenMap);
+				}
+
+				return true;
+			}
+		} catch (Exception e) {
+			System.err.println("Could not read action properties");
+			ErrorDisplay.displayError(e, "Failed to execute startup action");
+		}
+		return false;
+	}
+
+	/**
 	 * Main
 	 * 
 	 * @param args
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args), "config.prp");
-		loadLookAndFeel();
-		new MapCreatorApp();
+	public static void main(String[] args) {
+		try {
+			setupDefaultExceptionHandler();
+
+			OptionableProperties options = MainUtils.loadOptions(args);
+			SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
+			loadLookAndFeel();
+
+			if (startupFromAction(options)) {
+				return;
+			}
+
+			new MapCreatorApp();
+		} catch (Exception e) {
+			ErrorDisplay.displayError(e, "Error launching application");
+		}
 	}
 
 }

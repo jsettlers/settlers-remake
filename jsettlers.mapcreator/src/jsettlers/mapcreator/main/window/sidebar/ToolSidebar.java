@@ -442,7 +442,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	protected abstract void changeTool(Tool lastPathComponent);
 
 	@Override
-	public byte getActivePlayer() {
+	public int getActivePlayer() {
 		return playerSetter.getActivePlayer();
 	}
 

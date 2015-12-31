@@ -45,6 +45,10 @@ public class MapHeaderEditorPanel extends JPanel {
 	private SpinnerNumberModel height;
 	private SpinnerNumberModel minPlayer;
 	private SpinnerNumberModel maxPlayer;
+
+	/**
+	 * Text field with the map name
+	 */
 	private JTextField nameField;
 	private JTextArea descriptionField;
 
@@ -138,6 +142,13 @@ public class MapHeaderEditorPanel extends JPanel {
 			widthField.setEnabled(false);
 			heightField.setEnabled(false);
 		}
+	}
+
+	/**
+	 * @return Text field with the map name
+	 */
+	public JTextField getNameField() {
+		return nameField;
 	}
 
 	public void setHeader(MapFileHeader header) {

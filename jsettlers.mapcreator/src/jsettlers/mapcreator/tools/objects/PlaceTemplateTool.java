@@ -54,7 +54,11 @@ public class PlaceTemplateTool implements Tool {
 		for (TemplateObject object : objects) {
 			int x = start.x + object.getDx();
 			int y = start.y + object.getDy();
-			map.placeObject(object.getObject(player.getActivePlayer()), x, y);
+			// TODO change byte to int, java internally uses int anyway, because of memory alignment
+			// byte and short should be avoided, it uses the same amount of memory, and is slower, because
+			// it has to be converted from int to byte / short
+			// only for array it uses less memory, but thats not the case here...
+			map.placeObject(object.getObject((byte) player.getActivePlayer()), x, y);
 		}
 	}
 

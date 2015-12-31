@@ -67,7 +67,7 @@ public abstract class SettingsDialog extends JDialog {
 	public abstract void applyNewHeader(MapFileHeader header);
 
 	/**
-	 * Initiliaze buttons
+	 * Initialize buttons
 	 */
 	private void initButton() {
 		JPanel buttonPanel = new JPanel();
@@ -76,7 +76,7 @@ public abstract class SettingsDialog extends JDialog {
 		JButton btOk = new JButton(EditorLabels.getLabel("OK"));
 		btOk.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				MapFileHeader nheader = headerEditor.getHeader();
 				if (nheader.getWidth() != header.getWidth() || nheader.getHeight() != header.getHeight()) {
 					JOptionPane.showMessageDialog(SettingsDialog.this, "Widh and height are fixed.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -88,9 +88,9 @@ public abstract class SettingsDialog extends JDialog {
 		});
 
 		JButton btCancel = new JButton(EditorLabels.getLabel("Cancel"));
-		btOk.addActionListener(new ActionListener() {
+		btCancel.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
