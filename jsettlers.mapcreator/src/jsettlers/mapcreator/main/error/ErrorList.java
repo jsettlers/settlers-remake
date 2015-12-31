@@ -20,15 +20,29 @@ import javax.swing.AbstractListModel;
 
 import jsettlers.common.position.ILocatable;
 
+/**
+ * List model with the errors on the Map
+ * 
+ * @author Andreas Butti
+ */
 public class ErrorList extends AbstractListModel<ILocatable> {
-
-	/**
-     *
-     */
 	private static final long serialVersionUID = -6645362444519496534L;
 
+	/**
+	 * Error locations
+	 */
 	private ArrayList<Error> errors = new ArrayList<>();
 
+	/**
+	 * Constructor
+	 */
+	public ErrorList() {
+	}
+
+	/**
+	 * @param errors
+	 *            Error locations
+	 */
 	public void setErrors(ArrayList<Error> errors) {
 		int max = Math.max(errors.size(), this.errors.size());
 		this.errors = errors;

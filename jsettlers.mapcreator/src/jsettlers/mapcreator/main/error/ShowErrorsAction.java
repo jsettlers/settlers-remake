@@ -23,49 +23,70 @@ import javax.swing.event.ListDataListener;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
+import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 
 /**
  * Action to display errors, display error count as text
  * 
  * @author Andreas Butti
  */
-public class ShowErrorsAction extends AbstractAction implements ListDataListener {
-	private static final long serialVersionUID = -1759142509787969743L;
+public class ShowErrorsAction extends AbstractAction {
+	private static final long serialVersionUID = 1L;
 
-	private final ErrorList list;
-	private final IScrollToAble scrollTo;
-	private ErrorsWindow window = null;
+	/**
+	 * Sidebar to select tab
+	 */
+	private final Sidebar sidebar;
 
-	public ShowErrorsAction(ErrorList list, IScrollToAble scrollTo) {
+	/**
+	 * Error list
+	 */
+	private ErrorList list;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param list
+	 *            Error list
+	 * @param sidebar
+	 *            Sidebar to select tab
+	 */
+	public ShowErrorsAction(ErrorList list, Sidebar sidebar) {
 		this.list = list;
-		this.scrollTo = scrollTo;
-		list.addListDataListener(this);
+		this.sidebar = sidebar;
 		putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
+		list.addListDataListener(new ListDataListener() {
+
+			@Override
+			public void intervalRemoved(ListDataEvent e) {
+				updateText();
+			}
+
+			@Override
+			public void intervalAdded(ListDataEvent e) {
+				updateText();
+			}
+
+			@Override
+			public void contentsChanged(ListDataEvent e) {
+				updateText();
+			}
+		});
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (window == null || window.isClosed()) {
-			window = new ErrorsWindow(list, scrollTo);
-		} else {
-			window.show();
-		}
+		sidebar.selectError();
 	}
 
-	@Override
-	public void contentsChanged(ListDataEvent arg0) {
+	/**
+	 * Update the error text and icon, if an error or not
+	 */
+	public void updateText() {
 		if (list.getSize() == 0) {
 			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
 		} else {
 			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getSize()));
 		}
-	}
-
-	@Override
-	public void intervalAdded(ListDataEvent arg0) {
-	}
-
-	@Override
-	public void intervalRemoved(ListDataEvent arg0) {
 	}
 }

@@ -77,6 +77,7 @@ import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
+import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsWindow;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -120,8 +121,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 */
 	private MapFileHeader header;
 
-	private ShowErrorsAction showErrorsButton;
-
 	/**
 	 * Window displayed
 	 */
@@ -137,7 +136,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	/**
 	 * Sidebar with the tools
 	 */
-	private Sidebar sidebar = new Sidebar(this) {
+	private ToolSidebar toolSidebar = new ToolSidebar(this) {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -146,6 +145,11 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		}
 
 	};
+
+	/**
+	 * Sidebar with all tabs
+	 */
+	private Sidebar sidebar = new Sidebar(toolSidebar);
 
 	/**
 	 * Constructor
@@ -163,18 +167,24 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		map = new MapGraphics(data);
 
 		dataTester = new DataTester(data, this);
-		buildMapEditingWindow();
-		dataTester.start();
+		init();
 	}
 
 	public EditorControl(MapLoader loader) throws MapLoadException {
 		data = new MapData(loader.getMapData());
 		header = loader.getFileHeader();
 		map = new MapGraphics(data);
-
 		dataTester = new DataTester(data, this);
+		init();
+	}
+
+	/**
+	 * Initialize editor, called from constructor
+	 */
+	private void init() {
 		buildMapEditingWindow();
 		dataTester.start();
+		sidebar.initErrorTab(dataTester.getErrorList(), this);
 	}
 
 	public void buildMapEditingWindow() {
@@ -205,7 +215,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		final Region region = new Region(Region.POSITION_CENTER);
 		area.add(region);
 		AreaContainer displayPanel = new AreaContainer(area);
-		displayPanel.setPreferredSize(new Dimension(640, 480));
+		displayPanel.setMinimumSize(new Dimension(640, 480));
 		displayPanel.requestFocusInWindow();
 		displayPanel.setFocusable(true);
 		root.add(displayPanel, BorderLayout.CENTER);
@@ -350,11 +360,18 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			}
 		});
 
-		showErrorsButton = new ShowErrorsAction(dataTester.getErrorList(), this);
-		window.registerAction("show-errors", showErrorsButton);
+		window.registerAction("show-tools", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
 
-		// update text, after registerAction
-		showErrorsButton.contentsChanged(null);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sidebar.showTools();
+			}
+		});
+
+		ShowErrorsAction showErrorsAction = new ShowErrorsAction(dataTester.getErrorList(), sidebar);
+		window.registerAction("show-errors", showErrorsAction);
+		showErrorsAction.updateText();
 
 		this.gotoErrorAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -544,7 +561,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	}
 
 	private void updateShapeButtons() {
-		sidebar.updateShapeButtons(tool, activeShape);
+		toolSidebar.updateShapeButtons(tool, activeShape);
 	}
 
 	/**
@@ -555,7 +572,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 */
 	protected void setShape(ShapeType shape) {
 		activeShape = shape;
-		sidebar.setShape(shape);
+		toolSidebar.setShape(shape);
 	}
 
 	@Override
@@ -620,7 +637,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		testFailPoint = failPoint;
 		window.enableAction("play", allowed);
 		gotoErrorAction.putValue(javax.swing.Action.NAME, result);
-		showErrorsButton.setEnabled(!allowed);
 	}
 
 	@Override
