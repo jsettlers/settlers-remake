@@ -282,8 +282,34 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		dataTester.dispose();
 
 		MapFileHeader header = dlg.getHeader();
-		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), dlg.getGroundTypes()));
 
+		try {
+			File temp = File.createTempFile("jsettler-action", ".properties");
+
+			ActionPropertie prop = new ActionPropertie();
+			prop.setAction("new");
+			prop.setMapName(header.getName());
+			prop.setMapDescription(header.getDescription());
+			prop.setLanscapeType(dlg.getGroundTypes());
+			prop.setWidth(header.getWidth());
+			prop.setHeight(header.getHeight());
+			prop.setMinPlayerCount(header.getMinPlayer());
+			prop.setMaxPlayerCount(header.getMaxPlayer());
+
+			prop.saveToFile(temp);
+
+			String[] args = new String[] { "java", "-splash:splash.png", "-classpath", System.getProperty("java.class.path"),
+					MapCreatorApp.class.getName(),
+					"--actionconfig=" + temp.getAbsolutePath(), "--delete-actionconfig=true" };
+			startProcess(args, "game");
+		} catch (IOException e) {
+			ErrorDisplay.displayError(e, "Failed to start game");
+		}
+
+		// TODO open a second map does not work, I didn't analyze why yet
+		// MapFileHeader header = dlg.getHeader();
+		// init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), dlg.getGroundTypes()));
+		// ---------
 		// EditorControl control = new EditorControl(dlg.getHeader(), dlg.getGroundTypes());
 		// control.window.setLocation(window.getLocation());
 		// control.window.setSize(window.getSize());
@@ -487,6 +513,48 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		return imagedHeader;
 	}
 
+	/**
+	 * Start Another process
+	 * 
+	 * @param args
+	 *            Arguments
+	 * @param name
+	 *            For Log output and thread ID
+	 * @throws IOException
+	 */
+	protected void startProcess(String[] args, final String name) throws IOException {
+		System.out.println("Starting process:");
+		for (String arg : args) {
+			System.out.print(arg + " ");
+		}
+		System.out.println();
+
+		ProcessBuilder builder = new ProcessBuilder(args);
+		builder.redirectErrorStream(true);
+		final Process process = builder.start();
+
+		Thread streamReader = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+				while (true) {
+					String line;
+					try {
+						line = reader.readLine();
+					} catch (IOException e) {
+						break;
+					}
+					if (line == null) {
+						break;
+					}
+					System.out.println(name + " " + line);
+				}
+			}
+		}, "ExecThread " + name);
+		streamReader.setDaemon(true);
+	}
+
 	protected void play() {
 		try {
 			File temp = File.createTempFile("tmp_map", "");
@@ -495,39 +563,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), SwingManagedJSettlers.class.getName(),
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
-
-			System.out.println("Starting process:");
-			for (String arg : args) {
-				System.out.print(arg + " ");
-			}
-			System.out.println();
-
-			ProcessBuilder builder = new ProcessBuilder(args);
-			builder.redirectErrorStream(true);
-			final Process process = builder.start();
-
-			Thread streamReader = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-					while (true) {
-						String line;
-						try {
-							line = reader.readLine();
-						} catch (IOException e) {
-							break;
-						}
-						if (line == null) {
-							break;
-						}
-						System.out.println("Running game: " + line);
-					}
-				}
-			}, "run game process");
-			streamReader.setDaemon(true);
+			startProcess(args, "game");
 		} catch (IOException e) {
-			e.printStackTrace();
+			ErrorDisplay.displayError(e, "Failed to start game");
 		}
 	}
 

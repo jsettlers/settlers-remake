@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -214,9 +213,8 @@ public class MapCreatorApp {
 		try {
 			String actionconfig = options.getProperty("actionconfig");
 			if (actionconfig != null) {
-				Properties prop = new Properties();
-				prop.load(new FileInputStream(actionconfig));
-				String action = prop.getProperty("action");
+				ActionPropertie prop = new ActionPropertie(new FileInputStream(actionconfig));
+				String action = prop.getAction();
 
 				if (!"open".equals(action) && !"new".equals(action)) {
 					return false;
@@ -236,19 +234,21 @@ public class MapCreatorApp {
 					// min-player=1
 					// max-player=3
 
-					String mapName = prop.getProperty("map-name");
-					String lanscapeType = prop.getProperty("lanscape-type");
-					int width = Integer.parseInt(prop.getProperty("width"));
-					int height = Integer.parseInt(prop.getProperty("height"));
-					int minPlayer = Integer.parseInt(prop.getProperty("min-player"));
-					int maxPlayer = Integer.parseInt(prop.getProperty("max-player"));
-					MapFileHeader header = new MapFileHeader(MapType.NORMAL, mapName, null, "", (short) width, (short) height, (short) minPlayer,
+					String mapName = prop.getMapName();
+					String description = prop.getMapDescription();
+					ELandscapeType lanscapeType = prop.getLanscapeType();
+					int width = prop.getWidth();
+					int height = prop.getHeight();
+					int minPlayer = prop.getMinPlayerCount();
+					int maxPlayer = prop.getMaxPlayerCount();
+					MapFileHeader header = new MapFileHeader(MapType.NORMAL, mapName, null, description, (short) width, (short) height,
+							(short) minPlayer,
 							(short) maxPlayer, null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 
-					new EditorControl(header, ELandscapeType.valueOf(lanscapeType));
+					new EditorControl(header, lanscapeType);
 
 				} else {
-					String mapId = prop.getProperty("map-id");
+					String mapId = prop.getMapId();
 					List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
 					MapLoader toOpenMap = null;
 					for (MapLoader m : maps) {
