@@ -324,7 +324,12 @@ public abstract class MovableStrategy implements Serializable {
 	protected void pathAborted(ShortPoint2D pathTarget) {
 	}
 
-	public boolean offerDroppedMaterial() {
+	/**
+	 * This method is called before a material is dropped during a {@link EMovableType}.DROP action.
+	 * 
+	 * @return If true is returned, the dropped material is offered, if false, it isn't.
+	 */
+	public boolean beforeDroppingMaterial() {
 		return true;
 	}
 

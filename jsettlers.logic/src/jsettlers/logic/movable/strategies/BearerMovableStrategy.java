@@ -103,7 +103,6 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			break;
 
 		case DROPPING:
-			request.deliveryFulfilled();
 			request = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
@@ -140,8 +139,13 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public boolean offerDroppedMaterial() {
-		return request == null || !request.isActive();
+	public boolean beforeDroppingMaterial() {
+		if (request != null && request.isActive() && request.getPos().equals(super.getPos())) {
+			request.deliveryFulfilled();
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private void handleJobFailed(boolean reportAsJobless) {
