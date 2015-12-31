@@ -68,6 +68,11 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	private JPanel shapeButtons;
 	private JPanel shapeSettings;
 
+	/**
+	 * Active shape
+	 */
+	private ShapeType activeShape = null;
+
 	// @formatter:off
 	private final ToolNode TOOLBOX = new ToolBox(EditorLabels.getLabel("toolbox"), new ToolNode[] {
 			new ToolBox(EditorLabels.getLabel("category-landscape"), new ToolNode[] {
@@ -427,6 +432,13 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 		add(shape, BorderLayout.SOUTH);
 	}
 
+	/**
+	 * @return The active shape
+	 */
+	public ShapeType getActiveShape() {
+		return activeShape;
+	}
+
 	protected abstract void changeTool(Tool lastPathComponent);
 
 	@Override
@@ -442,7 +454,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	 * @param activeShape
 	 *            Active shape
 	 */
-	public void updateShapeButtons(Tool tool, ShapeType activeShape) {
+	public void updateShapeButtons(Tool tool) {
 		shapeButtons.removeAll();
 
 		if (tool != null) {
@@ -466,6 +478,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	 *            Shape
 	 */
 	public void setShape(ShapeType shape) {
+		this.activeShape = shape;
 		shapeSettings.removeAll();
 		if (shape != null) {
 			for (ShapeProperty property : shape.getProperties()) {

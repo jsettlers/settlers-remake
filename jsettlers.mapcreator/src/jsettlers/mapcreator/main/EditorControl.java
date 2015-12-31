@@ -99,7 +99,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	private final MapData data;
 	private final MapGraphics map;
 	private Tool tool = null;
-	private ShapeType activeShape = null;
 
 	private byte currentPlayer = 0;
 
@@ -538,7 +537,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 	protected void changeTool(Tool lastPathComponent) {
 		tool = lastPathComponent;
-		updateShapeButtons();
+		toolSidebar.updateShapeButtons(tool);
 		if (tool != null) {
 			ShapeType shape = tool.getShapes()[0];
 
@@ -554,25 +553,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 			map.setShowResources(tool instanceof ResourceTool);
 
-			setShape(shape);
+			toolSidebar.setShape(shape);
 		} else {
-			setShape(null);
+			toolSidebar.setShape(null);
 		}
-	}
-
-	private void updateShapeButtons() {
-		toolSidebar.updateShapeButtons(tool, activeShape);
-	}
-
-	/**
-	 * Set the active shape
-	 * 
-	 * @param shape
-	 *            Shape
-	 */
-	protected void setShape(ShapeType shape) {
-		activeShape = shape;
-		toolSidebar.setShape(shape);
 	}
 
 	@Override
@@ -584,7 +568,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				DrawLineAction lineAction = (DrawLineAction) action;
 
-				ShapeType shape = getActiveShape();
+				ShapeType shape = toolSidebar.getActiveShape();
 
 				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 
@@ -594,7 +578,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				StartDrawingAction lineAction = (StartDrawingAction) action;
 
-				ShapeType shape = getActiveShape();
+				ShapeType shape = toolSidebar.getActiveShape();
 
 				tool.start(data, shape, lineAction.getPos());
 
@@ -612,7 +596,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			if (tool != null) {
 				PointAction lineAction = (PointAction) action;
 
-				ShapeType shape = getActiveShape();
+				ShapeType shape = toolSidebar.getActiveShape();
 
 				tool.start(data, shape, lineAction.getPosition());
 				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
@@ -623,20 +607,23 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		}
 	}
 
-	private ShapeType getActiveShape() {
-		return activeShape;
-	}
-
 	@Override
 	public void fireAction(Action action) {
 		action(action);
 	}
 
 	@Override
-	public void testResult(String result, boolean allowed, ShortPoint2D failPoint) {
+	public void testResult(String result, boolean successful, ShortPoint2D failPoint) {
 		testFailPoint = failPoint;
-		window.enableAction("play", allowed);
-		gotoErrorAction.putValue(javax.swing.Action.NAME, result);
+		window.enableAction("play", successful);
+
+		if (successful) {
+			gotoErrorAction.putValue(javax.swing.Action.NAME, EditorLabels.getLabel("no-errors"));
+			gotoErrorAction.setEnabled(false);
+		} else {
+			gotoErrorAction.putValue(javax.swing.Action.NAME, result);
+			gotoErrorAction.setEnabled(true);
+		}
 	}
 
 	@Override
