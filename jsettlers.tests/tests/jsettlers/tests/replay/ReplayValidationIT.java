@@ -17,6 +17,8 @@ package jsettlers.tests.replay;
 import java.io.File;
 import java.io.IOException;
 
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -29,7 +31,6 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayTool;
@@ -50,8 +51,8 @@ public class ReplayValidationIT {
 		MapList.setDefaultListFactory(new IMapListFactory() {
 			@Override
 			public MapList getMapList() {
-				File resourceDir = ResourceManager.getSaveDirectory();
-				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps")), new DebugMapLister(new File(resourceDir, "save")));
+				File resourceDir = ResourceManager.getResourcesDirectory();
+				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps"), true), new DebugMapLister(new File(resourceDir, "save"), true));
 			}
 		});
 	}
@@ -67,27 +68,27 @@ public class ReplayValidationIT {
 		JSettlersGame game = new JSettlersGame(map, 0L, networkConnector, playerId,
 				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers()));
 
-		MapLoader directSavegame = ReplayTool.playGameToTargetTimeAndGetSavegame(targetTimeMinutes, networkConnector, game);
+		RemakeMapLoader directSavegame = ReplayTool.playGameToTargetTimeAndGetSavegame(targetTimeMinutes, networkConnector, game);
 
 		File replayFile = findNewestReplayFile().getCanonicalFile();
 
 		System.out.println("Found replay file for savegame: " + replayFile);
 
-		MapLoader replayedSavegame = ReplayTool.replayAndGetSavegame(replayFile, targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+		RemakeMapLoader replayedSavegame = ReplayTool.replayAndGetSavegame(replayFile, targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(directSavegame, replayedSavegame);
 
 		// delete created files
 		FileUtils.deleteRecursively(replayFile.getParentFile());
-		directSavegame.getFile().delete();
-		replayedSavegame.getFile().delete();
+		directSavegame.getListedMap().delete();
+		replayedSavegame.getListedMap().delete();
 	}
 
 	private File findNewestReplayFile() throws IOException {
 		final File[] newestReplay = new File[1];
 
-		FileUtils.walkFileTree(new File(ResourceManager.getSaveDirectory(), "logs"), new IFileVisitor() {
+		FileUtils.walkFileTree(new File(ResourceManager.getResourcesDirectory(), "logs"), new IFileVisitor() {
 			private long newestModificationTime;
 
 			@Override

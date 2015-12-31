@@ -85,7 +85,7 @@ public class WinnerGeneral implements ArmyGeneral {
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId).size());
 		setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, numberOfMissingSwordsmen);
-		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS / 2) {
+		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS / 2) {
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
 		} else {
 			int numberOfMissingSpearmen = Math.max(0, RUSH_DEFENSE_SPEARMEN

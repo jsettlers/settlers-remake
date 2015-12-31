@@ -29,6 +29,7 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.JSettlersGame.GameRunner;
 import jsettlers.main.ReplayStartInformation;
@@ -38,10 +39,10 @@ import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
 
-	public static MapLoader replayAndGetSavegame(File replayFile, float targetTimeMinutes, String remainingReplayFileName) throws IOException {
+	public static RemakeMapLoader replayAndGetSavegame(File replayFile, float targetTimeMinutes, String remainingReplayFileName) throws IOException {
 		ReplayTool.replayAndCreateSavegame(replayFile, targetTimeMinutes, remainingReplayFileName);
 
-		MapLoader savegameFile = getNewestSavegame();
+		RemakeMapLoader savegameFile = getNewestSavegame();
 		System.out.println("Replayed: " + replayFile + " and created savegame: " + savegameFile);
 		return savegameFile;
 	}
@@ -63,7 +64,7 @@ public class ReplayTool {
 		return networkConnector;
 	}
 
-	public static MapLoader playGameToTargetTimeAndGetSavegame(float targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
+	public static RemakeMapLoader playGameToTargetTimeAndGetSavegame(float targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
 			JSettlersGame game) throws IOException {
 		final int targetGameTimeMs = (int) (targetGameTimeMinutes * 60 * 1000);
 		IStartingGame startingGame = game.start();
@@ -79,14 +80,14 @@ public class ReplayTool {
 		return getNewestSavegame();
 	}
 
-	private static MapLoader getNewestSavegame() {
-		List<MapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
+	private static RemakeMapLoader getNewestSavegame() {
+		List<RemakeMapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
 		if (savedMaps.isEmpty()) {
 			return null;
 		}
 
-		MapLoader newest = savedMaps.get(0);
-		for (MapLoader map : savedMaps) {
+		RemakeMapLoader newest = savedMaps.get(0);
+		for (RemakeMapLoader map : savedMaps) {
 			if (newest.getCreationDate().before(map.getCreationDate())) {
 				newest = map;
 			}

@@ -9,17 +9,18 @@ import java.io.ObjectInputStream;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.ExtendedRandom;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.tests.utils.CountingInputStream;
 
 public class MapUtils {
 
-	static void compareMapFiles(MapLoader expectedSavegame, MapLoader actualSavegame) throws IOException, MapLoadException, ClassNotFoundException {
+	static void compareMapFiles(RemakeMapLoader expectedSavegame, RemakeMapLoader actualSavegame) throws IOException, MapLoadException, ClassNotFoundException {
 		System.out.println("Comparing expected '" + expectedSavegame + "' with actual '" + actualSavegame + "' (uncompressed!)");
 
-		try (InputStream expectedStream = MapLoader.getMapInputStream(expectedSavegame.getFile());
-				CountingInputStream actualStream = new CountingInputStream(MapLoader.getMapInputStream(actualSavegame.getFile()))) {
+		try (InputStream expectedStream = RemakeMapLoader.getMapInputStream(expectedSavegame.getListedMap());
+			 CountingInputStream actualStream = new CountingInputStream(RemakeMapLoader.getMapInputStream(actualSavegame.getListedMap()))) {
 			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 			MatchConstants.deserialize(new ObjectInputStream(expectedStream));
 			int expectedTime = MatchConstants.clock().getTime();

@@ -39,6 +39,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
@@ -571,6 +572,10 @@ public class AiStatistics {
 
 	public boolean isAlive(byte playerId) {
 		return playerStatistics[playerId].isAlive;
+	}
+
+	public ShortPoint2D getPositionOfPartition(byte playerId) {
+		return playerStatistics[playerId].referencePosition;
 	}
 
 	class PlayerStatistic {

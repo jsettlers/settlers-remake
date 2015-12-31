@@ -91,20 +91,20 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
-			MapLoader expectedSavegame = getReferenceSavegamePath();
+			RemakeMapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			RemakeMapLoader expectedSavegame = getReferenceSavegamePath();
 
 			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-			actualSavegame.getFile().delete();
+			actualSavegame.getListedMap().delete();
 		}
 	}
 
-	private MapLoader getReferenceSavegamePath() throws MapLoadException {
+	private RemakeMapLoader getReferenceSavegamePath() throws MapLoadException, IOException {
 		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
 		Path uncompressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION);
 		Path compressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION_COMPRESSED);
 
-		return MapLoader.getLoaderForListedMap(new ListedMapFile((Files.exists(uncompressed) ? uncompressed : compressed).toFile()));
+		return (RemakeMapLoader) MapLoader.getLoaderForListedMap(new ListedMapFile((Files.exists(uncompressed) ? uncompressed : compressed).toFile()));
 	}
 
 	private File getReplayFile() {
@@ -119,15 +119,16 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayTool.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
-			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
+
+			RemakeMapLoader newSavegame = ReplayTool.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			RemakeMapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {
 				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
-				newSavegame.getFile().delete();
+				newSavegame.getListedMap().delete();
 			} catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
-				Files.move(Paths.get(newSavegame.getFile().getFile().toString()), Paths.get(expectedSavegame.getFile().getFile().toString()),
+				Files.move(Paths.get(newSavegame.getListedMap().getFile().toString()), Paths.get(expectedSavegame.getListedMap().getFile().toString()),
 						StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + newSavegame + "'");
 			}
