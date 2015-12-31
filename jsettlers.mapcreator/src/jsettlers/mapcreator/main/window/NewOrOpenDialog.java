@@ -24,6 +24,10 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	 * Panel with the map list
 	 */
 	private OpenPanel openPanel = new OpenPanel();
+	/**
+	 * Panel with the map list
+	 */
+	private LastUsedPanel lastUsed = new LastUsedPanel();
 
 	/**
 	 * Main tabs
@@ -40,10 +44,15 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 		super(parent);
 		setTitle(EditorLabels.getLabel("neworopen.header"));
 
-		tabs.addTab(EditorLabels.getLabel("neworopen.new"), newFilePanel);
+		tabs.addTab(EditorLabels.getLabel("neworopen.lastused"), lastUsed);
 		tabs.addTab(EditorLabels.getLabel("neworopen.open"), openPanel);
+		tabs.addTab(EditorLabels.getLabel("neworopen.new"), newFilePanel);
 
 		add(tabs, BorderLayout.CENTER);
+
+		if (!lastUsed.hasFiles()) {
+			tabs.setSelectedComponent(openPanel);
+		}
 
 		pack();
 		setLocationRelativeTo(parent);
@@ -51,7 +60,14 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	}
 
 	/**
-	 * @return true for open, false for new map
+	 * @return true for last used
+	 */
+	public boolean isLastUsed() {
+		return tabs.getSelectedIndex() == 0;
+	}
+
+	/**
+	 * @return true for open
 	 */
 	public boolean isOpenAction() {
 		return tabs.getSelectedIndex() == 1;
@@ -62,6 +78,13 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	 */
 	public NewFilePanel getNewFilePanel() {
 		return newFilePanel;
+	}
+
+	/**
+	 * @return Panel with the map list
+	 */
+	public OpenPanel getLastUsed() {
+		return lastUsed;
 	}
 
 	/**

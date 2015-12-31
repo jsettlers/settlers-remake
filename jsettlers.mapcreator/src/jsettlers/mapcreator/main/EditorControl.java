@@ -73,6 +73,7 @@ import jsettlers.mapcreator.main.error.IScrollToAble;
 import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
+import jsettlers.mapcreator.main.window.LastUsedHandler;
 import jsettlers.mapcreator.main.window.NewFileDialog;
 import jsettlers.mapcreator.main.window.OpenExistingDialog;
 import jsettlers.mapcreator.main.window.SettingsDialog;
@@ -195,6 +196,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		buildMapEditingWindow();
 		dataTester.start();
 		sidebar.initErrorTab(dataTester.getErrorList(), this);
+
+		LastUsedHandler lastUsedHandler = new LastUsedHandler();
+		lastUsedHandler.saveUsedMapId(header.getUniqueId());
 	}
 
 	public void buildMapEditingWindow() {

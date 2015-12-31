@@ -163,8 +163,15 @@ public class MapCreatorApp {
 			return;
 		}
 
-		if (dlg.isOpenAction()) {
-			// open
+		if (dlg.isLastUsed()) {
+			OpenPanel openFile = dlg.getLastUsed();
+			try {
+				new EditorControl(openFile.getSelectedMap());
+			} catch (MapLoadException e) {
+				ErrorDisplay.displayError(e, "Could not open map!");
+			}
+		} else
+			if (dlg.isOpenAction()) {
 			OpenPanel openFile = dlg.getOpenPanel();
 			try {
 				new EditorControl(openFile.getSelectedMap());

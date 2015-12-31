@@ -111,7 +111,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		}
 
 		lbMapId.setText(date + " / " + value.getMapId());
-		lbPlayerCount.setText("[" + value.getMinPlayers() + " - " + value.getMaxPlayers() + "]");
+		lbPlayerCount.setText("Player: " + value.getMinPlayers() + " - " + value.getMaxPlayers());
 
 		if (value.getDescription() != null && !value.getDescription().isEmpty()) {
 			lbDescription.setText(value.getDescription());

@@ -27,12 +27,31 @@ public class OpenPanel extends JPanel {
 	private JList<MapLoader> mapList;
 
 	/**
+	 * List with all maps
+	 */
+	protected List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
+
+	/**
 	 * Constructor
 	 */
 	public OpenPanel() {
 		setLayout(new BorderLayout());
 
-		List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
+		sortMaps();
+
+		this.mapList = new JList<MapLoader>(maps.toArray(new MapLoader[maps.size()]));
+		mapList.setCellRenderer(new MapListCellRenderer());
+		add(new JScrollPane(mapList));
+
+		if (maps.size() > 0) {
+			mapList.setSelectedIndex(0);
+		}
+	}
+
+	/**
+	 * Order the maps
+	 */
+	protected void sortMaps() {
 		Collections.sort(maps, new Comparator<MapLoader>() {
 			@Override
 			public int compare(MapLoader mapLoader1, MapLoader mapLoader2) {
@@ -44,14 +63,6 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
-
-		this.mapList = new JList<MapLoader>(maps.toArray(new MapLoader[maps.size()]));
-		mapList.setCellRenderer(new MapListCellRenderer());
-		add(new JScrollPane(mapList));
-
-		if (maps.size() > 0) {
-			mapList.setSelectedIndex(0);
-		}
 	}
 
 	/**
