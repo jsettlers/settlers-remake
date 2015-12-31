@@ -48,6 +48,10 @@ public class OpenPanel extends JPanel {
 		this.mapList = new JList<MapLoader>(maps.toArray(new MapLoader[maps.size()]));
 		mapList.setCellRenderer(new MapListCellRenderer());
 		add(new JScrollPane(mapList));
+
+		if (maps.size() > 0) {
+			mapList.setSelectedIndex(0);
+		}
 	}
 
 	/**

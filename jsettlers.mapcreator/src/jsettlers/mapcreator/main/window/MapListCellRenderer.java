@@ -1,16 +1,20 @@
 package jsettlers.mapcreator.main.window;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * Render to open an existing map
@@ -51,35 +55,71 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	private JLabel lbName = new JLabel();
 
 	/**
-	 * ID of the Map
+	 * Count of players
+	 */
+	private JLabel lbPlayerCount = new JLabel();
+
+	/**
+	 * ID of the Map and the creation date
 	 */
 	private JLabel lbMapId = new JLabel();
+
+	/**
+	 * Description of the Map
+	 */
+	private JLabel lbDescription = new JLabel();
+
+	/**
+	 * Format for date display
+	 */
+	private SimpleDateFormat df = new SimpleDateFormat(EditorLabels.getLabel("date.date-only"));
 
 	/**
 	 * Constructor
 	 */
 	public MapListCellRenderer() {
-		pContents.add(lbName);
+		JPanel pFirst = new JPanel();
+		pFirst.setOpaque(false);
+		pFirst.setLayout(new BorderLayout(5, 0));
+		pFirst.add(lbName, BorderLayout.CENTER);
+		pFirst.add(lbPlayerCount, BorderLayout.EAST);
+		pFirst.setAlignmentX(Component.LEFT_ALIGNMENT);
+		pContents.add(pFirst);
 		pContents.add(lbMapId);
+		lbMapId.setAlignmentX(Component.LEFT_ALIGNMENT);
+		pContents.add(lbDescription);
+		lbDescription.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		pContents.setOpaque(true);
 		pContents.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		lbName.setFont(lbName.getFont().deriveFont(Font.BOLD));
+		lbName.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		lbName.setForeground(FOREGROUND);
 		lbMapId.setForeground(FOREGROUND);
+		lbDescription.setForeground(FOREGROUND);
+		lbPlayerCount.setForeground(Color.BLUE);
 	}
 
 	@Override
 	public Component getListCellRendererComponent(JList<? extends MapLoader> list, MapLoader value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 		lbName.setText(value.getMapName());
-		lbMapId.setText(value.getMapId());
-		// value.getCreationDate();
-		// value.getDescription();
+		String date = "???";
+		if (value.getCreationDate() != null) {
+			date = df.format(value.getCreationDate());
+		}
+
+		lbMapId.setText(date + " / " + value.getMapId());
+		lbPlayerCount.setText("[" + value.getMinPlayers() + " - " + value.getMaxPlayers() + "]");
+
+		if (value.getDescription() != null && !value.getDescription().isEmpty()) {
+			lbDescription.setText(value.getDescription());
+		} else {
+			lbDescription.setText("<no description>");
+		}
+		// TODO image seems to be not implemented... may display it if available
 		// value.getImage()
-		// value.getMinPlayers();
-		// value.getMaxPlayers()
 
 		if (isSelected) {
 			pContents.setBackground(SELECTION_BACKGROUND);
@@ -93,13 +133,4 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 
 		return pContents;
 	}
-
-	// @Override
-	// public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	// IMapDefinition map = (IMapDefinition) value;
-	// String longMapId = map.getMapId();
-	// String shortMapId = longMapId == null ? "no map id" : longMapId.substring(0, Math.min(longMapId.length(), 8));
-	// String displayName = map.getMapName() + " \t (" + shortMapId + ") created: " + map.getCreationDate();
-	// return super.getListCellRendererComponent(mapList, displayName, index, isSelected, cellHasFocus);
-	// }
 }
