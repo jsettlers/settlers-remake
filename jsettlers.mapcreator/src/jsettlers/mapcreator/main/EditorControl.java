@@ -15,6 +15,7 @@
 package jsettlers.mapcreator.main;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -46,6 +47,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
@@ -433,6 +435,19 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				save();
+			}
+		});
+
+		window.registerAction("open-map-folder", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Desktop.getDesktop().open(new File(ResourceManager.getSaveDirectory(), "maps"));
+				} catch (IOException e1) {
+					ErrorDisplay.displayError(e1, "Could not open map folder");
+				}
 			}
 		});
 
