@@ -49,6 +49,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.mapcreator.main.window.MapHeaderEditorPanel;
 
 /**
  * Entry point for Map Editor application
@@ -122,7 +123,7 @@ public class MapCreatorApp {
 	private JPanel createNewMapPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		final MapHeaderEditor headerEditor = new MapHeaderEditor(DEFAULT, true);
+		final MapHeaderEditorPanel headerEditor = new MapHeaderEditorPanel(DEFAULT, true);
 		panel.add(headerEditor);
 		headerEditor.setBorder(BorderFactory.createTitledBorder("Map settings"));
 

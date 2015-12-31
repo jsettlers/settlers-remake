@@ -141,13 +141,6 @@ public abstract class EditorFrame extends JFrame {
 				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
-		registerAction("map-settings", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
 	}
 
 	/**

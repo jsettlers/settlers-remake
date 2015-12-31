@@ -17,7 +17,6 @@ package jsettlers.mapcreator.main;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,9 +30,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -76,10 +72,11 @@ import jsettlers.mapcreator.main.error.IScrollToAble;
 import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
+import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapview.MapGraphics;
-import jsettlers.mapcreator.stat.StatisticsWindow;
+import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.landscape.ResourceTool;
@@ -333,15 +330,16 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			}
 		});
 
-		window.registerAction("statistic", new AbstractAction() {
+		window.registerAction("show-statistic", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new StatisticsWindow(data);
+				StatisticsDialog dlg = new StatisticsDialog(window, data);
+				dlg.setVisible(true);
 			}
 		});
-		window.registerAction("map-settings", new AbstractAction() {
+		window.registerAction("show-map-settings", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -395,34 +393,22 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		window.enableAction("redo", false);
 	}
 
+	/**
+	 * Display the map settings dialog
+	 */
 	protected void editSettings() {
-		final JDialog dialog = new JDialog(window, EditorLabels.getLabel("settings"), true);
-		final MapHeaderEditor headerEditor = new MapHeaderEditor(header, false);
-		JPanel box = new JPanel();
-		box.setLayout(new BoxLayout(box, BoxLayout.PAGE_AXIS));
-		box.add(headerEditor);
+		SettingsDialog dlg = new SettingsDialog(window, header) {
+			private static final long serialVersionUID = 1L;
 
-		JButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				MapFileHeader nheader = headerEditor.getHeader();
-				if (nheader.getWidth() != header.getWidth() || nheader.getHeight() != header.getHeight()) {
-					JOptionPane.showMessageDialog(window, "Widh and height are fixed.", "Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				header = nheader;
+			public void applyNewHeader(MapFileHeader header) {
+				EditorControl.this.header = header;
 				data.setMaxPlayers(header.getMaxPlayer());
 				dataTester.retest();
-				dialog.setVisible(false);
 			}
-		});
-		box.add(okButton);
 
-		dialog.add(box);
-		dialog.setLocationRelativeTo(null);
-		dialog.pack();
-		dialog.setVisible(true);
+		};
+		dlg.setVisible(true);
 	}
 
 	protected void save() {

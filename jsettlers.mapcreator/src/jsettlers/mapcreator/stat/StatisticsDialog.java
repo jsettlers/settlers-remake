@@ -14,26 +14,53 @@
  *******************************************************************************/
 package jsettlers.mapcreator.stat;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 
-public class StatisticsWindow {
-	public StatisticsWindow(MapData data) {
-		JTabbedPane root = new JTabbedPane();
+/**
+ * Dialog to display statistics
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class StatisticsDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param parent
+	 *            Parent frame to center on
+	 * 
+	 * @param data
+	 *            Map data to display
+	 */
+	public StatisticsDialog(JFrame parent, MapData data) {
+		super(parent);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setTitle(EditorLabels.getLabel("statistics.header"));
+
+		JTabbedPane tabs = new JTabbedPane();
 		JTable table = new JTable(new StatisticsTable(data));
-		root.add("Table", new JScrollPane(table));
+		tabs.add("Table", new JScrollPane(table));
 
 		for (int i = 0; i < data.getPlayerCount(); i++) {
-			root.add("player " + i, new PlayerDiagram(data, i));
+			tabs.add("player " + i, new PlayerDiagram(data, i));
 		}
 
-		JFrame frame = new JFrame("statistics");
-		frame.add(root);
-		frame.pack();
-		frame.setVisible(true);
+		setLayout(new BorderLayout());
+		add(tabs, BorderLayout.CENTER);
+
+		pack();
+		setModal(true);
+		setLocationRelativeTo(parent);
 	}
 }

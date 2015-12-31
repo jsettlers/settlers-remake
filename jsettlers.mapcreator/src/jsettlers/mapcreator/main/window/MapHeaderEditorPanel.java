@@ -12,9 +12,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.window;
 
-import java.awt.Dimension;
 import java.util.Date;
 
 import javax.swing.GroupLayout;
@@ -35,13 +34,10 @@ import jsettlers.mapcreator.localization.EditorLabels;
  * 
  * @author michael
  */
-public class MapHeaderEditor extends JPanel {
-	private static final int DEFAULT_MAPSIZE = 300;
+public class MapHeaderEditorPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
 
-	/**
-     * 
-     */
-	private static final long serialVersionUID = 4452683956025604099L;
+	private static final int DEFAULT_MAPSIZE = 300;
 
 	private static final int MIN_MAPSIZE = 100;
 	private static final int MAX_MAPSIZE = 2000;
@@ -52,28 +48,23 @@ public class MapHeaderEditor extends JPanel {
 	private JTextField nameField;
 	private JTextArea descriptionField;
 
-	public MapHeaderEditor(MapFileHeader header, boolean sizeChangable) {
+	public MapHeaderEditorPanel(MapFileHeader header, boolean sizeChangable) {
 		generate(sizeChangable);
 		setHeader(header);
 	}
 
 	private void generate(boolean sizeChangable) {
 		nameField = new JTextField();
-		descriptionField = new JTextArea();
-		descriptionField.setMinimumSize(new Dimension(200, 50));
+		descriptionField = new JTextArea(5, 40);
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
 
-		width =
-				new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
-						MAX_MAPSIZE, 1);
-		height =
-				new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
-						MAX_MAPSIZE, 1);
-		minPlayer =
-				new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
-		maxPlayer =
-				new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
+		width = new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+				MAX_MAPSIZE, 1);
+		height = new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+				MAX_MAPSIZE, 1);
+		minPlayer = new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
+		maxPlayer = new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
 
 		JSpinner widthField = new JSpinner(width);
 		JSpinner heightField = new JSpinner(height);
