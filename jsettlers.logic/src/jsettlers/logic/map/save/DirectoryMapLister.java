@@ -68,6 +68,11 @@ public class DirectoryMapLister implements IMapLister {
 		public boolean isCompressed() {
 			return file.getName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
 		}
+
+		@Override
+		public File getFile() {
+			return file;
+		}
 	}
 
 	public DirectoryMapLister(File directory, boolean createIfMissing) {
@@ -89,7 +94,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					String fileName = file.getName();
-					if (MapLoader.isExtensionKnown(fileName)) {
+					if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
 						callback.foundMap(new ListedMapFile(file));
 					}
 				}

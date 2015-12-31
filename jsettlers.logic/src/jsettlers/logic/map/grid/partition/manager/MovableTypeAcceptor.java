@@ -25,6 +25,13 @@ public final class MovableTypeAcceptor implements ITypeAcceptor<IManageableWorke
 
 	public EMovableType movableType = null;
 
+	public MovableTypeAcceptor() {
+	}
+
+	public MovableTypeAcceptor(EMovableType movableType) {
+		this.movableType = movableType;
+	}
+
 	@Override
 	public final boolean accepts(IManageableWorker worker) {
 		return this.movableType == worker.getMovableType();

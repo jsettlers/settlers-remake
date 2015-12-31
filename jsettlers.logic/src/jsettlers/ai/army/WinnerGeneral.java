@@ -16,32 +16,31 @@
  */
 package jsettlers.ai.army;
 
+import java.util.List;
+import java.util.Vector;
+
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.SetMaterialProductionAction.EMaterialProductionType;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-import java.util.List;
-import java.util.Vector;
-
 /**
  * This general is named winner because his attacks and defence should be very hard for human enemies. This should be realized by creating locally
- * superiority. (You can kill 200 bowmen with just 100 bowmen if you fight 100 vs 20 in loops. This general should lay the focus on some swordsmen
- * to occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the strongest military unit. It upgrades
- * bowmen first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3
- * is reached to get as many level3 bowmen as posibble.
- * TODO: store bows until level3 is reached
- * TODO: group soldiers in direction of enemy groups to defeat them
- * TODO: group soldiers in direction of enemy groups to attack them
- * TODO: introduce rush defency by early weaponsmith when enemy rushes
+ * superiority. (You can kill 200 bowmen with just 100 bowmen if you fight 100 vs 20 in loops. This general should lay the focus on some swordsmen to
+ * occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the strongest military unit. It upgrades bowmen
+ * first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3 is reached
+ * to get as many level3 bowmen as posibble. TODO: store bows until level3 is reached TODO: group soldiers in direction of enemy groups to defeat them
+ * TODO: group soldiers in direction of enemy groups to attack them TODO: introduce rush defency by early weaponsmith when enemy rushes
  *
  * @author codingberlin
  */
@@ -85,19 +84,33 @@ public class WinnerGeneral implements ArmyGeneral {
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId).size());
-		aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SWORD, numberOfMissingSwordsmen);
-		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS /2) {
-			aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SPEAR, 0);
+		setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, numberOfMissingSwordsmen);
+		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS / 2) {
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
 		} else {
 			int numberOfMissingSpearmen = Math.max(0, RUSH_DEFENSE_SPEARMEN
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId).size()
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId).size()
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId).size());
-			aiStatistics.getMaterialProduction(player.playerId).setNumberOfFutureProducedMaterial(EMaterialType.SPEAR, numberOfMissingSpearmen);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, numberOfMissingSpearmen);
 		}
-		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.SWORD, 0f);
-		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.SPEAR, 0f);
-		aiStatistics.getMaterialProduction(player.playerId).setRatioOfMaterial(EMaterialType.BOW, 1f);
+		setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0f);
+		setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0f);
+		setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1f);
+	}
+
+	private void setNumberOfFutureProducedMaterial(byte playerId, EMaterialType materialType, int numberToProduce) {
+		if (aiStatistics.getMaterialProduction(playerId).numberOfFutureProducedMaterial(materialType) != numberToProduce) {
+			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
+					EMaterialProductionType.SET_PRODUCTION, numberToProduce));
+		}
+	}
+
+	private void setRatioOfMaterial(byte playerId, EMaterialType materialType, float ratio) {
+		if (aiStatistics.getMaterialProduction(playerId).configuredRatioOfMaterial(materialType) != ratio) {
+			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
+					EMaterialProductionType.SET_RATIO, ratio));
+		}
 	}
 
 	private boolean upgradeSoldiers(ESoldierType type) {

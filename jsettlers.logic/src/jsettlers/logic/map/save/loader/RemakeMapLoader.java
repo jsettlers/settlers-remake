@@ -70,7 +70,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 	 * @return Returns a stream of the file without the header. So you can directly start reading the data of the map.
 	 * @throws IOException
 	 */
-	protected final InputStream getMapDataStream() throws IOException {
+	public final InputStream getMapDataStream() throws IOException {
 		InputStream inputStream = getMapInputStream(file);
 		MapFileHeader.readFromStream(inputStream);
 		return inputStream;

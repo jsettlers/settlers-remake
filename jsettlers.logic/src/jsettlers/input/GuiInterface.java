@@ -24,6 +24,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
@@ -66,7 +67,6 @@ import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
-import jsettlers.logic.movable.interfaces.IIDable;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 

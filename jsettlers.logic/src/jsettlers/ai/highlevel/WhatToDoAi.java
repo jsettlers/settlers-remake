@@ -51,11 +51,15 @@ import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.*;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
@@ -142,7 +146,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
 			if (militaryBuilding.getStateProgress() == 1 && !militaryBuilding.isOccupied()) {
 				ShortPoint2D door = militaryBuilding.getDoor();
-				Movable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
+				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
 				if (soldier != null && militaryBuilding.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
 					sendMovableTo(soldier, door);
 				}
@@ -150,7 +154,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	private void sendMovableTo(Movable movable, ShortPoint2D target) {
+	private void sendMovableTo(IMovable movable, ShortPoint2D target) {
 		if (movable != null) {
 			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID())));
 		}
@@ -177,7 +181,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 					}
 				}
 			}
-		 }
+		}
 
 		// destroy livinghouses
 		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
@@ -362,7 +366,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
 			if (type.isMilitaryBuilding()) {
-				Movable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
+				IMovable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
 				if (soldier != null) {
 					sendMovableTo(soldier, position);
 				}

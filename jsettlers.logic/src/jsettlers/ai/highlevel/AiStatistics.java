@@ -26,6 +26,7 @@ import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
@@ -34,10 +35,10 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
@@ -289,9 +290,9 @@ public class AiStatistics {
 			}
 
 			if (referencePosition != null) {
+				playerStatistics[playerId].referencePosition = referencePosition;
 				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
-				playerStatistics[playerId].materialProduction = partitionsGrid.getPartitionAt(referencePosition.x, referencePosition.y)
-						.getMaterialProduction();
+				playerStatistics[playerId].materialProduction = partitionsGrid.getMaterialProductionAt(referencePosition.x, referencePosition.y);
 				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
@@ -461,7 +462,7 @@ public class AiStatistics {
 				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
-	public Movable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
+	public IMovable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
 		List<ShortPoint2D> soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L3, playerId);
 		if (soldierPositions.size() == 0) {
 			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L2, playerId);
@@ -564,7 +565,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].deadMines;
 	}
 
-	public MaterialProductionSettings getMaterialProduction(byte playerId) {
+	public IMaterialProductionSettings getMaterialProduction(byte playerId) {
 		return playerStatistics[playerId].materialProduction;
 	}
 
@@ -573,27 +574,28 @@ public class AiStatistics {
 	}
 
 	class PlayerStatistic {
-		private boolean isAlive;
-		private int[] totalBuildingsNumbers;
-		private int[] buildingsNumbers;
-		private int[] unoccupiedBuildingsNumbers;
-		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
-		private List<ShortPoint2D> farmWorkAreas;
-		private List<ShortPoint2D> wineGrowerWorkAreas;
-		private short partitionIdToBuildOn;
-		private IPartitionData materials;
-		private AiPositions landToBuildOn;
-		private AiPositions borderLandNextToFreeLand;
-		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		private AiPositions stones;
-		private AiPositions trees;
-		private AiPositions rivers;
-		private AiPositions enemyTroopsInTown;
-		private AiPositions deadMines;
-		private int numberOfNotFinishedBuildings;
-		private int numberOfTotalBuildings;
-		private int numberOfNotOccupiedMilitaryBuildingss;
-		private MaterialProductionSettings materialProduction;
+		ShortPoint2D referencePosition;
+		boolean isAlive;
+		int[] totalBuildingsNumbers;
+		int[] buildingsNumbers;
+		int[] unoccupiedBuildingsNumbers;
+		Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
+		List<ShortPoint2D> farmWorkAreas;
+		List<ShortPoint2D> wineGrowerWorkAreas;
+		short partitionIdToBuildOn;
+		IPartitionData materials;
+		AiPositions landToBuildOn;
+		AiPositions borderLandNextToFreeLand;
+		Map<EMovableType, List<ShortPoint2D>> movablePositions;
+		AiPositions stones;
+		AiPositions trees;
+		AiPositions rivers;
+		AiPositions enemyTroopsInTown;
+		AiPositions deadMines;
+		int numberOfNotFinishedBuildings;
+		int numberOfTotalBuildings;
+		int numberOfNotOccupiedMilitaryBuildingss;
+		MaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
@@ -646,4 +648,5 @@ public class AiStatistics {
 			}
 		}
 	}
+
 }

@@ -102,4 +102,9 @@ public class BgMovable implements IMovable {
 		return false;
 	}
 
+	@Override
+	public int getID() {
+		return 0;
+	}
+
 }

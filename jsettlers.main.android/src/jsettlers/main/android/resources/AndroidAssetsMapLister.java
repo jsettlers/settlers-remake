@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.android.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,6 +54,11 @@ public class AndroidAssetsMapLister implements IMapLister {
 		@Override
 		public boolean isCompressed() {
 			return path.endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
+		}
+
+		@Override
+		public File getFile() {
+			throw new UnsupportedOperationException();
 		}
 	}
 

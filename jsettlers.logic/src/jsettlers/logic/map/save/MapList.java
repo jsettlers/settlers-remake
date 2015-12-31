@@ -27,6 +27,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
@@ -210,6 +211,7 @@ public class MapList implements IMapListerCallable {
 		header.writeTo(outStream);
 
 		ObjectOutputStream oos = new ObjectOutputStream(outStream);
+		MatchConstants.serialize(oos);
 		oos.writeObject(playerStates);
 		GameSerializer gameSerializer = new GameSerializer();
 		gameSerializer.save(grid, oos);
@@ -230,7 +232,6 @@ public class MapList implements IMapListerCallable {
 	 * gets the list of the default directory.
 	 * 
 	 * @return
-	 * @param originalSettlersFolder
 	 */
 	public static synchronized MapList getDefaultList() {
 		if (defaultList == null) {

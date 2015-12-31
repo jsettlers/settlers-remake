@@ -14,9 +14,10 @@
  *******************************************************************************/
 package jsettlers.common.utils;
 
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Class to cluster util functions concerning the main classes.
@@ -25,29 +26,31 @@ import java.util.regex.Pattern;
  * 
  */
 public final class MainUtils {
+	private static final String OPTIONS_FILE_NAME = "options.prp";
+
 	private MainUtils() {
 	}
 
-	public static HashMap<String, String> createArgumentsMap(String[] args) {
-		HashMap<String, String> argsMap = new HashMap<String, String>();
-
-		Pattern parameterPattern = Pattern.compile("--(.*?)=(.*?)");
-		Pattern optionPattern = Pattern.compile("--(.*?)");
-
-		for (String arg : args) {
-			Matcher parameterMatcher = parameterPattern.matcher(arg);
-			if (parameterMatcher.matches()) {
-				String parameter = parameterMatcher.group(1);
-				String value = parameterMatcher.group(2);
-				argsMap.put(parameter, value);
-			} else {
-				Matcher optionMatcher = optionPattern.matcher(arg);
-				if (optionMatcher.matches()) {
-					String option = optionMatcher.group(1);
-					argsMap.put(option, null);
-				}
+	public static OptionableProperties loadOptions(String[] args) {
+		File optionsFile = new File(OPTIONS_FILE_NAME);
+		OptionableProperties options = new OptionableProperties();
+		if (optionsFile.exists()) {
+			System.out.println("Found default command line options file. Starting to read.");
+			try {
+				options.load(new BufferedInputStream(new FileInputStream(optionsFile)));
+				System.out.println("Default command line options file successfully read.");
+			} catch (IOException e) {
+				System.err.println("Failed to read default command line options file.");
+				e.printStackTrace();
 			}
+		} else {
+			System.out.println("No default command line options file found.");
 		}
-		return argsMap;
+
+		options.loadArguments(args);
+		System.out.println("Options loaded: " + options.toString());
+
+		return options;
 	}
+
 }

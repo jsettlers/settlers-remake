@@ -74,5 +74,4 @@ public final class MatchConstants {
 		gameRandom = (ExtendedRandom) ois.readObject();
 		aiRandom = (ExtendedRandom) ois.readObject();
 	}
-
 }

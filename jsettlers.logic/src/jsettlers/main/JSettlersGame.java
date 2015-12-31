@@ -83,8 +83,7 @@ public class JSettlersGame {
 	private PrintStream systemOutStream;
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
-			PlayerSetting[] playerSettings,
-			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+			PlayerSetting[] playerSettings, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
 		System.out.println("OS version: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
@@ -137,9 +136,8 @@ public class JSettlersGame {
 		replayStartInformation.deserialize(replayFileInputStream);
 
 		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
-		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(), true, false,
-				replayFileInputStream);
+		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
+				replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
 	}
 
 	/**

@@ -18,8 +18,8 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,9 +33,11 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
+import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
@@ -70,13 +72,13 @@ public class SwingManagedJSettlers {
 	 * @throws MapLoadException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
-		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
+		OptionableProperties options = MainUtils.loadOptions(args);
 
-		loadDebugSettings(argsMap);
-		setupResourceManagers(argsMap, "config.prp");
+		loadOptionalSettings(options);
+		setupResourceManagers(options, "config.prp");
 
 		JSettlersScreen content = startGui();
-		generateContent(argsMap, content);
+		generateContent(options, content);
 	}
 
 	/**
@@ -90,11 +92,10 @@ public class SwingManagedJSettlers {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName)
-			throws FileNotFoundException, IOException {
-
-		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+	public static void setupResourceManagers(OptionableProperties options, String defaultConfigFileName) throws FileNotFoundException, IOException {
+		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
+
 		boolean firstRun = true;
 
 		while (!configFile.isSettlersFolderSet() || !trySettingUpResources(configFile)) {
@@ -156,27 +157,31 @@ public class SwingManagedJSettlers {
 		}
 	}
 
-	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
+	public static ConfigurationPropertiesFile getConfigFile(Properties options, String defaultConfigFileName) throws IOException {
 		String configFileName = defaultConfigFileName;
-		if (argsMap.containsKey("config")) {
-			configFileName = argsMap.get("config");
+		if (options.containsKey("config")) {
+			configFileName = options.getProperty("config");
 		}
 		return new ConfigurationPropertiesFile(new File(configFileName));
 	}
 
-	public static void loadDebugSettings(HashMap<String, String> argsMap) {
-		CommonConstants.CONTROL_ALL = argsMap.containsKey("control-all");
-		CommonConstants.ACTIVATE_ALL_PLAYERS = argsMap.containsKey("activate-all-players");
-		CommonConstants.ENABLE_CONSOLE_LOGGING = argsMap.containsKey("console-output");
-		CommonConstants.ENABLE_AI = !argsMap.containsKey("disable-ai");
-		CommonConstants.ALL_AI = argsMap.containsKey("all-ai");
+	public static void loadOptionalSettings(OptionableProperties options) {
+		CommonConstants.CONTROL_ALL = options.isOptionSet("control-all");
+		CommonConstants.ACTIVATE_ALL_PLAYERS = options.isOptionSet("activate-all-players");
+		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
+		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
+		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
 
-		if (argsMap.containsKey("localhost")) {
+		if (options.containsKey("fixed-ai-type")) {
+			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));
+		}
+
+		if (options.isOptionSet("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
 		}
 
-		if (argsMap.containsKey("locale")) {
-			String localeString = argsMap.get("locale");
+		if (options.containsKey("locale")) {
+			String localeString = options.getProperty("locale");
 			String[] localeParts = localeString.split("_");
 			if (localeParts.length == 2) {
 				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
@@ -190,7 +195,6 @@ public class SwingManagedJSettlers {
 	 * Creates a new SWING GUI for the game.
 	 * 
 	 * @param argsList
-	 * @param originalSettlersFolder
 	 * @return
 	 * @throws IOException
 	 * @throws FileNotFoundException
@@ -206,20 +210,18 @@ public class SwingManagedJSettlers {
 		return content;
 	}
 
-	private static void generateContent(HashMap<String, String> argsMap, JSettlersScreen content) throws IOException, MapLoadException {
+	private static void generateContent(OptionableProperties options, JSettlersScreen content) throws IOException, MapLoadException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
 		int targetGameTime = 0;
 
-		if (argsMap.containsKey("mapfile")) {
-			mapfile = argsMap.get("mapfile");
+		mapfile = options.getProperty("mapfile");
+		if (options.containsKey("random")) {
+			randomSeed = Long.parseLong(options.getProperty("random"));
 		}
-		if (argsMap.containsKey("random")) {
-			randomSeed = Long.parseLong(argsMap.get("random"));
-		}
-		if (argsMap.containsKey("replayFile")) {
-			String loadableReplayFileString = argsMap.get("replayFile");
+		if (options.containsKey("replayFile")) {
+			String loadableReplayFileString = options.getProperty("replayFile");
 			File replayFile = new File(loadableReplayFileString);
 			if (replayFile.exists()) {
 				loadableReplayFile = replayFile;
@@ -228,8 +230,8 @@ public class SwingManagedJSettlers {
 				System.err.println("Found replayFile parameter, but file can not be found!");
 			}
 		}
-		if (argsMap.containsKey("targetTime")) {
-			targetGameTime = Integer.valueOf(argsMap.get("targetTime")) * 60 * 1000;
+		if (options.containsKey("targetTime")) {
+			targetGameTime = Integer.valueOf(options.getProperty("targetTime")) * 60 * 1000;
 		}
 
 		if (mapfile != null || loadableReplayFile != null) {

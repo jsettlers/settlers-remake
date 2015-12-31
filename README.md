@@ -38,6 +38,21 @@ After that, follow the detailed installation instructions for you platform.
   2. Have fun and enjoy the game!
 6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game lacks some controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
+#### Configuration Flags
+As described before, the game's UI is still lacking a lot of features. That's why we have to offer some configurations via an options file. You can find a default `options.prp` file aside the `JSettlers.jar` file after you unpacked the archive. 
+
+When opening the file, you will see several options that can be enabled by uncommenting them (remove the # at the beginning of the respective line). This is also described in the file. 
+
+**Possible configurations include:**
+- all-ai: Let all players be played by the AI. You will be able to watch all AI players and to "assist" them during the game.
+- fixed-ai-type=YYYYY: Option to specify an AI type that shall be used for all AI players. The default behavior is to use a the weakest AI type for the first player and increase the difficulty for every player. Possible values: ROMAN_VERY_EASY, ROMAN_EASY, ROMAN_HARD, ROMAN_VERY_HARD
+- disable-ai: If this flag is enabled, no AI players will be present in single player games. 
+- locale: If you want to test a different localization than your systems default, it can be specify with this option. The value should look like: en_en.
+
+**Command line flags**
+All the options above can also be specified as command line options. For this, you need to prepend every one of them with a double dash. Therefore the option `fixed-ai-type=YYYYY` should be specified as `--fixed-ai-type=YYYYY`.
+
+
 ### Android
 1. Enable installation of Apps from "Unknown Sources".
 2. Copy the "GFX" and the "SND" folders of your original "The Settlers 3" installation into a folder called "JSettlers" on your device. The "JSettlers" folder must be located in the root directory of your internal storage (alongside folders like "Download" or "DCIM") or your external storage (e.g. memory card).

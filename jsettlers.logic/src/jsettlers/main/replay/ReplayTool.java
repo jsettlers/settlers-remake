@@ -38,12 +38,34 @@ import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
 
-	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
+	public static MapLoader replayAndGetSavegame(File replayFile, float targetTimeMinutes, String remainingReplayFileName) throws IOException {
+		ReplayTool.replayAndCreateSavegame(replayFile, targetTimeMinutes, remainingReplayFileName);
 
-		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
-		networkConnector.getGameClock().setPausing(true);
+		MapLoader savegameFile = getNewestSavegame();
+		System.out.println("Replayed: " + replayFile + " and created savegame: " + savegameFile);
+		return savegameFile;
+	}
+
+	public static void replayAndCreateSavegame(File replayFile, float targetGameTimeMinutes, String newReplayFile) throws IOException {
+		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
+		playGameToTargetTimeAndGetSavegame(targetGameTimeMinutes, networkConnector, game);
+
+		// create a replay basing on the savegame and containing the remaining tasks.
+		MapLoader newSavegame = getNewestSavegame();
+		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
+	}
+
+	public static OfflineNetworkConnector createPausingOfflineNetworkConnector() {
+		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
+		networkConnector.getGameClock().setPausing(true);
+		return networkConnector;
+	}
+
+	public static MapLoader playGameToTargetTimeAndGetSavegame(float targetGameTimeMinutes, OfflineNetworkConnector networkConnector,
+			JSettlersGame game) throws IOException {
+		final int targetGameTimeMs = (int) (targetGameTimeMinutes * 60 * 1000);
 		IStartingGame startingGame = game.start();
 		IStartedGame startedGame = waitForGameStartup(startingGame);
 
@@ -52,11 +74,9 @@ public class ReplayTool {
 				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
 		MatchConstants.clock().fastForwardTo(targetGameTimeMs);
 
-		// create a replay basing on the savegame and containing the remaining tasks.
-		MapLoader newSavegame = getNewestSavegame();
-		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
-
 		awaitShutdown(startedGame);
+
+		return getNewestSavegame();
 	}
 
 	private static MapLoader getNewestSavegame() {
@@ -106,12 +126,9 @@ public class ReplayTool {
 	}
 
 	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation)
-					throws IOException {
-		File loadableReplayFile = replayFile;
-		System.out.println("Found loadable replay file. Started loading it: " + loadableReplayFile);
-
-		return JSettlersGame.loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation);
+			ReplayStartInformation replayStartInformation) throws IOException {
+		System.out.println("Found loadable replay file. Started loading it: " + replayFile);
+		return JSettlersGame.loadFromReplayFile(replayFile, networkConnector, replayStartInformation);
 	}
 
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
