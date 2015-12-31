@@ -77,6 +77,9 @@ public class BordersThread implements Runnable {
 				if (!grid.isInBounds(currNeighborX, currNeighborY)) {
 					continue;
 				}
+				if (grid.getBlockedPartition(currNeighborX, currNeighborY) <= 0) {
+					continue; // this neighbor is in the sea => it can never be set.
+				}
 
 				byte neighborPlayer = grid.getPlayerIdAt(currNeighborX, currNeighborY);
 				boolean neighborIsBorder = false;
@@ -85,12 +88,7 @@ public class BordersThread implements Runnable {
 					isBorder = true;
 				}
 
-				if (grid.getBlockedPartition(currNeighborX, currNeighborY) <= 0) {
-					continue; // this neighbor is in the sea => it can never be set.
-				}
-
 				if (neighborPlayer >= 0) { // this position is occupied by a player
-
 					for (EDirection currNeighborDir : EDirection.values) {
 						short nextX = currNeighborDir.getNextTileX(currNeighborX);
 						short nextY = currNeighborDir.getNextTileY(currNeighborY);
