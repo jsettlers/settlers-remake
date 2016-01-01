@@ -247,6 +247,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 					playerArray[i] = i;
 				}
 				final JComboBox<Integer> playerCombobox = new JComboBox<>(playerArray);
+				// use heavyweight component
+				playerCombobox.setLightWeightPopupEnabled(false);
 				playerCombobox.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
