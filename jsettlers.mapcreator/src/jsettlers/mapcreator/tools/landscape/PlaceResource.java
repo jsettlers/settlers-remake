@@ -19,7 +19,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.DataTester;
+import jsettlers.mapcreator.mapvalidator.MapValidator2;
 import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.icons.ToolIcon;
 import jsettlers.mapcreator.tools.shapes.GridCircleShape;
@@ -69,7 +69,7 @@ public class PlaceResource extends AbstractTool implements ResourceTool {
 
 	private void placeAt(MapData map, byte[][] influence, int x, int y) {
 		if (type != null) {
-			if (DataTester
+			if (MapValidator2
 					.mayHoldResource(map.getLandscape(x, y), type)) {
 				map.addResource(x, y, type, influence[x][y]);
 			}

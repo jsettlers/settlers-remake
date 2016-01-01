@@ -66,14 +66,11 @@ import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.main.action.AbortDrawingAction;
 import jsettlers.mapcreator.main.action.CombiningActionFirerer;
 import jsettlers.mapcreator.main.action.DrawLineAction;
 import jsettlers.mapcreator.main.action.EndDrawingAction;
 import jsettlers.mapcreator.main.action.StartDrawingAction;
-import jsettlers.mapcreator.main.error.IScrollToAble;
-import jsettlers.mapcreator.main.error.ShowErrorsAction;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.LastUsedHandler;
@@ -83,6 +80,11 @@ import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
+import jsettlers.mapcreator.mapvalidator.IScrollToAble;
+import jsettlers.mapcreator.mapvalidator.MapValidator;
+import jsettlers.mapcreator.mapvalidator.MapValidator2;
+import jsettlers.mapcreator.mapvalidator.ValidationResultReceiver2;
+import jsettlers.mapcreator.mapvalidator.error.ShowErrorsAction;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -95,7 +97,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author Andreas Butti
  */
-public class EditorControl implements IMapInterfaceListener, ActionFireable, TestResultReceiver, IPlayerSetter, IScrollToAble {
+public class EditorControl implements IMapInterfaceListener, ActionFireable, ValidationResultReceiver2, IPlayerSetter, IScrollToAble {
 
 	private static final int MAX_UNDO = 100;
 
@@ -137,9 +139,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
 	/**
-	 * Check for errros
+	 * Check for errros TODO REMOVE
 	 */
-	private DataTester dataTester;
+	private MapValidator2 dataTester2;
 
 	private MapInterfaceConnector connector;
 
@@ -179,7 +181,12 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	/**
 	 * Sidebar with all tabs
 	 */
-	private Sidebar sidebar = new Sidebar(toolSidebar);
+	private Sidebar sidebar = new Sidebar(toolSidebar, this);
+
+	/**
+	 * Validates the map for errros
+	 */
+	private MapValidator validator = new MapValidator(sidebar);
 
 	/**
 	 * Timer for redrawing
@@ -216,10 +223,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		this.data = mapData;
 
 		map = new MapGraphics(data);
-		dataTester = new DataTester(data, this);
+		dataTester2 = new MapValidator2(data, this);
+		validator.setData(data);
 		buildMapEditingWindow();
-		dataTester.start();
-		sidebar.initErrorTab(dataTester.getErrorList(), this);
+		// sidebar.initErrorTab(dataTester.getErrorList(), this);
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 	}
@@ -310,7 +317,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 */
 	private void quit() {
 		redrawTimer.cancel();
-		dataTester.dispose();
+		dataTester2.dispose();
+		validator.dispose();
 		window.dispose();
 	}
 
@@ -569,7 +577,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			}
 		});
 
-		ShowErrorsAction showErrorsAction = new ShowErrorsAction(dataTester.getErrorList(), sidebar);
+		ShowErrorsAction showErrorsAction = new ShowErrorsAction(dataTester2.getErrorList(), sidebar);
 		window.registerAction("show-errors", showErrorsAction);
 		showErrorsAction.updateText();
 
@@ -610,7 +618,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			public void applyNewHeader(MapFileHeader header) {
 				EditorControl.this.header = header;
 				data.setMaxPlayers(header.getMaxPlayer());
-				dataTester.retest();
+				dataTester2.retest();
+				validator.reValidate();
 			}
 
 		};
@@ -781,7 +790,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 
-				dataTester.retest();
+				dataTester2.retest();
+				validator.reValidate();
 			}
 		} else if (action instanceof StartDrawingAction) {
 			if (tool != null && !(tool instanceof SetStartpointTool)) {
@@ -791,16 +801,19 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 				tool.start(data, shape, lineAction.getPos());
 
-				dataTester.retest();
+				dataTester2.retest();
+				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
 			endUseStep();
-			dataTester.retest();
+			dataTester2.retest();
+			validator.reValidate();
 		} else if (action instanceof AbortDrawingAction) {
 			MapDataDelta delta = data.getUndoDelta();
 			data.apply(delta);
 			data.resetUndoDelta();
-			dataTester.retest();
+			dataTester2.retest();
+			validator.reValidate();
 		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
 				PointAction lineAction = (PointAction) action;
@@ -811,7 +824,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
 				endUseStep();
-				dataTester.retest();
+				dataTester2.retest();
+				validator.reValidate();
 			}
 		}
 	}
@@ -822,7 +836,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	}
 
 	@Override
-	public void testResult(String result, boolean successful, ShortPoint2D failPoint) {
+	public void validationFinished(String result, boolean successful, ShortPoint2D failPoint) {
 		testFailPoint = failPoint;
 		window.enableAction("play", successful);
 

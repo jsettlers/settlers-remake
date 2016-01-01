@@ -12,52 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main.error;
+package jsettlers.mapcreator.mapvalidator;
 
-import java.util.ArrayList;
+import jsettlers.common.position.ShortPoint2D;
 
-import javax.swing.AbstractListModel;
+public interface IScrollToAble {
 
-import jsettlers.common.position.ILocatable;
-
-/**
- * List model with the errors on the Map
- * 
- * @author Andreas Butti
- */
-public class ErrorList extends AbstractListModel<ILocatable> {
-	private static final long serialVersionUID = -6645362444519496534L;
-
-	/**
-	 * Error locations
-	 */
-	private ArrayList<Error> errors = new ArrayList<>();
-
-	/**
-	 * Constructor
-	 */
-	public ErrorList() {
-	}
-
-	/**
-	 * @param errors
-	 *            Error locations
-	 */
-	public void setErrors(ArrayList<Error> errors) {
-		int max = Math.max(errors.size(), this.errors.size());
-		this.errors = errors;
-
-		fireContentsChanged(this, 0, max);
-	}
-
-	@Override
-	public ILocatable getElementAt(int arg0) {
-		return errors.get(arg0);
-	}
-
-	@Override
-	public int getSize() {
-		return errors.size();
-	}
+	void scrollTo(ShortPoint2D pos);
 
 }

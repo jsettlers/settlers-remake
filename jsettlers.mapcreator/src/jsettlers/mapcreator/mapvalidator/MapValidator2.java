@@ -12,10 +12,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.mapvalidator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
@@ -30,13 +34,21 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeFader;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.main.error.Error;
-import jsettlers.mapcreator.main.error.ErrorList;
+import jsettlers.mapcreator.mapvalidator.error.Error;
+import jsettlers.mapcreator.mapvalidator.error.ErrorList;
 
-public class DataTester implements Runnable {
+/**
+ * Checks the map for errors
+ * 
+ * @author Andreas Butti
+ */
+public class MapValidator2 {
 
 	public static final int MAX_HEIGHT_DIFF = 3;
-	private boolean retest = true;
+
+	/**
+	 * Map to check
+	 */
 	private final MapData data;
 
 	/**
@@ -46,74 +58,67 @@ public class DataTester implements Runnable {
 
 	private String result;
 	private ShortPoint2D resultPosition;
-	private final TestResultReceiver receiver;
+
+	/**
+	 * Test result handler
+	 */
+	private final ValidationResultReceiver2 receiver;
+
 	private final LandscapeFader fader = new LandscapeFader();
 	private boolean[][] failpoints;
 	private final ErrorList errorList;
 	private ArrayList<Error> errors = new ArrayList<Error>();
 
 	/**
-	 * Thread for testing
+	 * Runnable to execute the test once
 	 */
-	private Thread thread;
+	private Runnable testRunnable = new Runnable() {
+
+		@Override
+		public void run() {
+			doTest();
+		}
+	};
 
 	/**
-	 * Running flag
+	 * Executor service used to check the errors in another thread
 	 */
-	private boolean running = true;
+	private ExecutorService threadpool = Executors.newSingleThreadExecutor(new ThreadFactory() {
 
-	public DataTester(MapData data, TestResultReceiver receiver) {
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r);
+			t.setName("DataTester");
+			return t;
+		}
+	});
+
+	/**
+	 * Constructor
+	 * 
+	 * @param data
+	 *            Map to check
+	 * @param receiver
+	 *            Test result handler
+	 */
+	public MapValidator2(MapData data, ValidationResultReceiver2 receiver) {
 		this.data = data;
 		this.receiver = receiver;
 		errorList = new ErrorList();
 	}
 
-	public synchronized void start() {
-		running = true;
-		this.thread = new Thread(this, "data tester");
-		thread.start();
-	}
-
 	/**
 	 * Release all resources
 	 */
-	@SuppressWarnings("deprecation")
 	public void dispose() {
-		running = false;
-		synchronized (this) {
-			notifyAll();
-		}
+		threadpool.shutdownNow();
 		try {
-			thread.join(100);
-			// Kill the thread if it's not finished after 100ms...
-			thread.stop();
+			if (!threadpool.awaitTermination(1, TimeUnit.SECONDS)) {
+				throw new IllegalStateException("Could not stop DataTester!");
+			}
 		} catch (InterruptedException e) {
+			System.err.println("InterruptedException on stopping DataTester, shoulden't be a problem");
 			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void run() {
-		while (running) {
-			synchronized (this) {
-				while (!retest && running) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
-					}
-				}
-				retest = false;
-			}
-
-			if (!running) {
-				return;
-			}
-
-			try {
-				doTest();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -187,8 +192,9 @@ public class DataTester implements Runnable {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
+					// TODO the list have to be cloned
 					errorList.setErrors(errors);
-					receiver.testResult(result, successful, resultPosition);
+					receiver.validationFinished(result, successful, resultPosition);
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
@@ -290,13 +296,11 @@ public class DataTester implements Runnable {
 		errors.add(new Error(pos, string));
 	}
 
-	public synchronized void retest() {
-		retest = true;
-		this.notifyAll();
-	}
-
-	public interface TestResultReceiver {
-		public void testResult(String name, boolean allowed, ShortPoint2D resultPosition);
+	/**
+	 * Schedule a run of all tests in a separate thread
+	 */
+	public void retest() {
+		threadpool.submit(testRunnable);
 	}
 
 	public ErrorList getErrorList() {
