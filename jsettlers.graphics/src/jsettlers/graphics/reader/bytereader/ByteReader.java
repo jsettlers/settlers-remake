@@ -168,13 +168,12 @@ public class ByteReader {
 	 */
 	public void assumeToRead(byte[] toRead) throws IOException {
 		assertCacheHolds(toRead.length);
-		byte[] realRead = new byte[toRead.length];
 
 		for (int i = 0; i < toRead.length; i++) {
 			byte read = this.cache[this.cachePosition++];
 			if (read != toRead[i]) {
 				throw new IOException("IO error: expected to read " + toRead[i]
-						+ " but got " + realRead[i]);
+						+ " but got " + read + " (i=" + i + ")");
 			}
 		}
 	}
