@@ -54,7 +54,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		JButton btOk = new JButton(EditorLabels.getLabel("OK"));
+		JButton btOk = new JButton(EditorLabels.getLabel("general.OK"));
 		btOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -66,7 +66,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 			}
 		});
 
-		JButton btCancel = new JButton(EditorLabels.getLabel("Cancel"));
+		JButton btCancel = new JButton(EditorLabels.getLabel("general.Cancel"));
 		btCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

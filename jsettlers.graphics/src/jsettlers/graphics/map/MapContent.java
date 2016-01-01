@@ -938,4 +938,16 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		return new UIState(screen.getScreenCenterX(),
 				screen.getScreenCenterY(), screen.getZoom());
 	}
+
+	/**
+	 * Gets the color for a given player.
+	 * 
+	 * @param player
+	 *            The player to get the color for.
+	 * @return The color.
+	 */
+	public Color getPlayerColor(byte player) {
+		return context.getPlayerColor(player);
+	}
+
 }

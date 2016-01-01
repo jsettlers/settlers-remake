@@ -15,9 +15,12 @@
 package jsettlers.mapcreator.main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,12 +34,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import go.graphics.area.Area;
 import go.graphics.region.Region;
@@ -77,6 +80,7 @@ import jsettlers.mapcreator.main.window.LastUsedHandler;
 import jsettlers.mapcreator.main.window.NewFileDialog;
 import jsettlers.mapcreator.main.window.OpenExistingDialog;
 import jsettlers.mapcreator.main.window.SettingsDialog;
+import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapview.MapGraphics;
@@ -97,8 +101,19 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
+	/**
+	 * Map data
+	 */
 	private MapData data;
+
+	/**
+	 * Map drawing
+	 */
 	private MapGraphics map;
+
+	/**
+	 * Currently active tool
+	 */
 	private Tool tool = null;
 
 	/**
@@ -111,8 +126,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 */
 	private ShortPoint2D testFailPoint = null;
 
+	/**
+	 * Undo stack
+	 */
 	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
 
+	/**
+	 * Redo stack
+	 */
 	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
 	/**
@@ -220,16 +241,34 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected JSpinner createPlayerSelectSpinner() {
-				final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
-				JSpinner playerSpinner = new JSpinner(model);
-				playerSpinner.addChangeListener(new ChangeListener() {
+			protected JComponent createPlayerSelectSelection() {
+				Integer[] playerArray = new Integer[data.getPlayerCount()];
+				for (int i = 0; i < data.getPlayerCount(); i++) {
+					playerArray[i] = i;
+				}
+				final JComboBox<Integer> playerCombobox = new JComboBox<>(playerArray);
+				playerCombobox.addActionListener(new ActionListener() {
 					@Override
-					public void stateChanged(ChangeEvent e) {
-						currentPlayer = model.getNumber().byteValue();
+					public void actionPerformed(ActionEvent e) {
+						currentPlayer = (Integer) playerCombobox.getSelectedItem();
 					}
 				});
-				return playerSpinner;
+				playerCombobox.setRenderer(new DefaultListCellRenderer() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+						super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+						Integer player = (Integer) value;
+						setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
+						setText(String.format(EditorLabels.getLabel("general.player_x"), player));
+
+						return this;
+					}
+				});
+
+				return playerCombobox;
 			}
 
 		};
@@ -237,7 +276,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		window.initMenubarAndToolbar();
 
 		// toolbar
-		initToolbar();
+		initActions();
 
 		// window.pack();
 		window.setSize(1200, 800);
@@ -549,7 +588,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		window.registerAction("goto-error", gotoErrorAction);
 	}
 
-	private void initToolbar() {
+	/**
+	 * Set some actions disabled per default, will be enabled when they are available
+	 */
+	private void initActions() {
 		window.enableAction("save", false);
 		window.enableAction("undo", false);
 		window.enableAction("redo", false);

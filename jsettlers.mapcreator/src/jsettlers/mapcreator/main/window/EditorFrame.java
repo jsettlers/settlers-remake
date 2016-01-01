@@ -26,7 +26,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -277,7 +276,7 @@ public abstract class EditorFrame extends JFrame {
 				tb.addSeparator();
 			} else if ("player-spinner".equals(toolName)) {
 				tb.add(new JLabel(EditorLabels.getLabel("window.current-player")));
-				JSpinner playerSpinner = createPlayerSelectSpinner();
+				JComponent playerSpinner = createPlayerSelectSelection();
 				tb.add(playerSpinner);
 			} else {
 				final Action action = actionMap.get(toolName);
@@ -330,9 +329,9 @@ public abstract class EditorFrame extends JFrame {
 	/**
 	 * Create the player selection
 	 * 
-	 * @return JSpinner
+	 * @return JComponent
 	 */
-	protected abstract JSpinner createPlayerSelectSpinner();
+	protected abstract JComponent createPlayerSelectSelection();
 
 	/**
 	 * @param filename
