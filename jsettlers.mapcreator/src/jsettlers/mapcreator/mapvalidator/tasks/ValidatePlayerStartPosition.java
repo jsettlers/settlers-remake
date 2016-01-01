@@ -17,10 +17,12 @@ public class ValidatePlayerStartPosition extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
+		addHeader("playerstart.header");
+
 		for (int player = 0; player < data.getPlayerCount(); player++) {
 			ShortPoint2D point = data.getStartPoint(player);
 			if (players[point.x][point.y] != player) {
-				testFailed("Player " + player + " has invalid start point", point);
+				addErrorMessage("playerstart.header", point, player);
 			}
 			// mark
 			borders[point.x][point.y] = true;

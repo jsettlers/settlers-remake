@@ -8,7 +8,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Draw the building circle to the players array
+ * Draw the building circle to the players array, does not produce any error message
  * 
  * @author Andreas Butti
  */

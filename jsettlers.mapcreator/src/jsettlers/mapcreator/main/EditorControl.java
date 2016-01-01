@@ -82,9 +82,10 @@ import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
-import jsettlers.mapcreator.mapvalidator.MapValidator2;
-import jsettlers.mapcreator.mapvalidator.ValidationResultReceiver2;
-import jsettlers.mapcreator.mapvalidator.error.ShowErrorsAction;
+import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
+import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.tasks.GotoNextErrorAction;
+import jsettlers.mapcreator.mapvalidator.tasks.ShowErrorsAction;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -97,7 +98,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author Andreas Butti
  */
-public class EditorControl implements IMapInterfaceListener, ActionFireable, ValidationResultReceiver2, IPlayerSetter, IScrollToAble {
+public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
 
 	private static final int MAX_UNDO = 100;
 
@@ -138,11 +139,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 	 */
 	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
-	/**
-	 * Check for errros TODO REMOVE
-	 */
-	private MapValidator2 dataTester2;
-
 	private MapInterfaceConnector connector;
 
 	/**
@@ -154,11 +150,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 	 * Window displayed
 	 */
 	private EditorFrame window;
-
-	/**
-	 * Action to jump to next error
-	 */
-	private AbstractAction gotoErrorAction;
 
 	/**
 	 * Open GL Contents (Drawing)
@@ -186,7 +177,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 	/**
 	 * Validates the map for errros
 	 */
-	private MapValidator validator = new MapValidator(sidebar);
+	private MapValidator validator = new MapValidator();
 
 	/**
 	 * Timer for redrawing
@@ -223,10 +214,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 		this.data = mapData;
 
 		map = new MapGraphics(data);
-		dataTester2 = new MapValidator2(data, this);
 		validator.setData(data);
+		validator.addListener(sidebar);
 		buildMapEditingWindow();
-		// sidebar.initErrorTab(dataTester.getErrorList(), this);
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 	}
@@ -283,9 +273,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 		};
 		registerActions();
 		window.initMenubarAndToolbar();
-
-		// toolbar
 		initActions();
+
+		validator.reValidate();
 
 		// window.pack();
 		window.setSize(1200, 800);
@@ -317,7 +307,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 	 */
 	private void quit() {
 		redrawTimer.cancel();
-		dataTester2.dispose();
 		validator.dispose();
 		window.dispose();
 	}
@@ -559,12 +548,20 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 			}
 		});
 
-		window.registerAction("play", new AbstractAction() {
+		final AbstractAction playAction = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				play();
+			}
+		};
+		window.registerAction("play", playAction);
+		validator.addListener(new ValidationResultListener() {
+
+			@Override
+			public void validationFinished(ValidationList list) {
+				playAction.setEnabled(list.size() == 0);
 			}
 		});
 
@@ -577,25 +574,13 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 			}
 		});
 
-		ShowErrorsAction showErrorsAction = new ShowErrorsAction(dataTester2.getErrorList(), sidebar);
+		ShowErrorsAction showErrorsAction = new ShowErrorsAction(sidebar);
 		window.registerAction("show-errors", showErrorsAction);
-		showErrorsAction.updateText();
+		validator.addListener(showErrorsAction);
 
-		this.gotoErrorAction = new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-
-			{
-				putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
-			}
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (testFailPoint != null) {
-					connector.scrollTo(testFailPoint, true);
-				}
-			}
-		};
-		window.registerAction("goto-error", gotoErrorAction);
+		GotoNextErrorAction gotoNextErrorAction = new GotoNextErrorAction(this);
+		window.registerAction("goto-error", gotoNextErrorAction);
+		validator.addListener(showErrorsAction);
 	}
 
 	/**
@@ -618,7 +603,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 			public void applyNewHeader(MapFileHeader header) {
 				EditorControl.this.header = header;
 				data.setMaxPlayers(header.getMaxPlayer());
-				dataTester2.retest();
 				validator.reValidate();
 			}
 
@@ -790,7 +774,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 
 				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 
-				dataTester2.retest();
 				validator.reValidate();
 			}
 		} else if (action instanceof StartDrawingAction) {
@@ -801,18 +784,15 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 
 				tool.start(data, shape, lineAction.getPos());
 
-				dataTester2.retest();
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
 			endUseStep();
-			dataTester2.retest();
 			validator.reValidate();
 		} else if (action instanceof AbortDrawingAction) {
 			MapDataDelta delta = data.getUndoDelta();
 			data.apply(delta);
 			data.resetUndoDelta();
-			dataTester2.retest();
 			validator.reValidate();
 		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
@@ -824,7 +804,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
 				endUseStep();
-				dataTester2.retest();
 				validator.reValidate();
 			}
 		}
@@ -833,20 +812,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Val
 	@Override
 	public void fireAction(Action action) {
 		action(action);
-	}
-
-	@Override
-	public void validationFinished(String result, boolean successful, ShortPoint2D failPoint) {
-		testFailPoint = failPoint;
-		window.enableAction("play", successful);
-
-		if (successful) {
-			gotoErrorAction.putValue(javax.swing.Action.NAME, EditorLabels.getLabel("no-errors"));
-			gotoErrorAction.setEnabled(false);
-		} else {
-			gotoErrorAction.putValue(javax.swing.Action.NAME, result);
-			gotoErrorAction.setEnabled(true);
-		}
 	}
 
 	@Override

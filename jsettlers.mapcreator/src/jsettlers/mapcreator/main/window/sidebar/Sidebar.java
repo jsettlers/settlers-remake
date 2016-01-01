@@ -11,11 +11,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import jsettlers.common.position.ILocatable;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
-import jsettlers.mapcreator.mapvalidator.error.ErrorList;
 import jsettlers.mapcreator.mapvalidator.result.AbstarctErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
@@ -131,31 +129,6 @@ public class Sidebar extends JTabbedPane implements ValidationResultListener {
 	@Override
 	public void validationFinished(ValidationList list) {
 		errorList.setModel(list);
-	}
-
-	/**
-	 * Initialize the error tab
-	 * 
-	 * @param errorList
-	 *            List model with the errors
-	 * @param scrollTo
-	 *            Interface to scroll to position
-	 */
-	public void initErrorTab(final ErrorList errorList, final IScrollToAble scrollTo) {
-		final JList<ILocatable> list = new JList<>(errorList);
-		list.addListSelectionListener(new ListSelectionListener() {
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int index = list.getSelectedIndex();
-				if (index > 0) {
-					scrollTo.scrollTo(errorList.getElementAt(index).getPos());
-				}
-			}
-		});
-
-		this.scrolErrorList = new JScrollPane(list);
-		addTab(EditorLabels.getLabel("sidebar.errors"), scrolErrorList);
 	}
 
 	/**

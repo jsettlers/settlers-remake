@@ -19,7 +19,8 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
-import jsettlers.mapcreator.mapvalidator.MapValidator2;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
 import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
@@ -73,7 +74,7 @@ public class FixHeightsTool extends AbstractTool {
 
 	private static void fixResources(MapData map, int x, int y) {
 		if (map.getResourceAmount((short) x, (short) y) > 0) {
-			if (!MapValidator2.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
+			if (!ValidateResources.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
 				map.decreaseResourceTo(x, y, (byte) 0);
 			}
 		}
@@ -85,7 +86,7 @@ public class FixHeightsTool extends AbstractTool {
 		ELandscapeType l1 = map.getLandscape(x, y);
 		ELandscapeType l2 = map.getLandscape(x2, y2);
 
-		int maxHeightDiff = MapValidator2.getMaxHeightDiff(l1, l2);
+		int maxHeightDiff = ValidateLandscape.getMaxHeightDiff(l1, l2);
 
 		ObjectContainer container1 = map.getMapObjectContainer(x, y);
 		if (container1 instanceof LandscapeConstraint

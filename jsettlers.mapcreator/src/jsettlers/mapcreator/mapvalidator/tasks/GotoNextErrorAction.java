@@ -12,81 +12,78 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.error;
+package jsettlers.mapcreator.mapvalidator.tasks;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
-import jsettlers.mapcreator.main.window.sidebar.Sidebar;
+import jsettlers.mapcreator.mapvalidator.IScrollToAble;
+import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
+import jsettlers.mapcreator.mapvalidator.result.AbstarctErrorEntry;
+import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
+import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
 /**
- * Action to display errors, display error count as text
+ * Action to display next error, and jumpt to it, disabled if there is no error
  * 
  * @author Andreas Butti
  */
-public class ShowErrorsAction extends AbstractAction {
+public class GotoNextErrorAction extends AbstractAction implements ValidationResultListener {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Sidebar to select tab
+	 * Interface to scroll to position
 	 */
-	private final Sidebar sidebar;
+	private IScrollToAble scrollTo;
 
 	/**
-	 * Error list
+	 * Next error to select
 	 */
-	private ErrorList list;
+	private ErrorEntry nextErrorEntry = null;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param list
-	 *            Error list
-	 * @param sidebar
-	 *            Sidebar to select tab
+	 * @param scrollTo
+	 *            Interface to scroll to position
 	 */
-	public ShowErrorsAction(ErrorList list, Sidebar sidebar) {
-		this.list = list;
-		this.sidebar = sidebar;
+	public GotoNextErrorAction(IScrollToAble scrollTo) {
+		this.scrollTo = scrollTo;
 		putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
-		list.addListDataListener(new ListDataListener() {
-
-			@Override
-			public void intervalRemoved(ListDataEvent e) {
-				updateText();
-			}
-
-			@Override
-			public void intervalAdded(ListDataEvent e) {
-				updateText();
-			}
-
-			@Override
-			public void contentsChanged(ListDataEvent e) {
-				updateText();
-			}
-		});
+		setEnabled(false);
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		sidebar.selectError();
+	public void actionPerformed(ActionEvent e) {
+		if (nextErrorEntry == null) {
+			return;
+		}
+		scrollTo.scrollTo(nextErrorEntry.getPos());
 	}
 
 	/**
 	 * Update the error text and icon, if an error or not
 	 */
-	public void updateText() {
-		if (list.getSize() == 0) {
-			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
+	@Override
+	public void validationFinished(ValidationList list) {
+		for (int i = 0; i < list.size(); i++) {
+			AbstarctErrorEntry e = list.get(i);
+			if (e instanceof ErrorEntry) {
+				this.nextErrorEntry = (ErrorEntry) e;
+				break;
+			}
+		}
+
+		if (nextErrorEntry != null) {
+			putValue(Action.NAME, nextErrorEntry.getText());
+			setEnabled(true);
 		} else {
-			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getSize()));
+			putValue(Action.NAME, EditorLabels.getLabel("action.goto-error"));
+			setEnabled(false);
 		}
 	}
 }

@@ -46,7 +46,7 @@ public class ValidateResources extends AbstractValidationTask {
 	 *            Resource
 	 * @return true if valid
 	 */
-	private boolean mayHoldResource(ELandscapeType landscape, EResourceType resourceType) {
+	public static boolean mayHoldResource(ELandscapeType landscape, EResourceType resourceType) {
 		if (resourceType == EResourceType.FISH) {
 			return landscape.isWater();
 		} else {

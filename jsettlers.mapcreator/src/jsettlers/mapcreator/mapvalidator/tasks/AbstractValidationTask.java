@@ -105,18 +105,4 @@ public abstract class AbstractValidationTask {
 
 		list.addError(translatedText, pos);
 	}
-
-	/**
-	 * Add an error message to the list
-	 * 
-	 * @param message
-	 *            Error message
-	 * @param pos
-	 *            Error position
-	 */
-	@Deprecated
-	protected void testFailed(String message, ShortPoint2D pos) {
-		list.addError(message, pos);
-	}
-
 }

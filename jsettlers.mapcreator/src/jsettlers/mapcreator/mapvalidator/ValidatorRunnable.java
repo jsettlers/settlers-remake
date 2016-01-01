@@ -97,16 +97,16 @@ public class ValidatorRunnable implements Runnable {
 		tasks.add(task);
 		task.setData(data);
 		task.setList(list);
-		task.setPlayers(players);
-		task.setBorders(borders);
 	}
 
 	@Override
 	public void run() {
 		initPlayerData();
 
-		for (AbstractValidationTask t : tasks) {
-			t.doTest();
+		for (AbstractValidationTask task : tasks) {
+			task.setPlayers(players);
+			task.setBorders(borders);
+			task.doTest();
 		}
 
 		data.setPlayers(players);

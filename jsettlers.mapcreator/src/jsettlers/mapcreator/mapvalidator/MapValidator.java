@@ -1,11 +1,14 @@
 package jsettlers.mapcreator.mapvalidator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
 /**
  * Validate the map for errors
@@ -15,14 +18,27 @@ import jsettlers.mapcreator.data.MapData;
 public class MapValidator {
 
 	/**
-	 * Listener for validation result
-	 */
-	private final ValidationResultListener resultListener;
-
-	/**
 	 * Map to check
 	 */
 	protected MapData data;
+
+	/**
+	 * Listener for validation results
+	 */
+	private List<ValidationResultListener> listener = new ArrayList<>();
+
+	/**
+	 * Broadcast listener
+	 */
+	private final ValidationResultListener resultListener = new ValidationResultListener() {
+
+		@Override
+		public void validationFinished(ValidationList list) {
+			for (ValidationResultListener l : listener) {
+				l.validationFinished(list);
+			}
+		}
+	};
 
 	/**
 	 * Executor service used to check the errors in another thread
@@ -39,12 +55,16 @@ public class MapValidator {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param resultListener
-	 *            Listener for validation result
 	 */
-	public MapValidator(ValidationResultListener resultListener) {
-		this.resultListener = resultListener;
+	public MapValidator() {
+	}
+
+	/**
+	 * @param listener
+	 *            Listener to get informed about notifications
+	 */
+	public void addListener(ValidationResultListener listener) {
+		this.listener.add(listener);
 	}
 
 	/**
