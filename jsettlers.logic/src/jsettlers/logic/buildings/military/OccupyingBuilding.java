@@ -223,6 +223,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			sortedOccupiers.clear();
 		}
 
+		if (attackableTowerObject != null && attackableTowerObject.currDefender != null) {
+			attackableTowerObject.currDefender.soldier.leaveOccupyableBuilding(attackableTowerObject.getPos());
+		}
+
 		setAttackableTowerObject(false);
 	}
 

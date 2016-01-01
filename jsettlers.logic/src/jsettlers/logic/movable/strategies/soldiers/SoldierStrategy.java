@@ -257,6 +257,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		super.setVisible(true);
 
 		isInTower = false;
+		building = null;
+		defending = false;
 		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
