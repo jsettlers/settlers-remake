@@ -74,8 +74,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	private ShapeType activeShape = null;
 
 	// @formatter:off
-	private final ToolNode TOOLBOX = new ToolBox(EditorLabels.getLabel("toolbox"), new ToolNode[] {
-			new ToolBox(EditorLabels.getLabel("category-landscape"), new ToolNode[] {
+	private final ToolNode TOOLBOX = new ToolBox("<toolbox root>, hidden", new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.landscape"), new ToolNode[] {
 					new SetLandscapeTool(ELandscapeType.GRASS, false),
 					new SetLandscapeTool(ELandscapeType.DRY_GRASS, false),
 					new SetLandscapeTool(ELandscapeType.SAND, false),
@@ -101,20 +101,20 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
 					new SetLandscapeTool(ELandscapeType.GRAVEL, false)
 					}),
-			new ToolBox(EditorLabels.getLabel("category-heigths"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.heigths"), new ToolNode[] {
 					new LandscapeHeightTool(),
 					new HeightAdder(true),
 					new HeightAdder(false),
 					new FlatLandscapeTool(),
 					new FixHeightsTool(), }),
-			new ToolBox(EditorLabels.getLabel("category-land-resources"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.land-resources"), new ToolNode[] {
 					new PlaceResource(EResourceType.FISH),
 					new PlaceResource(EResourceType.IRONORE),
 					new PlaceResource(EResourceType.GOLDORE),
 					new PlaceResource(EResourceType.COAL),
 					new PlaceResource(null)
 					}),
-			new ToolBox(EditorLabels.getLabel("category-objects"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.objects"), new ToolNode[] {
 					new PlaceMapObjectTool(MapTreeObject.getInstance()),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(0)),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
@@ -130,8 +130,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
 					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION))
 					}),
-			new ToolBox(EditorLabels.getLabel("category-settlers"), new ToolNode[] {
-					new ToolBox(EditorLabels.getLabel("category-worker"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.settlers"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.worker"), new ToolNode[] {
 							new PlaceMovableTool(EMovableType.BEARER, this),
 							new PlaceMovableTool(EMovableType.BRICKLAYER, this),
 							new PlaceMovableTool(EMovableType.DIGGER, this),
@@ -151,13 +151,13 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceMovableTool(EMovableType.STONECUTTER, this),
 							new PlaceMovableTool(EMovableType.WATERWORKER, this),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-specialist"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.specialist"), new ToolNode[] {
 							new PlaceMovableTool(EMovableType.GEOLOGIST, this),
 							new PlaceMovableTool(EMovableType.PIONEER, this),
 							new PlaceMovableTool(EMovableType.THIEF, this),
 							new PlaceMovableTool(EMovableType.DONKEY, this),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-soldier"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.soldier"), new ToolNode[] {
 							new PlaceMovableTool(EMovableType.SWORDSMAN_L1, this),
 							new PlaceMovableTool(EMovableType.SWORDSMAN_L2, this),
 							new PlaceMovableTool(EMovableType.SWORDSMAN_L3, this),
@@ -169,13 +169,13 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceMovableTool(EMovableType.PIKEMAN_L3, this),
 							}),
 					}),
-			new ToolBox(EditorLabels.getLabel("category-materials"), new ToolNode[] {
-					new ToolBox(EditorLabels.getLabel("category-mat-build"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.materials"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.mat-build"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.PLANK, 8),
 							new PlaceStackToolbox(EMaterialType.STONE, 8),
 							new PlaceStackToolbox(EMaterialType.TRUNK, 8),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-mat-food"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.mat-food"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.BREAD, 8),
 							new PlaceStackToolbox(EMaterialType.CROP, 8),
 							new PlaceStackToolbox(EMaterialType.FISH, 8),
@@ -186,14 +186,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceStackToolbox(EMaterialType.HONEY, 8),
 							new PlaceStackToolbox(EMaterialType.MEAD, 8),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-mat-resources"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.mat-resources"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.COAL, 8),
 							new PlaceStackToolbox(EMaterialType.IRON, 8),
 							new PlaceStackToolbox(EMaterialType.IRONORE, 8),
 							new PlaceStackToolbox(EMaterialType.GOLD, 8),
 							new PlaceStackToolbox(EMaterialType.GOLDORE, 8),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-mat-tools"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.mat-tools"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.HAMMER, 8),
 							new PlaceStackToolbox(EMaterialType.BLADE, 8),
 							new PlaceStackToolbox(EMaterialType.AXE, 8),
@@ -202,14 +202,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceStackToolbox(EMaterialType.SCYTHE, 8),
 							new PlaceStackToolbox(EMaterialType.FISHINGROD, 8),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-mat-weapons"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.mat-weapons"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.SWORD, 8),
 							new PlaceStackToolbox(EMaterialType.BOW, 8),
 							new PlaceStackToolbox(EMaterialType.SPEAR, 8),
 							}),
 					}),
-			new ToolBox(EditorLabels.getLabel("category-buildings"), new ToolNode[] {
-					new ToolBox(EditorLabels.getLabel("category-resources"), new ToolNode[] {
+			new ToolBox(EditorLabels.getLabel("tools.category.buildings"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.resources"), new ToolNode[] {
 							new PlaceBuildingTool(EBuildingType.LUMBERJACK, this),
 							new PlaceBuildingTool(EBuildingType.SAWMILL, this),
 							new PlaceBuildingTool(EBuildingType.STONECUTTER, this),
@@ -222,7 +222,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceBuildingTool(EBuildingType.CHARCOAL_BURNER, this),
 							new PlaceBuildingTool(EBuildingType.TOOLSMITH, this),
 							}),
-					new ToolBox(EditorLabels.getLabel("category-food"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.food"), new ToolNode[] {
 							new PlaceBuildingTool(EBuildingType.FARM, this),
 							new PlaceBuildingTool(EBuildingType.MILL, this),
 							new PlaceBuildingTool(EBuildingType.BAKER, this),
@@ -233,14 +233,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceBuildingTool(EBuildingType.DONKEY_FARM, this),
 							new PlaceBuildingTool(EBuildingType.WINEGROWER, this)
 							}),
-					new ToolBox(EditorLabels.getLabel("category-military"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.military"), new ToolNode[] {
 							new PlaceBuildingTool(EBuildingType.TOWER, this),
 							new PlaceBuildingTool(EBuildingType.BIG_TOWER, this),
 							new PlaceBuildingTool(EBuildingType.CASTLE, this),
 							new PlaceBuildingTool(EBuildingType.WEAPONSMITH, this),
 							new PlaceBuildingTool(EBuildingType.DOCKYARD, this)
 							}),
-					new ToolBox(EditorLabels.getLabel("category-social"), new ToolNode[] {
+					new ToolBox(EditorLabels.getLabel("tools.category.social"), new ToolNode[] {
 							new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
 							new PlaceBuildingTool(EBuildingType.MEDIUM_LIVINGHOUSE, this),
 							new PlaceBuildingTool(EBuildingType.BIG_LIVINGHOUSE, this),

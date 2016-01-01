@@ -72,6 +72,7 @@ public class NewFilePanel extends Box {
 
 				ELandscapeType type = (ELandscapeType) value;
 				setIcon(new RectIcon(22, new Color(type.color.getARGB()), Color.GRAY));
+				setText(EditorLabels.getLabel("landscape." + type.name()));
 
 				return this;
 			}

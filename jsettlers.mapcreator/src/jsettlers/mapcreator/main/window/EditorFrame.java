@@ -276,7 +276,7 @@ public abstract class EditorFrame extends JFrame {
 			if ("---".equals(toolName)) {
 				tb.addSeparator();
 			} else if ("player-spinner".equals(toolName)) {
-				tb.add(new JLabel(EditorLabels.getLabel("current-player")));
+				tb.add(new JLabel(EditorLabels.getLabel("window.current-player")));
 				JSpinner playerSpinner = createPlayerSelectSpinner();
 				tb.add(playerSpinner);
 			} else {

@@ -76,7 +76,7 @@ public class SetLandscapeTool implements Tool {
 
 	@Override
 	public String getName() {
-		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape_" + type));
+		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type));
 	}
 
 	@Override
