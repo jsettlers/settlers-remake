@@ -575,8 +575,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 	/**
 	 * Save current map
-	 * 
-	 * TODO: Overwrite does not work, right?
 	 */
 	protected void save() {
 		try {

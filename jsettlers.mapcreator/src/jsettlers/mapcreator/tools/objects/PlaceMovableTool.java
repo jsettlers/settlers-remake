@@ -39,10 +39,6 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 
 	@Override
 	public MapObject getObject() {
-		// TODO change byte to int, java internally uses int anyway, because of memory alignment
-		// byte and short should be avoided, it uses the same amount of memory, and is slower, because
-		// it has to be converted from int to byte / short
-		// only for array it uses less memory, but thats not the case here...
 		return new MovableObject(type, (byte) player.getActivePlayer());
 	}
 }

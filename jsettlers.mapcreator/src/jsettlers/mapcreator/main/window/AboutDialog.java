@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import jsettlers.common.CommitInfo;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -43,8 +44,7 @@ public class AboutDialog extends JDialog {
 		add(info, BorderLayout.CENTER);
 
 		info.add(createHeaderLabel("about.version"));
-		// TODO Version
-		info.add(new JLabel("TODO: Version"));
+		info.add(new JLabel(CommitInfo.COMMIT_HASH_SHORT));
 		info.add(createSpacer());
 		info.add(createHeaderLabel("about.developer"));
 		info.add(createListLabelLabel("developer.txt"));

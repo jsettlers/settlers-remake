@@ -23,6 +23,11 @@ public class RectIcon implements Icon {
 	private Color color;
 
 	/**
+	 * Border color, <code>null</code> for no boarder
+	 */
+	private Color borderColor;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param size
@@ -31,14 +36,34 @@ public class RectIcon implements Icon {
 	 *            Color of the icon
 	 */
 	public RectIcon(int size, Color color) {
+		this(size, color, null);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param size
+	 *            Size of the icon
+	 * @param color
+	 *            Color of the icon
+	 * @param borderColor
+	 *            Border color, <code>null</code> for no boarder
+	 */
+	public RectIcon(int size, Color color, Color borderColor) {
 		this.size = size;
 		this.color = color;
+		this.borderColor = borderColor;
 	}
 
 	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 		g.setColor(color);
 		g.fillRect(x, y, size, size);
+
+		if (borderColor != null) {
+			g.setColor(borderColor);
+			g.drawRect(x, y, size, size);
+		}
 	}
 
 	@Override

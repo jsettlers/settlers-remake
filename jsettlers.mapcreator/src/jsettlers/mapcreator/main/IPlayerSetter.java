@@ -21,6 +21,7 @@ package jsettlers.mapcreator.main;
  *
  */
 public interface IPlayerSetter {
+
 	/**
 	 * @return Active player
 	 */
