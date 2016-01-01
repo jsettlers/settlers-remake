@@ -14,7 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
-import jsettlers.mapcreator.mapvalidator.result.AbstarctErrorEntry;
+import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
@@ -40,7 +40,7 @@ public class Sidebar extends JTabbedPane implements ValidationResultListener {
 	/**
 	 * List with the error entries
 	 */
-	private JList<AbstarctErrorEntry> errorList;
+	private JList<AbstractErrorEntry> errorList;
 
 	/**
 	 * Interface to scroll to position
@@ -90,7 +90,7 @@ public class Sidebar extends JTabbedPane implements ValidationResultListener {
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-				AbstarctErrorEntry entry = (AbstarctErrorEntry) value;
+				AbstractErrorEntry entry = (AbstractErrorEntry) value;
 				setText(entry.getText());
 
 				if (entry instanceof ErrorHeader) {
@@ -109,7 +109,7 @@ public class Sidebar extends JTabbedPane implements ValidationResultListener {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				AbstarctErrorEntry value = errorList.getSelectedValue();
+				AbstractErrorEntry value = errorList.getSelectedValue();
 				if (value == null) {
 					return;
 				}

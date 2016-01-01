@@ -23,8 +23,9 @@ import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
-import jsettlers.mapcreator.mapvalidator.result.AbstarctErrorEntry;
+import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
+import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
 /**
@@ -70,8 +71,13 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	 */
 	@Override
 	public void validationFinished(ValidationList list) {
+		String header = null;
 		for (int i = 0; i < list.size(); i++) {
-			AbstarctErrorEntry e = list.get(i);
+			AbstractErrorEntry e = list.get(i);
+			if (e instanceof ErrorHeader) {
+				header = e.getText();
+				continue;
+			}
 			if (e instanceof ErrorEntry) {
 				this.nextErrorEntry = (ErrorEntry) e;
 				break;
@@ -79,7 +85,7 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 		}
 
 		if (nextErrorEntry != null) {
-			putValue(Action.NAME, nextErrorEntry.getText());
+			putValue(Action.NAME, header + " - " + nextErrorEntry.getText());
 			setEnabled(true);
 		} else {
 			putValue(Action.NAME, EditorLabels.getLabel("action.goto-error"));

@@ -580,7 +580,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 		GotoNextErrorAction gotoNextErrorAction = new GotoNextErrorAction(this);
 		window.registerAction("goto-error", gotoNextErrorAction);
-		validator.addListener(showErrorsAction);
+		validator.addListener(gotoNextErrorAction);
 	}
 
 	/**

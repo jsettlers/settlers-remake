@@ -103,6 +103,6 @@ public abstract class AbstractValidationTask {
 			translatedText = new Formatter().format(translatedText, parameter).toString();
 		}
 
-		list.addError(translatedText, pos);
+		list.addError(translatedText, pos, textId);
 	}
 }

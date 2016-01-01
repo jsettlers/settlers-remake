@@ -5,7 +5,7 @@ package jsettlers.mapcreator.mapvalidator.result;
  * 
  * @author Andreas Butti
  */
-public class ErrorHeader extends AbstarctErrorEntry {
+public class ErrorHeader extends AbstractErrorEntry {
 
 	/**
 	 * Constructor

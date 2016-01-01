@@ -5,7 +5,7 @@ package jsettlers.mapcreator.mapvalidator.result;
  * 
  * @author Andreas Butti
  */
-public class AbstarctErrorEntry {
+public class AbstractErrorEntry {
 
 	/**
 	 * Text to display
@@ -18,7 +18,7 @@ public class AbstarctErrorEntry {
 	 * @param text
 	 *            Text to display
 	 */
-	public AbstarctErrorEntry(String text) {
+	public AbstractErrorEntry(String text) {
 		this.text = text;
 	}
 
