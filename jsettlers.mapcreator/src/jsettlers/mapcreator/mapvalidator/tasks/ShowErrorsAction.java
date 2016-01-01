@@ -61,10 +61,10 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	 */
 	@Override
 	public void validationFinished(ValidationList list) {
-		if (list.getSize() == 0) {
+		if (list.getErrorCount() == 0) {
 			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
 		} else {
-			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getSize()));
+			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getErrorCount()));
 		}
 	}
 }

@@ -16,6 +16,11 @@ public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Error count without headers
+	 */
+	private int errorCount;
+
+	/**
 	 * Constructor
 	 */
 	public ValidationList() {
@@ -117,5 +122,19 @@ public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
 	public void prepareToDisplay() {
 		romoveDuplicateNear();
 		removeDuplicateHeader();
+
+		errorCount = 0;
+		for (int i = 0; i < getSize(); i++) {
+			if (getElementAt(i) instanceof ErrorEntry) {
+				errorCount++;
+			}
+		}
+	}
+
+	/**
+	 * @return Error count without headers
+	 */
+	public int getErrorCount() {
+		return errorCount;
 	}
 }
