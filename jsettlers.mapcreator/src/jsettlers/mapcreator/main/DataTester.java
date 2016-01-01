@@ -77,6 +77,7 @@ public class DataTester implements Runnable {
 	/**
 	 * Release all resources
 	 */
+	@SuppressWarnings("deprecation")
 	public void dispose() {
 		running = false;
 		synchronized (this) {
@@ -84,6 +85,8 @@ public class DataTester implements Runnable {
 		}
 		try {
 			thread.join(100);
+			// Kill the thread if it's not finished after 100ms...
+			thread.stop();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
