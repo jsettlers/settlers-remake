@@ -14,13 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.objects;
 
-import javax.swing.Icon;
-
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
-import jsettlers.mapcreator.tools.icons.ToolIcon;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.PointShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
@@ -31,7 +27,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * @author Andreas Butti
  *
  */
-public class DeleteObjectTool implements Tool {
+public class DeleteObjectTool extends AbstractTool {
 
 	private static final ShapeType[] SHAPE_TYPES = new ShapeType[] {
 			new PointShape(),
@@ -39,20 +35,10 @@ public class DeleteObjectTool implements Tool {
 	};
 
 	/**
-	 * Icon of the tool
-	 */
-	private Icon icon;
-
-	/**
 	 * Constructor
 	 */
 	public DeleteObjectTool() {
-		icon = ToolIcon.loadIcon("delete.png");
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("tool.delete");
+		super("delete");
 	}
 
 	@Override
@@ -78,10 +64,4 @@ public class DeleteObjectTool implements Tool {
 	@Override
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
-
-	@Override
-	public Icon getIcon() {
-		return icon;
-	}
-
 }

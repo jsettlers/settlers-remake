@@ -14,13 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
-import javax.swing.Icon;
-
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
-import jsettlers.mapcreator.tools.icons.ToolIcon;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -28,26 +24,16 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author michael
  */
-public class FlatLandscapeTool implements Tool {
+public class FlatLandscapeTool extends AbstractTool {
 
 	private byte[][] old;
 	private double influencefactor = .3;
 
 	/**
-	 * Icon of the tool
-	 */
-	private Icon icon;
-
-	/**
 	 * Constructor
 	 */
 	public FlatLandscapeTool() {
-		icon = ToolIcon.loadIcon("flattern.png");
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("tool.flatten");
+		super("flattern");
 	}
 
 	@Override
@@ -104,10 +90,5 @@ public class FlatLandscapeTool implements Tool {
 			}
 		}
 
-	}
-
-	@Override
-	public Icon getIcon() {
-		return icon;
 	}
 }

@@ -14,29 +14,34 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
-import javax.swing.Icon;
-
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class HeightAdder implements Tool {
+/**
+ * Increase / decrease height
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class IncreaseDecreaseHeightAdder extends AbstractTool {
 
 	private static final int INCREASE_HEIGHT = 5;
 	private final boolean subtract;
 
 	private int[][] alreadyadded = null;
 
-	public HeightAdder(boolean subtract) {
+	/**
+	 * Constructor
+	 * 
+	 * @param subtract
+	 *            increase / decrease height
+	 */
+	public IncreaseDecreaseHeightAdder(boolean subtract) {
+		super(subtract ? "decreaseheight"
+				: "increaseheight");
 		this.subtract = subtract;
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel(subtract ? "decreaseheightdescr"
-				: "increaseheightdescr");
 	}
 
 	@Override
@@ -80,12 +85,6 @@ public class HeightAdder implements Tool {
 				map.setHeight(x, y, newheight);
 			}
 		}
-	}
-
-	@Override
-	public Icon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

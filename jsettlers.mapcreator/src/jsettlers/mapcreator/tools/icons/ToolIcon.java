@@ -1,5 +1,7 @@
 package jsettlers.mapcreator.tools.icons;
 
+import java.net.URL;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -25,7 +27,11 @@ public final class ToolIcon {
 	 * @return Icon
 	 */
 	public static Icon loadIcon(String name) {
-		return new ImageIcon(ToolIcon.class.getResource(name));
+		URL url = ToolIcon.class.getResource(name);
+		if (url == null) {
+			return null;
+		}
+		return new ImageIcon(url);
 	}
 
 }

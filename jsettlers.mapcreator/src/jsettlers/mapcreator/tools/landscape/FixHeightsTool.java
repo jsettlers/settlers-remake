@@ -14,22 +14,28 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
-import javax.swing.Icon;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
-import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class FixHeightsTool implements Tool {
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("fixheights");
+/**
+ * Fix height problems
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class FixHeightsTool extends AbstractTool {
+
+	/**
+	 * Constructor
+	 */
+	public FixHeightsTool() {
+		super("fixheights");
 	}
 
 	@Override
@@ -103,13 +109,6 @@ public class FixHeightsTool implements Tool {
 
 	@Override
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-
-	}
-
-	@Override
-	public Icon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

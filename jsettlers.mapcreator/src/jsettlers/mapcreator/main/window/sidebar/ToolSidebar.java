@@ -37,7 +37,7 @@ import jsettlers.mapcreator.tools.ToolBox;
 import jsettlers.mapcreator.tools.ToolNode;
 import jsettlers.mapcreator.tools.landscape.FixHeightsTool;
 import jsettlers.mapcreator.tools.landscape.FlatLandscapeTool;
-import jsettlers.mapcreator.tools.landscape.HeightAdder;
+import jsettlers.mapcreator.tools.landscape.IncreaseDecreaseHeightAdder;
 import jsettlers.mapcreator.tools.landscape.LandscapeHeightTool;
 import jsettlers.mapcreator.tools.landscape.PlaceResource;
 import jsettlers.mapcreator.tools.landscape.SetLandscapeTool;
@@ -103,8 +103,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.heigths"), new ToolNode[] {
 					new LandscapeHeightTool(),
-					new HeightAdder(true),
-					new HeightAdder(false),
+					new IncreaseDecreaseHeightAdder(true),
+					new IncreaseDecreaseHeightAdder(false),
 					new FlatLandscapeTool(),
 					new FixHeightsTool(), }),
 			new ToolBox(EditorLabels.getLabel("tools.category.land-resources"), new ToolNode[] {
