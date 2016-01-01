@@ -60,8 +60,4 @@ public class DeleteObjectTool extends AbstractTool {
 			}
 		}
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-	}
 }

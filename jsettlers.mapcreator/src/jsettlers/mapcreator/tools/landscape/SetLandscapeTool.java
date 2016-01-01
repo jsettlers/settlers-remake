@@ -16,8 +16,6 @@ package jsettlers.mapcreator.tools.landscape;
 
 import java.awt.Color;
 
-import javax.swing.Icon;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -25,7 +23,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.sidebar.RectIcon;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.buffers.ByteMapArea;
 import jsettlers.mapcreator.tools.buffers.GlobalShapeBuffer;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
@@ -39,7 +37,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author Andreas Butti
  */
-public class SetLandscapeTool implements Tool {
+public class SetLandscapeTool extends AbstractTool {
 
 	private static final ShapeType[] SHAPES = new ShapeType[] {
 			new PointShape(),
@@ -58,25 +56,11 @@ public class SetLandscapeTool implements Tool {
 
 	private GlobalShapeBuffer buffer;
 
-	/**
-	 * icon of this tree
-	 */
-	private final Icon icon;
-
 	public SetLandscapeTool(ELandscapeType type, boolean isRiver) {
+		super(new RectIcon(16, new Color(type.color.getARGB())),
+				String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));
 		this.type = type;
 		this.isRiver = isRiver;
-		this.icon = new RectIcon(16, new Color(type.color.getARGB()));
-	}
-
-	@Override
-	public Icon getIcon() {
-		return icon;
-	}
-
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type));
 	}
 
 	@Override
@@ -107,10 +91,6 @@ public class SetLandscapeTool implements Tool {
 		IMapArea area = new ByteMapArea(array);
 
 		map.fill(type, area);
-	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
 
 }

@@ -33,7 +33,7 @@ public class FlatLandscapeTool extends AbstractTool {
 	 * Constructor
 	 */
 	public FlatLandscapeTool() {
-		super("flattern");
+		super("flatten");
 	}
 
 	@Override

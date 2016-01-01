@@ -54,9 +54,4 @@ public class SetStartpointTool extends AbstractTool {
 			ShortPoint2D end, double uidx) {
 		map.setStartPoint(player.getActivePlayer(), end);
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-	}
-
 }

@@ -106,9 +106,4 @@ public class FixHeightsTool extends AbstractTool {
 			map.setHeight(x2, y2, h1 + maxHeightDiff);
 		}
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-	}
-
 }
