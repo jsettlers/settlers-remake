@@ -1,7 +1,10 @@
 package jsettlers.mapcreator.mapvalidator.tasks;
 
+import java.util.Formatter;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
 /**
@@ -22,9 +25,35 @@ public abstract class AbstractValidationTask {
 	private ValidationList list;
 
 	/**
+	 * Player data array
+	 */
+	protected byte[][] players;
+
+	/**
+	 * Border array
+	 */
+	protected boolean[][] borders;
+
+	/**
 	 * Constructor
 	 */
 	public AbstractValidationTask() {
+	}
+
+	/**
+	 * @param players
+	 *            Array with player data REFERENCE, DO NOT clone!
+	 */
+	public void setPlayers(byte[][] players) {
+		this.players = players;
+	}
+
+	/**
+	 * @param borders
+	 *            Array with border data REFERENCE, DO NOT clone!
+	 */
+	public void setBorders(boolean[][] borders) {
+		this.borders = borders;
 	}
 
 	/**
@@ -49,6 +78,35 @@ public abstract class AbstractValidationTask {
 	public abstract void doTest();
 
 	/**
+	 * Add a header Text
+	 * 
+	 * @param textId
+	 *            Text id (for translation)
+	 */
+	protected void addHeader(String textId) {
+		list.addHeader(EditorLabels.getLabel("validation." + textId));
+	}
+
+	/**
+	 * Add an error message to the list
+	 * 
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addErrorMessage(String textId, ShortPoint2D pos, Object... parameter) {
+		String translatedText = EditorLabels.getLabel("validation." + textId);
+		if (parameter.length > 0) {
+			translatedText = new Formatter().format(translatedText, parameter).toString();
+		}
+
+		list.addError(translatedText, pos);
+	}
+
+	/**
 	 * Add an error message to the list
 	 * 
 	 * @param message
@@ -56,6 +114,7 @@ public abstract class AbstractValidationTask {
 	 * @param pos
 	 *            Error position
 	 */
+	@Deprecated
 	protected void testFailed(String message, ShortPoint2D pos) {
 		list.addError(message, pos);
 	}

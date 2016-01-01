@@ -29,6 +29,14 @@ public class ValidationList extends DefaultListModel<AbstarctErrorEntry> {
 		addElement(new ErrorHeader(header));
 	}
 
+	/**
+	 * Add an error entry
+	 * 
+	 * @param text
+	 *            Text to display
+	 * @param pos
+	 *            Position
+	 */
 	public void addError(String text, ShortPoint2D pos) {
 		addElement(new ErrorEntry(text, pos));
 	}
