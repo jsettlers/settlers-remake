@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -35,6 +36,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
 import jsettlers.mapcreator.main.window.NewOrOpenDialog;
 import jsettlers.mapcreator.main.window.OpenPanel;
@@ -156,8 +158,14 @@ public class MapCreatorApp {
 	 * Display the New or open selection dialog
 	 */
 	private static void startWithSelectionDialog() {
-		NewOrOpenDialog dlg = new NewOrOpenDialog(null);
+		// dummy frame for icon, TODO to test on windows, ubuntu does not display the icon...
+		JFrame dummyFrame = new JFrame();
+		dummyFrame.setIconImage(EditorFrame.APP_ICON);
+		dummyFrame.setLocationRelativeTo(null);
+
+		NewOrOpenDialog dlg = new NewOrOpenDialog(dummyFrame);
 		dlg.setVisible(true);
+		dummyFrame.dispose();
 
 		if (!dlg.isConfirmed()) {
 			return;

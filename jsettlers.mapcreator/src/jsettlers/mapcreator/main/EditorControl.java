@@ -132,6 +132,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 	 */
 	private EditorFrame window;
 
+	/**
+	 * Action to jump to next error
+	 */
 	private AbstractAction gotoErrorAction;
 
 	/**
@@ -197,21 +200,19 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		dataTester.start();
 		sidebar.initErrorTab(dataTester.getErrorList(), this);
 
-		LastUsedHandler lastUsedHandler = new LastUsedHandler();
-		lastUsedHandler.saveUsedMapId(header.getUniqueId());
+		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 	}
 
 	public void buildMapEditingWindow() {
 		JPanel root = new JPanel();
 		root.setLayout(new BorderLayout(10, 10));
 
-		// map
+		// map display
 		Area area = new Area();
 		final Region region = new Region(Region.POSITION_CENTER);
 		area.add(region);
 		AreaContainer displayPanel = new AreaContainer(area);
 		displayPanel.setMinimumSize(new Dimension(640, 480));
-		displayPanel.requestFocusInWindow();
 		displayPanel.setFocusable(true);
 		root.add(displayPanel, BorderLayout.CENTER);
 
@@ -260,6 +261,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 
 		connector.addListener(this);
 		window.setVisible(true);
+		displayPanel.requestFocusInWindow();
 	}
 
 	/**
@@ -363,7 +365,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		if (undoDeltas.isEmpty()) {
 			return true;
 		} else {
-			int result = JOptionPane.showConfirmDialog(window, "Save changes?", "JSettler", JOptionPane.YES_NO_CANCEL_OPTION);
+			int result = JOptionPane.showConfirmDialog(window, EditorLabels.getLabel("ctrl.save-chages"), "JSettler",
+					JOptionPane.YES_NO_CANCEL_OPTION);
 			if (result == JOptionPane.YES_OPTION) {
 				save();
 				return true;
@@ -439,6 +442,23 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				save();
+			}
+		});
+
+		window.registerAction("save-as", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String name = JOptionPane.showInputDialog(window, EditorLabels.getLabel("ctrl.save-as-name"));
+
+				if (name != null) {
+					header = new MapFileHeader(header.getType(), name, null, header.getDescription(), header.getWidth(),
+							header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), header.getBgimage().clone());
+					save();
+					window.setFilename(name);
+				}
+
 			}
 		});
 
@@ -553,9 +573,16 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, Tes
 		dlg.setVisible(true);
 	}
 
+	/**
+	 * Save current map
+	 * 
+	 * TODO: Overwrite does not work, right?
+	 */
 	protected void save() {
 		try {
 			MapFileHeader imagedHeader = generateMapHeader();
+			new LastUsedHandler().saveUsedMapId(imagedHeader.getUniqueId());
+
 			data.doPreSaveActions();
 			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);

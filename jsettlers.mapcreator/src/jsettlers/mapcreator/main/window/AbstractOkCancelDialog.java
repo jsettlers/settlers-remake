@@ -25,7 +25,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	/**
 	 * If the user pressed OK
 	 */
-	private boolean confirmed = false;
+	protected boolean confirmed = false;
 
 	/**
 	 * Constructor

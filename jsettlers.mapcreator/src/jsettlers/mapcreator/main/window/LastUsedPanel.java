@@ -1,5 +1,6 @@
 package jsettlers.mapcreator.main.window;
 
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +13,14 @@ import jsettlers.logic.map.save.loader.MapLoader;
  *
  */
 public class LastUsedPanel extends OpenPanel {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor
 	 */
-	public LastUsedPanel() {
+	public LastUsedPanel(ActionListener doubleclickListener) {
+		super(doubleclickListener);
 	}
 
 	/**

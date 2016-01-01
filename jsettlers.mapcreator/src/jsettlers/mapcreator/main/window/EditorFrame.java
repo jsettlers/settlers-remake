@@ -2,6 +2,7 @@ package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -24,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
@@ -64,6 +64,11 @@ public abstract class EditorFrame extends JFrame {
 	public static final String DISPLAY_TEXT_IN_TOOLBAR = "display-text-in-toolbar";
 
 	/**
+	 * Logo for windows
+	 */
+	public static final Image APP_ICON = new ImageIcon(EditorFrame.class.getResource("icon.png")).getImage();
+
+	/**
 	 * Constructor
 	 * 
 	 * @param root
@@ -77,6 +82,7 @@ public abstract class EditorFrame extends JFrame {
 		setFilename("unnamed");
 
 		setLayout(new BorderLayout());
+		setIconImage(APP_ICON);
 
 		registerActions();
 
@@ -134,21 +140,6 @@ public abstract class EditorFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				AboutDialog dlg = new AboutDialog(EditorFrame.this);
 				dlg.setVisible(true);
-			}
-		});
-
-		registerAction("save-as", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
-			}
-		});
-		registerAction("export-image", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action not implemented");
 			}
 		});
 	}

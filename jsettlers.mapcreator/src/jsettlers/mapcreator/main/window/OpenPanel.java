@@ -1,6 +1,10 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,14 +37,27 @@ public class OpenPanel extends JPanel {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel() {
+	public OpenPanel(final ActionListener doubleclickListener) {
 		setLayout(new BorderLayout());
 
 		sortMaps();
 
 		this.mapList = new JList<MapLoader>(maps.toArray(new MapLoader[maps.size()]));
 		mapList.setCellRenderer(new MapListCellRenderer());
+		mapList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					if (doubleclickListener != null) {
+						doubleclickListener.actionPerformed(new ActionEvent(e, 0, "dblclick"));
+					}
+				}
+			}
+		});
 		add(new JScrollPane(mapList));
 
 		if (maps.size() > 0) {

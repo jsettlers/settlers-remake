@@ -1,6 +1,8 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -21,13 +23,27 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	private NewFilePanel newFilePanel = new NewFilePanel();
 
 	/**
-	 * Panel with the map list
+	 * Listener for Double click
 	 */
-	private OpenPanel openPanel = new OpenPanel();
+	private ActionListener doubleClickListener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			confirmed = true;
+			doOkAction();
+			dispose();
+		}
+	};
+
 	/**
 	 * Panel with the map list
 	 */
-	private LastUsedPanel lastUsed = new LastUsedPanel();
+	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
+
+	/**
+	 * Panel with the map list
+	 */
+	private LastUsedPanel lastUsed = new LastUsedPanel(doubleClickListener);
 
 	/**
 	 * Main tabs
