@@ -18,6 +18,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -54,6 +55,7 @@ public class AiDifficultiesIT {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 90 * MINUTES);
 	}
 
+	@Ignore
 	@Test
 	public void hardShouldConquerEasy() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 70 * MINUTES);
