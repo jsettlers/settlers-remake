@@ -75,12 +75,12 @@ public class MapHeaderEditorPanel extends JPanel {
 		JSpinner minPlayerField = new JSpinner(minPlayer);
 		JSpinner maxPlayerField = new JSpinner(maxPlayer);
 
-		JLabel nameLabel = new JLabel(EditorLabels.getLabel("map-name"));
-		JLabel descriptionLabel = new JLabel(EditorLabels.getLabel("map-description"));
-		JLabel widthLabel = new JLabel(EditorLabels.getLabel("max-width"));
-		JLabel heightLabel = new JLabel(EditorLabels.getLabel("max-height"));
-		JLabel minPlayerLabel = new JLabel(EditorLabels.getLabel("map-min-player"));
-		JLabel maxPlayerLabel = new JLabel(EditorLabels.getLabel("map-max-player"));
+		JLabel nameLabel = new JLabel(EditorLabels.getLabel("header.map-name"));
+		JLabel descriptionLabel = new JLabel(EditorLabels.getLabel("header.map-description"));
+		JLabel widthLabel = new JLabel(EditorLabels.getLabel("header.width"));
+		JLabel heightLabel = new JLabel(EditorLabels.getLabel("header.height"));
+		JLabel minPlayerLabel = new JLabel(EditorLabels.getLabel("header.map-min-player"));
+		JLabel maxPlayerLabel = new JLabel(EditorLabels.getLabel("header.map-max-player"));
 
 		add(nameField);
 		add(descriptionField);
