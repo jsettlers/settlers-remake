@@ -16,6 +16,8 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -25,7 +27,9 @@ import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
@@ -73,7 +77,7 @@ public class AiDifficultiesIT {
 		MatchConstants.clock().fastForwardTo(90 * MINUTES);
 		ReplayTool.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 160;
+		short expectedMinimalProducedSoldiers = 150;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
@@ -103,6 +107,7 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
+				saveMap(startingGame.getMainGrid());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
@@ -116,6 +121,17 @@ public class AiDifficultiesIT {
 
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 3000);
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
+	}
+
+	private void saveMap(MainGrid mainGrid) {
+		try {
+			System.out.println("Writing savegame with final state of failed test.");
+			PlayerState[] playerStates = new PlayerState[] { new PlayerState((byte) 0, null), new PlayerState((byte) 1, null) };
+			MapList.getDefaultList().saveMap(playerStates, mainGrid);
+		} catch (IOException e) {
+			System.err.println("Tried to create a savegame but failed:");
+			e.printStackTrace();
+		}
 	}
 
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
