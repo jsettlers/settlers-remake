@@ -18,6 +18,12 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
+/**
+ * Interface for all tools, displayed in the tree
+ * 
+ * @author Andreas Butti
+ *
+ */
 public interface Tool extends ToolNode {
 	public ShapeType[] getShapes();
 

@@ -18,7 +18,7 @@ public final class ToolIcon {
 	}
 
 	/**
-	 * Load an icon
+	 * Load an icon, no chache!
 	 * 
 	 * @param name
 	 *            Name

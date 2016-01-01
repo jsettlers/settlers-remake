@@ -25,6 +25,12 @@ import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.PointShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
+/**
+ * Delete existing objects
+ * 
+ * @author Andreas Butti
+ *
+ */
 public class DeleteObjectTool implements Tool {
 
 	private static final ShapeType[] SHAPE_TYPES = new ShapeType[] {
@@ -32,9 +38,21 @@ public class DeleteObjectTool implements Tool {
 			new LineCircleShape(),
 	};
 
+	/**
+	 * Icon of the tool
+	 */
+	private Icon icon;
+
+	/**
+	 * Constructor
+	 */
+	public DeleteObjectTool() {
+		icon = ToolIcon.loadIcon("delete.png");
+	}
+
 	@Override
 	public String getName() {
-		return EditorLabels.getLabel("deletedescr");
+		return EditorLabels.getLabel("tool.delete");
 	}
 
 	@Override
@@ -63,7 +81,7 @@ public class DeleteObjectTool implements Tool {
 
 	@Override
 	public Icon getIcon() {
-		return ToolIcon.loadIcon("delete.png");
+		return icon;
 	}
 
 }

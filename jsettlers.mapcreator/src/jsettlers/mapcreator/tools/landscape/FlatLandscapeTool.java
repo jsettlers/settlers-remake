@@ -20,11 +20,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.icons.ToolIcon;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
- * makes a flat space on the landscape
- * 
+ * Makes a flat space on the landscape
  * 
  * @author michael
  */
@@ -33,12 +33,21 @@ public class FlatLandscapeTool implements Tool {
 	private byte[][] old;
 	private double influencefactor = .3;
 
+	/**
+	 * Icon of the tool
+	 */
+	private Icon icon;
+
+	/**
+	 * Constructor
+	 */
 	public FlatLandscapeTool() {
+		icon = ToolIcon.loadIcon("flattern.png");
 	}
 
 	@Override
 	public String getName() {
-		return EditorLabels.getLabel("flatten");
+		return EditorLabels.getLabel("tool.flatten");
 	}
 
 	@Override
@@ -99,7 +108,6 @@ public class FlatLandscapeTool implements Tool {
 
 	@Override
 	public Icon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
+		return icon;
 	}
 }
