@@ -15,6 +15,7 @@
 package jsettlers.main.swing;
 
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.*;
 
 import go.graphics.area.Area;
 import go.graphics.swing.AreaContainer;
@@ -81,6 +83,44 @@ public class SwingManagedJSettlers {
 		generateContent(options, content);
 	}
 
+	private static String getSelectedFolderName() {
+		
+		//- Info: Don't use JFileChooser(), some Windows User have problems caused by a NullPointerException in FileDialog()
+		//-   see issue #240: https://github.com/jsettlers/settlers-remake/issues/240
+		
+		
+		//- see: http://stackoverflow.com/questions/1224714/how-can-i-make-a-java-filedialog-accept-directories-as-its-filetype-in-os-x
+		JFrame frame = new JFrame();
+		
+		System.setProperty("apple.awt.fileDialogForDirectories", "true");
+		FileDialog fd = new FileDialog(frame, Labels.getString("select-settlers-3-folder"), FileDialog.LOAD); 
+		fd.setVisible(true); 
+		String selectedFolderName = fd.getDirectory();
+		System.setProperty("apple.awt.fileDialogForDirectories", "false");
+		
+		//- user clicked cancel button
+		if (selectedFolderName == null) return null;
+		
+		//- try to check if the selection is really a Folder  
+		try {
+			File file = new File(selectedFolderName);
+			if (!file.isDirectory()) {
+				 return null;
+			}
+			
+			if (file.exists()){
+				//- OK looks good
+				return selectedFolderName;
+			}
+		}
+		catch (Exception e) {
+			return null;
+		}
+		
+		return null;
+	}
+	
+	
 	/**
 	 * Sets up the {@link ResourceManager} by using a configuration file. <br>
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
@@ -103,36 +143,21 @@ public class SwingManagedJSettlers {
 				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
 			}
 			firstRun = false;
-
-			JFileChooser fileDialog = new JFileChooser();
-			fileDialog.setAcceptAllFileFilterUsed(false);
-			fileDialog.setFileFilter(new FileFilter() {
-				@Override
-				public String getDescription() {
-					return null;
-				}
-
-				@Override
-				public boolean accept(File f) {
-					return f.isDirectory();
-				}
-			});
-			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-			fileDialog.setMultiSelectionEnabled(false);
-			fileDialog.setDialogTitle(Labels.getString("select-settlers-3-folder"));
-			fileDialog.showOpenDialog(null);
-
-			File selectedFolder = fileDialog.getSelectedFile();
-			if (selectedFolder == null) {
+			
+			String selectedFolderName = getSelectedFolderName();
+	        
+			if (selectedFolderName == null) {
 				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
 				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
 				System.err.println(noFolderSelctedMessage);
 				System.exit(1);
 			}
 
-			System.out.println(selectedFolder);
+			System.out.println(selectedFolderName);
+			
 			try {
+				File selectedFolder = new File(selectedFolderName);
+				
 				configFile.setSettlersFolder(selectedFolder);
 			} catch (IOException ex) {
 				String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");

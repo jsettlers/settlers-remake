@@ -35,7 +35,7 @@ public class ConfigurationPropertiesFile {
 
 	public ConfigurationPropertiesFile(File file) throws FileNotFoundException,
 			IOException {
-		this.configFile = file;
+		this.configFile = file.getAbsoluteFile();
 
 		Properties defaultProperties = new Properties();
 		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
@@ -51,8 +51,7 @@ public class ConfigurationPropertiesFile {
 		File dir = new File(property);
 		if (!dir.isAbsolute()) {
 			String parent = configFile.getParent();
-			dir = new File((parent == null ? "" : parent + File.separator)
-					+ property);
+			dir = new File((((parent == null) ? "" : parent) + File.separator) + property);
 		}
 		return dir.getAbsoluteFile();
 	}
@@ -66,9 +65,14 @@ public class ConfigurationPropertiesFile {
 		String[] result = new String[settlersFolder.length * subfolders.length];
 
 		int resultIdx = 0;
-		for (int subfolderIdx = 0; subfolderIdx < subfolders.length; subfolderIdx++) {
-			for (int folderIdx = 0; folderIdx < settlersFolder.length; folderIdx++) {
-				result[resultIdx++] = settlersFolder[folderIdx].replaceFirst("/?$", "/" + subfolders[subfolderIdx]);
+		for (int folderIdx = 0; folderIdx < settlersFolder.length; folderIdx++) {
+			
+			//- check if path ends with File-separator. If not -> Add!
+			String path = settlersFolder[folderIdx];
+			if (path.substring(path.length()-1) != File.separator) path += File.separator;
+			
+			for (int subfolderIdx = 0; subfolderIdx < subfolders.length; subfolderIdx++) {
+				result[resultIdx++] = path + subfolders[subfolderIdx];
 			}
 		}
 		return result;
