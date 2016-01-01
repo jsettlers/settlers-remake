@@ -24,7 +24,6 @@ import jsettlers.common.player.IInGamePlayer;
 import jsettlers.graphics.map.IMessenger;
 import jsettlers.graphics.messages.Message;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
-import jsettlers.logic.player.CombatStrengthCalculator.CombatStrengthInformation;
 
 /**
  * This class represents a player in the game. It can be used to access player specific statistics and methods.
@@ -43,7 +42,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
 	private final EndgameStatistic endgameStatistic = new EndgameStatistic(manaInformation);
 
-	private transient CombatStrengthInformation combatStrengthInfo;
+	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
 
 	public Player(byte playerId, Team team, byte numberOfPlayers) {
@@ -112,6 +111,6 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private void updateCombatStrengths() {
 		int amountOfGold = getAmountOf(EMaterialType.GOLD);
-		this.combatStrengthInfo = CombatStrengthCalculator.calculateCombatStrengthInformation(numberOfPlayers, amountOfGold);
+		this.combatStrengthInfo.updateGoldCombatStrength(numberOfPlayers, amountOfGold);
 	}
 }
