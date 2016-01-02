@@ -72,6 +72,8 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	@Override
 	public void validationFinished(ValidationList list) {
 		String header = null;
+		nextErrorEntry = null;
+
 		for (int i = 0; i < list.size(); i++) {
 			AbstractErrorEntry e = list.get(i);
 			if (e instanceof ErrorHeader) {

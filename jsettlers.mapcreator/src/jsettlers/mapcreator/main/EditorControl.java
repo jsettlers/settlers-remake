@@ -100,8 +100,6 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  */
 public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
 
-	private static final int MAX_UNDO = 100;
-
 	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
 	/**
@@ -125,14 +123,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private int currentPlayer = 0;
 
 	/**
-	 * Undo stack
+	 * Undo / Redo stack
 	 */
-	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
-
-	/**
-	 * Redo stack
-	 */
-	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
+	private UndoRedoHandler undoRedo;
 
 	private MapInterfaceConnector connector;
 
@@ -214,6 +207,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		buildMapEditingWindow();
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
+
+		undoRedo = new UndoRedoHandler(window, data);
 	}
 
 	public void buildMapEditingWindow() {
@@ -395,8 +390,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * @return true to continue, false to cancel
 	 */
 	private boolean checkSaved() {
-		// TODO, not working, because undo is not deleted on save...
-		if (undoDeltas.isEmpty()) {
+		if (!undoRedo.isChangedSinceLastSave()) {
 			return true;
 		} else {
 			int result = JOptionPane.showConfirmDialog(window, EditorLabels.getLabel("ctrl.save-chages"), "JSettler",
@@ -514,7 +508,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				undo();
+				undoRedo.undo();
 			}
 		});
 		window.registerAction("redo", new AbstractAction() {
@@ -522,7 +516,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				redo();
+				undoRedo.redo();
 			}
 		});
 
@@ -617,6 +611,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			data.doPreSaveActions();
 			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
+			undoRedo.setSaved();
 		} catch (Throwable e) {
 			ErrorDisplay.displayError(e, "Error saving");
 		}
@@ -686,53 +681,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		}
 	}
 
-	protected void undo() {
-		if (!undoDeltas.isEmpty()) {
-			MapDataDelta delta = undoDeltas.pollLast();
-
-			MapDataDelta inverse = data.apply(delta);
-
-			redoDeltas.addLast(inverse);
-			window.enableAction("redo", true);
-		}
-		if (undoDeltas.isEmpty()) {
-			window.enableAction("undo", false);
-			window.enableAction("save", false);
-		}
-	}
-
-	protected void redo() {
-		if (!redoDeltas.isEmpty()) {
-			MapDataDelta delta = redoDeltas.pollLast();
-
-			MapDataDelta inverse = data.apply(delta);
-
-			undoDeltas.addLast(inverse);
-			window.enableAction("undo", true);
-			window.enableAction("save", true);
-		}
-		if (redoDeltas.isEmpty()) {
-			window.enableAction("redo", false);
-		}
-	}
-
-	/**
-	 * Ends a use step of a tool: creates a diff to the last step.
-	 */
-	private void endUseStep() {
-		MapDataDelta delta = data.getUndoDelta();
-		data.resetUndoDelta();
-		if (undoDeltas.size() >= MAX_UNDO) {
-			undoDeltas.removeFirst();
-		}
-		undoDeltas.add(delta);
-		redoDeltas.clear();
-		window.enableAction("undo", true);
-		window.enableAction("redo", false);
-
-		window.enableAction("save", true);
-	}
-
 	protected void changeTool(Tool lastPathComponent) {
 		tool = lastPathComponent;
 		toolSidebar.updateShapeButtons(tool);
@@ -783,7 +731,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
-			endUseStep();
+			undoRedo.endUseStep();
 			validator.reValidate();
 		} else if (action instanceof AbortDrawingAction) {
 			MapDataDelta delta = data.getUndoDelta();
@@ -799,7 +747,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				tool.start(data, shape, lineAction.getPosition());
 				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
-				endUseStep();
+				undoRedo.endUseStep();
 				validator.reValidate();
 			}
 		}
