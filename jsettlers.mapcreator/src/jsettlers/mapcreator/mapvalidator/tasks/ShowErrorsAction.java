@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator;
+package jsettlers.mapcreator.mapvalidator.tasks;
 
 import java.awt.event.ActionEvent;
 
@@ -22,6 +22,7 @@ import javax.swing.Action;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
+import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
 /**

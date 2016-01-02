@@ -51,7 +51,6 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
@@ -81,12 +80,12 @@ import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
-import jsettlers.mapcreator.mapvalidator.GotoNextErrorAction;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
-import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.tasks.GotoNextErrorAction;
+import jsettlers.mapcreator.mapvalidator.tasks.ShowErrorsAction;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -100,6 +99,8 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * @author Andreas Butti
  */
 public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
+
+	private static final int MAX_UNDO = 100;
 
 	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
@@ -124,13 +125,20 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private int currentPlayer = 0;
 
 	/**
-	 * Undo / Redo stack
+	 * Last failure point to jump to
 	 */
-	private UndoRedoHandler undoRedo;
+	private ShortPoint2D testFailPoint = null;
 
 	/**
-	 * To scroll to position
+	 * Undo stack
 	 */
+	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
+
+	/**
+	 * Redo stack
+	 */
+	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
+
 	private MapInterfaceConnector connector;
 
 	/**
@@ -211,8 +219,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		buildMapEditingWindow();
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
-
-		undoRedo = new UndoRedoHandler(window, data);
 	}
 
 	public void buildMapEditingWindow() {
@@ -341,7 +347,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			createNewMapEditorInstanceWithActionFile(temp);
 
 		} catch (IOException e) {
-			ExceptionHandler.displayError(e, "Failed to start game");
+			ErrorDisplay.displayError(e, "Failed to start game");
 		}
 	}
 
@@ -375,7 +381,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			createNewMapEditorInstanceWithActionFile(temp);
 		} catch (IOException e) {
-			ExceptionHandler.displayError(e, "Failed to start game");
+			ErrorDisplay.displayError(e, "Failed to start game");
 		}
 
 		// TODO open a second map does not work, I didn't analyze why yet
@@ -394,7 +400,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * @return true to continue, false to cancel
 	 */
 	private boolean checkSaved() {
-		if (!undoRedo.isChangedSinceLastSave()) {
+		if (undoDeltas.isEmpty()) {
 			return true;
 		} else {
 			int result = JOptionPane.showConfirmDialog(window, EditorLabels.getLabel("ctrl.save-chages"), "JSettler",
@@ -502,7 +508,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				try {
 					Desktop.getDesktop().open(new File(ResourceManager.getSaveDirectory(), "maps"));
 				} catch (IOException e1) {
-					ExceptionHandler.displayError(e1, "Could not open map folder");
+					ErrorDisplay.displayError(e1, "Could not open map folder");
 				}
 			}
 		});
@@ -512,7 +518,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				undoRedo.undo();
+				undo();
 			}
 		});
 		window.registerAction("redo", new AbstractAction() {
@@ -520,7 +526,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				undoRedo.redo();
+				redo();
 			}
 		});
 
@@ -615,9 +621,8 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			data.doPreSaveActions();
 			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
-			undoRedo.setSaved();
 		} catch (Throwable e) {
-			ExceptionHandler.displayError(e, "Error saving");
+			ErrorDisplay.displayError(e, "Error saving");
 		}
 	}
 
@@ -681,8 +686,55 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
 			startProcess(args, "game");
 		} catch (IOException e) {
-			ExceptionHandler.displayError(e, "Failed to start game");
+			ErrorDisplay.displayError(e, "Failed to start game");
 		}
+	}
+
+	protected void undo() {
+		if (!undoDeltas.isEmpty()) {
+			MapDataDelta delta = undoDeltas.pollLast();
+
+			MapDataDelta inverse = data.apply(delta);
+
+			redoDeltas.addLast(inverse);
+			window.enableAction("redo", true);
+		}
+		if (undoDeltas.isEmpty()) {
+			window.enableAction("undo", false);
+			window.enableAction("save", false);
+		}
+	}
+
+	protected void redo() {
+		if (!redoDeltas.isEmpty()) {
+			MapDataDelta delta = redoDeltas.pollLast();
+
+			MapDataDelta inverse = data.apply(delta);
+
+			undoDeltas.addLast(inverse);
+			window.enableAction("undo", true);
+			window.enableAction("save", true);
+		}
+		if (redoDeltas.isEmpty()) {
+			window.enableAction("redo", false);
+		}
+	}
+
+	/**
+	 * Ends a use step of a tool: creates a diff to the last step.
+	 */
+	private void endUseStep() {
+		MapDataDelta delta = data.getUndoDelta();
+		data.resetUndoDelta();
+		if (undoDeltas.size() >= MAX_UNDO) {
+			undoDeltas.removeFirst();
+		}
+		undoDeltas.add(delta);
+		redoDeltas.clear();
+		window.enableAction("undo", true);
+		window.enableAction("redo", false);
+
+		window.enableAction("save", true);
 	}
 
 	protected void changeTool(Tool lastPathComponent) {
@@ -735,7 +787,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
-			undoRedo.endUseStep();
+			endUseStep();
 			validator.reValidate();
 		} else if (action instanceof AbortDrawingAction) {
 			MapDataDelta delta = data.getUndoDelta();
@@ -751,7 +803,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				tool.start(data, shape, lineAction.getPosition());
 				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
-				undoRedo.endUseStep();
+				endUseStep();
 				validator.reValidate();
 			}
 		}

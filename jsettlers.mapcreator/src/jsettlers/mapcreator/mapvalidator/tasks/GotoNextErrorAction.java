@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator;
+package jsettlers.mapcreator.mapvalidator.tasks;
 
 import java.awt.event.ActionEvent;
 
@@ -21,6 +21,8 @@ import javax.swing.Action;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
+import jsettlers.mapcreator.mapvalidator.IScrollToAble;
+import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
@@ -70,8 +72,6 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	@Override
 	public void validationFinished(ValidationList list) {
 		String header = null;
-		nextErrorEntry = null;
-
 		for (int i = 0; i < list.size(); i++) {
 			AbstractErrorEntry e = list.get(i);
 			if (e instanceof ErrorHeader) {

@@ -18,10 +18,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -29,7 +31,6 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
@@ -59,6 +60,24 @@ public class MapCreatorApp {
 		} catch (Exception e) {
 			// could not be loaded, ignore error
 		}
+	}
+
+	/**
+	 * Set Up an exception handler for uncatcht exception
+	 */
+	private static void setupDefaultExceptionHandler() {
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+			@Override
+			public void uncaughtException(final Thread t, final Throwable e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						ErrorDisplay.displayError(e, "Unhandled error in Thread " + t.getName());
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -130,7 +149,7 @@ public class MapCreatorApp {
 			}
 		} catch (Exception e) {
 			System.err.println("Could not read action properties");
-			ExceptionHandler.displayError(e, "Failed to execute startup action");
+			ErrorDisplay.displayError(e, "Failed to execute startup action");
 		}
 		return false;
 	}
@@ -157,7 +176,7 @@ public class MapCreatorApp {
 			try {
 				new EditorControl(openFile.getSelectedMap());
 			} catch (MapLoadException e) {
-				ExceptionHandler.displayError(e, "Could not open map!");
+				ErrorDisplay.displayError(e, "Could not open map!");
 			}
 		} else
 			if (dlg.isOpenAction()) {
@@ -165,7 +184,7 @@ public class MapCreatorApp {
 			try {
 				new EditorControl(openFile.getSelectedMap());
 			} catch (MapLoadException e) {
-				ExceptionHandler.displayError(e, "Could not open map!");
+				ErrorDisplay.displayError(e, "Could not open map!");
 			}
 		} else {
 			NewFilePanel newFile = dlg.getNewFilePanel();
@@ -182,7 +201,7 @@ public class MapCreatorApp {
 	 */
 	public static void main(String[] args) {
 		try {
-			ExceptionHandler.setupDefaultExceptionHandler();
+			setupDefaultExceptionHandler();
 
 			OptionableProperties options = MainUtils.loadOptions(args);
 			SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
@@ -194,7 +213,7 @@ public class MapCreatorApp {
 
 			startWithSelectionDialog();
 		} catch (Exception e) {
-			ExceptionHandler.displayError(e, "Error launching application");
+			ErrorDisplay.displayError(e, "Error launching application");
 		}
 	}
 

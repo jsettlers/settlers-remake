@@ -12,7 +12,6 @@
 	<property name="jsettlers.common.location" value="../jsettlers.common" />
 	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
 	<property name="jsettlers.graphics.swing.location" value="../jsettlers.graphics.swing" />
-	<property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator" />
 	<property name="jsettlers.network.location" value="../jsettlers.network" />
 	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
 	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
@@ -52,16 +51,6 @@
 		<path refid="jsettlers.common.classpath" />
 		<path refid="jsettlers.graphics.classpath" />
 	</path>
-	<path id="jsettlers.mapcreator.classpath">
-		<pathelement location="${jsettlers.mapcreator.location}/bin" />
-		<path refid="jsettlers.common.classpath" />
-		<path refid="jsettlers.graphics.classpath" />
-		<path refid="go.graphics.classpath" />
-		<path refid="go.graphics.swing.classpath" />
-		<path refid="jsettlers.main.swing.classpath" />
-		<path refid="jsettlers.logic.classpath" />
-		<path refid="jsettlers.graphics.swing.classpath" />
-	</path>
 	<path id="jsettlers.main.swing.classpath">
 		<pathelement location="${jsettlers.main.swing.location}/bin" />
 		<path refid="go.graphics.classpath" />
@@ -79,7 +68,6 @@
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="go.graphics.classpath" />
 		<path refid="go.graphics.swing.classpath" />
-		<path refid="jsettlers.mapcreator.classpath" />
 		<path refid="jsettlers.main.swing.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
 		<path refid="jsettlers.network.classpath" />
@@ -116,7 +104,6 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean" />
-		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="clean" />
@@ -128,7 +115,6 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build-project" />
-		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build-project" />

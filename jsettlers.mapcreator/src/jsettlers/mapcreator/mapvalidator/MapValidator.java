@@ -7,8 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.SwingUtilities;
-
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 
@@ -35,15 +33,10 @@ public class MapValidator {
 	private final ValidationResultListener resultListener = new ValidationResultListener() {
 
 		@Override
-		public void validationFinished(final ValidationList list) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					for (ValidationResultListener l : listener) {
-						l.validationFinished(list);
-					}
-				}
-			});
+		public void validationFinished(ValidationList list) {
+			for (ValidationResultListener l : listener) {
+				l.validationFinished(list);
+			}
 		}
 	};
 
