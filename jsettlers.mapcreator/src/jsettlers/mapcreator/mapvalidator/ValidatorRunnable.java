@@ -3,8 +3,6 @@ package jsettlers.mapcreator.mapvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
-
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
@@ -74,6 +72,25 @@ public class ValidatorRunnable implements Runnable {
 	}
 
 	/**
+	 * Constructor for UnitTesting, execute only a single task
+	 * 
+	 * @param resultListener
+	 *            Listener for validation result
+	 * @param data
+	 *            Map to check
+	 * @param tasks
+	 *            Tasks to execute
+	 */
+	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, List<AbstractValidationTask> tasks) {
+		this.resultListener = resultListener;
+		this.data = data;
+
+		for (AbstractValidationTask t : tasks) {
+			registerTask(t);
+		}
+	}
+
+	/**
 	 * Initialize the player array
 	 */
 	private void initPlayerData() {
@@ -115,19 +132,6 @@ public class ValidatorRunnable implements Runnable {
 
 		// fire result to UI
 		list.prepareToDisplay();
-		fireResult();
+		resultListener.validationFinished(list);
 	}
-
-	/**
-	 * Fire the result to the listener
-	 */
-	private void fireResult() {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				resultListener.validationFinished(list);
-			}
-		});
-	}
-
 }
