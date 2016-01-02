@@ -26,9 +26,8 @@ public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 		int height = data.getHeight();
 
 		for (int y = 0; y < height; y++) {
-
 			for (int x = 0; x < width; x++) {
-				if (1 <= y && y < height - 1 && 1 <= x && x < width - 1) {
+				if (1 <= y && y < height - 2 && 1 <= x && x < width - 2) {
 					continue;
 				}
 
