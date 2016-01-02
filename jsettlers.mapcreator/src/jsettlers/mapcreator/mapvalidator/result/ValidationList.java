@@ -1,8 +1,7 @@
 package jsettlers.mapcreator.mapvalidator.result;
 
 import java.util.ArrayList;
-
-import javax.swing.DefaultListModel;
+import java.util.List;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
@@ -13,13 +12,200 @@ import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
  * @author Andreas Butti
  *
  */
-public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
-	private static final long serialVersionUID = 1L;
+public class ValidationList {
 
 	/**
-	 * Error count without headers
+	 * Group with one header and multiple errors
 	 */
-	private int errorCount;
+	private static class Group {
+
+		/**
+		 * Header of this group
+		 */
+		private final ErrorHeader header;
+
+		/**
+		 * Entries of this group
+		 */
+		private final List<ErrorEntry> entries = new ArrayList<>();
+
+		/**
+		 * Constructor
+		 * 
+		 * @param header
+		 *            Header of this group
+		 */
+		public Group(ErrorHeader header) {
+			this.header = header;
+		}
+
+		/**
+		 * Try to group events logically by position
+		 * 
+		 * @return Grouped list
+		 */
+		public LocalGroupList groupSimilar() {
+			LocalGroupList list = new LocalGroupList();
+
+			for (ErrorEntry e : entries) {
+				list.putIntoGroup(e);
+			}
+
+			return list;
+		}
+
+	}
+
+	/**
+	 * Group with events near on the map
+	 */
+	private static class LocaleGroup {
+
+		/**
+		 * Max distance on map
+		 */
+		private static final int MAX_DISTANCE = 10;
+
+		/**
+		 * Entries of this group
+		 */
+		private final List<ErrorEntry> entries = new ArrayList<>();
+
+		/**
+		 * left
+		 */
+		private int x1;
+		/**
+		 * right
+		 */
+		private int x2;
+
+		/**
+		 * top
+		 */
+		private int y1;
+
+		/**
+		 * bottom
+		 */
+		private int y2;
+
+		/**
+		 * Constructor
+		 */
+		public LocaleGroup(ErrorEntry entry) {
+			this.entries.add(entry);
+			int x = entry.getPos().x;
+			x1 = x;
+			x2 = x;
+
+			int y = entry.getPos().y;
+			y1 = y;
+			y2 = y;
+		}
+
+		/**
+		 * Add an entry to the list
+		 * 
+		 * @param entry
+		 *            Entry
+		 */
+		public void add(ErrorEntry entry) {
+			this.entries.add(entry);
+
+			int x = entry.getPos().x;
+			x1 = Math.min(x1, x);
+			x2 = Math.max(x2, x);
+
+			int y = entry.getPos().y;
+			y1 = Math.min(y1, y);
+			y2 = Math.max(y2, y);
+		}
+
+		/**
+		 * Check if this Entry fits into this group
+		 * 
+		 * @param entry
+		 *            Entry
+		 * @return true if yes
+		 */
+		public boolean matchesGroup(ErrorEntry entry) {
+			ShortPoint2D pos = entry.getPos();
+
+			return isPointInRange(pos.x, pos.y);
+		}
+
+		/**
+		 * Checks if this point is near this group
+		 * 
+		 * @param x
+		 *            X
+		 * @param y
+		 *            Y
+		 * @return true if yes
+		 */
+		public boolean isPointInRange(int x, int y) {
+			// left
+			if (x1 > x + MAX_DISTANCE) {
+				return false;
+			}
+			// right
+			if (x2 < x - MAX_DISTANCE) {
+				return false;
+			}
+			// top
+			if (y1 > y + MAX_DISTANCE) {
+				return false;
+			}
+			// bottom
+			if (y2 < y - MAX_DISTANCE) {
+				return false;
+			}
+
+			return true;
+		}
+
+	}
+
+	/**
+	 * List of groups
+	 */
+	private static class LocalGroupList extends ArrayList<LocaleGroup> {
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * Constructor
+		 */
+		public LocalGroupList() {
+		}
+
+		/**
+		 * Put the entry in a group, if none is matching, create one
+		 * 
+		 * @param e
+		 */
+		public void putIntoGroup(ErrorEntry e) {
+			for (LocaleGroup g : this) {
+				if (g.matchesGroup(e)) {
+					g.add(e);
+					return;
+				}
+			}
+
+			add(new LocaleGroup(e));
+		}
+
+	}
+
+	/**
+	 * List with all grouped error entries
+	 */
+	private List<Group> list = new ArrayList<>();
+
+	/**
+	 * Current group, to current header
+	 */
+	private Group currentGroup = null;
 
 	/**
 	 * Constructor
@@ -36,7 +222,8 @@ public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
 	 *            Fix, if any
 	 */
 	public void addHeader(String header, AbstractFix fix) {
-		addElement(new ErrorHeader(header, fix));
+		currentGroup = new Group(new ErrorHeader(header, fix));
+		list.add(currentGroup);
 	}
 
 	/**
@@ -50,94 +237,34 @@ public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
 	 *            Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
 	public void addError(String text, ShortPoint2D pos, String typeId) {
-		addElement(new ErrorEntry(text, pos, typeId));
+		currentGroup.entries.add(new ErrorEntry(text, pos, typeId));
 	}
 
 	/**
-	 * Remove duplicate header
+	 * Prepare the list for displaying in the JList
+	 * 
+	 * @return
 	 */
-	public void removeDuplicateHeader() {
-		boolean lastWasHeader = true;
-		for (int i = getSize() - 1; i >= 0; i--) {
-			AbstractErrorEntry e = getElementAt(i);
+	public ValidationListModel toListModel() {
+		ValidationListModel model = new ValidationListModel();
 
-			if (lastWasHeader && e instanceof ErrorHeader) {
-				removeElementAt(i);
-
-				if (i < 1) {
-					return;
-				}
-
-				lastWasHeader = getElementAt(i - 1) instanceof ErrorHeader;
+		for (Group g : list) {
+			if (g.entries.isEmpty()) {
 				continue;
 			}
 
-			lastWasHeader = e instanceof ErrorHeader;
-		}
-	}
+			model.addElement(g.header);
 
-	/**
-	 * Remove duplicate entries which are near together - this is only working, because there are always header between to different entries
-	 */
-	public void romoveDuplicateNear() {
-		if (getSize() < 1) {
-			return;
-		}
+			LocalGroupList groupedList = g.groupSimilar();
 
-		ArrayList<AbstractErrorEntry> toDelete = new ArrayList<>();
-
-		AbstractErrorEntry lastEntryUnknown = null;
-
-		for (int i = getSize() - 1; i >= 0; i--) {
-			AbstractErrorEntry e = getElementAt(i);
-
-			if (lastEntryUnknown == null || !(e instanceof ErrorEntry) || !(lastEntryUnknown instanceof ErrorEntry)) {
-				lastEntryUnknown = e;
-				continue;
-			}
-
-			ErrorEntry lastEntry = (ErrorEntry) lastEntryUnknown;
-			ErrorEntry entry = (ErrorEntry) e;
-			lastEntryUnknown = e;
-
-			// two different error types
-			if (!lastEntry.getTypeId().equals(entry.getTypeId())) {
-				continue;
-			}
-
-			ShortPoint2D p1 = entry.getPos();
-			ShortPoint2D p2 = lastEntry.getPos();
-
-			if (p1.getOnGridDistTo(p2) < 10) {
-				toDelete.add(lastEntry);
+			for (LocaleGroup lgl : groupedList) {
+				// only use first entry of the group
+				model.addElement(lgl.entries.get(0));
 			}
 		}
 
-		// not so efficent...
-		for (AbstractErrorEntry t : toDelete) {
-			removeElement(t);
-		}
+		model.prepareToDisplay();
+		return model;
 	}
 
-	/**
-	 * Remove duplicate header, bring similar errors at the same location togther etc.
-	 */
-	public void prepareToDisplay() {
-		romoveDuplicateNear();
-		removeDuplicateHeader();
-
-		errorCount = 0;
-		for (int i = 0; i < getSize(); i++) {
-			if (getElementAt(i) instanceof ErrorEntry) {
-				errorCount++;
-			}
-		}
-	}
-
-	/**
-	 * @return Error count without headers
-	 */
-	public int getErrorCount() {
-		return errorCount;
-	}
 }

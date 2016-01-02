@@ -22,7 +22,7 @@ import javax.swing.Action;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
  * Action to display errors, display error count as text (always enabled, always clickable)
@@ -59,7 +59,7 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	 * Update the error text and icon, if an error or not
 	 */
 	@Override
-	public void validationFinished(ValidationList list) {
+	public void validationFinished(ValidationListModel list) {
 		if (list.getErrorCount() == 0) {
 			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
 		} else {

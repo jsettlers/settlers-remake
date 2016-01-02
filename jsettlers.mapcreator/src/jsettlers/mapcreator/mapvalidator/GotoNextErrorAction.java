@@ -24,7 +24,7 @@ import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
  * Action to display next error, and jumpt to it, disabled if there is no error
@@ -68,7 +68,7 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	 * Update the error text and icon, if an error or not
 	 */
 	@Override
-	public void validationFinished(ValidationList list) {
+	public void validationFinished(ValidationListModel list) {
 		String header = null;
 		nextErrorEntry = null;
 

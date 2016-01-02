@@ -84,7 +84,7 @@ import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
 import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
@@ -572,7 +572,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		validator.addListener(new ValidationResultListener() {
 
 			@Override
-			public void validationFinished(ValidationList list) {
+			public void validationFinished(ValidationListModel list) {
 				playAction.setEnabled(list.size() == 0);
 			}
 		});

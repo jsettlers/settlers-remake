@@ -13,7 +13,7 @@ import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
@@ -99,7 +99,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	}
 
 	@Override
-	public void validationFinished(ValidationList list) {
+	public void validationFinished(ValidationListModel list) {
 		errorList.setModel(list);
 	}
 

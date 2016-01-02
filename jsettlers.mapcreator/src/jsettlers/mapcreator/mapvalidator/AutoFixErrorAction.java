@@ -20,7 +20,7 @@ import javax.swing.AbstractAction;
 
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
@@ -35,7 +35,7 @@ public class AutoFixErrorAction extends AbstractAction implements ValidationResu
 	/**
 	 * Error list
 	 */
-	private ValidationList list;
+	private ValidationListModel list;
 
 	/**
 	 * Fix data helper
@@ -80,7 +80,7 @@ public class AutoFixErrorAction extends AbstractAction implements ValidationResu
 	 * Update the error text and icon, if an error or not
 	 */
 	@Override
-	public void validationFinished(ValidationList list) {
+	public void validationFinished(ValidationListModel list) {
 		setEnabled(list.getErrorCount() > 0);
 		this.list = list;
 	}

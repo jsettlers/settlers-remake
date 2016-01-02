@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.mapvalidator;
 
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
  * Listener to get notified about the validation result
@@ -15,5 +15,5 @@ public interface ValidationResultListener {
 	 * @param list
 	 *            List with errors / results
 	 */
-	public void validationFinished(ValidationList list);
+	public void validationFinished(ValidationListModel list);
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
  * Validate the map for errors
@@ -35,7 +35,7 @@ public class MapValidator {
 	private final ValidationResultListener resultListener = new ValidationResultListener() {
 
 		@Override
-		public void validationFinished(final ValidationList list) {
+		public void validationFinished(final ValidationListModel list) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

@@ -131,7 +131,6 @@ public class ValidatorRunnable implements Runnable {
 		data.setFailpoints(new boolean[data.getWidth()][data.getHeight()]);
 
 		// fire result to UI
-		list.prepareToDisplay();
-		resultListener.validationFinished(list);
+		resultListener.validationFinished(list.toListModel());
 	}
 }
