@@ -4,8 +4,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -16,6 +19,12 @@ import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateBlockingBorderPositions;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateBuildings;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateDrawBuildingCircle;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
 
 /**
@@ -104,7 +113,11 @@ public class ValidationTest {
 	public void testFishOnLand() throws Exception {
 		MapData map = loadMap("test_fish_on_land");
 
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, new ValidateResources());
+		// ValidateDrawBuildingCircle
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateResources());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -115,11 +128,298 @@ public class ValidationTest {
 	public void testFishValid() throws Exception {
 		MapData map = loadMap("test_fish_valid");
 
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, new ValidateResources());
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateResources());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
 		assertListContains("validation.resource.text", false);
 	}
 
+	@Test
+	public void testGoldOnWater() throws Exception {
+		MapData map = loadMap("test_gold_on_water");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateResources());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("resource.text", true);
+	}
+
+	@Test
+	public void testGoldValid() throws Exception {
+		MapData map = loadMap("test_gold_vald");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateResources());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("validation.resource.text", false);
+	}
+
+	@Test
+	public void testPlayerPositionInvalid() throws Exception {
+		MapData map = loadMap("test_player_position_invalid");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidatePlayerStartPosition());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("playerstart.text", true);
+	}
+
+	@Test
+	public void testPlayerPositionValid() throws Exception {
+		MapData map = loadMap("test_player_position_valid");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidatePlayerStartPosition());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("playerstart.text", false);
+	}
+
+	@Test
+	public void testBlockingBorder() throws Exception {
+		MapData map = loadMap("test_blocking_border");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBlockingBorderPositions());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("at-position", true);
+	}
+
+	@Test
+	public void testNoBlockingBorder() throws Exception {
+		MapData map = loadMap("test_border_ok");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBlockingBorderPositions());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("at-position", false);
+	}
+
+	@Test
+	@Ignore
+	public void testBuildingOutsideMap() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.outside-map", true);
+	}
+
+	@Test
+	@Ignore
+	public void testBuildingInsideMap() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.outside-map", false);
+	}
+
+	@Test
+	@Ignore
+	public void testBuildingWrongLandscape() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.wrong-landscape", true);
+	}
+
+	@Test
+	@Ignore
+	public void testBuildingCorrectLandscape() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.wrong-landscape", false);
+	}
+
+	@Test
+	public void testBuildingWrongLand() throws Exception {
+		MapData map = loadMap("test_building_wrong_land");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.wrong-land", true);
+	}
+
+	@Test
+	public void testBuildingCorrectLand() throws Exception {
+		MapData map = loadMap("test_building_correct_land");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.wrong-land", false);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testBuildingOnStone() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.flat-ground", true);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testBuildingOnFlatGround() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		// preparation
+		tasks.add(new ValidateDrawBuildingCircle());
+		tasks.add(new ValidateBuildings());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("building.flat-ground", false);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testLandscapeInvalidHeight() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateLandscape());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("landscape.height", true);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testLandscapeValidHeight() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateLandscape());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("landscape.height", false);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testLandscapeInvalidPair() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateLandscape());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("landscape.wrong-pair", true);
+	}
+
+	/**
+	 * TODO Create MAP for this Test!
+	 */
+	@Test
+	@Ignore
+	public void testLandscapeValidPair() throws Exception {
+		MapData map = loadMap("TODO_xxxxxxxxxxxxxxxx");
+
+		List<AbstractValidationTask> tasks = new ArrayList<>();
+		tasks.add(new ValidateLandscape());
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		validator.run();
+
+		assertNotNull(resultListener.list);
+		assertListContains("landscape.wrong-pair", false);
+	}
 }

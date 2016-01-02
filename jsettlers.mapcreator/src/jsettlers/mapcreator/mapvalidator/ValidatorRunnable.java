@@ -78,14 +78,16 @@ public class ValidatorRunnable implements Runnable {
 	 *            Listener for validation result
 	 * @param data
 	 *            Map to check
-	 * @param task
-	 *            Task to execute
+	 * @param tasks
+	 *            Tasks to execute
 	 */
-	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, AbstractValidationTask task) {
+	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, List<AbstractValidationTask> tasks) {
 		this.resultListener = resultListener;
 		this.data = data;
 
-		registerTask(task);
+		for (AbstractValidationTask t : tasks) {
+			registerTask(t);
+		}
 	}
 
 	/**
