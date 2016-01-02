@@ -51,6 +51,12 @@ public final class MatchConstants {
 		MatchConstants.aiRandom = new ExtendedRandom(randomSeed);
 	}
 
+	public static void clearState() {
+		clock = null;
+		gameRandom = null;
+		aiRandom = null;
+	}
+
 	public static IGameClock clock() {
 		return clock;
 	}
@@ -74,4 +80,5 @@ public final class MatchConstants {
 		gameRandom = (ExtendedRandom) ois.readObject();
 		aiRandom = (ExtendedRandom) ois.readObject();
 	}
+
 }

@@ -40,6 +40,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.tests.utils.DebugMapLister;
+import jsettlers.tests.utils.MapUtils;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {

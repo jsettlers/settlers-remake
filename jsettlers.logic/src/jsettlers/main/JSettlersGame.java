@@ -185,9 +185,9 @@ public class JSettlersGame {
 			try {
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
+				clearState();
 				MatchConstants.init(networkConnector.getGameClock(), randomSeed);
 				MatchConstants.clock().setReplayLogStream(createReplayFileStream());
-				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
@@ -242,13 +242,11 @@ public class JSettlersGame {
 				}
 
 				networkConnector.shutdown();
+				mainGrid.stopThreads();
 				MatchConstants.clock().stopExecution();
 				connector.shutdown();
-				mainGrid.stopThreads();
 				guiInterface.stop();
-				RescheduleTimer.stop();
-				Movable.resetState();
-				Building.dropAllBuildings();
+				clearState();
 
 				System.setErr(systemErrorStream);
 				System.setOut(systemOutStream);
@@ -263,6 +261,13 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
+		}
+
+		private void clearState() {
+			RescheduleTimer.stopAndClear();
+			Movable.resetState();
+			Building.dropAllBuildings();
+			MatchConstants.clearState();
 		}
 
 		public AiExecutor getAiExecutor() {

@@ -44,9 +44,11 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 		}
 	}
 
-	public static synchronized void stop() {
+	public static synchronized void stopAndClear() {
 		if (uniIns != null) {
-			MatchConstants.clock().remove(uniIns);
+			if (MatchConstants.clock() != null) {
+				MatchConstants.clock().remove(uniIns);
+			}
 			uniIns = null;
 		}
 	}
@@ -107,7 +109,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 
 	public static void loadFrom(ObjectInputStream ois) throws MapLoadException {
 		try {
-			stop();
+			stopAndClear();
 			uniIns = (RescheduleTimer) ois.readObject();
 		} catch (Throwable t) {
 			throw new MapLoadException(t);
