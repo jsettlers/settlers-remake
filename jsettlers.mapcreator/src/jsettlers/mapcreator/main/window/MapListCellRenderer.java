@@ -134,7 +134,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		pRight.add(lbDescription);
 		lbDescription.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		pRight.setOpaque(true);
+		pRight.setOpaque(false);
 		pRight.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		lbName.setFont(lbName.getFont().deriveFont(Font.BOLD));
 		lbName.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -147,6 +147,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		pContents.setLayout(new BorderLayout());
 		pContents.add(pRight, BorderLayout.CENTER);
 		pContents.add(lbIcon, BorderLayout.WEST);
+		lbIcon.setOpaque(false);
 		lbIcon.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
 	}
 
@@ -187,8 +188,11 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 
 		try {
 			short[] data = value.getImage();
-			BufferedImage img = new BufferedImage(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE, BufferedImage.TYPE_INT_RGB);
+			int xOffset = MapFileHeader.PREVIEW_IMAGE_SIZE;
+			BufferedImage img = new BufferedImage(MapFileHeader.PREVIEW_IMAGE_SIZE + xOffset,
+					MapFileHeader.PREVIEW_IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB);
 
+			xOffset--;
 			for (int y = 0; y < MapFileHeader.PREVIEW_IMAGE_SIZE; y++) {
 				for (int x = 0; x < MapFileHeader.PREVIEW_IMAGE_SIZE; x++) {
 					int index = y * MapFileHeader.PREVIEW_IMAGE_SIZE + x;
@@ -208,7 +212,10 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 					// red
 					rgb |= (rgb565 & 0xF800) << 8;
 
-					img.setRGB(x, y, rgb);
+					img.setRGB(x + xOffset, y, rgb | 0xff000000);
+				}
+				if (xOffset > 1) {
+					xOffset--;
 				}
 			}
 
@@ -249,12 +256,12 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		lbIcon.setIcon(img);
 
 		if (isSelected) {
-			pRight.setBackground(SELECTION_BACKGROUND);
+			pContents.setBackground(SELECTION_BACKGROUND);
 		} else {
 			if (index % 2 == 0) {
-				pRight.setBackground(BACKGROUND1);
+				pContents.setBackground(BACKGROUND1);
 			} else {
-				pRight.setBackground(BACKGROUND2);
+				pContents.setBackground(BACKGROUND2);
 			}
 		}
 
