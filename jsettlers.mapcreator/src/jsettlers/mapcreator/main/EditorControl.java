@@ -51,6 +51,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
@@ -337,7 +338,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			createNewMapEditorInstanceWithActionFile(temp);
 
 		} catch (IOException e) {
-			ErrorDisplay.displayError(e, "Failed to start game");
+			ExceptionHandler.displayError(e, "Failed to start game");
 		}
 	}
 
@@ -371,7 +372,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			createNewMapEditorInstanceWithActionFile(temp);
 		} catch (IOException e) {
-			ErrorDisplay.displayError(e, "Failed to start game");
+			ExceptionHandler.displayError(e, "Failed to start game");
 		}
 
 		// TODO open a second map does not work, I didn't analyze why yet
@@ -498,7 +499,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				try {
 					Desktop.getDesktop().open(new File(ResourceManager.getSaveDirectory(), "maps"));
 				} catch (IOException e1) {
-					ErrorDisplay.displayError(e1, "Could not open map folder");
+					ExceptionHandler.displayError(e1, "Could not open map folder");
 				}
 			}
 		});
@@ -613,7 +614,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
 			undoRedo.setSaved();
 		} catch (Throwable e) {
-			ErrorDisplay.displayError(e, "Error saving");
+			ExceptionHandler.displayError(e, "Error saving");
 		}
 	}
 
@@ -677,7 +678,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
 			startProcess(args, "game");
 		} catch (IOException e) {
-			ErrorDisplay.displayError(e, "Failed to start game");
+			ExceptionHandler.displayError(e, "Failed to start game");
 		}
 	}
 

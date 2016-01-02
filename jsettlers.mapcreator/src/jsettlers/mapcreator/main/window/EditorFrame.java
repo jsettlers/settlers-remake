@@ -31,8 +31,8 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
+import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.ErrorDisplay;
 
 /**
  * Editor JFrame, Main Wndow
@@ -128,7 +128,7 @@ public abstract class EditorFrame extends JFrame {
 				try {
 					Desktop.getDesktop().browse(new URI("http://www.settlers-android-clone.com/the-map-editor/"));
 				} catch (IOException | URISyntaxException e1) {
-					ErrorDisplay.displayError(e1, "Could not open URL");
+					ExceptionHandler.displayError(e1, "Could not open URL");
 				}
 			}
 		});
