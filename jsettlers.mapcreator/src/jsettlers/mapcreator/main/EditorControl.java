@@ -125,11 +125,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private int currentPlayer = 0;
 
 	/**
-	 * Last failure point to jump to
-	 */
-	private ShortPoint2D testFailPoint = null;
-
-	/**
 	 * Undo stack
 	 */
 	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
@@ -400,6 +395,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * @return true to continue, false to cancel
 	 */
 	private boolean checkSaved() {
+		// TODO, not working, because undo is not deleted on save...
 		if (undoDeltas.isEmpty()) {
 			return true;
 		} else {
