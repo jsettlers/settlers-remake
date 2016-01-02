@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.mapvalidator.tasks;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.mapvalidator.result.fix.FreeBorderFix;
 
 /**
  * Check if all border positions are blocking
@@ -18,7 +19,8 @@ public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		addHeader("blockingborder.header");
+		FreeBorderFix fix = new FreeBorderFix(data);
+		addHeader("blockingborder.header", fix);
 
 		int width = data.getWidth();
 		int height = data.getHeight();
@@ -31,7 +33,9 @@ public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 				}
 
 				if (!data.getLandscape(x, y).isBlocking) {
-					addErrorMessage("at-position", new ShortPoint2D(x, y), x, y);
+					ShortPoint2D p = new ShortPoint2D(x, y);
+					addErrorMessage("at-position", p, x, y);
+					fix.addPosition(p);
 				}
 			}
 		}

@@ -204,7 +204,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 		map = new MapGraphics(data);
 		validator.setData(data);
-		validator.addListener(sidebar);
+		validator.addListener(sidebar.getErrorSidebar());
 		buildMapEditingWindow();
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());

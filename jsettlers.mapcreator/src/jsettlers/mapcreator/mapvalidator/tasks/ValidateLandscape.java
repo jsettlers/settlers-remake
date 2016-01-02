@@ -4,6 +4,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeFader;
 import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.mapcreator.mapvalidator.result.fix.InvalidLandscapeFix;
 
 /**
  * Test landscape height and constelation
@@ -23,6 +24,11 @@ public class ValidateLandscape extends AbstractValidationTask {
 	private final LandscapeFader fader = new LandscapeFader();
 
 	/**
+	 * Fix
+	 */
+	private InvalidLandscapeFix landscapeFix = new InvalidLandscapeFix();
+
+	/**
 	 * Constructor
 	 */
 	public ValidateLandscape() {
@@ -30,7 +36,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		addHeader("landscape.header");
+		addHeader("landscape.header", landscapeFix);
 
 		for (int x = 0; x < data.getWidth() - 1; x++) {
 			for (int y = 0; y < data.getHeight() - 1; y++) {
@@ -46,7 +52,9 @@ public class ValidateLandscape extends AbstractValidationTask {
 		ELandscapeType l1 = data.getLandscape(x, y);
 		int maxHeightDiff = getMaxHeightDiff(l1, l2);
 		if (Math.abs(data.getLandscapeHeight(x2, y2) - data.getLandscapeHeight(x, y)) > maxHeightDiff) {
-			addErrorMessage("landscape.height", new ShortPoint2D(x, y));
+			ShortPoint2D p = new ShortPoint2D(x, y);
+			addErrorMessage("landscape.height", p);
+			landscapeFix.addPosition(p);
 		}
 		if (!fader.canFadeTo(l2, l1)) {
 			String landscapeName1 = EditorLabels.getLabel("landscape." + l2.name());
@@ -54,6 +62,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 
 			addErrorMessage("landscape.wrong-pair", new ShortPoint2D(x, y),
 					landscapeName1, landscapeName2);
+			// this cannot be automatically fixed
 		}
 
 		if (players[x][y] != players[x2][y2]) {

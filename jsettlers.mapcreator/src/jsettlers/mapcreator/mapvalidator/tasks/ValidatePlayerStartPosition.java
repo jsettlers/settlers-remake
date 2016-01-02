@@ -17,7 +17,7 @@ public class ValidatePlayerStartPosition extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		addHeader("playerstart.header");
+		addHeader("playerstart.header", null /* no autofix possible */);
 
 		for (int player = 0; player < data.getPlayerCount(); player++) {
 			ShortPoint2D point = data.getStartPoint(player);

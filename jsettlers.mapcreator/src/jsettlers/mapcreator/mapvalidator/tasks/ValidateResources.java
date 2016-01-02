@@ -5,6 +5,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.mapcreator.mapvalidator.result.fix.InvalidResourceFix;
 
 /**
  * Validate resources on wrong lanscape
@@ -22,7 +23,8 @@ public class ValidateResources extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		addHeader("resource.header");
+		InvalidResourceFix fix = new InvalidResourceFix();
+		addHeader("resource.header", fix);
 
 		for (short x = 0; x < data.getWidth(); x++) {
 			for (short y = 0; y < data.getHeight(); y++) {
