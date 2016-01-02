@@ -4,6 +4,7 @@ import javax.swing.JTabbedPane;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
+import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
  * The sidebar with all tabs
@@ -37,6 +38,14 @@ public class Sidebar extends JTabbedPane {
 
 		addTab(EditorLabels.getLabel("sidebar.tools"), toolSidebar);
 		addTab(EditorLabels.getLabel("sidebar.errors"), errorSidebar);
+	}
+
+	/**
+	 * @param fixData
+	 *            Fix data helper
+	 */
+	public void setFixData(FixData fixData) {
+		errorSidebar.setFixData(fixData);
 	}
 
 	/**

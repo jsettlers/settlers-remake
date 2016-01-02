@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.mapvalidator.result;
 
-import jsettlers.mapcreator.mapvalidator.result.fix.IFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
  * Header entry
@@ -12,7 +12,7 @@ public class ErrorHeader extends AbstractErrorEntry {
 	/**
 	 * Fix, if any
 	 */
-	private IFix fix;
+	private AbstractFix fix;
 
 	/**
 	 * Constructor
@@ -22,7 +22,7 @@ public class ErrorHeader extends AbstractErrorEntry {
 	 * @param fix
 	 *            Fix, if any
 	 */
-	public ErrorHeader(String text, IFix fix) {
+	public ErrorHeader(String text, AbstractFix fix) {
 		super(text);
 		this.fix = fix;
 	}
@@ -30,7 +30,7 @@ public class ErrorHeader extends AbstractErrorEntry {
 	/**
 	 * @return Fix, if any
 	 */
-	public IFix getFix() {
+	public AbstractFix getFix() {
 		return fix;
 	}
 

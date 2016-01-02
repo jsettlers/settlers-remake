@@ -8,7 +8,7 @@ import javax.swing.JPopupMenu;
  * @author Andreas Butti
  *
  */
-public class InvalidResourceFix implements IFix {
+public class InvalidResourceFix extends AbstractFix {
 
 	/**
 	 * Constructor

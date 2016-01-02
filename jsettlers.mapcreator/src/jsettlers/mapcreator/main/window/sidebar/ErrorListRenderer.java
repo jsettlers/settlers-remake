@@ -11,7 +11,7 @@ import javax.swing.JList;
 
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
-import jsettlers.mapcreator.mapvalidator.result.fix.IFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
  * Renderer for the error list in the sidebar
@@ -65,7 +65,7 @@ public class ErrorListRenderer extends DefaultListCellRenderer {
 			if (!isSelected) {
 				setBackground(BACKGROUND_HEADER);
 			}
-			IFix fix = ((ErrorHeader) entry).getFix();
+			AbstractFix fix = ((ErrorHeader) entry).getFix();
 			if (fix != null && fix.isFixAvailable()) {
 				setIcon(dropDownIcon);
 			} else {

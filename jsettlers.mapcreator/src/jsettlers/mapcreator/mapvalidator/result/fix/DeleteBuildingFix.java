@@ -10,7 +10,7 @@ import jsettlers.common.map.object.BuildingObject;
  * @author Andreas Butti
  *
  */
-public class DeleteBuildingFix implements IFix {
+public class DeleteBuildingFix extends AbstractFix {
 
 	/**
 	 * Constructor

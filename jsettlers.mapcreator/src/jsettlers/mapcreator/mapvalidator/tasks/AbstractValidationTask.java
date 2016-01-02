@@ -6,7 +6,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
-import jsettlers.mapcreator.mapvalidator.result.fix.IFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
  * Base class for validation tasks
@@ -86,7 +86,7 @@ public abstract class AbstractValidationTask {
 	 * @param fix
 	 *            Fix, if any
 	 */
-	protected void addHeader(String textId, IFix fix) {
+	protected void addHeader(String textId, AbstractFix fix) {
 		list.addHeader(EditorLabels.getLabel("validation." + textId), fix);
 	}
 

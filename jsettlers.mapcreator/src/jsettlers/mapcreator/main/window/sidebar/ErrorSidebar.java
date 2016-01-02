@@ -14,7 +14,8 @@ import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
-import jsettlers.mapcreator.mapvalidator.result.fix.IFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
  * Sidebar with the error messages
@@ -35,6 +36,11 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	private final IScrollToAble scrollTo;
 
 	/**
+	 * Fix data helper
+	 */
+	private FixData fixData;
+
+	/**
 	 * Listener to react to list clicks
 	 */
 	private ListSelectionListener selectionListener = new ListSelectionListener() {
@@ -51,12 +57,13 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 				scrollTo.scrollTo(entry.getPos());
 			} else if (value instanceof ErrorHeader) {
 				ErrorHeader header = (ErrorHeader) value;
-				IFix fix = header.getFix();
+				AbstractFix fix = header.getFix();
 				if (fix == null) {
 					return;
 				}
 
 				if (fix.isFixAvailable()) {
+					fix.setData(fixData);
 					JPopupMenu menu = fix.getPopupMenu();
 					int selectedIndex = errorList.getSelectedIndex();
 					Rectangle bounds = errorList.getCellBounds(selectedIndex, selectedIndex);
@@ -81,6 +88,14 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 		this.errorList.setCellRenderer(new ErrorListRenderer());
 		errorList.addListSelectionListener(selectionListener);
 
+	}
+
+	/**
+	 * @param fixData
+	 *            Fix data helper
+	 */
+	public void setFixData(FixData fixData) {
+		this.fixData = fixData;
 	}
 
 	@Override

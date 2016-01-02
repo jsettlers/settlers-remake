@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.mapvalidator.result.fix.IFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
  * List with validation errors
@@ -35,7 +35,7 @@ public class ValidationList extends DefaultListModel<AbstractErrorEntry> {
 	 * @param fix
 	 *            Fix, if any
 	 */
-	public void addHeader(String header, IFix fix) {
+	public void addHeader(String header, AbstractFix fix) {
 		addElement(new ErrorHeader(header, fix));
 	}
 

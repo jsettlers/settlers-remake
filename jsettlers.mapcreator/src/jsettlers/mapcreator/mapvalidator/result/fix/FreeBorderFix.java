@@ -12,7 +12,6 @@ import javax.swing.JPopupMenu;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -21,7 +20,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
  * @author Andreas Butti
  *
  */
-public class FreeBorderFix implements IFix, IMapArea {
+public class FreeBorderFix extends AbstractFix implements IMapArea {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -40,14 +39,16 @@ public class FreeBorderFix implements IFix, IMapArea {
 	 * @param data
 	 *            Map data, to fix
 	 */
-	public FreeBorderFix(final MapData data) {
+	public FreeBorderFix() {
 		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.free-borders"));
 		menuFix.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO UNDO / REDO !
-				data.fill(ELandscapeType.WATER8, FreeBorderFix.this);
+				data.getMap().fill(ELandscapeType.WATER8, FreeBorderFix.this);
+				data.getUndoRedo().endUseStep();
+				data.getValidator().reValidate();
+
 			}
 		});
 		menu.add(menuFix);

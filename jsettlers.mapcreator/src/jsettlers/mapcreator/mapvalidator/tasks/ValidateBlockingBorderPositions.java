@@ -19,7 +19,7 @@ public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		FreeBorderFix fix = new FreeBorderFix(data);
+		FreeBorderFix fix = new FreeBorderFix();
 		addHeader("blockingborder.header", fix);
 
 		int width = data.getWidth();

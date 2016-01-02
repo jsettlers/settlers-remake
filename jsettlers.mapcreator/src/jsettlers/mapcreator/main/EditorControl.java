@@ -87,6 +87,7 @@ import jsettlers.mapcreator.mapvalidator.MapValidator;
 import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -128,6 +129,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 */
 	private UndoRedoHandler undoRedo;
 
+	/**
+	 * To scrol to positions
+	 */
 	private MapInterfaceConnector connector;
 
 	/**
@@ -164,7 +168,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private Sidebar sidebar = new Sidebar(toolSidebar, this);
 
 	/**
-	 * Validates the map for errros
+	 * Validates the map for errors
 	 */
 	private MapValidator validator = new MapValidator();
 
@@ -210,6 +214,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 
 		undoRedo = new UndoRedoHandler(window, data);
+		sidebar.setFixData(new FixData(data, undoRedo, validator));
 	}
 
 	public void buildMapEditingWindow() {
@@ -510,6 +515,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				undoRedo.undo();
+				validator.reValidate();
 			}
 		});
 		window.registerAction("redo", new AbstractAction() {
@@ -518,6 +524,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				undoRedo.redo();
+				validator.reValidate();
 			}
 		});
 

@@ -10,7 +10,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Butti
  *
  */
-public class InvalidLandscapeFix implements IFix {
+public class InvalidLandscapeFix extends AbstractFix {
 
 	/**
 	 * Constructor
