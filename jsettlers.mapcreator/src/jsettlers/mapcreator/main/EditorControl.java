@@ -128,6 +128,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 */
 	private UndoRedoHandler undoRedo;
 
+	/**
+	 * To scroll to position
+	 */
 	private MapInterfaceConnector connector;
 
 	/**
