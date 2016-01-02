@@ -9,7 +9,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.mapvalidator.result.fix.DeleteBuildingFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
 
 /**
  * Validate all buildings, check player, ground and position
@@ -21,7 +21,7 @@ public class ValidateBuildings extends AbstractValidationTask {
 	/**
 	 * Fix for wrong placed buildings
 	 */
-	private DeleteBuildingFix fix = new DeleteBuildingFix();
+	private DeleteObjectFix fix = new DeleteObjectFix();
 
 	/**
 	 * Constructor
@@ -37,33 +37,43 @@ public class ValidateBuildings extends AbstractValidationTask {
 			for (int y = 0; y < data.getHeight(); y++) {
 				MapObject mapObject = data.getMapObject(x, y);
 				if (mapObject instanceof BuildingObject) {
-					ShortPoint2D start = new ShortPoint2D(x, y);
-					BuildingObject buildingObject = (BuildingObject) mapObject;
-					testBuilding(x, y, start, buildingObject);
+					testBuilding(x, y, (BuildingObject) mapObject);
 				}
 			}
 		}
 	}
 
-	private void testBuilding(int x, int y, ShortPoint2D start, BuildingObject buildingObject) {
+	/**
+	 * Test if the Building is valid at this location
+	 * 
+	 * @param x
+	 *            X pos
+	 * @param y
+	 *            Y Pos
+	 * @param buildingObject
+	 *            Building
+	 */
+	private void testBuilding(int x, int y, BuildingObject buildingObject) {
 		EBuildingType type = buildingObject.getType();
 		int height = data.getLandscapeHeight(x, y);
+		ShortPoint2D start = new ShortPoint2D(x, y);
+
 		for (RelativePoint p : type.getProtectedTiles()) {
 			ShortPoint2D pos = p.calculatePoint(start);
 			if (!data.contains(pos.x, pos.y)) {
 				addErrorMessage("building.outside-map", pos, Labels.getName(type));
-				fix.addInvalidBuilding(pos);
+				fix.addInvalidObject(pos);
 			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(), data.getLandscape(pos.x, pos.y))) {
 				ELandscapeType landscape = data.getLandscape(pos.x, pos.y);
 				String landscapeName = EditorLabels.getLabel("landscape." + landscape.name());
 				addErrorMessage("building.wrong-landscape", pos, Labels.getName(type), landscapeName);
-				fix.addInvalidBuilding(pos);
+				fix.addInvalidObject(pos);
 			} else if (players[pos.x][pos.y] != buildingObject.getPlayerId()) {
 				addErrorMessage("building.wrong-land", pos, Labels.getName(type), buildingObject.getPlayerId(), players[x][y]);
-				fix.addInvalidBuilding(pos);
+				fix.addInvalidObject(pos);
 			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN && data.getLandscapeHeight(pos.x, pos.y) != height) {
 				addErrorMessage("building.flat-ground", pos, Labels.getName(type), buildingObject.getPlayerId());
-				fix.addInvalidBuilding(pos);
+				fix.addInvalidObject(pos);
 			}
 		}
 	}

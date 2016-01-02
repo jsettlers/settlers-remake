@@ -12,6 +12,7 @@ import jsettlers.mapcreator.mapvalidator.tasks.ValidateDrawBuildingCircle;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateSettler;
 
 /**
  * The validation runnable running in the thread queue
@@ -66,6 +67,7 @@ public class ValidatorRunnable implements Runnable {
 		registerTask(new ValidateBlockingBorderPositions());
 		registerTask(new ValidateDrawBuildingCircle());
 		registerTask(new ValidateBuildings());
+		registerTask(new ValidateSettler());
 		registerTask(new ValidateLandscape());
 		registerTask(new ValidateResources());
 		registerTask(new ValidatePlayerStartPosition());

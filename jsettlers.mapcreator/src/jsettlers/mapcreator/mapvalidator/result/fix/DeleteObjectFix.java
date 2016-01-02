@@ -13,12 +13,12 @@ import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
- * Delete invalid building
+ * Delete invalid objects
  * 
  * @author Andreas Butti
  *
  */
-public class DeleteBuildingFix extends AbstractFix {
+public class DeleteObjectFix extends AbstractFix {
 
 	/**
 	 * List with invalid building positions
@@ -28,7 +28,7 @@ public class DeleteBuildingFix extends AbstractFix {
 	/**
 	 * Constructor
 	 */
-	public DeleteBuildingFix() {
+	public DeleteObjectFix() {
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class DeleteBuildingFix extends AbstractFix {
 	@Override
 	public JPopupMenu getPopupMenu() {
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.delete-invalid-resources"));
+		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.delete-invalid-objects"));
 		menuFix.addActionListener(new ActionListener() {
 
 			@Override
@@ -68,7 +68,7 @@ public class DeleteBuildingFix extends AbstractFix {
 	 * @param point
 	 *            Position
 	 */
-	public void addInvalidBuilding(ShortPoint2D point) {
+	public void addInvalidObject(ShortPoint2D point) {
 		list.add(point);
 	}
 
