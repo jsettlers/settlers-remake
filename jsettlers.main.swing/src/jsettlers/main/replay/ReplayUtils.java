@@ -50,12 +50,6 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  */
 public class ReplayUtils {
 
-	public static MapLoader replayAndGetSavegame(File replayFile, float targetTimeMinutes, String remainingReplayFileName) throws IOException {
-		MapLoader savegameFile = ReplayUtils.replayAndCreateSavegame(replayFile, targetTimeMinutes, remainingReplayFileName);
-		System.out.println("Replayed: " + replayFile + " and created savegame: " + savegameFile);
-		return savegameFile;
-	}
-
 	public static MapLoader replayAndCreateSavegame(File replayFile, float targetGameTimeMinutes, String newReplayFile) throws IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
@@ -67,6 +61,8 @@ public class ReplayUtils {
 
 		// create a replay basing on the savegame and containing the remaining tasks.
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile, gameClock);
+
+		System.out.println("Replayed: " + replayFile + " and created savegame: " + newSavegame);
 
 		return newSavegame;
 	}
@@ -143,7 +139,7 @@ public class ReplayUtils {
 		((GameRunner) startedGame).stopGame();
 
 		synchronized (gameStopped) {
-			while (gameStopped.value == 0 && !startedGame.isStopped()) {
+			while (gameStopped.value == 0 && !startedGame.isShutdownFinished()) {
 				try {
 					gameStopped.wait();
 				} catch (InterruptedException e) {

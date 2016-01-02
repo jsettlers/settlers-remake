@@ -79,7 +79,7 @@ public class ReplayValidationIT {
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
-		MapLoader replayedSavegame = ReplayUtils.replayAndGetSavegame(directSavegameReplay.getReplayFile(), targetTimeMinutes,
+		MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(directSavegameReplay.getReplayFile(), targetTimeMinutes,
 				REMAINING_REPLAY_FILENAME);
 
 		// compare direct savegame with replayed savegame.
@@ -141,8 +141,7 @@ public class ReplayValidationIT {
 			float targetTime = targetTimeMinutes[i];
 			MapLoader savegame = savegames[i];
 
-			MapLoader replayedSavegame = ReplayUtils.replayAndGetSavegame(replayFile, targetTime,
-					REMAINING_REPLAY_FILENAME);
+			MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(replayFile, targetTime, REMAINING_REPLAY_FILENAME);
 
 			// compare direct savegame with replayed savegame.
 			System.out.println("Comparing replay for savegame at targetTime: " + targetTime);

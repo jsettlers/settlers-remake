@@ -52,12 +52,14 @@ public final class MapUtils {
 			MatchConstants.deserialize(new ObjectInputStream(expectedStream));
 			int expectedTime = MatchConstants.clock().getTime();
 			ExtendedRandom expectedRandom = MatchConstants.random();
+			MatchConstants.clearState();
 
 			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
 			MatchConstants.init(new NetworkTimer(true), 1L);
 			MatchConstants.deserialize(new ObjectInputStream(actualStream));
 			int actualTime = MatchConstants.clock().getTime();
 			ExtendedRandom actualRandom = MatchConstants.random();
+			MatchConstants.clearState();
 
 			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 			assertEquals(expectedTime, actualTime);

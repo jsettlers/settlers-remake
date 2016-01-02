@@ -90,7 +90,7 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayUtils.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = getReferenceSavegamePath();
 
 			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
@@ -118,7 +118,7 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayUtils.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {

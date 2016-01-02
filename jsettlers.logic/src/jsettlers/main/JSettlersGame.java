@@ -76,8 +76,9 @@ public class JSettlersGame {
 
 	private final GameRunner gameRunner;
 
-	private boolean stopped = false;
 	private boolean started = false;
+	private boolean stopped = false;
+	private boolean shutdownFinished;
 
 	private PrintStream systemErrorStream;
 	private PrintStream systemOutStream;
@@ -243,7 +244,6 @@ public class JSettlersGame {
 
 				networkConnector.shutdown();
 				mainGrid.stopThreads();
-				MatchConstants.clock().stopExecution();
 				connector.shutdown();
 				guiInterface.stop();
 				clearState();
@@ -257,6 +257,7 @@ public class JSettlersGame {
 				e.printStackTrace();
 				reportFail(EGameError.UNKNOWN_ERROR, e);
 			} finally {
+				shutdownFinished = true;
 				if (exitListener != null) {
 					exitListener.gameExited(this);
 				}
@@ -353,8 +354,8 @@ public class JSettlersGame {
 		}
 
 		@Override
-		public boolean isStopped() {
-			return stopped;
+		public boolean isShutdownFinished() {
+			return shutdownFinished;
 		}
 
 		@Override
@@ -375,7 +376,6 @@ public class JSettlersGame {
 		public MainGrid getMainGrid() {
 			return mainGrid;
 		}
-
 	}
 
 	private void configureLogging(final IGameCreator mapcreator) {
