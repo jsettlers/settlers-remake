@@ -33,7 +33,9 @@ public class ValidateResources extends AbstractValidationTask {
 				if (data.getResourceAmount(x, y) > 0 && !mayHoldResource(landacape, resource)) {
 					String landscapeName = EditorLabels.getLabel("landscape." + landacape.name());
 					String resourceName = Labels.getName(resource);
-					addErrorMessage("resource.text", new ShortPoint2D(x, y), landscapeName, resourceName);
+					ShortPoint2D p = new ShortPoint2D(x, y);
+					addErrorMessage("resource.text", p, landscapeName, resourceName);
+					fix.addInvalidResource(p);
 				}
 			}
 		}

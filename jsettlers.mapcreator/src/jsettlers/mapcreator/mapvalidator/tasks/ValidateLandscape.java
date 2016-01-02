@@ -76,7 +76,7 @@ public class ValidateLandscape extends AbstractValidationTask {
 	}
 
 	/**
-	 * Get diff between two landacapes
+	 * Get diff between two landscapes
 	 * 
 	 * @param landscape
 	 *            To compare
