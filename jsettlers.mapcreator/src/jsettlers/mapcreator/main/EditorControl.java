@@ -78,6 +78,7 @@ import jsettlers.mapcreator.main.window.SettingsDialog;
 import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 import jsettlers.mapcreator.main.window.sidebar.Sidebar;
 import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
+import jsettlers.mapcreator.mapvalidator.AutoFixErrorAction;
 import jsettlers.mapcreator.mapvalidator.GotoNextErrorAction;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
@@ -173,16 +174,29 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private final Timer redrawTimer = new Timer(true);
 
 	/**
+	 * Action to fix all errors automatically, if clear what to do
+	 */
+	private AutoFixErrorAction autoFixErrorAction;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param header
 	 *            Header of the file to open
 	 * @param ground
+	 *            Ground to use for the new map
 	 */
 	public EditorControl(MapFileHeader header, ELandscapeType ground) {
 		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param loader
+	 *            Map to load
+	 * @throws MapLoadException
+	 */
 	public EditorControl(MapLoader loader) throws MapLoadException {
 		MapData data = new MapData(loader.getMapData());
 		MapFileHeader header = loader.getFileHeader();
@@ -209,9 +223,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 
 		undoRedo = new UndoRedoHandler(window, data);
-		sidebar.setFixData(new FixData(data, undoRedo, validator));
+		FixData fixData = new FixData(data, undoRedo, validator);
+		sidebar.setFixData(fixData);
+		autoFixErrorAction.setFixData(fixData);
 	}
 
+	/**
+	 * Build the Main Window
+	 */
 	public void buildMapEditingWindow() {
 		JPanel root = new JPanel();
 		root.setLayout(new BorderLayout(10, 10));
@@ -574,6 +593,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		GotoNextErrorAction gotoNextErrorAction = new GotoNextErrorAction(this);
 		window.registerAction("goto-error", gotoNextErrorAction);
 		validator.addListener(gotoNextErrorAction);
+
+		this.autoFixErrorAction = new AutoFixErrorAction();
+		window.registerAction("auto-fix-error", autoFixErrorAction);
+		validator.addListener(autoFixErrorAction);
 	}
 
 	/**

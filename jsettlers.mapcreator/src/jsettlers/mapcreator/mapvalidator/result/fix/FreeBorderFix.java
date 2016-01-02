@@ -45,13 +45,17 @@ public class FreeBorderFix extends AbstractFix implements IMapArea {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				data.getMap().fill(ELandscapeType.WATER8, FreeBorderFix.this);
-				data.getUndoRedo().endUseStep();
-				data.getValidator().reValidate();
-
+				autoFix();
 			}
 		});
 		menu.add(menuFix);
+	}
+
+	@Override
+	public void autoFix() {
+		data.getMap().fill(ELandscapeType.WATER8, FreeBorderFix.this);
+		data.getUndoRedo().endUseStep();
+		data.getValidator().reValidate();
 	}
 
 	/**

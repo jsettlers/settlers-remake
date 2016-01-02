@@ -30,6 +30,12 @@ public abstract class AbstractFix {
 	}
 
 	/**
+	 * Automatically fix the error, if clear what to do
+	 */
+	public void autoFix() {
+	}
+
+	/**
 	 * @return true to show the fix menu
 	 */
 	public abstract boolean isFixAvailable();

@@ -17,51 +17,63 @@ package jsettlers.mapcreator.mapvalidator;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
-import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorHeader;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
+import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
- * Action to display next error, and jumpt to it, disabled if there is no error
+ * Action to fix all errors automatically, if clear what to do
  * 
  * @author Andreas Butti
  */
-public class GotoNextErrorAction extends AbstractAction implements ValidationResultListener {
+public class AutoFixErrorAction extends AbstractAction implements ValidationResultListener {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Interface to scroll to position
+	 * Error list
 	 */
-	private IScrollToAble scrollTo;
+	private ValidationList list;
 
 	/**
-	 * Next error to select
+	 * Fix data helper
 	 */
-	private ErrorEntry nextErrorEntry = null;
+	private FixData fixData;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param scrollTo
-	 *            Interface to scroll to position
 	 */
-	public GotoNextErrorAction(IScrollToAble scrollTo) {
-		this.scrollTo = scrollTo;
-		putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
+	public AutoFixErrorAction() {
 		setEnabled(false);
+	}
+
+	/**
+	 * @param fixData
+	 *            Fix data helper
+	 */
+	public void setFixData(FixData fixData) {
+		this.fixData = fixData;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (nextErrorEntry == null) {
+		if (list == null) {
 			return;
 		}
-		scrollTo.scrollTo(nextErrorEntry.getPos());
+
+		for (int i = 0; i < list.size(); i++) {
+			AbstractErrorEntry entry = list.get(i);
+			if (entry instanceof ErrorHeader) {
+				AbstractFix fix = ((ErrorHeader) entry).getFix();
+
+				if (fix != null) {
+					fix.setData(fixData);
+					fix.autoFix();
+				}
+			}
+		}
 	}
 
 	/**
@@ -69,33 +81,7 @@ public class GotoNextErrorAction extends AbstractAction implements ValidationRes
 	 */
 	@Override
 	public void validationFinished(ValidationList list) {
-		String header = null;
-		nextErrorEntry = null;
-
-		for (int i = 0; i < list.size(); i++) {
-			AbstractErrorEntry e = list.get(i);
-			if (e instanceof ErrorHeader) {
-				header = e.getText();
-				continue;
-			}
-			if (e instanceof ErrorEntry) {
-				this.nextErrorEntry = (ErrorEntry) e;
-				break;
-			}
-		}
-
-		if (nextErrorEntry != null) {
-			String text = header + " - " + nextErrorEntry.getText();
-
-			if (text.length() > 35) {
-				text = text.substring(0, 30) + "...";
-			}
-
-			putValue(Action.NAME, text);
-			setEnabled(true);
-		} else {
-			putValue(Action.NAME, EditorLabels.getLabel("action.goto-error"));
-			setEnabled(false);
-		}
+		setEnabled(list.getErrorCount() > 0);
+		this.list = list;
 	}
 }
