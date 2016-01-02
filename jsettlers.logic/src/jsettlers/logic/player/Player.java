@@ -55,6 +55,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
+		combatStrengthInfo = new CombatStrengthInformation();
 		updateCombatStrengths();
 	}
 
