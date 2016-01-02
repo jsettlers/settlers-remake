@@ -37,11 +37,7 @@ public class FixHeightsTool extends AbstractTool {
 	 */
 	public FixHeightsTool() {
 		super("fixheights");
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return LandscapeHeightTool.LANDSCAPE_SHAPES;
+		shapeTypes.addAll(LandscapeHeightTool.LANDSCAPE_SHAPES);
 	}
 
 	@Override

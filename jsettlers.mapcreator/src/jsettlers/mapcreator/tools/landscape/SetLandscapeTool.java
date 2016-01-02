@@ -26,10 +26,7 @@ import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.buffers.ByteMapArea;
 import jsettlers.mapcreator.tools.buffers.GlobalShapeBuffer;
-import jsettlers.mapcreator.tools.shapes.LineCircleShape;
-import jsettlers.mapcreator.tools.shapes.LineShape;
-import jsettlers.mapcreator.tools.shapes.NoisyLineCircleShape;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -39,20 +36,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  */
 public class SetLandscapeTool extends AbstractTool {
 
-	private static final ShapeType[] SHAPES = new ShapeType[] {
-			new PointShape(),
-			new LineShape(),
-			new LineCircleShape(),
-			new NoisyLineCircleShape(),
-	};
-
-	private static final ShapeType[] RIVERSHAPES = new ShapeType[] {
-			new PointShape(), new LineShape(),
-	};
-
 	private final ELandscapeType type;
-
-	private final boolean isRiver;
 
 	private GlobalShapeBuffer buffer;
 
@@ -60,12 +44,14 @@ public class SetLandscapeTool extends AbstractTool {
 		super(new RectIcon(16, new Color(type.color.getARGB())),
 				String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));
 		this.type = type;
-		this.isRiver = isRiver;
-	}
 
-	@Override
-	public ShapeType[] getShapes() {
-		return isRiver ? RIVERSHAPES : SHAPES;
+		shapeTypes.add(EShapeType.POINT);
+		shapeTypes.add(EShapeType.LINE);
+
+		if (!isRiver) {
+			shapeTypes.add(EShapeType.LINE_CIRCLE);
+			shapeTypes.add(EShapeType.NOISY_LINE_CIRCLE);
+		}
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.IPlayerSetter;
 import jsettlers.mapcreator.tools.AbstractTool;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class PlaceTemplateTool extends AbstractTool {
@@ -35,11 +35,7 @@ public class PlaceTemplateTool extends AbstractTool {
 		super(null, String.format(EditorLabels.getLabel("tool.template"), name));
 		this.objects = objects;
 		this.player = player;
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return new ShapeType[] { new PointShape() };
+		shapeTypes.add(EShapeType.POINT);
 	}
 
 	private void addAround(MapData map, ShortPoint2D start) {

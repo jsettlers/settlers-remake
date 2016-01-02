@@ -1,15 +1,7 @@
 package jsettlers.mapcreator.main.window.sidebar;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -49,7 +41,6 @@ import jsettlers.mapcreator.tools.objects.PlaceTemplateTool;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateBuilding;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateMovable;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
-import jsettlers.mapcreator.tools.shapes.ShapeProperty;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -65,13 +56,10 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	 */
 	private final IPlayerSetter playerSetter;
 
-	private JPanel shapeButtons;
-	private JPanel shapeSettings;
-
 	/**
-	 * Active shape
+	 * Panel with the shape settings
 	 */
-	private ShapeType activeShape = null;
+	private ShapeSelectionPanel shapeSettingsPanel = new ShapeSelectionPanel();
 
 	// @formatter:off
 	private final ToolNode TOOLBOX = new ToolBox("<toolbox root>, hidden", new ToolNode[] {
@@ -374,22 +362,6 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	// @formatter:on
 
 	/**
-	 * Listener for activated shape
-	 */
-	private final class ShapeActionListener implements ActionListener {
-		private final ShapeType shape;
-
-		private ShapeActionListener(ShapeType shape) {
-			this.shape = shape;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			setShape(shape);
-		}
-	}
-
-	/**
 	 * Constructor
 	 */
 	public ToolSidebar(IPlayerSetter playerSetter) {
@@ -419,24 +391,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 		toolshelf.setCellRenderer(new ToolRenderer());
 		toolshelf.setRootVisible(false);
 
-		Box shape = Box.createVerticalBox();
-		JLabel headerLabel = new JLabel(EditorLabels.getLabel("shapes"));
-		headerLabel.setFont(headerLabel.getFont().deriveFont(Font.BOLD));
-		shape.add(headerLabel);
-		shapeButtons = new JPanel();
-		shapeButtons.setLayout(new GridLayout(0, 1));
-		shape.add(shapeButtons);
-		shapeSettings = new JPanel();
-		shapeSettings.setLayout(new GridLayout(0, 1));
-		shape.add(shapeSettings);
-		add(shape, BorderLayout.SOUTH);
+		add(shapeSettingsPanel, BorderLayout.NORTH);
 	}
 
 	/**
 	 * @return The active shape
 	 */
 	public ShapeType getActiveShape() {
-		return activeShape;
+		return shapeSettingsPanel.getActiveShape();
 	}
 
 	protected abstract void changeTool(Tool lastPathComponent);
@@ -454,38 +416,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	 * @param activeShape
 	 *            Active shape
 	 */
-	public void updateShapeButtons(Tool tool) {
-		shapeButtons.removeAll();
-
-		if (tool != null) {
-			ButtonGroup shapeGroup = new ButtonGroup();
-			for (ShapeType shape : tool.getShapes()) {
-				JCheckBox button = new JCheckBox(shape.getName());
-				button.setSelected(shape == activeShape);
-				button.addActionListener(new ShapeActionListener(shape));
-				shapeGroup.add(button);
-				shapeButtons.add(button);
-			}
-		}
-
-		shapeButtons.revalidate();
+	public void updateShapeSettings(Tool tool) {
+		shapeSettingsPanel.updateShapeSettings(tool);
 	}
-
-	/**
-	 * Set the active shape
-	 * 
-	 * @param shape
-	 *            Shape
-	 */
-	public void setShape(ShapeType shape) {
-		this.activeShape = shape;
-		shapeSettings.removeAll();
-		if (shape != null) {
-			for (ShapeProperty property : shape.getProperties()) {
-				shapeSettings.add(new ShapePropertyEditor(shape, property));
-			}
-		}
-		shapeSettings.revalidate();
-	}
-
 }

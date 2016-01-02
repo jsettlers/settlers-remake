@@ -14,12 +14,13 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.tools.AbstractTool;
-import jsettlers.mapcreator.tools.shapes.FuzzyLineCircleShape;
-import jsettlers.mapcreator.tools.shapes.LineCircleShape;
-import jsettlers.mapcreator.tools.shapes.NoisyLineCircleShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -30,22 +31,27 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  */
 public class LandscapeHeightTool extends AbstractTool {
 
-	public static final ShapeType[] LANDSCAPE_SHAPES = new ShapeType[] { new LineCircleShape(), new FuzzyLineCircleShape(),
-			new NoisyLineCircleShape() };
+	/**
+	 * Shapes supported by landscape tools
+	 */
+	public static final Set<EShapeType> LANDSCAPE_SHAPES = new HashSet<>();
+
 	private ShortPoint2D start = new ShortPoint2D(0, 0);
 	private byte[][] influences;
 	private double[][] carry;
+
+	static {
+		LANDSCAPE_SHAPES.add(EShapeType.LINE_CIRCLE);
+		LANDSCAPE_SHAPES.add(EShapeType.FUZZY_LINE_CIRCLE);
+		LANDSCAPE_SHAPES.add(EShapeType.NOISY_LINE_CIRCLE);
+	}
 
 	/**
 	 * Costructor
 	 */
 	public LandscapeHeightTool() {
 		super("changeheight");
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return LANDSCAPE_SHAPES;
+		shapeTypes.addAll(LANDSCAPE_SHAPES);
 	}
 
 	// TODO: this should me done in screen space!

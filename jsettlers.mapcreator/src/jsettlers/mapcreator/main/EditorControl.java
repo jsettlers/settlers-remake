@@ -26,10 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -101,8 +98,6 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * @author Andreas Butti
  */
 public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
-
-	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
 	/**
 	 * Map data
@@ -689,27 +684,17 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		}
 	}
 
+	/**
+	 * Set the selected tool
+	 * 
+	 * @param lastPathComponent
+	 */
 	protected void changeTool(Tool lastPathComponent) {
 		tool = lastPathComponent;
-		toolSidebar.updateShapeButtons(tool);
+		toolSidebar.updateShapeSettings(tool);
+
 		if (tool != null) {
-			ShapeType shape = tool.getShapes()[0];
-
-			List<ShapeType> shapes = Arrays.asList(tool.getShapes());
-			for (ShapeType used : lastUsed) {
-				if (shapes.contains(used)) {
-					shape = used;
-					break;
-				}
-			}
-			lastUsed.remove(shape);
-			lastUsed.addFirst(shape);
-
 			map.setShowResources(tool instanceof ResourceTool);
-
-			toolSidebar.setShape(shape);
-		} else {
-			toolSidebar.setShape(null);
 		}
 	}
 

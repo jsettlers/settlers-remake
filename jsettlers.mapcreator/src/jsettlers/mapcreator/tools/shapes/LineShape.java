@@ -16,9 +16,15 @@ package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.localization.EditorLabels;
 
 public class LineShape extends ShapeType {
+
+	/**
+	 * Constructor
+	 */
+	public LineShape() {
+		super("line");
+	}
 
 	@Override
 	public void setAffectedStatus(byte[][] fields, ShortPoint2D start, ShortPoint2D end) {
@@ -51,10 +57,4 @@ public class LineShape extends ShapeType {
 	public int getSize() {
 		return 1;
 	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("line");
-	}
-
 }

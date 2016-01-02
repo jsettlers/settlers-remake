@@ -42,11 +42,7 @@ public class IncreaseDecreaseHeightAdder extends AbstractTool {
 		super(subtract ? "decreaseheight"
 				: "increaseheight");
 		this.subtract = subtract;
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return LandscapeHeightTool.LANDSCAPE_SHAPES;
+		shapeTypes.addAll(LandscapeHeightTool.LANDSCAPE_SHAPES);
 	}
 
 	@Override

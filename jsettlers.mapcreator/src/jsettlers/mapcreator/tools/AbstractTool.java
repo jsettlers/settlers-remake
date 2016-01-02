@@ -1,11 +1,16 @@
 package jsettlers.mapcreator.tools;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.swing.Icon;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.icons.ToolIcon;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -25,6 +30,11 @@ public abstract class AbstractTool implements Tool {
 	 * Translated name of the tool
 	 */
 	protected String translatedName;
+
+	/**
+	 * Shape types supported by this tool
+	 */
+	protected final Set<EShapeType> shapeTypes = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -65,4 +75,8 @@ public abstract class AbstractTool implements Tool {
 		// can be overridden, but is mostly empty
 	}
 
+	@Override
+	public final Set<EShapeType> getSupportedShapes() {
+		return Collections.unmodifiableSet(shapeTypes);
+	}
 }

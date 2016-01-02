@@ -14,8 +14,11 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import java.util.Set;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -25,9 +28,31 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  *
  */
 public interface Tool extends ToolNode {
-	public ShapeType[] getShapes();
 
+	/**
+	 * Return a Set with all supported shape types
+	 * 
+	 * @return Read only list
+	 */
+	public Set<EShapeType> getSupportedShapes();
+
+	/**
+	 * Editing
+	 * 
+	 * @param map
+	 * @param shape
+	 * @param start
+	 * @param end
+	 * @param uidx
+	 */
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx);
 
+	/**
+	 * Start the editing
+	 * 
+	 * @param data
+	 * @param shape
+	 * @param pos
+	 */
 	public void start(MapData data, ShapeType shape, ShortPoint2D pos);
 }

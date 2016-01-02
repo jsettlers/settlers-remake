@@ -17,7 +17,7 @@ package jsettlers.mapcreator.tools;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.main.IPlayerSetter;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -42,11 +42,7 @@ public class SetStartpointTool extends AbstractTool {
 	public SetStartpointTool(IPlayerSetter player) {
 		super("statpoint");
 		this.player = player;
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return new ShapeType[] { new PointShape() };
+		shapeTypes.add(EShapeType.POINT);
 	}
 
 	@Override

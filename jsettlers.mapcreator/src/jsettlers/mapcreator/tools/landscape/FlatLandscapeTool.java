@@ -34,11 +34,7 @@ public class FlatLandscapeTool extends AbstractTool {
 	 */
 	public FlatLandscapeTool() {
 		super("flatten");
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return LandscapeHeightTool.LANDSCAPE_SHAPES;
+		shapeTypes.addAll(LandscapeHeightTool.LANDSCAPE_SHAPES);
 	}
 
 	@Override

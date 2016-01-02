@@ -22,19 +22,17 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.AbstractTool;
-import jsettlers.mapcreator.tools.shapes.GridCircleShape;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class PlaceMapObjectTool extends AbstractTool {
-	private static final ShapeType[] SHAPES = new ShapeType[] {
-			new PointShape(), new GridCircleShape(),
-	};
-
 	private final MapObject object;
 
 	public PlaceMapObjectTool(MapObject object) {
 		super(null, null);
+		shapeTypes.add(EShapeType.POINT);
+		shapeTypes.add(EShapeType.GRID_CIRCLE);
+
 		this.object = object;
 
 		if (object == null) {
@@ -56,11 +54,6 @@ public class PlaceMapObjectTool extends AbstractTool {
 			this.translatedName = String.format(EditorLabels.getLabel("tool.place"), object
 					.getClass().getSimpleName());
 		}
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return SHAPES;
 	}
 
 	@Override
