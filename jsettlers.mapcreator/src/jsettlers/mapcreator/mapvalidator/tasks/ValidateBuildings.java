@@ -52,18 +52,18 @@ public class ValidateBuildings extends AbstractValidationTask {
 			ShortPoint2D pos = p.calculatePoint(start);
 			if (!data.contains(pos.x, pos.y)) {
 				addErrorMessage("building.outside-map", pos, Labels.getName(type));
-				fix.addBuilding(buildingObject);
+				fix.addInvalidBuilding(pos);
 			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(), data.getLandscape(pos.x, pos.y))) {
 				ELandscapeType landscape = data.getLandscape(pos.x, pos.y);
 				String landscapeName = EditorLabels.getLabel("landscape." + landscape.name());
 				addErrorMessage("building.wrong-landscape", pos, Labels.getName(type), landscapeName);
-				fix.addBuilding(buildingObject);
+				fix.addInvalidBuilding(pos);
 			} else if (players[pos.x][pos.y] != buildingObject.getPlayerId()) {
 				addErrorMessage("building.wrong-land", pos, Labels.getName(type), buildingObject.getPlayerId(), players[x][y]);
-				fix.addBuilding(buildingObject);
+				fix.addInvalidBuilding(pos);
 			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN && data.getLandscapeHeight(pos.x, pos.y) != height) {
 				addErrorMessage("building.flat-ground", pos, Labels.getName(type), buildingObject.getPlayerId());
-				fix.addBuilding(buildingObject);
+				fix.addInvalidBuilding(pos);
 			}
 		}
 	}
