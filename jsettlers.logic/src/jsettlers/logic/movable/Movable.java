@@ -192,6 +192,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case PLAYING_ACTION:
 			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
 			movableAction = EAction.NO_ACTION;
+			checkPlayerOfCurrentPosition();
 			break;
 		default:
 			break;
@@ -273,7 +274,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EAction.NO_ACTION;
 			path = null;
-			checkPlayerOfCurrentPosition(); // TODO: this should be in timerEvent
 			return;
 		}
 
@@ -403,7 +403,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				} else { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
-					goInDirection(directionToPushing, false);
+					goInDirection(directionToPushing, true);
 					return true;
 				}
 			}
