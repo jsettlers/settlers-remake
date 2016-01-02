@@ -160,7 +160,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public int timerEvent() {
-		if (health <= 0) {
+		if (state == EMovableState.DEAD) {
 			return -1;
 		}
 
@@ -384,7 +384,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 *         false if this movable doesn't move.
 	 */
 	private boolean push(Movable pushingMovable) {
-		if (health <= 0) {
+		if (state == EMovableState.DEAD) {
 			return false;
 		}
 
@@ -722,13 +722,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 */
 	@Override
 	public final void kill() {
-		if (health <= -100) {
+		if (state == EMovableState.DEAD) {
 			return; // this movable already died.
 		}
 
 		grid.leavePosition(this.position, this);
 		this.health = -200;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.state = EMovableState.DEAD;
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
@@ -925,6 +926,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		TAKE,
 		DROP,
+
+		DEAD,
 
 		/**
 		 * This state may only be used for debugging reasons!
