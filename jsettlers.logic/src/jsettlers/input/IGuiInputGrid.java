@@ -98,7 +98,7 @@ public interface IGuiInputGrid {
 	 * @param y
 	 *            y coordinate of the position.
 	 */
-	void postionClicked(short x, short y);
+	void positionClicked(short x, short y);
 
 	/**
 	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.

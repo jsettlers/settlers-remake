@@ -1774,7 +1774,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void postionClicked(short x, short y) {
+		public void positionClicked(short x, short y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
 					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
 					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y));
