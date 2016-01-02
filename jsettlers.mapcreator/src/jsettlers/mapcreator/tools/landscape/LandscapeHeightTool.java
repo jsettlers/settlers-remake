@@ -16,14 +16,19 @@ package jsettlers.mapcreator.tools.landscape;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.FuzzyLineCircleShape;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.NoisyLineCircleShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class LandscapeHeightTool implements Tool {
+/**
+ * Change the height up / down
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class LandscapeHeightTool extends AbstractTool {
 
 	public static final ShapeType[] LANDSCAPE_SHAPES = new ShapeType[] { new LineCircleShape(), new FuzzyLineCircleShape(),
 			new NoisyLineCircleShape() };
@@ -31,12 +36,11 @@ public class LandscapeHeightTool implements Tool {
 	private byte[][] influences;
 	private double[][] carry;
 
+	/**
+	 * Costructor
+	 */
 	public LandscapeHeightTool() {
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("changeheightdescr");
+		super("changeheight");
 	}
 
 	@Override

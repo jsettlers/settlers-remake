@@ -19,8 +19,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.DataTester;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
+import jsettlers.mapcreator.tools.AbstractTool;
+import jsettlers.mapcreator.tools.icons.ToolIcon;
 import jsettlers.mapcreator.tools.shapes.GridCircleShape;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.LineShape;
@@ -28,7 +29,7 @@ import jsettlers.mapcreator.tools.shapes.NoisyLineCircleShape;
 import jsettlers.mapcreator.tools.shapes.PointShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class PlaceResource implements Tool, ResourceTool {
+public class PlaceResource extends AbstractTool implements ResourceTool {
 
 	private final EResourceType type;
 
@@ -36,15 +37,16 @@ public class PlaceResource implements Tool, ResourceTool {
 			new PointShape(), new LineShape(), new LineCircleShape(),
 			new NoisyLineCircleShape(), new GridCircleShape() };
 
+	/**
+	 * Constructor
+	 * 
+	 * @param type
+	 *            Type to place, <code>null</code> to delete resources
+	 */
 	public PlaceResource(EResourceType type) {
+		super(type == null ? ToolIcon.loadIcon("remove-resource.png") : null,
+				type == null ? EditorLabels.getLabel("tool.remove-resource") : Labels.getName(type));
 		this.type = type;
-	}
-
-	@Override
-	public String getName() {
-		return type == null ? EditorLabels.getLabel("remove_resource") : String
-				.format(EditorLabels.getLabel("place_resource"),
-						Labels.getName(type));
 	}
 
 	@Override
@@ -67,7 +69,7 @@ public class PlaceResource implements Tool, ResourceTool {
 
 	private void placeAt(MapData map, byte[][] influence, int x, int y) {
 		if (type != null) {
-			if (DataTester
+			if (ValidateResources
 					.mayHoldResource(map.getLandscape(x, y), type)) {
 				map.addResource(x, y, type, influence[x][y]);
 			}
@@ -76,9 +78,4 @@ public class PlaceResource implements Tool, ResourceTool {
 					(byte) (Byte.MAX_VALUE - influence[x][y]));
 		}
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-	}
-
 }

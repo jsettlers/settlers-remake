@@ -30,15 +30,11 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 		super(null);
 		this.type = type;
 		this.player = player;
-	}
-
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("movabledescr"), Labels.getName(type));
+		this.translatedName = String.format(EditorLabels.getLabel("tool.place"), Labels.getName(type));
 	}
 
 	@Override
 	public MapObject getObject() {
-		return new MovableObject(type, player.getActivePlayer());
+		return new MovableObject(type, (byte) player.getActivePlayer());
 	}
 }

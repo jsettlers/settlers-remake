@@ -19,15 +19,24 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.DataTester;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class FixHeightsTool implements Tool {
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("fixheights");
+/**
+ * Fix height problems
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class FixHeightsTool extends AbstractTool {
+
+	/**
+	 * Constructor
+	 */
+	public FixHeightsTool() {
+		super("fixheights");
 	}
 
 	@Override
@@ -65,7 +74,7 @@ public class FixHeightsTool implements Tool {
 
 	private static void fixResources(MapData map, int x, int y) {
 		if (map.getResourceAmount((short) x, (short) y) > 0) {
-			if (!DataTester.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
+			if (!ValidateResources.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
 				map.decreaseResourceTo(x, y, (byte) 0);
 			}
 		}
@@ -77,7 +86,7 @@ public class FixHeightsTool implements Tool {
 		ELandscapeType l1 = map.getLandscape(x, y);
 		ELandscapeType l2 = map.getLandscape(x2, y2);
 
-		int maxHeightDiff = DataTester.getMaxHeightDiff(l1, l2);
+		int maxHeightDiff = ValidateLandscape.getMaxHeightDiff(l1, l2);
 
 		ObjectContainer container1 = map.getMapObjectContainer(x, y);
 		if (container1 instanceof LandscapeConstraint
@@ -98,10 +107,4 @@ public class FixHeightsTool implements Tool {
 			map.setHeight(x2, y2, h1 + maxHeightDiff);
 		}
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-
-	}
-
 }

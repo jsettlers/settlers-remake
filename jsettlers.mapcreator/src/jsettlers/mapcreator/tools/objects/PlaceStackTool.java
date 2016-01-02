@@ -21,17 +21,8 @@ import jsettlers.mapcreator.localization.EditorLabels;
 
 public class PlaceStackTool extends PlaceMapObjectTool {
 
-	private final int count;
-	private final EMaterialType type;
-
 	public PlaceStackTool(EMaterialType type, int count) {
 		super(new StackObject(type, count));
-		this.type = type;
-		this.count = count;
-	}
-
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("stackdescr"), count, Labels.getName(type, count != 1));
+		this.translatedName = String.format(EditorLabels.getLabel("tool.place_n"), count, Labels.getName(type, count != 1));
 	}
 }

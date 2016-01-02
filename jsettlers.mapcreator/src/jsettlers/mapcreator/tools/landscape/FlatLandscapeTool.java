@@ -16,27 +16,24 @@ package jsettlers.mapcreator.tools.landscape;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
- * makes a flat space on the landscape
- * 
+ * Makes a flat space on the landscape
  * 
  * @author michael
  */
-public class FlatLandscapeTool implements Tool {
+public class FlatLandscapeTool extends AbstractTool {
 
 	private byte[][] old;
 	private double influencefactor = .3;
 
+	/**
+	 * Constructor
+	 */
 	public FlatLandscapeTool() {
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("flatten");
+		super("flatten");
 	}
 
 	@Override
@@ -68,9 +65,8 @@ public class FlatLandscapeTool implements Tool {
 				}
 				int oldheight = map.getLandscapeHeight(x, y);
 				double influence = influencefactor * influences[x][y] / Byte.MAX_VALUE;
-				int newheight =
-						(int) (influence * desired + (1 - influence)
-								* old[x][y]);
+				int newheight = (int) (influence * desired + (1 - influence)
+						* old[x][y]);
 				if (desired < old[x][y]) {
 					if (newheight < oldheight) {
 						map.setHeight(x, y, newheight);

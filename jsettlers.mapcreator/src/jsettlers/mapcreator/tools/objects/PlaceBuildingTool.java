@@ -30,16 +30,11 @@ public class PlaceBuildingTool extends PlaceMapObjectTool {
 		super(null);
 		this.type = type;
 		this.player = player;
+		this.translatedName = String.format(EditorLabels.getLabel("tool.building"), Labels.getName(type));
 	}
 
 	@Override
 	public MapObject getObject() {
-		return new BuildingObject(type, player.getActivePlayer());
+		return new BuildingObject(type, (byte) player.getActivePlayer());
 	}
-
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("buildingdescr"), Labels.getName(type));
-	}
-
 }
