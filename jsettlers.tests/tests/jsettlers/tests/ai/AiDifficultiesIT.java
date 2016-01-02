@@ -35,7 +35,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
-import jsettlers.main.replay.ReplayTool;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -74,10 +74,10 @@ public class AiDifficultiesIT {
 		playerSettings[2] = new PlayerSetting(false, null);
 		playerSettings[3] = new PlayerSetting(false, null);
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
-		IStartedGame startedGame = ReplayTool.waitForGameStartup(startingGame);
+		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
 		MatchConstants.clock().fastForwardTo(90 * MINUTES);
-		ReplayTool.awaitShutdown(startedGame);
+		ReplayUtils.awaitShutdown(startedGame);
 
 		short expectedMinimalProducedSoldiers = 150;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
@@ -97,7 +97,7 @@ public class AiDifficultiesIT {
 		playerSettings[3] = new PlayerSetting(false, null);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
-		IStartedGame startedGame = ReplayTool.waitForGameStartup(startingGame);
+		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 		AiStatistics aiStatistics = new AiStatistics(startingGame.getMainGrid());
 
 		int targetGameTime = 0;
@@ -119,7 +119,7 @@ public class AiDifficultiesIT {
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
-		ReplayTool.awaitShutdown(startedGame);
+		ReplayUtils.awaitShutdown(startedGame);
 
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 3000);
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
@@ -158,7 +158,7 @@ public class AiDifficultiesIT {
 	}
 
 	private void stopAndFail(String reason, IStartedGame startedGame) {
-		ReplayTool.awaitShutdown(startedGame);
+		ReplayUtils.awaitShutdown(startedGame);
 		fail(reason);
 	}
 

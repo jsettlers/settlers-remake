@@ -32,7 +32,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
-import jsettlers.main.replay.ReplayTool;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.tests.utils.DebugMapLister;
 
@@ -61,19 +61,19 @@ public class ReplayValidationIT {
 		final float targetTimeMinutes = 60f;
 		final String mapName = "mountain lake";
 
-		OfflineNetworkConnector networkConnector = ReplayTool.createPausingOfflineNetworkConnector();
+		OfflineNetworkConnector networkConnector = ReplayUtils.createPausingOfflineNetworkConnector();
 		MapLoader map = MapList.getDefaultList().getMapByName(mapName);
 		byte playerId = (byte) 0;
 		JSettlersGame game = new JSettlersGame(map, 0L, networkConnector, playerId,
 				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers()));
 
-		MapLoader directSavegame = ReplayTool.playGameToTargetTimeAndGetSavegame(targetTimeMinutes, networkConnector, game);
+		MapLoader directSavegame = ReplayUtils.playGameToTargetTimeAndGetSavegame(game, networkConnector, targetTimeMinutes);
 
 		File replayFile = findNewestReplayFile().getCanonicalFile();
 
 		System.out.println("Found replay file for savegame: " + replayFile);
 
-		MapLoader replayedSavegame = ReplayTool.replayAndGetSavegame(replayFile, targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+		MapLoader replayedSavegame = ReplayUtils.replayAndGetSavegame(replayFile, targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(directSavegame, replayedSavegame);

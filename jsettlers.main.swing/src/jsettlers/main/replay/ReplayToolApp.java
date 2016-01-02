@@ -46,7 +46,7 @@ public class ReplayToolApp {
 		if (!replayFile.exists())
 			throw new FileNotFoundException("Found replayFile parameter, but file can not be found: " + replayFile);
 
-		ReplayTool.replayAndCreateSavegame(replayFile, targetGameTimeMinutes, "replayForSavegame.log");
+		ReplayUtils.replayAndCreateSavegame(replayFile, targetGameTimeMinutes, "replayForSavegame.log");
 
 		Thread.sleep(2000);
 		System.exit(0);
