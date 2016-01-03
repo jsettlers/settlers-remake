@@ -182,6 +182,16 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private AutoFixErrorAction autoFixErrorAction;
 
 	/**
+	 * Always display resources
+	 */
+	private boolean showResourcesAlways = false;
+
+	/**
+	 * Show the resources because the current tool requests it
+	 */
+	private boolean showResourcesBecauseOfTool = false;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param header
@@ -486,6 +496,25 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				mapContent.zoom100();
 			}
 		});
+		window.registerAction("show-resources-always", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			{
+				putValue(EditorFrame.DISPLAY_CHECKBOX, true);
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Boolean checked = (Boolean) getValue(EditorFrame.CHECKBOX_VALUE);
+				if (checked != null && checked) {
+					showResourcesAlways = true;
+				} else {
+					showResourcesAlways = false;
+				}
+
+				map.setShowResources(showResourcesAlways | showResourcesBecauseOfTool);
+			}
+		});
 
 		window.registerAction("save", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -722,10 +751,10 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		tool = lastPathComponent;
 		toolSidebar.updateShapeSettings(tool);
 
-		boolean showResources = false;
+		showResourcesBecauseOfTool = false;
 		if (tool != null) {
 			// if the resource tool is used they should be displayed
-			showResources |= tool instanceof ResourceTool;
+			showResourcesBecauseOfTool |= tool instanceof ResourceTool;
 
 			if (tool instanceof PlaceBuildingTool) {
 				PlaceBuildingTool pbt = (PlaceBuildingTool) tool;
@@ -733,12 +762,12 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 				// display resources for Mines and Fisher
 				if (type.isMine() || type == EBuildingType.FISHER) {
-					showResources = true;
+					showResourcesBecauseOfTool = true;
 				}
 			}
 		}
 
-		map.setShowResources(showResources);
+		map.setShowResources(showResourcesAlways | showResourcesBecauseOfTool);
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +31,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -61,6 +64,16 @@ public abstract class EditorFrame extends JFrame {
 	 * Display icon AND text in toolbar, default display only icon and text as tooltip
 	 */
 	public static final String DISPLAY_TEXT_IN_TOOLBAR = "display-text-in-toolbar";
+
+	/**
+	 * Display as Check menu
+	 */
+	public static final String DISPLAY_CHECKBOX = "display-checkbox";
+
+	/**
+	 * Value of the checkbox (for DISPLAY_CHECKBOX)
+	 */
+	public static final String CHECKBOX_VALUE = "checkbox-value";
 
 	/**
 	 * Logo for windows
@@ -224,13 +237,46 @@ public abstract class EditorFrame extends JFrame {
 				if ("---".equals(menuAction)) {
 					menu.addSeparator();
 				} else {
-					Action action = actionMap.get(menuAction);
+					final Action action = actionMap.get(menuAction);
 					if (action == null) {
 						System.err.println("Action \"" + menuAction + "\" not found!");
 						continue;
 					}
 
-					final JMenuItem it = menu.add(action);
+					final JMenuItem it;
+					Boolean displayAsCheckbox = (Boolean) action.getValue(EditorFrame.DISPLAY_CHECKBOX);
+					if (displayAsCheckbox != null && displayAsCheckbox) {
+						it = new JCheckBoxMenuItem();
+						it.setAction(action);
+						it.addChangeListener(new ChangeListener() {
+
+							@Override
+							public void stateChanged(ChangeEvent e) {
+								Object oldValue = action.getValue(EditorFrame.CHECKBOX_VALUE);
+
+								if (oldValue != null && oldValue.equals(it.isSelected())) {
+									return;
+								}
+
+								action.putValue(EditorFrame.CHECKBOX_VALUE, it.isSelected());
+								action.actionPerformed(new ActionEvent(it, 0, "changed"));
+							}
+						});
+						action.addPropertyChangeListener(new PropertyChangeListener() {
+
+							@Override
+							public void propertyChange(PropertyChangeEvent evt) {
+								if (EditorFrame.CHECKBOX_VALUE.equals(evt.getPropertyName())) {
+									Boolean checked = (Boolean) evt.getNewValue();
+									if (it.isSelected() != checked) {
+										it.setSelected(checked);
+									}
+								}
+							}
+						});
+					} else {
+						it = menu.add(action);
+					}
 
 					action.addPropertyChangeListener(new PropertyChangeListener() {
 
