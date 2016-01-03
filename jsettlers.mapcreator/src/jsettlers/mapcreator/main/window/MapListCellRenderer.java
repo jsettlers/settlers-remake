@@ -219,7 +219,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 				}
 			}
 
-			Image resized = resize(img, MapFileHeader.PREVIEW_IMAGE_SIZE / 2, MapFileHeader.PREVIEW_IMAGE_SIZE / 2);
+			Image resized = resize(img, MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE / 2);
 			icon = new ImageIcon(resized);
 			previewImageCache.put(value, icon);
 			return icon;
