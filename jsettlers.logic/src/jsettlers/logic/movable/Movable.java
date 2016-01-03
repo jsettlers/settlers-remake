@@ -303,8 +303,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		} else { // step not possible, so try it next time
 			movableAction = EAction.NO_ACTION;
-			boolean pushedSuccessful = blockingMovable.push(this);
-			if (!pushedSuccessful) {
+			boolean pushedSuccessfully = blockingMovable.push(this);
+			if (!pushedSuccessfully) {
 				path = strategy.findWayAroundObstacle(direction, position, path);
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} else if (movableAction == EAction.NO_ACTION) {
@@ -400,11 +400,15 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			} else { // if we didn't find a direction, check if it's possible to exchange positions
 				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
-				} else { // exchange positions
+
+				} else if (pushingMovable.getMovableType().isMoveToAble() || isValidPosition(pushingMovable.getPos())) { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, true);
 					return true;
+
+				} else { // exchange not possible, as the location is not valid.
+					return false;
 				}
 			}
 
