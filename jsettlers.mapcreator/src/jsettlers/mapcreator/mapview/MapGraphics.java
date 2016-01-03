@@ -26,8 +26,16 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
+/**
+ * Wrapper for map display
+ * 
+ * @author Andreas Butti
+ */
 public class MapGraphics implements IGraphicsGrid {
 
+	/**
+	 * Original map
+	 */
 	private final MapData data;
 
 	/**
@@ -35,6 +43,12 @@ public class MapGraphics implements IGraphicsGrid {
 	 */
 	private boolean showResources = false;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param data
+	 *            Original map
+	 */
 	public MapGraphics(MapData data) {
 		this.data = data;
 	}
@@ -59,14 +73,11 @@ public class MapGraphics implements IGraphicsGrid {
 		ObjectContainer container = data.getMapObjectContainer(x, y);
 		if (container instanceof IMapObject) {
 			return (IMapObject) container;
-		} else {
+		} else
 			if (showResources) {
-				byte amount = data.getResourceAmount((short) x, (short) y);
-				if (amount > 0) {
-					return ResourceMapObject.get(data.getResourceType((short) x, (short) y), amount);
-				} else {
-					return null;
-				}
+			byte amount = data.getResourceAmount((short) x, (short) y);
+			if (amount > 0) {
+				return ResourceMapObject.get(data.getResourceType((short) x, (short) y), amount);
 			}
 		}
 

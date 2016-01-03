@@ -21,50 +21,82 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 
+/**
+ * Get actions, and combine multiple actions together
+ * 
+ * @author Andreas Butti
+ */
 public class CombiningActionFirerer implements ActionFireable {
+
+	/**
+	 * Working thread
+	 */
 	private final Thread thread;
 
+	/**
+	 * Queue
+	 */
 	private BlockingQueue<Action> toFire = new LinkedBlockingQueue<Action>();
 
+	/**
+	 * Target
+	 */
 	private final ActionFireable fireTo;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param fireTo
+	 *            Target
+	 */
 	public CombiningActionFirerer(ActionFireable fireTo) {
 		this.fireTo = fireTo;
-		this.thread = new ActionFirererThread();
-		this.thread.setDaemon(true);
-		this.thread.start();
+		thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				forwardActions();
+			}
+		});
+		thread.setName("action firerer");
+		thread.setDaemon(true);
+		thread.start();
+
 	}
 
-	private class ActionFirererThread extends Thread {
-		public ActionFirererThread() {
-			super("action firerer");
-		}
-
-		@Override
-		public void run() {
-			while (true) {
-				Action action;
-				try {
-					action = toFire.take();
-					if (action instanceof DrawLineAction
-							&& toFire.peek() instanceof DrawLineAction) {
-						ShortPoint2D start = ((DrawLineAction) action).getStart();
-						ShortPoint2D end = ((DrawLineAction) action).getEnd();
-						double uidy = ((DrawLineAction) action).getUidy();
-						while (toFire.peek() instanceof DrawLineAction) {
-							DrawLineAction next = (DrawLineAction) toFire.poll();
-							end = next.getEnd();
-							uidy += next.getUidy();
-						}
-						action = new DrawLineAction(start, end, uidy);
-					}
-					fireTo.fireAction(action);
-				} catch (Throwable e) {
-					jsettlers.exceptionhandler.ExceptionHandler.displayError(e, "Exception while handling action");
-				}
+	/**
+	 * Loop to forward actions
+	 */
+	protected void forwardActions() {
+		while (true) {
+			try {
+				forwardSingleAction();
+			} catch (Throwable e) {
+				jsettlers.exceptionhandler.ExceptionHandler.displayError(e, "Exception while handling action");
 			}
 		}
+	}
 
+	/**
+	 * Forward a single action
+	 * 
+	 * @throws InterruptedException
+	 */
+	protected void forwardSingleAction() throws InterruptedException {
+		Action action = toFire.take();
+		if (action instanceof DrawLineAction
+				&& toFire.peek() instanceof DrawLineAction) {
+			ShortPoint2D start = ((DrawLineAction) action).getStart();
+			ShortPoint2D end = ((DrawLineAction) action).getEnd();
+			double uidy = ((DrawLineAction) action).getUidy();
+			while (toFire.peek() instanceof DrawLineAction) {
+				DrawLineAction next = (DrawLineAction) toFire.poll();
+				end = next.getEnd();
+				uidy += next.getUidy();
+			}
+			action = new DrawLineAction(start, end, uidy);
+		}
+		fireTo.fireAction(action);
 	}
 
 	@Override

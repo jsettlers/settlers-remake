@@ -58,10 +58,10 @@ public abstract class ShapeIcon implements Icon, Cloneable {
 		@Override
 		protected void paint(Component c, Graphics2D g, int x, int y) {
 			g.fillOval(x + 1, y + 1, 5, 5);
-			g.fillOval(x + 10, y + 1, 5, 5);
 			g.fillOval(x + 2, y + 4, 5, 5);
 			g.fillOval(x + 5, y + 7, 5, 5);
 			g.fillOval(x + 3, y + 2, 5, 5);
+			g.fillOval(x + 10, y + 7, 5, 5);
 		}
 
 	};

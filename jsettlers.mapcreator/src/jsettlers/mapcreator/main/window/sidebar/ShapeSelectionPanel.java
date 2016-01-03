@@ -77,6 +77,7 @@ public class ShapeSelectionPanel extends Box {
 			bt.setSelectedIcon(type.getIcon().createSelectedIcon());
 			bt.setToolTipText(type.getShape().getName());
 			bt.addActionListener(new ShapeActionListener(type.getShape()));
+			bt.setEnabled(false);
 			tb.add(bt);
 			group.add(bt);
 			buttons.put(type, bt);

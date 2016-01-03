@@ -14,7 +14,7 @@ public enum EShapeType {
 	POINT(new PointShape(), ShapeIcon.POINT),
 
 	/**
-	 * TODO !!!!!!!!
+	 * Line without breaks, even if you move the mouse faster
 	 */
 	LINE(new LineShape(), ShapeIcon.LINE),
 
@@ -34,7 +34,7 @@ public enum EShapeType {
 	FUZZY_LINE_CIRCLE(new FuzzyLineCircleShape(), ShapeIcon.FUZZY_LINE_CIRCLE),
 
 	/**
-	 * TODO !!!!!!!!
+	 * Noisy line without breaks, even if you move the mouse faster
 	 */
 	NOISY_LINE_CIRCLE(new NoisyLineCircleShape(), ShapeIcon.NOISY_LINE_CIRCLE);
 
