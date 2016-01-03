@@ -192,10 +192,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case PLAYING_ACTION:
 			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
 			movableAction = EAction.NO_ACTION;
+
+		case PATHING:
+		case DOING_NOTHING:
 			if (visible) {
 				checkPlayerOfCurrentPosition();
 			}
 			break;
+
 		default:
 			break;
 		}
@@ -279,20 +283,19 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return;
 		}
 
-		direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
-
 		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
 			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
 				goSinglePathStep();
 
 			} else { // next position is invalid
+				movableAction = EAction.NO_ACTION;
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
 
 				if (newPath == null) { // no path found
 					setState(EMovableState.DOING_NOTHING);
-					movableAction = EAction.NO_ACTION;
+
 					strategy.pathAborted(path.getTargetPos()); // inform strategy
 					path = null;
 				} else {
@@ -321,6 +324,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
+		direction = EDirection.getDirection(this.position, position);
 		playAnimation(EAction.WALKING, movableType.getStepDurationMs());
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
@@ -589,7 +593,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	final boolean goInDirection(EDirection direction, boolean force) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
 		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
-			this.direction = direction;
 			initGoingSingleStep(pos);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
