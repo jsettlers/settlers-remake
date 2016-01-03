@@ -901,6 +901,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 	}
 
+	@Override
+	public boolean isTower() {
+		return false;
+	}
+
 	private void checkPlayerOfCurrentPosition() {
 		checkPlayerOfPosition(grid.getPlayerAt(position));
 	}

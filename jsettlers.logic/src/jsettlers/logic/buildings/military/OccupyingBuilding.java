@@ -578,6 +578,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		@Override
 		public void informAboutAttackable(IAttackable attackable) {
 		}
+
+		@Override
+		public boolean isTower() {
+			return true;
+		}
 	}
 
 }
