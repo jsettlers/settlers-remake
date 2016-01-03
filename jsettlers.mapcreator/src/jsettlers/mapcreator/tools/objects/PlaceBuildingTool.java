@@ -18,8 +18,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.IPlayerSetter;
 
 public class PlaceBuildingTool extends PlaceMapObjectTool {
 

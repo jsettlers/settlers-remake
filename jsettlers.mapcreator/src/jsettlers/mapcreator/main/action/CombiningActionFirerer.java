@@ -48,13 +48,11 @@ public class CombiningActionFirerer implements ActionFireable {
 					action = toFire.take();
 					if (action instanceof DrawLineAction
 							&& toFire.peek() instanceof DrawLineAction) {
-						ShortPoint2D start =
-								((DrawLineAction) action).getStart();
+						ShortPoint2D start = ((DrawLineAction) action).getStart();
 						ShortPoint2D end = ((DrawLineAction) action).getEnd();
 						double uidy = ((DrawLineAction) action).getUidy();
 						while (toFire.peek() instanceof DrawLineAction) {
-							DrawLineAction next =
-									(DrawLineAction) toFire.poll();
+							DrawLineAction next = (DrawLineAction) toFire.poll();
 							end = next.getEnd();
 							uidy += next.getUidy();
 						}
@@ -62,8 +60,7 @@ public class CombiningActionFirerer implements ActionFireable {
 					}
 					fireTo.fireAction(action);
 				} catch (Throwable e) {
-					System.err.println("Exception while habdling action:");
-					e.printStackTrace();
+					jsettlers.exceptionhandler.ExceptionHandler.displayError(e, "Exception while handling action");
 				}
 			}
 		}

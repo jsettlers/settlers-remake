@@ -20,9 +20,21 @@ import java.io.InputStream;
 
 import jsettlers.graphics.localization.AbstractLabels;
 
-public class EditorLabels extends AbstractLabels {
+/**
+ * Translation for Map editor
+ * 
+ * @author Andreas Butti
+ */
+public final class EditorLabels extends AbstractLabels {
+
+	/**
+	 * Singleton
+	 */
 	private static final EditorLabels instance = new EditorLabels();
 
+	/**
+	 * Utility class
+	 */
 	private EditorLabels() {
 	}
 

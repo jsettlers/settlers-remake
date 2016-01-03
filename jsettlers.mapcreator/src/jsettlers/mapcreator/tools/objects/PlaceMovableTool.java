@@ -18,8 +18,8 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.IPlayerSetter;
 
 public class PlaceMovableTool extends PlaceMapObjectTool {
 

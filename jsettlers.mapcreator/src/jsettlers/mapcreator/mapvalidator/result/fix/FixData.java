@@ -1,7 +1,7 @@
 package jsettlers.mapcreator.mapvalidator.result.fix;
 
+import jsettlers.mapcreator.control.UndoRedoHandler;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.main.UndoRedoHandler;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
 
 /**

@@ -24,6 +24,10 @@ import jsettlers.graphics.action.EActionType;
  *
  */
 public class AbortDrawingAction extends Action {
+
+	/**
+	 * Constructor TODO NOT CALLED
+	 */
 	public AbortDrawingAction() {
 		super(EActionType.UNSPECIFIED);
 	}

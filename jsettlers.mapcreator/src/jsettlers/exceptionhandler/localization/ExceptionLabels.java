@@ -26,7 +26,7 @@ import jsettlers.graphics.localization.AbstractLabels;
  * @author Andreas Butti
  *
  */
-public class ExceptionLabels extends AbstractLabels {
+public final class ExceptionLabels extends AbstractLabels {
 
 	/**
 	 * Singleton

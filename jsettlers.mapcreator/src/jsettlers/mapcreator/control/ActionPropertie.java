@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.control;
 
 import java.io.File;
 import java.io.FileInputStream;

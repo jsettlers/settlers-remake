@@ -16,20 +16,37 @@ package jsettlers.mapcreator.main;
 
 import java.io.File;
 
+import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 
+/**
+ * Main to play game
+ * 
+ * @author Andreas Butti
+ *
+ */
 public class PlayProcess {
+
+	/**
+	 * Main entry point
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
+			ExceptionHandler.setupDefaultExceptionHandler();
+
 			final File file = new File(args[0]);
 
 			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
 					123456L, (byte) 0, null);
 			game.start();
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			ExceptionHandler.displayError(e, "Error launching game");
 		}
+
 	}
 }

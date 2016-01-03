@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.control;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -64,6 +64,7 @@ import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.mapcreator.main.MapCreatorApp;
 import jsettlers.mapcreator.main.action.AbortDrawingAction;
 import jsettlers.mapcreator.main.action.CombiningActionFirerer;
 import jsettlers.mapcreator.main.action.DrawLineAction;
