@@ -192,7 +192,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case PLAYING_ACTION:
 			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
 			movableAction = EAction.NO_ACTION;
-			checkPlayerOfCurrentPosition();
+			if (visible) {
+				checkPlayerOfCurrentPosition();
+			}
 			break;
 		default:
 			break;
