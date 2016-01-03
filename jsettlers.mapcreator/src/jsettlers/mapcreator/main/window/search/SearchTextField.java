@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import jsettlers.mapcreator.localization.EditorLabels;
+
 /**
  * Search Text field
  * 
@@ -31,6 +33,11 @@ public class SearchTextField extends JTextField {
 	 * Clear "Button"
 	 */
 	private JLabel lbClear = new JLabel(clearIcon);
+
+	/**
+	 * Search text
+	 */
+	private final String SEARCH = EditorLabels.getLabel("general.search");
 
 	/**
 	 * Constructor
@@ -79,12 +86,8 @@ public class SearchTextField extends JTextField {
 		if (getText().isEmpty()) {
 			x += searchIcon.getIconWidth() + 6;
 			int y = this.getHeight() - (this.getHeight() - g.getFontMetrics().getHeight()) / 2 - g.getFontMetrics().getDescent();
-			g.drawString("Search...", x, y);
+			g.drawString(SEARCH, x, y);
 		}
-
-		// x = getWidth() - 4 - clearIcon.getIconWidth();
-		// int y = (this.getHeight() - searchIcon.getIconHeight()) / 2;
-		// clearIcon.paintIcon(this, g, x, y);
 	}
 
 }
