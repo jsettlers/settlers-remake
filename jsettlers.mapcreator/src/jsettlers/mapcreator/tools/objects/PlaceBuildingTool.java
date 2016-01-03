@@ -21,16 +21,43 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
 
+/**
+ * Place buildings on the Map
+ * 
+ * @author Andreas Butti
+ */
 public class PlaceBuildingTool extends PlaceMapObjectTool {
 
+	/**
+	 * Type of the building to place
+	 */
 	private final EBuildingType type;
+
+	/**
+	 * Interface to query which player owns the building
+	 */
 	private final IPlayerSetter player;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param type
+	 *            Type of the building to place
+	 * @param player
+	 *            Interface to query which player owns the building
+	 */
 	public PlaceBuildingTool(EBuildingType type, IPlayerSetter player) {
 		super(null);
 		this.type = type;
 		this.player = player;
 		this.translatedName = String.format(EditorLabels.getLabel("tool.building"), Labels.getName(type));
+	}
+
+	/**
+	 * @return Type of the building to place
+	 */
+	public EBuildingType getType() {
+		return type;
 	}
 
 	@Override

@@ -44,6 +44,7 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
@@ -92,6 +93,7 @@ import jsettlers.mapcreator.stat.StatisticsDialog;
 import jsettlers.mapcreator.tools.SetStartpointTool;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.landscape.ResourceTool;
+import jsettlers.mapcreator.tools.objects.PlaceBuildingTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -694,6 +696,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		streamReader.setDaemon(true);
 	}
 
+	/**
+	 * Play the game in a new process
+	 */
 	protected void play() {
 		try {
 			File temp = File.createTempFile("tmp_map", "");
@@ -717,9 +722,23 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		tool = lastPathComponent;
 		toolSidebar.updateShapeSettings(tool);
 
+		boolean showResources = false;
 		if (tool != null) {
-			map.setShowResources(tool instanceof ResourceTool);
+			// if the resource tool is used they should be displayed
+			showResources |= tool instanceof ResourceTool;
+
+			if (tool instanceof PlaceBuildingTool) {
+				PlaceBuildingTool pbt = (PlaceBuildingTool) tool;
+				EBuildingType type = pbt.getType();
+
+				// display resources for Mines and Fisher
+				if (type.isMine() || type == EBuildingType.FISHER) {
+					showResources = true;
+				}
+			}
 		}
+
+		map.setShowResources(showResources);
 	}
 
 	@Override
