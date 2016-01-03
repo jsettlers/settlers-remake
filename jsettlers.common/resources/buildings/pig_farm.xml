@@ -116,8 +116,8 @@
 	<!-- real door is at dx="1" dy="2", but blocked -->
 	<door dx="0" dy="1" />
 
-	<constructionStack dx="1" dy="6" material="PLANK" buildrequired="1" />
-	<constructionStack dx="3" dy="6" material="STONE" buildrequired="1" />
+	<constructionStack dx="1" dy="6" material="PLANK" buildrequired="6" />
+	<constructionStack dx="3" dy="6" material="STONE" buildrequired="6" />
 	<requestStack dx="5" dy="5" material="CROP" />
 	<requestStack dx="3" dy="6" material="WATER" />
 	<!--<stack dx="-1" dy="4" material="PIG" buildrequired="0" /> -->
