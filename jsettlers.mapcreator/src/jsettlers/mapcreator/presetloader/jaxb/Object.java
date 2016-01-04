@@ -5,20 +5,21 @@
 // Generated on: 2016.01.04 at 06:39:01 PM CET 
 //
 
-
 package jsettlers.mapcreator.presetloader.jaxb;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import jsettlers.common.material.EMaterialType;
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,112 +38,99 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "object")
 public class Object {
 
-    @XmlAttribute(name = "dx")
-    protected Integer dx;
-    @XmlAttribute(name = "dy")
-    protected Integer dy;
-    @XmlAttribute(name = "type")
-    protected String type;
-    @XmlAttribute(name = "count")
-    protected Integer count;
+	@XmlAttribute(name = "dx")
+	protected Integer dx;
+	@XmlAttribute(name = "dy")
+	protected Integer dy;
+	@XmlAttribute(name = "type")
+	protected EMaterialType type;
+	@XmlAttribute(name = "count")
+	protected Integer count;
 
-    /**
-     * Gets the value of the dx property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getDx() {
-        return dx;
-    }
+	/**
+	 * Gets the value of the dx property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getDx() {
+		return dx;
+	}
 
-    /**
-     * Sets the value of the dx property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setDx(Integer value) {
-        this.dx = value;
-    }
+	/**
+	 * Sets the value of the dx property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setDx(Integer value) {
+		this.dx = value;
+	}
 
-    /**
-     * Gets the value of the dy property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getDy() {
-        return dy;
-    }
+	/**
+	 * Gets the value of the dy property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getDy() {
+		return dy;
+	}
 
-    /**
-     * Sets the value of the dy property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setDy(Integer value) {
-        this.dy = value;
-    }
+	/**
+	 * Sets the value of the dy property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setDy(Integer value) {
+		this.dy = value;
+	}
 
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
+	/**
+	 * Gets the value of the type property.
+	 * 
+	 * @return EMaterialType
+	 * 
+	 */
+	public EMaterialType getType() {
+		return type;
+	}
 
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+	/**
+	 * Sets the value of the type property.
+	 * 
+	 * @param value
+	 *            EMaterialType
+	 * 
+	 */
+	public void setType(EMaterialType value) {
+		this.type = value;
+	}
 
-    /**
-     * Gets the value of the count property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getCount() {
-        return count;
-    }
+	/**
+	 * Gets the value of the count property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getCount() {
+		return count;
+	}
 
-    /**
-     * Sets the value of the count property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setCount(Integer value) {
-        this.count = value;
-    }
+	/**
+	 * Sets the value of the count property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setCount(Integer value) {
+		this.count = value;
+	}
 
 }

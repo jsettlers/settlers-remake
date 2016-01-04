@@ -8,16 +8,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.StackObject;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.presetloader.jaxb.Building;
 import jsettlers.mapcreator.presetloader.jaxb.Moveable;
 import jsettlers.mapcreator.presetloader.jaxb.Object;
-import jsettlers.mapcreator.presetloader.jaxb.ObjectFactory;
 import jsettlers.mapcreator.presetloader.jaxb.Preset;
 import jsettlers.mapcreator.presetloader.jaxb.Presets;
 import jsettlers.mapcreator.tools.DynamicToolBox;
@@ -29,8 +25,7 @@ import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
 /**
  * Loads preset templates from .xml
  * 
- * <h3>Create Jaxb classes from .xsd</h3>
- * <code>xjc -d src -p jsettlers.mapcreator.presetloader.jaxb src/jsettlers/mapcreator/presetloader/preset.xsd</code>
+ * <h3>Create .xsd with</h3> <code>DevelopmentGenerateJaxbSchema.java</code>
  * 
  * @author Andreas Butti
  *
@@ -68,7 +63,7 @@ public class PresetLoader {
 	 * @throws JAXBException
 	 */
 	public void load(InputStream in) throws JAXBException {
-		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
+		JAXBContext context = JAXBContext.newInstance(Presets.class);
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		Presets xml = (Presets) unmarshaller.unmarshal(in);
 
@@ -90,15 +85,15 @@ public class PresetLoader {
 		List<TemplateObject> list = new ArrayList<>();
 
 		for (Building b : p.getBuilding()) {
-			list.add(new TemplateBuilding(b.getDx(), b.getDy(), EBuildingType.valueOf(b.getType())));
+			list.add(new TemplateBuilding(b.getDx(), b.getDy(), b.getType()));
 		}
 
 		for (Moveable m : p.getMoveable()) {
-			list.add(new TemplateMovable(m.getDx(), m.getDy(), EMovableType.valueOf(m.getType())));
+			list.add(new TemplateMovable(m.getDx(), m.getDy(), m.getType()));
 		}
 
 		for (Object o : p.getObject()) {
-			list.add(new TemplateObject(o.getDx(), o.getDy(), new StackObject(EMaterialType.valueOf(o.getType()), o.getCount())));
+			list.add(new TemplateObject(o.getDx(), o.getDy(), new StackObject(o.getType(), o.getCount())));
 		}
 
 		return list.toArray(new TemplateObject[] {});

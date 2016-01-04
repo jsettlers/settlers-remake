@@ -15,7 +15,6 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.StackObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -40,10 +39,6 @@ import jsettlers.mapcreator.tools.objects.DeleteObjectTool;
 import jsettlers.mapcreator.tools.objects.PlaceBuildingTool;
 import jsettlers.mapcreator.tools.objects.PlaceMapObjectTool;
 import jsettlers.mapcreator.tools.objects.PlaceMovableTool;
-import jsettlers.mapcreator.tools.objects.PlaceTemplateTool;
-import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateBuilding;
-import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateMovable;
-import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 /**
@@ -64,121 +59,10 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	 */
 	private ShapeSelectionPanel shapeSettingsPanel = new ShapeSelectionPanel();
 
-	// @formatter:off
-	private final DynamicToolBox PRESETS = 
-		new DynamicToolBox(EditorLabels.getLabel("presets"), new ToolNode[] {
-			new PlaceTemplateTool(EditorLabels.getLabel("preset-start"), new TemplateObject[] {
-					new TemplateBuilding(0, 0, EBuildingType.TOWER),
-
-					// goods
-					new TemplateObject(-4, 7, new StackObject(EMaterialType.PLANK, 8)),
-					new TemplateObject(-4, 10, new StackObject(EMaterialType.PLANK, 8)),
-
-					new TemplateObject(-1, 7, new StackObject(EMaterialType.PLANK, 8)),
-					new TemplateObject(-1, 10, new StackObject(EMaterialType.PLANK, 8)),
-					new TemplateObject(-1, 13, new StackObject(EMaterialType.PLANK, 8)),
-
-					new TemplateObject(2, 7, new StackObject(EMaterialType.STONE, 8)),
-					new TemplateObject(2, 10, new StackObject(EMaterialType.PLANK, 8)),
-					new TemplateObject(2, 13, new StackObject(EMaterialType.PLANK, 8)),
-
-					new TemplateObject(5, 7, new StackObject(EMaterialType.STONE, 8)),
-					new TemplateObject(5, 10, new StackObject(EMaterialType.STONE, 8)),
-					new TemplateObject(5, 13, new StackObject(EMaterialType.STONE, 8)),
-
-					new TemplateObject(8, 7, new StackObject(EMaterialType.FISH, 8)),
-					new TemplateObject(8, 10, new StackObject(EMaterialType.COAL, 8)),
-					new TemplateObject(8, 13, new StackObject(EMaterialType.STONE, 8)),
-
-					new TemplateObject(11, 7, new StackObject(EMaterialType.BREAD, 8)),
-					new TemplateObject(11, 10, new StackObject(EMaterialType.IRONORE, 8)),
-					new TemplateObject(11, 13, new StackObject(EMaterialType.BLADE, 6)),
-
-					new TemplateObject(14, 7, new StackObject(EMaterialType.MEAT, 8)),
-					new TemplateObject(14, 10, new StackObject(EMaterialType.FISHINGROD, 2)),
-					new TemplateObject(14, 13, new StackObject(EMaterialType.HAMMER, 8)),
-
-					new TemplateObject(17, 7, new StackObject(EMaterialType.SCYTHE, 2)),
-					new TemplateObject(17, 13, new StackObject(EMaterialType.AXE, 6)),
-
-					new TemplateObject(20, 10, new StackObject(EMaterialType.PICK, 8)),
-					new TemplateObject(20, 13, new StackObject(EMaterialType.SAW, 3)),
-
-					// worker
-					new TemplateMovable(8, 16, EMovableType.BRICKLAYER),
-					new TemplateMovable(9, 18, EMovableType.BRICKLAYER),
-					new TemplateMovable(10, 16, EMovableType.BRICKLAYER),
-					new TemplateMovable(11, 18, EMovableType.BRICKLAYER),
-					new TemplateMovable(12, 16, EMovableType.BRICKLAYER),
-
-					new TemplateMovable(14, 16, EMovableType.DIGGER),
-					new TemplateMovable(15, 18, EMovableType.DIGGER),
-					new TemplateMovable(16, 16, EMovableType.DIGGER),
-					new TemplateMovable(17, 18, EMovableType.DIGGER),
-					new TemplateMovable(18, 16, EMovableType.DIGGER),
-
-					new TemplateMovable(18, 17, EMovableType.SMITH),
-					new TemplateMovable(18, 18, EMovableType.SMITH),
-					new TemplateMovable(20, 16, EMovableType.MELTER),
-
-					// soldiers
-					new TemplateMovable(-11, -12, EMovableType.SWORDSMAN_L1),
-					new TemplateMovable(-11, -14, EMovableType.SWORDSMAN_L1),
-					new TemplateMovable(-11, -16, EMovableType.SWORDSMAN_L1),
-
-					new TemplateMovable(-9, -10, EMovableType.SWORDSMAN_L1),
-					new TemplateMovable(-9, -12, EMovableType.SWORDSMAN_L1),
-					new TemplateMovable(-9, -14, EMovableType.SWORDSMAN_L1),
-					new TemplateMovable(-9, -16, EMovableType.BOWMAN_L1),
-
-					new TemplateMovable(-7, -10, EMovableType.PIKEMAN_L1),
-					new TemplateMovable(-7, -12, EMovableType.PIKEMAN_L1),
-					new TemplateMovable(-7, -14, EMovableType.BOWMAN_L1),
-					new TemplateMovable(-7, -16, EMovableType.BOWMAN_L1),
-
-					new TemplateMovable(-5, -10, EMovableType.PIKEMAN_L1),
-					new TemplateMovable(-5, -12, EMovableType.BOWMAN_L1),
-					new TemplateMovable(-5, -14, EMovableType.BOWMAN_L1),
-
-					// bearer
-					new TemplateMovable(-2, -12, EMovableType.BEARER),
-					new TemplateMovable(-2, -14, EMovableType.BEARER),
-					new TemplateMovable(-2, -16, EMovableType.BEARER),
-
-					new TemplateMovable(0, -10, EMovableType.BEARER),
-					new TemplateMovable(0, -12, EMovableType.BEARER),
-					new TemplateMovable(0, -14, EMovableType.BEARER),
-					new TemplateMovable(0, -16, EMovableType.BEARER),
-
-					new TemplateMovable(2, -10, EMovableType.BEARER),
-					new TemplateMovable(2, -12, EMovableType.BEARER),
-					new TemplateMovable(2, -14, EMovableType.BEARER),
-					new TemplateMovable(2, -16, EMovableType.BEARER),
-
-					new TemplateMovable(4, -10, EMovableType.BEARER),
-					new TemplateMovable(4, -12, EMovableType.BEARER),
-					new TemplateMovable(4, -14, EMovableType.BEARER),
-
-					new TemplateMovable(5, -12, EMovableType.BEARER),
-					new TemplateMovable(5, -14, EMovableType.BEARER),
-					new TemplateMovable(5, -16, EMovableType.BEARER),
-
-					new TemplateMovable(7, -10, EMovableType.BEARER),
-					new TemplateMovable(7, -12, EMovableType.BEARER),
-					new TemplateMovable(7, -14, EMovableType.BEARER),
-					new TemplateMovable(7, -16, EMovableType.BEARER),
-
-					new TemplateMovable(9, -10, EMovableType.BEARER),
-					new TemplateMovable(9, -12, EMovableType.BEARER),
-					new TemplateMovable(9, -14, EMovableType.BEARER),
-					new TemplateMovable(9, -16, EMovableType.BEARER),
-
-					new TemplateMovable(11, -10, EMovableType.BEARER),
-					new TemplateMovable(11, -12, EMovableType.BEARER),
-					new TemplateMovable(11, -14, EMovableType.BEARER),
-			}, this)
-		});
-	// @formatter:on
+	/**
+	 * Presets, Templates: Loaded from .xml file
+	 */
+	private final DynamicToolBox PRESETS = new DynamicToolBox(EditorLabels.getLabel("presets"));
 
 	// @formatter:off
 	private final ToolNode TOOLBOX = new ToolBox("<toolbox root>, hidden", new ToolNode[] {

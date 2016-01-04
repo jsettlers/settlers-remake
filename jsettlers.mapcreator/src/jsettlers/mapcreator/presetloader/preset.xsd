@@ -1,48 +1,170 @@
-<xs:schema attributeFormDefault="unqualified"
-	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:element name="presets">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="preset" maxOccurs="unbounded" minOccurs="0" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:element name="preset">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="building" maxOccurs="unbounded"
-					minOccurs="0" />
-				<xs:element ref="object" maxOccurs="unbounded" minOccurs="0" />
-				<xs:element ref="moveable" maxOccurs="unbounded"
-					minOccurs="0" />
-			</xs:sequence>
-			<xs:attribute type="xs:string" name="text-id" use="required" />
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="presets">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="preset" nillable="true" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="building" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence/>
+                  <xs:attribute name="dx" type="xs:int"/>
+                  <xs:attribute name="dy" type="xs:int"/>
+                  <xs:attribute name="type" type="eBuildingType"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="object" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence/>
+                  <xs:attribute name="dx" type="xs:int"/>
+                  <xs:attribute name="dy" type="xs:int"/>
+                  <xs:attribute name="type" type="eMaterialType"/>
+                  <xs:attribute name="count" type="xs:int"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="moveable" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence/>
+                  <xs:attribute name="dx" type="xs:int"/>
+                  <xs:attribute name="dy" type="xs:int"/>
+                  <xs:attribute name="type" type="eMovableType"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="text-id" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="building">
-		<xs:complexType>
-			<xs:attribute type="xs:int" name="dx" />
-			<xs:attribute type="xs:int" name="dy" />
-			<xs:attribute type="xs:string" name="type" />
-		</xs:complexType>
-	</xs:element>
+  <xs:simpleType name="eBuildingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="STONECUTTER"/>
+      <xs:enumeration value="FORESTER"/>
+      <xs:enumeration value="LUMBERJACK"/>
+      <xs:enumeration value="SAWMILL"/>
+      <xs:enumeration value="COALMINE"/>
+      <xs:enumeration value="IRONMINE"/>
+      <xs:enumeration value="GOLDMINE"/>
+      <xs:enumeration value="GOLDMELT"/>
+      <xs:enumeration value="IRONMELT"/>
+      <xs:enumeration value="TOOLSMITH"/>
+      <xs:enumeration value="WEAPONSMITH"/>
+      <xs:enumeration value="FARM"/>
+      <xs:enumeration value="PIG_FARM"/>
+      <xs:enumeration value="MILL"/>
+      <xs:enumeration value="WATERWORKS"/>
+      <xs:enumeration value="SLAUGHTERHOUSE"/>
+      <xs:enumeration value="BAKER"/>
+      <xs:enumeration value="FISHER"/>
+      <xs:enumeration value="WINEGROWER"/>
+      <xs:enumeration value="CHARCOAL_BURNER"/>
+      <xs:enumeration value="DONKEY_FARM"/>
+      <xs:enumeration value="SMALL_LIVINGHOUSE"/>
+      <xs:enumeration value="MEDIUM_LIVINGHOUSE"/>
+      <xs:enumeration value="BIG_LIVINGHOUSE"/>
+      <xs:enumeration value="LOOKOUT_TOWER"/>
+      <xs:enumeration value="TOWER"/>
+      <xs:enumeration value="BIG_TOWER"/>
+      <xs:enumeration value="CASTLE"/>
+      <xs:enumeration value="HOSPITAL"/>
+      <xs:enumeration value="BARRACK"/>
+      <xs:enumeration value="DOCKYARD"/>
+      <xs:enumeration value="HARBOR"/>
+      <xs:enumeration value="STOCK"/>
+      <xs:enumeration value="TEMPLE"/>
+      <xs:enumeration value="BIG_TEMPLE"/>
+      <xs:enumeration value="MARKET_PLACE"/>
+    </xs:restriction>
+  </xs:simpleType>
 
-	<xs:element name="object">
-		<xs:complexType>
-			<xs:attribute type="xs:int" name="dx" />
-			<xs:attribute type="xs:int" name="dy" />
-			<xs:attribute type="xs:string" name="type" />
-			<xs:attribute type="xs:int" name="count" />
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="moveable">
-		<xs:complexType>
-			<xs:attribute type="xs:int" name="dx" />
-			<xs:attribute type="xs:int" name="dy" />
-			<xs:attribute type="xs:string" name="type" />
-		</xs:complexType>
-	</xs:element>
+  <xs:simpleType name="eMaterialType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NO_MATERIAL"/>
+      <xs:enumeration value="AXE"/>
+      <xs:enumeration value="BOW"/>
+      <xs:enumeration value="BLADE"/>
+      <xs:enumeration value="BREAD"/>
+      <xs:enumeration value="COAL"/>
+      <xs:enumeration value="CROP"/>
+      <xs:enumeration value="FISH"/>
+      <xs:enumeration value="FISHINGROD"/>
+      <xs:enumeration value="FLOUR"/>
+      <xs:enumeration value="GOLD"/>
+      <xs:enumeration value="GOLDORE"/>
+      <xs:enumeration value="HAMMER"/>
+      <xs:enumeration value="HONEY"/>
+      <xs:enumeration value="IRON"/>
+      <xs:enumeration value="IRONORE"/>
+      <xs:enumeration value="MEAD"/>
+      <xs:enumeration value="MEAT"/>
+      <xs:enumeration value="PICK"/>
+      <xs:enumeration value="PIG"/>
+      <xs:enumeration value="PLANK"/>
+      <xs:enumeration value="SAW"/>
+      <xs:enumeration value="SCYTHE"/>
+      <xs:enumeration value="SPEAR"/>
+      <xs:enumeration value="STONE"/>
+      <xs:enumeration value="SWORD"/>
+      <xs:enumeration value="TRUNK"/>
+      <xs:enumeration value="WATER"/>
+      <xs:enumeration value="WINE"/>
+      <xs:enumeration value="GEMS"/>
+      <xs:enumeration value="SULFUR"/>
+      <xs:enumeration value="RICE"/>
+      <xs:enumeration value="KEG"/>
+      <xs:enumeration value="BOX"/>
+      <xs:enumeration value="CANNON_AMMO"/>
+      <xs:enumeration value="BALLISTA_AMMO"/>
+      <xs:enumeration value="CATAPULT_AMMO"/>
+      <xs:enumeration value="WHITE_BREAD"/>
+      <xs:enumeration value="BASKET"/>
+      <xs:enumeration value="TREE"/>
+      <xs:enumeration value="PLANT"/>
+    </xs:restriction>
+  </xs:simpleType>
 
+  <xs:simpleType name="eMovableType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BEARER"/>
+      <xs:enumeration value="SMITH"/>
+      <xs:enumeration value="LUMBERJACK"/>
+      <xs:enumeration value="STONECUTTER"/>
+      <xs:enumeration value="SAWMILLER"/>
+      <xs:enumeration value="FORESTER"/>
+      <xs:enumeration value="MELTER"/>
+      <xs:enumeration value="MINER"/>
+      <xs:enumeration value="FISHERMAN"/>
+      <xs:enumeration value="FARMER"/>
+      <xs:enumeration value="MILLER"/>
+      <xs:enumeration value="BAKER"/>
+      <xs:enumeration value="PIG_FARMER"/>
+      <xs:enumeration value="SLAUGHTERER"/>
+      <xs:enumeration value="CHARCOAL_BURNER"/>
+      <xs:enumeration value="WATERWORKER"/>
+      <xs:enumeration value="WINEGROWER"/>
+      <xs:enumeration value="HEALER"/>
+      <xs:enumeration value="BRICKLAYER"/>
+      <xs:enumeration value="DIGGER"/>
+      <xs:enumeration value="THIEF"/>
+      <xs:enumeration value="PIONEER"/>
+      <xs:enumeration value="GEOLOGIST"/>
+      <xs:enumeration value="MAGE"/>
+      <xs:enumeration value="SWORDSMAN_L1"/>
+      <xs:enumeration value="SWORDSMAN_L2"/>
+      <xs:enumeration value="SWORDSMAN_L3"/>
+      <xs:enumeration value="PIKEMAN_L1"/>
+      <xs:enumeration value="PIKEMAN_L2"/>
+      <xs:enumeration value="PIKEMAN_L3"/>
+      <xs:enumeration value="BOWMAN_L1"/>
+      <xs:enumeration value="BOWMAN_L2"/>
+      <xs:enumeration value="BOWMAN_L3"/>
+      <xs:enumeration value="DONKEY"/>
+      <xs:enumeration value="WHITEFLAGGED_DONKEY"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
+
