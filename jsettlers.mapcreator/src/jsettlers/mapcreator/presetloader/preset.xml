@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<presets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="preset.xsd">
+
+	<!-- Name translated in jsettlers.mapcreator.localization -->
+	<preset text-id="preset.start">
+	</preset>
+
+	<!-- Name translated in jsettlers.mapcreator.localization -->
+	<preset text-id="preset-wood">
+		<building dx="0" dy="10" type="LUMBERJACK" />
+		<building dx="0" dy="0" type="FORESTER" />
+		<building dx="3" dy="-9" type="LUMBERJACK" />
+
+		<moveable dx="8" dy="-8" type="LUMBERJACK" />
+		<moveable dx="7" dy="3" type="FORESTER" />
+		<moveable dx="7" dy="12" type="LUMBERJACK" />
+	</preset>
+</presets>

@@ -22,7 +22,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
@@ -32,7 +31,7 @@ public class PlaceTemplateTool extends AbstractTool {
 	private final IPlayerSetter player;
 
 	public PlaceTemplateTool(String name, TemplateObject[] objects, IPlayerSetter player) {
-		super(null, String.format(EditorLabels.getLabel("tool.template"), name));
+		super(null, name);
 		this.objects = objects;
 		this.player = player;
 		shapeTypes.add(EShapeType.POINT);

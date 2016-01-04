@@ -1,0 +1,48 @@
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="presets">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="preset" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="preset">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="building" maxOccurs="unbounded"
+					minOccurs="0" />
+				<xs:element ref="object" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="moveable" maxOccurs="unbounded"
+					minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute type="xs:string" name="text-id" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="building">
+		<xs:complexType>
+			<xs:attribute type="xs:int" name="dx" />
+			<xs:attribute type="xs:int" name="dy" />
+			<xs:attribute type="xs:string" name="type" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="object">
+		<xs:complexType>
+			<xs:attribute type="xs:int" name="dx" />
+			<xs:attribute type="xs:int" name="dy" />
+			<xs:attribute type="xs:string" name="type" />
+			<xs:attribute type="xs:int" name="count" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="moveable">
+		<xs:complexType>
+			<xs:attribute type="xs:int" name="dx" />
+			<xs:attribute type="xs:int" name="dy" />
+			<xs:attribute type="xs:string" name="type" />
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

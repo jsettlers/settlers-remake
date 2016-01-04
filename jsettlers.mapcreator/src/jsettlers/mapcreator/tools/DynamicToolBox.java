@@ -14,24 +14,33 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Icon;
 
 /**
- * This is a tool that only holds some more tools.
+ * Tool list with dynamic content
  * 
- * @author michael
+ * @author Andreas Butti
+ *
  */
-public class ToolBox implements ToolNode {
+public class DynamicToolBox extends ToolBox {
 
 	/**
-	 * Name of the node
+	 * Tools
 	 */
-	private final String name;
+	private final List<ToolNode> tools = new ArrayList<>();
 
 	/**
-	 * Array with the tools
+	 * Constructor
+	 * 
+	 * @param name
+	 *            Name of the node
 	 */
-	private final ToolNode[] tools;
+	public DynamicToolBox(String name) {
+		super(name, null);
+	}
 
 	/**
 	 * Constructor
@@ -41,32 +50,32 @@ public class ToolBox implements ToolNode {
 	 * @param tools
 	 *            Array with the tools
 	 */
-	public ToolBox(String name, ToolNode[] tools) {
-		this.name = name;
-		this.tools = tools;
+	public DynamicToolBox(String name, ToolNode[] tools) {
+		super(name, null);
+
+		for (ToolNode t : tools) {
+			this.tools.add(t);
+		}
 	}
 
 	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Get tool at index
-	 * 
-	 * @param index
-	 *            Index
-	 * @return Tool
-	 */
 	public ToolNode getTool(int index) {
-		return tools[index];
+		return tools.get(index);
+	}
+
+	@Override
+	public int getToolLength() {
+		return tools.size();
 	}
 
 	/**
-	 * @return Tool length
+	 * Add a tool
+	 * 
+	 * @param t
+	 *            To add
 	 */
-	public int getToolLength() {
-		return tools.length;
+	public void add(ToolNode t) {
+		tools.add(t);
 	}
 
 	@Override
