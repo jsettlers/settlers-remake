@@ -261,6 +261,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			return new LinkedList<ShortPoint2D>(); // return if no tower has been found
 		}
 
+		// free the occupied area
 		IteratorFilter<ShortPoint2D> areaWithoutGround = new IteratorFilter<ShortPoint2D>(tower.area, new IPredicate<ShortPoint2D>() {
 			@Override
 			public boolean evaluate(ShortPoint2D pos) {
@@ -273,20 +274,23 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		// let the other towers occupy the area
 		checkOtherTowersInArea(tower);
 
+		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower);
+		return occupyAreaOfTower(groundArea, newTower);
+	}
+
+	private IMapArea occupyAreaOfTower(final FreeMapArea groundArea, PartitionOccupyingTower tower) {
 		// set the tower counter of the groundArea to 0 => the ground area will be occupied
 		for (ShortPoint2D currPos : groundArea) {
 			towers[currPos.x + currPos.y * width] = 0;
 		}
 
 		// occupy the area for the new player
-		occupyArea(newPlayerId, tower.area, tower.areaBorders);
-		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower);
-		occupyingTowers.add(newTower);
+		occupyArea(tower.playerId, tower.area, tower.areaBorders);
+		occupyingTowers.add(tower);
 
 		// recalculate the tower counter for the ground area
-		recalculateTowerCounter(newTower, groundArea);
-
-		return newTower.area;
+		recalculateTowerCounter(tower, groundArea);
+		return tower.area;
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
