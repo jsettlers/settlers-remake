@@ -37,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import go.graphics.area.Area;
 import go.graphics.region.Region;
@@ -770,8 +771,11 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		map.setShowResources(showResourcesAlways | showResourcesBecauseOfTool);
 	}
 
+	/**
+	 * This listener is called from different Thread, all swing calls have to be from event dispatcher thread!
+	 */
 	@Override
-	public void action(Action action) {
+	public void action(final Action action) {
 		System.out.println("Got action: " + action.getActionType());
 		if (action.getActionType() == EActionType.SELECT_AREA) {
 			// IMapArea area = ((SelectAreaAction) action).getArea();
@@ -779,6 +783,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				DrawLineAction lineAction = (DrawLineAction) action;
 
+				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
 				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
@@ -789,6 +794,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				StartDrawingAction lineAction = (StartDrawingAction) action;
 
+				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
 				tool.start(data, shape, lineAction.getPos());
@@ -796,24 +802,42 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
-			undoRedo.endUseStep();
-			validator.reValidate();
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					undoRedo.endUseStep();
+					validator.reValidate();
+				}
+			});
 		} else if (action instanceof AbortDrawingAction) {
-			MapDataDelta delta = data.getUndoDelta();
-			data.apply(delta);
-			data.resetUndoDelta();
-			validator.reValidate();
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					MapDataDelta delta = data.getUndoDelta();
+					data.apply(delta);
+					data.resetUndoDelta();
+					validator.reValidate();
+				}
+			});
 		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
-				PointAction lineAction = (PointAction) action;
+				SwingUtilities.invokeLater(new Runnable() {
 
-				ShapeType shape = toolSidebar.getActiveShape();
+					@Override
+					public void run() {
+						PointAction lineAction = (PointAction) action;
 
-				tool.start(data, shape, lineAction.getPosition());
-				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
+						ShapeType shape = toolSidebar.getActiveShape();
 
-				undoRedo.endUseStep();
-				validator.reValidate();
+						tool.start(data, shape, lineAction.getPosition());
+						tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
+
+						undoRedo.endUseStep();
+						validator.reValidate();
+					}
+				});
 			}
 		}
 	}
