@@ -1596,7 +1596,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, FreeMapArea groundArea) {
-			Iterable<ShortPoint2D> positions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId, groundArea);
+			Iterable<ShortPoint2D> positions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId);
 			checkAllPositionsForEnclosedBlockedAreas(positions);
 		}
 

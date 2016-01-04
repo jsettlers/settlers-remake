@@ -132,7 +132,7 @@ public class PartitionsGridTestingWnd {
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		grid.changePlayerOfTower(pos, (byte) newPlayer, getGroundArea(pos));
+		grid.changePlayerOfTower(pos, (byte) newPlayer);
 	}
 
 	private FreeMapArea getGroundArea(ShortPoint2D pos) {
