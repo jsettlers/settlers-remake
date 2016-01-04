@@ -19,18 +19,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.IPartitionsGridBlockingProvider;
-import jsettlers.logic.map.grid.partition.Partition;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
-
-import org.junit.Test;
 
 public class PartitionsGridTest {
 
@@ -240,7 +238,11 @@ public class PartitionsGridTest {
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		grid.changePlayerOfTower(pos, (byte) newPlayer, new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()));
+		grid.changePlayerOfTower(pos, (byte) newPlayer, getGroundArea(pos));
+	}
+
+	private FreeMapArea getGroundArea(ShortPoint2D pos) {
+		return new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles());
 	}
 
 	private void assertCircleIs(MapCircle circle, short partition) {
@@ -254,7 +256,7 @@ public class PartitionsGridTest {
 	}
 
 	private void addTower(int playerId, int x, int y, int radius) {
-		grid.addTowerAndOccupyArea((byte) playerId, getTowerCircle(x, y, radius));
+		grid.addTowerAndOccupyArea((byte) playerId, getTowerCircle(x, y, radius), getGroundArea(new ShortPoint2D(x, y)));
 	}
 
 	private MapCircle getTowerCircle(int x, int y, int radius) {

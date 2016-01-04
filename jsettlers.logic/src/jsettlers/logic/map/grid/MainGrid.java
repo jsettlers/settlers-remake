@@ -1583,8 +1583,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void occupyAreaByTower(Player player, MapCircle influencingArea) {
-			partitionsGrid.addTowerAndOccupyArea(player.playerId, influencingArea);
+		public void occupyAreaByTower(Player player, MapCircle influencingArea, FreeMapArea groundArea) {
+			partitionsGrid.addTowerAndOccupyArea(player.playerId, influencingArea, groundArea);
 			checkAllPositionsForEnclosedBlockedAreas(influencingArea); // TODO @Andreas Eberle only test the borders of changed areas!!
 		}
 

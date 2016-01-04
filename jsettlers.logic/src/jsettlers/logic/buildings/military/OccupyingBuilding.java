@@ -124,9 +124,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		super.setPlayer(newPlayer);
 
 		if (occupiedArea) { // free the area if it had been occupied.
-			ShortPoint2D pos = super.getPos();
-			FreeMapArea protectedArea = new FreeMapArea(pos, getBuildingType().getProtectedTiles());
-			super.getGrid().changePlayerOfTower(pos, newPlayer, protectedArea);
+			super.getGrid().changePlayerOfTower(super.getPos(), newPlayer, getGroundArea());
 		} else {
 			occupyAreaIfNeeded();
 		}
@@ -141,6 +139,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		super.placeFlag(true);
 		setAttackableTowerObject(true);
+	}
+
+	private FreeMapArea getGroundArea() {
+		return new FreeMapArea(super.getPos(), getBuildingType().getProtectedTiles());
 	}
 
 	private void resetSoldierSearch() {
@@ -344,7 +346,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
 			MapCircle occupying = new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
-			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying);
+			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying, getGroundArea());
 			occupiedArea = true;
 		}
 	}

@@ -204,8 +204,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 *            The id of the occupying player.
 	 * @param influencingArea
 	 *            The area affected by the tower.
+	 * @param groundArea
+	 *            The ground area of the tower.
 	 */
-	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea) {
+	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea, FreeMapArea groundArea) {
 		IMapArea filteredArea = new FilteredMapArea(influencingArea, new ISerializablePredicate<ShortPoint2D>() {
 			private static final long serialVersionUID = -6460916149912865762L;
 
@@ -215,12 +217,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		});
 
-		// occupy the area
-		occupyArea(playerId, filteredArea, influencingArea.getBorders());
+		PartitionOccupyingTower tower = new PartitionOccupyingTower(playerId, influencingArea.getCenter(), filteredArea, influencingArea.getBorders(),
+				(int) influencingArea.getRadius());
 
-		// add the new tower object
-		occupyingTowers.add(new PartitionOccupyingTower(playerId, influencingArea.getCenter(), filteredArea, influencingArea.getBorders(),
-				(int) influencingArea.getRadius()));
+		occupyAreaOfTower(groundArea, tower);
 	}
 
 	/**
