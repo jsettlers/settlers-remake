@@ -9,10 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -27,6 +24,7 @@ import jsettlers.logic.map.save.loader.MapLoader;
  */
 public class OpenPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
+	private final ListCellRenderer<MapLoader> cellRenderer;
 
 	/**
 	 * List with the Maps to select
@@ -53,13 +51,18 @@ public class OpenPanel extends JPanel {
 	 */
 	private SearchTextField txtSearch;
 
+	public OpenPanel(final ActionListener doubleclickListener) {
+		this(doubleclickListener, new MapListCellRenderer());
+	}
+
 	/**
 	 * Constructor
 	 *
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final ActionListener doubleclickListener) {
+	public OpenPanel(final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+		this.cellRenderer = cellRenderer;
 		setLayout(new BorderLayout());
 
 		sortMaps();
@@ -86,7 +89,7 @@ public class OpenPanel extends JPanel {
 
 		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
 		this.mapList = new JList<MapLoader>(listModelFiltered);
-		mapList.setCellRenderer(new MapListCellRenderer());
+		mapList.setCellRenderer(cellRenderer);
 		mapList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
