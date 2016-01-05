@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main.window.search;
+package jsettlers.main.components.openpanel;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -9,11 +9,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import jsettlers.mapcreator.localization.EditorLabels;
+import jsettlers.graphics.localization.Labels;
 
 /**
  * Search Text field
- * 
+ *
  * @author Andreas Butti
  */
 public class SearchTextField extends JTextField {
@@ -37,7 +37,7 @@ public class SearchTextField extends JTextField {
 	/**
 	 * Search text
 	 */
-	private final String SEARCH = EditorLabels.getLabel("general.search");
+	private final String SEARCH = Labels.getString("general.search");
 
 	/**
 	 * Constructor

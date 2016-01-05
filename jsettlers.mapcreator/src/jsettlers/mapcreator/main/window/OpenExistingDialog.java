@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
+import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**

@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main.window.search;
+package jsettlers.main.components.openpanel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -12,7 +12,7 @@ import javax.swing.Icon;
 
 /**
  * Icon to clear search
- * 
+ *
  * @author Andreas Butti
  */
 public class ClearIcon implements Icon {

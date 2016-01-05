@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.main.components.openpanel.OpenPanel;
 
 /**
  * Panel to open one of the last used maps

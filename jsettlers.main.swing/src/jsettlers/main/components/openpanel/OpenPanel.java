@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main.window;
+package jsettlers.main.components.openpanel;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -18,11 +18,10 @@ import javax.swing.event.DocumentListener;
 
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.mapcreator.main.window.search.SearchTextField;
 
 /**
  * Panel to open an existing map
- * 
+ *
  * @author Andreas Butti
  *
  */
@@ -56,7 +55,7 @@ public class OpenPanel extends JPanel {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
@@ -130,7 +129,7 @@ public class OpenPanel extends JPanel {
 
 	/**
 	 * Checks if a map matches the search criteria
-	 * 
+	 *
 	 * @param m
 	 *            Map
 	 * @param search
