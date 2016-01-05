@@ -13,7 +13,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 
 /**
@@ -34,7 +33,7 @@ public class OpenPanel extends JPanel {
 	/**
 	 * List with all maps
 	 */
-	protected List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
+	protected List<MapLoader> maps;
 
 	/**
 	 * Unfiltered map list
@@ -51,8 +50,8 @@ public class OpenPanel extends JPanel {
 	 */
 	private SearchTextField txtSearch;
 
-	public OpenPanel(final ActionListener doubleclickListener) {
-		this(doubleclickListener, new MapListCellRenderer());
+	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener) {
+		this(theMaps, doubleclickListener, new MapListCellRenderer());
 	}
 
 	/**
@@ -61,7 +60,8 @@ public class OpenPanel extends JPanel {
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+		this.maps = theMaps;
 		this.cellRenderer = cellRenderer;
 		setLayout(new BorderLayout());
 
@@ -177,4 +177,7 @@ public class OpenPanel extends JPanel {
 		return mapList.getSelectedValue();
 	}
 
+	public boolean isEmpty() {
+		return maps.isEmpty();
+	}
 }

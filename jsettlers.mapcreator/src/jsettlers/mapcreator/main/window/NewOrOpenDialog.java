@@ -3,10 +3,14 @@ package jsettlers.mapcreator.main.window;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.mapcreator.localization.EditorLabels;
 
@@ -39,12 +43,12 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the map list
 	 */
-	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
+	private final OpenPanel openPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), doubleClickListener);
 
 	/**
 	 * Panel with the map list
 	 */
-	private LastUsedPanel lastUsed = new LastUsedPanel(doubleClickListener);
+	private final OpenPanel lastUsed;
 
 	/**
 	 * Main tabs
@@ -59,6 +63,8 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	 */
 	public NewOrOpenDialog(JFrame parent) {
 		super(parent);
+		lastUsed = initializeLastUsed();
+
 		setTitle(EditorLabels.getLabel("neworopen.header"));
 
 		tabs.addTab(EditorLabels.getLabel("neworopen.lastused"), lastUsed);
@@ -67,13 +73,24 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 
 		add(tabs, BorderLayout.CENTER);
 
-		if (!lastUsed.hasFiles()) {
+		if (lastUsed.isEmpty()) {
 			tabs.setSelectedComponent(openPanel);
 		}
 
 		pack();
 		setLocationRelativeTo(parent);
 		setModal(true);
+	}
+
+	private OpenPanel initializeLastUsed() {
+		List<String> lastUsedMapIds = new LastUsedHandler().getLastUsed();
+		List<MapLoader> lastUsedMaps = new Vector<MapLoader>();
+		for (MapLoader mapLoader : MapList.getDefaultList().getFreshMaps().getItems()) {
+			if (lastUsedMapIds.contains(mapLoader.getMapId())) {
+				lastUsedMaps.add(mapLoader);
+			}
+		}
+		return new OpenPanel(lastUsedMaps, doubleClickListener);
 	}
 
 	/**
