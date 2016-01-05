@@ -50,6 +50,10 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 				MatchConstants.clock().remove(uniIns);
 			}
 			uniIns = null;
+			try {
+				Thread.sleep(100); // stopping takes some time
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 
@@ -88,6 +92,10 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 		ArrayList<IScheduledTimerable> queue = timerables[currTimeSlot];
 
 		for (IScheduledTimerable curr : queue) {
+			if (uniIns != this) { // fast stop when stopAndClear() is called.
+				return;
+			}
+
 			try {
 				int delay = curr.timerEvent();
 				addTimerable(curr, delay);
