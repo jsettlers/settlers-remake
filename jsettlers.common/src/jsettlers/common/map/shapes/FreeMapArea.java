@@ -40,6 +40,7 @@ public final class FreeMapArea implements IMapArea {
 	private final boolean[][] areaMap;
 	private final int width;
 	private final int height;
+	private transient final ShortPoint2D upperLeftPosition; // FIXME remove transient
 
 	/**
 	 * @param positions
@@ -51,13 +52,13 @@ public final class FreeMapArea implements IMapArea {
 		this.positions = positions;
 		SRectangle bounds = getBounds(positions);
 
-		xOffset = bounds.xMin;
-		yOffset = bounds.yMin;
-		width = bounds.getWidth() + 1;
-		height = bounds.getHeight() + 1;
+		this.xOffset = bounds.xMin;
+		this.yOffset = bounds.yMin;
+		this.width = bounds.getWidth() + 1;
+		this.height = bounds.getHeight() + 1;
 
-		areaMap = new boolean[width][height];
-		setPositionsToMap(areaMap, positions);
+		this.areaMap = new boolean[width][height];
+		this.upperLeftPosition = setPositionsToMap(areaMap, positions);
 	}
 
 	/**
@@ -81,8 +82,8 @@ public final class FreeMapArea implements IMapArea {
 		this.width = width;
 		this.height = height;
 
-		areaMap = new boolean[width][height];
-		setPositionsToMap(areaMap, positions);
+		this.areaMap = new boolean[width][height];
+		this.upperLeftPosition = setPositionsToMap(areaMap, positions);
 	}
 
 	/**
@@ -106,10 +107,29 @@ public final class FreeMapArea implements IMapArea {
 		return list;
 	}
 
-	private final void setPositionsToMap(boolean[][] areaMap, List<ShortPoint2D> positions) {
+	/**
+	 * Sets the positions to the map and returns the upper left position
+	 * 
+	 * @param areaMap
+	 * @param positions
+	 * @return
+	 */
+	private final ShortPoint2D setPositionsToMap(boolean[][] areaMap, List<ShortPoint2D> positions) {
+		if (positions.isEmpty()) {
+			return null;
+		}
+
+		ShortPoint2D upperLeft = positions.get(0);
+
 		for (ShortPoint2D curr : positions) {
 			areaMap[getMapX(curr)][getMapY(curr)] = true;
+
+			if (curr.y < upperLeft.y || curr.y == upperLeft.y && curr.x < upperLeft.x) {
+				upperLeft = curr;
+			}
 		}
+
+		return upperLeft;
 	}
 
 	final int getMapY(ShortPoint2D pos) {
@@ -142,12 +162,17 @@ public final class FreeMapArea implements IMapArea {
 
 	@Override
 	public final boolean contains(ShortPoint2D pos) {
-		return isValidPos(pos) && areaMap[getMapX(pos)][getMapY(pos)];
+		return contains(pos.x, pos.y);
 	}
 
-	private final boolean isValidPos(ShortPoint2D pos) {
-		int dx = pos.x - xOffset;
-		int dy = pos.y - yOffset;
+	public boolean contains(int x, int y) {
+		int dx = x - xOffset;
+		int dy = y - yOffset;
+
+		return isValidMapPos(dx, dy) && areaMap[dx][dy];
+	}
+
+	private final boolean isValidMapPos(int dx, int dy) {
 		return dx >= 0 && dy >= 0 && dx < width && dy < height;
 	}
 
@@ -170,6 +195,10 @@ public final class FreeMapArea implements IMapArea {
 
 	final void setPosition(ShortPoint2D pos, boolean value) {
 		areaMap[getMapX(pos)][getMapY(pos)] = value;
+	}
+
+	public ShortPoint2D getUpperLeftPosition() {
+		return upperLeftPosition;
 	}
 
 	private final static class FreeMapAreaIterator implements Iterator<ShortPoint2D> {
@@ -201,5 +230,4 @@ public final class FreeMapArea implements IMapArea {
 		}
 
 	}
-
 }

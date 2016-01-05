@@ -182,16 +182,19 @@ public class PartitionsGridTest {
 		assertEquals(grid.getPartitionIdAt(100, 100), grid.getPartitionIdAt(150, 100));
 
 		addTower(1, 75, 55, 42);
-		addTower(1, 125, 150, 42);
+		addTower(1, 120, 145, 42);
 		// partitions still should be connected
 		assertEquals(grid.getPartitionIdAt(50, 100), grid.getPartitionIdAt(150, 100));
 
 		removeTower(100, 100);
+
 		// now the partitions should be divided
 		assertTrue(grid.getPartitionIdAt(50, 100) != grid.getPartitionIdAt(150, 100));
 		assertCircleIs(getTowerCircle(50, 100, 40), grid.getPartitionIdAt(50, 100));
 		assertCircleIs(getTowerCircle(150, 100, 40), grid.getPartitionIdAt(150, 100));
-		assertEquals(grid.getPartitionIdAt(75, 55), grid.getPartitionIdAt(125, 150));
+		assertEquals(grid.getPartitionIdAt(75, 55), grid.getPartitionIdAt(120, 145)); // do tower positions equal?
+		assertEquals(grid.getPartitionIdAt(74, 55), grid.getPartitionIdAt(120, 145)); // do the surroundings equal the tower positions?
+		assertEquals(grid.getPartitionIdAt(75, 55), grid.getPartitionIdAt(121, 145));
 
 		assertOfferAt(materialPos, EMaterialType.STONE, 2);
 	}
@@ -238,11 +241,7 @@ public class PartitionsGridTest {
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		grid.changePlayerOfTower(pos, (byte) newPlayer, getGroundArea(pos));
-	}
-
-	private FreeMapArea getGroundArea(ShortPoint2D pos) {
-		return new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles());
+		grid.changePlayerOfTower(pos, (byte) newPlayer);
 	}
 
 	private void assertCircleIs(MapCircle circle, short partition) {
@@ -257,6 +256,10 @@ public class PartitionsGridTest {
 
 	private void addTower(int playerId, int x, int y, int radius) {
 		grid.addTowerAndOccupyArea((byte) playerId, getTowerCircle(x, y, radius), getGroundArea(new ShortPoint2D(x, y)));
+	}
+
+	private FreeMapArea getGroundArea(ShortPoint2D pos) {
+		return new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles());
 	}
 
 	private MapCircle getTowerCircle(int x, int y, int radius) {

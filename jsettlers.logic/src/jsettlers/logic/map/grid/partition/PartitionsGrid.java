@@ -365,7 +365,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 					continue; // only work on towers of other players.
 				}
 
-				PartitionOccupyingTower currTower = curr.e2;
+				final PartitionOccupyingTower currTower = curr.e2;
 
 				final IMapArea currArea = currTower.area;
 
@@ -377,6 +377,18 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 				});
 
 				occupyAreaByTower(currTower.playerId, area, currTower.areaBorders);
+
+				PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
+				final FreeMapArea groundArea = currTower.groundArea;
+				ShortPoint2D upperLeftGroundAreaPosition = groundArea.getUpperLeftPosition();
+				BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
+					@Override
+					public boolean contains(int x, int y) {
+						return groundArea.contains(x, y);
+					}
+				}, upperLeftGroundAreaPosition, borderVisitor, true);
+				checkMergesAndDividesOnPartitionsList(currTower.playerId,
+						getPartitionIdAt(upperLeftGroundAreaPosition.x, upperLeftGroundAreaPosition.y), borderVisitor.getPartitionsList());
 			}
 		}
 	}
