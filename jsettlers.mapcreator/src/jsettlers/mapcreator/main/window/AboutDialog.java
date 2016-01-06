@@ -30,6 +30,9 @@ public class AboutDialog extends JDialog {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param parent
+	 *            Parent JFrame, to center on
 	 */
 	public AboutDialog(JFrame parent) {
 		super(parent);
