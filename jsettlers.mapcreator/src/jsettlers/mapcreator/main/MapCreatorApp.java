@@ -16,8 +16,6 @@ package jsettlers.mapcreator.main;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -179,8 +177,7 @@ public class MapCreatorApp {
 	 * Main
 	 * 
 	 * @param args
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 *            Arguments
 	 */
 	public static void main(String[] args) {
 		try {

@@ -9,7 +9,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -23,7 +27,6 @@ import jsettlers.logic.map.save.loader.MapLoader;
  */
 public class OpenPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private final ListCellRenderer<MapLoader> cellRenderer;
 
 	/**
 	 * List with the Maps to select
@@ -50,19 +53,30 @@ public class OpenPanel extends JPanel {
 	 */
 	private SearchTextField txtSearch;
 
-	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener) {
-		this(theMaps, doubleclickListener, new MapListCellRenderer());
+	/**
+	 * Constructor
+	 * 
+	 * @param maps
+	 *            Maps to display
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 */
+	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener) {
+		this(maps, doubleclickListener, new MapListCellRenderer());
 	}
 
 	/**
 	 * Constructor
-	 *
+	 * 
+	 * @param maps
+	 *            Maps to display
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 * @param cellRenderer
+	 *            Cell renderer to use
 	 */
-	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
-		this.maps = theMaps;
-		this.cellRenderer = cellRenderer;
+	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+		this.maps = maps;
 		setLayout(new BorderLayout());
 
 		sortMaps();
@@ -177,6 +191,9 @@ public class OpenPanel extends JPanel {
 		return mapList.getSelectedValue();
 	}
 
+	/**
+	 * @return true if there are no maps in the list
+	 */
 	public boolean isEmpty() {
 		return maps.isEmpty();
 	}

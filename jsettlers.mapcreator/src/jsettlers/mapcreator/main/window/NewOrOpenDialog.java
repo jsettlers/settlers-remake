@@ -3,8 +3,8 @@ package jsettlers.mapcreator.main.window;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -82,9 +82,14 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 		setModal(true);
 	}
 
+	/**
+	 * Filter the last used maps in a list
+	 * 
+	 * @return Panel with the last used maps
+	 */
 	private OpenPanel initializeLastUsed() {
 		List<String> lastUsedMapIds = new LastUsedHandler().getLastUsed();
-		List<MapLoader> lastUsedMaps = new Vector<MapLoader>();
+		List<MapLoader> lastUsedMaps = new ArrayList<MapLoader>();
 		for (MapLoader mapLoader : MapList.getDefaultList().getFreshMaps().getItems()) {
 			if (lastUsedMapIds.contains(mapLoader.getMapId())) {
 				lastUsedMaps.add(mapLoader);
