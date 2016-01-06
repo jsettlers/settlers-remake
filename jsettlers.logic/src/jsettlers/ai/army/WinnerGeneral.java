@@ -16,6 +16,7 @@
  */
 package jsettlers.ai.army;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -186,12 +187,14 @@ public class WinnerGeneral implements ArmyGeneral {
 	}
 
 	private Building determineTowerToAttack(byte enemyToAttackId) {
-		List<ShortPoint2D> myMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, player.playerId);
+		List<ShortPoint2D> myMilitaryBuildings = new ArrayList<>();
+		myMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, player.playerId));
 		myMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_TOWER, player.playerId));
 		myMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.CASTLE, player.playerId));
 		ShortPoint2D myBaseAveragePoint = aiStatistics.calculateAveragePointFromList(myMilitaryBuildings);
 
-		List<ShortPoint2D> enemyMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, enemyToAttackId);
+		List<ShortPoint2D> enemyMilitaryBuildings = new ArrayList<>();
+		enemyMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, enemyToAttackId));
 		enemyMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_TOWER, enemyToAttackId));
 		enemyMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.CASTLE, enemyToAttackId));
 
