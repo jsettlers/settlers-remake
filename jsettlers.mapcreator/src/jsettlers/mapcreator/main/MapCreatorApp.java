@@ -34,13 +34,13 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.control.ActionPropertie;
 import jsettlers.mapcreator.control.EditorControl;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
 import jsettlers.mapcreator.main.window.NewOrOpenDialog;
-import jsettlers.mapcreator.main.window.OpenPanel;
 
 /**
  * Entry point for Map Editor application
