@@ -2,7 +2,6 @@ package jsettlers.lookandfeel.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -43,8 +42,8 @@ public class ButtonUIStone extends BasicButtonUI {
 
 	@Override
 	public void installDefaults(AbstractButton b) {
-		b.setFont(new Font("Sans", Font.PLAIN, 12));
-		b.setForeground(Color.YELLOW);
+		b.setFont(UIDefaults.FONT);
+		b.setForeground(UIDefaults.LABEL_TEXT_COLOR);
 		b.setPreferredSize(getPreferredSize(b));
 	}
 
@@ -55,7 +54,7 @@ public class ButtonUIStone extends BasicButtonUI {
 
 	@Override
 	public Dimension getPreferredSize(JComponent c) {
-		return new Dimension(180, 40);
+		return new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight());
 	}
 
 	@Override
@@ -86,8 +85,9 @@ public class ButtonUIStone extends BasicButtonUI {
 			y += 1;
 		}
 
-		// TODO !!!!!!! FONT
-		g.setFont(new Font("Sans", Font.PLAIN, 12));
+		g.setFont(c.getFont());
+
+		// draw shadow
 		g.setColor(Color.BLACK);
 		g.drawString(b.getText(), x + 1, y + 1);
 		g.setColor(c.getForeground());

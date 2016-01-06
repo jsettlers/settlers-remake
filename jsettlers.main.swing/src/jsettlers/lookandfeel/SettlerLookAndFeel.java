@@ -2,8 +2,10 @@ package jsettlers.lookandfeel;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
+import javax.swing.plaf.LabelUI;
 
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
+import jsettlers.lookandfeel.factory.LabelUiFactory;
 import jsettlers.lookandfeel.factory.PanelUiFactory;
 
 /**
@@ -33,6 +35,7 @@ public class SettlerLookAndFeel extends LookAndFeel {
 		Object[] uiDefaults = {
 				"ButtonUI", ButtonUiFactory.class.getName(),
 				"PanelUI", PanelUiFactory.class.getName(),
+				"LabelUI", LabelUiFactory.class.getName(),
 		};
 		defaults.putDefaults(uiDefaults);
 	}

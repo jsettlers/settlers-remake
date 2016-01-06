@@ -10,8 +10,10 @@ import java.util.Properties;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -50,15 +52,40 @@ public class LookAndFeelSample extends JFrame {
 
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setLayout(new FlowLayout());
+		backgroundPanel.putClientProperty(LFStyle.KEY, LFStyle.PANEL_BACKGROUND_STONE);
+
+		// -------------------
 
 		JButton button1 = new JButton("Button1");
 		button1.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		backgroundPanel.add(button1);
 
+		// -------------------
+
 		JButton button2 = new JButton("Button2");
 		backgroundPanel.add(button2);
 
-		backgroundPanel.putClientProperty(LFStyle.KEY, LFStyle.PANEL_BACKGROUND_STONE);
+		// -------------------
+
+		JLabel lbHeader = new JLabel("Titel label");
+		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
+		backgroundPanel.add(lbHeader);
+
+		lbHeader = new JLabel("Titel Center", SwingConstants.CENTER);
+		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
+		backgroundPanel.add(lbHeader);
+
+		// -------------------
+
+		JLabel lbText = new JLabel("Label long");
+		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
+		backgroundPanel.add(lbText);
+
+		lbText = new JLabel("Label short");
+		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		backgroundPanel.add(lbText);
+
+		// -------------------
 
 		add(backgroundPanel);
 

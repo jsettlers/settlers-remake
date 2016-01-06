@@ -13,6 +13,21 @@ public enum LFStyle {
 	BUTTON_MENU,
 
 	/**
+	 * Header JLabel
+	 */
+	LABEL_HEADER,
+
+	/**
+	 * JLabel
+	 */
+	LABEL_LONG,
+
+	/**
+	 * JLabel
+	 */
+	LABEL_SHORT,
+
+	/**
 	 * Display the stone background with the settler logo
 	 */
 	PANEL_BACKGROUND_STONE;
