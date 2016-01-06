@@ -54,7 +54,7 @@ package jsettlers.common.movable;
  *
  * @author michael
  */
-public enum EAction {
+public enum EMovableAction {
 	/**
 	 * No action is performed and the settler is just standing.
 	 */

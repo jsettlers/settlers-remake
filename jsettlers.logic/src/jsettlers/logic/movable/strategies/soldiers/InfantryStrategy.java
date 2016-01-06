@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.logic.constants.Constants;
@@ -48,7 +48,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void startAttackAnimation(IAttackable enemy) {
-		super.playAction(EAction.ACTION1, INFANTRY_ATTACK_DURATION);
+		super.playAction(EMovableAction.ACTION1, INFANTRY_ATTACK_DURATION);
 	}
 
 	@Override

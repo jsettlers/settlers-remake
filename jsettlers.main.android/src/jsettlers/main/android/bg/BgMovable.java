@@ -15,7 +15,7 @@
 package jsettlers.main.android.bg;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -68,8 +68,8 @@ public class BgMovable implements IMovable {
 	}
 
 	@Override
-	public EAction getAction() {
-		return EAction.NO_ACTION;
+	public EMovableAction getAction() {
+		return EMovableAction.NO_ACTION;
 	}
 
 	@Override

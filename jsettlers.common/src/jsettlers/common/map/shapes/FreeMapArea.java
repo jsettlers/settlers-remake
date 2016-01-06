@@ -40,7 +40,7 @@ public final class FreeMapArea implements IMapArea {
 	private final boolean[][] areaMap;
 	private final int width;
 	private final int height;
-	private transient final ShortPoint2D upperLeftPosition; // FIXME remove transient
+	private final ShortPoint2D upperLeftPosition;
 
 	/**
 	 * @param positions

@@ -55,7 +55,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	@Override
 	protected void action() {
 		switch (state) {
-		case JOBLESS: // TODO @Andreas think about new state for NewMovable to turn of downcall for action when it's not needed
+		case JOBLESS:
 			break;
 
 		case INIT_CONVERT_WITH_TOOL_JOB:

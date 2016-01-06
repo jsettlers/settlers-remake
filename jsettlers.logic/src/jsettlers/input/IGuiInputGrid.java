@@ -86,7 +86,7 @@ public interface IGuiInputGrid {
 	 * @param type
 	 *            {@link EBuildingType} of the new building.
 	 * @param playerId
-	 *            TODO
+	 *            The player constructing the building.
 	 */
 	void constructBuildingAt(ShortPoint2D position, EBuildingType type, byte playerId);
 
@@ -124,8 +124,6 @@ public interface IGuiInputGrid {
 	 */
 	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority);
-
-
 
 	short getBlockedPartition(ShortPoint2D pos);
 

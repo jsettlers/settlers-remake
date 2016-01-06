@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
@@ -89,7 +89,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 
 	private void tryToBuild() {
 		if (constructionSite.tryToTakeMaterial()) {
-			super.playAction(EAction.ACTION1, BRICKLAYER_ACTION_DURATION);
+			super.playAction(EMovableAction.ACTION1, BRICKLAYER_ACTION_DURATION);
 		} else {
 			jobFinished();
 		}

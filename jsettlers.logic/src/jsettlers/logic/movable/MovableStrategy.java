@@ -19,8 +19,8 @@ import java.io.Serializable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
@@ -119,7 +119,7 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.setMaterial(materialType);
 	}
 
-	protected final void playAction(EAction movableAction, float duration) { // TODO @Andreas : rename EAction to EMovableAction
+	protected final void playAction(EMovableAction movableAction, float duration) {
 		movable.playAction(movableAction, duration);
 	}
 

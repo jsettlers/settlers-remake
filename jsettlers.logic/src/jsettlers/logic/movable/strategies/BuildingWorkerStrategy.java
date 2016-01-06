@@ -24,7 +24,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -187,11 +187,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case PLAY_ACTION1:
-			super.playAction(EAction.ACTION1, currentJob.getTime());
+			super.playAction(EMovableAction.ACTION1, currentJob.getTime());
 			jobFinished();
 			break;
 		case PLAY_ACTION2:
-			super.playAction(EAction.ACTION2, currentJob.getTime());
+			super.playAction(EMovableAction.ACTION2, currentJob.getTime());
 			jobFinished();
 			break;
 
