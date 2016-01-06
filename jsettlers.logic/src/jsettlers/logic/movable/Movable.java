@@ -26,8 +26,8 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -205,28 +205,32 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 
 		if (moveToRequest != null) {
-			switch (state) {
-			case PATHING:
-				// if we're currently pathing, stop former pathing and calculate a new path
-				setState(EMovableState.DOING_NOTHING);
-				this.movableAction = EMovableAction.NO_ACTION;
-				this.path = null;
+			if (strategy.isMoveToAble()) {
+				switch (state) {
+				case PATHING:
+					// if we're currently pathing, stop former pathing and calculate a new path
+					setState(EMovableState.DOING_NOTHING);
+					this.movableAction = EMovableAction.NO_ACTION;
+					this.path = null;
 
-			case DOING_NOTHING:
-				ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
-				ShortPoint2D oldPos = position;
-				boolean foundPath = goToPos(moveToRequest); // progress is reset in here
-				moveToRequest = null;
+				case DOING_NOTHING:
+					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
+					ShortPoint2D oldPos = position;
+					boolean foundPath = goToPos(moveToRequest); // progress is reset in here
+					moveToRequest = null;
 
-				if (foundPath) {
-					this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
-					return animationDuration; // we already follow the path and initiated the walking
-				} else {
+					if (foundPath) {
+						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+						return animationDuration; // we already follow the path and initiated the walking
+					} else {
+						break;
+					}
+
+				default:
 					break;
 				}
-
-			default:
-				break;
+			} else {
+				moveToRequest = null;
 			}
 		}
 
