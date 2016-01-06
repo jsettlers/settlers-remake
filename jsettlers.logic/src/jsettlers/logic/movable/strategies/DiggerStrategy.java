@@ -151,9 +151,18 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		if (pathTarget != null) {
 			super.getStrategyGrid().setMarked(pathTarget, false);
 		}
-		if (state == EDiggerState.JOBLESS) {
+
+		switch (state) {
+		case JOBLESS:
 			super.getStrategyGrid().removeJobless(this);
+			break;
+		case PLAYING_ACTION:
+			super.getStrategyGrid().setMarked(super.getPos(), false);
+			break;
+		default:
+			break;
 		}
+
 		if (requester != null) {
 			abortJob();
 		}
