@@ -70,7 +70,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 
 	@Override
 	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty) {
-		final boolean blockedAtStart;
+		final short blockedAtStartPartition;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
 		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
@@ -78,9 +78,9 @@ public final class BucketQueueAStar extends AbstractAStar {
 		} else if (sx == tx && sy == ty) {
 			return null;
 		} else if (isBlocked(requester, sx, sy)) {
-			blockedAtStart = true;
+			blockedAtStartPartition = map.getBlockedPartition(sx, sy);
 		} else {
-			blockedAtStart = false;
+			blockedAtStartPartition = -1;
 		}
 
 		final int targetFlatIdx = getFlatIdx(tx, ty);
@@ -111,7 +111,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 				final int neighborX = x + xDeltaArray[i];
 				final int neighborY = y + yDeltaArray[i];
 
-				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
+				if (isValidPosition(requester, neighborX, neighborY, blockedAtStartPartition)) {
 					final int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedBitSet.get(flatNeighborIdx)) {
@@ -185,8 +185,9 @@ public final class BucketQueueAStar extends AbstractAStar {
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, boolean blockedAtStart) {
-		return isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
+	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, short blockedAtStartPartition) {
+		return isInBounds(x, y)
+				&& (blockedAtStartPartition >= 0 && map.getBlockedPartition(x, y) == blockedAtStartPartition || !isBlocked(requester, x, y));
 	}
 
 	private final boolean isInBounds(int x, int y) {
