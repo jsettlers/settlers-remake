@@ -16,27 +16,25 @@ package jsettlers.mapcreator.tools.objects;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
-import jsettlers.mapcreator.tools.shapes.LineCircleShape;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.AbstractTool;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class DeleteObjectTool implements Tool {
+/**
+ * Delete existing objects
+ * 
+ * @author Andreas Butti
+ *
+ */
+public class DeleteObjectTool extends AbstractTool {
 
-	private static final ShapeType[] SHAPE_TYPES = new ShapeType[] {
-			new PointShape(),
-			new LineCircleShape(),
-	};
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("deletedescr");
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return SHAPE_TYPES;
+	/**
+	 * Constructor
+	 */
+	public DeleteObjectTool() {
+		super("delete");
+		shapeTypes.add(EShapeType.POINT);
+		shapeTypes.add(EShapeType.LINE_CIRCLE);
 	}
 
 	@Override
@@ -53,9 +51,4 @@ public class DeleteObjectTool implements Tool {
 			}
 		}
 	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
-	}
-
 }

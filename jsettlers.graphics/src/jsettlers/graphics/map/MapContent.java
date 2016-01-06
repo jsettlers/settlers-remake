@@ -579,6 +579,35 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		});
 	}
 
+	/**
+	 * Zoom in
+	 */
+	public void zoomIn() {
+		if (context != null) {
+			float zoom = context.getScreen().getZoom();
+			setZoom(zoom * 1.3f);
+		}
+	}
+
+	/**
+	 * Zoom out
+	 */
+	public void zoomOut() {
+		if (context != null) {
+			float zoom = context.getScreen().getZoom();
+			setZoom(zoom / 1.3f);
+		}
+	}
+
+	/**
+	 * Zoom to default value
+	 */
+	public void zoom100() {
+		if (context != null) {
+			setZoom(1.0f);
+		}
+	}
+
 	private void fireActionEvent(GOEvent event, Action action) {
 		event.setHandler(new ActionHandler(action, this));
 	}
@@ -909,4 +938,16 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		return new UIState(screen.getScreenCenterX(),
 				screen.getScreenCenterY(), screen.getZoom());
 	}
+
+	/**
+	 * Gets the color for a given player.
+	 * 
+	 * @param player
+	 *            The player to get the color for.
+	 * @return The color.
+	 */
+	public Color getPlayerColor(byte player) {
+		return context.getPlayerColor(player);
+	}
+
 }

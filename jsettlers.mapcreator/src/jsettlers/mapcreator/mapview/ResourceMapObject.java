@@ -18,6 +18,12 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 
+/**
+ * Helper class to display resources on the Map
+ * 
+ * @author Andreas Butti
+ *
+ */
 public class ResourceMapObject implements IMapObject {
 
 	private final byte resourceAmount;

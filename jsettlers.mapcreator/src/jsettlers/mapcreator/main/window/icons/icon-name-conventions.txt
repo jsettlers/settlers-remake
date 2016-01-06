@@ -1,0 +1,5 @@
+== Name Conventions for icons ==
+The icons here should be named like the menu actions.png,
+so for the menu action quit the icon is quit.png
+
+the size of the icon should be 22x22px
