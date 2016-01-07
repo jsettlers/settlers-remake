@@ -26,7 +26,7 @@ import java.io.OutputStream;
  */
 public interface IResourceProvider {
 	/**
-	 * Gets a input steam for a file name.
+	 * Gets a input steam for a resources file name.
 	 * 
 	 * @param name
 	 *            The name of the file. With directory, separated by "/"
@@ -34,7 +34,7 @@ public interface IResourceProvider {
 	 * @throws IOException
 	 *             If no stream could be generated
 	 */
-	InputStream getFile(String name) throws IOException;
+	InputStream getResourcesFileStream(String name) throws IOException;
 
 	/**
 	 * Gets a output steam to write a file with the name.<br>
@@ -51,10 +51,16 @@ public interface IResourceProvider {
 	/**
 	 * Gets a directory to store settings and other stuff.
 	 * 
-	 * @see ResourceManager#getSaveDirectory()
+	 * @see ResourceManager#getResourcesDirectory()
 	 * @return The directory, where the user has write permissions.
 	 */
-	File getSaveDirectory();
+	File getResourcesDirectory();
 
-	File getTempDirectory();
+	/**
+	 * Gets the folder containing the original maps.
+	 * 
+	 * @return The folder containing the original maps.
+	 */
+	File getOriginalMapsDirectory();
+
 }

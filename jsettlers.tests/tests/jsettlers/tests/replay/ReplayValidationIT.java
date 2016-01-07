@@ -32,11 +32,11 @@ import jsettlers.common.utils.FileUtils;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.replay.ReplayUtils;
@@ -64,8 +64,9 @@ public class ReplayValidationIT {
 		MapList.setDefaultListFactory(new IMapListFactory() {
 			@Override
 			public MapList getMapList() {
-				File resourceDir = ResourceManager.getSaveDirectory();
-				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps")), new DebugMapLister(new File(resourceDir, "save")));
+				File resourceDir = ResourceManager.getResourcesDirectory();
+				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps"), true),
+						new DebugMapLister(new File(resourceDir, "save"), true));
 			}
 		});
 	}
@@ -87,8 +88,8 @@ public class ReplayValidationIT {
 
 		// delete created files
 		FileUtils.deleteRecursively(directSavegameReplay.getReplayFile().getParentFile());
-		savegame.getFile().delete();
-		replayedSavegame.getFile().delete();
+		savegame.getListedMap().delete();
+		replayedSavegame.getListedMap().delete();
 	}
 
 	@Test
@@ -121,8 +122,8 @@ public class ReplayValidationIT {
 
 		// delete created files
 		FileUtils.deleteRecursively(directSavegameReplay.getReplayFile().getParentFile());
-		savegame.getFile().delete();
-		savegameOfSavegame.getFile().delete();
+		savegame.getListedMap().delete();
+		savegameOfSavegame.getListedMap().delete();
 	}
 
 	@Ignore

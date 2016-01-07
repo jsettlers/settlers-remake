@@ -585,8 +585,8 @@ public class AiStatistics {
 	}
 
 	private static class PlayerStatistic {
-		boolean isAlive;
 		ShortPoint2D referencePosition;
+		boolean isAlive;
 		int[] totalBuildingsNumbers;
 		int[] buildingsNumbers;
 		int[] unoccupiedBuildingsNumbers;

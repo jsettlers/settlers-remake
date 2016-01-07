@@ -52,13 +52,13 @@ public class SwingResourceLoader {
 	}
 
 	public static void setupResourcesManager(ConfigurationPropertiesFile configFile) {
-		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
+		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesDirectory(), configFile.getOriginalMapsDirectory()));
 	}
 
 	private static void testConfig(ConfigurationPropertiesFile cf)
 			throws IOException {
-		if (!isResourceDir(cf.getResourcesFolder())) {
-			throw new IOException("Not a resources folder: " + cf.getResourcesFolder() + " in " + new File("").getAbsolutePath());
+		if (!isResourceDir(cf.getResourcesDirectory())) {
+			throw new IOException("Not a resources folder: " + cf.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
 		}
 
 		boolean hasSndDir = false;

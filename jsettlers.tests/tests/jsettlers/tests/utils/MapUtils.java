@@ -24,10 +24,11 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.ExtendedRandom;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
@@ -45,8 +46,8 @@ public final class MapUtils {
 			throws IOException, MapLoadException, ClassNotFoundException {
 		System.out.println("Comparing expected '" + expectedSavegame + "' with actual '" + actualSavegame + "' (uncompressed!)");
 
-		try (InputStream expectedStream = MapLoader.getMapInputStream(expectedSavegame.getFile());
-				CountingInputStream actualStream = new CountingInputStream(MapLoader.getMapInputStream(actualSavegame.getFile()))) {
+		try (InputStream expectedStream = RemakeMapLoader.getMapInputStream(expectedSavegame.getListedMap());
+				CountingInputStream actualStream = new CountingInputStream(RemakeMapLoader.getMapInputStream(actualSavegame.getListedMap()))) {
 			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 			MatchConstants.init(new NetworkTimer(true), 0L);
 			MatchConstants.deserialize(new ObjectInputStream(expectedStream));

@@ -24,33 +24,35 @@ import java.io.OutputStream;
 import jsettlers.common.resources.IResourceProvider;
 
 public class SwingResourceProvider implements IResourceProvider {
-	private final String resourcesFolder;
+	private final String resourcesDirectory;
+	private final File originalMapsDirectory;
 
-	public SwingResourceProvider(File file) {
-		this.resourcesFolder = file.getPath() + "/";
+	public SwingResourceProvider(File resourcesDirectory, File originalMapsDirectory) {
+		this.resourcesDirectory = resourcesDirectory.getPath() + File.separator;
+		this.originalMapsDirectory = originalMapsDirectory;
 	}
 
 	@Override
-	public InputStream getFile(String name) throws IOException {
-		File file = new File(resourcesFolder + name);
+	public InputStream getResourcesFileStream(String name) throws IOException {
+		File file = new File(resourcesDirectory + name);
 
 		return new FileInputStream(file);
 	}
 
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
-		File file = new File(resourcesFolder + name);
+		File file = new File(resourcesDirectory + name);
 		file.getParentFile().mkdirs();
 		return new FileOutputStream(file);
 	}
 
 	@Override
-	public File getSaveDirectory() {
-		return new File(resourcesFolder);
+	public File getResourcesDirectory() {
+		return new File(resourcesDirectory);
 	}
 
 	@Override
-	public File getTempDirectory() {
-		return new File(resourcesFolder);
+	public File getOriginalMapsDirectory() {
+		return originalMapsDirectory;
 	}
 }

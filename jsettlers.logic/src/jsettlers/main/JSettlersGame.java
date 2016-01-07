@@ -50,7 +50,7 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
@@ -250,6 +250,7 @@ public class JSettlersGame {
 
 				System.setErr(systemErrorStream);
 				System.setOut(systemOutStream);
+				
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
@@ -262,6 +263,7 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
+			
 		}
 
 		private void clearState() {

@@ -32,8 +32,8 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.JSettlersGame.GameRunner;
@@ -109,7 +109,7 @@ public class ReplayUtils {
 	}
 
 	public static MapLoader getNewestSavegame() {
-		List<MapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
+		List<? extends MapLoader> savedMaps = MapList.getDefaultList().getSavedMaps().getItems();
 		if (savedMaps.isEmpty()) {
 			return null;
 		}
@@ -201,7 +201,7 @@ public class ReplayUtils {
 	private static File findNewestReplayFile() throws IOException {
 		final File[] newestReplay = new File[1];
 
-		FileUtils.walkFileTree(new File(ResourceManager.getSaveDirectory(), "logs"), new IFileVisitor() {
+		FileUtils.walkFileTree(new File(ResourceManager.getResourcesDirectory(), "logs"), new IFileVisitor() {
 			private long newestModificationTime;
 
 			@Override

@@ -536,7 +536,13 @@ public final class MainGrid implements Serializable {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL, EMapObjectType.FOUND_IRON, EMapObjectType.FOUND_GOLD);
+					&& !objectsGrid.hasMapObjectType(x, y,
+							EMapObjectType.FOUND_COAL,
+							EMapObjectType.FOUND_IRON,
+							EMapObjectType.FOUND_GOLD,
+							EMapObjectType.FOUND_NOTHING,
+							EMapObjectType.FOUND_GEMSTONE,
+							EMapObjectType.FOUND_BRIMSTONE);
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {

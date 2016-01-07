@@ -30,6 +30,7 @@ import java.util.zip.ZipOutputStream;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
+import jsettlers.logic.map.MapLoader;
 
 /**
  * Lists all maps in a directory.
@@ -65,7 +66,7 @@ public class DirectoryMapLister implements IMapLister {
 
 		@Override
 		public boolean isCompressed() {
-			return file.getName().endsWith(MapList.COMPRESSED_MAP_EXTENSION);
+			return file.getName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
 		}
 
 		@Override
@@ -74,18 +75,17 @@ public class DirectoryMapLister implements IMapLister {
 		}
 	}
 
-	public DirectoryMapLister(File directory) {
+	public DirectoryMapLister(File directory, boolean createIfMissing) {
 		this.directory = directory;
-		if (!directory.exists()) {
+		if (createIfMissing && !directory.exists()) {
 			directory.mkdirs();
 		}
 	}
 
 	@Override
 	public void listMaps(final IMapListerCallable callback) {
-		File[] files = directory.listFiles();
-		if (files == null) {
-			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
+		if (directory == null || !directory.isDirectory() || directory.listFiles() == null) {
+			return;
 		}
 
 		try {
@@ -94,7 +94,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					String fileName = file.getName();
-					if (!file.isDirectory() && fileName.endsWith(MapList.MAP_EXTENSION) || fileName.endsWith(MapList.COMPRESSED_MAP_EXTENSION)) {
+					if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
 						callback.foundMap(new ListedMapFile(file));
 					}
 				}
@@ -134,7 +134,7 @@ public class DirectoryMapLister implements IMapLister {
 			if (CommonConstants.USE_SAVEGAME_COMPRESSION) {
 				System.out.println("Using savegame compression!");
 				ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-				ZipEntry zipEntry = new ZipEntry(actualName + MapList.MAP_EXTENSION);
+				ZipEntry zipEntry = new ZipEntry(actualName + MapLoader.MAP_EXTENSION);
 				zipOutputStream.putNextEntry(zipEntry);
 
 				return zipOutputStream;

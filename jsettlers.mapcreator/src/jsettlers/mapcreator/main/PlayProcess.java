@@ -16,12 +16,13 @@ package jsettlers.mapcreator.main;
 
 import java.io.File;
 
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 
 public class PlayProcess {
 	public static void main(String[] args) {
+		
 		try {
 			final File file = new File(args[0]);
 
