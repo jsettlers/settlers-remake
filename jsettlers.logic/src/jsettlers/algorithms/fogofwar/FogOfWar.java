@@ -227,10 +227,4 @@ public final class FogOfWar implements Serializable {
 	public void cancel() {
 		this.canceled = true;
 	}
-
-	public void reset() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

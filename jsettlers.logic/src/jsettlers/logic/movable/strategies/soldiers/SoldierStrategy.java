@@ -72,10 +72,11 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
-			hitEnemy(enemy); // after the animation, execute the actual hit.
 			if (!isEnemyAttackable(enemy, isInTower)) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 			} else {
+				hitEnemy(enemy); // after the animation, execute the actual hit.
+
 				if (state != ESoldierState.HITTING) {
 					break; // the soldier could have entered an attacked tower
 				}
@@ -137,9 +138,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case INIT_GOTO_TOWER:
-			if (super.getPos().equals(building.getDoor()) || super.goToPos(building.getDoor())) {
-				changeStateTo(ESoldierState.GOING_TO_TOWER);
-			} else {
+			changeStateTo(ESoldierState.GOING_TO_TOWER); // change state before requesting path because of checkPathStepPreconditions()
+			if (!super.getPos().equals(building.getDoor()) && !super.goToPos(building.getDoor())) {
 				notifyTowerThatRequestFailed();
 			}
 			break;
@@ -256,6 +256,8 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		super.setVisible(true);
 
 		isInTower = false;
+		building = null;
+		defending = false;
 		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
@@ -280,6 +282,10 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+		if (state == ESoldierState.INIT_GOTO_TOWER) {
+			return false; // abort previous path when we just got a tower set
+		}
+
 		boolean result = !((state == ESoldierState.SEARCH_FOR_ENEMIES || state == ESoldierState.HITTING) && step >= 2);
 		if (!result && oldPathTarget == null) {
 			oldPathTarget = pathTarget;
@@ -355,7 +361,15 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
-		state = ESoldierState.AGGRESSIVE;
+		switch (state) {
+		case INIT_GOTO_TOWER:
+		case GOING_TO_TOWER:
+			notifyTowerThatRequestFailed();
+			break;
+		default:
+			state = ESoldierState.AGGRESSIVE;
+			break;
+		}
 	}
 
 	protected float getCombatStrength() {

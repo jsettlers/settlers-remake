@@ -38,8 +38,9 @@ import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.replay.ReplayTool;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.tests.utils.DebugMapLister;
+import jsettlers.tests.utils.MapUtils;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -89,7 +90,7 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = getReferenceSavegamePath();
 
 			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
@@ -117,7 +118,7 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayTool.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {

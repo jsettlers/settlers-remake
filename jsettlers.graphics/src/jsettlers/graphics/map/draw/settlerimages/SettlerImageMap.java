@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -66,7 +66,7 @@ public final class SettlerImageMap {
 	 */
 	private SettlerImageMap() {
 		this.types = EMovableType.NUMBER_OF_MOVABLETYPES;
-		this.actions = EAction.values().length;
+		this.actions = EMovableAction.values().length;
 		this.materials = EMaterialType.NUMBER_OF_MATERIALS;
 		this.directions = EDirection.values.length;
 		this.map =
@@ -136,7 +136,7 @@ public final class SettlerImageMap {
 		final String directionString = matcher.group(4);
 
 		EMovableType type = parseType(typeString);
-		EAction action = parseAction(actionString);
+		EMovableAction action = parseAction(actionString);
 		EMaterialType material = parseMaterial(materialString);
 		EDirection direction = parseDirection(directionString);
 
@@ -162,12 +162,12 @@ public final class SettlerImageMap {
 		return type;
 	}
 
-	private EAction parseAction(final String actionString) {
-		EAction action;
+	private EMovableAction parseAction(final String actionString) {
+		EMovableAction action;
 		if ("*".equals(actionString)) {
 			action = null;
 		} else {
-			action = EAction.valueOf(actionString);
+			action = EMovableAction.valueOf(actionString);
 		}
 		return action;
 	}
@@ -192,7 +192,7 @@ public final class SettlerImageMap {
 		return direction;
 	}
 
-	private int calculatePriority(EMovableType type, EAction action,
+	private int calculatePriority(EMovableType type, EMovableAction action,
 			EMaterialType material, EDirection direction) {
 		int priority = 1;// more than 0.
 		if (type != null) {
@@ -241,7 +241,7 @@ public final class SettlerImageMap {
 	 * @param priority
 	 */
 	private void addEntryToMap(int[][][][] priorities, EMovableType type,
-			EAction action, EMaterialType material, EDirection direction,
+			EMovableAction action, EMaterialType material, EDirection direction,
 			SettlerImageMapItem item, int priority) {
 		int minType, maxType;
 		if (type == null) {
@@ -301,10 +301,10 @@ public final class SettlerImageMap {
 	 * @param movable
 	 *            The settler to get the image for
 	 * @return The image or an null-image.
-	 * @see SettlerImageMap#getImageForSettler(EMovableType, EAction, EMaterialType, EDirection, float)
+	 * @see SettlerImageMap#getImageForSettler(EMovableType, EMovableAction, EMaterialType, EDirection, float)
 	 */
 	public Image getImageForSettler(IMovable movable, float progress) {
-		if (movable.getAction() == EAction.WALKING) {
+		if (movable.getAction() == EMovableAction.WALKING) {
 			progress = progress / 2;
 			if (movable.isRightstep()) {
 				progress += .5f;
@@ -330,7 +330,7 @@ public final class SettlerImageMap {
 	 *            The progress.
 	 * @return The image.
 	 */
-	public Image getImageForSettler(EMovableType movableType, EAction action,
+	public Image getImageForSettler(EMovableType movableType, EMovableAction action,
 			EMaterialType material, EDirection direction, float progress) {
 		SettlerImageMapItem item =
 				getMapItem(movableType, action, material, direction);
@@ -356,7 +356,7 @@ public final class SettlerImageMap {
 	 * @return The item of the map at the given position. Is not null.
 	 */
 	private SettlerImageMapItem getMapItem(EMovableType movableType,
-			EAction action, EMaterialType material, EDirection direction) {
+			EMovableAction action, EMaterialType material, EDirection direction) {
 		SettlerImageMapItem item =
 				this.map[movableType.ordinal()][action.ordinal()][material
 						.ordinal()][direction.ordinal()];

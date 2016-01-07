@@ -290,7 +290,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		if (workerRequest != null) {
 			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), new MovableTypeAcceptor(workerRequest.movableType));
 
-			if (worker != null) {
+			if (worker != null && worker.isAlive()) {
 				worker.setWorkerJob(workerRequest.building);
 			} else {
 				if (!workerRequest.creationRequested) {

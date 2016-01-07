@@ -107,7 +107,7 @@ public interface IBuildingsGrid {
 	 * @param player
 	 * @param influencingArea
 	 */
-	void occupyAreaByTower(Player player, MapCircle influencingArea);
+	void occupyAreaByTower(Player player, MapCircle influencingArea, final FreeMapArea groundArea);
 
 	/**
 	 * Frees the area occupied by the tower at the given position.

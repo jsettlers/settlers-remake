@@ -43,5 +43,5 @@ public interface IStartedGame {
 
 	void setGameExitListener(IGameExitListener exitListener);
 
-	boolean isStopped();
+	boolean isShutdownFinished();
 }
