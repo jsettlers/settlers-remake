@@ -251,7 +251,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
 					if (buildToolsEconomy()) {
 						return;
-					}
+					} 
 					toolsEconomyNeedsToBeChecked = false;
 				}
 				if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingType)

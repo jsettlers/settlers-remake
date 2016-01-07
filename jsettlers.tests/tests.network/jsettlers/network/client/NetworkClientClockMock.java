@@ -135,26 +135,18 @@ public class NetworkClientClockMock implements INetworkClientClock {
 
 	@Override
 	public void stopExecution() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void setReplayLogStream(DataOutputStream replayFileStream) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void loadReplayLogFromStream(DataInputStream dataInputStream) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void saveRemainingTasks(DataOutputStream dos) throws IOException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

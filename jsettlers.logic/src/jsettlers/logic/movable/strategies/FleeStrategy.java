@@ -29,8 +29,12 @@ import jsettlers.logic.movable.MovableStrategy;
  */
 public class FleeStrategy extends MovableStrategy {
 	private static final long serialVersionUID = -7693464085159449304L;
+
 	private int searchesCounter = 0;
 	private boolean turnNextTime;
+
+	private int lastCheckedPathStep;
+	private byte pathStepCheckedCounter;
 
 	public FleeStrategy(Movable movable) {
 		super(movable);
@@ -45,7 +49,9 @@ public class FleeStrategy extends MovableStrategy {
 				return;
 			}
 
-			if (super.preSearchPath(true, position.x, position.y, Constants.MOVABLE_FLEE_TO_VALID_POSITION_RADIUS, ESearchType.VALID_FREE_POSITION)) {
+			if (super.preSearchPath(true, position.x, position.y, Constants.MOVABLE_FLEEING_DIJKSTRA_RADIUS, ESearchType.VALID_FREE_POSITION)
+					|| super.preSearchPath(false, position.x, position.y, Constants.MOVABLE_FLEEING_MAX_RADIUS, ESearchType.VALID_FREE_POSITION)) {
+				lastCheckedPathStep = Integer.MIN_VALUE;
 				super.followPresearchedPath();
 			} else {
 				EDirection currentDirection = super.getMovable().getDirection();
@@ -76,6 +82,14 @@ public class FleeStrategy extends MovableStrategy {
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return step <= 2;
+		if (lastCheckedPathStep == step) {
+			pathStepCheckedCounter++;
+			searchesCounter++;
+		} else {
+			pathStepCheckedCounter = 0;
+			lastCheckedPathStep = (short) step;
+		}
+
+		return !super.isValidPosition(super.getPos()) && pathStepCheckedCounter < 5;
 	}
 }

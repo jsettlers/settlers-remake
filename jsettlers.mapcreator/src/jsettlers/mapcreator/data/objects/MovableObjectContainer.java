@@ -17,7 +17,7 @@ package jsettlers.mapcreator.data.objects;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -64,8 +64,8 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public EAction getAction() {
-		return EAction.NO_ACTION;
+	public EMovableAction getAction() {
+		return EMovableAction.NO_ACTION;
 	}
 
 	@Override

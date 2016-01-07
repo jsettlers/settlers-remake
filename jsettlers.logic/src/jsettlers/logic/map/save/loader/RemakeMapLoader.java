@@ -53,6 +53,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		this.header = header;
 	}
 
+	@Override
 	public MapFileHeader getFileHeader() {
 		return header;
 	}
@@ -61,7 +62,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		try (InputStream stream = getMapInputStream(file)) {
 			return MapFileHeader.readFromStream(stream);
 		} catch (IOException e) {
-			throw new MapLoadException("Error during header request: ", e);
+			throw new MapLoadException("Error during header request for map " + file + " exception: ", e);
 		}
 	}
 
@@ -159,6 +160,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 
+	@Override
 	public IListedMap getListedMap() {
 		return file;
 	}

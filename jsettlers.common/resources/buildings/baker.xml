@@ -58,9 +58,9 @@
 	<blocked dx="4" dy="5" block="false" />
 
 	<door dx="3" dy="2" />
-
+	
 	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="4" />
-	<constructionStack dx="5" dy="5" material="STONE" buildrequired="5" />
+	<constructionStack dx="4" dy="4" material="STONE" buildrequired="5" />
 	<requestStack dx="3" dy="4" material="FLOUR" />
 	<requestStack dx="4" dy="2" material="WATER" />
 	<offerStack dx="-2" dy="1" material="BREAD" />

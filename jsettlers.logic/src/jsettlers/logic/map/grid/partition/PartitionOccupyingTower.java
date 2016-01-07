@@ -16,9 +16,12 @@ package jsettlers.logic.map.grid.partition;
 
 import java.io.Serializable;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.IPredicate;
+import jsettlers.common.utils.collections.IteratorFilter;
 
 /**
  * This class holds the data of a tower occupying an area on the {@link PartitionsGrid}.
@@ -31,13 +34,15 @@ final class PartitionOccupyingTower implements Serializable {
 
 	public final byte playerId;
 	public final ShortPoint2D position;
+	public final FreeMapArea groundArea;
 	public final IMapArea area;
 	public final SRectangle areaBorders;
 	public final int radius;
 
-	public PartitionOccupyingTower(byte playerId, ShortPoint2D position, IMapArea area, SRectangle areaBorders, int radius) {
+	public PartitionOccupyingTower(byte playerId, ShortPoint2D position, FreeMapArea groundArea, IMapArea area, SRectangle areaBorders, int radius) {
 		this.playerId = playerId;
 		this.position = position;
+		this.groundArea = groundArea;
 		this.area = area;
 		this.areaBorders = areaBorders;
 		this.radius = radius;
@@ -50,7 +55,17 @@ final class PartitionOccupyingTower implements Serializable {
 	 * @param tower
 	 */
 	public PartitionOccupyingTower(byte newPlayerId, PartitionOccupyingTower tower) {
-		this(newPlayerId, tower.position, tower.area, tower.areaBorders, tower.radius);
+		this(newPlayerId, tower.position, tower.groundArea, tower.area, tower.areaBorders, tower.radius);
+	}
+
+	public Iterable<ShortPoint2D> getAreaWithoutGround() {
+		IteratorFilter<ShortPoint2D> areaWithoutGround = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				return !groundArea.contains(pos);
+			}
+		});
+		return areaWithoutGround;
 	}
 
 }

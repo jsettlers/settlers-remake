@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.selectable.ESelectionType;
-
 import java.util.EnumSet;
 import java.util.Set;
+
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.selectable.ESelectionType;
 
 /**
  * Defines all types of movables with the tool they need, their selection level and if they need their players ground.
@@ -70,6 +70,11 @@ public enum EMovableType {
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
 
+	/**
+	 * All step durations will be multiplied with this speedup factor.
+	 */
+	private static final float STEP_DURATION_SPEEDUP_FACTOR = 0.75f;
+
 	public static final double DEFAULT_STEP_DURATION_SECONDS = 0.6;
 	public static final float DEFAULT_HEALTH = 100f;
 	public static final float DEFAULT_STRENGTH = 0f;
@@ -100,7 +105,7 @@ public enum EMovableType {
 		this.tool = tool;
 		this.selectionType = selectionType;
 		this.needsPlayersGround = needsPlayersGround;
-		this.stepDurationMs = (short) (stepDurationSec * 1000);
+		this.stepDurationMs = (short) (stepDurationSec * 1000 * STEP_DURATION_SPEEDUP_FACTOR);
 		this.health = health;
 		this.strength = strength;
 	}
@@ -146,6 +151,7 @@ public enum EMovableType {
 	public static boolean isSoldier(EMovableType movableType) {
 		return soldiers.contains(movableType);
 	}
+
 	public static boolean isPikeman(EMovableType movableType) {
 		return pikemen.contains(movableType);
 	}

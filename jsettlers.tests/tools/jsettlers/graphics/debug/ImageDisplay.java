@@ -42,11 +42,11 @@ import javax.swing.event.DocumentListener;
 public class ImageDisplay extends JFrame {
 
 	private static final String FILE =
-			// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.f8007e01f.dat";
-			"/home/michael/Desktop/sounds/VL-212.DX4";
+	// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.f8007e01f.dat";
+	"/home/michael/Desktop/sounds/VL-212.DX4";
 	/**
-     * 
-     */
+	 * 
+	 */
 	private static final long serialVersionUID = 3846777822789324058L;
 
 	protected static final int PIXELLENGTH = 8;
@@ -106,8 +106,7 @@ public class ImageDisplay extends JFrame {
 
 		getImage().setFocusable(true);
 		getRoot();
-		InputMap input =
-				getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap input = getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actions = getRoot().getActionMap();
 
 		input.put(KeyStroke.getKeyStroke("UP"), "up");
@@ -116,8 +115,8 @@ public class ImageDisplay extends JFrame {
 		input.put(KeyStroke.getKeyStroke("RIGHT"), "right");
 		actions.put("up", new AbstractAction() {
 			/**
-             * 
-             */
+			 * 
+			 */
 			private static final long serialVersionUID = -5230566743343442027L;
 
 			@Override
@@ -127,8 +126,8 @@ public class ImageDisplay extends JFrame {
 		});
 		actions.put("down", new AbstractAction() {
 			/**
-             * 
-             */
+			 * 
+			 */
 			private static final long serialVersionUID = -901408786185210944L;
 
 			@Override
@@ -138,8 +137,8 @@ public class ImageDisplay extends JFrame {
 		});
 		actions.put("left", new AbstractAction() {
 			/**
-             * 
-             */
+			 * 
+			 */
 			private static final long serialVersionUID = 2545364896702320931L;
 
 			@Override
@@ -149,8 +148,8 @@ public class ImageDisplay extends JFrame {
 		});
 		actions.put("right", new AbstractAction() {
 			/**
-             * 
-             */
+			 * 
+			 */
 			private static final long serialVersionUID = 5756131018979838342L;
 
 			@Override
@@ -177,9 +176,8 @@ public class ImageDisplay extends JFrame {
 	 */
 	private JSpinner getOffsetSpinner() {
 		if (this.offsetSpinner == null) {
-			this.offsetSpinner =
-					new JSpinner(new SpinnerNumberModel(getImage().getOffset(),
-							0, this.data.length, 1));
+			this.offsetSpinner = new JSpinner(new SpinnerNumberModel(getImage().getOffset(),
+					0, this.data.length, 1));
 			this.offsetSpinner.setBounds(new Rectangle(322, 4, 100, 20));
 			this.offsetSpinner.addChangeListener(new ChangeListener() {
 				@Override
@@ -262,9 +260,8 @@ public class ImageDisplay extends JFrame {
 	 */
 	private JSpinner getPixelLengthSpinner() {
 		if (this.pixelLengthSpinner == null) {
-			this.pixelLengthSpinner =
-					new JSpinner(new SpinnerNumberModel(getImage()
-							.getPixelLength(), 1, 100, 1));
+			this.pixelLengthSpinner = new JSpinner(new SpinnerNumberModel(getImage()
+					.getPixelLength(), 1, 100, 1));
 			this.pixelLengthSpinner.setBounds(new Rectangle(323, 32, 100, 20));
 			this.pixelLengthSpinner.addChangeListener(new ChangeListener() {
 				@Override
@@ -292,9 +289,8 @@ public class ImageDisplay extends JFrame {
 	 */
 	private JSpinner getImageWidthSpinner() {
 		if (this.imageWidthSpinner == null) {
-			this.imageWidthSpinner =
-					new JSpinner(new SpinnerNumberModel(getImage()
-							.getImageWidth(), 1, 1000, 1));
+			this.imageWidthSpinner = new JSpinner(new SpinnerNumberModel(getImage()
+					.getImageWidth(), 1, 1000, 1));
 			this.imageWidthSpinner.setBounds(new Rectangle(325, 58, 100, 20));
 			this.imageWidthSpinner.addChangeListener(new ChangeListener() {
 				@Override
@@ -482,7 +478,6 @@ public class ImageDisplay extends JFrame {
 		try {
 			new ImageDisplay(new File(FILE));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

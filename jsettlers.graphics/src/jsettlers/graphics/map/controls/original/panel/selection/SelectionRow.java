@@ -19,7 +19,7 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.image.Image;
@@ -50,7 +50,7 @@ public class SelectionRow extends UIPanel {
 		float width = getPosition().getWidth();
 		Image image =
 				SettlerImageMap.getInstance().getImageForSettler(type,
-						EAction.NO_ACTION, EMaterialType.NO_MATERIAL,
+						EMovableAction.NO_ACTION, EMaterialType.NO_MATERIAL,
 						EDirection.SOUTH_EAST, 0);
 
 		Color color = getColor();

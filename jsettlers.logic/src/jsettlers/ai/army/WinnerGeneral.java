@@ -186,12 +186,12 @@ public class WinnerGeneral implements ArmyGeneral {
 	}
 
 	private Building determineMilitaryBuildingToAttack(byte enemyToAttackId) {
-		List<ShortPoint2D> myMilitaryBuildings =
-				aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), player.playerId);
+		List<ShortPoint2D> myMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(),
+				player.playerId);
 		ShortPoint2D myBaseAveragePoint = aiStatistics.calculateAveragePointFromList(myMilitaryBuildings);
 
-		List<ShortPoint2D> enemyMilitaryBuildings
-				= aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), enemyToAttackId);
+		List<ShortPoint2D> enemyMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(),
+				enemyToAttackId);
 
 		if (enemyMilitaryBuildings.size() == 0) {
 			return null;

@@ -24,6 +24,8 @@ public final class Constants {
 
 	public static boolean FOG_OF_WAR_DEFAULT_ENABLED = true;
 
+	public static final float COMBAT_STRENGTH_OWN_GROUND = 1;
+
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */
@@ -48,8 +50,6 @@ public final class Constants {
 	public static final short MOVABLE_VIEW_DISTANCE = 8;
 
 	public static final short MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS = 2;
-
-	public static final short MOVABLE_FLEE_TO_VALID_POSITION_RADIUS = 9;
 
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
 	public static final short TOWER_SEARCH_RADIUS = 40;
@@ -103,5 +103,8 @@ public final class Constants {
 	 * Maximum amount of resources per position.
 	 */
 	public static final byte MAX_RESOURCE_AMOUNT_PER_POSITION = 50;
+
+	public static final short MOVABLE_FLEEING_DIJKSTRA_RADIUS = 9;
+	public static final short MOVABLE_FLEEING_MAX_RADIUS = TOWER_SEARCH_RADIUS;
 
 }

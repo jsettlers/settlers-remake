@@ -26,8 +26,8 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -70,7 +70,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
-	private EAction movableAction = EAction.NO_ACTION;
+	private EMovableAction movableAction = EMovableAction.NO_ACTION;
 	private EDirection direction;
 
 	private int animationStartTime;
@@ -160,7 +160,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public int timerEvent() {
-		if (health <= 0) {
+		if (state == EMovableState.DEAD) {
 			return -1;
 		}
 
@@ -183,7 +183,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		switch (state) {
 		case TAKE:
 		case DROP:
-			if (this.movableAction != EAction.RAISE_UP) {
+			if (this.movableAction != EMovableAction.RAISE_UP) {
 				break;
 			} // TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
 
@@ -191,35 +191,46 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
 			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
-			movableAction = EAction.NO_ACTION;
+			movableAction = EMovableAction.NO_ACTION;
+
+		case PATHING:
+		case DOING_NOTHING:
+			if (visible) {
+				checkPlayerOfCurrentPosition();
+			}
 			break;
+
 		default:
 			break;
 		}
 
 		if (moveToRequest != null) {
-			switch (state) {
-			case PATHING:
-				// if we're currently pathing, stop former pathing and calculate a new path
-				setState(EMovableState.DOING_NOTHING);
-				this.movableAction = EAction.NO_ACTION;
-				this.path = null;
+			if (strategy.isMoveToAble()) {
+				switch (state) {
+				case PATHING:
+					// if we're currently pathing, stop former pathing and calculate a new path
+					setState(EMovableState.DOING_NOTHING);
+					this.movableAction = EMovableAction.NO_ACTION;
+					this.path = null;
 
-			case DOING_NOTHING:
-				ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
-				ShortPoint2D oldPos = position;
-				boolean foundPath = goToPos(moveToRequest); // progress is reset in here
-				moveToRequest = null;
+				case DOING_NOTHING:
+					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
+					ShortPoint2D oldPos = position;
+					boolean foundPath = goToPos(moveToRequest); // progress is reset in here
+					moveToRequest = null;
 
-				if (foundPath) {
-					this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
-					return animationDuration; // we already follow the path and initiated the walking
-				} else {
+					if (foundPath) {
+						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+						return animationDuration; // we already follow the path and initiated the walking
+					} else {
+						break;
+					}
+
+				default:
 					break;
 				}
-
-			default:
-				break;
+			} else {
+				moveToRequest = null;
 			}
 		}
 
@@ -227,7 +238,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
 			setState(EMovableState.DOING_NOTHING);
-			this.movableAction = EAction.NO_ACTION;
+			this.movableAction = EMovableAction.NO_ACTION;
 			break;
 
 		case PATHING:
@@ -237,14 +248,15 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case TAKE:
 			grid.takeMaterial(position, takeDropMaterial);
 			setMaterial(takeDropMaterial);
-			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 		case DROP:
 			if (takeDropMaterial != null && takeDropMaterial != EMaterialType.NO_MATERIAL) {
-				grid.dropMaterial(position, takeDropMaterial, strategy.offerDroppedMaterial());
+				boolean offerMaterial = strategy.beforeDroppingMaterial();
+				grid.dropMaterial(position, takeDropMaterial, offerMaterial);
 			}
 			setMaterial(EMaterialType.NO_MATERIAL);
-			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 
 		default:
@@ -270,37 +282,41 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
-			movableAction = EAction.NO_ACTION;
+			movableAction = EMovableAction.NO_ACTION;
 			path = null;
-			checkPlayerOfCurrentPosition(); // TODO: this should be in timerEvent
 			return;
 		}
 
-		direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
-
 		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
-			if (!grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is invalid
+			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+				goSinglePathStep();
+
+			} else { // next position is invalid
+				movableAction = EMovableAction.NO_ACTION;
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+
 				if (newPath == null) { // no path found
 					setState(EMovableState.DOING_NOTHING);
-					movableAction = EAction.NO_ACTION;
+
 					strategy.pathAborted(path.getTargetPos()); // inform strategy
 					path = null;
-					return;
 				} else {
 					this.path = newPath; // continue with new path
+					if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+						goSinglePathStep();
+					}
 				}
 			}
 
-			goSinglePathStep();
 		} else { // step not possible, so try it next time
-			movableAction = EAction.NO_ACTION;
-			boolean pushedSuccessful = blockingMovable.push(this);
-			if (!pushedSuccessful) {
+			movableAction = EMovableAction.NO_ACTION;
+			boolean pushedSuccessfully = blockingMovable.push(this);
+			if (!pushedSuccessfully) {
 				path = strategy.findWayAroundObstacle(direction, position, path);
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} else if (movableAction == EAction.NO_ACTION) {
+			} else if (movableAction == EMovableAction.NO_ACTION) {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} // else: push initiated our next step
 		}
@@ -312,7 +328,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
-		playAnimation(EAction.WALKING, movableType.getStepDurationMs());
+		direction = EDirection.getDirection(this.position, position);
+		playAnimation(EMovableAction.WALKING, movableType.getStepDurationMs());
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
 		this.position = position;
@@ -377,7 +394,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 *         false if this movable doesn't move.
 	 */
 	private boolean push(Movable pushingMovable) {
-		if (health <= 0) {
+		if (state == EMovableState.DEAD) {
 			return false;
 		}
 
@@ -393,11 +410,15 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			} else { // if we didn't find a direction, check if it's possible to exchange positions
 				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
-				} else { // exchange positions
+
+				} else if (pushingMovable.getMovableType().isMoveToAble() || isValidPosition(pushingMovable.getPos())) { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
-					goInDirection(directionToPushing, false);
+					goInDirection(directionToPushing, true);
 					return true;
+
+				} else { // exchange not possible, as the location is not valid.
+					return false;
 				}
 			}
 
@@ -484,7 +505,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param duration
 	 *            duration the animation should last (in seconds). // TODO change to milliseconds
 	 */
-	final void playAction(EAction movableAction, float duration) {
+	final void playAction(EMovableAction movableAction, float duration) {
 		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
 
 		playAnimation(movableAction, (short) (duration * 1000));
@@ -492,7 +513,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		this.soundPlayed = false;
 	}
 
-	private void playAnimation(EAction movableAction, short duration) {
+	private void playAnimation(EMovableAction movableAction, short duration) {
 		this.animationStartTime = MatchConstants.clock().getTime();
 		this.animationDuration = duration;
 		this.movableAction = movableAction;
@@ -507,7 +528,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		if (!takeFromMap || grid.canTakeMaterial(position, materialToTake)) {
 			this.takeDropMaterial = materialToTake;
 
-			playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+			playAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
 			setState(EMovableState.TAKE);
 			return true;
 		} else {
@@ -518,7 +539,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	final void drop(EMaterialType materialToDrop) {
 		this.takeDropMaterial = materialToDrop;
 
-		playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+		playAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
 		setState(EMovableState.DROP);
 	}
 
@@ -530,7 +551,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	final void wait(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
-		playAnimation(EAction.NO_ACTION, sleepTime);
+		playAnimation(EMovableAction.NO_ACTION, sleepTime);
 		setState(EMovableState.WAITING);
 	}
 
@@ -576,7 +597,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	final boolean goInDirection(EDirection direction, boolean force) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
 		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
-			this.direction = direction;
 			initGoingSingleStep(pos);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
@@ -664,7 +684,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	void abortPath() {
 		setState(EMovableState.DOING_NOTHING);
-		movableAction = EAction.NO_ACTION;
+		movableAction = EMovableAction.NO_ACTION;
 		path = null;
 	}
 
@@ -675,7 +695,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private void followPath(Path path) {
 		this.path = path;
 		setState(EMovableState.PATHING);
-		this.movableAction = EAction.NO_ACTION;
+		this.movableAction = EMovableAction.NO_ACTION;
 		pathingAction();
 	}
 
@@ -715,13 +735,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 */
 	@Override
 	public final void kill() {
-		if (health <= -100) {
+		if (state == EMovableState.DEAD) {
 			return; // this movable already died.
 		}
 
 		grid.leavePosition(this.position, this);
 		this.health = -200;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.state = EMovableState.DEAD;
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
@@ -779,7 +800,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	@Override
-	public final EAction getAction() {
+	public final EMovableAction getAction() {
 		return movableAction;
 	}
 
@@ -851,7 +872,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private void setStrategy(MovableStrategy newStrategy) {
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.strategy = newStrategy;
-		this.movableAction = EAction.NO_ACTION;
+		this.movableAction = EMovableAction.NO_ACTION;
 		setState(EMovableState.DOING_NOTHING);
 	}
 
@@ -893,6 +914,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 	}
 
+	@Override
+	public boolean isTower() {
+		return false;
+	}
+
 	private void checkPlayerOfCurrentPosition() {
 		checkPlayerOfPosition(grid.getPlayerAt(position));
 	}
@@ -918,6 +944,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		TAKE,
 		DROP,
+
+		DEAD,
 
 		/**
 		 * This state may only be used for debugging reasons!

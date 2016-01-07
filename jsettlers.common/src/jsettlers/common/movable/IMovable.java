@@ -30,7 +30,7 @@ import jsettlers.common.sound.ISoundable;
 public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable, IIDable {
 	public EMovableType getMovableType();
 
-	public EAction getAction();
+	public EMovableAction getAction();
 
 	public EDirection getDirection();
 
