@@ -5,6 +5,7 @@
 
 ### UI Options =======================================
 # locale = en_en
+# disable-original-maps = true
 
 
 ### AI Options =======================================

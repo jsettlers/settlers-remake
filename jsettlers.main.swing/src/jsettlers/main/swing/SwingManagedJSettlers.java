@@ -171,6 +171,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
 		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
 		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
+		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
 
 		if (options.containsKey("fixed-ai-type")) {
 			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));

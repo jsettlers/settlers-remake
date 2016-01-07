@@ -26,8 +26,8 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
@@ -94,7 +94,7 @@ public class MapList implements IMapListerCallable {
 		freshMaps.clear();
 		savedMaps.clear();
 
-		if (originalMapsDirectory != null) {
+		if (originalMapsDirectory != null && !CommonConstants.DISABLE_ORIGINAL_MAPS) {
 			originalMapsDirectory.listMaps(this);
 		}
 		mapsDir.listMaps(this);
