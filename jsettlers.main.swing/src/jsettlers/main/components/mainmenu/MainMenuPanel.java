@@ -41,7 +41,6 @@ public class MainMenuPanel extends JPanel {
 	private final JToggleButton loadSaveGameButton = new JToggleButton();
 	private final OpenPanel openSinglePlayerPanel;
 	private final OpenPanel openSaveGamePanel;
-	private JToggleButton selectedToggleButton;
 
 	public MainMenuPanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
@@ -60,8 +59,8 @@ public class MainMenuPanel extends JPanel {
 	}
 
 	private void addListener() {
-		newSinglePlayerGameButton.addActionListener(setEast(newSinglePlayerGameButton, openSinglePlayerPanel));
-		loadSaveGameButton.addActionListener(setEast(loadSaveGameButton, openSaveGamePanel));
+		newSinglePlayerGameButton.addActionListener(setEast(openSinglePlayerPanel));
+		loadSaveGameButton.addActionListener(setEast(openSaveGamePanel));
 		exitButton.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
 				settlersFrame.exit();
@@ -82,19 +81,18 @@ public class MainMenuPanel extends JPanel {
 		centerPanel.add(loadSaveGameButton);
 		centerPanel.add(exitButton);
 		add(centerPanel, BorderLayout.CENTER);
+		ButtonGroup buttonGroup = new ButtonGroup();
+		buttonGroup.add(newSinglePlayerGameButton);
+		buttonGroup.add(loadSaveGameButton);
 		add(emptyPanel, BorderLayout.EAST);
 		emptyPanel.setPreferredSize(PREFERRED_EAST_SIZE);
 		openSinglePlayerPanel.setPreferredSize(PREFERRED_EAST_SIZE);
 		openSaveGamePanel.setPreferredSize(PREFERRED_EAST_SIZE);
 	}
 
-	private ActionListener setEast(final JToggleButton clickedButton, final OpenPanel panelToBeSet) {
+	private ActionListener setEast(final OpenPanel panelToBeSet) {
 		return new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
-				if (selectedToggleButton != null) {
-					selectedToggleButton.getModel().setSelected(false);
-				}
-				selectedToggleButton = clickedButton;
 				remove(1);
 				add(panelToBeSet, BorderLayout.EAST);
 				settlersFrame.revalidate();
