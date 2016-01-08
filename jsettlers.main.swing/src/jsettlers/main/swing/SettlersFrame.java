@@ -29,6 +29,7 @@ public class SettlersFrame extends JFrame {
 	public SettlersFrame() throws HeadlessException {
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setPreferredSize(new Dimension(1200, 800));
 		pack();
 		setVisible(true);
 	}

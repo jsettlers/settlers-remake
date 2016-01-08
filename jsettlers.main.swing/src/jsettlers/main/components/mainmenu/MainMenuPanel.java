@@ -23,8 +23,6 @@ import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,7 +44,8 @@ public class MainMenuPanel extends JPanel {
 		this.settlersFrame = settlersFrame;
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), new ShowNewSinglePlayerGame(settlersFrame));
 		openSaveGamePanel = new OpenPanel(
-				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()), new ShowNewSinglePlayerGame(settlersFrame));
+				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
+				new ShowNewSinglePlayerGame(settlersFrame));
 		createStructure();
 		localize();
 		addListener();
@@ -59,13 +58,9 @@ public class MainMenuPanel extends JPanel {
 	}
 
 	private void addListener() {
-		newSinglePlayerGameButton.addActionListener(setEast(openSinglePlayerPanel));
-		loadSaveGameButton.addActionListener(setEast(openSaveGamePanel));
-		exitButton.addActionListener(new ActionListener() {
-			@Override public void actionPerformed(ActionEvent e) {
-				settlersFrame.exit();
-			}
-		});
+		newSinglePlayerGameButton.addActionListener(e -> setCenter(openSinglePlayerPanel));
+		loadSaveGameButton.addActionListener(e -> setCenter(openSaveGamePanel));
+		exitButton.addActionListener(e -> settlersFrame.exit());
 	}
 
 	private void localize() {
@@ -76,28 +71,23 @@ public class MainMenuPanel extends JPanel {
 
 	private void createStructure() {
 		setLayout(new BorderLayout());
-		JPanel centerPanel = new JPanel();
-		centerPanel.add(newSinglePlayerGameButton);
-		centerPanel.add(loadSaveGameButton);
-		centerPanel.add(exitButton);
-		add(centerPanel, BorderLayout.CENTER);
+		JPanel westPanel = new JPanel();
+		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.PAGE_AXIS));
+		westPanel.add(newSinglePlayerGameButton);
+		westPanel.add(loadSaveGameButton);
+		westPanel.add(exitButton);
+		add(westPanel, BorderLayout.WEST);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(newSinglePlayerGameButton);
 		buttonGroup.add(loadSaveGameButton);
-		add(emptyPanel, BorderLayout.EAST);
-		emptyPanel.setPreferredSize(PREFERRED_EAST_SIZE);
-		openSinglePlayerPanel.setPreferredSize(PREFERRED_EAST_SIZE);
-		openSaveGamePanel.setPreferredSize(PREFERRED_EAST_SIZE);
+		add(emptyPanel, BorderLayout.CENTER);
+		westPanel.setPreferredSize(PREFERRED_EAST_SIZE);
 	}
 
-	private ActionListener setEast(final OpenPanel panelToBeSet) {
-		return new ActionListener() {
-			@Override public void actionPerformed(ActionEvent e) {
-				remove(1);
-				add(panelToBeSet, BorderLayout.EAST);
-				settlersFrame.revalidate();
-				settlersFrame.repaint();
-			}
-		};
+	private void setCenter(final OpenPanel panelToBeSet) {
+		remove(1);
+		add(panelToBeSet, BorderLayout.CENTER);
+		settlersFrame.revalidate();
+		settlersFrame.repaint();
 	}
 }
