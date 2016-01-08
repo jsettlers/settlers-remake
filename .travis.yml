@@ -5,13 +5,10 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-
-env:
-  - TARGET=runUnitTests
-  - TARGET=runAutoReplayIT
-  - TARGET=buildDedicatedServer
-  - TARGET=buildSwing
-  - TARGET=runAiDifficultiesIT
-  - TARGET=runReplayValidationIT
-
-script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
+script:
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant runUnitTests
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant runAutoReplayIT
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant buildDedicatedServer
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant buildSwing use oraclejdk8
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant runAiDifficultiesIT
+  - ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant runReplayValidationIT
