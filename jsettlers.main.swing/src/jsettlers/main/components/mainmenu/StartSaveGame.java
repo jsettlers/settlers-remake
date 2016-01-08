@@ -30,6 +30,7 @@ public class StartSaveGame implements ActionListener {
 	@Override public void actionPerformed(ActionEvent e) {
 		SavegameLoader savegameLoader = (SavegameLoader) relatedOpenPanel.getSelectedMap();
 		if (savegameLoader != null) {
+			//TODO: read playersettings out of savegame file
 			long randomSeed = 4711L;
 			byte playerId = 0;
 			PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) savegameLoader.getMaxPlayers());

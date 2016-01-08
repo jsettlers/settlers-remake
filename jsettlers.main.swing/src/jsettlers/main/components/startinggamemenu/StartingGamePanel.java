@@ -32,7 +32,7 @@ import java.awt.*;
  */
 public class StartingGamePanel extends JPanel implements IStartingGameListener {
 
-	private final JLabel messageLabel = new JLabel();
+	private final JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
 	private final SettlersFrame settlersFrame;
 
 	public StartingGamePanel(SettlersFrame settlersFrame) {
