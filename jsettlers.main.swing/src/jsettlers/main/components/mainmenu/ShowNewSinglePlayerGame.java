@@ -31,6 +31,6 @@ public class ShowNewSinglePlayerGame implements ActionListener {
 	}
 
 	@Override public void actionPerformed(ActionEvent e) {
-
+		//settlersFrame.showStartingGamePanel(); show game settings menu
 	}
 }

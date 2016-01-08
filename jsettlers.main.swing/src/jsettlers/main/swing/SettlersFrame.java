@@ -14,10 +14,21 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import go.graphics.area.Area;
+import go.graphics.region.Region;
+import go.graphics.sound.SoundPlayer;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
+import jsettlers.graphics.map.MapContent;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
+import jsettlers.main.components.startinggamemenu.StartingGamePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.TimerTask;
+import java.util.Timer;
 
 /**
  * @author codingberlin
@@ -25,6 +36,8 @@ import java.awt.*;
 public class SettlersFrame extends JFrame {
 
 	private final MainMenuPanel mainPanel = new MainMenuPanel(this);
+	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
+	private SoundPlayer soundPlayer = new SwingSoundPlayer();
 
 	public SettlersFrame() throws HeadlessException {
 		showMainMenu();
@@ -36,9 +49,42 @@ public class SettlersFrame extends JFrame {
 
 	public void showMainMenu() {
 		setContentPane(mainPanel);
+		revalidate();
+		repaint();
+	}
+
+	public void showStartingGamePanel(IStartingGame startingGame) {
+		startingGamePanel.setStartingGame(startingGame);
+		setContentPane(startingGamePanel);
+		revalidate();
+		repaint();
 	}
 
 	public void exit() {
 		System.exit(0);
+	}
+
+	public SoundPlayer getSoundPlayer() {
+		return soundPlayer;
+	}
+
+	public void setContent(MapContent content) {
+		Region region = new Region(500, 500);
+		region.setContent(content);
+		Area area = new Area();
+		area.add(region);
+
+		new Timer("opengl-redraw").schedule(new TimerTask() {
+			@Override
+			public void run() {
+				region.requestRedraw();
+			}
+		}, 100, 25);
+
+		SwingUtilities.invokeLater(() -> {
+			setContentPane(new AreaContainer(area));
+			revalidate();
+			repaint();
+		});
 	}
 }

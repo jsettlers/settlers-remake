@@ -43,9 +43,11 @@ public class MainMenuPanel extends JPanel {
 	public MainMenuPanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), new ShowNewSinglePlayerGame(settlersFrame));
+		StartSaveGame startSaveGame = new StartSaveGame(settlersFrame);
 		openSaveGamePanel = new OpenPanel(
 				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
-				new ShowNewSinglePlayerGame(settlersFrame));
+				startSaveGame);
+		startSaveGame.setRelatedOpenPanel(openSaveGamePanel);
 		createStructure();
 		localize();
 		addListener();
