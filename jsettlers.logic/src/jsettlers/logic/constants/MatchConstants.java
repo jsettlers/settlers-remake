@@ -46,9 +46,19 @@ public final class MatchConstants {
 	private static ExtendedRandom aiRandom;
 
 	public static void init(IGameClock clock, long randomSeed) {
+		clearState();
 		MatchConstants.clock = clock;
 		MatchConstants.gameRandom = new ExtendedRandom(randomSeed);
 		MatchConstants.aiRandom = new ExtendedRandom(randomSeed);
+	}
+
+	public static void clearState() {
+		if (clock != null) {
+			clock.stopExecution();
+		}
+		clock = null;
+		gameRandom = null;
+		aiRandom = null;
 	}
 
 	public static IGameClock clock() {
@@ -74,4 +84,5 @@ public final class MatchConstants {
 		gameRandom = (ExtendedRandom) ois.readObject();
 		aiRandom = (ExtendedRandom) ois.readObject();
 	}
+
 }

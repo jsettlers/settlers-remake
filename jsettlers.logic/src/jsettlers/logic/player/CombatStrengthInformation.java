@@ -12,70 +12,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.startscreen.interfaces;
+package jsettlers.logic.player;
 
-import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.player.ICombatStrengthInformation;
+import jsettlers.logic.constants.Constants;
 
 /**
- * This is a simple implementation of {@link IStartedGame} that allows you to supply a map as a game.
- * 
- * @author michael
+ * @author codingberlin
  */
-public class FakeMapGame implements IStartedGame {
 
-	public final class NullStatistics implements IStatisticable {
-		@Override
-		public int getGameTime() {
-			return 0;
-		}
+public class CombatStrengthInformation implements ICombatStrengthInformation {
+	private static final float[] START_AMOUNT = { 29, 22, 14, 10.25f, 8, 6, 5, 4.7f, 4.2f, 3.8f, 3.3f, 3.1f, 2.9f, 2.7f, 2.6f, 2.4f, 2.3f, 2.2f, 2.1f,
+			2, 1.9f, 1.8f, 1.7f, 1.6f, 1.5f, 1.4f, 1.3f, 1.2f, 1.1f };
+	private static final float goldDivisor = (float) (Math.log(2) * 9);
 
-		@Override
-		public int getNumberOf(EMovableType movableType) {
-			return 0;
-		}
+	private float combatStrength;
+	private float combatStrengthOwnGround;
 
-		@Override
-		public int getNumberOf(EMaterialType materialType) {
-			return 0;
-		}
-
-		@Override
-		public int getJoblessBearers() {
-			return 0;
-		}
-	}
-
-	private final IGraphicsGrid map;
-
-	public FakeMapGame(IGraphicsGrid map) {
-		this.map = map;
+	@Override
+	public float getCombatStrength(boolean ownGround) {
+		return ownGround ? combatStrengthOwnGround : combatStrength;
 	}
 
 	@Override
-	public IGraphicsGrid getMap() {
-		return map;
+	public String toString() {
+		return "CombatStrength: ownGround: " + combatStrengthOwnGround + "    external: " + combatStrength;
 	}
 
-	@Override
-	public IStatisticable getPlayerStatistics() {
-		return new NullStatistics();
-	}
+	public void updateGoldCombatStrength(byte numberOfPlayers, int amountOfGold) {
+		float totalGoldAmount = amountOfGold + START_AMOUNT[Math.min(START_AMOUNT.length, numberOfPlayers) - 1];
+		float goldCombatStrength = ((float) Math.log(totalGoldAmount)) / goldDivisor;
 
-	@Override
-	public IInGamePlayer getInGamePlayer() {
-		return null;
-	}
-
-	@Override
-	public void setGameExitListener(IGameExitListener exitListener) {
-	}
-
-	@Override
-	public boolean isShutdownFinished() {
-		return false;
+		this.combatStrength = goldCombatStrength;
+		this.combatStrengthOwnGround = Math.max(goldCombatStrength, Constants.COMBAT_STRENGTH_OWN_GROUND);
 	}
 }

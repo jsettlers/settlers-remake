@@ -16,7 +16,7 @@ package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
@@ -55,7 +55,7 @@ public final class GeologistStrategy extends MovableStrategy {
 			super.getStrategyGrid().setMarked(pos, false); // unmark the pos for the following check
 			if (canWorkOnPos(pos)) {
 				super.getStrategyGrid().setMarked(pos, true);
-				super.playAction(EAction.ACTION1, ACTION1_DURATION);
+				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EGeologistState.PLAYING_ACTION_1;
 			} else {
 				findWorkablePosition();
@@ -64,7 +64,7 @@ public final class GeologistStrategy extends MovableStrategy {
 			break;
 
 		case PLAYING_ACTION_1:
-			super.playAction(EAction.ACTION2, ACTION2_DURATION);
+			super.playAction(EMovableAction.ACTION2, ACTION2_DURATION);
 			state = EGeologistState.PLAYING_ACTION_2;
 			break;
 

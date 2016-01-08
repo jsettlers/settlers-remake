@@ -16,7 +16,7 @@ package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Movable;
@@ -51,7 +51,7 @@ public final class PioneerStrategy extends MovableStrategy {
 			}
 
 			if (canWorkOnPos(super.getPos())) {
-				super.playAction(EAction.ACTION1, ACTION1_DURATION);
+				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EPioneerState.WORKING_ON_POS;
 			} else {
 				findWorkablePosition();

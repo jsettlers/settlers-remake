@@ -15,7 +15,7 @@
 package jsettlers.graphics.test;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -39,8 +39,8 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public EAction getAction() {
-		return EAction.WALKING;
+	public EMovableAction getAction() {
+		return EMovableAction.WALKING;
 	}
 
 	@Override

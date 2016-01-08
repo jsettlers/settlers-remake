@@ -32,7 +32,7 @@ public class MainMenu {
 	private static final float WIDTH = 300;
 	private static final float COLLAPSED_MARGIN = 10;
 	private static final float COLLAPSED_WIDTH = 20;
-	private AnimatedFader size = new AnimatedFader(0, 1);
+	private final AnimatedFader size = new AnimatedFader(0, 1);
 	private float height = 100;
 
 	private final UIPanel collapsedMark = new UIPanel();
@@ -50,8 +50,7 @@ public class MainMenu {
 	}
 
 	public void drawAt(GLDrawContext gl) {
-		float sizeValue = this.size
-				.getValue();
+		float sizeValue = this.size.getValue();
 		if (sizeValue < .01) {
 			drawCollappsedMarker(gl);
 		} else {
@@ -71,8 +70,7 @@ public class MainMenu {
 	}
 
 	public boolean containsPoint(UIPoint position) {
-		float sizeValue = this.size
-				.getValue();
+		float sizeValue = this.size.getValue();
 		if (sizeValue < .01) {
 			return position.getX() < COLLAPSED_WIDTH;
 		} else {
@@ -82,12 +80,10 @@ public class MainMenu {
 	}
 
 	public Action getActionFor(UIPoint position) {
-		float sizeValue = this.size
-				.getValue();
+		float sizeValue = this.size.getValue();
 		if (sizeValue < .01) {
 			return new FadeAnimatedFaderAction(size, 1);
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 

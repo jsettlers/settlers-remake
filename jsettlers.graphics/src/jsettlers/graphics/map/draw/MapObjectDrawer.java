@@ -36,7 +36,7 @@ import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
@@ -432,11 +432,11 @@ public class MapObjectDrawer {
 
 	private void playMovableSound(IMovable movable) {
 		if (!movable.isSoundPlayed()) {
-			final EAction action = movable.getAction();
-			if (action == EAction.ACTION1) {
+			final EMovableAction action = movable.getAction();
+			if (action == EMovableAction.ACTION1) {
 				playSoundAction1(movable.getMovableType());
 				movable.setSoundPlayed();
-			} else if (action == EAction.ACTION2) {
+			} else if (action == EMovableAction.ACTION2) {
 				playSoundAction2(movable.getMovableType());
 				movable.setSoundPlayed();
 			}
@@ -495,7 +495,7 @@ public class MapObjectDrawer {
 
 		float viewX;
 		float viewY;
-		if (movable.getAction() == EAction.WALKING) {
+		if (movable.getAction() == EMovableAction.WALKING) {
 			int originx = x - movable.getDirection().getGridDeltaX();
 			int originy = y - movable.getDirection().getGridDeltaY();
 			viewX = betweenTilesX(originx, originy, x, y, moveProgress);

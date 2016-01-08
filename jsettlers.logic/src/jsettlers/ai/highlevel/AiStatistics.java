@@ -20,7 +20,14 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -39,7 +46,6 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
@@ -65,7 +71,7 @@ public class AiStatistics {
 	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
 	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
-			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE};
+			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
@@ -167,13 +173,13 @@ public class AiStatistics {
 		if (building.getStateProgress() < 1f) {
 			playerStatistic.numberOfNotFinishedBuildings++;
 			if (building.getBuildingType().isMilitaryBuilding()) {
-				playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
+				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
 			}
 		} else if (building.getBuildingType().isMilitaryBuilding()) {
 			if (building.isOccupied()) {
 				playerStatistic.isAlive = true;
 			} else {
-				playerStatistic.numberOfNotOccupiedMilitaryBuildingss++;
+				playerStatistic.numberOfNotOccupiedMilitaryBuildings++;
 			}
 		}
 	}
@@ -425,7 +431,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfNotOccupiedMilitaryBuildings(short playerId) {
-		return playerStatistics[playerId].numberOfNotOccupiedMilitaryBuildingss;
+		return playerStatistics[playerId].numberOfNotOccupiedMilitaryBuildings;
 	}
 
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
@@ -570,15 +576,15 @@ public class AiStatistics {
 		return playerStatistics[playerId].materialProduction;
 	}
 
-	public boolean isAlive(byte playerId) {
-		return playerStatistics[playerId].isAlive;
-	}
-
 	public ShortPoint2D getPositionOfPartition(byte playerId) {
 		return playerStatistics[playerId].referencePosition;
 	}
 
-	class PlayerStatistic {
+	public boolean isAlive(byte playerId) {
+		return playerStatistics[playerId].isAlive;
+	}
+
+	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
 		int[] totalBuildingsNumbers;
@@ -599,8 +605,8 @@ public class AiStatistics {
 		AiPositions deadMines;
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
-		int numberOfNotOccupiedMilitaryBuildingss;
-		MaterialProductionSettings materialProduction;
+		int numberOfNotOccupiedMilitaryBuildings;
+		IMaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
@@ -643,7 +649,7 @@ public class AiStatistics {
 			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
-			numberOfNotOccupiedMilitaryBuildingss = 0;
+			numberOfNotOccupiedMilitaryBuildings = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 

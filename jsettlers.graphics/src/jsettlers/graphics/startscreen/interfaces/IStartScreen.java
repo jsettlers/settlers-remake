@@ -100,21 +100,17 @@ public interface IStartScreen {
 
 		@Override
 		public IStartingGame startSingleplayerGame(IMapDefinition map) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public IStartingGame loadSingleplayerGame(IMapDefinition map) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public IMultiplayerConnector getMultiplayerConnector(String serverAddr, Player player) {
-			// TODO Auto-generated method stub
 			return null;
 		}
-
 	};
 }

@@ -15,7 +15,7 @@
 package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
@@ -66,7 +66,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 			}
 		case GOING_TO_POS:
 			if (needsToBeWorkedOn(super.getPos())) {
-				super.playAction(EAction.ACTION1, 1f);
+				super.playAction(EMovableAction.ACTION1, 1f);
 				this.state = EDiggerState.PLAYING_ACTION;
 			} else {
 				goToDiggablePosition();
@@ -151,9 +151,18 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		if (pathTarget != null) {
 			super.getStrategyGrid().setMarked(pathTarget, false);
 		}
-		if (state == EDiggerState.JOBLESS) {
+
+		switch (state) {
+		case JOBLESS:
 			super.getStrategyGrid().removeJobless(this);
+			break;
+		case PLAYING_ACTION:
+			super.getStrategyGrid().setMarked(super.getPos(), false);
+			break;
+		default:
+			break;
 		}
+
 		if (requester != null) {
 			abortJob();
 		}
