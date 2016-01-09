@@ -14,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -56,12 +57,14 @@ public class LookAndFeelSample extends JFrame {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		BackgroundPanel backgroundPanel = new BackgroundPanel();
+		JPanel contentPanel = new JPanel();
+		backgroundPanel.add(contentPanel);
 
 		// -------------------
 
 		JButton button1 = new JButton("Button1");
 		button1.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		backgroundPanel.add(button1);
+		contentPanel.add(button1);
 		button1.addActionListener(new ActionListener() {
 
 			@Override
@@ -73,46 +76,46 @@ public class LookAndFeelSample extends JFrame {
 		// -------------------
 
 		JButton button2 = new JButton("Button2");
-		backgroundPanel.add(button2);
+		contentPanel.add(button2);
 
 		// -------------------
 
 		JLabel lbHeader = new JLabel("Titel label");
 		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
-		backgroundPanel.add(lbHeader);
+		contentPanel.add(lbHeader);
 
 		lbHeader = new JLabel("Titel Center", SwingConstants.CENTER);
 		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
-		backgroundPanel.add(lbHeader);
+		contentPanel.add(lbHeader);
 
 		// -------------------
 
 		JLabel lbText = new JLabel("Label long");
 		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
-		backgroundPanel.add(lbText);
+		contentPanel.add(lbText);
 
 		lbText = new JLabel("Label short");
 		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		backgroundPanel.add(lbText);
+		contentPanel.add(lbText);
 
 		// -------------------
 
 		JTextField txt = new JTextField("JTextField");
-		backgroundPanel.add(txt);
+		contentPanel.add(txt);
 
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
+		contentPanel.add(new JTextField("JTextField"));
 
 		JLabel p = new JLabel(
 				"<html>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br></html>");
@@ -120,10 +123,10 @@ public class LookAndFeelSample extends JFrame {
 		scrol.setBorder(new TitledBorder("Scroll"));
 		scrol.setPreferredSize(new Dimension(80, 120));
 
-		backgroundPanel.add(scrol);
+		contentPanel.add(scrol);
 
 		JScrollBar sb = new StoneScrollbar(JScrollBar.VERTICAL, 15, 15, 0, 150);
-		backgroundPanel.add(sb);
+		contentPanel.add(sb);
 
 		// -------------------
 
