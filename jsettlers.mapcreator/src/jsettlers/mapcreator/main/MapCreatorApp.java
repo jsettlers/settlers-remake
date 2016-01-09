@@ -14,9 +14,10 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -33,13 +34,13 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.control.ActionPropertie;
 import jsettlers.mapcreator.control.EditorControl;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
 import jsettlers.mapcreator.main.window.NewOrOpenDialog;
+import jsettlers.mapcreator.main.window.OpenPanel;
 
 /**
  * Entry point for Map Editor application
@@ -60,18 +61,6 @@ public class MapCreatorApp {
 		} catch (Exception e) {
 			// could not be loaded, ignore error
 		}
-
-		// Map Cell renderer
-		UIManager.put("MapListCellRenderer.backgroundColor1", Color.WHITE);
-		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0xE0E0E0));
-		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0x9EB1CD));
-		UIManager.put("MapListCellRenderer.foregroundColor", Color.BLACK);
-
-		// Search Field
-		UIManager.put("ClearSearchIcon.foregroundColor", Color.WHITE);
-		UIManager.put("ClearSearchIcon.backgroundColor", Color.LIGHT_GRAY);
-		UIManager.put("ClearSearchIcon.backgroundColorHover", Color.GRAY);
-
 	}
 
 	/**
@@ -190,7 +179,8 @@ public class MapCreatorApp {
 	 * Main
 	 * 
 	 * @param args
-	 *            Arguments
+	 * @throws FileNotFoundException
+	 * @throws IOException
 	 */
 	public static void main(String[] args) {
 		try {

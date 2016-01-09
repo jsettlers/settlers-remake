@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
-import jsettlers.logic.map.save.MapList;
-import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -34,7 +32,7 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the map list
 	 */
-	private OpenPanel openPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), doubleClickListener);
+	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
 
 	/**
 	 * Constructor

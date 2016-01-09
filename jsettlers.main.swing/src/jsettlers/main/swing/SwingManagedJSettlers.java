@@ -38,7 +38,6 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
@@ -66,13 +65,29 @@ public class SwingManagedJSettlers {
 	}
 
 	/**
+	 * @param args
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws MapLoadException
+	 */
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
+		OptionableProperties options = MainUtils.loadOptions(args);
+
+		loadOptionalSettings(options);
+		setupResourceManagers(options, "config.prp");
+
+		JSettlersScreen content = startGui();
+		generateContent(options, content);
+	}
+
+	/**
 	 * Sets up the {@link ResourceManager} by using a configuration file. <br>
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
 	 * file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 * 
-	 * @param options
-	 *            Command line options
+	 * @param argsMap
 	 * @param defaultConfigFileName
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -175,7 +190,10 @@ public class SwingManagedJSettlers {
 	/**
 	 * Creates a new SWING GUI for the game.
 	 * 
-	 * @return JSettlersScreen
+	 * @param argsList
+	 * @return
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
 	public static JSettlersScreen startGui() {
 		Area area = new Area();
@@ -267,27 +285,4 @@ public class SwingManagedJSettlers {
 	private static String getBuild() {
 		return Labels.getString("version-build", CommitInfo.COMMIT_HASH_SHORT);
 	}
-
-	/**
-	 * Main entry point
-	 * 
-	 * @param args
-	 *            Arguments
-	 */
-	public static void main(String[] args) {
-		try {
-			ExceptionHandler.setupDefaultExceptionHandler();
-
-			OptionableProperties options = MainUtils.loadOptions(args);
-
-			loadOptionalSettings(options);
-			setupResourceManagers(options, "config.prp");
-
-			JSettlersScreen content = startGui();
-			generateContent(options, content);
-		} catch (Exception e) {
-			ExceptionHandler.displayError(e, "Error launching application");
-		}
-	}
-
 }

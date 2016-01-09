@@ -1,20 +1,18 @@
-package jsettlers.main.components.openpanel;
+package jsettlers.mapcreator.main.window.search;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 
 import javax.swing.Icon;
-import javax.swing.UIManager;
-
-import jsettlers.lookandfeel.DrawHelper;
 
 /**
  * Icon to clear search
- *
+ * 
  * @author Andreas Butti
  */
 public class ClearIcon implements Icon {
@@ -24,41 +22,24 @@ public class ClearIcon implements Icon {
 	 */
 	private boolean hover = false;
 
-	/**
-	 * Background
-	 */
-	private final Color BACKGROUND = UIManager.getColor("ClearSearchIcon.backgroundColor");
-
-	/**
-	 * Background mouse over
-	 */
-	private final Color BACKGROUND_HOVER = UIManager.getColor("ClearSearchIcon.backgroundColorHover");
-
-	/**
-	 * Foreground
-	 */
-	private final Color FOREGROUND = UIManager.getColor("ClearSearchIcon.foregroundColor");
-
 	@Override
 	public void paintIcon(Component c, Graphics g1, int x, int y) {
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
+		Graphics2D g = (Graphics2D) g1;
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 		Stroke oldStroke = g.getStroke();
 
-		Color background;
-
 		if (hover) {
-			g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-			background = BACKGROUND_HOVER;
+			g.setColor(Color.GRAY);
 		} else {
-			background = BACKGROUND;
+			g.setColor(Color.LIGHT_GRAY);
 		}
-		if (background != null) {
-			g.setColor(background);
-			g.fillOval(x + 2, y + 2, 18, 18);
-		}
-
-		g.setColor(FOREGROUND);
+		g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.fillOval(x + 2, y + 2, 18, 18);
+		g.setColor(Color.WHITE);
 		g.drawLine(x + 6, y + 6, x + 15, y + 15);
 		g.drawLine(x + 15, y + 6, x + 6, y + 15);
 

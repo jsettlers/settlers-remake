@@ -1,4 +1,4 @@
-package jsettlers.main.components.openpanel;
+package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -13,16 +13,16 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.lookandfeel.LFStyle;
+import jsettlers.mapcreator.main.window.search.SearchTextField;
 
 /**
  * Panel to open an existing map
- *
+ * 
  * @author Andreas Butti
  *
  */
@@ -37,7 +37,7 @@ public class OpenPanel extends JPanel {
 	/**
 	 * List with all maps
 	 */
-	protected List<MapLoader> maps;
+	protected List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
 
 	/**
 	 * Unfiltered map list
@@ -57,33 +57,15 @@ public class OpenPanel extends JPanel {
 	/**
 	 * Constructor
 	 * 
-	 * @param maps
-	 *            Maps to display
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener) {
-		this(maps, doubleclickListener, new MapListCellRenderer());
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param maps
-	 *            Maps to display
-	 * @param doubleclickListener
-	 *            Gets called when an entry is double clicked, can be <code>null</code>
-	 * @param cellRenderer
-	 *            Cell renderer to use
-	 */
-	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
-		this.maps = maps;
+	public OpenPanel(final ActionListener doubleclickListener) {
 		setLayout(new BorderLayout());
 
 		sortMaps();
 
 		this.txtSearch = new SearchTextField();
-		txtSearch.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
 		add(txtSearch, BorderLayout.NORTH);
 		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -105,7 +87,7 @@ public class OpenPanel extends JPanel {
 
 		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
 		this.mapList = new JList<MapLoader>(listModelFiltered);
-		mapList.setCellRenderer(cellRenderer);
+		mapList.setCellRenderer(new MapListCellRenderer());
 		mapList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -116,7 +98,6 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
-		mapList.setOpaque(false);
 		add(new JScrollPane(mapList), BorderLayout.CENTER);
 
 		searchChanged();
@@ -149,7 +130,7 @@ public class OpenPanel extends JPanel {
 
 	/**
 	 * Checks if a map matches the search criteria
-	 *
+	 * 
 	 * @param m
 	 *            Map
 	 * @param search
@@ -194,10 +175,4 @@ public class OpenPanel extends JPanel {
 		return mapList.getSelectedValue();
 	}
 
-	/**
-	 * @return true if there are no maps in the list
-	 */
-	public boolean isEmpty() {
-		return maps.isEmpty();
-	}
 }

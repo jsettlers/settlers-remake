@@ -4,10 +4,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.Icon;
-
-import jsettlers.lookandfeel.DrawHelper;
 
 /**
  * Icon for shapes
@@ -114,15 +113,19 @@ public abstract class ShapeIcon implements Icon, Cloneable {
 	}
 
 	@Override
-	public void paintIcon(Component c, Graphics g1, int x, int y) {
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
+	public void paintIcon(Component c, Graphics g, int x, int y) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-		g.setColor(getBackgroundColor());
-		g.fillRect(x, y, getIconWidth(), getIconHeight());
-		g.setColor(Color.WHITE);
-		g.drawRect(x, y, getIconWidth(), getIconHeight());
-		g.setColor(getColor());
-		paint(c, g, x, y);
+		g2.setColor(getBackgroundColor());
+		g2.fillRect(x, y, getIconWidth(), getIconHeight());
+		g2.setColor(Color.WHITE);
+		g2.drawRect(x, y, getIconWidth(), getIconHeight());
+		g2.setColor(getColor());
+		paint(c, g2, x, y);
 	}
 
 	/**

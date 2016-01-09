@@ -1,26 +1,29 @@
-package jsettlers.main.components.openpanel;
+package jsettlers.mapcreator.main.window.search;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 
 import javax.swing.Icon;
 
-import jsettlers.lookandfeel.DrawHelper;
-
 /**
  * Icon to display search symbol
- *
+ * 
  * @author Andreas Butti
  */
 public class SearchIcon implements Icon {
 
 	@Override
 	public void paintIcon(Component c, Graphics g1, int x, int y) {
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
+		Graphics2D g = (Graphics2D) g1;
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 		Stroke oldStroke = g.getStroke();
 

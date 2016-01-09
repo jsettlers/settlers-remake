@@ -1,4 +1,4 @@
-package jsettlers.main.components.openpanel;
+package jsettlers.mapcreator.main.window.search;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -9,11 +9,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * Search Text field
- *
+ * 
  * @author Andreas Butti
  */
 public class SearchTextField extends JTextField {
@@ -22,27 +22,29 @@ public class SearchTextField extends JTextField {
 	/**
 	 * Search icon
 	 */
-	private static final SearchIcon SEARCH_ICON = new SearchIcon();
+	private SearchIcon searchIcon = new SearchIcon();
 
 	/**
 	 * Icon to clear search
 	 */
-	private static final ClearIcon CLEAR_ICON = new ClearIcon();
+	private ClearIcon clearIcon = new ClearIcon();
 
 	/**
 	 * Clear "Button"
 	 */
-	private JLabel lbClear = new JLabel(CLEAR_ICON);
+	private JLabel lbClear = new JLabel(clearIcon);
 
 	/**
 	 * Search text
 	 */
-	private final String SEARCH = Labels.getString("general.search");
+	private final String SEARCH = EditorLabels.getLabel("general.search");
 
 	/**
 	 * Constructor
 	 */
 	public SearchTextField() {
+		setMargin(new Insets(2, searchIcon.getIconWidth() + 4, 2, clearIcon.getIconWidth() + 4));
+
 		lbClear.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -51,37 +53,26 @@ public class SearchTextField extends JTextField {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				CLEAR_ICON.setHover(true);
+				clearIcon.setHover(true);
 				lbClear.repaint();
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				CLEAR_ICON.setHover(false);
+				clearIcon.setHover(false);
 				lbClear.repaint();
 			}
 
 		});
+		add(lbClear);
 		lbClear.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-		updateUI();
-	}
-
-	@Override
-	public void updateUI() {
-		super.updateUI();
-		if (lbClear != null) {
-			remove(lbClear);
-			add(lbClear);
-		}
-		setMargin(new Insets(2, SEARCH_ICON.getIconWidth() + 4, 2, CLEAR_ICON.getIconWidth() + 4));
 	}
 
 	@Override
 	public void layout() {
-		int x = getWidth() - 4 - CLEAR_ICON.getIconWidth();
-		int y = (this.getHeight() - SEARCH_ICON.getIconHeight()) / 2;
-		lbClear.setBounds(x, y, CLEAR_ICON.getIconWidth(), CLEAR_ICON.getIconHeight());
+		int x = getWidth() - 4 - clearIcon.getIconWidth();
+		int y = (this.getHeight() - searchIcon.getIconHeight()) / 2;
+		lbClear.setBounds(x, y, clearIcon.getIconWidth(), clearIcon.getIconHeight());
 	}
 
 	@Override
@@ -89,10 +80,11 @@ public class SearchTextField extends JTextField {
 		super.paintComponent(g);
 
 		int x = 4;
-		SEARCH_ICON.paintIcon(this, g, x, (this.getHeight() - SEARCH_ICON.getIconHeight()) / 2);
+		searchIcon.paintIcon(this, g, x, (this.getHeight() - searchIcon.getIconHeight()) / 2);
 
+		// color already set by search icon...
 		if (getText().isEmpty()) {
-			x += SEARCH_ICON.getIconWidth() + 6;
+			x += searchIcon.getIconWidth() + 6;
 			int y = this.getHeight() - (this.getHeight() - g.getFontMetrics().getHeight()) / 2 - g.getFontMetrics().getDescent();
 			g.drawString(SEARCH, x, y);
 		}

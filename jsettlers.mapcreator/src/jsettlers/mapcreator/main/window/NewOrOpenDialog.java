@@ -3,15 +3,10 @@ package jsettlers.mapcreator.main.window;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
-import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -43,12 +38,12 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the map list
 	 */
-	private final OpenPanel openPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), doubleClickListener);
+	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
 
 	/**
 	 * Panel with the map list
 	 */
-	private final OpenPanel lastUsed;
+	private LastUsedPanel lastUsed = new LastUsedPanel(doubleClickListener);
 
 	/**
 	 * Main tabs
@@ -63,8 +58,6 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	 */
 	public NewOrOpenDialog(JFrame parent) {
 		super(parent);
-		lastUsed = initializeLastUsed();
-
 		setTitle(EditorLabels.getLabel("neworopen.header"));
 
 		tabs.addTab(EditorLabels.getLabel("neworopen.lastused"), lastUsed);
@@ -73,29 +66,13 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 
 		add(tabs, BorderLayout.CENTER);
 
-		if (lastUsed.isEmpty()) {
+		if (!lastUsed.hasFiles()) {
 			tabs.setSelectedComponent(openPanel);
 		}
 
 		pack();
 		setLocationRelativeTo(parent);
 		setModal(true);
-	}
-
-	/**
-	 * Filter the last used maps in a list
-	 * 
-	 * @return Panel with the last used maps
-	 */
-	private OpenPanel initializeLastUsed() {
-		List<String> lastUsedMapIds = new LastUsedHandler().getLastUsed();
-		List<MapLoader> lastUsedMaps = new ArrayList<MapLoader>();
-		for (MapLoader mapLoader : MapList.getDefaultList().getFreshMaps().getItems()) {
-			if (lastUsedMapIds.contains(mapLoader.getMapId())) {
-				lastUsedMaps.add(mapLoader);
-			}
-		}
-		return new OpenPanel(lastUsedMaps, doubleClickListener);
 	}
 
 	/**
