@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.PanelUI;
 
 import jsettlers.lookandfeel.DrawHelper;
+import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.lookandfeel.ui.img.UiImageLoader;
 
 /**
@@ -19,12 +20,8 @@ import jsettlers.lookandfeel.ui.img.UiImageLoader;
  */
 public class BackgroundPanelUi extends PanelUI {
 
-	// private Image originalBg;
 	// private BufferedImage backgroundTextture;
-	// private boolean original = false;
 	//
-
-	// private Image leafes1;
 
 	/**
 	 * Current background cache
@@ -42,12 +39,15 @@ public class BackgroundPanelUi extends PanelUI {
 	private BufferedImage borderTexture = UiImageLoader.get("texture-border.png");
 
 	/**
+	 * Leaf image at the right corner
+	 */
+	private BufferedImage leafes1 = UiImageLoader.get("leafes1b.png");
+
+	/**
 	 * Constructor
 	 */
 	public BackgroundPanelUi() {
-		// originalBg = new ImageIcon(BackgroundComponent.class.getResource("orig/15.png")).getImage();
 		// backgroundTextture = toBufferedImage(new ImageIcon(BackgroundComponent.class.getResource("nahtlohs" + TEXTURE_ID + ".jpg")).getImage());
-		// this.leafes1 = new ImageIcon(BackgroundComponent.class.getResource("leafes1b.png")).getImage();
 	}
 
 	@Override
@@ -96,47 +96,45 @@ public class BackgroundPanelUi extends PanelUI {
 		border.setPaint(tp);
 		border.drawRect();
 
-		//
-		// float factor = 0.2f;
-		// g.drawImage(leafes1, getWidth() - 120, -30, (int) (874 * factor), (int) (440 * factor), this);
-		//
-		// g.dispose();
-		// }
-		//
-		// protected void paintBorder(BorderDrawer border, Graphics2D g) {
-		// border.drawRect();
-		// }
-		//
-		// private void multiplyImage(BufferedImage tmpBg, BufferedImage textture, int targetX, int targetY) {
-		// for (int x = 0; x < textture.getWidth(); x++) {
-		// for (int y = 0; y < textture.getHeight(); y++) {
-		// if (x + targetX >= tmpBg.getWidth() || y + targetY >= tmpBg.getHeight()) {
-		// continue;
-		// }
-		//
-		// int rgb1 = tmpBg.getRGB(x + targetX, y + targetY);
-		// Color c1 = new Color(rgb1);
-		// float r1 = c1.getRed() / 255f;
-		// float g1 = c1.getGreen() / 255f;
-		// float b1 = c1.getBlue() / 255f;
-		//
-		// int rgb2 = textture.getRGB(x, y);
-		// Color c2 = new Color(rgb2);
-		// float addTexture = 0.15f;
-		// float r2 = c2.getRed() / 255f + addTexture;
-		// float g2 = c2.getGreen() / 255f + addTexture;
-		// float b2 = c2.getBlue() / 255f + addTexture;
-		//
-		// int r = (int) (Math.min(1.0f, r1 * r2) * 255f);
-		// int g = (int) (Math.min(1.0f, g1 * g2) * 255f);
-		// int b = (int) (Math.min(1.0f, b1 * b2) * 255f);
-		//
-		// tmpBg.setRGB(x + targetX, y + targetY, r << 16 | g << 8 | b);
-		// }
-		// }
-		//
-		// // g.drawImage(backgroundTextture, x, y, this);
-		//
+		if (c instanceof SplitedBackgroundPanel) {
+			border.drawVertical(((SplitedBackgroundPanel) c).getSplitPosition(), true);
+		}
+
+		float factor = 0.2f;
+		g.drawImage(leafes1, c.getWidth() - 120, -30, (int) (leafes1.getWidth() * factor), (int) (leafes1.getHeight() * factor), c);
+
+		g.dispose();
 	}
+
+	// private void multiplyImage(BufferedImage tmpBg, BufferedImage textture, int targetX, int targetY) {
+	// for (int x = 0; x < textture.getWidth(); x++) {
+	// for (int y = 0; y < textture.getHeight(); y++) {
+	// if (x + targetX >= tmpBg.getWidth() || y + targetY >= tmpBg.getHeight()) {
+	// continue;
+	// }
+	//
+	// int rgb1 = tmpBg.getRGB(x + targetX, y + targetY);
+	// Color c1 = new Color(rgb1);
+	// float r1 = c1.getRed() / 255f;
+	// float g1 = c1.getGreen() / 255f;
+	// float b1 = c1.getBlue() / 255f;
+	//
+	// int rgb2 = textture.getRGB(x, y);
+	// Color c2 = new Color(rgb2);
+	// float addTexture = 0.15f;
+	// float r2 = c2.getRed() / 255f + addTexture;
+	// float g2 = c2.getGreen() / 255f + addTexture;
+	// float b2 = c2.getBlue() / 255f + addTexture;
+	//
+	// int r = (int) (Math.min(1.0f, r1 * r2) * 255f);
+	// int g = (int) (Math.min(1.0f, g1 * g2) * 255f);
+	// int b = (int) (Math.min(1.0f, b1 * b2) * 255f);
+	//
+	// tmpBg.setRGB(x + targetX, y + targetY, r << 16 | g << 8 | b);
+	// }
+	// }
+	//
+	// // g.drawImage(backgroundTextture, x, y, this);
+	//
 
 }

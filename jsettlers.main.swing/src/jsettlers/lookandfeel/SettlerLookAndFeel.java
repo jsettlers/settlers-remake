@@ -7,6 +7,7 @@ import javax.swing.UIManager;
 import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
 import jsettlers.lookandfeel.factory.LabelUiFactory;
+import jsettlers.lookandfeel.factory.PanelUiFactory;
 
 /**
  * Look and Feel for JSettlers
@@ -41,6 +42,7 @@ public class SettlerLookAndFeel extends LookAndFeel {
 		Object[] uiDefaults = {
 				"ButtonUI", ButtonUiFactory.class.getName(),
 				"LabelUI", LabelUiFactory.class.getName(),
+				"PanelUI", PanelUiFactory.class.getName(),
 				// "CheckBoxUI", metalPackageName + "MetalCheckBoxUI",
 				// "ComboBoxUI", metalPackageName + "MetalComboBoxUI",
 				// "LabelUI", metalPackageName + "MetalLabelUI",

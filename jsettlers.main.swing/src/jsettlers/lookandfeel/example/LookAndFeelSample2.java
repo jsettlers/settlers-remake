@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -34,9 +35,9 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.SettlerLookAndFeel;
 import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
-import jsettlers.lookandfeel.ui.ButtonUIStone;
 import jsettlers.lookandfeel.ui.UIDefaults;
 import jsettlers.main.components.openpanel.OpenPanel;
 
@@ -96,6 +97,14 @@ public class LookAndFeelSample2 extends JFrame {
 		pButtons.setLayout(new GridLayout(0, 1, 20, 20));
 		add(contents);
 
+		// ********************************************************
+		// IMPORTANT
+		// Update tree ui after the style of all components is set
+		// ********************************************************
+		SwingUtilities.updateComponentTreeUI(contents);
+		contents.invalidate();
+		// ********************************************************
+
 		setSize(800, 600);
 		setLocationRelativeTo(null);
 	}
@@ -104,7 +113,7 @@ public class LookAndFeelSample2 extends JFrame {
 
 	private void createButton(final String text, final JComponent panel) {
 		JButton bt = new JButton(text);
-		bt.setUI(new ButtonUIStone());
+		bt.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		bt.addActionListener(new ActionListener() {
 
 			@Override
