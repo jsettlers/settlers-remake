@@ -23,16 +23,16 @@ import java.util.ArrayList;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -46,8 +46,6 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public class MapList implements IMapListerCallable {
-	public static final String MAP_EXTENSION = ".map";
-	public static final String COMPRESSED_MAP_EXTENSION = ".zmap";
 
 	/**
 	 * Gives the currently used map extension for saving a map.
@@ -55,13 +53,13 @@ public class MapList implements IMapListerCallable {
 	 * @return
 	 */
 	public static String getMapExtension() {
-		return CommonConstants.USE_SAVEGAME_COMPRESSION ? COMPRESSED_MAP_EXTENSION : MAP_EXTENSION;
+		return CommonConstants.USE_SAVEGAME_COMPRESSION ? MapLoader.MAP_EXTENSION_COMPRESSED : MapLoader.MAP_EXTENSION;
 	}
 
 	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
 		public MapList getMapList() {
-			return new MapList(ResourceManager.getSaveDirectory());
+			return new MapList(ResourceManager.getResourcesDirectory(), ResourceManager.getOriginalMapDirectory());
 		}
 	};
 
@@ -69,25 +67,36 @@ public class MapList implements IMapListerCallable {
 
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
+	private final IMapLister originalMapsDirectory;
 
 	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
-	private final ChangingList<MapLoader> savedMaps = new ChangingList<>();
+	private final ChangingList<RemakeMapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
-	public MapList(File dir) {
-		this(new DirectoryMapLister(new File(dir, "maps")), new DirectoryMapLister(new File(dir, "save")));
+	public MapList(File resourcesDirectory, File originalMapsDirectory) {
+		this(new DirectoryMapLister(new File(resourcesDirectory, "maps"), false),
+				new DirectoryMapLister(new File(resourcesDirectory, "save"), true),
+				new DirectoryMapLister(originalMapsDirectory, false));
 	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
+		this(mapsDir, saveDir, null);
+	}
+
+	public MapList(IMapLister mapsDir, IMapLister saveDir, IMapLister originalMapsDirectory) {
 		this.mapsDir = mapsDir;
 		this.saveDir = saveDir;
+		this.originalMapsDirectory = originalMapsDirectory;
 	}
 
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
 
+		if (originalMapsDirectory != null && !CommonConstants.DISABLE_ORIGINAL_MAPS) {
+			originalMapsDirectory.listMaps(this);
+		}
 		mapsDir.listMaps(this);
 		saveDir.listMaps(this);
 	}
@@ -97,18 +106,19 @@ public class MapList implements IMapListerCallable {
 		try {
 			MapLoader loader = MapLoader.getLoaderForListedMap(map);
 			MapType type = loader.getFileHeader().getType();
-			if (type == MapType.SAVED_SINGLE) {
-				savedMaps.add(loader);
+
+			if ((type == MapType.SAVED_SINGLE)) {
+				savedMaps.add((RemakeMapLoader) loader);
 			} else {
 				freshMaps.add(loader);
 			}
-		} catch (MapLoadException e) {
+		} catch (Exception e) {
 			System.err.println("Cought exception while loading header for " + map.getFileName());
 			e.printStackTrace();
 		}
 	}
 
-	public synchronized ChangingList<MapLoader> getSavedMaps() {
+	public synchronized ChangingList<RemakeMapLoader> getSavedMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -143,6 +153,7 @@ public class MapList implements IMapListerCallable {
 			}
 		}
 		return null;
+
 	}
 
 	public MapLoader getMapByName(String mapName) {
@@ -228,12 +239,6 @@ public class MapList implements IMapListerCallable {
 			defaultList = mapListFactory.getMapList();
 		}
 		return defaultList;
-	}
-
-	public void deleteLoadableGame(MapLoader game) {
-		game.getFile().delete();
-		savedMaps.remove(game);
-		loadFileList();
 	}
 
 	public static void setDefaultListFactory(IMapListFactory factory) {

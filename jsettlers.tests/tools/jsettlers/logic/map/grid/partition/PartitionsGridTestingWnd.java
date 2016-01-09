@@ -132,12 +132,16 @@ public class PartitionsGridTestingWnd {
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		grid.changePlayerOfTower(pos, (byte) newPlayer, new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()));
+		grid.changePlayerOfTower(pos, (byte) newPlayer);
+	}
+
+	private FreeMapArea getGroundArea(ShortPoint2D pos) {
+		return new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles());
 	}
 
 	private void addTower(int playerId, int x, int y, int radius) {
 		blockArea(getTowerBlockArea(x, y), true);
-		grid.addTowerAndOccupyArea((byte) playerId, new MapCircle(new ShortPoint2D(x, y), radius));
+		grid.addTowerAndOccupyArea((byte) playerId, new MapCircle(new ShortPoint2D(x, y), radius), getGroundArea(new ShortPoint2D(x, y)));
 	}
 
 	private IMapArea getTowerBlockArea(int x, int y) {

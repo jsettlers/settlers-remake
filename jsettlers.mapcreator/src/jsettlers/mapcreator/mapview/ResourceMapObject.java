@@ -42,19 +42,32 @@ public class ResourceMapObject implements IMapObject {
 	@Override
 	public EMapObjectType getObjectType() {
 		switch (resourceType) {
-		case COAL:
-			return EMapObjectType.FOUND_COAL;
-
-		case GOLDORE:
-			return EMapObjectType.FOUND_GOLD;
-
-		case IRONORE:
-			return EMapObjectType.FOUND_IRON;
-
-		case FISH:
-			return EMapObjectType.FISH_DECORATION;
+			case COAL:
+				return EMapObjectType.FOUND_COAL;
+	
+			case GOLDORE:
+				return EMapObjectType.FOUND_GOLD;
+	
+			case IRONORE:
+				return EMapObjectType.FOUND_IRON;
+	
+			case FISH:
+				return EMapObjectType.FISH_DECORATION;
+				
+			case NOTHING:
+				return EMapObjectType.FOUND_NOTHING;
+				
+			case GEMSTONE:
+				return EMapObjectType.FOUND_GEMSTONE;
+				
+			case BRIMSTONE:
+				return EMapObjectType.FOUND_BRIMSTONE;
+				
+			default:
+				return EMapObjectType.FOUND_NOTHING;
 		}
-		return EMapObjectType.FOUND_NOTHING;
+		
+		
 	}
 
 	@Override

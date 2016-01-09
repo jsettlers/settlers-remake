@@ -28,7 +28,7 @@ import jsettlers.logic.map.save.MapFileHeader;
  * @author Andreas Eberle
  * 
  */
-public class FreshMapLoader extends MapLoader {
+public class FreshMapLoader extends RemakeMapLoader {
 
 	private FreshMapData data = null;
 

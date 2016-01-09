@@ -38,9 +38,9 @@ public class ResourceManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public static InputStream getFile(String filename) throws IOException {
+	public static InputStream getResourcesFileStream(String filename) throws IOException {
 		if (provider != null) {
-			return provider.getFile(filename);
+			return provider.getResourcesFileStream(filename);
 		} else {
 			throw new IOException("No resource provider set.");
 		}
@@ -59,19 +59,19 @@ public class ResourceManager {
 	 * 
 	 * @return The directory.
 	 */
-	public static File getSaveDirectory() {
+	public static File getResourcesDirectory() {
 		if (provider != null) {
-			return provider.getSaveDirectory();
+			return provider.getResourcesDirectory();
 		} else {
 			return new File("");
 		}
 	}
 
-	public static File getTempDirectory() {
+	public static File getOriginalMapDirectory() {
 		if (provider != null) {
-			return provider.getTempDirectory();
+			return provider.getOriginalMapsDirectory();
 		} else {
-			return new File("");
+			return null;
 		}
 	}
 }

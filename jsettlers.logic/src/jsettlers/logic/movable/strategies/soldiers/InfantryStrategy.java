@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.logic.constants.Constants;
@@ -42,13 +42,13 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
-		short maxDistance = (short) Math.max(Math.abs(super.getPos().x - enemy.getPos().x), Math.abs(super.getPos().y - enemy.getPos().y));
-		return (maxDistance == 1 || (EMovableType.isPikeman(super.getMovableType()) && maxDistance == 2));
+		int maxDistance = super.getPos().getOnGridDistTo(enemy.getPos());
+		return (maxDistance == 1 || (!enemy.isTower() && EMovableType.isPikeman(super.getMovableType()) && maxDistance <= 2));
 	}
 
 	@Override
 	protected void startAttackAnimation(IAttackable enemy) {
-		super.playAction(EAction.ACTION1, INFANTRY_ATTACK_DURATION);
+		super.playAction(EMovableAction.ACTION1, INFANTRY_ATTACK_DURATION);
 	}
 
 	@Override

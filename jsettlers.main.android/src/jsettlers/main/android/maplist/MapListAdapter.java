@@ -19,10 +19,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.main.android.PreviewImageConverter;
-import jsettlers.main.android.R;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +26,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.R;
 
 /**
  * This is the basic map list. It can be extended by setting the name/description/image sources. It automatically listens to list changes.

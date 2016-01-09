@@ -55,7 +55,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	@Override
 	protected void action() {
 		switch (state) {
-		case JOBLESS: // TODO @Andreas think about new state for NewMovable to turn of downcall for action when it's not needed
+		case JOBLESS:
 			break;
 
 		case INIT_CONVERT_WITH_TOOL_JOB:
@@ -103,7 +103,6 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			break;
 
 		case DROPPING:
-			request.deliveryFulfilled();
 			request = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
@@ -140,8 +139,13 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public boolean offerDroppedMaterial() {
-		return request == null || !request.isActive();
+	public boolean beforeDroppingMaterial() {
+		if (request != null && request.isActive() && request.getPos().equals(super.getPos())) {
+			request.deliveryFulfilled();
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private void handleJobFailed(boolean reportAsJobless) {

@@ -16,8 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.mapcreator.main.window.search.SearchTextField;
 
 /**

@@ -924,6 +924,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	protected void loadUIState(UIState state) {
+		if (state == null) {
+			return;
+		}
+
 		if (state.getStartPoint() != null) {
 			scrollTo(state.getStartPoint(), false);
 		} else {

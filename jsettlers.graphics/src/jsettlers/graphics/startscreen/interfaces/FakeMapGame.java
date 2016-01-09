@@ -75,7 +75,7 @@ public class FakeMapGame implements IStartedGame {
 	}
 
 	@Override
-	public boolean isStopped() {
+	public boolean isShutdownFinished() {
 		return false;
 	}
 }

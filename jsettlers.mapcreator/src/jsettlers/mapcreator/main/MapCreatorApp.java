@@ -30,10 +30,10 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.exceptionhandler.ExceptionHandler;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.control.ActionPropertie;
 import jsettlers.mapcreator.control.EditorControl;
@@ -161,8 +161,7 @@ public class MapCreatorApp {
 			} catch (MapLoadException e) {
 				ExceptionHandler.displayError(e, "Could not open map!");
 			}
-		} else
-			if (dlg.isOpenAction()) {
+		} else if (dlg.isOpenAction()) {
 			OpenPanel openFile = dlg.getOpenPanel();
 			try {
 				new EditorControl(openFile.getSelectedMap());

@@ -33,13 +33,15 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.DirectoryMapLister.ListedMapFile;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.replay.ReplayTool;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.tests.utils.DebugMapLister;
+import jsettlers.tests.utils.MapUtils;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -53,8 +55,9 @@ public class AutoReplayIT {
 		MapList.setDefaultListFactory(new IMapListFactory() {
 			@Override
 			public MapList getMapList() {
-				File resourceDir = ResourceManager.getSaveDirectory();
-				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps")), new DebugMapLister(new File(resourceDir, "save")));
+				File resourceDir = ResourceManager.getResourcesDirectory();
+				return new MapList(new DirectoryMapLister(new File(resourceDir, "maps"), false),
+						new DebugMapLister(new File(resourceDir, "save"), true));
 			}
 		});
 	}
@@ -89,20 +92,21 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayTool.replayAndGetSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = getReferenceSavegamePath();
 
 			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-			actualSavegame.getFile().delete();
+			actualSavegame.getListedMap().delete();
 		}
 	}
 
-	private MapLoader getReferenceSavegamePath() throws MapLoadException {
+	private RemakeMapLoader getReferenceSavegamePath() throws MapLoadException, IOException {
 		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
-		Path uncompressed = Paths.get(replayPath + MapList.MAP_EXTENSION);
-		Path compressed = Paths.get(replayPath + MapList.COMPRESSED_MAP_EXTENSION);
+		Path uncompressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION);
+		Path compressed = Paths.get(replayPath + MapLoader.MAP_EXTENSION_COMPRESSED);
 
-		return MapLoader.getLoaderForListedMap(new ListedMapFile((Files.exists(uncompressed) ? uncompressed : compressed).toFile()));
+		return (RemakeMapLoader) MapLoader
+				.getLoaderForListedMap(new ListedMapFile((Files.exists(uncompressed) ? uncompressed : compressed).toFile()));
 	}
 
 	private File getReplayFile() {
@@ -117,15 +121,16 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayTool.replayAndGetSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {
 				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
 				System.out.println("New savegame is equal to old one => won't replace.");
-				newSavegame.getFile().delete();
+				newSavegame.getListedMap().delete();
 			} catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
-				Files.move(Paths.get(newSavegame.getFile().getFile().toString()), Paths.get(expectedSavegame.getFile().getFile().toString()),
+				Files.move(Paths.get(newSavegame.getListedMap().getFile().toString()),
+						Paths.get(expectedSavegame.getListedMap().getFile().toString()),
 						StandardCopyOption.REPLACE_EXISTING);
 				System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + newSavegame + "'");
 			}

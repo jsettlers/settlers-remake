@@ -18,7 +18,7 @@
           target: buildLayouts              
          ================================= -->
     <target name="buildLayouts" depends="loadLib,clean" description="Builds the UI layout files from their xml representation">
-        <convertLayout sourceXMLDirectory="./res/layout" genDirectory="./gen"/>
+        <convertLayout sourceXMLDirectory="./res/layout" genDirectory="./gen" />
     </target>
 	
     <!-- - - - - - - - - - - - - - - - - - 
@@ -27,8 +27,7 @@
     <target name="loadLib">
         <mkdir dir="./build/.buildScripts" />
         <javac srcdir="./build:${workspace}/jsettlers.common/src:${workspace}/jsettlers.common/gen:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
-        <copy file="${workspace}/jsettlers.graphics.swing/src/jsettlers/graphics/swing/resources/defaultConfig.prp" tofile="./build/.buildScripts/jsettlers/graphics/swing/resources/defaultConfig.prp" />
-    	<taskdef name="convertLayout" classname="jsettlers.graphics.ui.generate.LayoutConverter" classpath="./build/.buildScripts/" />
+        <taskdef name="convertLayout" classname="jsettlers.graphics.ui.generate.LayoutConverter" classpath="./build/.buildScripts/" />
     </target>
 
 	<target name="clean">

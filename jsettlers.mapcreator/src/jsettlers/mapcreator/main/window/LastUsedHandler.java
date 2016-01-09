@@ -33,7 +33,7 @@ public class LastUsedHandler {
 	 * Load last used list (if any)
 	 */
 	public LastUsedHandler() {
-		lastUsedFile = new File(ResourceManager.getSaveDirectory(), "last-used.properties");
+		lastUsedFile = new File(ResourceManager.getResourcesDirectory(), "last-used.properties");
 
 		if (!lastUsedFile.exists()) {
 			return;

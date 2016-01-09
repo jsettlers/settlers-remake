@@ -46,8 +46,8 @@ import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -141,6 +141,10 @@ public class SwingManagedJSettlers {
 				ex.printStackTrace();
 			}
 		}
+
+		if (!firstRun) { // the dialog was shown => settlers folder might have changed
+			SwingResourceLoader.setupResourcesManager(configFile);
+		}
 	}
 
 	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
@@ -167,6 +171,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
 		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
 		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
+		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
 
 		if (options.containsKey("fixed-ai-type")) {
 			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));

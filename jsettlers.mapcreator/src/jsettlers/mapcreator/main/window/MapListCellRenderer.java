@@ -21,8 +21,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**

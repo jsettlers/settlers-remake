@@ -59,9 +59,9 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
@@ -549,7 +549,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Desktop.getDesktop().open(new File(ResourceManager.getSaveDirectory(), "maps"));
+					Desktop.getDesktop().open(new File(ResourceManager.getResourcesDirectory(), "maps"));
 				} catch (IOException e1) {
 					ExceptionHandler.displayError(e1, "Could not open map folder");
 				}

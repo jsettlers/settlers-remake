@@ -44,7 +44,7 @@ public class SettingsManager {
 		if (settings == null) {
 			settings = new Properties();
 			try {
-				InputStream in = ResourceManager.getFile(FILE);
+				InputStream in = ResourceManager.getResourcesFileStream(FILE);
 				settings.load(in);
 			} catch (IOException e) {
 			}
