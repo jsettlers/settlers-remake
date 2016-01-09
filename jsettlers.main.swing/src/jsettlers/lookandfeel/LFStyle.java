@@ -33,6 +33,11 @@ public enum LFStyle {
 	PANEL_DARK,
 
 	/**
+	 * JTextField for black background
+	 */
+	TEXT_DEFAULT,
+
+	/**
 	 * Supports transparent background colors
 	 */
 	PANEL_DRAW_BG_CUSTOM;

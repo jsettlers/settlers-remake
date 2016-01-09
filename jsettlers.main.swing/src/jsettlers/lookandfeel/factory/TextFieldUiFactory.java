@@ -4,24 +4,19 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.ui.ButtonUIStone;
+import jsettlers.lookandfeel.ui.TextFieldUiDark;
 
 /**
- * Button UI factory
+ * Text field UI factory
  * 
  * @author Andreas Butti
  */
-public class ButtonUiFactory {
+public class TextFieldUiFactory {
 
 	/**
 	 * Forward calls
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
-
-	/**
-	 * Instance of the UI, for all Button the same instance
-	 */
-	private static final ButtonUIStone stoneUI = new ButtonUIStone();
 
 	/**
 	 * Create PLAF
@@ -31,11 +26,9 @@ public class ButtonUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		Object style = c.getClientProperty(LFStyle.KEY);
-		if (LFStyle.BUTTON_MENU == style) {
-			return stoneUI;
+		if (LFStyle.TEXT_DEFAULT == c.getClientProperty(LFStyle.KEY)) {
+			return new TextFieldUiDark();
 		}
-
 		return FORWARD.create(c);
 	}
 }

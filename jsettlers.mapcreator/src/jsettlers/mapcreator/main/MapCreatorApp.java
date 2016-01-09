@@ -61,10 +61,17 @@ public class MapCreatorApp {
 			// could not be loaded, ignore error
 		}
 
+		// Map Cell renderer
 		UIManager.put("MapListCellRenderer.backgroundColor1", Color.WHITE);
 		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0xE0E0E0));
 		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0x9EB1CD));
 		UIManager.put("MapListCellRenderer.foregroundColor", Color.BLACK);
+
+		// Search Field
+		UIManager.put("ClearSearchIcon.foregroundColor", Color.WHITE);
+		UIManager.put("ClearSearchIcon.backgroundColor", Color.LIGHT_GRAY);
+		UIManager.put("ClearSearchIcon.backgroundColorHover", Color.GRAY);
+
 	}
 
 	/**

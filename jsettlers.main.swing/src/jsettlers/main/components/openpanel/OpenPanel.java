@@ -18,6 +18,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.lookandfeel.LFStyle;
 
 /**
  * Panel to open an existing map
@@ -82,6 +83,7 @@ public class OpenPanel extends JPanel {
 		sortMaps();
 
 		this.txtSearch = new SearchTextField();
+		txtSearch.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
 		add(txtSearch, BorderLayout.NORTH);
 		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 

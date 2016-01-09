@@ -22,17 +22,17 @@ public class SearchTextField extends JTextField {
 	/**
 	 * Search icon
 	 */
-	private SearchIcon searchIcon = new SearchIcon();
+	private static final SearchIcon SEARCH_ICON = new SearchIcon();
 
 	/**
 	 * Icon to clear search
 	 */
-	private ClearIcon clearIcon = new ClearIcon();
+	private static final ClearIcon CLEAR_ICON = new ClearIcon();
 
 	/**
 	 * Clear "Button"
 	 */
-	private JLabel lbClear = new JLabel(clearIcon);
+	private JLabel lbClear = new JLabel(CLEAR_ICON);
 
 	/**
 	 * Search text
@@ -43,8 +43,6 @@ public class SearchTextField extends JTextField {
 	 * Constructor
 	 */
 	public SearchTextField() {
-		setMargin(new Insets(2, searchIcon.getIconWidth() + 4, 2, clearIcon.getIconWidth() + 4));
-
 		lbClear.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -53,26 +51,37 @@ public class SearchTextField extends JTextField {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				clearIcon.setHover(true);
+				CLEAR_ICON.setHover(true);
 				lbClear.repaint();
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				clearIcon.setHover(false);
+				CLEAR_ICON.setHover(false);
 				lbClear.repaint();
 			}
 
 		});
-		add(lbClear);
 		lbClear.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+		updateUI();
+	}
+
+	@Override
+	public void updateUI() {
+		super.updateUI();
+		if (lbClear != null) {
+			remove(lbClear);
+			add(lbClear);
+		}
+		setMargin(new Insets(2, SEARCH_ICON.getIconWidth() + 4, 2, CLEAR_ICON.getIconWidth() + 4));
 	}
 
 	@Override
 	public void layout() {
-		int x = getWidth() - 4 - clearIcon.getIconWidth();
-		int y = (this.getHeight() - searchIcon.getIconHeight()) / 2;
-		lbClear.setBounds(x, y, clearIcon.getIconWidth(), clearIcon.getIconHeight());
+		int x = getWidth() - 4 - CLEAR_ICON.getIconWidth();
+		int y = (this.getHeight() - SEARCH_ICON.getIconHeight()) / 2;
+		lbClear.setBounds(x, y, CLEAR_ICON.getIconWidth(), CLEAR_ICON.getIconHeight());
 	}
 
 	@Override
@@ -80,11 +89,10 @@ public class SearchTextField extends JTextField {
 		super.paintComponent(g);
 
 		int x = 4;
-		searchIcon.paintIcon(this, g, x, (this.getHeight() - searchIcon.getIconHeight()) / 2);
+		SEARCH_ICON.paintIcon(this, g, x, (this.getHeight() - SEARCH_ICON.getIconHeight()) / 2);
 
-		// color already set by search icon...
 		if (getText().isEmpty()) {
-			x += searchIcon.getIconWidth() + 6;
+			x += SEARCH_ICON.getIconWidth() + 6;
 			int y = this.getHeight() - (this.getHeight() - g.getFontMetrics().getHeight()) / 2 - g.getFontMetrics().getDescent();
 			g.drawString(SEARCH, x, y);
 		}

@@ -58,7 +58,7 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 		if (getComponentCount() >= 2) {
 			getComponent(1).setBounds(50, 70, splitPosition - 80, getHeight() - 140);
 		}
-		int w = getWidth() - splitPosition - 100;
+		int w = getWidth() - splitPosition - 80;
 		if (getComponentCount() >= 3) {
 			getComponent(2).setBounds(splitPosition + 30, 70, w, getHeight() - 140);
 		}

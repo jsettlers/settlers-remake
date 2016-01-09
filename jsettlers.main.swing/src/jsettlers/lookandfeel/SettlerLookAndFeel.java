@@ -2,8 +2,6 @@ package jsettlers.lookandfeel;
 
 import java.awt.Color;
 
-import javax.swing.LookAndFeel;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -13,6 +11,7 @@ import jsettlers.lookandfeel.factory.ButtonUiFactory;
 import jsettlers.lookandfeel.factory.LabelUiFactory;
 import jsettlers.lookandfeel.factory.PanelUiFactory;
 import jsettlers.lookandfeel.factory.ScrollPaneUiFactory;
+import jsettlers.lookandfeel.factory.TextFieldUiFactory;
 
 /**
  * Look and Feel for JSettlers
@@ -20,22 +19,10 @@ import jsettlers.lookandfeel.factory.ScrollPaneUiFactory;
  * @author Andreas Butti
  *
  */
-public class SettlerLookAndFeel extends LookAndFeel {
+public class SettlerLookAndFeel {
 
 	/**
-	 * Table with the defaults
-	 */
-	private UIDefaults defaults = new UIDefaults() {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		protected void getUIError(String msg) {
-			// ignore errors, not all UIs are implemented, the default are handled by Nimbus
-		};
-	};
-
-	/**
-	 * Install the look and feel
+	 * Install the look and feel components
 	 * 
 	 * @throws UnsupportedLookAndFeelException
 	 * @throws IllegalAccessException
@@ -50,25 +37,23 @@ public class SettlerLookAndFeel extends LookAndFeel {
 			}
 		}
 
-		UIManager.addAuxiliaryLookAndFeel(new SettlerLookAndFeel());
+		// Forward calls which are not handled by our UI
+		// UIManager.addAuxiliaryLookAndFeel(laf);
+		// doesn't work as expected...
 
-		UIManager.put("MapListCellRenderer.backgroundColor1", new Color(0xff, 0xff, 0xff, 40));
-		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0, 0, 0, 60));
-		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0xff, 0xff, 0, 80));
-		UIManager.put("MapListCellRenderer.foregroundColor", Color.WHITE);
-	}
+		ButtonUiFactory.FORWARD.loadFromType("ButtonUI");
+		TextFieldUiFactory.FORWARD.loadFromType("TextFieldUI");
+		ButtonUiFactory.FORWARD.loadFromType("ButtonUI");
+		LabelUiFactory.FORWARD.loadFromType("LabelUI");
+		// Panel handles all UI types
+		// PanelUiFactory.FORWARD.loadFromType("PanelUI");
+		// ScrollPane handles all UI types
+		// ScrollPaneUiFactory.FORWARD.loadFromType("ScrollPaneUI");
 
-	/**
-	 * Constructor, use <code>install</code> to install
-	 */
-	protected SettlerLookAndFeel() {
 		Object[] scrollbar = {
 				// "ScrollBarUI", ScrollBarUiFactory.class.getName()
 				"BackgroundPanelUI", BackgroundPanelUiFactory.class.getName(),
-		};
-		UIManager.getDefaults().putDefaults(scrollbar);
-
-		Object[] uiDefaults = {
+				"TextFieldUI", TextFieldUiFactory.class.getName(),
 				"ButtonUI", ButtonUiFactory.class.getName(),
 				"LabelUI", LabelUiFactory.class.getName(),
 				"PanelUI", PanelUiFactory.class.getName(),
@@ -76,40 +61,19 @@ public class SettlerLookAndFeel extends LookAndFeel {
 				// "ComboBoxUI", metalPackageName + "MetalComboBoxUI",
 				// "LabelUI", metalPackageName + "MetalLabelUI",
 				"ScrollPaneUI", ScrollPaneUiFactory.class.getName(),
-				// "TextFieldUI", metalPackageName + "MetalTextFieldUI",
-
 		};
-		defaults.putDefaults(uiDefaults);
-	}
+		UIManager.getDefaults().putDefaults(scrollbar);
 
-	@Override
-	public UIDefaults getDefaults() {
-		return defaults;
-	}
+		// Map Cell renderer
+		UIManager.put("MapListCellRenderer.backgroundColor1", new Color(0xff, 0xff, 0xff, 40));
+		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0, 0, 0, 60));
+		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0xff, 0xff, 0, 80));
+		UIManager.put("MapListCellRenderer.foregroundColor", Color.WHITE);
 
-	@Override
-	public String getName() {
-		return "Settler";
-	}
-
-	@Override
-	public String getID() {
-		return "Settler";
-	}
-
-	@Override
-	public String getDescription() {
-		return "JSettler Look and Feel";
-	}
-
-	@Override
-	public boolean isNativeLookAndFeel() {
-		return false;
-	}
-
-	@Override
-	public boolean isSupportedLookAndFeel() {
-		return true;
+		// Search Field
+		UIManager.put("ClearSearchIcon.foregroundColor", Color.WHITE);
+		UIManager.put("ClearSearchIcon.backgroundColor", null);
+		UIManager.put("ClearSearchIcon.backgroundColorHover", null);
 	}
 
 }

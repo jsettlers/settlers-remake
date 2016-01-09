@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import javax.swing.Icon;
+import javax.swing.UIManager;
 
 import jsettlers.lookandfeel.DrawHelper;
 
@@ -23,20 +24,41 @@ public class ClearIcon implements Icon {
 	 */
 	private boolean hover = false;
 
+	/**
+	 * Background
+	 */
+	private final Color BACKGROUND = UIManager.getColor("ClearSearchIcon.backgroundColor");
+
+	/**
+	 * Background mouse over
+	 */
+	private final Color BACKGROUND_HOVER = UIManager.getColor("ClearSearchIcon.backgroundColorHover");
+
+	/**
+	 * Foreground
+	 */
+	private final Color FOREGROUND = UIManager.getColor("ClearSearchIcon.foregroundColor");
+
 	@Override
 	public void paintIcon(Component c, Graphics g1, int x, int y) {
 		Graphics2D g = DrawHelper.antialiasingOn(g1);
 
 		Stroke oldStroke = g.getStroke();
 
+		Color background;
+
 		if (hover) {
-			g.setColor(Color.GRAY);
+			g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			background = BACKGROUND_HOVER;
 		} else {
-			g.setColor(Color.LIGHT_GRAY);
+			background = BACKGROUND;
 		}
-		g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		g.fillOval(x + 2, y + 2, 18, 18);
-		g.setColor(Color.WHITE);
+		if (background != null) {
+			g.setColor(background);
+			g.fillOval(x + 2, y + 2, 18, 18);
+		}
+
+		g.setColor(FOREGROUND);
 		g.drawLine(x + 6, y + 6, x + 15, y + 15);
 		g.drawLine(x + 15, y + 6, x + 6, y + 15);
 

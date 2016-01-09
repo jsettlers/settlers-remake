@@ -5,12 +5,12 @@ import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.ScrollPaneUI;
+import javax.swing.plaf.basic.BasicScrollPaneUI;
 
 import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
- * Button UI factory
+ * ScrollPanel UI factory
  * 
  * @author Andreas Butti
  */
@@ -19,7 +19,7 @@ public class ScrollPaneUiFactory {
 	/**
 	 * make all scrollpanel transparent
 	 */
-	private static final ScrollPaneUI transparentScollPanel = new ScrollPaneUI() {
+	private static final BasicScrollPaneUI transparentScollPanel = new BasicScrollPaneUI() {
 		@Override
 		public void installUI(JComponent c) {
 			super.installUI(c);

@@ -15,6 +15,11 @@ import jsettlers.lookandfeel.ui.UIDefaults;
 public class LabelUiFactory {
 
 	/**
+	 * Forward calls
+	 */
+	public static final ForwardFactory FORWARD = new ForwardFactory();
+
+	/**
 	 * Header Label
 	 */
 	private static final SettlerLabelUi headerLabel = new SettlerLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
@@ -48,6 +53,6 @@ public class LabelUiFactory {
 			return labelShort;
 		}
 
-		return null;
+		return FORWARD.create(c);
 	}
 }

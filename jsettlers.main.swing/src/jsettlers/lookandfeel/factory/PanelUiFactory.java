@@ -11,7 +11,7 @@ import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
- * Button UI factory
+ * Panel UI factory
  * 
  * @author Andreas Butti
  */

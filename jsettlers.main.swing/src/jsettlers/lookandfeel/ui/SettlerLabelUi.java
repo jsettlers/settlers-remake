@@ -63,6 +63,7 @@ public class SettlerLabelUi extends BasicLabelUI {
 		c.setForeground(foregroundColor);
 		c.setPreferredSize(getPreferredSize(c));
 		c.setBorder(border);
+		c.setFont(UIDefaults.FONT);
 	}
 
 	@Override
