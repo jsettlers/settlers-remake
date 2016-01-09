@@ -25,12 +25,7 @@ public enum LFStyle {
 	/**
 	 * JLabel
 	 */
-	LABEL_SHORT,
-
-	/**
-	 * Display the stone background with the settler logo
-	 */
-	PANEL_BACKGROUND_STONE;
+	LABEL_SHORT;
 
 	/**
 	 * Key used for putClientProperty

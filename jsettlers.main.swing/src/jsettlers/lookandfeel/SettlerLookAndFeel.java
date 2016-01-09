@@ -2,11 +2,11 @@ package jsettlers.lookandfeel;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
-import javax.swing.plaf.LabelUI;
+import javax.swing.UIManager;
 
+import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
 import jsettlers.lookandfeel.factory.LabelUiFactory;
-import jsettlers.lookandfeel.factory.PanelUiFactory;
 
 /**
  * Look and Feel for JSettlers
@@ -32,10 +32,21 @@ public class SettlerLookAndFeel extends LookAndFeel {
 	 * Constructor
 	 */
 	public SettlerLookAndFeel() {
+		Object[] scrollbar = {
+				// "ScrollBarUI", ScrollBarUiFactory.class.getName()
+				"BackgroundPanelUI", BackgroundPanelUiFactory.class.getName(),
+		};
+		UIManager.getDefaults().putDefaults(scrollbar);
+
 		Object[] uiDefaults = {
 				"ButtonUI", ButtonUiFactory.class.getName(),
-				"PanelUI", PanelUiFactory.class.getName(),
 				"LabelUI", LabelUiFactory.class.getName(),
+				// "CheckBoxUI", metalPackageName + "MetalCheckBoxUI",
+				// "ComboBoxUI", metalPackageName + "MetalComboBoxUI",
+				// "LabelUI", metalPackageName + "MetalLabelUI",
+				// "ScrollPaneUI", metalPackageName + "MetalScrollPaneUI",
+				// "TextFieldUI", metalPackageName + "MetalTextFieldUI",
+
 		};
 		defaults.putDefaults(uiDefaults);
 	}

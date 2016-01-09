@@ -1,10 +1,8 @@
 package jsettlers.lookandfeel.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractButton;
@@ -13,6 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.lookandfeel.DrawHelper;
 
 /**
  * Button UI Implementation
@@ -49,21 +48,11 @@ public class ButtonUIStone extends BasicButtonUI {
 
 	@Override
 	public void uninstallDefaults(AbstractButton b) {
-		// super.uninstallDefaults(b);
-	}
-
-	@Override
-	public Dimension getPreferredSize(JComponent c) {
-		return new Dimension(backgroundImage.getWidth(), backgroundImage.getHeight());
 	}
 
 	@Override
 	public void paint(Graphics g1, JComponent c) {
-		Graphics2D g = (Graphics2D) g1;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		Graphics2D g = DrawHelper.antialiasingOn(g1);
 
 		AbstractButton b = (AbstractButton) c;
 		ButtonModel model = b.getModel();
@@ -72,12 +61,12 @@ public class ButtonUIStone extends BasicButtonUI {
 		// perform UI specific press action, e.g. Windows L&F shifts text
 		if (model.isArmed() && model.isPressed()) {
 			pressed = true;
-			g.drawImage(backgroundPressedImage, 0, 0, c);
+			g.drawImage(backgroundPressedImage, 0, 0, b.getWidth(), b.getHeight(), c);
 		} else {
-			g.drawImage(backgroundImage, 0, 0, c);
+			g.drawImage(backgroundImage, 0, 0, b.getWidth(), b.getHeight(), c);
 		}
 
-		int y = (b.getHeight() - g.getFontMetrics().getHeight());
+		int y = b.getHeight() / 2 + (g.getFontMetrics().getAscent() / 2);
 		int x = 10;
 
 		if (pressed) {

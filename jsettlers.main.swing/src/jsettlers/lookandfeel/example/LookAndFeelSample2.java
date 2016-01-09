@@ -1,6 +1,8 @@
 package jsettlers.lookandfeel.example;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -9,20 +11,17 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 
 import jsettlers.common.CommonConstants;
@@ -34,10 +33,12 @@ import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
-import jsettlers.lookandfeel.LFStyle;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.lookandfeel.SettlerLookAndFeel;
-import jsettlers.lookandfeel.StoneScrollbar;
-import jsettlers.lookandfeel.components.BackgroundPanel;
+import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
+import jsettlers.lookandfeel.ui.ButtonUIStone;
+import jsettlers.lookandfeel.ui.UIDefaults;
+import jsettlers.main.components.openpanel.OpenPanel;
 
 /**
  * Sample to test Look and Feel - please leave this class until the new Swing GUI is working
@@ -47,102 +48,79 @@ import jsettlers.lookandfeel.components.BackgroundPanel;
  * @author Andreas Butti
  *
  */
-public class LookAndFeelSample extends JFrame {
+public class LookAndFeelSample2 extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor
-	 */
-	public LookAndFeelSample() {
-		setTitle("Example");
+	private JPanel pButtons = new JPanel();
+
+	private JPanel pContents = new JPanel();
+
+	private JLabel lbInfo = new JLabel(
+			"<html>This project intends to create a remake of the famous strategy game \"The Settlers 3\" published by Blue Byte in 1998. The project is developed in Java and runs on PC (Windows/Linux), Mac and Android. More information can be found on the project's website at www.settlers-android-clone.com</html>");
+
+	private JPanel pInfo = new JPanel(); // TODO DarkPanel();
+
+	private JPanel openPanel;
+
+	public LookAndFeelSample2() {
+		setTitle(getClass().getName());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-		BackgroundPanel backgroundPanel = new BackgroundPanel();
+		pInfo.setLayout(new BorderLayout());
+		pInfo.add(lbInfo, BorderLayout.NORTH);
+		pInfo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		lbInfo.setFont(UIDefaults.FONT);
+		lbInfo.setForeground(Color.WHITE);
+		pInfo.setOpaque(false);
 
-		// -------------------
-
-		JButton button1 = new JButton("Button1");
-		button1.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		backgroundPanel.add(button1);
-		button1.addActionListener(new ActionListener() {
+		openPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("button 1");
+				// TODO Auto-generated method stub
+
 			}
 		});
 
-		// -------------------
+		createButton("Neues Einzelspiel", openPanel);
+		createButton("Spiel laden", null);
+		createButton("Neues Netzwerkspiel", null);
+		createButton("Netzwerkspiel beitreten", pInfo);
+		createButton("Einstellungen", null);
+		createButton("Beenden", null);
 
-		JButton button2 = new JButton("Button2");
-		backgroundPanel.add(button2);
-
-		// -------------------
-
-		JLabel lbHeader = new JLabel("Titel label");
-		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
-		backgroundPanel.add(lbHeader);
-
-		lbHeader = new JLabel("Titel Center", SwingConstants.CENTER);
-		lbHeader.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
-		backgroundPanel.add(lbHeader);
-
-		// -------------------
-
-		JLabel lbText = new JLabel("Label long");
-		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
-		backgroundPanel.add(lbText);
-
-		lbText = new JLabel("Label short");
-		lbText.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		backgroundPanel.add(lbText);
-
-		// -------------------
-
-		JTextField txt = new JTextField("JTextField");
-		backgroundPanel.add(txt);
-
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-		backgroundPanel.add(new JTextField("JTextField"));
-
-		JLabel p = new JLabel(
-				"<html>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br>a<br></html>");
-		JScrollPane scrol = new JScrollPane(p);
-		scrol.setBorder(new TitledBorder("Scroll"));
-		scrol.setPreferredSize(new Dimension(80, 120));
-
-		backgroundPanel.add(scrol);
-
-		JScrollBar sb = new StoneScrollbar(JScrollBar.VERTICAL, 15, 15, 0, 150);
-		backgroundPanel.add(sb);
-
-		// -------------------
-
-		add(backgroundPanel);
-
-		System.out.println("========");
-
-		// ********************************************************
-		// IMPORTANT
-		// Update tree ui after the style of all components is set
-		// ********************************************************
-		SwingUtilities.updateComponentTreeUI(backgroundPanel);
-		backgroundPanel.invalidate();
-		// ********************************************************
+		contents.add(pButtons);
+		contents.add(pContents);
+		pContents.setLayout(new BorderLayout());
+		pContents.add(pInfo, BorderLayout.CENTER);
+		pButtons.setLayout(new GridLayout(0, 1, 20, 20));
+		add(contents);
 
 		setSize(800, 600);
 		setLocationRelativeTo(null);
+	}
+
+	protected SplitedBackgroundPanel contents = new SplitedBackgroundPanel();
+
+	private void createButton(final String text, final JComponent panel) {
+		JButton bt = new JButton(text);
+		bt.setUI(new ButtonUIStone());
+		bt.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				contents.getTitleLabel().setText(text);
+				pContents.removeAll();
+				if (panel != null) {
+					pContents.add(panel, BorderLayout.CENTER);
+				}
+
+				pContents.revalidate();
+				repaint();
+			}
+		});
+
+		pButtons.add(bt);
 	}
 
 	public static ConfigurationPropertiesFile getConfigFile(Properties options, String defaultConfigFileName) throws IOException {
@@ -279,6 +257,6 @@ public class LookAndFeelSample extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new LookAndFeelSample().setVisible(true);
+		new LookAndFeelSample2().setVisible(true);
 	}
 }

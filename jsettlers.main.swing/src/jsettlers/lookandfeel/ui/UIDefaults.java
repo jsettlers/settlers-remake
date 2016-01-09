@@ -17,13 +17,13 @@ public interface UIDefaults {
 	public static final Color HEADER_TEXT_COLOR = new Color(0xFF5D18);
 
 	/**
-	 * Label colr
+	 * Label color
 	 */
 	public static final Color LABEL_TEXT_COLOR = Color.YELLOW;
 
 	/**
 	 * Default font
 	 */
-	public static final Font FONT = new Font("Sans", Font.PLAIN, 12);
+	public static final Font FONT = new Font("Sans", Font.BOLD, 14);
 
 }

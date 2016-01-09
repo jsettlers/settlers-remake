@@ -23,7 +23,7 @@ public class SettlerLabelUi extends BasicLabelUI {
 	/**
 	 * Foreground color of the Label
 	 */
-	private Color foregroundColor;
+	private final Color foregroundColor;
 
 	/**
 	 * Background Image
