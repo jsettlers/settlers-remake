@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
@@ -59,6 +60,11 @@ public class MapCreatorApp {
 		} catch (Exception e) {
 			// could not be loaded, ignore error
 		}
+
+		UIManager.put("MapListCellRenderer.backgroundColor1", Color.WHITE);
+		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0xE0E0E0));
+		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0x9EB1CD));
+		UIManager.put("MapListCellRenderer.foregroundColor", Color.BLACK);
 	}
 
 	/**

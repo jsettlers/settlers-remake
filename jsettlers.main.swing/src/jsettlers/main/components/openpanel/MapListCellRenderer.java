@@ -20,10 +20,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.lookandfeel.LFStyle;
 
 /**
  * Render to open an existing map
@@ -36,22 +39,22 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Selected background color
 	 */
-	private static final Color SELECTION_BACKGROUND = new Color(0x9EB1CD);
+	private final Color SELECTION_BACKGROUND = UIManager.getColor("MapListCellRenderer.backgroundSelected");
 
 	/**
 	 * Background even
 	 */
-	private static final Color BACKGROUND1 = Color.WHITE;
+	private final Color BACKGROUND1 = UIManager.getColor("MapListCellRenderer.backgroundColor1");
 
 	/**
 	 * Background odd
 	 */
-	private static final Color BACKGROUND2 = new Color(0xE0E0E0);
+	private final Color BACKGROUND2 = UIManager.getColor("MapListCellRenderer.backgroundColor2");
 
 	/**
-	 * Foreground
+	 * Font color
 	 */
-	private static final Color FOREGROUND = Color.BLACK;
+	private final Color FOREGROUND = UIManager.getColor("MapListCellRenderer.foregroundColor");
 
 	/**
 	 * Right part of the panel with all texts
@@ -89,7 +92,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	private JLabel lbIcon = new JLabel();
 
 	/**
-	 * Empty icon, if there is noe
+	 * Empty icon, if there is no image
 	 */
 	private final Icon EMPTY_ICON = new Icon() {
 
@@ -147,8 +150,13 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		pContents.setLayout(new BorderLayout());
 		pContents.add(pRight, BorderLayout.CENTER);
 		pContents.add(lbIcon, BorderLayout.WEST);
+		pContents.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DRAW_BG_CUSTOM);
+
 		lbIcon.setOpaque(false);
 		lbIcon.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
+
+		// Update UI
+		SwingUtilities.updateComponentTreeUI(pContents);
 	}
 
 	/**

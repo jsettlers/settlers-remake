@@ -30,7 +30,12 @@ public enum LFStyle {
 	/**
 	 * Half transparent dark panel
 	 */
-	PANEL_DARK;
+	PANEL_DARK,
+
+	/**
+	 * Supports transparent background colors
+	 */
+	PANEL_DRAW_BG_CUSTOM;
 
 	/**
 	 * Key used for putClientProperty

@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -78,6 +77,7 @@ public class OpenPanel extends JPanel {
 	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
 		this.maps = maps;
 		setLayout(new BorderLayout());
+		setOpaque(false);
 
 		sortMaps();
 
@@ -114,7 +114,9 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
-		add(new JScrollPane(mapList), BorderLayout.CENTER);
+		mapList.setOpaque(false);
+		// TODO !!!!! add(new JScrollPane(mapList), BorderLayout.CENTER);
+		add(mapList, BorderLayout.CENTER);
 
 		searchChanged();
 
