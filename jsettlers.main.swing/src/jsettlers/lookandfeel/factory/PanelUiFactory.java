@@ -1,6 +1,5 @@
 package jsettlers.lookandfeel.factory;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
@@ -9,6 +8,7 @@ import javax.swing.plaf.PanelUI;
 
 import jsettlers.lookandfeel.DrawHelper;
 import jsettlers.lookandfeel.LFStyle;
+import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
  * Button UI factory
@@ -44,7 +44,7 @@ public class PanelUiFactory {
 		public void paint(java.awt.Graphics g1, JComponent c) {
 			Graphics2D g = DrawHelper.antialiasingOn(g1);
 
-			g.setColor(new Color(0, 0, 0, 160));
+			g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
 			int arc = 15;
 			g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), arc, arc);
 		};

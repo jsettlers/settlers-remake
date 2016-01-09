@@ -1,9 +1,13 @@
 package jsettlers.lookandfeel.factory;
 
+import java.awt.Graphics;
+
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ScrollPaneUI;
+
+import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
  * Button UI factory
@@ -21,7 +25,15 @@ public class ScrollPaneUiFactory {
 			super.installUI(c);
 
 			((JScrollPane) c).getViewport().setOpaque(false);
+			((JScrollPane) c).getViewport().setBorder(null);
 			c.setOpaque(false);
+			c.setBorder(null);
+		}
+
+		@Override
+		public void paint(Graphics g, JComponent c) {
+			g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
+			g.fillRect(0, 0, c.getWidth(), c.getHeight());
 		}
 	};
 

@@ -53,7 +53,7 @@ public class SettlerLookAndFeel extends LookAndFeel {
 		UIManager.addAuxiliaryLookAndFeel(new SettlerLookAndFeel());
 
 		UIManager.put("MapListCellRenderer.backgroundColor1", new Color(0xff, 0xff, 0xff, 40));
-		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0, 0, 0, 40));
+		UIManager.put("MapListCellRenderer.backgroundColor2", new Color(0, 0, 0, 60));
 		UIManager.put("MapListCellRenderer.backgroundSelected", new Color(0xff, 0xff, 0, 80));
 		UIManager.put("MapListCellRenderer.foregroundColor", Color.WHITE);
 	}

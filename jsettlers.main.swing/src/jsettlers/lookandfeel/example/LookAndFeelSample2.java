@@ -80,6 +80,7 @@ public class LookAndFeelSample2 extends JFrame {
 
 			}
 		});
+		((BorderLayout) openPanel.getLayout()).setVgap(5);
 
 		createButton("Neues Einzelspiel", openPanel);
 		createButton("Spiel laden", null);
@@ -100,6 +101,7 @@ public class LookAndFeelSample2 extends JFrame {
 		// Update tree ui after the style of all components is set
 		// ********************************************************
 		SwingUtilities.updateComponentTreeUI(contents);
+		SwingUtilities.updateComponentTreeUI(openPanel);
 		contents.invalidate();
 		// ********************************************************
 
