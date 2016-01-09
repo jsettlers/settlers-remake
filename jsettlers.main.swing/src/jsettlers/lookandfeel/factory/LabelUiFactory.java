@@ -17,7 +17,7 @@ public class LabelUiFactory {
 	/**
 	 * Header Label
 	 */
-	private static final SettlerLabelUi headerLabel = new SettlerLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 29);
+	private static final SettlerLabelUi headerLabel = new SettlerLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
 	 * Label short
@@ -27,7 +27,7 @@ public class LabelUiFactory {
 	/**
 	 * Label long
 	 */
-	private static final SettlerLabelUi labelLong = new SettlerLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 29);
+	private static final SettlerLabelUi labelLong = new SettlerLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
 	 * Create PLAF

@@ -25,7 +25,12 @@ public enum LFStyle {
 	/**
 	 * JLabel
 	 */
-	LABEL_SHORT;
+	LABEL_SHORT,
+
+	/**
+	 * Half transparent dark panel
+	 */
+	PANEL_DARK;
 
 	/**
 	 * Key used for putClientProperty

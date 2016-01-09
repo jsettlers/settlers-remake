@@ -59,7 +59,7 @@ public class LookAndFeelSample2 extends JFrame {
 	private JLabel lbInfo = new JLabel(
 			"<html>This project intends to create a remake of the famous strategy game \"The Settlers 3\" published by Blue Byte in 1998. The project is developed in Java and runs on PC (Windows/Linux), Mac and Android. More information can be found on the project's website at www.settlers-android-clone.com</html>");
 
-	private JPanel pInfo = new JPanel(); // TODO DarkPanel();
+	private JPanel pInfo = new JPanel();
 
 	private JPanel openPanel;
 
@@ -70,9 +70,9 @@ public class LookAndFeelSample2 extends JFrame {
 		pInfo.setLayout(new BorderLayout());
 		pInfo.add(lbInfo, BorderLayout.NORTH);
 		pInfo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		pInfo.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
 		lbInfo.setFont(UIDefaults.FONT);
 		lbInfo.setForeground(Color.WHITE);
-		pInfo.setOpaque(false);
 
 		openPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), new ActionListener() {
 
