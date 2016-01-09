@@ -44,7 +44,7 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Leaf image at the right corner
 	 */
-	private BufferedImage leafes1 = UiImageLoader.get("leafes1b.png");
+	private BufferedImage leaves1 = UiImageLoader.get("leaves1b.png");
 
 	/**
 	 * Constructor
@@ -103,7 +103,7 @@ public class BackgroundPanelUi extends PanelUI {
 		}
 
 		float factor = 0.2f;
-		g.drawImage(leafes1, c.getWidth() - 120, -30, (int) (leafes1.getWidth() * factor), (int) (leafes1.getHeight() * factor), c);
+		g.drawImage(leaves1, c.getWidth() - 120, -30, (int) (leaves1.getWidth() * factor), (int) (leaves1.getHeight() * factor), c);
 
 		g.dispose();
 	}
