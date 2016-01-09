@@ -37,6 +37,7 @@ public class MainMenuPanel extends JPanel {
 	private final JButton exitButton = new JButton();
 	private final JToggleButton newSinglePlayerGameButton = new JToggleButton();
 	private final JToggleButton loadSaveGameButton = new JToggleButton();
+	private final JButton settingsButton = new JButton();
 	private final OpenPanel openSinglePlayerPanel;
 	private final OpenPanel openSaveGamePanel;
 
@@ -63,12 +64,14 @@ public class MainMenuPanel extends JPanel {
 		newSinglePlayerGameButton.addActionListener(e -> setCenter(openSinglePlayerPanel));
 		loadSaveGameButton.addActionListener(e -> setCenter(openSaveGamePanel));
 		exitButton.addActionListener(e -> settlersFrame.exit());
+		settingsButton.addActionListener(e -> settlersFrame.showSettingsMenu());
 	}
 
 	private void localize() {
 		exitButton.setText(Labels.getString("main-panel-exit-button"));
 		newSinglePlayerGameButton.setText(Labels.getString("main-panel-new-single-player-game-button"));
 		loadSaveGameButton.setText(Labels.getString("start-loadgame"));
+		settingsButton.setText(Labels.getString("settings-title"));
 	}
 
 	private void createStructure() {
@@ -77,6 +80,7 @@ public class MainMenuPanel extends JPanel {
 		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.PAGE_AXIS));
 		westPanel.add(newSinglePlayerGameButton);
 		westPanel.add(loadSaveGameButton);
+		westPanel.add(settingsButton);
 		westPanel.add(exitButton);
 		add(westPanel, BorderLayout.WEST);
 		ButtonGroup buttonGroup = new ButtonGroup();
