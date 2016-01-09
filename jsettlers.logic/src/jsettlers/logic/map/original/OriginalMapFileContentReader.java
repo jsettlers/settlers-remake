@@ -17,6 +17,7 @@ package jsettlers.logic.map.original;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +58,11 @@ public class OriginalMapFileContentReader {
 	private String mapQuestText = null;
 
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
+
+	/**
+	 * Charset of read strings
+	 */
+	private static final Charset TEXT_CHARSET = Charset.forName("ISO-8859-1");
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		// - init Resource Info
@@ -134,19 +140,20 @@ public class OriginalMapFileContentReader {
 		if (mapContent.length <= offset + length)
 			return "";
 
-		String outStr = "";
-		int pos = offset;
+		byte[] buffer = new byte[length];
 
-		for (int i = length; i > 0; i--) {
-			byte b = mapContent[pos];
-			pos++;
-
-			if (b == 0)
+		int i = 0;
+		for (; i < length; i++) {
+			buffer[i] = mapContent[offset + i];
+			if (buffer[i] == 0) {
 				break;
-
-			outStr += new String(new byte[] { b });
+			}
 		}
-		return outStr;
+		if (i == 0) {
+			return "";
+		}
+
+		return new String(buffer, 0, i - 1, TEXT_CHARSET);
 	}
 
 	// - returns a File Resources
@@ -186,7 +193,7 @@ public class OriginalMapFileContentReader {
 	// - Reads in the Map-File-Structure
 	boolean loadMapResources() {
 		// - Version of File: 0x0A : Original Siedler Map ; 0x0B : Amazon Map
-		int fileVersion  = readBEIntFrom(4);
+		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
 		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value))
@@ -198,7 +205,6 @@ public class OriginalMapFileContentReader {
 		// - start of map-content
 		int filePos = 8;
 		int partTypeTemp;
-
 
 		do {
 			partTypeTemp = readBEIntFrom(filePos);
