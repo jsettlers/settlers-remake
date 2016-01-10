@@ -16,6 +16,7 @@ package jsettlers.main.swing;
 
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
+import jsettlers.lookandfeel.SettlerLookAndFeel;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -28,6 +29,17 @@ public class NewSwingManagedJSettlers {
 	public static void main(String[] args) throws IOException {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		SwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
-		new SettlersFrame();
+		try {
+			SettlerLookAndFeel.install();
+			new SettlersFrame();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 	}
 }

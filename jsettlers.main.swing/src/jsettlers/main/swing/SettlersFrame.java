@@ -37,7 +37,6 @@ public class SettlersFrame extends JFrame {
 
 	private final MainMenuPanel mainPanel = new MainMenuPanel(this);
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
-	private final SettingsMenuPanel settingsMenuPanel = new SettingsMenuPanel(this);
 	private SoundPlayer soundPlayer = new SwingSoundPlayer();
 
 	public SettlersFrame() throws HeadlessException {
@@ -55,11 +54,6 @@ public class SettlersFrame extends JFrame {
 	public void showStartingGamePanel(IStartingGame startingGame) {
 		startingGamePanel.setStartingGame(startingGame);
 		setNewContentPane(startingGamePanel);
-	}
-
-	public void showSettingsMenu() {
-		settingsMenuPanel.initializeValues();
-		setNewContentPane(settingsMenuPanel);
 	}
 
 	private void setNewContentPane(Container newContent) {

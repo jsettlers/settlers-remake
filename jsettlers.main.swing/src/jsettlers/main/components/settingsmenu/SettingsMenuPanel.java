@@ -16,6 +16,8 @@ package jsettlers.main.components.settingsmenu;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.components.mainmenu.MainMenuPanel;
 import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
@@ -25,7 +27,7 @@ import java.awt.*;
  * @author codingberlin
  */
 public class SettingsMenuPanel extends JPanel {
-	private final SettlersFrame settlersFrame;
+	private final MainMenuPanel mainMenuPanel;
 	private final JLabel playerNameLabel = new JLabel();
 	private final JTextField playerNameField = new JTextField();
 	private final JLabel volumeLabel = new JLabel();
@@ -33,22 +35,30 @@ public class SettingsMenuPanel extends JPanel {
 	private final JButton cancelButton = new JButton();
 	private final JButton saveButton = new JButton();
 
-
-	public SettingsMenuPanel(SettlersFrame settlersFrame) {
-		this.settlersFrame = settlersFrame;
+	public SettingsMenuPanel(MainMenuPanel mainMenuPanel) {
+		this.mainMenuPanel = mainMenuPanel;
 		createStructure();
+		setStyle();
 		localize();
 		addListener();
 	}
 
 	private void createStructure() {
-		setLayout(new GridLayout(3, 2));
+		setLayout(new GridLayout(0, 2, 20, 20));
 		add(playerNameLabel);
 		add(playerNameField);
 		add(volumeLabel);
 		add(volumeSlider);
 		add(cancelButton);
 		add(saveButton);
+	}
+
+	private void setStyle() {
+		saveButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		volumeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		playerNameField.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DRAW_BG_CUSTOM);
 	}
 
 	private void localize() {
@@ -69,9 +79,9 @@ public class SettingsMenuPanel extends JPanel {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			settingsManager.set(SettingsManager.SETTING_USERNAME, playerNameField.getText());
 			settingsManager.set(SettingsManager.SETTING_VOLUME, (volumeSlider.getValue() / 100D) + "");
-			SwingUtilities.invokeLater(settlersFrame::showMainMenu);
+			mainMenuPanel.reset();
 		});
-		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
+		cancelButton.addActionListener(e -> mainMenuPanel.reset());
 	}
 
 }

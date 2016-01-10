@@ -18,7 +18,10 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.lookandfeel.LFStyle;
+import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.main.components.openpanel.OpenPanel;
+import jsettlers.main.components.settingsmenu.SettingsMenuPanel;
 import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
@@ -29,17 +32,19 @@ import java.util.Vector;
 /**
  * @author codingberlin
  */
-public class MainMenuPanel extends JPanel {
+public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	public static final Dimension PREFERRED_EAST_SIZE = new Dimension(300, 300);
 	private final SettlersFrame settlersFrame;
 	private final JPanel emptyPanel = new JPanel();
+	private final SettingsMenuPanel settingsPanel;
 	private final JButton exitButton = new JButton();
 	private final JToggleButton newSinglePlayerGameButton = new JToggleButton();
 	private final JToggleButton loadSaveGameButton = new JToggleButton();
-	private final JButton settingsButton = new JButton();
+	private final JToggleButton settingsButton = new JToggleButton();
 	private final OpenPanel openSinglePlayerPanel;
 	private final OpenPanel openSaveGamePanel;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	public MainMenuPanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
@@ -49,7 +54,9 @@ public class MainMenuPanel extends JPanel {
 				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
 				startSaveGame);
 		startSaveGame.setRelatedOpenPanel(openSaveGamePanel);
+		settingsPanel = new SettingsMenuPanel(this);
 		createStructure();
+		setStyle();
 		localize();
 		addListener();
 	}
@@ -60,11 +67,16 @@ public class MainMenuPanel extends JPanel {
 		return mapLoaders;
 	}
 
-	private void addListener() {
-		newSinglePlayerGameButton.addActionListener(e -> setCenter(openSinglePlayerPanel));
-		loadSaveGameButton.addActionListener(e -> setCenter(openSaveGamePanel));
-		exitButton.addActionListener(e -> settlersFrame.exit());
-		settingsButton.addActionListener(e -> settlersFrame.showSettingsMenu());
+	private void setStyle() {
+		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		exitButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+
+		SwingUtilities.updateComponentTreeUI(this);
+		SwingUtilities.updateComponentTreeUI(openSinglePlayerPanel);
+		SwingUtilities.updateComponentTreeUI(openSaveGamePanel);
+		SwingUtilities.updateComponentTreeUI(settingsPanel);
 	}
 
 	private void localize() {
@@ -74,26 +86,49 @@ public class MainMenuPanel extends JPanel {
 		settingsButton.setText(Labels.getString("settings-title"));
 	}
 
+	private void addListener() {
+		newSinglePlayerGameButton.addActionListener(e -> setCenter("main-panel-new-single-player-game-button", openSinglePlayerPanel));
+		loadSaveGameButton.addActionListener(e -> setCenter("start-loadgame", openSaveGamePanel));
+		exitButton.addActionListener(e -> settlersFrame.exit());
+		settingsButton.addActionListener(e -> {
+			setCenter("settings-title", settingsPanel);
+			settingsPanel.initializeValues();
+		});
+	}
+
 	private void createStructure() {
-		setLayout(new BorderLayout());
 		JPanel westPanel = new JPanel();
-		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.PAGE_AXIS));
+		westPanel.setLayout(new GridLayout(0, 1, 20, 20));
 		westPanel.add(newSinglePlayerGameButton);
 		westPanel.add(loadSaveGameButton);
 		westPanel.add(settingsButton);
 		westPanel.add(exitButton);
-		add(westPanel, BorderLayout.WEST);
-		ButtonGroup buttonGroup = new ButtonGroup();
+		add(westPanel);
 		buttonGroup.add(newSinglePlayerGameButton);
 		buttonGroup.add(loadSaveGameButton);
-		add(emptyPanel, BorderLayout.CENTER);
+		buttonGroup.add(settingsButton);
+		add(emptyPanel);
+		getTitleLabel().setVisible(false);
 		westPanel.setPreferredSize(PREFERRED_EAST_SIZE);
 	}
 
-	private void setCenter(final OpenPanel panelToBeSet) {
-		remove(1);
-		add(panelToBeSet, BorderLayout.CENTER);
+	public void reset() {
+		setCenter(emptyPanel);
+		getTitleLabel().setVisible(false);
+		buttonGroup.clearSelection();
+	}
+
+	private void setCenter(final String titleKey, final JPanel panelToBeSet) {
+		getTitleLabel().setText(Labels.getString(titleKey));
+		getTitleLabel().setVisible(true);
+		setCenter(panelToBeSet);
+	}
+
+	private void setCenter(final JPanel panelToBeSet) {
+		remove(2);
+		add(panelToBeSet);
 		settlersFrame.revalidate();
 		settlersFrame.repaint();
+
 	}
 }
