@@ -3,6 +3,7 @@ package jsettlers.main.components.openpanel;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.main.swing.JSettlersSwingUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,22 +174,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		}
 
 		try {
-			short[] data = value.getImage();
-			int xOffset = MapFileHeader.PREVIEW_IMAGE_SIZE;
-			BufferedImage img = new BufferedImage(MapFileHeader.PREVIEW_IMAGE_SIZE + xOffset,
-					MapFileHeader.PREVIEW_IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB);
-
-			xOffset--;
-			for (int y = 0; y < MapFileHeader.PREVIEW_IMAGE_SIZE; y++) {
-				for (int x = 0; x < MapFileHeader.PREVIEW_IMAGE_SIZE; x++) {
-					int index = y * MapFileHeader.PREVIEW_IMAGE_SIZE + x;
-					jsettlers.common.Color c = jsettlers.common.Color.fromShort(data[index]);
-					img.setRGB(x + xOffset, y, c.getARGB());
-				}
-				if (xOffset > 1) {
-					xOffset--;
-				}
-			}
+			BufferedImage img = JSettlersSwingUtil.createBufferedImageFrom(value);
 
 			Image resized = resize(img, MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE / 2);
 			icon = new ImageIcon(resized);
