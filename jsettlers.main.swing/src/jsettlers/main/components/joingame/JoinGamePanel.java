@@ -51,6 +51,12 @@ public class JoinGamePanel extends BackgroundPanel {
 	private MapLoader mapLoader;
 
 
+	//TODO: spielerslots
+	//TODO: anzahl spieler combobox füllen
+	//TODO: Warenbestand combobox füllen
+	//TODO: Spielstart
+
+
 	public JoinGamePanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 		createStructure();
@@ -88,7 +94,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(peaceTimeLabel);
 		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout());
-		centerPanel.add(playerSlotPanel);
+		centerPanel.add(playerSlotPanel, BorderLayout.NORTH);
 		playerSlotPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
