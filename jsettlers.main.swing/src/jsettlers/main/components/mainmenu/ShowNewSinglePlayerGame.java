@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.components.mainmenu;
 
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.loader.SavegameLoader;
+import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.main.swing.SettlersFrame;
 
 import java.awt.event.ActionEvent;
@@ -25,12 +28,17 @@ import java.awt.event.ActionListener;
 public class ShowNewSinglePlayerGame implements ActionListener {
 
 	private final SettlersFrame settlersFrame;
+	private OpenPanel relatedOpenPanel;
 
 	public ShowNewSinglePlayerGame(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 	}
 
+	public void setRelatedOpenPanel(OpenPanel relatedOpenPanel) {
+		this.relatedOpenPanel = relatedOpenPanel;
+	}
+
 	@Override public void actionPerformed(ActionEvent e) {
-		//settlersFrame.showStartingGamePanel(); show game settings menu
+		settlersFrame.showJoinGameMenu(relatedOpenPanel.getSelectedMap());
 	}
 }

@@ -21,8 +21,9 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.main.components.joingame.JoinGamePanel;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
-import jsettlers.main.components.settingsmenu.SettingsMenuPanel;
 import jsettlers.main.components.startinggamemenu.StartingGamePanel;
 
 import javax.swing.*;
@@ -37,6 +38,7 @@ public class SettlersFrame extends JFrame {
 
 	private final MainMenuPanel mainPanel = new MainMenuPanel(this);
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
+	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private SoundPlayer soundPlayer = new SwingSoundPlayer();
 
 	public SettlersFrame() throws HeadlessException {
@@ -88,5 +90,10 @@ public class SettlersFrame extends JFrame {
 			revalidate();
 			repaint();
 		});
+	}
+
+	public void showJoinGameMenu(MapLoader mapLoader) {
+		joinGamePanel.setSinglePlayerMap(mapLoader);
+		setNewContentPane(joinGamePanel);
 	}
 }

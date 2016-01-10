@@ -48,7 +48,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	public MainMenuPanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
-		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), new ShowNewSinglePlayerGame(settlersFrame));
+		ShowNewSinglePlayerGame showNewSinglePlayerGame = new ShowNewSinglePlayerGame(settlersFrame);
+		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), showNewSinglePlayerGame);
+		showNewSinglePlayerGame.setRelatedOpenPanel(openSinglePlayerPanel);
 		StartSaveGame startSaveGame = new StartSaveGame(settlersFrame);
 		openSaveGamePanel = new OpenPanel(
 				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
@@ -68,9 +70,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	}
 
 	private void setStyle() {
-		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
 		exitButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 
 		SwingUtilities.updateComponentTreeUI(this);
