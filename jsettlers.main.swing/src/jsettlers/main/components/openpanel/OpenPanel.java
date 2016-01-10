@@ -1,7 +1,5 @@
 package jsettlers.main.components.openpanel;
 
-import jsettlers.logic.map.MapLoader;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,10 +9,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import jsettlers.graphics.localization.Labels;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.lookandfeel.LFStyle;
 
 /**
  * Panel to open an existing map
@@ -24,7 +33,6 @@ import javax.swing.event.DocumentListener;
  */
 public class OpenPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private final ListCellRenderer<MapLoader> cellRenderer;
 
 	/**
 	 * List with the Maps to select
@@ -51,25 +59,55 @@ public class OpenPanel extends JPanel {
 	 */
 	private SearchTextField txtSearch;
 
-	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener) {
-		this(theMaps, doubleclickListener, new MapListCellRenderer());
+	/**
+	 * Filter buttons
+	 */
+	private JPanel pFilter = new JPanel();
+
+	/**
+	 * Currently active filter
+	 */
+	private EMapFilter currentFilter = EMapFilter.ALL;
+
+	/**
+	 * Constructor
+	 *
+	 * @param maps
+	 *            Maps to display
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 */
+	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener) {
+		this(maps, doubleclickListener, new MapListCellRenderer());
 	}
 
 	/**
 	 * Constructor
 	 *
+	 * @param maps
+	 *            Maps to display
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 * @param cellRenderer
+	 *            Cell renderer to use
 	 */
-	public OpenPanel(final List<MapLoader> theMaps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
-		this.maps = theMaps;
-		this.cellRenderer = cellRenderer;
+	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+		this.maps = maps;
 		setLayout(new BorderLayout());
 
 		sortMaps();
 
+		initFilter();
+
 		this.txtSearch = new SearchTextField();
-		add(txtSearch, BorderLayout.NORTH);
+		txtSearch.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+
+		Box box = Box.createVerticalBox();
+		box.add(pFilter);
+		box.add(txtSearch);
+
+		add(box, BorderLayout.NORTH);
+
 		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -101,6 +139,7 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
+		mapList.setOpaque(false);
 		add(new JScrollPane(mapList), BorderLayout.CENTER);
 
 		searchChanged();
@@ -111,22 +150,47 @@ public class OpenPanel extends JPanel {
 	}
 
 	/**
+	 * Initialize the filter buttons
+	 */
+	private void initFilter() {
+		JLabel filterLabel = new JLabel(Labels.getString("mapfilter.title"));
+		filterLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		pFilter.add(filterLabel);
+
+		boolean first = true;
+		ButtonGroup group = new ButtonGroup();
+		for (final EMapFilter filter : EMapFilter.values()) {
+			JToggleButton bt = new JToggleButton(filter.getName());
+			bt.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+			bt.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					currentFilter = filter;
+					searchChanged();
+				}
+			});
+
+			if (first) {
+				first = false;
+				bt.setSelected(true);
+			}
+
+			group.add(bt);
+			pFilter.add(bt);
+		}
+	}
+
+	/**
 	 * Search has changed, update the list
 	 */
 	protected void searchChanged() {
 		String search = txtSearch.getText().toLowerCase();
 
-		if (search.isEmpty()) {
-			listModelFiltered.clear();
-			for (MapLoader m : mapsAvailable) {
+		listModelFiltered.clear();
+		for (MapLoader m : mapsAvailable) {
+			if (matchesSearch(m, search) && currentFilter.filter(m)) {
 				listModelFiltered.addElement(m);
-			}
-		} else {
-			listModelFiltered.clear();
-			for (MapLoader m : mapsAvailable) {
-				if (matchesSearch(m, search)) {
-					listModelFiltered.addElement(m);
-				}
 			}
 		}
 	}
@@ -141,6 +205,10 @@ public class OpenPanel extends JPanel {
 	 * @return true if yes, false if no
 	 */
 	private boolean matchesSearch(MapLoader m, String search) {
+		if (search.isEmpty()) {
+			return true;
+		}
+
 		if (m.getMapName().toLowerCase().contains(search)) {
 			return true;
 		}
@@ -178,6 +246,9 @@ public class OpenPanel extends JPanel {
 		return mapList.getSelectedValue();
 	}
 
+	/**
+	 * @return true if there are no maps in the list
+	 */
 	public boolean isEmpty() {
 		return maps.isEmpty();
 	}

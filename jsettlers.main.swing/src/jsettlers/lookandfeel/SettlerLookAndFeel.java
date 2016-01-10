@@ -42,6 +42,7 @@ public class SettlerLookAndFeel {
 		// PanelUiFactory.FORWARD.loadFromType("PanelUI");
 		// ScrollPane handles all UI types
 		// ScrollPaneUiFactory.FORWARD.loadFromType("ScrollPaneUI");
+		ToggleButtonUiFactory.FORWARD.loadFromType("ToggleButtonUI");
 
 		Object[] scrollbar = {
 				// "ScrollBarUI", ScrollBarUiFactory.class.getName()
@@ -54,6 +55,7 @@ public class SettlerLookAndFeel {
 				// "ComboBoxUI", metalPackageName + "MetalComboBoxUI",
 				// "LabelUI", metalPackageName + "MetalLabelUI",
 				"ScrollPaneUI", ScrollPaneUiFactory.class.getName(),
+				"ToggleButtonUI", ToggleButtonUiFactory.class.getName()
 		};
 		UIManager.getDefaults().putDefaults(scrollbar);
 

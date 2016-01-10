@@ -28,6 +28,9 @@ public class TextFieldUiDark extends MetalTextFieldUI {
 		txt.setOpaque(false);
 
 		Insets margin = txt.getMargin();
+		if (margin == null) {
+			margin = new Insets(5, 5, 5, 5);
+		}
 		Border marginBorder = BorderFactory.createEmptyBorder(margin.top + 3, margin.left, margin.bottom + 3, margin.right);
 		CompoundBorder border = new CompoundBorder(BorderFactory.createLineBorder(Color.WHITE), marginBorder);
 

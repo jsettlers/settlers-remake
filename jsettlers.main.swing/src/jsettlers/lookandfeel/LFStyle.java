@@ -38,6 +38,11 @@ public enum LFStyle {
 	TEXT_DEFAULT,
 
 	/**
+	 * Stone toggle button
+	 */
+	TOGGLE_BUTTON_STONE,
+
+	/**
 	 * Supports transparent background colors
 	 */
 	PANEL_DRAW_BG_CUSTOM;

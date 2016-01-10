@@ -26,6 +26,11 @@ public interface UIDefaults {
 	public static final Font FONT = new Font("Sans", Font.BOLD, 14);
 
 	/**
+	 * Default font
+	 */
+	public static final Font FONT_PLAIN = new Font("Sans", Font.PLAIN, 14);
+
+	/**
 	 * Half transparent black
 	 */
 	public static final Color HALFTRANSPARENT_BLACK = new Color(0, 0, 0, 160);
