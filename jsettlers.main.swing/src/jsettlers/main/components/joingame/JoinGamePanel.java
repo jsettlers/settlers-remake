@@ -41,6 +41,8 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JLabel mapImage = new JLabel();
 	private final JLabel numberOfPlayersLabel = new JLabel();
 	private final JComboBox<Integer> numberOfPlayersComboBox = new JComboBox<>();
+	private final JLabel peaceTimeLabel = new JLabel();
+	private final JComboBox<EPeaceTime> peaceTimeComboBox = new JComboBox<>();
 	private final JLabel startResourcesLabel = new JLabel();
 	private final JComboBox<OriginalMapFileDataStructs.EMapStartResources> startResourcesComboBox = new JComboBox<>();
 	private final JPanel playerSlotPanel = new JPanel();
@@ -83,6 +85,8 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(numberOfPlayersComboBox);;
 		settingsPanel.add(startResourcesLabel);
 		settingsPanel.add(startResourcesComboBox);
+		settingsPanel.add(peaceTimeLabel);
+		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(playerSlotPanel);
 		playerSlotPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -93,13 +97,13 @@ public class JoinGamePanel extends BackgroundPanel {
 		southPanelWrapper.add(southPanel);
 		southPanel.add(cancelButton);
 		southPanel.add(startGameButton);
-		southPanel.add(new JLabel("TODO: wenn ich weg bin, verschwinden die Buttons")); //TODO
 	}
 
 	private void setStyle() {
 		mapNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
 		numberOfPlayersLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		startResourcesLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		peaceTimeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		playerSlotPanel.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
 		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
@@ -112,6 +116,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		startResourcesLabel.setText(Labels.getString("join-game-panel-start-resources"));
 		cancelButton.setText(Labels.getString("join-game-panel-cancel"));
 		startGameButton.setText(Labels.getString("join-game-panel-start"));
+		peaceTimeLabel.setText(Labels.getString("join-game-panel-peace-time"));
 	}
 
 	private void addListener() {
@@ -123,5 +128,15 @@ public class JoinGamePanel extends BackgroundPanel {
 		mapNameLabel.setText(mapLoader.getMapName());
 		mapImage.setIcon(new ImageIcon(JSettlersSwingUtil.createBufferedImageFrom(mapLoader)));
 		titleLabel.setText(Labels.getString("join-game-panel-new-single-player-game-title"));
+		peaceTimeComboBox.removeAllItems();
+		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
+	}
+
+	private enum EPeaceTime {
+		WITHOUT;
+
+		@Override public String toString() {
+			return Labels.getString("peace-time-" + name());
+		}
 	}
 }
