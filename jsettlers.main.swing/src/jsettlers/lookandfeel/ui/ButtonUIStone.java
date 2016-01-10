@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Button UI Implementation
- * 
+ *
  * @author Andreas Butti
  */
 public class ButtonUIStone extends BasicButtonUI {
@@ -38,7 +38,6 @@ public class ButtonUIStone extends BasicButtonUI {
 	public void installDefaults(AbstractButton b) {
 		b.setFont(UIDefaults.FONT);
 		b.setForeground(UIDefaults.LABEL_TEXT_COLOR);
-		b.setPreferredSize(getPreferredSize(b));
 	}
 
 	@Override
