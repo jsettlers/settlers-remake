@@ -44,13 +44,15 @@ public class SettingsMenuPanel extends JPanel {
 	}
 
 	private void createStructure() {
-		setLayout(new GridLayout(0, 2, 20, 20));
-		add(playerNameLabel);
-		add(playerNameField);
-		add(volumeLabel);
-		add(volumeSlider);
-		add(cancelButton);
-		add(saveButton);
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(0, 2, 20, 20));
+		panel.add(playerNameLabel);
+		panel.add(playerNameField);
+		panel.add(volumeLabel);
+		panel.add(volumeSlider);
+		panel.add(cancelButton);
+		panel.add(saveButton);
+		add(panel);
 	}
 
 	private void setStyle() {
