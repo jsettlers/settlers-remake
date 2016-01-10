@@ -22,6 +22,9 @@ import jsettlers.graphics.startscreen.interfaces.EGameError;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
+import jsettlers.lookandfeel.LFStyle;
+import jsettlers.lookandfeel.components.BackgroundPanel;
+import jsettlers.lookandfeel.ui.BorderDrawer;
 import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
@@ -30,7 +33,7 @@ import java.awt.*;
 /**
  * @author codingberlin
  */
-public class StartingGamePanel extends JPanel implements IStartingGameListener {
+public class StartingGamePanel extends BackgroundPanel implements IStartingGameListener {
 
 	private final JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
 	private final SettlersFrame settlersFrame;
@@ -38,17 +41,26 @@ public class StartingGamePanel extends JPanel implements IStartingGameListener {
 	public StartingGamePanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 		createStructure();
+		setStyle();
 		localize();
+	}
+
+	private void createStructure() {
+		JPanel outerPanel = new JPanel();
+		outerPanel.setLayout(new BorderLayout());
+		JPanel southPanel = new JPanel();
+		outerPanel.add(southPanel, BorderLayout.SOUTH);
+		southPanel.add(messageLabel);
+		add(outerPanel);
+	}
+
+	private void setStyle() {
+		messageLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
+		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	private void localize() {
 		messageLabel.setText(Labels.getProgress(EProgressState.LOADING));
-	}
-
-
-	private void createStructure() {
-		setLayout(new BorderLayout());
-		add(messageLabel, BorderLayout.SOUTH);
 	}
 
 	public void setStartingGame(IStartingGame startingGame) {
