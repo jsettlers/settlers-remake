@@ -58,7 +58,6 @@ public class SettingsMenuPanel extends JPanel {
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		volumeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		playerNameField.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DRAW_BG_CUSTOM);
 	}
 
 	private void localize() {
