@@ -48,6 +48,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JPanel playerSlotPanel = new JPanel();
 	private final JButton cancelButton = new JButton();
 	private final JButton startGameButton = new JButton();
+	private final PlayerSlot[] playerSlots = new PlayerSlot[20];
 	private MapLoader mapLoader;
 
 
@@ -96,6 +97,14 @@ public class JoinGamePanel extends BackgroundPanel {
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(playerSlotPanel, BorderLayout.NORTH);
 		playerSlotPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		JPanel headlinePanel = new JPanel();
+		playerSlotPanel.add(headlinePanel);
+		//TODO: labels auslagern, damit die gestyled werden können
+		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-player-name")));
+		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-civilisation")));
+		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-player-type")));
+		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-map-slot")));
+		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-team")));
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
 		JPanel southPanel = new JPanel();
@@ -103,6 +112,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		southPanelWrapper.add(southPanel);
 		southPanel.add(cancelButton);
 		southPanel.add(startGameButton);
+		for (int i = 0; i < playerSlots.length; i++) {
+			playerSlots[i] = new PlayerSlot();
+			//TODO: Array wird wohl nicht funktionieren, da setInvisible trozdem Platz beansprucht
+			playerSlotPanel.add(playerSlots[i]);
+		}
 	}
 
 	private void setStyle() {
@@ -136,6 +150,23 @@ public class JoinGamePanel extends BackgroundPanel {
 		titleLabel.setText(Labels.getString("join-game-panel-new-single-player-game-title"));
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
+		resetNumberOfPlayersComboBox();
+		resetVisibilityOfPlayerSlots();
+	}
+
+	private void resetNumberOfPlayersComboBox() {
+		numberOfPlayersComboBox.removeAllItems();
+		for (int i = 0; i < mapLoader.getMaxPlayers(); i++) {
+			numberOfPlayersComboBox.addItem(i);
+		}
+		numberOfPlayersComboBox.setSelectedItem(mapLoader.getMaxPlayers());
+	}
+
+	private void resetVisibilityOfPlayerSlots() {
+		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();
+		for (int i = 0; i < playerSlots.length; i++) {
+			playerSlots[i].setVisible(i < numberOfPlayers);
+		}
 	}
 
 	private enum EPeaceTime {
