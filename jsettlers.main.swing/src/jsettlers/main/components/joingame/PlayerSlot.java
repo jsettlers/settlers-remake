@@ -18,6 +18,7 @@ import jsettlers.common.player.ECivilisation;
 import jsettlers.lookandfeel.LFStyle;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author codingberlin
@@ -36,6 +37,7 @@ public class PlayerSlot extends JPanel {
 	}
 
 	private void createStructure() {
+		setLayout(new GridLayout(1, 0, 0, 0));
 		add(playerNameLabel);
 		add(civilisationComboBox);
 	}

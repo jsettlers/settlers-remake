@@ -24,6 +24,8 @@ import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author codingberlin
@@ -45,16 +47,17 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JComboBox<EPeaceTime> peaceTimeComboBox = new JComboBox<>();
 	private final JLabel startResourcesLabel = new JLabel();
 	private final JComboBox<OriginalMapFileDataStructs.EMapStartResources> startResourcesComboBox = new JComboBox<>();
+	private final JPanel playerSlotPanelWrapper = new JPanel();
 	private final JPanel playerSlotPanel = new JPanel();
 	private final JButton cancelButton = new JButton();
 	private final JButton startGameButton = new JButton();
-	private final PlayerSlot[] playerSlots = new PlayerSlot[20];
 	private final JLabel slotsHeadlinePlayerNameLabel = new JLabel();
 	private final JLabel slotsHeadlineCivilisation = new JLabel();
 	private final JLabel slotsHeadlineType = new JLabel();
 	private final JLabel slotsHeadlineMapSlot = new JLabel();
 	private final JLabel slotsHeadlineTeam = new JLabel();
 	private MapLoader mapLoader;
+	private List<PlayerSlot> playerSlots = new Vector<>();
 
 
 	//TODO: spielerslots
@@ -100,10 +103,13 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(peaceTimeLabel);
 		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout());
-		centerPanel.add(playerSlotPanel, BorderLayout.NORTH);
-		playerSlotPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
+		playerSlotPanelWrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		JPanel headlinePanel = new JPanel();
-		playerSlotPanel.add(headlinePanel);
+		headlinePanel.setLayout(new GridLayout(1, 0, 0, 0));
+		playerSlotPanelWrapper.add(headlinePanel);
+		playerSlotPanelWrapper.add(playerSlotPanel);
+		playerSlotPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		headlinePanel.add(slotsHeadlinePlayerNameLabel);
 		headlinePanel.add(slotsHeadlineCivilisation);
 		headlinePanel.add(slotsHeadlineType);
@@ -116,11 +122,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		southPanelWrapper.add(southPanel);
 		southPanel.add(cancelButton);
 		southPanel.add(startGameButton);
-		for (int i = 0; i < playerSlots.length; i++) {
-			playerSlots[i] = new PlayerSlot();
-			//TODO: Array wird wohl nicht funktionieren, da setInvisible trozdem Platz beansprucht
-			playerSlotPanel.add(playerSlots[i]);
-		}
 	}
 
 	private void setStyle() {
@@ -128,7 +129,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		numberOfPlayersLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		startResourcesLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		peaceTimeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		playerSlotPanel.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
+		playerSlotPanelWrapper.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
 		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		startGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
@@ -155,6 +156,7 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void addListener() {
 		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
+		numberOfPlayersComboBox.addActionListener(e -> updateNumberOfPlayerSlots());
 	}
 
 	public void setSinglePlayerMap(MapLoader mapLoader) {
@@ -165,22 +167,29 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
 		resetNumberOfPlayersComboBox();
-		resetVisibilityOfPlayerSlots();
+		updateNumberOfPlayerSlots();
 	}
 
 	private void resetNumberOfPlayersComboBox() {
 		numberOfPlayersComboBox.removeAllItems();
-		for (int i = 0; i < mapLoader.getMaxPlayers(); i++) {
+		for (int i = 1; i < mapLoader.getMaxPlayers(); i++) {
 			numberOfPlayersComboBox.addItem(i);
 		}
-		numberOfPlayersComboBox.setSelectedItem(mapLoader.getMaxPlayers());
+		numberOfPlayersComboBox.setSelectedIndex(mapLoader.getMaxPlayers()-2);
 	}
 
-	private void resetVisibilityOfPlayerSlots() {
+	private void updateNumberOfPlayerSlots() {
 		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();
-		for (int i = 0; i < playerSlots.length; i++) {
-			playerSlots[i].setVisible(i < numberOfPlayers);
+		for (int i = playerSlots.size(); i < numberOfPlayers; i++) {
+			PlayerSlot playerSlot = new PlayerSlot();
+			playerSlots.add(playerSlot);
 		}
+		//TODO: gibt es hier eine methode von List, die das folgente kann?
+		while (playerSlots.size() > numberOfPlayers) {
+			playerSlots.remove(playerSlots.size()-1);
+		}
+		playerSlotPanel.removeAll();
+		playerSlots.stream().forEach(playerSlotPanel::add);
 	}
 
 	private enum EPeaceTime {
