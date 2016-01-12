@@ -49,6 +49,11 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JButton cancelButton = new JButton();
 	private final JButton startGameButton = new JButton();
 	private final PlayerSlot[] playerSlots = new PlayerSlot[20];
+	private final JLabel slotsHeadlinePlayerNameLabel = new JLabel();
+	private final JLabel slotsHeadlineCivilisation = new JLabel();
+	private final JLabel slotsHeadlineType = new JLabel();
+	private final JLabel slotsHeadlineMapSlot = new JLabel();
+	private final JLabel slotsHeadlineTeam = new JLabel();
 	private MapLoader mapLoader;
 
 
@@ -99,12 +104,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		playerSlotPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		JPanel headlinePanel = new JPanel();
 		playerSlotPanel.add(headlinePanel);
-		//TODO: labels auslagern, damit die gestyled werden können
-		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-player-name")));
-		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-civilisation")));
-		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-player-type")));
-		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-map-slot")));
-		headlinePanel.add(new JLabel(Labels.getString("join-game-panel-team")));
+		headlinePanel.add(slotsHeadlinePlayerNameLabel);
+		headlinePanel.add(slotsHeadlineCivilisation);
+		headlinePanel.add(slotsHeadlineType);
+		headlinePanel.add(slotsHeadlineMapSlot);
+		headlinePanel.add(slotsHeadlineTeam);
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
 		JPanel southPanel = new JPanel();
@@ -128,6 +132,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		startGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlineCivilisation.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 
@@ -137,6 +146,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		cancelButton.setText(Labels.getString("join-game-panel-cancel"));
 		startGameButton.setText(Labels.getString("join-game-panel-start"));
 		peaceTimeLabel.setText(Labels.getString("join-game-panel-peace-time"));
+		slotsHeadlinePlayerNameLabel.setText(Labels.getString("join-game-panel-player-name"));
+		slotsHeadlineCivilisation.setText(Labels.getString("join-game-panel-civilisation"));
+		slotsHeadlineType.setText(Labels.getString("join-game-panel-player-type"));
+		slotsHeadlineMapSlot.setText(Labels.getString("join-game-panel-map-slot"));
+		slotsHeadlineTeam.setText(Labels.getString("join-game-panel-team"));
 	}
 
 	private void addListener() {
