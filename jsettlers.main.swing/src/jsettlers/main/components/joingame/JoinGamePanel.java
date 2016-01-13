@@ -15,6 +15,7 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs;
 import jsettlers.lookandfeel.LFStyle;
@@ -48,7 +49,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JLabel startResourcesLabel = new JLabel();
 	private final JComboBox<OriginalMapFileDataStructs.EMapStartResources> startResourcesComboBox = new JComboBox<>();
 	private final JPanel playerSlotPanelWrapper = new JPanel();
-	private final JPanel playerSlotPanel = new JPanel();
+	private final JPanel playerSlotsPanel = new JPanel();
 	private final JButton cancelButton = new JButton();
 	private final JButton startGameButton = new JButton();
 	private final JLabel slotsHeadlinePlayerNameLabel = new JLabel();
@@ -58,10 +59,10 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JLabel slotsHeadlineTeam = new JLabel();
 	private MapLoader mapLoader;
 	private List<PlayerSlot> playerSlots = new Vector<>();
+	private PlayerSlotFactory playerSlotFactory;
 
 
-	//TODO: spielerslots
-	//TODO: anzahl spieler combobox füllen
+	//TODO: map slots per listener verdrahten, falls einer doppel ausgewählt wird.
 	//TODO: Warenbestand combobox füllen
 	//TODO: Spielstart
 
@@ -104,17 +105,13 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx=0;
+		constraints.gridy=0;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotPanelWrapper.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		JPanel headlinePanel = new JPanel();
-		headlinePanel.setLayout(new GridLayout(1, 0, 0, 0));
-		playerSlotPanelWrapper.add(headlinePanel);
-		playerSlotPanelWrapper.add(playerSlotPanel);
-		playerSlotPanel.setLayout(new GridLayout(0, 1, 0, 0));
-		headlinePanel.add(slotsHeadlinePlayerNameLabel);
-		headlinePanel.add(slotsHeadlineCivilisation);
-		headlinePanel.add(slotsHeadlineType);
-		headlinePanel.add(slotsHeadlineMapSlot);
-		headlinePanel.add(slotsHeadlineTeam);
+		playerSlotsPanel.setLayout(new GridBagLayout());
+		playerSlotPanelWrapper.add(playerSlotsPanel);
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
 		JPanel southPanel = new JPanel();
@@ -133,9 +130,9 @@ public class JoinGamePanel extends BackgroundPanel {
 		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		startGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
 		slotsHeadlineCivilisation.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
 		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		SwingUtilities.updateComponentTreeUI(this);
@@ -167,7 +164,9 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
 		resetNumberOfPlayersComboBox();
+		playerSlotFactory = new SinglePlayerSlotFactory();
 		updateNumberOfPlayerSlots();
+
 	}
 
 	private void resetNumberOfPlayersComboBox() {
@@ -179,14 +178,53 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void updateNumberOfPlayerSlots() {
+		if (playerSlotFactory == null) {
+			return;
+		}
 		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();
 		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), numberOfPlayers));
-		for (int i = playerSlots.size(); i < numberOfPlayers; i++) {
-			PlayerSlot playerSlot = new PlayerSlot();
+		for (byte i = (byte) playerSlots.size(); i < numberOfPlayers; i++) {
+			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, mapLoader);
 			playerSlots.add(playerSlot);
 		}
-		playerSlotPanel.removeAll();
-		playerSlots.stream().forEach(playerSlotPanel::add);
+		playerSlotsPanel.removeAll();
+		addPlayerSlotHeadline();
+		for (int i = 0; i<playerSlots.size(); i++) {
+			playerSlots.get(i).addTo(playerSlotsPanel, i+1);
+		}
+		SwingUtilities.updateComponentTreeUI(playerSlotsPanel);
+	}
+
+	private void addPlayerSlotHeadline() {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = 4;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		playerSlotsPanel.add(slotsHeadlinePlayerNameLabel, constraints);
+		constraints.gridx = 4;
+		constraints.gridy = 0;
+		constraints.gridwidth = 2;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		playerSlotsPanel.add(slotsHeadlineCivilisation, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 6;
+		constraints.gridy = 0;
+		constraints.gridwidth = 4;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		playerSlotsPanel.add(slotsHeadlineType, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 10;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		playerSlotsPanel.add(slotsHeadlineMapSlot, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 11;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		playerSlotsPanel.add(slotsHeadlineTeam, constraints);
 	}
 
 	private enum EPeaceTime {

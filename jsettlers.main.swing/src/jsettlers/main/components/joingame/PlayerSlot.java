@@ -15,32 +15,63 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.lookandfeel.LFStyle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * @author codingberlin
  */
-public class PlayerSlot extends JPanel {
+public class PlayerSlot {
 
 	private final JLabel playerNameLabel = new JLabel();
-	private final JComboBox<ECivilisation> civilisationComboBox = new JComboBox<>();
+	private final JComboBox<CivilisationUiWrapper> civilisationComboBox = new JComboBox<>();
+	private final JComboBox<EPlayerType> typeComboBox = new JComboBox<>();
+	private final JComboBox<Byte> slotComboBox = new JComboBox<>();
+	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
 
 	public PlayerSlot() {
-		createStructure();
 		setStyle();
 		localize();
 		addListener();
 		initializeComboBoxes();
 	}
 
-	private void createStructure() {
-		setLayout(new GridLayout(1, 0, 0, 0));
-		add(playerNameLabel);
-		add(civilisationComboBox);
+	public void addTo(JPanel panel, int row) {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx=0;
+		constraints.gridy=row+1;
+		constraints.gridwidth=4;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(playerNameLabel, constraints);
+		constraints.gridx = 4;
+		constraints.gridy=row+1;
+		constraints.gridwidth=2;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(civilisationComboBox, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 6;
+		constraints.gridy=row+1;
+		constraints.gridwidth=4;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(typeComboBox, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 10;
+		constraints.gridy=row+1;
+		constraints.gridwidth=1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(slotComboBox, constraints);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 11;
+		constraints.gridy=row+1;
+		constraints.gridwidth=1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(teamComboBox, constraints);
 	}
+
 
 	private void setStyle() {
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
@@ -50,14 +81,49 @@ public class PlayerSlot extends JPanel {
 	}
 
 	private void addListener() {
+		typeComboBox.addActionListener(e -> updateAiPlayerName());
+		civilisationComboBox.addActionListener(e -> updateAiPlayerName());
+	}
+
+	private void updateAiPlayerName() {
+		if (typeComboBox.getSelectedItem() == null || civilisationComboBox.getSelectedItem() == null) {
+			return;
+		}
+
+		if (!EPlayerType.HUMAN.equals(typeComboBox.getSelectedItem())) {
+			setPlayerName(Labels.getString("player-name-" + ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation().name() + "-" +
+				((EPlayerType) typeComboBox.getSelectedItem()).name()));
+		}
 	}
 
 	private void initializeComboBoxes() {
-		civilisationComboBox.addItem(ECivilisation.ROMAN);
+		civilisationComboBox.addItem(new CivilisationUiWrapper(ECivilisation.ROMAN));
 	}
 
 	public void setPlayerName(String playerName) {
 		playerNameLabel.setText(playerName);
+	}
+
+	public void setPossibleTypes(EPlayerType[] playerTypes) {
+		typeComboBox.removeAll();
+		Arrays.asList(playerTypes).stream().forEach(typeComboBox::addItem);
+	}
+
+	public void setSlotAndTeams(Byte slotAndTeamCount) {
+		slotComboBox.removeAllItems();
+		teamComboBox.removeAllItems();
+		for (byte i = 1; i < slotAndTeamCount + 1; i++) {
+			slotComboBox.addItem(i);
+			teamComboBox.addItem(i);
+		}
+	}
+
+	public void setSlot(byte i) {
+		slotComboBox.setSelectedIndex(i - 1);
+	}
+
+	public void setTeam(byte i) {
+		teamComboBox.setSelectedIndex(i - 1);
 	}
 
 }
