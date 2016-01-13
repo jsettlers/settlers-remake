@@ -15,6 +15,7 @@
 package go.graphics.swing.opengl;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
 import go.graphics.swing.text.JOGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -44,8 +45,8 @@ public class JOGLDrawContext implements GLDrawContext {
 	private final GL2 gl2;
 	private final boolean canUseVBOs;
 	private final int bufferChecksum;
-	private final static int BUFFER_MASK_CHECKSUM = 0xff000000;
-	private final static int BUFFER_MASK = ~BUFFER_MASK_CHECKSUM;
+	private final static int BUFFER_MASK_CHECKTOKEN = 0xff000000;
+	private final static int BUFFER_MASK = ~BUFFER_MASK_CHECKTOKEN;
 
 	public JOGLDrawContext(GL2 gl2, int instanceCounter) {
 		this.gl2 = gl2;
@@ -183,7 +184,7 @@ public class JOGLDrawContext implements GLDrawContext {
 				GL.GL_RGBA, GL.GL_UNSIGNED_SHORT_5_5_5_1, data);
 		setTextureParameters();
 
-		return addChecksum(texture);
+		return addCheckToken(texture);
 	}
 
 	/**
@@ -202,32 +203,32 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void updateTexture(int publicTextureIndex, int left, int bottom,
-			int width, int height, ShortBuffer data) {
+			int width, int height, ShortBuffer data) throws IllegalBufferException {
 		bindTextureCheckChecksum(publicTextureIndex);
 		gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width, height,
 				GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
-	private void bindTextureCheckChecksum(int textureIndex) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, removeChecksum(textureIndex));
+	private void bindTextureCheckChecksum(int textureIndex) throws IllegalBufferException {
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, removeCheckToken(textureIndex));
 	}
 
 	@Override
-	public void deleteTexture(int publicTextureIndex) {
-		int textureIndex = removeChecksum(publicTextureIndex);
+	public void deleteTexture(int publicTextureIndex) throws IllegalBufferException {
+		int textureIndex = removeCheckToken(publicTextureIndex);
 		gl2.glDeleteTextures(1, new int[] {
 				textureIndex
 		}, 0);
 	}
 
 	@Override
-	public void drawQuadWithTexture(int publicTextureIndex, float[] geometry) {
+	public void drawQuadWithTexture(int publicTextureIndex, float[] geometry) throws IllegalBufferException {
 		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
 		drawQuadWithTexture(publicTextureIndex, buffer, geometry.length / 5);
 	}
 
-	private void drawQuadWithTexture(int publicTextureIndex, ByteBuffer buffer, int len) {
+	private void drawQuadWithTexture(int publicTextureIndex, ByteBuffer buffer, int len) throws IllegalBufferException {
 		bindTextureCheckChecksum(publicTextureIndex);
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3 * 4);
@@ -236,13 +237,13 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
+	public void drawTrianglesWithTexture(int textureid, float[] geometry) throws IllegalBufferException {
 		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
 		drawTrianglesWithTexture(textureid, buffer, geometry.length / 5 / 3);
 	}
 
 	private void drawTrianglesWithTexture(int publicTextureIndex, ByteBuffer buffer,
-			int triangles) {
+			int triangles) throws IllegalBufferException {
 		bindTextureCheckChecksum(publicTextureIndex);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
@@ -252,7 +253,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
+	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) throws IllegalBufferException {
 		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
 		drawTrianglesWithTextureColored(textureid, buffer, geometry.length / 3
 				/ FLOATS_PER_COLORED_TRI_VERTEX);
@@ -260,7 +261,7 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTextureColored(int publicTextureIndex,
-			ByteBuffer buffer, int triangles) {
+			ByteBuffer buffer, int triangles) throws IllegalBufferException {
 		bindTextureCheckChecksum(publicTextureIndex);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 6 * 4, buffer);
@@ -305,11 +306,11 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawQuadWithTexture(int publicTextureIndex, int publicGeometryIndex) {
+	public void drawQuadWithTexture(int publicTextureIndex, int publicGeometryIndex) throws IllegalBufferException {
 		if (publicGeometryIndex < 0) {
 			return; // ignore
 		}
-		int geometryIndex = removeChecksum(publicGeometryIndex);
+		int geometryIndex = removeCheckToken(publicGeometryIndex);
 		if (canUseVBOs) {
 			bindTextureCheckChecksum(publicTextureIndex);
 
@@ -327,8 +328,8 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTexture(int publicTextureIndex, int publicGeometryIndex,
-			int triangleCount) {
-		int geometryIndex = removeChecksum(publicGeometryIndex);
+			int triangleCount) throws IllegalBufferException {
+		int geometryIndex = removeCheckToken(publicGeometryIndex);
 		if (canUseVBOs) {
 			bindTextureCheckChecksum(publicTextureIndex);
 
@@ -349,8 +350,8 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTextureColored(int publicTextureIndex,
-			int publicGeometryIndex, int triangleCount) {
-		int geometryIndex = removeChecksum(publicGeometryIndex);
+			int publicGeometryIndex, int triangleCount) throws IllegalBufferException {
+		int geometryIndex = removeCheckToken(publicGeometryIndex);
 		if (canUseVBOs) {
 			bindTextureCheckChecksum(publicTextureIndex);
 
@@ -372,7 +373,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public int storeGeometry(float[] geometry) {
+	public int storeGeometry(float[] geometry) throws IllegalBufferException {
 		if (canUseVBOs) {
 			int vertexBufferId =
 					generateGeometry(geometry.length * Buffers.SIZEOF_FLOAT);
@@ -395,7 +396,7 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public boolean isGeometryValid(int geometryindex) {
-		if ((geometryindex & BUFFER_MASK_CHECKSUM) != bufferChecksum) {
+		if ((geometryindex & BUFFER_MASK_CHECKTOKEN) != bufferChecksum) {
 			return false;
 		}
 		if (canUseVBOs) {
@@ -419,8 +420,8 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GLBuffer startWriteGeometry(int publicGeometryIndex) {
-		int geometryIndex = removeChecksum(publicGeometryIndex);
+	public GLBuffer startWriteGeometry(int publicGeometryIndex) throws IllegalBufferException {
+		int geometryIndex = removeCheckToken(publicGeometryIndex);
 		if (canUseVBOs) {
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryIndex);
 			ByteBuffer buffer =
@@ -476,12 +477,12 @@ public class JOGLDrawContext implements GLDrawContext {
 			gl2.glBufferData(GL.GL_ARRAY_BUFFER, bytes, null,
 					GL.GL_DYNAMIC_DRAW);
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-			return addChecksum(vertexBufferId);
+			return addCheckToken(vertexBufferId);
 		} else {
 			ByteBuffer bb = ByteBuffer.allocateDirect(bytes);
 			bb.order(ByteOrder.nativeOrder());
 			geometries.add(bb);
-			return addChecksum(geometries.size() - 1);
+			return addCheckToken(geometries.size() - 1);
 		}
 	}
 
@@ -503,18 +504,18 @@ public class JOGLDrawContext implements GLDrawContext {
 	public void disposeAll() {
 	}
 
-	private int addChecksum(int bufferId) {
+	private int addCheckToken(int bufferId) {
 		if (bufferId > BUFFER_MASK) {
-			throw new IllegalArgumentException("Cannot add a checksum: Buffer to large.");
+			throw new IllegalArgumentException("Buffer id to large: " + bufferId);
 		} else if (bufferId < 0) {
 			throw new IllegalArgumentException("Illegal buffer id: " + bufferId);
 		}
 		return bufferId | bufferChecksum;
 	}
 
-	private int removeChecksum(int bufferWithChecksum) {
-		if ((bufferWithChecksum & BUFFER_MASK_CHECKSUM) != bufferChecksum) {
-			throw new IllegalArgumentException("Illegal buffer.");
+	private int removeCheckToken(int bufferWithChecksum) throws IllegalBufferException {
+		if ((bufferWithChecksum & BUFFER_MASK_CHECKTOKEN) != bufferChecksum) {
+			throw new IllegalBufferException("This buffer is not managed by this manager.");
 		}
 		return bufferWithChecksum & BUFFER_MASK;
 	}
