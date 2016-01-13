@@ -172,21 +172,18 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void resetNumberOfPlayersComboBox() {
 		numberOfPlayersComboBox.removeAllItems();
-		for (int i = 1; i < mapLoader.getMaxPlayers(); i++) {
+		for (int i = 1; i < mapLoader.getMaxPlayers() + 1; i++) {
 			numberOfPlayersComboBox.addItem(i);
 		}
-		numberOfPlayersComboBox.setSelectedIndex(mapLoader.getMaxPlayers()-2);
+		numberOfPlayersComboBox.setSelectedIndex(mapLoader.getMaxPlayers()-1);
 	}
 
 	private void updateNumberOfPlayerSlots() {
 		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();
+		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), numberOfPlayers));
 		for (int i = playerSlots.size(); i < numberOfPlayers; i++) {
 			PlayerSlot playerSlot = new PlayerSlot();
 			playerSlots.add(playerSlot);
-		}
-		//TODO: gibt es hier eine methode von List, die das folgente kann?
-		while (playerSlots.size() > numberOfPlayers) {
-			playerSlots.remove(playerSlots.size()-1);
 		}
 		playerSlotPanel.removeAll();
 		playerSlots.stream().forEach(playerSlotPanel::add);
