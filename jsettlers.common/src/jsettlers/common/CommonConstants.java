@@ -54,10 +54,15 @@ public abstract class CommonConstants {
 	/**
 	 * Use only ai players for single player.
 	 */
-	public static boolean ALL_AI;
+	public static boolean ALL_AI = false;
 
 	/**
 	 * If set, only this AI type is used.
 	 */
-	public static EWhatToDoAiType FIXED_AI_TYPE;
+	public static EWhatToDoAiType FIXED_AI_TYPE = null;
+
+	/**
+	 * Option to disable the loading of original maps.
+	 */
+	public static boolean DISABLE_ORIGINAL_MAPS = false;
 }

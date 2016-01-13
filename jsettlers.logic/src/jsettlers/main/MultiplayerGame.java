@@ -17,7 +17,6 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
@@ -30,7 +29,7 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
@@ -141,15 +140,17 @@ public class MultiplayerGame {
 	}
 
 	private PlayerSetting[] determinePlayerSettings(boolean[] availablePlayers) {
-		boolean aiPlayersEnabled = iAmTheHost;
 		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
 
-		for (byte i = 0; i < playersList.getItems().size(); i++) {
+		byte i = 0;
+		for (; i < playersList.getItems().size(); i++) {
 			playerSettings[i] = new PlayerSetting(true);
 		}
 
-		for (byte i = (byte) playersList.getItems().size(); i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI && aiPlayersEnabled, EWhatToDoAiType.getTypeByIndex(i));
+		EWhatToDoAiType aiType = iAmTheHost ? EWhatToDoAiType.ROMAN_VERY_HARD : null;
+
+		for (; i < availablePlayers.length; i++) {
+			playerSettings[i] = new PlayerSetting(true, aiType);
 		}
 
 		return playerSettings;

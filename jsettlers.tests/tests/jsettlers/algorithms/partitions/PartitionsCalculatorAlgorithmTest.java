@@ -18,14 +18,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
+import org.junit.Test;
+
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestUtils;
-import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.Color;
 import jsettlers.common.map.EDebugColorModes;
-
-import org.junit.Test;
 
 public class PartitionsCalculatorAlgorithmTest {
 
@@ -77,7 +75,6 @@ public class PartitionsCalculatorAlgorithmTest {
 		try {
 			Thread.sleep(60000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

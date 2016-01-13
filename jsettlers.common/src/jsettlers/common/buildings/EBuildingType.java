@@ -90,6 +90,7 @@ public enum EBuildingType {
 
 	public static final EBuildingType[] values = EBuildingType.values();
 	public static final int NUMBER_OF_BUILDINGS = values.length;
+	private static final EBuildingType[] MILITARY_BUILDINGS = {TOWER, BIG_TOWER, CASTLE};
 
 	public final int ordinal;
 
@@ -326,11 +327,26 @@ public enum EBuildingType {
 		return offerStacks;
 	}
 
+	public static EBuildingType[] getMilitaryBuildings() {
+		return MILITARY_BUILDINGS;
+	}
+
 	public boolean isMine() {
 		switch (this) {
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	public boolean isMilitaryBuilding() {
+		switch(this) {
+		case TOWER:
+		case BIG_TOWER:
+		case CASTLE:
 			return true;
 		default:
 			return false;

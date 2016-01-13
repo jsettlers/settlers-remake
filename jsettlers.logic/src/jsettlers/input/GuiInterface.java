@@ -509,7 +509,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		ShortPoint2D pos = action.getPosition();
 
 		// only for debugging
-		grid.postionClicked(pos.x, pos.y);
+		grid.positionClicked(pos.x, pos.y);
 
 		// check what's to do
 		ISelectable selected = getSelectableAt(pos);

@@ -50,7 +50,7 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
@@ -76,8 +76,9 @@ public class JSettlersGame {
 
 	private final GameRunner gameRunner;
 
-	private boolean stopped = false;
 	private boolean started = false;
+	private boolean stopped = false;
+	private boolean shutdownFinished;
 
 	private PrintStream systemErrorStream;
 	private PrintStream systemOutStream;
@@ -185,9 +186,9 @@ public class JSettlersGame {
 			try {
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
+				clearState();
 				MatchConstants.init(networkConnector.getGameClock(), randomSeed);
 				MatchConstants.clock().setReplayLogStream(createReplayFileStream());
-				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
@@ -242,16 +243,14 @@ public class JSettlersGame {
 				}
 
 				networkConnector.shutdown();
-				MatchConstants.clock().stopExecution();
-				connector.shutdown();
 				mainGrid.stopThreads();
+				connector.shutdown();
 				guiInterface.stop();
-				RescheduleTimer.stop();
-				Movable.resetState();
-				Building.dropAllBuildings();
+				clearState();
 
 				System.setErr(systemErrorStream);
 				System.setOut(systemOutStream);
+				
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
@@ -259,10 +258,19 @@ public class JSettlersGame {
 				e.printStackTrace();
 				reportFail(EGameError.UNKNOWN_ERROR, e);
 			} finally {
+				shutdownFinished = true;
 				if (exitListener != null) {
 					exitListener.gameExited(this);
 				}
 			}
+			
+		}
+
+		private void clearState() {
+			RescheduleTimer.stopAndClear();
+			Movable.resetState();
+			Building.dropAllBuildings();
+			MatchConstants.clearState();
 		}
 
 		public AiExecutor getAiExecutor() {
@@ -348,8 +356,8 @@ public class JSettlersGame {
 		}
 
 		@Override
-		public boolean isStopped() {
-			return stopped;
+		public boolean isShutdownFinished() {
+			return shutdownFinished;
 		}
 
 		@Override
@@ -370,7 +378,6 @@ public class JSettlersGame {
 		public MainGrid getMainGrid() {
 			return mainGrid;
 		}
-
 	}
 
 	private void configureLogging(final IGameCreator mapcreator) {

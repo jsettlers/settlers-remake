@@ -24,7 +24,7 @@
 	<blocked dx="1" dy="-2" block="true" />
 	<blocked dx="2" dy="-1" block="true" />
 	<blocked dx="3" dy="-1" block="true" />
-	<blocked dx="3" dy="0" block="true" />
+	<blocked dx="3" dy="0" block="false" />
 	<blocked dx="2" dy="0" block="true" />
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="-2" dy="0" block="true" />

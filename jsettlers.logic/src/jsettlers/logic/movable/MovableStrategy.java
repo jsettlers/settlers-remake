@@ -19,8 +19,8 @@ import java.io.Serializable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
@@ -119,7 +119,7 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.setMaterial(materialType);
 	}
 
-	protected final void playAction(EAction movableAction, float duration) { // TODO @Andreas : rename EAction to EMovableAction
+	protected final void playAction(EMovableAction movableAction, float duration) {
 		movable.playAction(movableAction, duration);
 	}
 
@@ -301,10 +301,10 @@ public abstract class MovableStrategy implements Serializable {
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
-		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y)) {
+		} else if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y)) {
 			path.goToNextStep();
 			path = new Path(path, leftPos);
-		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y)) {
+		} else if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y)) {
 			path.goToNextStep();
 			path = new Path(path, rightPos);
 		} else {
@@ -324,7 +324,12 @@ public abstract class MovableStrategy implements Serializable {
 	protected void pathAborted(ShortPoint2D pathTarget) {
 	}
 
-	public boolean offerDroppedMaterial() {
+	/**
+	 * This method is called before a material is dropped during a {@link EMovableType}.DROP action.
+	 * 
+	 * @return If true is returned, the dropped material is offered, if false, it isn't.
+	 */
+	public boolean beforeDroppingMaterial() {
 		return true;
 	}
 

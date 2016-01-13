@@ -40,7 +40,7 @@ public final class Labels extends AbstractLabels {
 	@Override
 	protected InputStream getLocaleStream(LocaleSuffix locale) throws IOException {
 		String filename = locale.getFileName("localization/labels", ".properties");
-		InputStream inputStream = ResourceManager.getFile(filename);
+		InputStream inputStream = ResourceManager.getResourcesFileStream(filename);
 		return inputStream;
 	}
 

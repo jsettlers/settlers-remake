@@ -26,7 +26,10 @@ public enum EResourceType {
 	COAL(EMapObjectType.FOUND_COAL),
 	GOLDORE(EMapObjectType.FOUND_GOLD),
 	IRONORE(EMapObjectType.FOUND_IRON),
-	FISH(null);
+	FISH(null),
+	GEMSTONE(EMapObjectType.FOUND_GEMSTONE),
+	BRIMSTONE(EMapObjectType.FOUND_BRIMSTONE),
+	NOTHING(EMapObjectType.FOUND_NOTHING);
 
 	public static final EResourceType[] values = EResourceType.values();
 
