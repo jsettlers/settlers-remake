@@ -50,7 +50,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 	private Component canvas;
 	private JOGLDrawContext context;
-	private int glContextCounter = 1;
 
 	/**
 	 * creates a new area conaainer
@@ -159,8 +158,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		gl2.glLoadIdentity();
 
 		if (context == null || context.getGl2() != gl2) {
-			context = new JOGLDrawContext(gl2, glContextCounter);
-			glContextCounter++;
+			context = new JOGLDrawContext(gl2);
 		}
 		context.startFrame();
 		area.drawArea(context);

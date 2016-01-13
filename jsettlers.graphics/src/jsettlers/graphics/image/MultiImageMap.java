@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.TextureHandle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +51,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private int drawpointer = 0;
 	private boolean drawEnabled = false;
 	private boolean textureValid = false;
-	private int textureIndex = -1;
+	private TextureHandle texture = null;
 	private ShortBuffer buffers;
 	private ByteBuffer byteBuffer;
 
@@ -215,10 +216,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 * @param gl
 	 * @return
 	 */
-	public int getTexture(GLDrawContext gl) {
-		if (!textureValid) {
-			if (textureIndex > -1) {
-				gl.deleteTexture(textureIndex);
+	public TextureHandle getTexture(GLDrawContext gl) {
+		if (!textureValid || !texture.isValid()) {
+			if (texture != null) {
+				texture.delete();
 			}
 			try {
 				loadTexture(gl);
@@ -226,7 +227,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 				e.printStackTrace();
 			}
 		}
-		return textureIndex;
+		return texture;
 	}
 
 	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
@@ -249,10 +250,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		}
 
 		buffers.rewind();
-		textureIndex = gl.generateTexture(width, height, buffers);
-		System.out.println("opengl Texture: " + textureIndex
+		texture = gl.generateTexture(width, height, buffers);
+		System.out.println("opengl Texture: " + texture
 				+ ", thread: " + Thread.currentThread().toString());
-		if (textureIndex > -1) {
+		if (texture != null) {
 			textureValid = true;
 		}
 		buffers = null;

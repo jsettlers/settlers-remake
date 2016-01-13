@@ -76,15 +76,7 @@ public interface GLDrawContext {
 	 *            blue and 1 bit alpha.
 	 * @return The id of the generated texture.
 	 */
-	int generateTexture(int width, int height, ShortBuffer data);
-
-	/**
-	 * Deletes a texture.
-	 * 
-	 * @param textureid
-	 * @throws IllegalBufferException
-	 */
-	void deleteTexture(int textureid) throws IllegalBufferException;
+	TextureHandle generateTexture(int width, int height, ShortBuffer data);
 
 	/**
 	 * Draws with a texture.
@@ -95,17 +87,17 @@ public interface GLDrawContext {
 	 *            A float array of the form: x,y,z,u,v
 	 * @throws IllegalBufferException
 	 */
-	void drawQuadWithTexture(int textureid, float[] geometry) throws IllegalBufferException;
+	void drawQuadWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
-	void drawQuadWithTexture(int textureid, int geometryindex) throws IllegalBufferException;
+	void drawQuadWithTexture(TextureHandle textureid, GeometryHandle geometryindex) throws IllegalBufferException;
 
-	void drawTrianglesWithTexture(int textureid, float[] geometry) throws IllegalBufferException;
+	void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
-	void drawTrianglesWithTexture(int textureid, int geometryindex, int triangleCount) throws IllegalBufferException;
+	void drawTrianglesWithTexture(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
 
-	void drawTrianglesWithTextureColored(int textureid, float[] geometry) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, float[] geometry) throws IllegalBufferException;
 
-	void drawTrianglesWithTextureColored(int textureid, int geometryindex, int triangleCount) throws IllegalBufferException;
+	void drawTrianglesWithTextureColored(TextureHandle textureid, GeometryHandle geometryindex, int triangleCount) throws IllegalBufferException;
 
 	int makeWidthValid(int width);
 
@@ -125,21 +117,17 @@ public interface GLDrawContext {
 	 * @param data
 	 * @throws IllegalBufferException
 	 */
-	void updateTexture(int textureIndex, int left, int bottom, int width, int height, ShortBuffer data) throws IllegalBufferException;
+	void updateTexture(TextureHandle textureIndex, int left, int bottom, int width, int height, ShortBuffer data) throws IllegalBufferException;
 
 	TextDrawer getTextDrawer(EFontSize size);
 
-	int storeGeometry(float[] geometry) throws IllegalBufferException;
+	GeometryHandle storeGeometry(float[] geometry);
 
-	boolean isGeometryValid(int geometryindex);
+	GLBuffer startWriteGeometry(GeometryHandle geometryindex) throws IllegalBufferException;
 
-	void removeGeometry(int geometryindex);
+	void endWriteGeometry(GeometryHandle geometryindex);
 
-	GLBuffer startWriteGeometry(int geometryindex) throws IllegalBufferException;
-
-	void endWriteGeometry(int geometryindex);
-
-	int generateGeometry(int bytes);
+	GeometryHandle generateGeometry(int bytes);
 
 	interface GLBuffer {
 		void putFloat(float f);
@@ -149,6 +137,6 @@ public interface GLDrawContext {
 		void position(int position);
 	}
 
-	void drawTrianglesWithTextureColored(int currentTexture,
+	void drawTrianglesWithTextureColored(TextureHandle currentTexture,
 			ByteBuffer byteBuffer, int currentTriangles) throws IllegalBufferException;
 }

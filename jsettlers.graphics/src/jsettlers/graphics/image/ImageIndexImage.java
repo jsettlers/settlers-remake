@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
@@ -75,7 +76,22 @@ public class ImageIndexImage extends Image {
 					color.getAlpha());
 		}
 
-		gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometry);
+		float[] geometryBuffer = geometry;
+		draw(gl, geometryBuffer);
+	}
+
+	private void draw(GLDrawContext gl, float[] geometryBuffer) {
+		try {
+			gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometryBuffer);
+		} catch (IllegalBufferException e) {
+			try {
+				texture.recreateTexture();
+				gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometryBuffer);
+			} catch (IllegalBufferException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -155,13 +171,18 @@ public class ImageIndexImage extends Image {
 		tmpBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
 		tmpBuffer[26] = minY + IMAGE_DRAW_OFFSET;
 
-		gl.drawQuadWithTexture(texture.getTextureIndex(gl), tmpBuffer);
+		draw(gl, tmpBuffer);
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
-		buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin,
-				umax, vmax, iColor);
+		try {
+			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin,
+					vmin,
+					umax, vmax, iColor);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 }
