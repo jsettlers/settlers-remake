@@ -50,6 +50,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 	private Component canvas;
 	private JOGLDrawContext context;
+	private int glContextCounter = 1;
 
 	/**
 	 * creates a new area conaainer
@@ -89,6 +90,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 			@Override
 			public void dispose(GLAutoDrawable arg0) {
+				disposeAll();
 			}
 
 			@Override
@@ -157,10 +159,21 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		gl2.glLoadIdentity();
 
 		if (context == null || context.getGl2() != gl2) {
-			context = new JOGLDrawContext(gl2);
+			context = new JOGLDrawContext(gl2, glContextCounter);
+			glContextCounter++;
 		}
 		context.startFrame();
 		area.drawArea(context);
+	}
+
+	/**
+	 * Disposes all textures / buffers that were allocated by this context.
+	 */
+	protected void disposeAll() {
+		if (context != null) {
+			context.disposeAll();
+		}
+		context = null;
 	}
 
 	@Override

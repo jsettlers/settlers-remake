@@ -29,6 +29,12 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
+/**
+ * This is the draw context implementation for JOGL. OpenGL draw calles are mapped to the corresponding JOGL calls.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class JOGLDrawContext implements GLDrawContext {
 
 	private JOGLTextDrawer[] textDrawers = new JOGLTextDrawer[EFontSize
@@ -37,8 +43,11 @@ public class JOGLDrawContext implements GLDrawContext {
 	private static final int FLOATS_PER_COLORED_TRI_VERTEX = 9;
 	private final GL2 gl2;
 	private final boolean canUseVBOs;
+	private final int bufferChecksum;
+	private final static int BUFFER_MASK_CHECKSUM = 0xff000000;
+	private final static int BUFFER_MASK = ~BUFFER_MASK_CHECKSUM;
 
-	public JOGLDrawContext(GL2 gl2) {
+	public JOGLDrawContext(GL2 gl2, int instanceCounter) {
 		this.gl2 = gl2;
 		gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
@@ -51,6 +60,7 @@ public class JOGLDrawContext implements GLDrawContext {
 		gl2.glEnable(GL2.GL_TEXTURE_2D);
 
 		canUseVBOs = gl2.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+		bufferChecksum = instanceCounter << 24;
 	}
 
 	public void startFrame() {
@@ -173,7 +183,7 @@ public class JOGLDrawContext implements GLDrawContext {
 				GL.GL_RGBA, GL.GL_UNSIGNED_SHORT_5_5_5_1, data);
 		setTextureParameters();
 
-		return texture;
+		return addChecksum(texture);
 	}
 
 	/**
@@ -191,29 +201,34 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void updateTexture(int textureIndex, int left, int bottom,
+	public void updateTexture(int publicTextureIndex, int left, int bottom,
 			int width, int height, ShortBuffer data) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureIndex);
+		bindTextureCheckChecksum(publicTextureIndex);
 		gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width, height,
 				GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
+	private void bindTextureCheckChecksum(int textureIndex) {
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, removeChecksum(textureIndex));
+	}
+
 	@Override
-	public void deleteTexture(int textureid) {
+	public void deleteTexture(int publicTextureIndex) {
+		int textureIndex = removeChecksum(publicTextureIndex);
 		gl2.glDeleteTextures(1, new int[] {
-				textureid
+				textureIndex
 		}, 0);
 	}
 
 	@Override
-	public void drawQuadWithTexture(int textureid, float[] geometry) {
+	public void drawQuadWithTexture(int publicTextureIndex, float[] geometry) {
 		ByteBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
-		drawQuadWithTexture(textureid, buffer, geometry.length / 5);
+		drawQuadWithTexture(publicTextureIndex, buffer, geometry.length / 5);
 	}
 
-	private void drawQuadWithTexture(int textureid, ByteBuffer buffer, int len) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+	private void drawQuadWithTexture(int publicTextureIndex, ByteBuffer buffer, int len) {
+		bindTextureCheckChecksum(publicTextureIndex);
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3 * 4);
 		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
@@ -226,9 +241,9 @@ public class JOGLDrawContext implements GLDrawContext {
 		drawTrianglesWithTexture(textureid, buffer, geometry.length / 5 / 3);
 	}
 
-	private void drawTrianglesWithTexture(int textureid, ByteBuffer buffer,
+	private void drawTrianglesWithTexture(int publicTextureIndex, ByteBuffer buffer,
 			int triangles) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+		bindTextureCheckChecksum(publicTextureIndex);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3 * 4);
@@ -244,9 +259,9 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(int textureid,
+	public void drawTrianglesWithTextureColored(int publicTextureIndex,
 			ByteBuffer buffer, int triangles) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+		bindTextureCheckChecksum(publicTextureIndex);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 6 * 4, buffer);
 		buffer.position(3 * 4);
@@ -290,14 +305,15 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawQuadWithTexture(int textureid, int geometryindex) {
-		if (geometryindex < 0) {
+	public void drawQuadWithTexture(int publicTextureIndex, int publicGeometryIndex) {
+		if (publicGeometryIndex < 0) {
 			return; // ignore
 		}
+		int geometryIndex = removeChecksum(publicGeometryIndex);
 		if (canUseVBOs) {
-			gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+			bindTextureCheckChecksum(publicTextureIndex);
 
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryindex);
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryIndex);
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, 0);
 			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, 3 * 4);
 
@@ -305,17 +321,18 @@ public class JOGLDrawContext implements GLDrawContext {
 
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		} else {
-			drawQuadWithTexture(textureid, geometries.get(geometryindex), 4);
+			drawQuadWithTexture(publicTextureIndex, geometries.get(geometryIndex), 4);
 		}
 	}
 
 	@Override
-	public void drawTrianglesWithTexture(int textureid, int geometryindex,
+	public void drawTrianglesWithTexture(int publicTextureIndex, int publicGeometryIndex,
 			int triangleCount) {
+		int geometryIndex = removeChecksum(publicGeometryIndex);
 		if (canUseVBOs) {
-			gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+			bindTextureCheckChecksum(publicTextureIndex);
 
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryindex);
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryIndex);
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, 0);
 			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, 3 * 4);
 
@@ -323,20 +340,21 @@ public class JOGLDrawContext implements GLDrawContext {
 
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		} else {
-			ByteBuffer buffer = geometries.get(geometryindex);
+			ByteBuffer buffer = geometries.get(geometryIndex);
 			buffer.rewind();
-			drawTrianglesWithTexture(textureid, buffer,
+			drawTrianglesWithTexture(publicTextureIndex, buffer,
 					buffer.remaining() / 5 / 4);
 		}
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(int textureid,
-			int geometryindex, int triangleCount) {
+	public void drawTrianglesWithTextureColored(int publicTextureIndex,
+			int publicGeometryIndex, int triangleCount) {
+		int geometryIndex = removeChecksum(publicGeometryIndex);
 		if (canUseVBOs) {
-			gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+			bindTextureCheckChecksum(publicTextureIndex);
 
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryindex);
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryIndex);
 			gl2.glVertexPointer(3, GL2.GL_FLOAT, 6 * 4, 0);
 			gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 6 * 4, 3 * 4);
 			gl2.glColorPointer(4, GL2.GL_UNSIGNED_BYTE, 6 * 4, 5 * 4);
@@ -347,8 +365,8 @@ public class JOGLDrawContext implements GLDrawContext {
 
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		} else {
-			ByteBuffer buffer = geometries.get(geometryindex);
-			drawTrianglesWithTextureColored(textureid, buffer,
+			ByteBuffer buffer = geometries.get(geometryIndex);
+			drawTrianglesWithTextureColored(publicTextureIndex, buffer,
 					buffer.remaining() / 4 / 5);
 		}
 	}
@@ -377,6 +395,9 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public boolean isGeometryValid(int geometryindex) {
+		if ((geometryindex & BUFFER_MASK_CHECKSUM) != bufferChecksum) {
+			return false;
+		}
 		if (canUseVBOs) {
 			// TODO: can we find out more?
 			return geometryindex > 0;
@@ -398,16 +419,17 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	@Override
-	public GLBuffer startWriteGeometry(int geometryindex) {
+	public GLBuffer startWriteGeometry(int publicGeometryIndex) {
+		int geometryIndex = removeChecksum(publicGeometryIndex);
 		if (canUseVBOs) {
-			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryindex);
+			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, geometryIndex);
 			ByteBuffer buffer =
 					gl2.glMapBuffer(GL2.GL_ARRAY_BUFFER, GL2.GL_WRITE_ONLY)
 							.order(ByteOrder.nativeOrder());
 			return new GLByteBufferWrapper(buffer);
 
 		} else {
-			return new GLByteBufferWrapper(geometries.get(geometryindex));
+			return new GLByteBufferWrapper(geometries.get(geometryIndex));
 		}
 	}
 
@@ -445,12 +467,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	@Override
 	public int generateGeometry(int bytes) {
 		if (canUseVBOs) {
-			int[] vertexBuffIds = new int[] {
-					0
-			};
-			gl2.glGenBuffers(1, vertexBuffIds, 0);
-
-			int vertexBufferId = vertexBuffIds[0];
+			int vertexBufferId = allocateVBO();
 			if (vertexBufferId == 0) {
 				return -1;
 			}
@@ -459,15 +476,46 @@ public class JOGLDrawContext implements GLDrawContext {
 			gl2.glBufferData(GL.GL_ARRAY_BUFFER, bytes, null,
 					GL.GL_DYNAMIC_DRAW);
 			gl2.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-			return vertexBufferId;
+			return addChecksum(vertexBufferId);
 		} else {
 			ByteBuffer bb = ByteBuffer.allocateDirect(bytes);
 			bb.order(ByteOrder.nativeOrder());
 			geometries.add(bb);
-			return geometries.size() - 1;
+			return addChecksum(geometries.size() - 1);
 		}
 	}
 
+	private int allocateVBO() {
+		int[] vertexBuffIds = new int[] {
+				0
+		};
+		gl2.glGenBuffers(1, vertexBuffIds, 0);
+
+		return vertexBuffIds[0];
+	}
+
 	public void prepareFontDrawing() {
+	}
+
+	/**
+	 * Called whenever we should dispose all buffers associated with this context.
+	 */
+	public void disposeAll() {
+	}
+
+	private int addChecksum(int bufferId) {
+		if (bufferId > BUFFER_MASK) {
+			throw new IllegalArgumentException("Cannot add a checksum: Buffer to large.");
+		} else if (bufferId < 0) {
+			throw new IllegalArgumentException("Illegal buffer id: " + bufferId);
+		}
+		return bufferId | bufferChecksum;
+	}
+
+	private int removeChecksum(int bufferWithChecksum) {
+		if ((bufferWithChecksum & BUFFER_MASK_CHECKSUM) != bufferChecksum) {
+			throw new IllegalArgumentException("Illegal buffer.");
+		}
+		return bufferWithChecksum & BUFFER_MASK;
 	}
 }
