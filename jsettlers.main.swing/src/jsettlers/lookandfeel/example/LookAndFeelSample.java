@@ -1,7 +1,7 @@
 package jsettlers.lookandfeel.example;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
@@ -223,7 +223,7 @@ public class LookAndFeelSample extends JFrame {
 		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
 
 		if (options.containsKey("fixed-ai-type")) {
-			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));
+			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
 		}
 
 		if (options.isOptionSet("localhost")) {

@@ -17,16 +17,21 @@ package jsettlers.common.ai;
 /**
  * @author codingberlin
  */
-public enum EWhatToDoAiType {
-	ROMAN_VERY_EASY,
-	ROMAN_EASY,
-	ROMAN_HARD,
-	ROMAN_VERY_HARD;
+public enum EPlayerType {
+	AI_VERY_EASY,
+	AI_EASY,
+	AI_HARD,
+	AI_VERY_HARD,
+	HUMAN;
 
-	public static final EWhatToDoAiType[] values = EWhatToDoAiType.values();
-	public static final int NUMBER_OF_AI_TYPES = values.length;
+	public static final EPlayerType[] values = EPlayerType.values();
+	public static final int NUMBER_OF_PLAYER_TYPES = values.length;
 
-	public static EWhatToDoAiType getTypeByIndex(int index) {
-		return values[index % NUMBER_OF_AI_TYPES];
+	public static EPlayerType getTypeByIndex(int index) {
+		return values[index % NUMBER_OF_PLAYER_TYPES];
+	}
+
+	public boolean isAi() {
+		return  !(HUMAN == this);
 	}
 }

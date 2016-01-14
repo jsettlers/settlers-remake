@@ -33,7 +33,7 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
@@ -174,7 +174,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
 
 		if (options.containsKey("fixed-ai-type")) {
-			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));
+			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
 		}
 
 		if (options.isOptionSet("localhost")) {

@@ -22,7 +22,7 @@ import org.junit.Test;
 import jsettlers.TestUtils;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
@@ -50,27 +50,27 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 70 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 70 * MINUTES);
 	}
 
 	@Ignore
 	@Test
 	public void hardShouldConquerEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 60 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 60 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 70 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 70 * MINUTES);
 	}
 
 	@Test
 	public void verHardShouldProduceCertainAmountOfSoldiersWithin75Minutes() {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
-		playerSettings[0] = new PlayerSetting(true, EWhatToDoAiType.ROMAN_VERY_HARD);
-		playerSettings[1] = new PlayerSetting(false, null);
-		playerSettings[2] = new PlayerSetting(false, null);
-		playerSettings[3] = new PlayerSetting(false, null);
+		playerSettings[0] = new PlayerSetting(true, EPlayerType.AI_VERY_HARD);
+		playerSettings[1] = new PlayerSetting(false);
+		playerSettings[2] = new PlayerSetting(false);
+		playerSettings[3] = new PlayerSetting(false);
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
@@ -80,19 +80,19 @@ public class AiDifficultiesIT {
 		short expectedMinimalProducedSoldiers = 250;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
-			fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
+			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
 					+ "soldiers were produced. Some code changes make the AI weaker.");
 		}
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 2500);
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
 	}
 
-	private void holdBattleBetween(EWhatToDoAiType expectedWinner, EWhatToDoAiType expectedLooser, int maximumTimeToWin) {
+	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, expectedLooser);
 		playerSettings[1] = new PlayerSetting(true, expectedWinner);
-		playerSettings[2] = new PlayerSetting(false, null);
-		playerSettings[3] = new PlayerSetting(false, null);
+		playerSettings[2] = new PlayerSetting(false);
+		playerSettings[3] = new PlayerSetting(false);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);

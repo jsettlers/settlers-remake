@@ -17,7 +17,7 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
@@ -147,7 +147,7 @@ public class MultiplayerGame {
 			playerSettings[i] = new PlayerSetting(true);
 		}
 
-		EWhatToDoAiType aiType = iAmTheHost ? EWhatToDoAiType.ROMAN_VERY_HARD : null;
+		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : null;
 
 		for (; i < availablePlayers.length; i++) {
 			playerSettings[i] = new PlayerSetting(true, aiType);

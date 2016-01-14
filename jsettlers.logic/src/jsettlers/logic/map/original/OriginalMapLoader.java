@@ -170,7 +170,7 @@ public class OriginalMapLoader extends MapLoader {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true, null);
+				playerSettings[i] = new PlayerSetting(true);
 			}
 		}
 
