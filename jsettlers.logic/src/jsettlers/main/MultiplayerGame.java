@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
@@ -150,7 +151,7 @@ public class MultiplayerGame {
 		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : null;
 
 		for (; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, aiType);
+			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN);
 		}
 
 		return playerSettings;

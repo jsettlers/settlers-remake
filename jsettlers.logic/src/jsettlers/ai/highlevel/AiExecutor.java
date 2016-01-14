@@ -44,6 +44,7 @@ public class AiExecutor implements INetworkTimerable {
 			if (playerSetting.isAvailable() && playerSetting.getPlayerType().isAi()) {
 				whatToDoAis.add(aiFactory.buildWhatToDoAi(
 						playerSettings[playerId].getPlayerType(),
+						playerSettings[playerId].getCivilisation(),
 						aiStatistics,
 						mainGrid.getPartitionsGrid().getPlayer(playerId),
 						mainGrid,

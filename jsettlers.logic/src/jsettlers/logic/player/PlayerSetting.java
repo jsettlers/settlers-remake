@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.player.ECivilisation;
 
 /**
  * @author codingberlin
@@ -11,6 +12,7 @@ import jsettlers.common.ai.EPlayerType;
 public class PlayerSetting {
 
 	private final EPlayerType playerType;
+	private final ECivilisation civilisation;
 	private boolean isAvailable;
 
 	/**
@@ -19,7 +21,7 @@ public class PlayerSetting {
 	 * @param isAvailable
 	 */
 	public PlayerSetting(boolean isAvailable) {
-		this(isAvailable, EPlayerType.HUMAN);
+		this(isAvailable, EPlayerType.HUMAN, ECivilisation.ROMAN);
 	}
 
 	/**
@@ -29,9 +31,10 @@ public class PlayerSetting {
 	 * @param playerType
 	 *            {@link EPlayerType} defining the type of the AI player. If <code>null</code>, a human player is assumed.
 	 */
-	public PlayerSetting(boolean isAvailable, EPlayerType playerType) {
+	public PlayerSetting(boolean isAvailable, EPlayerType playerType, ECivilisation civilisation) {
 		this.isAvailable = isAvailable;
 		this.playerType = playerType;
+		this.civilisation = civilisation;
 	}
 
 	public boolean isAvailable() {
@@ -40,6 +43,10 @@ public class PlayerSetting {
 
 	public EPlayerType getPlayerType() {
 		return playerType;
+	}
+
+	public ECivilisation getCivilisation() {
+		return civilisation;
 	}
 
 	@Override
@@ -66,7 +73,7 @@ public class PlayerSetting {
 						aiType = EPlayerType.getTypeByIndex(i + offsetToSkipHuman);
 					}
 				}
-				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, aiType);
+				playerSettings[i] = new PlayerSetting(CommonConstants.ENABLE_AI, aiType, ECivilisation.ROMAN);
 			}
 		}
 		System.out.println("created player settings: " + Arrays.toString(playerSettings));
