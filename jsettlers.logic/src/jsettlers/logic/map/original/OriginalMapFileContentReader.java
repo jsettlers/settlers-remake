@@ -17,10 +17,12 @@ package jsettlers.logic.map.original;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -28,6 +30,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
+import jsettlers.logic.map.save.MapFileHeader;
 
 /**
  * @author Thomas Zeugner
@@ -57,6 +60,11 @@ public class OriginalMapFileContentReader {
 	private String mapQuestText = null;
 
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
+
+	/**
+	 * Charset of read strings
+	 */
+	private static final Charset TEXT_CHARSET = Charset.forName("ISO-8859-1");
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		// - init Resource Info
@@ -98,7 +106,7 @@ public class OriginalMapFileContentReader {
 	public int readBEIntFrom(int offset) {
 		if (mapContent == null)
 			return 0;
-		return ((mapContent[offset] & 0xFF) << 0) |
+		return ((mapContent[offset] & 0xFF)) |
 				((mapContent[offset + 1] & 0xFF) << 8) |
 				((mapContent[offset + 2] & 0xFF) << 16) |
 				((mapContent[offset + 3] & 0xFF) << 24);
@@ -108,7 +116,7 @@ public class OriginalMapFileContentReader {
 	public int readBEWordFrom(int offset) {
 		if (mapContent == null)
 			return 0;
-		return ((mapContent[offset] & 0xFF) << 0) |
+		return ((mapContent[offset] & 0xFF)) |
 				((mapContent[offset + 1] & 0xFF) << 8);
 	}
 
@@ -134,19 +142,20 @@ public class OriginalMapFileContentReader {
 		if (mapContent.length <= offset + length)
 			return "";
 
-		String outStr = "";
-		int pos = offset;
+		byte[] buffer = new byte[length];
 
-		for (int i = length; i > 0; i--) {
-			byte b = mapContent[pos];
-			pos++;
-
-			if (b == 0)
+		int i = 0;
+		for (; i < length; i++) {
+			buffer[i] = mapContent[offset + i];
+			if (buffer[i] == 0) {
 				break;
-
-			outStr += new String(new byte[] { b });
+			}
 		}
-		return outStr;
+		if (i == 0) {
+			return "";
+		}
+
+		return new String(buffer, 0, i - 1, TEXT_CHARSET);
 	}
 
 	// - returns a File Resources
@@ -186,7 +195,7 @@ public class OriginalMapFileContentReader {
 	// - Reads in the Map-File-Structure
 	boolean loadMapResources() {
 		// - Version of File: 0x0A : Original Siedler Map ; 0x0B : Amazon Map
-		int fileVersion  = readBEIntFrom(4);
+		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
 		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value))
@@ -198,7 +207,6 @@ public class OriginalMapFileContentReader {
 		// - start of map-content
 		int filePos = 8;
 		int partTypeTemp;
-
 
 		do {
 			partTypeTemp = readBEIntFrom(filePos);
@@ -322,6 +330,57 @@ public class OriginalMapFileContentReader {
 		return mapQuestText;
 	}
 
+	public short[] getPreviewImage(int width, int height)
+	{
+		short[] outImg = new short[width * height];
+		
+		// - get resource information for the area
+		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PREVIEW);
+
+		if (filePart == null)
+			return outImg;
+		if (filePart.size < 4)
+			return outImg;
+		
+		// - Decrypt this resource if necessary
+		if (!doDecrypt(filePart))
+			return outImg;
+		
+		// - file position
+		int pos = filePart.offset;
+
+		// - height and width are the same
+		int wh = readBEWordFrom(pos);
+		pos+=2;
+		int unknown = readBEWordFrom(pos);
+		pos+=2;
+		
+		float scale_width = wh / width;
+		float scale_height = wh / height;
+		
+		int out_index = 0;
+		int offset = pos;
+		
+		for (int y = 0; y < height; y++) {
+			int src_row =  (int)(Math.floor(scale_height * y)) * wh;
+			
+			for (int x = 0; x < width; x++){
+				
+				int in_index = offset + ((src_row + (int)Math.floor(x * scale_width)) * 2);
+				
+				int colorValue = ((mapContent[in_index] & 0xFF)) | ((mapContent[in_index+1] & 0xFF) << 8);
+				
+				//- the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b) 
+				outImg[out_index] = (short)(1 | colorValue << 1);
+				out_index++;
+			}
+		}
+
+		
+		return outImg;
+	}
+	
+	
 	public String readMapQuestTip() {
 
 		if (mapQuestTip != null)

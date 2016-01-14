@@ -42,24 +42,33 @@ public class OriginalMapLoader extends MapLoader {
 	private final OriginalMapFileContentReader mapContent;
 	private final Date creationDate;
 	private final String fileName;
-
+	private Boolean isMapOK = false;
+	
 	public OriginalMapLoader(IListedMap listedMap) throws IOException {
 		this.listedMap = listedMap;
 		fileName = listedMap.getFileName();
-		creationDate = new Date(new File(fileName).lastModified());
+		creationDate = new Date(listedMap.getFile().lastModified());
 		mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
 
-		if (!mapContent.isChecksumValid()) {
-			System.out.println("Checksum of original map (" + fileName + ") was not valid!");
-			return;
+		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM) {
+			if (!mapContent.isChecksumValid()) {
+				System.out.println("Checksum of original map (" + fileName + ") is not valid!");
+				return;
+			}
 		}
 
 		// - read all important information from file
-		mapContent.loadMapResources();
+		if (!mapContent.loadMapResources())
+		{
+				System.out.println("Unable to open original map (" + fileName + ")!");
+				return;
+		}
 		mapContent.readBasicMapInformation();
 
 		// - free the DataBuffer
 		mapContent.freeBuffer();
+		
+		isMapOK = true;
 	}
 
 	// ---------------------------//
@@ -67,7 +76,8 @@ public class OriginalMapLoader extends MapLoader {
 	// -------------------------//
 	@Override
 	public MapFileHeader getFileHeader() {
-		return new MapFileHeader(
+		if (isMapOK) {
+			return new MapFileHeader(
 				MapFileHeader.MapType.NORMAL,
 				getMapName(),
 				getMapId(),
@@ -78,6 +88,8 @@ public class OriginalMapLoader extends MapLoader {
 				(short) getMaxPlayers(),
 				getCreationDate(),
 				getImage());
+		}
+		return null;
 	}
 
 	@Override
@@ -90,7 +102,7 @@ public class OriginalMapLoader extends MapLoader {
 	// ------------------------------//
 	@Override
 	public String getMapName() {
-		return fileName; // .replaceFirst("[.][^.]+$", "").replace('_', ' ');
+		return fileName.replaceFirst("[.][^.]+$", "").replace('_', ' ');
 	}
 
 	@Override
@@ -115,8 +127,14 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		// - TODO
-		return new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		try {
+			// - the map buffer of the class may is closed and need to reopen!
+			mapContent.reOpen(this.listedMap.getInputStream());
+		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
+		
+		return mapContent.getPreviewImage(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);	
 	}
 
 	@Override
@@ -143,9 +161,14 @@ public class OriginalMapLoader extends MapLoader {
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 		}
+		
 
 		// - load all common map information
-		mapContent.loadMapResources();
+		if (!mapContent.loadMapResources())
+		{
+			System.out.println("Unable to open original map (" + fileName + ")!");
+			return null;
+		}
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
@@ -194,9 +217,14 @@ public class OriginalMapLoader extends MapLoader {
 		} catch (Exception e) {
 			throw new MapLoadException(e);
 		}
-
+		
 		// - load all common map information
-		mapContent.loadMapResources();
+		if (!mapContent.loadMapResources())
+		{
+			System.out.println("Unable to open original map (" + fileName + ")!");
+			throw new MapLoadException();
+		}
+		
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
