@@ -63,7 +63,7 @@ public class OriginalMapLoader extends MapLoader {
 				System.out.println("Unable to open original map (" + fileName + ")!");
 				return;
 		}
-		mapContent.readBasicMapInformation();
+		mapContent.readBasicMapInformation(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);
 
 		// - free the DataBuffer
 		mapContent.freeBuffer();
@@ -127,14 +127,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		try {
-			// - the map buffer of the class may is closed and need to reopen!
-			mapContent.reOpen(this.listedMap.getInputStream());
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-		
-		return mapContent.getPreviewImage(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);	
+		return mapContent.getPreviewImage();	
 	}
 
 	@Override

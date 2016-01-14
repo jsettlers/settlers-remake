@@ -59,6 +59,10 @@ public class OriginalMapFileContentReader {
 	private String mapQuestTip = null;
 	private String mapQuestText = null;
 
+	private short previewImage[] = null;
+	private short previewWidth = 0;
+	private short previewHeight = 0;
+	 
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
 
 	/**
@@ -264,8 +268,11 @@ public class OriginalMapFileContentReader {
 			element.hasBeenDecrypted = false;
 		}
 	}
-
 	public void readBasicMapInformation() {
+		this.readBasicMapInformation(0, 0);
+	}
+
+	public void readBasicMapInformation(int previewWidth, int previewHeight) {
 		// - Reset
 		fileChecksum = 0;
 		widthHeight = 0;
@@ -287,6 +294,13 @@ public class OriginalMapFileContentReader {
 		readMapQuestText();
 		readMapQuestTip();
 
+		//- create preview Image for cache  
+		if ((previewWidth > 0) &&(previewHeight > 0)) {
+			this.previewImage = getPreviewImage(previewWidth, previewHeight);
+			this.previewWidth = (short)previewWidth;
+			this.previewHeight = (short)previewHeight;
+		}
+		
 		// - reset
 		widthHeight = 0;
 
@@ -330,8 +344,19 @@ public class OriginalMapFileContentReader {
 		return mapQuestText;
 	}
 
-	public short[] getPreviewImage(int width, int height)
-	{
+	public short[] getPreviewImage() {
+		//- return cached Image
+		return previewImage;
+	}
+	
+	public short[] getPreviewImage(int width, int height) {
+		
+		//- return cached Image if available
+		if ((previewWidth == width) && (previewHeight == height) && (previewImage != null)) {
+			return previewImage;
+		}
+		
+		//- create new Image
 		short[] outImg = new short[width * height];
 		
 		// - get resource information for the area
@@ -355,28 +380,27 @@ public class OriginalMapFileContentReader {
 		int unknown = readBEWordFrom(pos);
 		pos+=2;
 		
-		float scale_width = wh / width;
-		float scale_height = wh / height;
+		float scaleWidth = wh / width;
+		float scaleHeight = wh / height;
 		
-		int out_index = 0;
+		int outIndex = 0;
 		int offset = pos;
 		
 		for (int y = 0; y < height; y++) {
-			int src_row =  (int)(Math.floor(scale_height * y)) * wh;
+			int srcRow =  (int)(Math.floor(scaleHeight * y)) * wh;
 			
 			for (int x = 0; x < width; x++){
 				
-				int in_index = offset + ((src_row + (int)Math.floor(x * scale_width)) * 2);
+				int inIndex = offset + ((srcRow + (int)Math.floor(x * scaleWidth)) * 2);
 				
-				int colorValue = ((mapContent[in_index] & 0xFF)) | ((mapContent[in_index+1] & 0xFF) << 8);
+				int colorValue = ((mapContent[inIndex] & 0xFF)) | ((mapContent[inIndex + 1] & 0xFF) << 8);
 				
 				//- the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b) 
-				outImg[out_index] = (short)(1 | colorValue << 1);
-				out_index++;
+				outImg[outIndex] = (short)(1 | colorValue << 1);
+				outIndex++;
 			}
 		}
 
-		
 		return outImg;
 	}
 	
