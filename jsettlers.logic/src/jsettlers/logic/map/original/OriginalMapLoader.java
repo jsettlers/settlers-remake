@@ -58,8 +58,7 @@ public class OriginalMapLoader extends MapLoader {
 		}
 
 		// - read all important information from file
-		if (!mapContent.loadMapResources())
-		{
+		if (!mapContent.loadMapResources()) {
 				System.out.println("Unable to open original map (" + fileName + ")!");
 				return;
 		}
@@ -102,7 +101,15 @@ public class OriginalMapLoader extends MapLoader {
 	// ------------------------------//
 	@Override
 	public String getMapName() {
-		return fileName.replaceFirst("[.][^.]+$", "").replace('_', ' ');
+		//- remove the extention {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
+		if (fileName == null) return "";
+
+		int pos = fileName.lastIndexOf('.');
+		if (pos >= 0) {
+			return fileName.substring(0, pos).replace('_', ' ');
+		} else {
+			return fileName.replace('_', ' ');
+		}
 	}
 
 	@Override
@@ -157,8 +164,7 @@ public class OriginalMapLoader extends MapLoader {
 		
 
 		// - load all common map information
-		if (!mapContent.loadMapResources())
-		{
+		if (!mapContent.loadMapResources()) {
 			System.out.println("Unable to open original map (" + fileName + ")!");
 			return null;
 		}
@@ -212,8 +218,7 @@ public class OriginalMapLoader extends MapLoader {
 		}
 		
 		// - load all common map information
-		if (!mapContent.loadMapResources())
-		{
+		if (!mapContent.loadMapResources()) {
 			System.out.println("Unable to open original map (" + fileName + ")!");
 			throw new MapLoadException();
 		}
