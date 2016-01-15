@@ -193,6 +193,8 @@ public class JoinGamePanel extends BackgroundPanel {
 			playerSlots.get(i).addTo(playerSlotsPanel, i+1);
 		}
 		SwingUtilities.updateComponentTreeUI(playerSlotsPanel);
+		SlotToggleGroup slotToggleGroup = new SlotToggleGroup();
+		playerSlots.stream().forEach(slotToggleGroup::add);
 	}
 
 	private void addPlayerSlotHeadline() {

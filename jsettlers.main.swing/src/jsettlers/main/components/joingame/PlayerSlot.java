@@ -33,6 +33,8 @@ public class PlayerSlot {
 	private final JComboBox<PlayerTypeUiWrapper> typeComboBox = new JComboBox<>();
 	private final JComboBox<Byte> slotComboBox = new JComboBox<>();
 	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
+	private byte oldSlotValue;
+	private SlotListener slotListener;
 
 	public PlayerSlot() {
 		setStyle();
@@ -43,36 +45,35 @@ public class PlayerSlot {
 
 	public void addTo(JPanel panel, int row) {
 		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx=0;
-		constraints.gridy=row+1;
-		constraints.gridwidth=4;
+		constraints.gridx = 0;
+		constraints.gridy = row + 1;
+		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(playerNameLabel, constraints);
 		constraints.gridx = 4;
-		constraints.gridy=row+1;
-		constraints.gridwidth=2;
+		constraints.gridy = row + 1;
+		constraints.gridwidth = 2;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(civilisationComboBox, constraints);
 		constraints = new GridBagConstraints();
 		constraints.gridx = 6;
-		constraints.gridy=row+1;
-		constraints.gridwidth=4;
+		constraints.gridy = row + 1;
+		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(typeComboBox, constraints);
 		constraints = new GridBagConstraints();
 		constraints.gridx = 10;
-		constraints.gridy=row+1;
-		constraints.gridwidth=1;
+		constraints.gridy = row + 1;
+		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(slotComboBox, constraints);
 		constraints = new GridBagConstraints();
 		constraints.gridx = 11;
-		constraints.gridy=row+1;
-		constraints.gridwidth=1;
+		constraints.gridy = row + 1;
+		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(teamComboBox, constraints);
 	}
-
 
 	private void setStyle() {
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
@@ -84,6 +85,12 @@ public class PlayerSlot {
 	private void addListener() {
 		typeComboBox.addActionListener(e -> updateAiPlayerName());
 		civilisationComboBox.addActionListener(e -> updateAiPlayerName());
+		slotComboBox.addActionListener(e -> {
+			if (slotListener != null) {
+				slotListener.slotHasChanged(oldSlotValue, getSlot());
+			}
+			oldSlotValue = getSlot();
+		});
 	}
 
 	private void updateAiPlayerName() {
@@ -92,8 +99,9 @@ public class PlayerSlot {
 		}
 
 		if (!EPlayerType.HUMAN.equals(((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
-			setPlayerName(Labels.getString("player-name-" + ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation().name() + "-" +
-				((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
+			setPlayerName(Labels.getString(
+					"player-name-" + ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation().name() + "-" +
+							((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
 		}
 	}
 
@@ -124,10 +132,18 @@ public class PlayerSlot {
 
 	public void setSlot(byte i) {
 		slotComboBox.setSelectedIndex(i - 1);
+		oldSlotValue = getSlot();
 	}
 
 	public void setTeam(byte i) {
 		teamComboBox.setSelectedIndex(i - 1);
 	}
 
+	public byte getSlot() {
+		return (byte) slotComboBox.getSelectedItem();
+	}
+
+	public void setSlotListener(SlotListener slotListener) {
+		this.slotListener = slotListener;
+	}
 }
