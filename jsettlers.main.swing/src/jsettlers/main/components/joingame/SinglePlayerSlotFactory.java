@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.MapLoader;
 

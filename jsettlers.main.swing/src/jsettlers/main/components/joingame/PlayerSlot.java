@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.lookandfeel.LFStyle;
@@ -29,7 +30,7 @@ public class PlayerSlot {
 
 	private final JLabel playerNameLabel = new JLabel();
 	private final JComboBox<CivilisationUiWrapper> civilisationComboBox = new JComboBox<>();
-	private final JComboBox<EPlayerType> typeComboBox = new JComboBox<>();
+	private final JComboBox<PlayerTypeUiWrapper> typeComboBox = new JComboBox<>();
 	private final JComboBox<Byte> slotComboBox = new JComboBox<>();
 	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
 
@@ -90,9 +91,9 @@ public class PlayerSlot {
 			return;
 		}
 
-		if (!EPlayerType.HUMAN.equals(typeComboBox.getSelectedItem())) {
+		if (!EPlayerType.HUMAN.equals(((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
 			setPlayerName(Labels.getString("player-name-" + ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation().name() + "-" +
-				((EPlayerType) typeComboBox.getSelectedItem()).name()));
+				((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
 		}
 	}
 
@@ -106,7 +107,10 @@ public class PlayerSlot {
 
 	public void setPossibleTypes(EPlayerType[] playerTypes) {
 		typeComboBox.removeAll();
-		Arrays.asList(playerTypes).stream().forEach(typeComboBox::addItem);
+		Arrays.asList(playerTypes)
+				.stream()
+				.map(PlayerTypeUiWrapper::new)
+				.forEach(typeComboBox::addItem);
 	}
 
 	public void setSlotAndTeams(Byte slotAndTeamCount) {
