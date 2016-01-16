@@ -152,7 +152,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	/**
 	 * Sidebar with the tools
 	 */
-	private ToolSidebar toolSidebar = new ToolSidebar(this) {
+	private final ToolSidebar toolSidebar = new ToolSidebar(this) {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -165,12 +165,12 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	/**
 	 * Sidebar with all tabs
 	 */
-	private Sidebar sidebar = new Sidebar(toolSidebar, this);
+	private final Sidebar sidebar = new Sidebar(toolSidebar, this);
 
 	/**
 	 * Validates the map for errors
 	 */
-	private MapValidator validator = new MapValidator();
+	private final MapValidator validator = new MapValidator();
 
 	/**
 	 * Timer for redrawing
@@ -816,7 +816,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				@Override
 				public void run() {
 					MapDataDelta delta = data.getUndoDelta();
-					data.apply(delta);
+					if (delta != null) {
+						data.apply(delta);
+					}
 					data.resetUndoDelta();
 					validator.reValidate();
 				}

@@ -39,7 +39,7 @@ public class ExceptionDialog extends JFrame {
 	/**
 	 * Url to report bug
 	 */
-	private final String ERROR_URL = "https://github.com/jsettlers/settlers-remake/issues/new";
+	private static final String ERROR_URL = "https://github.com/jsettlers/settlers-remake/issues/new";
 
 	/**
 	 * Error to copy to github

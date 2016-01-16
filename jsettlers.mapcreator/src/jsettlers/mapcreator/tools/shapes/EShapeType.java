@@ -19,17 +19,17 @@ public enum EShapeType {
 	LINE(new LineShape(), ShapeIcon.LINE),
 
 	/**
-	 * TODO !!!!!!!!
+	 * TODO A good description
 	 */
 	LINE_CIRCLE(new LineCircleShape(), ShapeIcon.LINE_CIRCLE),
 
 	/**
-	 * TODO !!!!!!!!
+	 * TODO A good description
 	 */
 	GRID_CIRCLE(new GridCircleShape(), ShapeIcon.GRID_CIRCLE),
 
 	/**
-	 * TODO !!!!!!!!
+	 * TODO A good description
 	 */
 	FUZZY_LINE_CIRCLE(new FuzzyLineCircleShape(), ShapeIcon.FUZZY_LINE_CIRCLE),
 

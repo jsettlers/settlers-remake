@@ -20,7 +20,7 @@ public class ErrorIcon implements Icon {
 	/**
 	 * Size
 	 */
-	private int size = 120;
+	private static final int size = 120;
 
 	@Override
 	public void paintIcon(Component c, Graphics g1, int x, int y) {
