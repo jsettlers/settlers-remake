@@ -16,7 +16,7 @@ public class ExceptionHandler {
 	/**
 	 * Count errors, reset on error dialog close, to prevent loops, e.g. on out of memory
 	 */
-	private static AtomicInteger errorCount = new AtomicInteger(0);
+	private static final AtomicInteger errorCount = new AtomicInteger(0);
 
 	/**
 	 * Constructor

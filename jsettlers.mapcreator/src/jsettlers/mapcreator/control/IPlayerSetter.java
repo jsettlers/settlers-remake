@@ -25,5 +25,5 @@ public interface IPlayerSetter {
 	/**
 	 * @return Active player
 	 */
-	public int getActivePlayer();
+	int getActivePlayer();
 }

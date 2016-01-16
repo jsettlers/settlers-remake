@@ -15,7 +15,7 @@ import jsettlers.mapcreator.main.window.EditorFrame;
 public class UndoRedoHandler {
 
 	/**
-	 * Max undo counts
+	 * Max undo counts, The data is not compressed, limit max undo count to not run out of memory
 	 */
 	private static final int MAX_UNDO = 100;
 
@@ -37,12 +37,12 @@ public class UndoRedoHandler {
 	/**
 	 * Window displayed
 	 */
-	private EditorFrame window;
+	private final EditorFrame window;
 
 	/**
 	 * Map data
 	 */
-	private MapData data;
+	private final MapData data;
 
 	/**
 	 * Constructor
@@ -101,6 +101,7 @@ public class UndoRedoHandler {
 	public void endUseStep() {
 		MapDataDelta delta = data.getUndoDelta();
 		data.resetUndoDelta();
+
 		if (undoDeltas.size() >= MAX_UNDO) {
 			undoDeltas.removeFirst();
 		}
