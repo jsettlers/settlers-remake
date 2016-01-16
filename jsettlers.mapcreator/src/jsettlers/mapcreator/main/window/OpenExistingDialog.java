@@ -24,7 +24,7 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			confirmed = true;
-			doOkAction();
+			beforeOkAction();
 			dispose();
 		}
 	};

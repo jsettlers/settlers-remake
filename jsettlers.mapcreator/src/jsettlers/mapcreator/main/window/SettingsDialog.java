@@ -54,7 +54,7 @@ public abstract class SettingsDialog extends AbstractOkCancelDialog {
 	public abstract void applyNewHeader(MapFileHeader header);
 
 	@Override
-	protected boolean doOkAction() {
+	protected boolean beforeOkAction() {
 		MapFileHeader nheader = headerEditor.getHeader();
 		if (nheader.getWidth() != header.getWidth() || nheader.getHeight() != header.getHeight()) {
 			JOptionPane.showMessageDialog(SettingsDialog.this, "Widh and height are fixed.", "Error", JOptionPane.ERROR_MESSAGE);

@@ -30,7 +30,7 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			confirmed = true;
-			doOkAction();
+			beforeOkAction();
 			dispose();
 		}
 	};
