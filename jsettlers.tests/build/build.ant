@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
 <project basedir=".." default="build" name="jsettlers.tests">
 	<property environment="env" />
 	<property name="junit.output.dir" value="junit" />
@@ -83,6 +78,7 @@
 		<path refid="jsettlers.main.swing.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
 		<path refid="jsettlers.network.classpath" />
+		<path refid="jsettlers.mapcreator.classpath" />
 		<pathelement location="${jsettlers.tests.location}/libs/junit-4.11.jar" />
 		<pathelement location="${jsettlers.tests.location}/libs/hamcrest-core-1.3.jar" />
 	</path>
@@ -108,11 +104,9 @@
 		</copy>
 	</target>
 	
-	
 	<target name="clean">
 		<delete dir="bin" />
 	</target>
-	
 	
 	<target depends="clean" name="cleanall">
 		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean" />
@@ -126,9 +120,7 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean" />
 	</target>
 	
-	
 	<target depends="build-subprojects,build-project" name="build" />
-	
 	
 	<target name="build-subprojects">
 		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="build-project" />
@@ -141,7 +133,6 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build-project" />
 	</target>
-	
 	
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}" />
