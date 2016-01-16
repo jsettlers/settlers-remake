@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -20,12 +21,12 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the editfield
 	 */
-	private NewFilePanel newFilePanel = new NewFilePanel();
+	private final NewFilePanel newFilePanel = new NewFilePanel();
 
 	/**
 	 * Listener for Double click
 	 */
-	private ActionListener doubleClickListener = new ActionListener() {
+	private final ActionListener doubleClickListener = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -38,17 +39,17 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the map list
 	 */
-	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
+	private final OpenPanel openPanel = new OpenPanel(doubleClickListener);
 
 	/**
 	 * Panel with the map list
 	 */
-	private LastUsedPanel lastUsed = new LastUsedPanel(doubleClickListener);
+	private final LastUsedPanel lastUsed = new LastUsedPanel(doubleClickListener);
 
 	/**
 	 * Main tabs
 	 */
-	private JTabbedPane tabs = new JTabbedPane();
+	private final JTabbedPane tabs = new JTabbedPane();
 
 	/**
 	 * Constructor
@@ -71,6 +72,12 @@ public class NewOrOpenDialog extends AbstractOkCancelDialog {
 		}
 
 		pack();
+
+		// prevent to big dialog
+		if (getWidth() > 1024) {
+			setSize(new Dimension(1024, getHeight()));
+		}
+
 		setLocationRelativeTo(parent);
 		setModal(true);
 	}

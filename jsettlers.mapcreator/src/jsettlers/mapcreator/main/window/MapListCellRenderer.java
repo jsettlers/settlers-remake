@@ -56,37 +56,37 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Right part of the panel with all texts
 	 */
-	private Box pRight = Box.createVerticalBox();
+	private final Box pRight = Box.createVerticalBox();
 
 	/**
 	 * Main Panel
 	 */
-	private JPanel pContents = new JPanel();
+	private final JPanel pContents = new JPanel();
 
 	/**
 	 * Name of the Map
 	 */
-	private JLabel lbName = new JLabel();
+	private final JLabel lbName = new JLabel();
 
 	/**
 	 * Count of players
 	 */
-	private JLabel lbPlayerCount = new JLabel();
+	private final JLabel lbPlayerCount = new JLabel();
 
 	/**
 	 * ID of the Map and the creation date
 	 */
-	private JLabel lbMapId = new JLabel();
+	private final JLabel lbMapId = new JLabel();
 
 	/**
 	 * Description of the Map
 	 */
-	private JLabel lbDescription = new JLabel();
+	private final JLabel lbDescription = new JLabel();
 
 	/**
 	 * Preview of the map
 	 */
-	private JLabel lbIcon = new JLabel();
+	private final JLabel lbIcon = new JLabel();
 
 	/**
 	 * Empty icon, if there is noe
@@ -111,12 +111,12 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Format for date display
 	 */
-	private SimpleDateFormat df = new SimpleDateFormat(EditorLabels.getLabel("date.date-only"));
+	private final SimpleDateFormat df = new SimpleDateFormat(EditorLabels.getLabel("date.date-only"));
 
 	/**
 	 * Cache for preview images
 	 */
-	private Map<MapLoader, Icon> previewImageCache = new HashMap<>();
+	private final Map<MapLoader, Icon> previewImageCache = new HashMap<>();
 
 	/**
 	 * Constructor
