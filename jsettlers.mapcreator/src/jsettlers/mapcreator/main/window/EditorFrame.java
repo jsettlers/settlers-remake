@@ -48,17 +48,17 @@ public abstract class EditorFrame extends JFrame {
 	/**
 	 * Menu / Toolbar configuration
 	 */
-	private Properties menuconfig = new Properties();
+	private final Properties menuconfig = new Properties();
 
 	/**
 	 * Shortcut configuration
 	 */
-	private Properties shortcut = new Properties();
+	private final Properties shortcut = new Properties();
 
 	/**
 	 * Split editor / sidebar
 	 */
-	private JSplitPane splitter;
+	private final JSplitPane splitter;
 
 	/**
 	 * Display icon AND text in toolbar, default display only icon and text as tooltip
@@ -109,6 +109,7 @@ public abstract class EditorFrame extends JFrame {
 		});
 
 		this.splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, root, sidebar);
+		splitter.setResizeWeight(1);
 		add(splitter, BorderLayout.CENTER);
 		splitter.setDividerLocation(1000);
 
