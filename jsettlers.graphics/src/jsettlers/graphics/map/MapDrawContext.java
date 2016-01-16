@@ -58,33 +58,46 @@ public final class MapDrawContext implements IGLProvider {
 
 	private final MapCoordinateConverter converter;
 
-	// TODO Why not use HSV to calculate the colors?
-	// The original game uses the HSV Colors, split
-	// the Cirlcle into 20 pcs and then you get the original colors
-	// Andreas Butti
-	Color[] playerColors = new Color[] {
-			// red
-			new Color(0xffe50000),
-			// blue
-			new Color(0xff0343df),
-			// green
-			new Color(0xff15b01a),
-			// yellow
-			new Color(0xffffff14),
-			// purple
-			new Color(0xff7e1e9c),
-			// teal
-			new Color(0xff029386),
-			// orange
-			new Color(0xfff97306),
-			// magenta
-			new Color(0xffc20078),
-			// grey
-			new Color(0xff929591),
-			// violet
-			new Color(0xff9a0eea),
-			// olive
-			new Color(0xff6e750e),
+	/**
+	 * Color for settler player, the first 20 colors are copied from an original settler 3 editor screenshot, the other 12 colors are choosen so they
+	 * are unique
+	 */
+	private static final Color[] PLAYER_COLORS = new Color[] {
+			// Color 0 .. 19 Original settler colors
+			new Color(0xF71000),
+			new Color(0x108CF7),
+			new Color(0xF7F700),
+			new Color(0x29B552),
+			new Color(0xF78C00),
+			new Color(0x00F7F7),
+			new Color(0xF700F7),
+			new Color(0x292929),
+			new Color(0xF7F7F7),
+			new Color(0x0010F7),
+			new Color(0xCE4A10),
+			new Color(0x8C8C8C),
+			new Color(0xAD08DE),
+			new Color(0x006B00),
+			new Color(0xF7BDBD),
+			new Color(0x84EFA5),
+			new Color(0x9C0831),
+			new Color(0xCE8CE7),
+			new Color(0xF7CE94),
+			new Color(0x8CBDEF),
+
+			// Additional 12 Colors
+			new Color(0xBAFF45),
+			new Color(0xFFC800),
+			new Color(0xD9F1AF),
+			new Color(0x6E005F),
+			new Color(0x96FF8D),
+			new Color(0x64B3B9),
+			new Color(0xB3F6FB),
+			new Color(0x8E592B),
+			new Color(0x8E882B),
+			new Color(0xD9E0FF),
+			new Color(0xD4D4D4),
+			new Color(0xFF578F)
 	};
 
 	public boolean ENABLE_ORIGINAL = true;
@@ -273,7 +286,7 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public Color getPlayerColor(byte player) {
 		if (player >= 0) {
-			return this.playerColors[player % this.playerColors.length];
+			return this.PLAYER_COLORS[player % this.PLAYER_COLORS.length];
 		} else {
 			return Color.BLACK;
 		}

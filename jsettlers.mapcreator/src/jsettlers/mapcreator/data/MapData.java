@@ -96,8 +96,8 @@ public class MapData implements IMapData {
 			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
-		if (playercount <= 0 || playercount >= CommonConstants.MAX_PLAYERS) {
-			throw new IllegalArgumentException("Player count must be 1..32");
+		if (playercount <= 0 || playercount > CommonConstants.MAX_PLAYERS) {
+			throw new IllegalArgumentException("Player count must be 1.." + CommonConstants.MAX_PLAYERS);
 		}
 
 		this.playercount = playercount;
