@@ -363,18 +363,18 @@ public class OriginalMapFileContentReader {
 		int unknown = readBEWordFrom(pos);
 		pos+=2;
 		
-		float scaleWidth = wh / width;
-		float scaleHeight = wh / height;
+		float scaleX = wh / width;
+		float scaleY = wh / height;
 		
 		int outIndex = 0;
 		int offset = pos;
 		
 		for (int y = 0; y < height; y++) {
-			int srcRow =  (int)(Math.floor(scaleHeight * y)) * wh;
+			int srcRow =  offset + ((int)(Math.floor(scaleY * y)) * wh) * 2;
 			
 			for (int x = 0; x < width; x++){
 				
-				int inIndex = offset + ((srcRow + (int)Math.floor(x * scaleWidth)) * 2);
+				int inIndex = srcRow + ((int)Math.floor(x * scaleX)) * 2;
 				
 				int colorValue = ((mapContent[inIndex] & 0xFF)) | ((mapContent[inIndex + 1] & 0xFF) << 8);
 				

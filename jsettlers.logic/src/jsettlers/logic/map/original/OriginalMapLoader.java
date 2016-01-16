@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,9 +100,9 @@ public class OriginalMapLoader extends MapLoader {
 	// ------------------------------//
 	@Override
 	public String getMapName() {
-		//- remove the extention {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
+		//- remove the extension {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
 		if (fileName == null) return "";
-
+		
 		int pos = fileName.lastIndexOf('.');
 		if (pos >= 0) {
 			return fileName.substring(0, pos).replace('_', ' ');
