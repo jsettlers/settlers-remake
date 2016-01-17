@@ -196,7 +196,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void updateNumberOfPlayerSlots() {
-		if (playerSlotFactory == null) {
+		if (playerSlotFactory == null || numberOfPlayersComboBox.getSelectedItem() == null) {
 			return;
 		}
 		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();

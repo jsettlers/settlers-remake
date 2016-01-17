@@ -130,9 +130,9 @@ public class PlayerSlot {
 		}
 	}
 
-	public void setSlot(byte i) {
-		slotComboBox.setSelectedIndex(i - 1);
-		oldSlotValue = getSlot();
+	public void setSlot(byte slot) {
+		slotComboBox.setSelectedIndex(slot);
+		oldSlotValue = slot;
 	}
 
 	public void setTeam(byte team) {

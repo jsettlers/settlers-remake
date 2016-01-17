@@ -42,7 +42,7 @@ public class SinglePlayerSlotFactory implements PlayerSlotFactory {
 					EPlayerType.AI_VERY_HARD });
 		}
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
-		playerSlot.setSlot((byte) (slot + 1));
+		playerSlot.setSlot(slot);
 		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 1 : 2));
 		return playerSlot;
 	}
