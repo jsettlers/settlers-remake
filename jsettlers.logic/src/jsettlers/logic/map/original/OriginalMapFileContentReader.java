@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -30,8 +29,6 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
-import jsettlers.logic.map.save.MapFileHeader;
 
 /**
  * @author Thomas Zeugner
