@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2015 - 2016
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
@@ -56,37 +70,37 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Right part of the panel with all texts
 	 */
-	private Box pRight = Box.createVerticalBox();
+	private final Box pRight = Box.createVerticalBox();
 
 	/**
 	 * Main Panel
 	 */
-	private JPanel pContents = new JPanel();
+	private final JPanel pContents = new JPanel();
 
 	/**
 	 * Name of the Map
 	 */
-	private JLabel lbName = new JLabel();
+	private final JLabel lbName = new JLabel();
 
 	/**
 	 * Count of players
 	 */
-	private JLabel lbPlayerCount = new JLabel();
+	private final JLabel lbPlayerCount = new JLabel();
 
 	/**
 	 * ID of the Map and the creation date
 	 */
-	private JLabel lbMapId = new JLabel();
+	private final JLabel lbMapId = new JLabel();
 
 	/**
 	 * Description of the Map
 	 */
-	private JLabel lbDescription = new JLabel();
+	private final JLabel lbDescription = new JLabel();
 
 	/**
 	 * Preview of the map
 	 */
-	private JLabel lbIcon = new JLabel();
+	private final JLabel lbIcon = new JLabel();
 
 	/**
 	 * Empty icon, if there is noe
@@ -111,12 +125,12 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Format for date display
 	 */
-	private SimpleDateFormat df = new SimpleDateFormat(EditorLabels.getLabel("date.date-only"));
+	private final SimpleDateFormat df = new SimpleDateFormat(EditorLabels.getLabel("date.date-only"));
 
 	/**
 	 * Cache for preview images
 	 */
-	private Map<MapLoader, Icon> previewImageCache = new HashMap<>();
+	private final Map<MapLoader, Icon> previewImageCache = new HashMap<>();
 
 	/**
 	 * Constructor

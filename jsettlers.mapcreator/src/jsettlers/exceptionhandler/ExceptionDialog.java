@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2015 - 2016
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package jsettlers.exceptionhandler;
 
 import java.awt.BorderLayout;
@@ -22,8 +36,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import jsettlers.exceptionhandler.localization.ExceptionLabels;
 
@@ -39,7 +51,7 @@ public class ExceptionDialog extends JFrame {
 	/**
 	 * Url to report bug
 	 */
-	private final String ERROR_URL = "https://github.com/jsettlers/settlers-remake/issues/new";
+	private static final String ERROR_URL = "https://github.com/jsettlers/settlers-remake/issues/new";
 
 	/**
 	 * Error to copy to github
@@ -175,36 +187,4 @@ public class ExceptionDialog extends JFrame {
 		p.add(new JScrollPane(txt), BorderLayout.CENTER);
 		return p;
 	}
-
-	/**
-	 * To generate an exception with a big stacktrace...
-	 */
-	private static void endlessRecursion() {
-		endlessRecursion();
-	}
-
-	/**
-	 * Main to test the dialog
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (Exception e) {
-			// could not be loaded, ignore error
-		}
-
-		try {
-			endlessRecursion();
-		} catch (Throwable e) {
-			ExceptionHandler.displayError(e, "test erro");
-		}
-	}
-
 }

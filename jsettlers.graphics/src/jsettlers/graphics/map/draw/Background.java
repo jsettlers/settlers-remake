@@ -16,6 +16,9 @@ package jsettlers.graphics.map.draw;
 
 import go.graphics.GLDrawContext;
 import go.graphics.GLDrawContext.GLBuffer;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -854,9 +857,9 @@ public class Background implements IGraphicsBackgroundListener {
 	private int bufferwidth = 1;; // in map points.
 	private int bufferheight = 1; // in map points.
 
-	private static int texture = -1;
+	private static TextureHandle texture = null;
 
-	private int geometryindex = -1;
+	private GeometryHandle geometryhandle = null;
 
 	private int geometrytirs;
 
@@ -893,8 +896,8 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
-	private static int getTexture(GLDrawContext context) {
-		if (texture < 0) {
+	private static TextureHandle getTexture(GLDrawContext context) {
+		if (texture == null || !texture.isValid()) {
 			long starttime = System.currentTimeMillis();
 			short[] data;
 			synchronized (preloadMutex) {
@@ -1308,31 +1311,37 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param screen2
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
-		// float[] geometry = getGeometry(context);
-		GLDrawContext gl = context.getGl();
-		MapRectangle screenArea =
-				context.getConverter().getMapForScreen(screen);
-		mapViewResized = !gl.isGeometryValid(geometryindex)
-				|| screenArea.getLineLength() + 1 != bufferwidth
-				|| screenArea.getLines() != bufferheight;
-		if (mapViewResized) {
-			regenerateGeometry(gl, screenArea);
+		try {
+			GLDrawContext gl = context.getGl();
+			MapRectangle screenArea =
+					context.getConverter().getMapForScreen(screen);
+			mapViewResized = geometryhandle == null || !geometryhandle.isValid()
+					|| screenArea.getLineLength() + 1 != bufferwidth
+					|| screenArea.getLines() != bufferheight;
+			if (mapViewResized) {
+				regenerateGeometry(gl, screenArea);
+			}
+
+			GLBuffer boundbuffer = gl.startWriteGeometry(geometryhandle);
+			reloadGeometry(boundbuffer, screenArea, context);
+			gl.endWriteGeometry(geometryhandle);
+			gl.glPushMatrix();
+			try {
+				gl.glTranslatef(0, 0, -.1f);
+				gl.glScalef(1, 1, 0);
+				gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
+				gl.color(1, 1, 1, 1);
+				gl.drawTrianglesWithTextureColored(getTexture(context.getGl()),
+						geometryhandle, geometrytirs);
+			} finally {
+				gl.glPopMatrix();
+			}
+
+			resetFOWDimStatus();
+		} catch (IllegalBufferException e) {
+			// TODO: Create crash report.
+			e.printStackTrace();
 		}
-
-		GLBuffer boundbuffer = gl.startWriteGeometry(geometryindex);
-		reloadGeometry(boundbuffer, screenArea, context);
-		gl.endWriteGeometry(geometryindex);
-		gl.glPushMatrix();
-		gl.glTranslatef(0, 0, -.1f);
-		gl.glScalef(1, 1, 0);
-		gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
-		gl.color(1, 1, 1, 1);
-		gl.drawTrianglesWithTextureColored(getTexture(context.getGl()),
-				geometryindex, geometrytirs);
-
-		gl.glPopMatrix();
-
-		resetFOWDimStatus();
 	}
 
 	private void resetFOWDimStatus() {
@@ -1340,8 +1349,8 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
-		if (gl.isGeometryValid(geometryindex)) {
-			gl.removeGeometry(geometryindex);
+		if (geometryhandle != null && geometryhandle.isValid()) {
+			geometryhandle.delete();
 		}
 		bufferwidth = niceRoundUp(screenArea.getLineLength() + 1);
 		bufferheight = niceRoundUp(screenArea.getLines());
@@ -1350,7 +1359,7 @@ public class Background implements IGraphicsBackgroundListener {
 		geometryInvalid = new BitSet(count);
 		geometrytirs = count * 2;
 
-		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
+		geometryhandle = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
 	}
 
 	private static int niceRoundUp(int i) {
@@ -1765,7 +1774,7 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	public static void invalidateTexture() {
-		texture = -1;
+		texture = null;
 	}
 
 }

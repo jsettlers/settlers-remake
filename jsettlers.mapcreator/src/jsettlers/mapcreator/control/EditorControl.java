@@ -66,7 +66,6 @@ import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.MapCreatorApp;
 import jsettlers.mapcreator.main.action.AbortDrawingAction;
 import jsettlers.mapcreator.main.action.CombiningActionFirerer;
 import jsettlers.mapcreator.main.action.DrawLineAction;
@@ -152,7 +151,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	/**
 	 * Sidebar with the tools
 	 */
-	private ToolSidebar toolSidebar = new ToolSidebar(this) {
+	private final ToolSidebar toolSidebar = new ToolSidebar(this) {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -165,12 +164,12 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	/**
 	 * Sidebar with all tabs
 	 */
-	private Sidebar sidebar = new Sidebar(toolSidebar, this);
+	private final Sidebar sidebar = new Sidebar(toolSidebar, this);
 
 	/**
 	 * Validates the map for errors
 	 */
-	private MapValidator validator = new MapValidator();
+	private final MapValidator validator = new MapValidator();
 
 	/**
 	 * Timer for redrawing
@@ -194,38 +193,44 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 	/**
 	 * Constructor
+	 */
+	public EditorControl() {
+	}
+
+	/**
+	 * Load a map
+	 * 
+	 * @param loader
+	 *            Map to load
+	 * @throws MapLoadException
+	 */
+	public void loadMap(MapLoader loader) throws MapLoadException {
+		MapData data = new MapData(loader.getMapData());
+		MapFileHeader header = loader.getFileHeader();
+		loadMap(header, data);
+	}
+
+	/**
+	 * Create a new map
 	 * 
 	 * @param header
 	 *            Header of the file to open
 	 * @param ground
 	 *            Ground to use for the new map
 	 */
-	public EditorControl(MapFileHeader header, ELandscapeType ground) {
-		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
+	public void createNewMap(MapFileHeader header, ELandscapeType ground) {
+		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
 	}
 
 	/**
-	 * Constructor
-	 * 
-	 * @param loader
-	 *            Map to load
-	 * @throws MapLoadException
-	 */
-	public EditorControl(MapLoader loader) throws MapLoadException {
-		MapData data = new MapData(loader.getMapData());
-		MapFileHeader header = loader.getFileHeader();
-		init(header, data);
-	}
-
-	/**
-	 * Initialize editor, called from constructor
+	 * Load a map
 	 * 
 	 * @param header
 	 *            Header to use
 	 * @param mapData
 	 *            Map to use
 	 */
-	private void init(MapFileHeader header, MapData mapData) {
+	public void loadMap(MapFileHeader header, MapData mapData) {
 		this.header = header;
 		this.data = mapData;
 
@@ -336,23 +341,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	}
 
 	/**
-	 * Create a new map editor instance, with a action property file
-	 * 
-	 * @param file
-	 *            File to use
-	 * @throws IOException
-	 */
-	private void createNewMapEditorInstanceWithActionFile(File file) throws IOException {
-		String[] args = new String[] { "java", "-splash:splash.png", "-classpath", System.getProperty("java.class.path"),
-				MapCreatorApp.class.getName(),
-				"--actionconfig=" + file.getAbsolutePath(), "--delete-actionconfig=true" };
-		startProcess(args, "game");
-	}
-
-	/**
 	 * Open an existing file
 	 */
 	private void openExistingFile() {
+		if (!checkSaved()) {
+			// user canceled
+			return;
+		}
+
 		OpenExistingDialog dlg = new OpenExistingDialog(window);
 		dlg.setVisible(true);
 
@@ -360,18 +356,15 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 			return;
 		}
 
+		// only one map can be active
+		quit();
+
+		// create new control for new map
+		EditorControl control = new EditorControl();
 		try {
-			File temp = File.createTempFile("jsettler-action", ".properties");
-
-			ActionPropertie prop = new ActionPropertie();
-			prop.setAction("open");
-			prop.setMapId(dlg.getSelectedMapId());
-			prop.saveToFile(temp);
-
-			createNewMapEditorInstanceWithActionFile(temp);
-
-		} catch (IOException e) {
-			ExceptionHandler.displayError(e, "Failed to start game");
+			control.loadMap(dlg.getSelectedMap());
+		} catch (MapLoadException e) {
+			ExceptionHandler.displayError(e, "Could not load map");
 		}
 	}
 
@@ -379,6 +372,11 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * Create a new map
 	 */
 	private void createNewFile() {
+		if (!checkSaved()) {
+			// user canceled
+			return;
+		}
+
 		NewFileDialog dlg = new NewFileDialog(window);
 		dlg.setVisible(true);
 
@@ -388,34 +386,12 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 		MapFileHeader header = dlg.getHeader();
 
-		try {
-			File temp = File.createTempFile("jsettler-action", ".properties");
+		// only one map can be active
+		quit();
 
-			ActionPropertie prop = new ActionPropertie();
-			prop.setAction("new");
-			prop.setMapName(header.getName());
-			prop.setMapDescription(header.getDescription());
-			prop.setLanscapeType(dlg.getGroundTypes());
-			prop.setWidth(header.getWidth());
-			prop.setHeight(header.getHeight());
-			prop.setMinPlayerCount(header.getMinPlayer());
-			prop.setMaxPlayerCount(header.getMaxPlayer());
-
-			prop.saveToFile(temp);
-
-			createNewMapEditorInstanceWithActionFile(temp);
-		} catch (IOException e) {
-			ExceptionHandler.displayError(e, "Failed to start game");
-		}
-
-		// TODO open a second map does not work, I didn't analyze why yet
-		// MapFileHeader header = dlg.getHeader();
-		// init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), dlg.getGroundTypes()));
-		// ---------
-		// EditorControl control = new EditorControl(dlg.getHeader(), dlg.getGroundTypes());
-		// control.window.setLocation(window.getLocation());
-		// control.window.setSize(window.getSize());
-		// control.window.getSplitter().setDividerLocation(window.getSplitter().getDividerLocation());
+		// create new control for new map
+		EditorControl control = new EditorControl();
+		control.createNewMap(header, dlg.getGroundTypes());
 	}
 
 	/**
@@ -816,7 +792,9 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				@Override
 				public void run() {
 					MapDataDelta delta = data.getUndoDelta();
-					data.apply(delta);
+					if (delta != null) {
+						data.apply(delta);
+					}
 					data.resetUndoDelta();
 					validator.reValidate();
 				}
@@ -839,6 +817,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 					}
 				});
 			}
+
 		}
 	}
 

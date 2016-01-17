@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -37,7 +38,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private final EFontSize size;
 	private final AndroidContext context;
-	private int texture = 0;
+	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
 	 */
@@ -247,7 +248,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	private void initialize() {
-		if (texture == 0) {
+		if (texture == null || !texture.isValid()) {
 			texture =
 					context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 			lineheight = (int) (getScaledSize() * 1.3);
