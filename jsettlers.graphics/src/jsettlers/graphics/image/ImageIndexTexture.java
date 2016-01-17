@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.TextureHandle;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -25,15 +26,15 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 public final class ImageIndexTexture {
-	private int textureIndex = -1;
+	private TextureHandle textureIndex = null;
 	private final InputStream file;
 
 	public ImageIndexTexture(InputStream inputStream) {
 		this.file = inputStream;
 	}
 
-	public int getTextureIndex(GLDrawContext gl) {
-		if (textureIndex < 0) {
+	public TextureHandle getTextureIndex(GLDrawContext gl) {
+		if (textureIndex == null || !textureIndex.isValid()) {
 			loadTexture(gl);
 		}
 		return textureIndex;
@@ -57,7 +58,7 @@ public final class ImageIndexTexture {
 			textureIndex = gl.generateTexture(width, height, data);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			textureIndex = 0;
+			textureIndex = null;
 		}
 	}
 
@@ -67,5 +68,12 @@ public final class ImageIndexTexture {
 			i *= 2;
 		}
 		return i;
+	}
+
+	/**
+	 * Informs this texture that it should be recreated.
+	 */
+	public void recreateTexture() {
+		textureIndex = null;
 	}
 }
