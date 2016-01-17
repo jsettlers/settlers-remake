@@ -81,12 +81,9 @@ public class UndoRedoHandler {
 			MapDataDelta inverse = data.apply(delta);
 
 			redoDeltas.addLast(inverse);
-			window.enableAction("redo", true);
 		}
-		if (undoDeltas.isEmpty()) {
-			window.enableAction("undo", false);
-			window.enableAction("save", false);
-		}
+		updateMenuAndToolbar();
+
 		changedSinceLastSave = true;
 	}
 
@@ -100,12 +97,10 @@ public class UndoRedoHandler {
 			MapDataDelta inverse = data.apply(delta);
 
 			undoDeltas.addLast(inverse);
-			window.enableAction("undo", true);
-			window.enableAction("save", true);
 		}
-		if (redoDeltas.isEmpty()) {
-			window.enableAction("redo", false);
-		}
+
+		updateMenuAndToolbar();
+
 		changedSinceLastSave = true;
 	}
 
@@ -121,11 +116,22 @@ public class UndoRedoHandler {
 		}
 		undoDeltas.add(delta);
 		redoDeltas.clear();
-		window.enableAction("undo", true);
-		window.enableAction("redo", false);
 
-		window.enableAction("save", true);
+		updateMenuAndToolbar();
+
 		changedSinceLastSave = true;
+	}
+
+	/**
+	 * Activate / deactivate menu / toolbar
+	 */
+	public void updateMenuAndToolbar() {
+		window.enableAction("undo", !undoDeltas.isEmpty());
+
+		// allow save always, can be later changed if all is really good tested
+		window.enableAction("save", true);
+
+		window.enableAction("redo", !redoDeltas.isEmpty());
 	}
 
 	/**
