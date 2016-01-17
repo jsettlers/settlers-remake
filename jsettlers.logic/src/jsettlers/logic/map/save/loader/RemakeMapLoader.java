@@ -152,7 +152,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true);
+				playerSettings[i] = new PlayerSetting(true, (byte) i);
 			}
 		}
 

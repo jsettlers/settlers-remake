@@ -173,7 +173,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			long randomSeed = System.currentTimeMillis();
 			PlayerSetting[] playerSettings = playerSlots.stream()
 					.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getSlot() - otherPlayerSlot.getSlot())
-					.map(playerSlot -> new PlayerSetting(true, playerSlot.getPlayerType(), playerSlot.getCivilisation()))
+					.map(playerSlot -> new PlayerSetting(true, playerSlot.getPlayerType(), playerSlot.getCivilisation(), playerSlot.getTeam()))
 					.toArray(PlayerSetting[]::new);
 			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
 			IStartingGame startingGame = game.start();

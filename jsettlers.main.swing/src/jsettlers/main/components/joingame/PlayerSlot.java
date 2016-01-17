@@ -144,7 +144,7 @@ public class PlayerSlot {
 	}
 
 	public byte getTeam() {
-		return (byte) teamComboBox.getSelectedItem();
+		return (byte) teamComboBox.getSelectedIndex();
 	}
 
 	public EPlayerType getPlayerType() {

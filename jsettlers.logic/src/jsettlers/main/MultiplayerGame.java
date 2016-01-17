@@ -145,13 +145,13 @@ public class MultiplayerGame {
 
 		byte i = 0;
 		for (; i < playersList.getItems().size(); i++) {
-			playerSettings[i] = new PlayerSetting(true);
+			playerSettings[i] = new PlayerSetting(true, i);
 		}
 
 		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : null;
 
 		for (; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN);
+			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN, i);
 		}
 
 		return playerSettings;
