@@ -65,4 +65,8 @@ public abstract class CommonConstants {
 	 * Option to disable the loading of original maps.
 	 */
 	public static boolean DISABLE_ORIGINAL_MAPS = false;
+	/**
+	 * Option to disable the validation of the original maps checksum.
+	 */
+	public static boolean DISABLE_ORIGINAL_MAPS_CHECKSUM = false;
 }
