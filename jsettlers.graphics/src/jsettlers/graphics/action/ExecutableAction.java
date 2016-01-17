@@ -15,15 +15,21 @@
 package jsettlers.graphics.action;
 
 /**
- * This is an action tha can be executed.
+ * This is an action that can be executed. When fired, this action is not interpreted but executed instead.
  * 
- * @author michael
+ * @author Michael Zangl
  *
  */
 public abstract class ExecutableAction extends Action {
+	/**
+	 * Creates a new {@link ExecutableAction}.
+	 */
 	public ExecutableAction() {
 		super(EActionType.EXECUTABLE);
 	}
 
-	abstract public void execute();
+	/**
+	 * Executes this action.
+	 */
+	public abstract void execute();
 }

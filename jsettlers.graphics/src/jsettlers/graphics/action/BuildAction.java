@@ -20,7 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * This is a build action. This happens when the user clicks on a map position to build a building there.
  * 
- * @author michael
+ * @author Michael Zangl
  *
  */
 public class BuildAction extends PointAction {

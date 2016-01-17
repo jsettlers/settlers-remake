@@ -17,9 +17,13 @@ package jsettlers.graphics.action;
 import jsettlers.common.movable.ESoldierType;
 
 /**
+ * This action is used when soldiers are upgraded.
+ * 
  * @author codingberlin
  * @author Andreas Eberle
+ * @deprecated Because we can use {@link SoldierAction}.
  */
+@Deprecated
 public class UpgradeSoldiersAction extends SoldierAction {
 
 	public UpgradeSoldiersAction(ESoldierType soldierType) {
