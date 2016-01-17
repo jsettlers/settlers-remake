@@ -140,7 +140,7 @@ public class PlayerSlot {
 	}
 
 	public byte getSlot() {
-		return (byte) slotComboBox.getSelectedItem();
+		return (byte) slotComboBox.getSelectedIndex();
 	}
 
 	public byte getTeam() {
