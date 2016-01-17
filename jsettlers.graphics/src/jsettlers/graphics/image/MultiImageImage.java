@@ -15,6 +15,8 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
@@ -135,16 +137,20 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		gl.color(multiply, multiply, multiply, 1);
-		int texture = map.getTexture(gl);
-		gl.drawQuadWithTexture(texture, settlerGeometry);
-		if (torsoGeometry != null) {
-			if (color != null) {
-				gl.color(color.getRed() * multiply,
-						color.getGreen() * multiply,
-						color.getBlue() * multiply, color.getAlpha());
+		try {
+			gl.color(multiply, multiply, multiply, 1);
+			TextureHandle texture = map.getTexture(gl);
+			gl.drawQuadWithTexture(texture, settlerGeometry);
+			if (torsoGeometry != null) {
+				if (color != null) {
+					gl.color(color.getRed() * multiply,
+							color.getGreen() * multiply,
+							color.getBlue() * multiply, color.getAlpha());
+				}
+				gl.drawQuadWithTexture(texture, torsoGeometry);
 			}
-			gl.drawQuadWithTexture(texture, torsoGeometry);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
 		}
 	}
 
@@ -153,19 +159,23 @@ public class MultiImageImage extends Image {
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 			float right, float top) {
-		gl.color(1, 1, 1, 1);
+		try {
+			gl.color(1, 1, 1, 1);
 
-		System.arraycopy(settlerGeometry, 0, tmpBuffer, 0, 4 * 5);
-		tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
-		tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
-		tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
-		tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
-		tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
-		tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
-		tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
-		tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
+			System.arraycopy(settlerGeometry, 0, tmpBuffer, 0, 4 * 5);
+			tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
+			tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
+			tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
+			tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
+			tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
+			tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
+			tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
+			tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
 
-		gl.drawQuadWithTexture(map.getTexture(gl), tmpBuffer);
+			gl.drawQuadWithTexture(map.getTexture(gl), tmpBuffer);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	@Override
@@ -186,19 +196,24 @@ public class MultiImageImage extends Image {
 
 	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, int sColor, int tColor) {
-		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX
-				+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
-				+ IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
-				+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY
-				+ IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
-				settler.vmax, sColor);
-		if (torso != null) {
-			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX
-					+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
-					+ IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
-					+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY
-					+ IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
-					torso.vmax, tColor);
+		try {
+			TextureHandle texture = map.getTexture(gl);
+			buffer.addImage(texture, viewX + settler.offsetX
+					+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
+					+ IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
+					+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY
+					+ IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
+					settler.vmax, sColor);
+			if (torso != null) {
+				buffer.addImage(texture, viewX + torso.offsetX
+						+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
+						+ IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
+						+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY
+						+ IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
+						torso.vmax, tColor);
+			}
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
 		}
 	}
 

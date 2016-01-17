@@ -15,6 +15,7 @@
 package jsettlers.graphics.map;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
@@ -445,66 +446,71 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawDebugColors() {
-		IMapArea tiles = new MapShapeFilter(context.getScreenArea(), map.getWidth(),
-				map.getHeight());
-		GLDrawContext gl = this.context.getGl();
+		try {
+			IMapArea tiles = new MapShapeFilter(context.getScreenArea(), map.getWidth(),
+					map.getHeight());
+			GLDrawContext gl = this.context.getGl();
 
-		float[] shape = new float[] {
-				0,
-				4,
-				.5f,
-				0,
-				0,
-				-3,
-				2,
-				.5f,
-				0,
-				0,
-				-3,
-				-2,
-				.5f,
-				0,
-				0,
-				0,
-				-4,
-				.5f,
-				0,
-				0,
-				0,
-				-4,
-				.5f,
-				0,
-				0,
-				3,
-				-2,
-				.5f,
-				0,
-				0,
-				3,
-				2,
-				.5f,
-				0,
-				0,
-				0,
-				4,
-				.5f,
-				0,
-				0,
-		};
+			float[] shape = new float[] {
+					0,
+					4,
+					.5f,
+					0,
+					0,
+					-3,
+					2,
+					.5f,
+					0,
+					0,
+					-3,
+					-2,
+					.5f,
+					0,
+					0,
+					0,
+					-4,
+					.5f,
+					0,
+					0,
+					0,
+					-4,
+					.5f,
+					0,
+					0,
+					3,
+					-2,
+					.5f,
+					0,
+					0,
+					3,
+					2,
+					.5f,
+					0,
+					0,
+					0,
+					4,
+					.5f,
+					0,
+					0,
+			};
 
-		for (ShortPoint2D pos : tiles) {
-			short x = pos.x;
-			short y = pos.y;
-			int argb = map.getDebugColorAt(x, y, debugColorMode);
-			if (argb != 0) {
-				this.context.beginTileContext(x, y);
-				gl.color(((argb >> 16) & 0xff) / 255f,
-						((argb >> 8) & 0xff) / 255f,
-						((argb >> 0) & 0xff) / 255f,
-						((argb >> 24) & 0xff) / 255f);
-				gl.drawQuadWithTexture(0, shape);
-				context.endTileContext();
+			for (ShortPoint2D pos : tiles) {
+				short x = pos.x;
+				short y = pos.y;
+				int argb = map.getDebugColorAt(x, y, debugColorMode);
+				if (argb != 0) {
+					this.context.beginTileContext(x, y);
+					gl.color(((argb >> 16) & 0xff) / 255f,
+							((argb >> 8) & 0xff) / 255f,
+							((argb >> 0) & 0xff) / 255f,
+							((argb >> 24) & 0xff) / 255f);
+					gl.drawQuadWithTexture(null, shape);
+					context.endTileContext();
+				}
 			}
+		} catch (IllegalBufferException e) {
+			// TODO: Create a crash report
+			// This should never happen since we only use texture 0 (no texture)
 		}
 	}
 
