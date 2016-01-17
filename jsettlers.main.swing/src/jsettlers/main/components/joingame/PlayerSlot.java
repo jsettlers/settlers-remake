@@ -100,7 +100,7 @@ public class PlayerSlot {
 
 		if (!EPlayerType.HUMAN.equals(((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
 			setPlayerName(Labels.getString(
-					"player-name-" + ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation().name() + "-" +
+					"player-name-" + getCivilisation().name() + "-" +
 							((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
 		}
 	}
@@ -135,12 +135,24 @@ public class PlayerSlot {
 		oldSlotValue = getSlot();
 	}
 
-	public void setTeam(byte i) {
-		teamComboBox.setSelectedIndex(i - 1);
+	public void setTeam(byte team) {
+		teamComboBox.setSelectedIndex(team - 1);
 	}
 
 	public byte getSlot() {
 		return (byte) slotComboBox.getSelectedItem();
+	}
+
+	public byte getTeam() {
+		return (byte) teamComboBox.getSelectedItem();
+	}
+
+	public EPlayerType getPlayerType() {
+		return ((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType();
+	}
+
+	public ECivilisation getCivilisation() {
+		return ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation();
 	}
 
 	public void setSlotListener(SlotListener slotListener) {

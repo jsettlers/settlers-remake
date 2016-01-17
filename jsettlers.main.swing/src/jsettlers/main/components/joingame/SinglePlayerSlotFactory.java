@@ -28,7 +28,12 @@ public class SinglePlayerSlotFactory implements PlayerSlotFactory {
 		if (slot == 0) {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
-			playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN });
+			playerSlot.setPossibleTypes(new EPlayerType[] {
+					EPlayerType.HUMAN,
+					EPlayerType.AI_VERY_EASY,
+					EPlayerType.AI_EASY,
+					EPlayerType.AI_HARD,
+					EPlayerType.AI_VERY_HARD });
 		} else {
 			playerSlot.setPossibleTypes(new EPlayerType[] {
 					EPlayerType.AI_VERY_EASY,

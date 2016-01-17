@@ -15,15 +15,19 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
+import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -60,8 +64,6 @@ public class JoinGamePanel extends BackgroundPanel {
 	private MapLoader mapLoader;
 	private List<PlayerSlot> playerSlots = new Vector<>();
 	private PlayerSlotFactory playerSlotFactory;
-
-	//TODO: Spielstart
 
 	public JoinGamePanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
@@ -167,6 +169,21 @@ public class JoinGamePanel extends BackgroundPanel {
 		resetNumberOfPlayersComboBox();
 		playerSlotFactory = new SinglePlayerSlotFactory();
 		updateNumberOfPlayerSlots();
+		setStartButtonActionListener(e -> {
+			long randomSeed = System.currentTimeMillis();
+			PlayerSetting[] playerSettings = playerSlots.stream()
+					.map(playerSlot -> new PlayerSetting(true, playerSlot.getPlayerType(), playerSlot.getCivilisation()))
+					.toArray(PlayerSetting[]::new);
+			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
+			IStartingGame startingGame = game.start();
+			settlersFrame.showStartingGamePanel(startingGame);
+		});
+	}
+
+	private void setStartButtonActionListener(ActionListener actionListener) {
+		ActionListener[] actionListeners = startGameButton.getActionListeners();
+		Arrays.asList(actionListeners).stream().forEach(startGameButton::removeActionListener);
+		startGameButton.addActionListener(actionListener);
 	}
 
 	private void resetNumberOfPlayersComboBox() {
