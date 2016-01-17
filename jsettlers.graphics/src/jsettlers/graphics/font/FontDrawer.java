@@ -23,20 +23,33 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.ImageProvider;
 
 /**
- * This is a special font drawer class. It draws fonts using our builtin font.
+ * This is a special font drawer class. It draws fonts using our built in font.
+ * <p>
+ * Currently, this class is not used for in-game messages but the {@link TextDrawer} is used instead. This class is a fall back if that fails.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class FontDrawer implements TextDrawer {
 	private final EFontSize size;
 	private final DrawBuffer drawBuffer;
 
-	private static final String chars =
+	private static final DirectImageLink TEXTURE = new DirectImageLink("font.0");
+	private static final String CHARACTERS =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
 	private static final int CHARS_PER_ROW = 16;
 	private static final int CHARS_PER_COLUMN = 16;
 	private final GLDrawContext gl;
 
+	/**
+	 * Creates a new {@link FontDrawer}
+	 * 
+	 * @param gl
+	 *            The gl context to work with.
+	 * @param drawBuffer
+	 *            The draw buffer to work on.
+	 * @param size
+	 *            The font size to use.
+	 */
 	public FontDrawer(GLDrawContext gl, DrawBuffer drawBuffer, EFontSize size) {
 		this.gl = gl;
 		this.drawBuffer = drawBuffer;
@@ -50,12 +63,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	private int getCharIndex(char c) {
-		return chars.indexOf(Character.toUpperCase(c));
-	}
-
-	private float getWidth(int charIndex) {
-		// TODO: Variable widths
-		return charIndex >= 0 ? size.getSize() : 0;
+		return CHARACTERS.indexOf(Character.toUpperCase(c));
 	}
 
 	@Override
@@ -65,17 +73,16 @@ public class FontDrawer implements TextDrawer {
 
 		for (int i = 0; i < string.length(); i++) {
 			int idx = getCharIndex(string.charAt(i));
-			/*
-			 * float w = getWidth(idx); float right = cursorX + w; float umin = (float) (idx & (CHARS_PER_ROW - 1)) / CHARS_PER_ROW; float umax = umin
-			 * + (w / size.getSize() / CHARS_PER_ROW); float vmin = (float) (idx / CHARS_PER_ROW) / CHARS_PER_COLUMN; float vmax = vmin + (1.0f /
-			 * CHARS_PER_COLUMN);
-			 * 
-			 * drawBuffer.addImage(textureid, cursorX, y, right, top, umin, vmax, umax, vmin, 0xffffffff);
-			 */
+
+			float w = getWidth(idx);
+			float right = cursorX + w;
+			float umin = (float) (idx & (CHARS_PER_ROW - 1)) / CHARS_PER_ROW;
+			float umax = umin + (w / size.getSize() / CHARS_PER_ROW);
+			float vmin = (float) (idx / CHARS_PER_ROW) / CHARS_PER_COLUMN;
+			float vmax = vmin + (1.0f / CHARS_PER_COLUMN);
 
 			// TODO: Chars, color
-			DirectImageLink texture = new DirectImageLink("font.0");
-			Image image = ImageProvider.getInstance().getImage(texture);
+			Image image = ImageProvider.getInstance().getImage(TEXTURE);
 
 			image.drawAt(gl, drawBuffer, cursorX, top, 0xffffffff);
 			image.drawAt(gl, drawBuffer, 0, 0, 0xffffffff);
@@ -84,6 +91,14 @@ public class FontDrawer implements TextDrawer {
 
 		drawBuffer.flush();
 		System.out.println("Drawed " + string + " chars");
+	}
+
+	private float getWidth(int charIndex) {
+		if (charIndex >= 0) {
+			return size.getSize();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
@@ -103,7 +118,6 @@ public class FontDrawer implements TextDrawer {
 
 	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
-		// TODO Auto-generated method stub
-
+		// TODO Support color changes.
 	}
 }
