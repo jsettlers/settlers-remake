@@ -151,7 +151,7 @@ The checkstyle profile that matches the default formatter profile.
     <property name="ignoreLines" value="2"/>
   </module>
   <module name="RegexpMultiline">
-    <property name="format" value="\r\n"/>
+    <property name="format" value="\r\n[\w\W]*"/>
     <property name="message" value="Use unix line endings."/>
   </module>
 </module>
