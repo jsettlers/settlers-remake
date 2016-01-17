@@ -35,8 +35,10 @@ public class PlayerSlot {
 	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
 	private byte oldSlotValue;
 	private SlotListener slotListener;
+	private boolean isAvailable;
 
 	public PlayerSlot() {
+		isAvailable = true;
 		setStyle();
 		localize();
 		addListener();
@@ -139,12 +141,20 @@ public class PlayerSlot {
 		teamComboBox.setSelectedIndex(team - 1);
 	}
 
+	public void setAvailable(boolean available) {
+		isAvailable = available;
+	}
+
 	public byte getSlot() {
 		return (byte) slotComboBox.getSelectedIndex();
 	}
 
 	public byte getTeam() {
 		return (byte) teamComboBox.getSelectedIndex();
+	}
+
+	public boolean isAvailable() {
+		return isAvailable;
 	}
 
 	public EPlayerType getPlayerType() {

@@ -173,7 +173,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			long randomSeed = System.currentTimeMillis();
 			PlayerSetting[] playerSettings = playerSlots.stream()
 					.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getSlot() - otherPlayerSlot.getSlot())
-					.map(playerSlot -> new PlayerSetting(true, playerSlot.getPlayerType(), playerSlot.getCivilisation(), playerSlot.getTeam()))
+					.map(playerSlot -> new PlayerSetting(playerSlot.isAvailable(), playerSlot.getPlayerType(), playerSlot.getCivilisation(), playerSlot.getTeam()))
 					.toArray(PlayerSetting[]::new);
 			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
 			IStartingGame startingGame = game.start();
@@ -199,16 +199,20 @@ public class JoinGamePanel extends BackgroundPanel {
 		if (playerSlotFactory == null || numberOfPlayersComboBox.getSelectedItem() == null) {
 			return;
 		}
-		int numberOfPlayers = (Integer) numberOfPlayersComboBox.getSelectedItem();
-		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), numberOfPlayers));
-		for (byte i = (byte) playerSlots.size(); i < numberOfPlayers; i++) {
+		int maximumNumberOfPlayers = mapLoader.getMaxPlayers();
+		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), maximumNumberOfPlayers));
+		for (byte i = (byte) playerSlots.size(); i < maximumNumberOfPlayers; i++) {
 			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, mapLoader);
 			playerSlots.add(playerSlot);
 		}
 		playerSlotsPanel.removeAll();
 		addPlayerSlotHeadline();
 		for (int i = 0; i<playerSlots.size(); i++) {
-			playerSlots.get(i).addTo(playerSlotsPanel, i+1);
+			if (i < (int) numberOfPlayersComboBox.getSelectedItem()) {
+				playerSlots.get(i).addTo(playerSlotsPanel, i+1);
+			} else {
+				playerSlots.get(i).setAvailable(false);
+			}
 		}
 		SwingUtilities.updateComponentTreeUI(playerSlotsPanel);
 		SlotToggleGroup slotToggleGroup = new SlotToggleGroup();
