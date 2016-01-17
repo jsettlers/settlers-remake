@@ -51,7 +51,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		super(parent);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setLayout(new BorderLayout());
-		initButton();
+		initButtons();
 	}
 
 	/**
@@ -64,7 +64,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	/**
 	 * Initialize buttons
 	 */
-	private void initButton() {
+	private void initButtons() {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
@@ -72,11 +72,10 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		btOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!doOkAction()) {
-					return;
+				if (beforeOkAction()) {
+					confirmed = true;
+					dispose();
 				}
-				confirmed = true;
-				dispose();
 			}
 		});
 
@@ -84,20 +83,17 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		btCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!doCancelAction()) {
-					return;
+				if (!beforeCancelAction()) {
+					dispose();
 				}
-				dispose();
 			}
 		});
 
 		buttonPanel.add(btCancel);
 		buttonPanel.add(btOk);
 
-		Dimension size = btOk.getPreferredSize();
-		if (btCancel.getPreferredSize().width > size.width) {
-			size.width = btCancel.getPreferredSize().width;
-		}
+		int width = Math.max(btOk.getPreferredSize().width, btCancel.getPreferredSize().width);
+		Dimension size = new Dimension(width, btOk.getPreferredSize().height);
 		btOk.setPreferredSize(size);
 		btCancel.setPreferredSize(size);
 
@@ -109,7 +105,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	 * 
 	 * @return true to close the dialog
 	 */
-	protected boolean doCancelAction() {
+	protected boolean beforeCancelAction() {
 		return true;
 	}
 
@@ -118,7 +114,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 	 * 
 	 * @return true to close the dialog
 	 */
-	protected boolean doOkAction() {
+	protected boolean beforeOkAction() {
 		return true;
 	}
 }
