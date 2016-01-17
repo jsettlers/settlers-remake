@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
@@ -78,13 +79,13 @@ public class SettlerImage extends SingleImage {
 	}
 
 	@Override
-	protected int getGeometryIndex(GLDrawContext context) {
-		int index = super.getGeometryIndex(context);
+	protected GeometryHandle getGeometry(GLDrawContext context) {
+		GeometryHandle index = super.getGeometry(context);
 		if (torso != null && torso.getWidth() == getWidth()
 				&& torso.getHeight() == getHeight()
 				&& torso.getOffsetX() == getOffsetX()
 				&& torso.getOffsetY() == getOffsetY()) {
-			torso.setGeometryIndex(index);
+			torso.setGeometry(index);
 		}
 		return index;
 	}
