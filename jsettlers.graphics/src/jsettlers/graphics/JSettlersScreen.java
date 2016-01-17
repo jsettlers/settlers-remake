@@ -47,6 +47,16 @@ public class JSettlersScreen implements IContentSetable {
 	private final String revision;
 	private UIInput focusedInput;
 
+	/**
+	 * Creates a new screen instance.
+	 * 
+	 * @param baseConnector
+	 *            The connector that manages the start screen.
+	 * @param soundPlayer
+	 *            The sound player to use.
+	 * @param revision
+	 *            The Jsettlers revision.
+	 */
 	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer,
 			String revision) {
 		super();
@@ -55,6 +65,12 @@ public class JSettlersScreen implements IContentSetable {
 		this.revision = revision;
 	}
 
+	/**
+	 * This class displays a {@link UIPanel} on the whole window.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	private class PanelRegionContent implements RegionContent {
 		private final UIPanel root;
 
@@ -75,6 +91,12 @@ public class JSettlersScreen implements IContentSetable {
 			}
 		};
 
+		/**
+		 * Creates a new panel.
+		 * 
+		 * @param root
+		 *            The root UI panel.
+		 */
 		public PanelRegionContent(UIPanel root) {
 			this.root = root;
 		}

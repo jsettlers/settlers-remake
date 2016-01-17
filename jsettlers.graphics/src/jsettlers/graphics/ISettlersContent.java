@@ -17,9 +17,27 @@ package jsettlers.graphics;
 import go.graphics.RedrawListener;
 import go.graphics.region.RegionContent;
 
+/**
+ * This is a special region content to which we can add and remove redraw listeners.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public interface ISettlersContent extends RegionContent {
 
-	public void addRedrawListener(RedrawListener l);
+	/**
+	 * Add a {@link RedrawListener}.
+	 * 
+	 * @param l
+	 *            The listener
+	 */
+	void addRedrawListener(RedrawListener l);
 
-	public void removeRedrawListener(RedrawListener l);
+	/**
+	 * Remove a {@link RedrawListener}.
+	 * 
+	 * @param l
+	 *            The listener
+	 */
+	void removeRedrawListener(RedrawListener l);
 }
