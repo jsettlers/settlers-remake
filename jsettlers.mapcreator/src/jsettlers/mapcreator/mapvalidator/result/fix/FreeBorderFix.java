@@ -40,18 +40,15 @@ public class FreeBorderFix extends AbstractFix implements IMapArea {
 	/**
 	 * Points to delete
 	 */
-	private List<ShortPoint2D> points = new ArrayList<>();
+	private final List<ShortPoint2D> points = new ArrayList<>();
 
 	/**
 	 * Menu to display with possible fixes
 	 */
-	private JPopupMenu menu = new JPopupMenu();
+	private final JPopupMenu menu = new JPopupMenu();
 
 	/**
 	 * Constructor
-	 * 
-	 * @param data
-	 *            Map data, to fix
 	 */
 	public FreeBorderFix() {
 		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.free-borders"));

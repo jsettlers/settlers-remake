@@ -31,6 +31,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -192,9 +193,49 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private boolean showResourcesBecauseOfTool = false;
 
 	/**
+	 * Combobox with the player selection
+	 */
+	private final JComboBox<Integer> playerCombobox = new JComboBox<>();
+
+	/**
 	 * Constructor
 	 */
 	public EditorControl() {
+		// use heavyweight component
+		playerCombobox.setLightWeightPopupEnabled(false);
+		playerCombobox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				currentPlayer = (Integer) playerCombobox.getSelectedItem();
+			}
+		});
+		playerCombobox.setRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+				Integer player = (Integer) value;
+				setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
+				setText(String.format(EditorLabels.getLabel("general.player_x"), player));
+
+				return this;
+			}
+		});
+	}
+
+	/**
+	 * Update the player selection combobox
+	 */
+	private void updatePlayerCombobox() {
+		// create a new model, because a swing bug there are sometimes problems updating an existing model
+		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
+		model.setSelectedItem(playerCombobox.getSelectedItem());
+		for (int i = 0; i < data.getPlayerCount(); i++) {
+			model.addElement(i);
+		}
+		playerCombobox.setModel(model);
 	}
 
 	/**
@@ -233,6 +274,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	public void loadMap(MapFileHeader header, MapData mapData) {
 		this.header = header;
 		this.data = mapData;
+		updatePlayerCombobox();
 
 		map = new MapGraphics(data);
 		validator.setData(data);
@@ -268,34 +310,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			protected JComponent createPlayerSelectSelection() {
-				Integer[] playerArray = new Integer[data.getPlayerCount()];
-				for (int i = 0; i < data.getPlayerCount(); i++) {
-					playerArray[i] = i;
-				}
-				final JComboBox<Integer> playerCombobox = new JComboBox<>(playerArray);
-				// use heavyweight component
-				playerCombobox.setLightWeightPopupEnabled(false);
-				playerCombobox.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						currentPlayer = (Integer) playerCombobox.getSelectedItem();
-					}
-				});
-				playerCombobox.setRenderer(new DefaultListCellRenderer() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-						super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-						Integer player = (Integer) value;
-						setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
-						setText(String.format(EditorLabels.getLabel("general.player_x"), player));
-
-						return this;
-					}
-				});
-
 				return playerCombobox;
 			}
 
@@ -629,6 +643,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				EditorControl.this.header = header;
 				data.setMaxPlayers(header.getMaxPlayer());
 				validator.reValidate();
+				updatePlayerCombobox();
 			}
 
 		};

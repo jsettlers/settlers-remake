@@ -32,20 +32,25 @@ public class InvalidLandscapeFix extends AbstractFix {
 	public InvalidLandscapeFix() {
 	}
 
+	/**
+	 * Add a position to fix
+	 * 
+	 * @param p
+	 *            Position
+	 */
 	public void addPosition(ShortPoint2D p) {
-		// TODO Auto-generated method stub
-
+		// TODO implement
 	}
 
 	@Override
 	public boolean isFixAvailable() {
-		// TODO Auto-generated method stub
+		// TODO implement
 		return false;
 	}
 
 	@Override
 	public JPopupMenu getPopupMenu() {
-		// TODO Auto-generated method stub
+		// TODO implement
 		return null;
 	}
 

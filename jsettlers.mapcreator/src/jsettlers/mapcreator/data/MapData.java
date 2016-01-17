@@ -81,7 +81,7 @@ public class MapData implements IMapData {
 
 	private byte[][] lastPlayers;
 	private boolean[][] lastBorders;
-	private boolean[][] doneBuffer;
+	private final boolean[][] doneBuffer;
 	private boolean[][] failpoints;
 
 	private final LandscapeFader fader = new LandscapeFader();
@@ -674,9 +674,15 @@ public class MapData implements IMapData {
 		return failpoints != null && failpoints[x][y];
 	}
 
+	/**
+	 * Set the maximum player count
+	 * 
+	 * @param maxPlayer
+	 *            Min: 1, Max: CommonConstants.MAX_PLAYERS
+	 */
 	public void setMaxPlayers(short maxPlayer) {
-		if (maxPlayer <= 0 || maxPlayer >= CommonConstants.MAX_PLAYERS) {
-			throw new IllegalArgumentException("Player count must be 1..32");
+		if (maxPlayer <= 0 || maxPlayer > CommonConstants.MAX_PLAYERS) {
+			throw new IllegalArgumentException("Player count must be 1.." + CommonConstants.MAX_PLAYERS);
 		}
 
 		ShortPoint2D[] newPlayerStarts = new ShortPoint2D[maxPlayer];
