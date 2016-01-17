@@ -89,6 +89,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 			@Override
 			public void dispose(GLAutoDrawable arg0) {
+				disposeAll();
 			}
 
 			@Override
@@ -161,6 +162,16 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		}
 		context.startFrame();
 		area.drawArea(context);
+	}
+
+	/**
+	 * Disposes all textures / buffers that were allocated by this context.
+	 */
+	protected void disposeAll() {
+		if (context != null) {
+			context.disposeAll();
+		}
+		context = null;
 	}
 
 	@Override

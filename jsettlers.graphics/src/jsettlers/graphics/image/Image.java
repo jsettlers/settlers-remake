@@ -15,6 +15,7 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
@@ -82,7 +83,6 @@ public abstract class Image {
 			float viewY, Color color, float multiply) {
 		int iColor = dimColor(color, multiply);
 		drawAt(gl, buffer, viewX, viewY, iColor);
-
 	}
 
 	public static int dimColor(Color color, float multiply) {
@@ -96,6 +96,17 @@ public abstract class Image {
 							color.getAlpha());
 		}
 		return iColor;
+	}
+
+	/**
+	 * Creates a crash report. This should not happen if we check that the texture is valid every time.
+	 * 
+	 * @param e
+	 *            The exception.
+	 */
+	protected void handleIllegalBufferException(IllegalBufferException e) {
+		// TODO Create crash report
+		e.printStackTrace();
 	}
 
 }

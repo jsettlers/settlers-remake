@@ -15,6 +15,9 @@
 package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
@@ -40,8 +43,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	protected final int offsetX;
 	protected final int offsetY;
 
-	private int texture = -1;
-	private int geometryindex = -1;
+	private TextureHandle texture = null;
+	private GeometryHandle geometryhandle = null;
 
 	/**
 	 * Creates a new image by the given buffer.
@@ -133,8 +136,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * 
 	 * @return The gl index or 0 if the texture is not allocated.
 	 */
-	public int getTextureIndex(GLDrawContext gl) {
-		if (texture < 0) {
+	public TextureHandle getTextureIndex(GLDrawContext gl) {
+		if (texture == null || !texture.isValid()) {
 			if (textureWidth == 0) {
 				textureWidth = gl.makeWidthValid(width);
 				textureHeight = gl.makeHeightValid(height);
@@ -156,25 +159,29 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 			float right, float top) {
-		int textureIndex = getTextureIndex(gl);
+		try {
+			TextureHandle textureHandle = getTextureIndex(gl);
 
-		tmpBuffer[0] = left;
-		tmpBuffer[1] = top;
+			tmpBuffer[0] = left;
+			tmpBuffer[1] = top;
 
-		tmpBuffer[5] = left;
-		tmpBuffer[6] = bottom;
-		tmpBuffer[9] = (float) height / textureHeight;
+			tmpBuffer[5] = left;
+			tmpBuffer[6] = bottom;
+			tmpBuffer[9] = (float) height / textureHeight;
 
-		tmpBuffer[10] = right;
-		tmpBuffer[11] = bottom;
-		tmpBuffer[13] = (float) width / textureWidth;
-		tmpBuffer[14] = (float) height / textureHeight;
+			tmpBuffer[10] = right;
+			tmpBuffer[11] = bottom;
+			tmpBuffer[13] = (float) width / textureWidth;
+			tmpBuffer[14] = (float) height / textureHeight;
 
-		tmpBuffer[15] = right;
-		tmpBuffer[16] = top;
-		tmpBuffer[18] = (float) width / textureWidth;
+			tmpBuffer[15] = right;
+			tmpBuffer[16] = top;
+			tmpBuffer[18] = (float) width / textureWidth;
 
-		gl.drawQuadWithTexture(textureIndex, tmpBuffer);
+			gl.drawQuadWithTexture(textureHandle, tmpBuffer);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	/*
@@ -212,30 +219,38 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 */
 	@Override
 	public void draw(GLDrawContext gl, Color color) {
-		if (color == null) {
-			gl.color(1, 1, 1, 1);
-		} else {
-			gl.color(color.getRed(), color.getGreen(), color.getBlue(),
-					color.getAlpha());
-		}
+		try {
+			if (color == null) {
+				gl.color(1, 1, 1, 1);
+			} else {
+				gl.color(color.getRed(), color.getGreen(), color.getBlue(),
+						color.getAlpha());
+			}
 
-		int textureIndex = getTextureIndex(gl);
-		int geometryIndex2 = getGeometryIndex(gl);
-		gl.drawTrianglesWithTexture(textureIndex, geometryIndex2, 2);
+			TextureHandle textureIndex = getTextureIndex(gl);
+			GeometryHandle geometry = getGeometry(gl);
+			gl.drawTrianglesWithTexture(textureIndex, geometry, 2);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-		if (color == null) {
-			gl.color(multiply, multiply, multiply, 1);
-		} else {
-			gl.color(color.getRed() * multiply, color.getGreen() * multiply,
-					color.getBlue() * multiply, color.getAlpha());
-		}
+		try {
+			if (color == null) {
+				gl.color(multiply, multiply, multiply, 1);
+			} else {
+				gl.color(color.getRed() * multiply, color.getGreen() * multiply,
+						color.getBlue() * multiply, color.getAlpha());
+			}
 
-		int textureIndex = getTextureIndex(gl);
-		int geometryIndex2 = getGeometryIndex(gl);
-		gl.drawTrianglesWithTexture(textureIndex, geometryIndex2, 2);
+			TextureHandle textureIndex = getTextureIndex(gl);
+			GeometryHandle geometryIndex2 = getGeometry(gl);
+			gl.drawTrianglesWithTexture(textureIndex, geometryIndex2, 2);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	private float[] getGeometry() {
@@ -282,15 +297,15 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		};
 	}
 
-	protected int setGeometryIndex(int geometryindex) {
-		return geometryindex;
+	protected void setGeometry(GeometryHandle geometry) {
+		geometryhandle = geometry;
 	}
 
-	protected int getGeometryIndex(GLDrawContext context) {
-		if (!context.isGeometryValid(geometryindex)) {
-			geometryindex = context.storeGeometry(getGeometry());
+	protected GeometryHandle getGeometry(GLDrawContext context) {
+		if (geometryhandle == null || !geometryhandle.isValid()) {
+			geometryhandle = context.storeGeometry(getGeometry());
 		}
-		return geometryindex;
+		return geometryhandle;
 	}
 
 	public float getTextureScaleX() {
@@ -304,11 +319,15 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, int iColor) {
-		int textureIndex = getTextureIndex(gl);
-		buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
-				- getOffsetY(), viewX + getOffsetX() + width, viewY
-				- getOffsetY() - height, 0, 0, getTextureScaleX(),
-				getTextureScaleY(), iColor);
+		try {
+			TextureHandle textureIndex = getTextureIndex(gl);
+			buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
+					- getOffsetY(), viewX + getOffsetX() + width, viewY
+					- getOffsetY() - height, 0, 0, getTextureScaleX(),
+					getTextureScaleY(), iColor);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	protected float convertU(float relativeU) {
@@ -340,34 +359,40 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 */
 	public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
-		DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
-		float left = getOffsetX() + viewX;
-		float top = -getOffsetY() + viewY;
-		// In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the growing
-		// image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more predictable and controlled
-		// manner.
-		u1 = (float) Math.round(u1 * width) / width;
-		u2 = (float) Math.round(u2 * width) / width;
-		u3 = (float) Math.round(u3 * width) / width;
-		v1 = (float) Math.round(v1 * height) / height;
-		v2 = (float) Math.round(v2 * height) / height;
-		v3 = (float) Math.round(v3 * height) / height;
+		try {
+			DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
+			float left = getOffsetX() + viewX;
+			float top = -getOffsetY() + viewY;
+			// In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
+			// growing
+			// image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more predictable and
+			// controlled
+			// manner.
+			u1 = (float) Math.round(u1 * width) / width;
+			u2 = (float) Math.round(u2 * width) / width;
+			u3 = (float) Math.round(u3 * width) / width;
+			v1 = (float) Math.round(v1 * height) / height;
+			v2 = (float) Math.round(v2 * height) / height;
+			v3 = (float) Math.round(v3 * height) / height;
 
-		buffer2.addTriangle(
-				(left + u1 * width),
-				(top - v1 * height),
-				(left + u2 * width),
-				(top - v2 * height),
-				(left + u3 * width),
-				(top - v3 * height),
-				convertU(u1),
-				convertV(v1),
-				convertU(u2),
-				convertV(v2),
-				convertU(u3),
-				convertV(v3),
-				activeColor
-				);
+			buffer2.addTriangle(
+					(left + u1 * width),
+					(top - v1 * height),
+					(left + u2 * width),
+					(top - v2 * height),
+					(left + u3 * width),
+					(top - v3 * height),
+					convertU(u1),
+					convertV(v1),
+					convertU(u2),
+					convertV(v2),
+					convertU(u3),
+					convertV(v3),
+					activeColor
+					);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
 	}
 
 	public BufferedImage generateBufferedImage() {
