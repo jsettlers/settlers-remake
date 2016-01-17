@@ -14,26 +14,15 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.List;
-
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.exceptionhandler.ExceptionHandler;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.main.swing.SwingManagedJSettlers;
-import jsettlers.mapcreator.control.ActionPropertie;
 import jsettlers.mapcreator.control.EditorControl;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
@@ -59,82 +48,6 @@ public class MapCreatorApp {
 		} catch (Exception e) {
 			// could not be loaded, ignore error
 		}
-	}
-
-	/**
-	 * Startup from action properties
-	 * 
-	 * @param options
-	 *            Options
-	 * @return true on success
-	 */
-	private static boolean startupFromAction(OptionableProperties options) {
-		try {
-			String actionconfig = options.getProperty("actionconfig");
-			if (actionconfig != null) {
-				ActionPropertie prop = new ActionPropertie(new FileInputStream(actionconfig));
-				String action = prop.getAction();
-
-				if (!"open".equals(action) && !"new".equals(action)) {
-					return false;
-				}
-
-				if (Boolean.parseBoolean(options.getProperty("delete-actionconfig"))) {
-					new File(actionconfig).delete();
-				}
-
-				if ("new".equals(action)) {
-					// Sample property file:
-					// action=new
-					// map-name=OpenTest 1
-					// lanscape-type=GRASS
-					// width=100
-					// height=100
-					// min-player=1
-					// max-player=3
-
-					String mapName = prop.getMapName();
-					String description = prop.getMapDescription();
-					ELandscapeType lanscapeType = prop.getLanscapeType();
-					int width = prop.getWidth();
-					int height = prop.getHeight();
-					int minPlayer = prop.getMinPlayerCount();
-					int maxPlayer = prop.getMaxPlayerCount();
-					MapFileHeader header = new MapFileHeader(MapType.NORMAL, mapName, null, description, (short) width, (short) height,
-							(short) minPlayer,
-							(short) maxPlayer, null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
-
-					EditorControl control = new EditorControl();
-					control.createNewMap(header, lanscapeType);
-
-				} else {
-					String mapId = prop.getMapId();
-					List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
-					MapLoader toOpenMap = null;
-					for (MapLoader m : maps) {
-						if (mapId.equals(m.getMapId())) {
-							toOpenMap = m;
-							break;
-						}
-					}
-
-					if (toOpenMap == null) {
-						JOptionPane.showMessageDialog(null, "Could not find map with ID \"" + mapId + "\"", "JSettler", JOptionPane.ERROR_MESSAGE,
-								null);
-						return false;
-					}
-
-					EditorControl control = new EditorControl();
-					control.loadMap(toOpenMap);
-				}
-
-				return true;
-			}
-		} catch (Exception e) {
-			System.err.println("Could not read action properties");
-			ExceptionHandler.displayError(e, "Failed to execute startup action");
-		}
-		return false;
 	}
 
 	/**
@@ -189,10 +102,6 @@ public class MapCreatorApp {
 			OptionableProperties options = MainUtils.loadOptions(args);
 			SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
 			loadLookAndFeel();
-
-			if (startupFromAction(options)) {
-				return;
-			}
 
 			startWithSelectionDialog();
 		} catch (Exception e) {

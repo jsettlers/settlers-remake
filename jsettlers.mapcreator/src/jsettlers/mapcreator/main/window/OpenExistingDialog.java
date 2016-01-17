@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
+import jsettlers.logic.map.MapLoader;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -33,7 +34,7 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 	/**
 	 * Listener for Double click
 	 */
-	private ActionListener doubleClickListener = new ActionListener() {
+	private final ActionListener doubleClickListener = new ActionListener() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -46,7 +47,7 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 	/**
 	 * Panel with the map list
 	 */
-	private OpenPanel openPanel = new OpenPanel(doubleClickListener);
+	private final OpenPanel openPanel = new OpenPanel(doubleClickListener);
 
 	/**
 	 * Constructor
@@ -66,9 +67,9 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 	}
 
 	/**
-	 * @return The selected map ID
+	 * @return The selected map
 	 */
-	public String getSelectedMapId() {
-		return openPanel.getSelectedMap().getMapId();
+	public MapLoader getSelectedMap() {
+		return openPanel.getSelectedMap();
 	}
 }
