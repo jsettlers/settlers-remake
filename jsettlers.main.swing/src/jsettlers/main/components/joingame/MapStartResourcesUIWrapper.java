@@ -1,60 +1,38 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.main.components.joingame;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.EMapStartResources;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
 
 /**
- * Classes of this interface are capable of creating a game.
- * 
- * @author michael
- * @author Andreas Eberle
+ * @author codingberlin
  */
-public interface IGameCreator {
+public class MapStartResourcesUIWrapper {
 
-	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
+	private final EMapStartResources startResources;
 
-	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException;
+	public MapStartResourcesUIWrapper(EMapStartResources startResources) {
+		this.startResources = startResources;
+	}
 
-	String getMapName();
+	public EMapStartResources getStartResources() {
+		return startResources;
+	}
 
-	String getMapId();
-
-	class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
+	@Override public String toString() {
+		return Labels.getString("map-start-resources-" + startResources.name());
 	}
 }

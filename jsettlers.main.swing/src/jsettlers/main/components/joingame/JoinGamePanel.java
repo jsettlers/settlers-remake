@@ -15,9 +15,8 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.swing.JSettlersSwingUtil;
@@ -25,6 +24,7 @@ import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -47,7 +47,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JLabel peaceTimeLabel = new JLabel();
 	private final JComboBox<EPeaceTime> peaceTimeComboBox = new JComboBox<>();
 	private final JLabel startResourcesLabel = new JLabel();
-	private final JComboBox<OriginalMapFileDataStructs.EMapStartResources> startResourcesComboBox = new JComboBox<>();
+	private final JComboBox<MapStartResourcesUIWrapper> startResourcesComboBox = new JComboBox<>();
 	private final JPanel playerSlotPanelWrapper = new JPanel();
 	private final JPanel playerSlotsPanel = new JPanel();
 	private final JButton cancelButton = new JButton();
@@ -61,11 +61,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private List<PlayerSlot> playerSlots = new Vector<>();
 	private PlayerSlotFactory playerSlotFactory;
 
-
-	//TODO: map slots per listener verdrahten, falls einer doppel ausgewählt wird.
-	//TODO: Warenbestand combobox füllen
 	//TODO: Spielstart
-
 
 	public JoinGamePanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
@@ -163,10 +159,14 @@ public class JoinGamePanel extends BackgroundPanel {
 		titleLabel.setText(Labels.getString("join-game-panel-new-single-player-game-title"));
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
+		startResourcesComboBox.removeAllItems();
+		Arrays.asList(EMapStartResources.values()).stream()
+				.map(MapStartResourcesUIWrapper::new)
+				.forEach(startResourcesComboBox::addItem);
+		startResourcesComboBox.setSelectedIndex(EMapStartResources.HIGH_GOODS.value-1);
 		resetNumberOfPlayersComboBox();
 		playerSlotFactory = new SinglePlayerSlotFactory();
 		updateNumberOfPlayerSlots();
-
 	}
 
 	private void resetNumberOfPlayersComboBox() {

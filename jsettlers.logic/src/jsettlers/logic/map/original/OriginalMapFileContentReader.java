@@ -26,8 +26,8 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
 
 /**
  * @author Thomas Zeugner
@@ -51,7 +51,7 @@ public class OriginalMapFileContentReader {
 	private boolean hasBuildings = false;
 
 	private byte[] mapContent;
-	private OriginalMapFileDataStructs.EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
+	private EMapStartResources startResources = EMapStartResources.HIGH_GOODS;
 
 	private String mapQuestTip = null;
 	private String mapQuestText = null;
@@ -627,7 +627,7 @@ public class OriginalMapFileContentReader {
 		return true;
 	}
 
-	public void addStartTowerMaterialsAndSettlers() {
+	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
 		// - only if there are no buildings
 		if (hasBuildings)
 			return;
