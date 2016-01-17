@@ -26,22 +26,23 @@ import jsettlers.graphics.reader.ImageMetadata;
  * <p>
  * It may be returned by image methods if the requested image is not available.
  * 
- * @author michael
+ * @author Michael Zangl
  */
-public class NullImage extends SingleImage {
+public final class NullImage extends SingleImage {
+	private static final float NULL_IMAGE_ALPHA = 0.5f;
 	private static final short[] NULL_DATA = new short[] {
 			0
 	};
 	private static final int HALFSIZE = 3;
 	private static NullImage instance;
 	private static LandscapeImage landscapeinstance = null;
-	private static final ImageMetadata nullImageMeta = new ImageMetadata();
+	private static final ImageMetadata NULL_IMAGE_META = new ImageMetadata();
 
 	static {
-		nullImageMeta.width = 1;
-		nullImageMeta.height = 1;
-		nullImageMeta.offsetX = 0;
-		nullImageMeta.offsetY = 0;
+		NULL_IMAGE_META.width = 1;
+		NULL_IMAGE_META.height = 1;
+		NULL_IMAGE_META.offsetX = 0;
+		NULL_IMAGE_META.offsetY = 0;
 	}
 
 	/**
@@ -62,7 +63,7 @@ public class NullImage extends SingleImage {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color) {
-		gl.color(1, 1, 1, 0.5f);
+		gl.color(1, 1, 1, NULL_IMAGE_ALPHA);
 		gl.fillQuad(-HALFSIZE, -HALFSIZE, HALFSIZE, HALFSIZE);
 
 		gl.color(1, 0, 0, 1);
@@ -91,7 +92,7 @@ public class NullImage extends SingleImage {
 	 */
 	public static LandscapeImage getForLandscape() {
 		if (landscapeinstance == null) {
-			landscapeinstance = new LandscapeImage(nullImageMeta, NULL_DATA);
+			landscapeinstance = new LandscapeImage(NULL_IMAGE_META, NULL_DATA);
 		}
 		return landscapeinstance;
 	}
@@ -103,7 +104,7 @@ public class NullImage extends SingleImage {
 	 */
 	public static GuiImage getForGui() {
 		if (guiinstance == null) {
-			guiinstance = new GuiImage(nullImageMeta, NULL_DATA);
+			guiinstance = new GuiImage(NULL_IMAGE_META, NULL_DATA);
 		}
 		return guiinstance;
 	}

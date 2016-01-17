@@ -25,14 +25,32 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
+/**
+ * This is a texture that is part of the {@link ImageIndexFile}.
+ * 
+ * @author Michael Zangl
+ */
 public final class ImageIndexTexture {
 	private TextureHandle textureIndex = null;
 	private final InputStream file;
 
+	/**
+	 * Creates a new {@link ImageIndexTexture} from an input stream.
+	 * 
+	 * @param inputStream
+	 *            The stream.
+	 */
 	public ImageIndexTexture(InputStream inputStream) {
 		this.file = inputStream;
 	}
 
+	/**
+	 * Generates the gl texture handle used for drawing this texture.
+	 * 
+	 * @param gl
+	 *            The gl context.
+	 * @return The texture handle.
+	 */
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
 		if (textureIndex == null || !textureIndex.isValid()) {
 			loadTexture(gl);

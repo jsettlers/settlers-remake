@@ -19,13 +19,15 @@ import jsettlers.graphics.reader.ImageMetadata;
 /**
  * This is a shadow image.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class ShadowImage extends SingleImage {
 
 	/**
 	 * Generates a shadow image.
 	 * 
+	 * @param metadata
+	 *            The mata data to use.
 	 * @param data
 	 *            The data to use.
 	 */

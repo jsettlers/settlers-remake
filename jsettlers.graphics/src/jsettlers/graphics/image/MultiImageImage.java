@@ -32,6 +32,12 @@ public class MultiImageImage extends Image {
 	private final float[] settlerGeometry;
 	private final float[] torsoGeometry;
 
+	/**
+	 * This is the data that is required to store the position of a {@link MultiImageImage}.
+	 * 
+	 * @author Michael Zangl.
+	 *
+	 */
 	private final class Data {
 		private int width;
 
@@ -85,7 +91,7 @@ public class MultiImageImage extends Image {
 		data.umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
 
 		data.vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
-		data.vmax = (float) (settlery) / map.getHeight();
+		data.vmax = (float) settlery / map.getHeight();
 		return new float[] {
 				// top left
 				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
@@ -154,7 +160,7 @@ public class MultiImageImage extends Image {
 		}
 	}
 
-	static private float[] tmpBuffer = new float[5 * 4];
+	private static final float[] TEMP_BUFFER = new float[5 * 4];
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
@@ -162,17 +168,17 @@ public class MultiImageImage extends Image {
 		try {
 			gl.color(1, 1, 1, 1);
 
-			System.arraycopy(settlerGeometry, 0, tmpBuffer, 0, 4 * 5);
-			tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
-			tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
-			tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
-			tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
-			tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
-			tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
-			tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
-			tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
+			System.arraycopy(settlerGeometry, 0, TEMP_BUFFER, 0, 4 * 5);
+			TEMP_BUFFER[0] = left + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[1] = top + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[5] = left + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[6] = bottom + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[10] = right + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[11] = bottom + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[15] = right + IMAGE_DRAW_OFFSET;
+			TEMP_BUFFER[16] = top + IMAGE_DRAW_OFFSET;
 
-			gl.drawQuadWithTexture(map.getTexture(gl), tmpBuffer);
+			gl.drawQuadWithTexture(map.getTexture(gl), TEMP_BUFFER);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
