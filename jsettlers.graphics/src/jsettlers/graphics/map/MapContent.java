@@ -168,6 +168,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
+		backgroundSound.start();
 
 		if (controls == null) {
 			this.controls = new OriginalControls(this, game.getInGamePlayer());
