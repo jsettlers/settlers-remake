@@ -141,7 +141,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void occupyMilitaryBuildings() {
 		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(
-				EBuildingType.getMilitaryBuildings(), playerId)) {
+				EBuildingType.getMilitaryBuildingsArray(), playerId)) {
 
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
 			if (militaryBuilding.getStateProgress() == 1 && !militaryBuilding.isOccupied()) {

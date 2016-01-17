@@ -142,7 +142,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	}
 
 	private ShortPoint2D calculateCenterOfPlayer(AiStatistics aiStatistics, byte playerId) {
-		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), playerId);
+		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildingsArray(), playerId);
 		int centerX = 0;
 		int centerY = 0;
 		for (ShortPoint2D militaryBuilding : militaryBuildings) {

@@ -320,7 +320,7 @@ public class AiStatistics {
 
 	public List<ShortPoint2D> getHinterlandMilitaryBuildingPositionsOfPlayer(byte playerId) {
 		List<ShortPoint2D> hinterlandMilitaryBuildingPositions = new ArrayList<ShortPoint2D>();
-		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), playerId)) {
+		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildingsArray(), playerId)) {
 			Building militaryBuilding = getBuildingAt(militaryBuildingPosition);
 			if (isMilitaryBuildingInHinterland(militaryBuilding, playerId)) {
 				hinterlandMilitaryBuildingPositions.add(militaryBuildingPosition);

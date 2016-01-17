@@ -971,7 +971,7 @@ public final class MainGrid implements Serializable {
 		private boolean canUsePositionForConstructionSafe(int x, int y, EBuildingType buildingType, short partition) {
 			// FIXME @Andreas: this can be merged with canUsePositionForConstruction
 			return !flagsGrid.isProtected(x, y)
-					&& buildingType.allowsLandscapeId(landscapeGrid.getLandscapeIdAt(x, y))
+					&& buildingType.allowsGroundTypeId(landscapeGrid.getLandscapeIdAt(x, y))
 					&& partitionsGrid.getPartitionIdAt(x, y) == partition;
 		}
 

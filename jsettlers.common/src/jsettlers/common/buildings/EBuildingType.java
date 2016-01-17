@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.buildings;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -31,7 +32,7 @@ import jsettlers.common.position.RelativePoint;
 /**
  * This interface defines the main building type.
  * 
- * @author michael
+ * @author Michael Zangl
  * @author Andreas Eberle
  */
 public enum EBuildingType {
@@ -81,17 +82,27 @@ public enum EBuildingType {
 	TEMPLE(31),
 	BIG_TEMPLE(32),
 
-	MARKET_PLACE(0),
-	// /**
-	// * Test building for own image files.
-	// */
-	// LAGERHAUS(0)
-	;
+	MARKET_PLACE(0);
 
-	public static final EBuildingType[] values = EBuildingType.values();
-	public static final int NUMBER_OF_BUILDINGS = values.length;
-	private static final EBuildingType[] MILITARY_BUILDINGS = {TOWER, BIG_TOWER, CASTLE};
+	private static final int SIZEOF_LONG = 64;
 
+	private static final int IMAGE_ROMAN = 13;
+
+	/**
+	 * A copy of {@link #values()}. Do not modify this array. This is intended for quicker access to this value.
+	 */
+	public static final EBuildingType[] VALUES = EBuildingType.values();
+
+	/**
+	 * The number of buildings in the {@link #VALUES} array.
+	 */
+	public static final int NUMBER_OF_BUILDINGS = VALUES.length;
+	private static final EnumSet<EBuildingType> MILITARY_BUILDINGS = EnumSet.of(TOWER, BIG_TOWER, CASTLE);
+	private static final EnumSet<EBuildingType> MINE_BUILDINGS = EnumSet.of(GOLDMINE, IRONMINE, COALMINE);
+
+	/**
+	 * The ordinal of this type. Yields more performance than using {@link #ordinal()}
+	 */
 	public final int ordinal;
 
 	private final IBuildingJob startJob;
@@ -137,6 +148,12 @@ public enum EBuildingType {
 
 	private final BuildingAreaBitSet buildingAreaBitSet;
 
+	/**
+	 * Constructs an enum object.
+	 * 
+	 * @param imageIndex
+	 *            The image index in the roman image file.
+	 */
 	EBuildingType(int imageIndex) {
 		this.ordinal = ordinal();
 
@@ -162,8 +179,8 @@ public enum EBuildingType {
 		if (tempimages.length == 0) {
 			// TODO: this can be removed if all images are converted
 			System.out.println("WARNING: Building " + this.toString() + " does not have an image definition.");
-			images = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0) };
-			buildImages = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1) };
+			images = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, IMAGE_ROMAN, imageIndex, 0) };
+			buildImages = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, IMAGE_ROMAN, imageIndex, 1) };
 		} else {
 			images = tempimages;
 			buildImages = file.getBuildImages();
@@ -179,16 +196,23 @@ public enum EBuildingType {
 		this.buildingAreaBitSet = new BuildingAreaBitSet(this.getProtectedTiles());
 	}
 
-	private long packGroundtypes(ELandscapeType[] groundtypes) {
-		assert ELandscapeType.values.length <= 64;
+	/**
+	 * Converts the list of supported ground types to a long for fast lookup.
+	 * 
+	 * @param groundtypeArray
+	 *            The array of ground types.
+	 * @return A packed bitset with each bit set if the ground type with that ordinal is in it.
+	 */
+	private long packGroundtypes(ELandscapeType[] groundtypeArray) {
+		assert ELandscapeType.values.length <= SIZEOF_LONG : "Too many ground types.";
 		long res = 0;
-		for (ELandscapeType g : groundtypes) {
+		for (ELandscapeType g : groundtypeArray) {
 			res |= (1 << g.ordinal);
 		}
 		return res;
 	}
 
-	private final byte calculateNumberOfConstructionMaterials() {
+	private byte calculateNumberOfConstructionMaterials() {
 		byte sum = 0;
 		for (ConstructionStack stack : getConstructionStacks()) {
 			sum += stack.requiredForBuild();
@@ -196,68 +220,40 @@ public enum EBuildingType {
 		return sum;
 	}
 
+	/**
+	 * Gets the job a worker for this building should start with.
+	 * 
+	 * @return That {@link IBuildingJob}
+	 */
 	public final IBuildingJob getStartJob() {
 		return startJob;
 	}
 
+	/**
+	 * Gets the type of worker required for the building.
+	 * 
+	 * @return The worker or <code>null</code> if no worker is required.
+	 */
 	public final EMovableType getWorkerType() {
 		return workerType;
 	}
 
+	/**
+	 * Gets the position of the door for this building.
+	 * 
+	 * @return The door.
+	 */
 	public final RelativePoint getDoorTile() {
 		return doorTile;
 	}
 
+	/**
+	 * Gets a list of blocked positions.
+	 * 
+	 * @return The list of blocked positions.
+	 */
 	public final RelativePoint[] getBlockedTiles() {
 		return blockedTiles;
-	}
-
-	@Deprecated
-	public final int getImageIndex() {
-		return imageIndex;
-	}
-
-	/**
-	 * Gets the images needed to display this building
-	 * 
-	 * @return The images
-	 */
-	public final ImageLink[] getImages() {
-		return images;
-	}
-
-	/**
-	 * Gets the gui image
-	 * 
-	 * @return The image. It may be <code>null</code>
-	 */
-	public final ImageLink getGuiImage() {
-		return guiImage;
-	}
-
-	/**
-	 * Gets the working radius of the building. If it is 0, the building does not support a working radius.
-	 * 
-	 * @return
-	 */
-	public final short getWorkradius() {
-		return workradius;
-	}
-
-	public final RelativePoint getWorkcenter() {
-		return workcenter;
-	}
-
-	public final RelativePoint getFlag() {
-		return flag;
-	}
-
-	public final RelativeBricklayer[] getBricklayers() {
-		return bricklayers;
-	}
-
-	public final byte getNumberOfConstructionMaterials() {
-		return numberOfConstructionMaterials;
 	}
 
 	/**
@@ -269,26 +265,132 @@ public enum EBuildingType {
 		return protectedTiles;
 	}
 
-	public final RelativePoint[] getBuildmarks() {
-		return buildmarks;
+	@Deprecated
+	public final int getImageIndex() {
+		return imageIndex;
 	}
 
+	/**
+	 * Gets the images needed to display this building. They are rendered in the order provided.
+	 * 
+	 * @return The images
+	 */
+	public final ImageLink[] getImages() {
+		return images;
+	}
+
+	/**
+	 * Gets the images needed to display this building while it si build. They are rendered in the order provided.
+	 * 
+	 * @return The images
+	 */
 	public final ImageLink[] getBuildImages() {
 		return buildImages;
 	}
 
+	/**
+	 * Gets the gui image that is displayed in the building selection dialog.
+	 * 
+	 * @return The image. It may be <code>null</code>
+	 */
+	public final ImageLink getGuiImage() {
+		return guiImage;
+	}
+
+	/**
+	 * Gets the working radius of the building. If it is 0, the building does not support a working radius.
+	 * 
+	 * @return The radius.
+	 */
+	public final short getWorkradius() {
+		return workradius;
+	}
+
+	/**
+	 * Gets the default work center for the building type.
+	 * 
+	 * @return The default work center position.
+	 */
+	public final RelativePoint getDefaultWorkcenter() {
+		return workcenter;
+	}
+
+	/**
+	 * Gets the position of the flag for this building. The flag type is determined by the building itself.
+	 * 
+	 * @return The flag position.
+	 */
+	public final RelativePoint getFlag() {
+		return flag;
+	}
+
+	/**
+	 * Gets the positions where the bricklayers should stand to build the house.
+	 * 
+	 * @return The positions.
+	 * @see RelativeBricklayer
+	 */
+	public final RelativeBricklayer[] getBricklayers() {
+		return bricklayers;
+	}
+
+	/**
+	 * Gets the positions of the build marks (sticks) for this building.
+	 * 
+	 * @return The positions of the marks.
+	 */
+	public final RelativePoint[] getBuildmarks() {
+		return buildmarks;
+	}
+
+	/**
+	 * Gets the ground types this building can be placed on.
+	 * 
+	 * @return The ground types.
+	 */
 	public final ELandscapeType[] getGroundtypes() {
 		return groundtypes;
 	}
 
+	/**
+	 * A (fast) method that allows us to check if this landscape type is allowed.
+	 * 
+	 * @param landscapeId
+	 *            The landscape id (ordinal).
+	 * @return True if we allow that landscape as ground type.
+	 */
+	public boolean allowsGroundTypeId(int landscapeId) {
+		return (groundtypesFast & (1 << landscapeId)) != 0;
+	}
+
+	/**
+	 * Gets the distance the FOW should be set to visible around this building.
+	 * 
+	 * @return The view distance.
+	 */
 	public final short getViewDistance() {
 		return viewdistance;
 	}
 
+	/**
+	 * Gets the places where occupiers can be in this building.
+	 * 
+	 * @return The places.
+	 * @see OccupyerPlace
+	 */
 	public final OccupyerPlace[] getOccupyerPlaces() {
 		return occupyerPlaces;
 	}
 
+	/**
+	 * Queries a building job with the given name that needs to be accessible from the start job.
+	 * 
+	 * @param jobname
+	 *            The name of the job.
+	 * @return The job if found.
+	 * @throws IllegalArgumentException
+	 *             If the name was not found.
+	 */
 	public final IBuildingJob getJobByName(String jobname) {
 		HashSet<String> visited = new HashSet<String>();
 
@@ -311,56 +413,86 @@ public enum EBuildingType {
 		throw new IllegalArgumentException("This building has no job with name " + jobname);
 	}
 
+	/**
+	 * Gets the area for this building.
+	 * 
+	 * @return The building area.
+	 */
 	public final BuildingAreaBitSet getBuildingAreaBitSet() {
 		return buildingAreaBitSet;
 	}
 
+	/**
+	 * Gets the materials required to build this building and where to place them.
+	 * 
+	 * @return The array of material stacks.
+	 */
 	public ConstructionStack[] getConstructionStacks() {
 		return constructionStacks;
 	}
 
+	/**
+	 * Get the amount of material required to build this house. Usually the number of stone + planks.
+	 * 
+	 * @return The number of materials required to construct the building.
+	 */
+	public final byte getNumberOfConstructionMaterials() {
+		return numberOfConstructionMaterials;
+	}
+
+	/**
+	 * Gets the request stacks required to operate this building.
+	 * 
+	 * @return The request stacks.
+	 */
 	public RelativeStack[] getRequestStacks() {
 		return requestStacks;
 	}
 
+	/**
+	 * Gets the positions where the building should offer materials.
+	 * 
+	 * @return The offer positions.
+	 */
 	public RelativeStack[] getOfferStacks() {
 		return offerStacks;
 	}
 
-	public static EBuildingType[] getMilitaryBuildings() {
-		return MILITARY_BUILDINGS;
-	}
-
+	/**
+	 * Checks if this building is a mine.
+	 * 
+	 * @return <code>true</code> iff this building is a mine.
+	 */
 	public boolean isMine() {
-		switch (this) {
-		case COALMINE:
-		case IRONMINE:
-		case GOLDMINE:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	public boolean isMilitaryBuilding() {
-		switch(this) {
-		case TOWER:
-		case BIG_TOWER:
-		case CASTLE:
-			return true;
-		default:
-			return false;
-		}
+		return MINE_BUILDINGS.contains(this);
 	}
 
 	/**
-	 * A (fast) method that allows us to check if this landscape type is allowed.
+	 * Checks if this building is a military building.
 	 * 
-	 * @param landscapeId
-	 *            The landscape id (ordinal).
-	 * @return True if we allow that landscape as ground type.
+	 * @return <code>true</code> iff this is a military building.
 	 */
-	public boolean allowsLandscapeId(int landscapeId) {
-		return (groundtypesFast & (1 << landscapeId)) != 0;
+	public boolean isMilitaryBuilding() {
+		return MILITARY_BUILDINGS.contains(this);
 	}
+
+	/**
+	 * Gets an collection of all military buildings.
+	 * 
+	 * @return The buildings.
+	 */
+	public static EnumSet<EBuildingType> getMilitaryBuildings() {
+		return MILITARY_BUILDINGS;
+	}
+
+	/**
+	 * Gets an array of all military buildings. Use {@link #getMilitaryBuildings()} instead.
+	 * 
+	 * @return The buildings.
+	 */
+	@Deprecated
+	public static EBuildingType[] getMilitaryBuildingsArray() {
+		return MILITARY_BUILDINGS.toArray(new EBuildingType[0]);
+	}
+
 }
