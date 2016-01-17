@@ -228,7 +228,7 @@ class LineLoader implements Runnable {
 						Color playerColor = context.getPlayerColor(player);
 						// Now add a landscape below that....
 						Color landscape = getColorForArea(map, mapminX, mapminY, mapmaxX, mapmaxY);
-						playerColor = landscape.toGreyScale().overlay(playerColor);
+						playerColor = landscape.toGreyScale().multiply(playerColor);
 						occupiedColor = playerColor.toShortColor(1);
 						displayOccupied = OccupiedAreaMode.NONE;
 					}
