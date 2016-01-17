@@ -5,7 +5,7 @@ logs
 
 /.metadata
 /.recommenders
-.settings
+!/go.graphics/.settings/org.eclipse.jdt.ui.prefs
 .buildScripts
 /jsettlers.main.android/assets/*
 
