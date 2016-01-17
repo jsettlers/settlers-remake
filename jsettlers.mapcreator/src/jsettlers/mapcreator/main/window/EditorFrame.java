@@ -126,7 +126,7 @@ public abstract class EditorFrame extends JFrame {
 	 * Initialize menubar and toolbar
 	 */
 	public void initMenubarAndToolbar() {
-		createMenu();
+		createMenubar();
 		createToolbar();
 	}
 
@@ -202,7 +202,7 @@ public abstract class EditorFrame extends JFrame {
 	/**
 	 * Create the menu from menu.properties
 	 */
-	private void createMenu() {
+	private void createMenubar() {
 		try {
 			menuconfig.load(EditorFrame.class.getResourceAsStream("menu.properties"));
 		} catch (Exception e) {
@@ -216,7 +216,6 @@ public abstract class EditorFrame extends JFrame {
 			System.err.println("Could not load shortcut.properties");
 		}
 
-		ActionMap actionMap = ((JPanel) this.getContentPane()).getActionMap();
 		JMenuBar menuBar = new JMenuBar();
 
 		for (String menuName : menuconfig.getProperty("menubar", "").split(",")) {
@@ -224,85 +223,123 @@ public abstract class EditorFrame extends JFrame {
 			if (menuName.isEmpty()) {
 				continue;
 			}
-			JMenu menu = new JMenu(EditorLabels.getLabel("menu." + menuName));
 
-			// because of the open gl context
-			menu.getPopupMenu().setLightWeightPopupEnabled(false);
-
-			for (String menuAction : menuconfig.getProperty("menu." + menuName, "").split(",")) {
-				menuAction = menuAction.trim();
-				if (menuAction.isEmpty()) {
-					continue;
-				}
-
-				if ("---".equals(menuAction)) {
-					menu.addSeparator();
-				} else {
-					final Action action = actionMap.get(menuAction);
-					if (action == null) {
-						System.err.println("Action \"" + menuAction + "\" not found!");
-						continue;
-					}
-
-					final JMenuItem it;
-					Boolean displayAsCheckbox = (Boolean) action.getValue(EditorFrame.DISPLAY_CHECKBOX);
-					if (displayAsCheckbox != null && displayAsCheckbox) {
-						it = new JCheckBoxMenuItem();
-						it.setAction(action);
-						it.addChangeListener(new ChangeListener() {
-
-							@Override
-							public void stateChanged(ChangeEvent e) {
-								Object oldValue = action.getValue(EditorFrame.CHECKBOX_VALUE);
-
-								if (oldValue != null && oldValue.equals(it.isSelected())) {
-									return;
-								}
-
-								action.putValue(EditorFrame.CHECKBOX_VALUE, it.isSelected());
-								action.actionPerformed(new ActionEvent(it, 0, "changed"));
-							}
-						});
-						action.addPropertyChangeListener(new PropertyChangeListener() {
-
-							@Override
-							public void propertyChange(PropertyChangeEvent evt) {
-								if (EditorFrame.CHECKBOX_VALUE.equals(evt.getPropertyName())) {
-									Boolean checked = (Boolean) evt.getNewValue();
-									if (it.isSelected() != checked) {
-										it.setSelected(checked);
-									}
-								}
-							}
-						});
-					} else {
-						it = menu.add(action);
-					}
-
-					action.addPropertyChangeListener(new PropertyChangeListener() {
-
-						@Override
-						public void propertyChange(PropertyChangeEvent evt) {
-							if (Action.NAME.equals(evt.getPropertyName())) {
-								it.setText((String) evt.getNewValue());
-							}
-						}
-					});
-					it.setText((String) action.getValue(Action.NAME));
-
-					String shortcut = this.shortcut.getProperty(menuAction);
-					if (shortcut != null) {
-						it.setAccelerator(
-								KeyStroke.getKeyStroke(shortcut));
-					}
-
-					menu.add(it);
-				}
-			}
-
+			JMenu menu = createMenu(menuName);
 			menuBar.add(menu);
 		}
 		setJMenuBar(menuBar);
+	}
+
+	/**
+	 * Create a single menu in the Menubar
+	 * 
+	 * @param menuName
+	 *            Name of the menu
+	 * @return JMenu
+	 */
+	private JMenu createMenu(String menuName) {
+		ActionMap actionMap = ((JPanel) this.getContentPane()).getActionMap();
+		JMenu menu = new JMenu(EditorLabels.getLabel("menu." + menuName));
+		// because of the open gl context
+		menu.getPopupMenu().setLightWeightPopupEnabled(false);
+
+		for (String menuActionName : menuconfig.getProperty("menu." + menuName, "").split(",")) {
+			menuActionName = menuActionName.trim();
+			if (menuActionName.isEmpty()) {
+				continue;
+			}
+
+			if ("---".equals(menuActionName)) {
+				menu.addSeparator();
+			} else {
+				final Action action = actionMap.get(menuActionName);
+				if (action == null) {
+					System.err.println("Action \"" + menuActionName + "\" not found!");
+					continue;
+				}
+
+				createMenuItemForAction(action, menuActionName, menu);
+			}
+		}
+		return menu;
+	}
+
+	/**
+	 * Create a menu item for a specific action
+	 * 
+	 * @param action
+	 *            The action
+	 * @param menuActionName
+	 *            The name of the action
+	 * @param menu
+	 *            The menu to add the action
+	 */
+	private void createMenuItemForAction(final Action action, String menuActionName, JMenu menu) {
+		final JMenuItem it;
+		Boolean displayAsCheckbox = (Boolean) action.getValue(EditorFrame.DISPLAY_CHECKBOX);
+		if (displayAsCheckbox != null && displayAsCheckbox) {
+			it = createCheckboxMenuItemForAction(action);
+			menu.add(it);
+		} else {
+			it = menu.add(action);
+		}
+
+		action.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (Action.NAME.equals(evt.getPropertyName())) {
+					it.setText((String) evt.getNewValue());
+				}
+			}
+		});
+		it.setText((String) action.getValue(Action.NAME));
+
+		String shortcut = this.shortcut.getProperty(menuActionName);
+		if (shortcut != null) {
+			it.setAccelerator(
+					KeyStroke.getKeyStroke(shortcut));
+		}
+	}
+
+	/**
+	 * Create a checkbox menu item
+	 * 
+	 * @param action
+	 *            The target action
+	 * 
+	 * @return JMenuItem
+	 */
+	private JMenuItem createCheckboxMenuItemForAction(final Action action) {
+		final JCheckBoxMenuItem it = new JCheckBoxMenuItem();
+		it.setAction(action);
+		it.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				Object oldValue = action.getValue(EditorFrame.CHECKBOX_VALUE);
+
+				if (oldValue != null && oldValue.equals(it.isSelected())) {
+					return;
+				}
+
+				action.putValue(EditorFrame.CHECKBOX_VALUE, it.isSelected());
+				action.actionPerformed(new ActionEvent(it, 0, "changed"));
+			}
+		});
+		action.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (EditorFrame.CHECKBOX_VALUE.equals(evt.getPropertyName())) {
+					Boolean checked = (Boolean) evt.getNewValue();
+					if (it.isSelected() != checked) {
+						it.setSelected(checked);
+					}
+				}
+			}
+		});
+		return it;
 	}
 
 	/**
