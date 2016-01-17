@@ -32,7 +32,7 @@ import jsettlers.graphics.progress.EProgressState;
  * @author michael
  */
 public final class Labels extends AbstractLabels {
-	private static final Labels instance = new Labels();
+	private static final Labels INSTANCE = new Labels();
 
 	private Labels() {
 	}
@@ -45,23 +45,33 @@ public final class Labels extends AbstractLabels {
 	}
 
 	/**
-	 * Gets a string
+	 * Gets a string.
 	 * 
 	 * @param key
 	 *            The name of the string
 	 * @return The localized string
 	 */
 	public static String getString(String key) {
-		return instance.getSingleString(key);
-	}
-
-	public static String getString(String string, Object... args) {
-		String parsedString = getString(string);
-		return String.format(instance.usedLocale, parsedString, args);
+		return INSTANCE.getSingleString(key);
 	}
 
 	/**
-	 * Gets the name of a movable
+	 * Gets a formatted string.
+	 * 
+	 * @param string
+	 *            The key to query
+	 * @param args
+	 *            The arguments to replace.
+	 * @return A localized, formatted string.
+	 * @see String#format(String, Object...)
+	 */
+	public static String getString(String string, Object... args) {
+		String parsedString = getString(string);
+		return String.format(INSTANCE.getUsedLocale(), parsedString, args);
+	}
+
+	/**
+	 * Gets the name of a movable.
 	 * 
 	 * @param type
 	 *            The movable type
@@ -72,7 +82,7 @@ public final class Labels extends AbstractLabels {
 	}
 
 	/**
-	 * Gets the name of a resource
+	 * Gets the name of a resource.
 	 * 
 	 * @param type
 	 *            The resource type
@@ -83,7 +93,7 @@ public final class Labels extends AbstractLabels {
 	}
 
 	/**
-	 * Gets the name of a building
+	 * Gets the name of a building.
 	 * 
 	 * @param type
 	 *            The building type
@@ -94,7 +104,7 @@ public final class Labels extends AbstractLabels {
 	}
 
 	/**
-	 * Gets the name of a material
+	 * Gets the name of a material.
 	 *
 	 * @param type
 	 *            The material type
@@ -103,11 +113,15 @@ public final class Labels extends AbstractLabels {
 	 * @return The localized name.
 	 */
 	public static String getName(EMaterialType type, boolean plural) {
-		return getString("material_" + type + (plural ? "p" : ""));
+		String key = "material_" + type;
+		if (plural) {
+			key += "p";
+		}
+		return getString(key);
 	}
 
 	/**
-	 * Gets the name of a {@link ESoldierType}
+	 * Gets the name of a {@link ESoldierType}.
 	 *
 	 * @param type
 	 *            The soldier type
@@ -128,7 +142,14 @@ public final class Labels extends AbstractLabels {
 		return getString("action_" + action);
 	}
 
-	public static String getProgress(EProgressState loading) {
-		return getString("progress_" + loading);
+	/**
+	 * Gets a String for a progress constant.
+	 * 
+	 * @param progress
+	 *            The progress constant.
+	 * @return The localized name,
+	 */
+	public static String getProgress(EProgressState progress) {
+		return getString("progress_" + progress);
 	}
 }
