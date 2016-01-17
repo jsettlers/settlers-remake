@@ -57,6 +57,7 @@ import jsettlers.mapcreator.data.objects.ProtectContainer;
 import jsettlers.mapcreator.data.objects.StackContainer;
 import jsettlers.mapcreator.data.objects.StoneObjectContainer;
 import jsettlers.mapcreator.data.objects.TreeObjectContainer;
+import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
 
 /**
  * This is the map data of a map that is beeing created by the editor.
@@ -77,6 +78,12 @@ public class MapData implements IMapData {
 
 	private MapDataDelta undoDelta;
 	private int playercount;
+
+	/**
+	 * Start position of all player, will be converted to a border in ValidatePlayerStartPosition
+	 * 
+	 * @see ValidatePlayerStartPosition
+	 */
 	private ShortPoint2D[] playerStarts;
 
 	private byte[][] lastPlayers;
@@ -663,6 +670,16 @@ public class MapData implements IMapData {
 		this.lastBorders = lastBorders;
 	}
 
+	/**
+	 * Start position of a player, will be converted to a border in ValidatePlayerStartPosition
+	 * 
+	 * @see ValidatePlayerStartPosition
+	 * 
+	 * @param activePlayer
+	 *            Player
+	 * @param pos
+	 *            Position
+	 */
 	public void setStartPoint(int activePlayer, ShortPoint2D pos) {
 		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
 		this.playerStarts[activePlayer] = pos;

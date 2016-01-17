@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
@@ -34,6 +35,11 @@ import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 public class MapValidator {
 
 	/**
+	 * Header of the current open map
+	 */
+	private MapFileHeader header;
+
+	/**
 	 * Map to check
 	 */
 	protected MapData data;
@@ -41,7 +47,7 @@ public class MapValidator {
 	/**
 	 * Listener for validation results
 	 */
-	private List<ValidationResultListener> listener = new ArrayList<>();
+	private final List<ValidationResultListener> listener = new ArrayList<>();
 
 	/**
 	 * Broadcast listener
@@ -64,7 +70,7 @@ public class MapValidator {
 	/**
 	 * Executor service used to check the errors in another thread
 	 */
-	private ExecutorService threadpool = Executors.newSingleThreadExecutor(new ThreadFactory() {
+	private final ExecutorService threadpool = Executors.newSingleThreadExecutor(new ThreadFactory() {
 
 		@Override
 		public Thread newThread(Runnable r) {
@@ -97,10 +103,18 @@ public class MapValidator {
 	}
 
 	/**
+	 * @param header
+	 *            Header of the current open map
+	 */
+	public void setHeader(MapFileHeader header) {
+		this.header = header;
+	}
+
+	/**
 	 * Validate again
 	 */
 	public void reValidate() {
-		threadpool.execute(new ValidatorRunnable(resultListener, data));
+		threadpool.execute(new ValidatorRunnable(resultListener, data, header));
 	}
 
 	/**

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,7 +43,6 @@ import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
-import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -84,7 +82,6 @@ import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapvalidator.AutoFixErrorAction;
 import jsettlers.mapcreator.mapvalidator.GotoNextErrorAction;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
-import jsettlers.mapcreator.mapvalidator.MapValidator;
 import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
@@ -102,12 +99,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author Andreas Butti
  */
-public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
-
-	/**
-	 * Map data
-	 */
-	private MapData data;
+public class EditorControl extends EditorControlBase implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
 
 	/**
 	 * Map drawing
@@ -133,11 +125,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * To scrol to positions
 	 */
 	private MapInterfaceConnector connector;
-
-	/**
-	 * Header of the current open map
-	 */
-	private MapFileHeader header;
 
 	/**
 	 * Window displayed
@@ -166,11 +153,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * Sidebar with all tabs
 	 */
 	private final Sidebar sidebar = new Sidebar(toolSidebar, this);
-
-	/**
-	 * Validates the map for errors
-	 */
-	private final MapValidator validator = new MapValidator();
 
 	/**
 	 * Timer for redrawing
@@ -272,12 +254,13 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 *            Map to use
 	 */
 	public void loadMap(MapFileHeader header, MapData mapData) {
-		this.header = header;
+		setHeader(header);
 		this.data = mapData;
 		updatePlayerCombobox();
 
 		map = new MapGraphics(data);
 		validator.setData(data);
+		validator.setHeader(header);
 		validator.addListener(sidebar.getErrorSidebar());
 		buildMapEditingWindow();
 
@@ -324,7 +307,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		window.setSize(1200, 800);
 		window.invalidate();
 
-		window.setFilename(header.getName());
+		window.setFilename(getHeader().getName());
 
 		// center on screen
 		window.setLocationRelativeTo(null);
@@ -524,8 +507,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				String name = JOptionPane.showInputDialog(window, EditorLabels.getLabel("ctrl.save-as-name"));
 
 				if (name != null) {
-					header = new MapFileHeader(header.getType(), name, null, header.getDescription(), header.getWidth(),
-							header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), header.getBgimage().clone());
+					createNewHeaderWithName(name);
 					save();
 					window.setFilename(name);
 				}
@@ -635,15 +617,15 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * Display the map settings dialog
 	 */
 	protected void editSettings() {
-		SettingsDialog dlg = new SettingsDialog(window, header) {
+		SettingsDialog dlg = new SettingsDialog(window, getHeader()) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void applyNewHeader(MapFileHeader header) {
-				EditorControl.this.header = header;
+				setHeader(header);
 				data.setMaxPlayers(header.getMaxPlayer());
-				validator.reValidate();
 				updatePlayerCombobox();
+				validator.reValidate();
 			}
 
 		};
@@ -665,14 +647,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		} catch (Throwable e) {
 			ExceptionHandler.displayError(e, "Error saving");
 		}
-	}
-
-	private MapFileHeader generateMapHeader() {
-		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
-				data.getPreviewImageDataSupplier()).getPreviewImage();
-		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getBaseMapId(), header.getDescription(),
-				header.getWidth(), header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
-		return imagedHeader;
 	}
 
 	/**
