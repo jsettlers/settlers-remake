@@ -50,7 +50,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 		/**
 		 * The last texture we set.
 		 */
-		private int currentTexture = 0;
+		private TextureHandle currentTexture = null;
 
 		private int currentTriangles = 0;
 
@@ -74,7 +74,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 			byteBuffer.put(activeColor);
 		}
 
-		protected void setForTexture(int texture) {
+		protected void setForTexture(TextureHandle texture) {
 			if (currentTexture != texture) {
 				if (currentTriangles != 0) {
 					draw();
@@ -143,9 +143,9 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	protected abstract void drawTriangles(FloatBuffer buffer,
 			FloatBuffer bufferDuplicate, int tris);
 
-	protected abstract void setTexture(int index);
+	protected abstract void setTexture(TextureHandle index);
 
-	protected GLBuffer getBuffer(int texture) {
+	protected GLBuffer getBuffer(TextureHandle texture) {
 		for (int i = 0; i < GL_BUFFERS; i++) {
 			if (drawBuffers[i].currentTexture == texture) {
 				return drawBuffers[i];
@@ -163,7 +163,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
+	public void drawTrianglesWithTexture(TextureHandle textureid, float[] geometry) {
 		GLBuffer buffer = getBuffer(textureid);
 		buffer.addTriangles(geometry);
 	}
@@ -177,19 +177,19 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	}
 
 	@Override
-	public void drawQuadWithTexture(int textureid, float[] geometry) {
+	public void drawQuadWithTexture(TextureHandle textureid, float[] geometry) {
 		GLBuffer buffer = getBuffer(textureid);
 		buffer.addQuad(geometry);
 	}
 
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
-		GLBuffer buffer = getBuffer(0);
+		GLBuffer buffer = getBuffer(null);
 		buffer.addQuadPrimitive(x1, y1, x2, y2);
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
+	public void drawTrianglesWithTextureColored(TextureHandle textureid, float[] geometry) {
 		// UNUSED
 	}
 
