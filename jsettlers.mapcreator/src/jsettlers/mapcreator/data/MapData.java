@@ -164,10 +164,6 @@ public class MapData implements IMapData {
 	 * 
 	 * @param type
 	 * @param area
-	 * @param usedmaxy
-	 * @param usedmaxx
-	 * @param usedminy
-	 * @param usedminx
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
 
@@ -222,12 +218,8 @@ public class MapData implements IMapData {
 		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<FadeTask>();
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
-				if (area.contains(new ShortPoint2D(x, y))) { // < we cannot use
-																// done[x][y],
-																// because done
-																// flag
-																// is set for other
-																// tiles, too.
+				// we cannot use done[x][y], because done flag is set for other tiles, too.
+				if (area.contains(new ShortPoint2D(x, y))) {
 					for (EDirection dir : EDirection.values) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
@@ -312,46 +304,6 @@ public class MapData implements IMapData {
 		return tx >= 0 && tx < width && ty >= 0 && ty < height;
 	}
 
-	private static final class MapDataReceiver implements IMapDataReceiver {
-		MapData data = null;
-
-		@Override
-		public void setPlayerStart(byte player, int x, int y) {
-			data.playerStarts[player] = new ShortPoint2D(x, y);
-		}
-
-		@Override
-		public void setMapObject(int x, int y, MapObject object) {
-			data.placeObject(object, x, y);
-		}
-
-		@Override
-		public void setLandscape(int x, int y, ELandscapeType type) {
-			data.landscapes[x][y] = type;
-		}
-
-		@Override
-		public void setHeight(int x, int y, byte height) {
-			data.heights[x][y] = height;
-		}
-
-		@Override
-		public void setDimension(int width, int height, int playercount) {
-			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
-		}
-
-		@Override
-		public void setResources(int x, int y, EResourceType type, byte amount) {
-			data.resources[x][y] = type;
-			data.resourceAmount[x][y] = amount;
-		}
-
-		@Override
-		public void setBlockedPartition(int x, int y, short blockedPartition) {
-			data.blockedPartitions[x][y] = blockedPartition;
-		}
-	}
-
 	private static class FadeTask {
 
 		private final ELandscapeType type;
@@ -403,13 +355,12 @@ public class MapData implements IMapData {
 	}
 
 	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
-		boolean allowed = false;
 		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
 			if (t == type) {
-				allowed = true;
+				return true;
 			}
 		}
-		return allowed;
+		return false;
 	}
 
 	public void setListener(IGraphicsBackgroundListener backgroundListener) {
@@ -619,6 +570,57 @@ public class MapData implements IMapData {
 		return playercount;
 	}
 
+	/**
+	 * Class to read serialized data
+	 */
+	private static final class MapDataReceiver implements IMapDataReceiver {
+		MapData data = null;
+
+		@Override
+		public void setPlayerStart(byte player, int x, int y) {
+			data.playerStarts[player] = new ShortPoint2D(x, y);
+		}
+
+		@Override
+		public void setMapObject(int x, int y, MapObject object) {
+			data.placeObject(object, x, y);
+		}
+
+		@Override
+		public void setLandscape(int x, int y, ELandscapeType type) {
+			data.landscapes[x][y] = type;
+		}
+
+		@Override
+		public void setHeight(int x, int y, byte height) {
+			data.heights[x][y] = height;
+		}
+
+		@Override
+		public void setDimension(int width, int height, int playercount) {
+			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
+		}
+
+		@Override
+		public void setResources(int x, int y, EResourceType type, byte amount) {
+			data.resources[x][y] = type;
+			data.resourceAmount[x][y] = amount;
+		}
+
+		@Override
+		public void setBlockedPartition(int x, int y, short blockedPartition) {
+			data.blockedPartitions[x][y] = blockedPartition;
+		}
+	}
+
+	/**
+	 * Read serialized file
+	 * 
+	 * @param in
+	 *            input stream
+	 * @return MapData
+	 * @throws IOException
+	 */
 	public static MapData deserialize(InputStream in) throws IOException {
 		MapDataReceiver receiver = new MapDataReceiver();
 		FreshMapSerializer.deserialize(receiver, in);
