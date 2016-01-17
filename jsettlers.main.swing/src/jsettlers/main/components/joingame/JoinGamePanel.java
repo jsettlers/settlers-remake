@@ -168,7 +168,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		startResourcesComboBox.setSelectedIndex(EMapStartResources.HIGH_GOODS.value-1);
 		resetNumberOfPlayersComboBox();
 		playerSlotFactory = new SinglePlayerSlotFactory();
-		updateNumberOfPlayerSlots();
+		initializeNumberOfPlayerSlots();
 		setStartButtonActionListener(e -> {
 			long randomSeed = System.currentTimeMillis();
 			PlayerSetting[] playerSettings = playerSlots.stream()
@@ -195,15 +195,23 @@ public class JoinGamePanel extends BackgroundPanel {
 		numberOfPlayersComboBox.setSelectedIndex(mapLoader.getMaxPlayers()-1);
 	}
 
-	private void updateNumberOfPlayerSlots() {
-		if (playerSlotFactory == null || numberOfPlayersComboBox.getSelectedItem() == null) {
-			return;
-		}
+	private void initializeNumberOfPlayerSlots() {
 		int maximumNumberOfPlayers = mapLoader.getMaxPlayers();
 		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), maximumNumberOfPlayers));
 		for (byte i = (byte) playerSlots.size(); i < maximumNumberOfPlayers; i++) {
 			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, mapLoader);
 			playerSlots.add(playerSlot);
+		}
+		for (byte i = 0; i < playerSlots.size(); i++) {
+			playerSlots.get(i).setSlot(i);
+			playerSlots.get(i).setTeam(i);
+		}
+		updateNumberOfPlayerSlots();
+	}
+
+	private void updateNumberOfPlayerSlots() {
+		if (playerSlotFactory == null || numberOfPlayersComboBox.getSelectedItem() == null) {
+			return;
 		}
 		playerSlotsPanel.removeAll();
 		addPlayerSlotHeadline();

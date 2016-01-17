@@ -43,7 +43,7 @@ public class SinglePlayerSlotFactory implements PlayerSlotFactory {
 		}
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
-		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 1 : 2));
+		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));
 		return playerSlot;
 	}
 

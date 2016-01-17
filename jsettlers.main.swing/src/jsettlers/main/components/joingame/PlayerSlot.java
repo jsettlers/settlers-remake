@@ -138,7 +138,7 @@ public class PlayerSlot {
 	}
 
 	public void setTeam(byte team) {
-		teamComboBox.setSelectedIndex(team - 1);
+		teamComboBox.setSelectedIndex(team);
 	}
 
 	public void setAvailable(boolean available) {

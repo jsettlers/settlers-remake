@@ -73,8 +73,8 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
 		MapContent content = new MapContent(game, settlersFrame.getSoundPlayer());
-		settlersFrame.setContent(content);
-		game.setGameExitListener(game1 -> settlersFrame.showMainMenu());
+		SwingUtilities.invokeLater(() -> settlersFrame.setContent(content));
+		game.setGameExitListener(exitGame -> SwingUtilities.invokeLater(settlersFrame::showMainMenu));
 		return content.getInterfaceConnector();
 	}
 
