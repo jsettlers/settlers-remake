@@ -16,8 +16,6 @@ package jsettlers.mapcreator.main;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -106,7 +104,8 @@ public class MapCreatorApp {
 							(short) minPlayer,
 							(short) maxPlayer, null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 
-					new EditorControl(header, lanscapeType);
+					EditorControl control = new EditorControl();
+					control.createNewMap(header, lanscapeType);
 
 				} else {
 					String mapId = prop.getMapId();
@@ -125,7 +124,8 @@ public class MapCreatorApp {
 						return false;
 					}
 
-					new EditorControl(toOpenMap);
+					EditorControl control = new EditorControl();
+					control.loadMap(toOpenMap);
 				}
 
 				return true;
@@ -157,20 +157,23 @@ public class MapCreatorApp {
 		if (dlg.isLastUsed()) {
 			OpenPanel openFile = dlg.getLastUsed();
 			try {
-				new EditorControl(openFile.getSelectedMap());
+				EditorControl control = new EditorControl();
+				control.loadMap(openFile.getSelectedMap());
 			} catch (MapLoadException e) {
 				ExceptionHandler.displayError(e, "Could not open map!");
 			}
 		} else if (dlg.isOpenAction()) {
 			OpenPanel openFile = dlg.getOpenPanel();
 			try {
-				new EditorControl(openFile.getSelectedMap());
+				EditorControl control = new EditorControl();
+				control.loadMap(openFile.getSelectedMap());
 			} catch (MapLoadException e) {
 				ExceptionHandler.displayError(e, "Could not open map!");
 			}
 		} else {
 			NewFilePanel newFile = dlg.getNewFilePanel();
-			new EditorControl(newFile.getHeader(), newFile.getGroundTypes());
+			EditorControl control = new EditorControl();
+			control.createNewMap(newFile.getHeader(), newFile.getGroundTypes());
 		}
 	}
 
@@ -178,8 +181,6 @@ public class MapCreatorApp {
 	 * Main
 	 * 
 	 * @param args
-	 * @throws FileNotFoundException
-	 * @throws IOException
 	 */
 	public static void main(String[] args) {
 		try {

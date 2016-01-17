@@ -194,38 +194,44 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 	/**
 	 * Constructor
+	 */
+	public EditorControl() {
+	}
+
+	/**
+	 * Load a map
+	 * 
+	 * @param loader
+	 *            Map to load
+	 * @throws MapLoadException
+	 */
+	public void loadMap(MapLoader loader) throws MapLoadException {
+		MapData data = new MapData(loader.getMapData());
+		MapFileHeader header = loader.getFileHeader();
+		loadMap(header, data);
+	}
+
+	/**
+	 * Create a new map
 	 * 
 	 * @param header
 	 *            Header of the file to open
 	 * @param ground
 	 *            Ground to use for the new map
 	 */
-	public EditorControl(MapFileHeader header, ELandscapeType ground) {
-		init(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
+	public void createNewMap(MapFileHeader header, ELandscapeType ground) {
+		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
 	}
 
 	/**
-	 * Constructor
-	 * 
-	 * @param loader
-	 *            Map to load
-	 * @throws MapLoadException
-	 */
-	public EditorControl(MapLoader loader) throws MapLoadException {
-		MapData data = new MapData(loader.getMapData());
-		MapFileHeader header = loader.getFileHeader();
-		init(header, data);
-	}
-
-	/**
-	 * Initialize editor, called from constructor
+	 * Load a map
 	 * 
 	 * @param header
 	 *            Header to use
 	 * @param mapData
 	 *            Map to use
 	 */
-	private void init(MapFileHeader header, MapData mapData) {
+	public void loadMap(MapFileHeader header, MapData mapData) {
 		this.header = header;
 		this.data = mapData;
 
@@ -841,6 +847,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 					}
 				});
 			}
+
 		}
 	}
 
