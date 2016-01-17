@@ -4,4 +4,8 @@
   <fileset name="all" enabled="true" check-config-name="settlers" local="false">
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
+  <filter name="DerivedFiles" enabled="true"/>
+  <filter name="FilesFromPackage" enabled="true">
+    <filter-data value="gen"/>
+  </filter>
 </fileset-config>
