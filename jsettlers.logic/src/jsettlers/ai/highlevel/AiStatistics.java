@@ -102,7 +102,7 @@ public class AiStatistics {
 		}
 		sortedRiversInDefaultPartition = new AiPositions();
 		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, AiPositions>();
-		sortedResourceTypes = new AiPositions[EResourceType.values.length];
+		sortedResourceTypes = new AiPositions[EResourceType.VALUES.length];
 		for (int i = 0; i < sortedResourceTypes.length; i++) {
 			sortedResourceTypes[i] = new AiPositions();
 		}
@@ -307,7 +307,7 @@ public class AiStatistics {
 	}
 
 	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, short x, short y) {
-		for (EDirection dir : EDirection.values) {
+		for (EDirection dir : EDirection.VALUES) {
 			int lx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
 			int ly = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
 			if (mainGrid.isInBounds(lx, ly)) {

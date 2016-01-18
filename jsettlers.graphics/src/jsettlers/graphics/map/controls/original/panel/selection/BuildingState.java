@@ -39,15 +39,15 @@ public class BuildingState {
 	private final EPriority priority;
 	private final EPriority[] supportedPriorities;
 	private final ArrayList<StackState> stackStates = new ArrayList<>();
-	private boolean construction;
+	private final boolean construction;
 
 	/**
 	 * An array: soldier class -> available places.
 	 */
 	private final Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates;
 	private final BitSet stockStates;
-	private int[] tradingCounts;
-	private boolean isSeaTrading;
+	private final int[] tradingCounts;
+	private final boolean isSeaTrading;
 
 	/**
 	 * This is the state for a building stack.
@@ -199,7 +199,7 @@ public class BuildingState {
 		if (building instanceof IBuilding.IOccupyed && !construction) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
 			newStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
-			for (ESoldierClass soldierClass : ESoldierClass.values) {
+			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				newStates.put(soldierClass, new ArrayList<OccupierState>());
 			}
 
@@ -209,7 +209,7 @@ public class BuildingState {
 				newStates.get(soldierClass).add(state);
 			}
 
-			for (ESoldierClass soldierClass : ESoldierClass.values) {
+			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				ArrayList<OccupierState> list = newStates.get(soldierClass);
 				int comming = occupyed.getCurrentlyCommingSoldiers(soldierClass);
 				while (list.size() < comming) {

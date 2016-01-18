@@ -14,11 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import go.graphics.GLDrawContext;
-
 import java.util.Arrays;
 import java.util.BitSet;
 
+import go.graphics.GLDrawContext;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
@@ -179,7 +178,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 					// FIXME: Synchronize!
 					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
 				}
-				for (EMaterialType m : EMaterialType.values) {
+				for (EMaterialType m : EMaterialType.VALUES) {
 					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
 				}
 				setOrder(newOrder);

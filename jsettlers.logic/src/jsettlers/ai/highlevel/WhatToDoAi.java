@@ -108,7 +108,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void initializeBuildingLists() {
-		for (EBuildingType buildingType : EBuildingType.values()) {
+		for (EBuildingType buildingType : EBuildingType.VALUES) {
 			buildingNeeds.put(buildingType, new ArrayList<BuildingCount>());
 			buildingIsNeededBy.put(buildingType, new ArrayList<EBuildingType>());
 		}

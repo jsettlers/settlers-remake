@@ -228,7 +228,7 @@ public class MapData implements IMapData {
 																// flag
 																// is set for other
 																// tiles, too.
-					for (EDirection dir : EDirection.values) {
+					for (EDirection dir : EDirection.VALUES) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
 						if (contains(tx, ty) && !doneBuffer[tx][ty]) {
@@ -265,7 +265,7 @@ public class MapData implements IMapData {
 
 			ELandscapeType newLandscape = fade[1];
 			setLandscape(task.x, task.y, newLandscape);
-			for (EDirection dir : EDirection.values) {
+			for (EDirection dir : EDirection.VALUES) {
 				int nx = task.x + dir.getGridDeltaX();
 				int ny = task.y + dir.getGridDeltaY();
 				if (contains(nx, ny) && !doneBuffer[nx][ny]) {

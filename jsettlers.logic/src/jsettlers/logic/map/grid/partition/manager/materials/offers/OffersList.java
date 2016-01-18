@@ -145,7 +145,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			final int materialTypeIdx = i;
-			final EMaterialType materialType = EMaterialType.values[materialTypeIdx];
+			final EMaterialType materialType = EMaterialType.VALUES[materialTypeIdx];
 			offersLists[materialTypeIdx].moveObjectsAtPositionTo(position, otherList.offersLists[i], new IMovedVisitor<MaterialOffer>() {
 				@Override
 				public void visit(MaterialOffer moved) { // correct the counts
@@ -164,7 +164,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 			if (amount > 0) {
 				offersLists[i].addAll(otherList.offersLists[i]);
 				numberOfOffers[i] += amount;
-				EMaterialType materialType = EMaterialType.values[i];
+				EMaterialType materialType = EMaterialType.VALUES[i];
 				otherList.countListener.offersCountChanged(materialType, -amount);
 				countListener.offersCountChanged(materialType, amount);
 			}

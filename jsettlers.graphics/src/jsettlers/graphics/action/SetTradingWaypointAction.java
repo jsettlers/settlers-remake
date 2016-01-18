@@ -36,7 +36,7 @@ public class SetTradingWaypointAction extends PointAction {
 		WAYPOINT_3,
 		DESTINATION;
 
-		public static WaypointType[] values = values();
+		public static WaypointType[] VALUES = values();
 	}
 
 	private final WaypointType waypoint;

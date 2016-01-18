@@ -50,7 +50,7 @@ public class ConvertGuiTask extends MovableGuiTask {
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		targetType = EMovableType.values[dis.readInt()];
+		targetType = EMovableType.VALUES[dis.readInt()];
 	}
 
 	@Override

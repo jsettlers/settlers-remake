@@ -304,7 +304,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class LandTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.values.length;
+		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.VALUES.length;
 
 		/**
 		 * Create a new {@link LandTradingPath}.
@@ -331,7 +331,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class SeaTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.values.length + 1;
+		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.VALUES.length + 1;
 
 		/**
 		 * Create a new {@link SeaTradingPath}.

@@ -170,7 +170,7 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final boolean hasNeighborObjectType(int x, int y, EMapObjectType... mapObjectTypes) {
-		EDirection[] directions = EDirection.values;
+		EDirection[] directions = EDirection.VALUES;
 
 		for (EDirection currDir : directions) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(x, y);

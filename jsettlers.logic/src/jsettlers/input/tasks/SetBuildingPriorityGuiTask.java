@@ -67,7 +67,7 @@ public class SetBuildingPriorityGuiTask extends SimpleGuiTask {
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		buildingPosition = SimpleGuiTask.deserializePosition(dis);
-		newPriority = EPriority.values[dis.readByte()];
+		newPriority = EPriority.VALUES[dis.readByte()];
 	}
 
 	@Override

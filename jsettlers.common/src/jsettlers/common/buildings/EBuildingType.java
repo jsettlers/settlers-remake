@@ -204,7 +204,7 @@ public enum EBuildingType {
 	 * @return A packed bitset with each bit set if the ground type with that ordinal is in it.
 	 */
 	private long packGroundtypes(ELandscapeType[] groundtypeArray) {
-		assert ELandscapeType.values.length <= SIZEOF_LONG : "Too many ground types.";
+		assert ELandscapeType.VALUES.length <= SIZEOF_LONG : "Too many ground types.";
 		long res = 0;
 		for (ELandscapeType g : groundtypeArray) {
 			res |= (1 << g.ordinal);

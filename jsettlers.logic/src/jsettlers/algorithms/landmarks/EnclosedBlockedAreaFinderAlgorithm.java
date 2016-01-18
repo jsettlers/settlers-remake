@@ -39,7 +39,7 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 
 		short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
 
-		for (EDirection currDir : EDirection.values) {
+		for (EDirection currDir : EDirection.VALUES) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);
 
 			if (grid.isBlocked(currPos.x, currPos.y)) {
