@@ -332,6 +332,9 @@ public class AiStatistics {
 
 	private boolean isMilitaryBuildingInHinterland(Building militaryBuilding, byte playerId) {
 		for (ShortPoint2D influencedPositions : new MapCircle(militaryBuilding.getPos(), CommonConstants.TOWER_RADIUS + TOWER_RADIUS_OVERLAP)) {
+			if (!mainGrid.isInBounds(influencedPositions.x, influencedPositions.y)) {
+				continue;
+			}
 			if (positionIsBorderLandAndIsProtectedOnlyFromOneTower(playerId, influencedPositions) ||
 					positionIsOtherPlayersLand(influencedPositions, playerId)) {
 				return false;
