@@ -15,6 +15,7 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
@@ -150,11 +151,42 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void addListener() {
-		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		numberOfPlayersComboBox.addActionListener(e -> updateNumberOfPlayerSlots());
 	}
 
 	public void setSinglePlayerMap(MapLoader mapLoader) {
+		this.playerSlotFactory =  new SinglePlayerSlotFactory();
+		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
+		setStartButtonActionListener(e -> {
+			long randomSeed = System.currentTimeMillis();
+			PlayerSetting[] playerSettings = playerSlots.stream()
+					.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getSlot() - otherPlayerSlot.getSlot())
+					.map(playerSlot -> new PlayerSetting(playerSlot.isAvailable(), playerSlot.getPlayerType(), playerSlot.getCivilisation(),
+							playerSlot.getTeam()))
+					.toArray(PlayerSetting[]::new);
+			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
+			IStartingGame startingGame = game.start();
+			settlersFrame.showStartingGamePanel(startingGame);
+		});
+
+		prepareUiFor(mapLoader);
+	}
+
+	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
+		connector.openNewMultiplayerGame(new OpenMultiPlayerGameInfo(mapLoader));
+		this.playerSlotFactory =  new SinglePlayerSlotFactory(); //TODO: introduce HostMultiPlayerSlotFactory
+		cancelButton.addActionListener(e -> {
+			settlersFrame.showMainMenu();
+			connector.shutdown();
+		});
+		setStartButtonActionListener(e -> {
+			//TODO fill with code
+		});
+
+		prepareUiFor(mapLoader);
+	}
+
+	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
 		mapNameLabel.setText(mapLoader.getMapName());
 		mapImage.setIcon(new ImageIcon(JSettlersSwingUtil.createBufferedImageFrom(mapLoader)));
@@ -167,18 +199,21 @@ public class JoinGamePanel extends BackgroundPanel {
 				.forEach(startResourcesComboBox::addItem);
 		startResourcesComboBox.setSelectedIndex(EMapStartResources.HIGH_GOODS.value-1);
 		resetNumberOfPlayersComboBox();
-		playerSlotFactory = new SinglePlayerSlotFactory();
-		initializeNumberOfPlayerSlots();
-		setStartButtonActionListener(e -> {
-			long randomSeed = System.currentTimeMillis();
-			PlayerSetting[] playerSettings = playerSlots.stream()
-					.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getSlot() - otherPlayerSlot.getSlot())
-					.map(playerSlot -> new PlayerSetting(playerSlot.isAvailable(), playerSlot.getPlayerType(), playerSlot.getCivilisation(), playerSlot.getTeam()))
-					.toArray(PlayerSetting[]::new);
-			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
-			IStartingGame startingGame = game.start();
-			settlersFrame.showStartingGamePanel(startingGame);
-		});
+		buildPlayerSlots();
+		updateNumberOfPlayerSlots();
+	}
+
+	private void buildPlayerSlots() {
+		int maximumNumberOfPlayers = this.mapLoader.getMaxPlayers();
+		playerSlots.clear();
+		for (byte i = 0; i < maximumNumberOfPlayers; i++) {
+			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, this.mapLoader);
+			playerSlots.add(playerSlot);
+		}
+		for (byte i = 0; i < playerSlots.size(); i++) {
+			playerSlots.get(i).setSlot(i);
+			playerSlots.get(i).setTeam(i);
+		}
 	}
 
 	private void setStartButtonActionListener(ActionListener actionListener) {
@@ -193,20 +228,6 @@ public class JoinGamePanel extends BackgroundPanel {
 			numberOfPlayersComboBox.addItem(i);
 		}
 		numberOfPlayersComboBox.setSelectedIndex(mapLoader.getMaxPlayers()-1);
-	}
-
-	private void initializeNumberOfPlayerSlots() {
-		int maximumNumberOfPlayers = mapLoader.getMaxPlayers();
-		playerSlots = playerSlots.subList(0, Math.min(playerSlots.size(), maximumNumberOfPlayers));
-		for (byte i = (byte) playerSlots.size(); i < maximumNumberOfPlayers; i++) {
-			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, mapLoader);
-			playerSlots.add(playerSlot);
-		}
-		for (byte i = 0; i < playerSlots.size(); i++) {
-			playerSlots.get(i).setSlot(i);
-			playerSlots.get(i).setTeam(i);
-		}
-		updateNumberOfPlayerSlots();
 	}
 
 	private void updateNumberOfPlayerSlots() {

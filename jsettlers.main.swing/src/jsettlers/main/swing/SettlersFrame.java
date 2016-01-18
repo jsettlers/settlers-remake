@@ -20,6 +20,7 @@ import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.graphics.map.MapContent;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.main.components.joingame.JoinGamePanel;
@@ -92,8 +93,13 @@ public class SettlersFrame extends JFrame {
 		});
 	}
 
-	public void showJoinGameMenu(MapLoader mapLoader) {
+	public void showNewSinglePlayerGameMenu(MapLoader mapLoader) {
 		joinGamePanel.setSinglePlayerMap(mapLoader);
+		setNewContentPane(joinGamePanel);
+	}
+
+	public void showNewMultiPlayerGameMenu(MapLoader mapLoader, IMultiplayerConnector connector) {
+		joinGamePanel.setNewMultiPlayerMap(mapLoader, connector);
 		setNewContentPane(joinGamePanel);
 	}
 }

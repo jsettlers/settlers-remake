@@ -42,8 +42,12 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private final JToggleButton newSinglePlayerGameButton = new JToggleButton();
 	private final JToggleButton loadSaveGameButton = new JToggleButton();
 	private final JToggleButton settingsButton = new JToggleButton();
+	private final JToggleButton newNetworkGameButton = new JToggleButton();
+	private final JToggleButton joinNetworkGameButton = new JToggleButton();
 	private final OpenPanel openSinglePlayerPanel;
 	private final OpenPanel openSaveGamePanel;
+	private final OpenPanel newMultiPlayerGamePanel;
+	private final JPanel joinMultiPlayerGamePanel = new JPanel();
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	public MainMenuPanel(SettlersFrame settlersFrame) {
@@ -56,6 +60,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
 				startSaveGame);
 		startSaveGame.setRelatedOpenPanel(openSaveGamePanel);
+		NewMultiPlayerGame newMultiplayerGame = new NewMultiPlayerGame(settlersFrame);
+		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(),	newMultiplayerGame);
+		newMultiplayerGame.setRelatedOpenPanel(newMultiPlayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
 		createStructure();
 		setStyle();
@@ -73,12 +80,16 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
 		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
 		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+		newNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+		joinNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
 		exitButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 
 		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(openSinglePlayerPanel);
 		SwingUtilities.updateComponentTreeUI(openSaveGamePanel);
 		SwingUtilities.updateComponentTreeUI(settingsPanel);
+		SwingUtilities.updateComponentTreeUI(newMultiPlayerGamePanel);
+		SwingUtilities.updateComponentTreeUI(joinMultiPlayerGamePanel);
 	}
 
 	private void localize() {
@@ -86,11 +97,15 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		newSinglePlayerGameButton.setText(Labels.getString("main-panel-new-single-player-game-button"));
 		loadSaveGameButton.setText(Labels.getString("start-loadgame"));
 		settingsButton.setText(Labels.getString("settings-title"));
+		newNetworkGameButton.setText(Labels.getString("start-newmultiplayer"));
+		joinNetworkGameButton.setText(Labels.getString("start-joinmultiplayer"));
 	}
 
 	private void addListener() {
 		newSinglePlayerGameButton.addActionListener(e -> setCenter("main-panel-new-single-player-game-button", openSinglePlayerPanel));
 		loadSaveGameButton.addActionListener(e -> setCenter("start-loadgame", openSaveGamePanel));
+		newNetworkGameButton.addActionListener(e -> setCenter("start-newmultiplayer-start", newMultiPlayerGamePanel));
+		joinNetworkGameButton.addActionListener(e -> setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel));
 		exitButton.addActionListener(e -> settlersFrame.exit());
 		settingsButton.addActionListener(e -> {
 			setCenter("settings-title", settingsPanel);
@@ -104,11 +119,15 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		westPanel.add(newSinglePlayerGameButton);
 		westPanel.add(loadSaveGameButton);
 		westPanel.add(settingsButton);
+		westPanel.add(newNetworkGameButton);
+		westPanel.add(joinNetworkGameButton);
 		westPanel.add(exitButton);
 		add(westPanel);
 		buttonGroup.add(newSinglePlayerGameButton);
 		buttonGroup.add(loadSaveGameButton);
 		buttonGroup.add(settingsButton);
+		buttonGroup.add(newNetworkGameButton);
+		buttonGroup.add(joinNetworkGameButton);
 		add(emptyPanel);
 		getTitleLabel().setVisible(false);
 		westPanel.setPreferredSize(PREFERRED_EAST_SIZE);
