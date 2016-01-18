@@ -14,10 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import go.graphics.UIPoint;
-
 import java.util.ArrayList;
 
+import go.graphics.UIPoint;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.ui.Button;
 
@@ -86,7 +85,7 @@ public class ActionMap {
 	 * 
 	 * @author Michael Zangl
 	 */
-	private class PositionedAction {
+	private static class PositionedAction {
 		private final Action action;
 		private final FloatRectangle position;
 		private final Button button;
