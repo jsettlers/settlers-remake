@@ -3,8 +3,10 @@ package jsettlers.main.swing.foldertree;
 import java.io.File;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * Node to display file / folders
@@ -23,6 +25,16 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	 * If this is a settler folder
 	 */
 	private boolean settlerFolder = false;
+
+	/**
+	 * To expand the node on the first selection
+	 */
+	private boolean wasExpanded = false;
+
+	/**
+	 * Tmp loaded child list, has to be Vector because of DefaultMutableTreeNode
+	 */
+	private final Vector<FilesystemTreeNode> list = new Vector<>();
 
 	/**
 	 * Constructor
@@ -45,11 +57,86 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	}
 
 	/**
+	 * @return Root node
+	 */
+	private RootTreeNode findRoot() {
+		TreeNode node = getParent();
+		while (true) {
+			if (node == null) {
+				return null;
+			}
+			if (node instanceof RootTreeNode) {
+				return (RootTreeNode) node;
+			}
+			node = node.getParent();
+		}
+	}
+
+	/**
 	 * Load the children of this folder, if a folder
 	 */
-	@SuppressWarnings("unchecked")
 	private void loadChildren() {
-		loaded = true;
+		RootTreeNode root = findRoot();
+		if (root == null) {
+			loadChildren1();
+			applyLoadedChildren();
+		} else {
+			root.loadAsynchron(this);
+		}
+	}
+
+	/**
+	 * @return true if this node already was expanded
+	 */
+	public boolean wasExpanded() {
+		return wasExpanded;
+	}
+
+	/**
+	 * @param wasExpanded
+	 *            true if this node already was expanded
+	 */
+	public void setWasExpanded(boolean wasExpanded) {
+		this.wasExpanded = wasExpanded;
+	}
+
+	/**
+	 * @return if this is a settler folder
+	 */
+	public boolean isSettlerFolder() {
+		return settlerFolder;
+	}
+
+	/**
+	 * Load children if not loaded
+	 */
+	private synchronized void loadIfNotLoaded() {
+		if (!loaded) {
+			loaded = true;
+
+			loadChildren();
+		}
+	}
+
+	@Override
+	public boolean isLeaf() {
+		loadIfNotLoaded();
+		if (children != null) {
+			return children.isEmpty();
+		}
+		return true;
+	}
+
+	@Override
+	public int getChildCount() {
+		loadIfNotLoaded();
+		return super.getChildCount();
+	}
+
+	/**
+	 * Load the children to a tmp attribute
+	 */
+	public void loadChildren1() {
 		File file = getFile();
 
 		if (!file.isDirectory()) {
@@ -66,7 +153,7 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 
 		for (File f : files) {
 			if (f.isDirectory()) {
-				add(new FilesystemTreeNode(f));
+				list.add(new FilesystemTreeNode(f));
 				if ("gfx".equalsIgnoreCase(f.getName())) {
 					gfx = true;
 				} else if ("snd".equalsIgnoreCase(f.getName())) {
@@ -74,12 +161,8 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 				}
 			}
 		}
-		if (children == null) {
-			return;
-		}
-
 		settlerFolder = snd && gfx;
-		Collections.sort(children, new Comparator<FilesystemTreeNode>() {
+		Collections.sort(list, new Comparator<FilesystemTreeNode>() {
 
 			@Override
 			public int compare(FilesystemTreeNode o1, FilesystemTreeNode o2) {
@@ -89,18 +172,10 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	}
 
 	/**
-	 * @return if this is a settler folder
+	 * Apply the loaded children
 	 */
-	public boolean isSettlerFolder() {
-		return settlerFolder;
-	}
-
-	@Override
-	public boolean isLeaf() {
-		if (!loaded) {
-			loadChildren();
-		}
-		return super.isLeaf();
+	public void applyLoadedChildren() {
+		children = list;
 	}
 
 }
