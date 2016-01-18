@@ -23,6 +23,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,10 +75,10 @@ public class AiStatistics {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
 
 	private final Queue<Building> buildings;
-	private PlayerStatistic[] playerStatistics;
-	private Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
-	private AiPositions[] sortedResourceTypes;
-	private AiPositions sortedRiversInDefaultPartition;
+	private final PlayerStatistic[] playerStatistics;
+	private final Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
+	private final AiPositions[] sortedResourceTypes;
+	private final AiPositions sortedRiversInDefaultPartition;
 	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
@@ -320,7 +321,7 @@ public class AiStatistics {
 
 	public List<ShortPoint2D> getHinterlandMilitaryBuildingPositionsOfPlayer(byte playerId) {
 		List<ShortPoint2D> hinterlandMilitaryBuildingPositions = new ArrayList<ShortPoint2D>();
-		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildingsArray(), playerId)) {
+		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), playerId)) {
 			Building militaryBuilding = getBuildingAt(militaryBuildingPosition);
 			if (isMilitaryBuildingInHinterland(militaryBuilding, playerId)) {
 				hinterlandMilitaryBuildingPositions.add(militaryBuildingPosition);
@@ -406,7 +407,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].buildingPositions.get(type);
 	}
 
-	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EBuildingType[] buildingTypes, byte playerId) {
+	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EnumSet<EBuildingType> buildingTypes, byte playerId) {
 		List<ShortPoint2D> buildingPositions = new Vector<ShortPoint2D>();
 		for (EBuildingType buildingType : buildingTypes) {
 			buildingPositions.addAll(getBuildingPositionsOfTypeForPlayer(buildingType, playerId));

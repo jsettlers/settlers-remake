@@ -484,15 +484,4 @@ public enum EBuildingType {
 	public static EnumSet<EBuildingType> getMilitaryBuildings() {
 		return MILITARY_BUILDINGS;
 	}
-
-	/**
-	 * Gets an array of all military buildings. Use {@link #getMilitaryBuildings()} instead.
-	 * 
-	 * @return The buildings.
-	 */
-	@Deprecated
-	public static EBuildingType[] getMilitaryBuildingsArray() {
-		return MILITARY_BUILDINGS.toArray(new EBuildingType[0]);
-	}
-
 }
