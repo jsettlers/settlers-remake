@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<presets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="preset.xsd">
+
+	<!-- Name translated in jsettlers.mapcreator.localization -->
+	<preset text-id="preset.start">
+		<building dx="0" dy="0" type="TOWER" />
+
+		<!-- Goods -->
+		<object dx="-4" dy="7" type="PLANK" count="8" />
+		<object dx="-4" dy="10" type="PLANK" count="8" />
+
+		<object dx="-1" dy="7" type="PLANK" count="8" />
+		<object dx="-1" dy="10" type="PLANK" count="8" />
+		<object dx="-1" dy="13" type="PLANK" count="8" />
+
+		<object dx="2" dy="7" type="STONE" count="8" />
+		<object dx="2" dy="10" type="PLANK" count="8" />
+		<object dx="2" dy="13" type="PLANK" count="8" />
+
+		<object dx="5" dy="7" type="STONE" count="8" />
+		<object dx="5" dy="10" type="STONE" count="8" />
+		<object dx="5" dy="13" type="STONE" count="8" />
+
+		<object dx="8" dy="7" type="FISH" count="8" />
+		<object dx="8" dy="10" type="COAL" count="8" />
+		<object dx="8" dy="13" type="STONE" count="8" />
+
+		<object dx="11" dy="7" type="BREAD" count="8" />
+		<object dx="11" dy="10" type="IRONORE" count="8" />
+		<object dx="11" dy="13" type="BLADE" count="6" />
+
+		<object dx="14" dy="7" type="MEAT" count="8" />
+		<object dx="14" dy="10" type="FISHINGROD" count="2" />
+		<object dx="14" dy="13" type="HAMMER" count="8" />
+
+		<object dx="17" dy="7" type="SCYTHE" count="2" />
+		<object dx="17" dy="13" type="AXE" count="6" />
+
+		<object dx="20" dy="10" type="PICK" count="8" />
+		<object dx="20" dy="13" type="SAW" count="3" />
+
+		<!-- Worker -->
+		<moveable dx="8" dy="16" type="BRICKLAYER" />
+		<moveable dx="9" dy="18" type="BRICKLAYER" />
+		<moveable dx="10" dy="16" type="BRICKLAYER" />
+		<moveable dx="11" dy="18" type="BRICKLAYER" />
+		<moveable dx="12" dy="16" type="BRICKLAYER" />
+
+		<moveable dx="14" dy="16" type="DIGGER" />
+		<moveable dx="15" dy="18" type="DIGGER" />
+		<moveable dx="16" dy="16" type="DIGGER" />
+		<moveable dx="17" dy="18" type="DIGGER" />
+		<moveable dx="18" dy="16" type="DIGGER" />
+
+		<moveable dx="18" dy="17" type="SMITH" />
+		<moveable dx="18" dy="18" type="SMITH" />
+		<moveable dx="20" dy="16" type="MELTER" />
+
+		<!-- Soldiers -->
+		<moveable dx="-11" dy="-12" type="SWORDSMAN_L1" />
+		<moveable dx="-11" dy="-14" type="SWORDSMAN_L1" />
+		<moveable dx="-11" dy="-16" type="SWORDSMAN_L1" />
+
+		<moveable dx="-9" dy="-10" type="SWORDSMAN_L1" />
+		<moveable dx="-9" dy="-12" type="SWORDSMAN_L1" />
+		<moveable dx="-9" dy="-14" type="SWORDSMAN_L1" />
+		<moveable dx="-9" dy="-16" type="BOWMAN_L1" />
+
+		<moveable dx="-7" dy="-10" type="PIKEMAN_L1" />
+		<moveable dx="-7" dy="-12" type="PIKEMAN_L1" />
+		<moveable dx="-7" dy="-14" type="BOWMAN_L1" />
+		<moveable dx="-7" dy="-16" type="BOWMAN_L1" />
+
+		<moveable dx="-5" dy="-10" type="PIKEMAN_L1" />
+		<moveable dx="-5" dy="-12" type="BOWMAN_L1" />
+		<moveable dx="-5" dy="-14" type="BOWMAN_L1" />
+
+		<!-- Bearer -->
+		<moveable dx="-2" dy="-12" type="BEARER" />
+		<moveable dx="-2" dy="-14" type="BEARER" />
+		<moveable dx="-2" dy="-16" type="BEARER" />
+
+		<moveable dx="0" dy="-10" type="BEARER" />
+		<moveable dx="0" dy="-12" type="BEARER" />
+		<moveable dx="0" dy="-14" type="BEARER" />
+		<moveable dx="0" dy="-16" type="BEARER" />
+
+		<moveable dx="2" dy="-10" type="BEARER" />
+		<moveable dx="2" dy="-12" type="BEARER" />
+		<moveable dx="2" dy="-14" type="BEARER" />
+		<moveable dx="2" dy="-16" type="BEARER" />
+
+		<moveable dx="4" dy="-10" type="BEARER" />
+		<moveable dx="4" dy="-12" type="BEARER" />
+		<moveable dx="4" dy="-14" type="BEARER" />
+
+		<moveable dx="5" dy="-12" type="BEARER" />
+		<moveable dx="5" dy="-14" type="BEARER" />
+		<moveable dx="5" dy="-16" type="BEARER" />
+
+		<moveable dx="7" dy="-10" type="BEARER" />
+		<moveable dx="7" dy="-12" type="BEARER" />
+		<moveable dx="7" dy="-14" type="BEARER" />
+		<moveable dx="7" dy="-16" type="BEARER" />
+
+		<moveable dx="9" dy="-10" type="BEARER" />
+		<moveable dx="9" dy="-12" type="BEARER" />
+		<moveable dx="9" dy="-14" type="BEARER" />
+		<moveable dx="9" dy="-16" type="BEARER" />
+
+		<moveable dx="11" dy="-10" type="BEARER" />
+		<moveable dx="11" dy="-12" type="BEARER" />
+		<moveable dx="11" dy="-14" type="BEARER" />
+	</preset>
+
+
+	<!-- Name translated in jsettlers.mapcreator.localization -->
+	<preset text-id="preset.wood">
+		<building dx="0" dy="10" type="LUMBERJACK" />
+		<building dx="0" dy="0" type="FORESTER" />
+		<building dx="3" dy="-9" type="LUMBERJACK" />
+
+		<moveable dx="8" dy="-8" type="LUMBERJACK" />
+		<moveable dx="7" dy="3" type="FORESTER" />
+		<moveable dx="7" dy="12" type="LUMBERJACK" />
+	</preset>
+</presets>

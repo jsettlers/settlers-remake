@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.Iterator;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.util.Iterator;
-
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -58,6 +57,11 @@ public final class MapDrawContext implements IGLProvider {
 	private final ScreenPosition screen;
 
 	private final MapCoordinateConverter converter;
+
+	// TODO Why not use HSV to calculate the colors?
+	// The original game uses the HSV Colors, split
+	// the Cirlcle into 20 pcs and then you get the original colors
+	// Andreas Butti
 	Color[] playerColors = new Color[] {
 			// red
 			new Color(0xffe50000),
@@ -103,16 +107,14 @@ public final class MapDrawContext implements IGLProvider {
 	public MapDrawContext(IGraphicsGrid map, ReplaceableTextDrawer textDrawer) {
 		this.map = map;
 		this.textDrawer = textDrawer;
-		float incline =
-				DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
+		float incline = DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
 		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
-		this.converter =
-				MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-						DrawConstants.DISTANCE_Y, map.getWidth(),
-						map.getHeight());
+		this.converter = MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
+				DrawConstants.DISTANCE_Y, map.getWidth(),
+				map.getHeight());
 
 		buffer = new DrawBuffer(this);
 	}
@@ -212,9 +214,8 @@ public final class MapDrawContext implements IGLProvider {
 		ShortPoint2D currentPoint = converter.getMap(screenx, screeny);
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
-		UIPoint onscreen =
-				converter.getView(currentPoint.x, currentPoint.y,
-						getHeight(currentPoint.x, currentPoint.y));
+		UIPoint onscreen = converter.getView(currentPoint.x, currentPoint.y,
+				getHeight(currentPoint.x, currentPoint.y));
 		double currentbest = onscreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
@@ -323,16 +324,14 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl.glPushMatrix();
 		float theight = getHeight(startx, starty);
 		float dheight = getHeight(destinationx, destinationy);
-		float x =
-				(1 - progress)
-						* this.converter.getViewX(startx, starty, theight)
-						+ progress
+		float x = (1 - progress)
+				* this.converter.getViewX(startx, starty, theight)
+				+ progress
 						* this.converter.getViewX(destinationx, destinationy,
 								dheight);
-		float y =
-				(1 - progress)
-						* this.converter.getViewY(startx, starty, theight)
-						+ progress
+		float y = (1 - progress)
+				* this.converter.getViewY(startx, starty, theight)
+				+ progress
 						* this.converter.getViewY(destinationx, destinationy,
 								dheight);
 		this.gl.glTranslatef(x, y, 0);
@@ -422,9 +421,8 @@ public final class MapDrawContext implements IGLProvider {
 						currentLine++;
 						currentX = base.getLineStartX(currentLine);
 					}
-					ShortPoint2D point =
-							new ShortPoint2D(currentX,
-									base.getLineY(currentLine));
+					ShortPoint2D point = new ShortPoint2D(currentX,
+							base.getLineY(currentLine));
 					if (contains(point)) {
 						return point;
 					}

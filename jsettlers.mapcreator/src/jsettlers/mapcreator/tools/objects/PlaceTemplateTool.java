@@ -20,39 +20,28 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.main.IPlayerSetter;
-import jsettlers.mapcreator.tools.Tool;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.AbstractTool;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class PlaceTemplateTool implements Tool {
-	private final String name;
+public class PlaceTemplateTool extends AbstractTool {
 	private final TemplateObject[] objects;
 	private final IPlayerSetter player;
 
 	public PlaceTemplateTool(String name, TemplateObject[] objects, IPlayerSetter player) {
-		this.name = name;
+		super(null, name);
 		this.objects = objects;
 		this.player = player;
-	}
-
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("templatedescr"), name);
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return new ShapeType[] { new PointShape() };
+		shapeTypes.add(EShapeType.POINT);
 	}
 
 	private void addAround(MapData map, ShortPoint2D start) {
 		for (TemplateObject object : objects) {
 			int x = start.x + object.getDx();
 			int y = start.y + object.getDy();
-			map.placeObject(object.getObject(player.getActivePlayer()), x, y);
+			map.placeObject(object.getObject((byte) player.getActivePlayer()), x, y);
 		}
 	}
 
@@ -123,5 +112,4 @@ public class PlaceTemplateTool implements Tool {
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx) {
 	}
-
 }

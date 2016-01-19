@@ -15,14 +15,15 @@
 package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.localization.EditorLabels;
 
 public class LineCircleShape extends ShapeType {
 
-	private static final ShapeProperty RADIUS_PROPERTY = new ShapeProperty(EditorLabels.getLabel("radius"), 0, 100);
-
+	/**
+	 * Constructor
+	 */
 	public LineCircleShape() {
-		addProperty(RADIUS_PROPERTY);
+		super("circle_line");
+		properties.put(EShapeProperty.RADIUS, new ShapeProperty(0, 100, 5));
 	}
 
 	@Override
@@ -39,20 +40,15 @@ public class LineCircleShape extends ShapeType {
 	}
 
 	protected byte getFieldRating(int x, int y, double distance) {
-		return (distance <= getProperty(RADIUS_PROPERTY) ? Byte.MAX_VALUE : 0);
+		return (distance <= getProperty(EShapeProperty.RADIUS) ? Byte.MAX_VALUE : 0);
 	}
 
 	@Override
 	public int getSize() {
-		return getProperty(RADIUS_PROPERTY);
+		return getProperty(EShapeProperty.RADIUS);
 	}
 
 	public int getRadius() {
-		return getProperty(RADIUS_PROPERTY);
-	}
-
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("circle_line");
+		return getProperty(EShapeProperty.RADIUS);
 	}
 }
