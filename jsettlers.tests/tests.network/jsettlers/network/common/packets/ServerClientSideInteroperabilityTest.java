@@ -20,8 +20,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import jsettlers.network.TestUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import jsettlers.network.NetworkConstants.ENetworkKey;
+import jsettlers.network.TestUtils;
 import jsettlers.network.client.task.TestTaskPacket;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
@@ -31,10 +36,6 @@ import jsettlers.network.infrastructure.channel.listeners.BufferingPacketListene
 import jsettlers.network.server.packets.ServersideSyncTasksPacket;
 import jsettlers.network.server.packets.ServersideTaskPacket;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 /**
  * This class tests that the server can handle client side packets with it's server side representative. After the server received a packet, it must
  * also be possible to send the packet back in the form it was received, so that the client can deserialize it correctly.
@@ -42,6 +43,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
+@Ignore
 public class ServerClientSideInteroperabilityTest {
 	private Channel c1;
 	private Channel c2;
