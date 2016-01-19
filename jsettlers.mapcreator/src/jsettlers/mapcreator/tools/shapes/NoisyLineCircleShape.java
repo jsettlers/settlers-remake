@@ -23,6 +23,14 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 
 	private NoiseGenerator noise = new NoiseGenerator();
 
+	/**
+	 * Constructor
+	 */
+	public NoisyLineCircleShape() {
+		this.name = EditorLabels.getLabel("shape.noisy_circle_line");
+	}
+
+	@Override
 	protected byte getFieldRating(int x, int y, double distance) {
 		if (distance > (double) getRadius() * (Byte.MAX_VALUE + noiseSize)
 				/ Byte.MAX_VALUE) {
@@ -34,8 +42,4 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 		}
 	};
 
-	@Override
-	public String getName() {
-		return EditorLabels.getLabel("noisy_circle_line");
-	}
 }

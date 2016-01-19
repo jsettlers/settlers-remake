@@ -20,10 +20,16 @@ import jsettlers.graphics.action.EActionType;
 /**
  * This action states that drawing on the map was aborted.
  * 
+ * TODO: @michael call on ESC
+ * 
  * @author michael
  *
  */
 public class AbortDrawingAction extends Action {
+
+	/**
+	 * Constructor
+	 */
 	public AbortDrawingAction() {
 		super(EActionType.UNSPECIFIED);
 	}

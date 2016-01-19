@@ -22,27 +22,65 @@ package jsettlers.mapcreator.tools.shapes;
  */
 public class ShapeProperty {
 
-	private final String name;
+	/**
+	 * Minimum of the property
+	 */
 	private final int min;
+
+	/**
+	 * Maximum of the property
+	 */
 	private final int max;
 
-	public ShapeProperty(String name, int min, int max) {
+	/**
+	 * The current value of the Property
+	 */
+	private int value;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param min
+	 *            Minimum of the property
+	 * @param max
+	 *            Maximum of the property
+	 * @param value
+	 *            The current value of the Property
+	 */
+	public ShapeProperty(int min, int max, int value) {
 		if (min > max) {
 			throw new IllegalArgumentException();
 		}
-		this.name = name;
 		this.min = min;
 		this.max = max;
+		this.value = value;
 	}
 
-	public String getName() {
-		return name;
+	/**
+	 * @param value
+	 *            The current value of the Property
+	 */
+	public void setValue(int value) {
+		this.value = value;
 	}
 
+	/**
+	 * @return The current value of the Property
+	 */
+	public int getValue() {
+		return value;
+	}
+
+	/**
+	 * @return Maximum of the property
+	 */
 	public int getMax() {
 		return max;
 	}
 
+	/**
+	 * @return Minimum of the property
+	 */
 	public int getMin() {
 		return min;
 	}
