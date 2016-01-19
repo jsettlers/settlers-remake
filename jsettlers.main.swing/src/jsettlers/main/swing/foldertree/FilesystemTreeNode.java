@@ -1,11 +1,13 @@
 package jsettlers.main.swing.foldertree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -13,13 +15,12 @@ import javax.swing.tree.TreeNode;
  * 
  * @author Andreas Butti
  */
-public class FilesystemTreeNode extends DefaultMutableTreeNode {
-	private static final long serialVersionUID = 1L;
+public class FilesystemTreeNode implements TreeNode {
 
 	/**
 	 * If the children are already loaded
 	 */
-	private boolean loaded = false;
+	protected boolean loaded = false;
 
 	/**
 	 * If this is a settler folder
@@ -32,9 +33,24 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	private boolean wasExpanded = false;
 
 	/**
-	 * Tmp loaded child list, has to be Vector because of DefaultMutableTreeNode
+	 * Tmp loaded child list
 	 */
-	private final Vector<FilesystemTreeNode> list = new Vector<>();
+	private final List<FilesystemTreeNode> list = new ArrayList<>();
+
+	/**
+	 * Current child list
+	 */
+	private List<FilesystemTreeNode> children = new ArrayList<>();
+
+	/**
+	 * Parent node
+	 */
+	private TreeNode parent;
+
+	/**
+	 * The file represented by this node
+	 */
+	private final File file;
 
 	/**
 	 * Constructor
@@ -43,17 +59,14 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	 *            The file to represent
 	 */
 	public FilesystemTreeNode(File file) {
-		super(file);
-		if (file == null) {
-			throw new IllegalArgumentException("file == null");
-		}
+		this.file = file;
 	}
 
 	/**
 	 * @return The file
 	 */
 	public File getFile() {
-		return (File) getUserObject();
+		return file;
 	}
 
 	/**
@@ -130,14 +143,26 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	@Override
 	public int getChildCount() {
 		loadIfNotLoaded();
-		return super.getChildCount();
+		return children.size();
+	}
+
+	/**
+	 * Add a node
+	 * 
+	 * @param node
+	 *            Node
+	 */
+	public void add(FilesystemTreeNode node) {
+		children.add(node);
 	}
 
 	/**
 	 * Load the children to a tmp attribute
 	 */
 	public void loadChildren1() {
-		File file = getFile();
+		if (file == null) {
+			return;
+		}
 
 		if (!file.isDirectory()) {
 			return;
@@ -176,6 +201,55 @@ public class FilesystemTreeNode extends DefaultMutableTreeNode {
 	 */
 	public void applyLoadedChildren() {
 		children = list;
+	}
+
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		return children.get(childIndex);
+	}
+
+	@Override
+	public TreeNode getParent() {
+		return parent;
+	}
+
+	/**
+	 * @param parent
+	 *            The parent tree node
+	 */
+	public void setParent(TreeNode parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		return children.indexOf(node);
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return true;
+	}
+
+	@Override
+	public Enumeration<?> children() {
+		return new Enumeration<Object>() {
+
+			/**
+			 * Iterator
+			 */
+			private final Iterator<FilesystemTreeNode> it = children.iterator();
+
+			@Override
+			public boolean hasMoreElements() {
+				return it.hasNext();
+			}
+
+			@Override
+			public Object nextElement() {
+				return it.next();
+			}
+		};
 	}
 
 }

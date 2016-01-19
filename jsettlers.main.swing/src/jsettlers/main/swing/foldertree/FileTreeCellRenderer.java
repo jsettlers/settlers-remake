@@ -12,7 +12,6 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
@@ -75,19 +74,18 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		File file = (File) node.getUserObject();
+		if (value instanceof FilesystemTreeNode) {
+			FilesystemTreeNode node = (FilesystemTreeNode) value;
+			File file = node.getFile();
+			if (file == null) {
+				return this;
+			}
 
-		if (file == null) {
-			return this;
-		}
+			setIcon(fileSystemView.getSystemIcon(file));
+			setText(fileSystemView.getSystemDisplayName(file));
+			setToolTipText(file.getPath());
 
-		setIcon(fileSystemView.getSystemIcon(file));
-		setText(fileSystemView.getSystemDisplayName(file));
-		setToolTipText(file.getPath());
-
-		if (node instanceof FilesystemTreeNode) {
-			if (((FilesystemTreeNode) node).isSettlerFolder()) {
+			if (node.isSettlerFolder()) {
 				setIcon(SETTLER_FOLDER_ICON);
 			}
 		}

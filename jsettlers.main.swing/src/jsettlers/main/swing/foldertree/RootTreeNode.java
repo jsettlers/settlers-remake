@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import javax.swing.SwingUtilities;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -16,8 +15,7 @@ import javax.swing.tree.DefaultTreeModel;
  * 
  * @author Andreas Butti
  */
-public class RootTreeNode extends DefaultMutableTreeNode {
-	private static final long serialVersionUID = 1L;
+public class RootTreeNode extends FilesystemTreeNode {
 
 	/**
 	 * Threadpool
@@ -41,6 +39,8 @@ public class RootTreeNode extends DefaultMutableTreeNode {
 	 * Constructor
 	 */
 	public RootTreeNode() {
+		super(null);
+		loaded = true;
 	}
 
 	/**
