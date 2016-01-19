@@ -3,7 +3,6 @@ package jsettlers.main.swing.foldertree;
 import java.awt.BorderLayout;
 import java.io.File;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,6 +38,11 @@ public class SelectSettlerFolderDialog extends JFrame {
 	private JTree tree;
 
 	/**
+	 * Panel with the current path
+	 */
+	private final PathPanel pathPanel = new PathPanel();
+
+	/**
 	 * Listener for Tree selection
 	 */
 	private final TreeSelectionListener selectionListener = new TreeSelectionListener() {
@@ -46,6 +50,8 @@ public class SelectSettlerFolderDialog extends JFrame {
 		@Override
 		public void valueChanged(TreeSelectionEvent e) {
 			TreePath path = e.getPath();
+			pathPanel.setPath(path.getPath());
+
 			Object last = path.getLastPathComponent();
 			if (last instanceof FilesystemTreeNode) {
 				FilesystemTreeNode ft = (FilesystemTreeNode) last;
@@ -85,11 +91,11 @@ public class SelectSettlerFolderDialog extends JFrame {
 		setLayout(new BorderLayout());
 
 		JPanel pHeader = new JPanel();
-		pHeader.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		pHeader.setLayout(new BorderLayout());
+		pHeader.setLayout(new BorderLayout(5, 5));
 		pHeader.add(new JLabel("Wählen Sie den Ordner der Sielder III Installation"), BorderLayout.CENTER);
 		JButton btHelp = new JButton("Ich brauche Hilfe");
 		pHeader.add(btHelp, BorderLayout.EAST);
+		pHeader.add(pathPanel, BorderLayout.SOUTH);
 
 		add(pHeader, BorderLayout.NORTH);
 
