@@ -17,15 +17,32 @@ package jsettlers.main.components.joingame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.localization.Labels;
 
+import java.util.Random;
+
 /**
  * @author codingberlin
  */
 public class CivilisationUiWrapper {
 
 	private final ECivilisation civilisation;
+	private final boolean isRandom;
+
+	public CivilisationUiWrapper() {
+		this(determineRandomCivilisation(), true);
+
+	};
 
 	public CivilisationUiWrapper(ECivilisation civilisation) {
+		this(civilisation, false);
+	}
+
+	private CivilisationUiWrapper(ECivilisation civilisation, boolean isRandom) {
 		this.civilisation = civilisation;
+		this.isRandom = isRandom;
+	}
+
+	private static ECivilisation determineRandomCivilisation() {
+		return ECivilisation.values()[new Random().nextInt(ECivilisation.values().length)];
 	}
 
 	public ECivilisation getCivilisation() {
@@ -33,6 +50,9 @@ public class CivilisationUiWrapper {
 	}
 
 	@Override public String toString() {
+		if (isRandom) {
+			return Labels.getString("civilisation-random");
+		}
 		return Labels.getString("civilisation-" + civilisation.name());
 	}
 }

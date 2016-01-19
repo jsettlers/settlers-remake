@@ -108,6 +108,7 @@ public class PlayerSlot {
 	}
 
 	private void initializeComboBoxes() {
+		civilisationComboBox.addItem(new CivilisationUiWrapper());
 		civilisationComboBox.addItem(new CivilisationUiWrapper(ECivilisation.ROMAN));
 	}
 
