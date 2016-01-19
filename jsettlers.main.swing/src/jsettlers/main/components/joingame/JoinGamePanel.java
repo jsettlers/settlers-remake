@@ -156,6 +156,9 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	public void setSinglePlayerMap(MapLoader mapLoader) {
 		this.playerSlotFactory =  new SinglePlayerSlotFactory();
+		numberOfPlayersComboBox.setEnabled(true);
+		peaceTimeComboBox.setEnabled(true);
+		startResourcesComboBox.setEnabled(true);
 		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		setStartButtonActionListener(e -> {
 			long randomSeed = System.currentTimeMillis();
@@ -174,7 +177,10 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
 		connector.openNewMultiplayerGame(new OpenMultiPlayerGameInfo(mapLoader));
-		this.playerSlotFactory =  new SinglePlayerSlotFactory(); //TODO: introduce HostMultiPlayerSlotFactory
+		this.playerSlotFactory =  new HostOfMultiplayerPlayerSlotFactory();
+		numberOfPlayersComboBox.setEnabled(false);
+		peaceTimeComboBox.setEnabled(false);
+		startResourcesComboBox.setEnabled(false);
 		cancelButton.addActionListener(e -> {
 			settlersFrame.showMainMenu();
 			connector.shutdown();

@@ -169,4 +169,19 @@ public class PlayerSlot {
 	public void setSlotListener(SlotListener slotListener) {
 		this.slotListener = slotListener;
 	}
+
+	public void disableAllInputs() {
+		slotComboBox.setEnabled(false);
+		civilisationComboBox.setEnabled(false);
+		teamComboBox.setEnabled(false);
+		typeComboBox.setEnabled(false);
+	}
+
+	public void setCivilisation(ECivilisation civilisation) {
+		civilisationComboBox.setSelectedItem(new CivilisationUiWrapper(civilisation));
+	}
+
+	public void setTypeComboBox(EPlayerType playerType) {
+		typeComboBox.setSelectedItem(new PlayerTypeUiWrapper(playerType));
+	}
 }
