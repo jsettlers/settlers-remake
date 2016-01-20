@@ -21,7 +21,7 @@ import jsettlers.common.Color;
 
 public enum ELandscapeType {
 	// DO NOT sort, order is important!
-	GRASS(0, new Color(0xff105910), false, false),
+	GRASS(0, new Color(0xff198219), false, false),
 	DRY_GRASS(1, new Color(0xff82601C), false, false),
 	DESERT(18, new Color(0xffA07038), false, false),
 	EARTH(2, new Color(0xffa2653e), false, false), // TODO: color
