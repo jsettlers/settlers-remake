@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import go.graphics.area.Area;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,14 +32,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import go.graphics.area.Area;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.JSettlersScreen;
@@ -75,7 +75,7 @@ public class SwingManagedJSettlers {
 		OptionableProperties options = MainUtils.loadOptions(args);
 
 		loadOptionalSettings(options);
-		setupResourceManagers(options, "config.prp");
+		setupResourceManagers(options, new File("."));
 
 		JSettlersScreen content = startGui();
 		generateContent(options, content);
@@ -92,8 +92,8 @@ public class SwingManagedJSettlers {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(OptionableProperties options, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigFileName);
+	public static void setupResourceManagers(OptionableProperties options, File defaultConfigDirectory) throws FileNotFoundException, IOException {
+		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigDirectory);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		boolean firstRun = true;
@@ -157,12 +157,16 @@ public class SwingManagedJSettlers {
 		}
 	}
 
-	public static ConfigurationPropertiesFile getConfigFile(Properties options, String defaultConfigFileName) throws IOException {
-		String configFileName = defaultConfigFileName;
+	public static ConfigurationPropertiesFile getConfigFile(Properties options, File defaultConfigDirectory) throws IOException {
+		ConfigurationPropertiesFile file;
 		if (options.containsKey("config")) {
-			configFileName = options.getProperty("config");
+			String configFileName = options.getProperty("config");
+			file = new ConfigurationPropertiesFile(new File(configFileName));
+		} else {
+			file = new ConfigurationPropertiesFile(new File(defaultConfigDirectory, "config.prp"), new File(defaultConfigDirectory,
+					"configTemplate.prp"));
 		}
-		return new ConfigurationPropertiesFile(new File(configFileName));
+		return file;
 	}
 
 	public static void loadOptionalSettings(OptionableProperties options) {

@@ -34,11 +34,19 @@ public class ConfigurationPropertiesFile {
 	private final Properties properties;
 
 	public ConfigurationPropertiesFile(File file) throws FileNotFoundException, IOException {
+		this(file, null);
+	}
+
+	public ConfigurationPropertiesFile(File file, File templateFile) throws FileNotFoundException, IOException {
 		this.configFile = file;
 
 		Properties defaultProperties = new Properties();
 		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
 		this.properties = new Properties(defaultProperties);
+
+		if (templateFile != null && templateFile.exists()) {
+			this.properties.load(new FileInputStream(templateFile));
+		}
 
 		if (file.exists()) {
 			this.properties.load(new FileInputStream(file));
