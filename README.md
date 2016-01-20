@@ -103,6 +103,8 @@ Adjust your settings to match the ones of the figure before clicking on "Formatt
 
 The [formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml) can be found in the repository at "docs/eclipse-setup/formatterConfiguration.xml".
 
+Set encoding in "General" -> "Workspace" -> "Text file encoding" to "UTF-8" (Works with all special chars of all languages)
+
 ##### IntelliJ IDEA
 For IntelliJ IDEA, there is a plugin to use the Eclipse Auto Formatter configuration. For example [this article](http://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/) covers the subject and gives a detailed manual.
 

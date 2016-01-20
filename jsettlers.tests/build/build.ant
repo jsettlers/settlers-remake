@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
 <project basedir=".." default="build" name="jsettlers.tests">
 	<property environment="env" />
 	<property name="junit.output.dir" value="junit" />
@@ -15,6 +10,7 @@
 	<property name="jsettlers.network.location" value="../jsettlers.network" />
 	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
 	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
+	<property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator" />
 	<property name="jsettlers.tests.location" value="../jsettlers.tests" />
 	<property name="debuglevel" value="source,lines,vars" />
 
@@ -54,12 +50,23 @@
 	<path id="jsettlers.main.swing.classpath">
 		<pathelement location="${jsettlers.main.swing.location}/bin" />
 		<path refid="go.graphics.classpath" />
+		<path refid="go.graphics.swing.classpath" />
 		<path refid="jsettlers.common.classpath" />
 		<path refid="jsettlers.logic.classpath" />
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
-		<path refid="go.graphics.swing.classpath" />
 		<path refid="jsettlers.network.classpath" />
+	</path>
+	<path id="jsettlers.mapcreator.classpath">
+		<pathelement location="${jsettlers.mapcreator.location}/bin" />
+		<path refid="go.graphics.classpath" />
+		<path refid="go.graphics.swing.classpath" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="jsettlers.logic.classpath" />
+		<path refid="jsettlers.graphics.classpath" />
+		<path refid="jsettlers.graphics.swing.classpath" />
+		<path refid="jsettlers.network.classpath" />
+		<path refid="jsettlers.main.swing.classpath" />
 	</path>
 	<path id="jsettlers.tests.classpath">
 		<pathelement location="bin" />
@@ -71,6 +78,7 @@
 		<path refid="jsettlers.main.swing.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
 		<path refid="jsettlers.network.classpath" />
+		<path refid="jsettlers.mapcreator.classpath" />
 		<pathelement location="${jsettlers.tests.location}/libs/junit-4.11.jar" />
 		<pathelement location="${jsettlers.tests.location}/libs/hamcrest-core-1.3.jar" />
 	</path>
@@ -95,9 +103,11 @@
 			</fileset>
 		</copy>
 	</target>
+	
 	<target name="clean">
 		<delete dir="bin" />
 	</target>
+	
 	<target depends="clean" name="cleanall">
 		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="clean" />
@@ -107,8 +117,11 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean" />
 	</target>
+	
 	<target depends="build-subprojects,build-project" name="build" />
+	
 	<target name="build-subprojects">
 		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="build-project" />
@@ -118,7 +131,9 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build-project" />
 	</target>
+	
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
