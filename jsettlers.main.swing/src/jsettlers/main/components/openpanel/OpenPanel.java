@@ -92,10 +92,8 @@ public class OpenPanel extends JPanel {
 	 *            Cell renderer to use
 	 */
 	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
-		this.maps = maps;
+		setMapLoadersWithoutSearchChanged(maps);
 		setLayout(new BorderLayout());
-
-		sortMaps();
 
 		initFilter();
 
@@ -126,7 +124,6 @@ public class OpenPanel extends JPanel {
 			}
 		});
 
-		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
 		this.mapList = new JList<MapLoader>(listModelFiltered);
 		mapList.setCellRenderer(cellRenderer);
 		mapList.addMouseListener(new MouseAdapter() {
@@ -149,6 +146,17 @@ public class OpenPanel extends JPanel {
 		}
 	}
 
+	public void setMapLoaders(final List<MapLoader> maps) {
+		setMapLoadersWithoutSearchChanged(maps);
+		searchChanged();
+	}
+
+	private void setMapLoadersWithoutSearchChanged(final List<MapLoader> maps) {
+		this.maps = maps;
+		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
+		sortMaps();
+	}
+
 	/**
 	 * Initialize the filter buttons
 	 */
@@ -162,13 +170,9 @@ public class OpenPanel extends JPanel {
 		for (final EMapFilter filter : EMapFilter.values()) {
 			JToggleButton bt = new JToggleButton(filter.getName());
 			bt.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
-			bt.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					currentFilter = filter;
-					searchChanged();
-				}
+			bt.addActionListener(e -> {
+				currentFilter = filter;
+				searchChanged();
 			});
 
 			if (first) {
