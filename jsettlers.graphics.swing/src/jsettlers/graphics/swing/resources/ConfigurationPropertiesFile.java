@@ -56,10 +56,6 @@ public class ConfigurationPropertiesFile {
 		return dir.getAbsoluteFile();
 	}
 
-	public String[] getGfxFolders() {
-		return getFolders("GFX", "gfx", "Gfx");
-	}
-
 	private String[] getFolders(String... subfolders) {
 		String[] settlersFolder = properties.getProperty("settlers-folder").split(SPLIT_CHARACTER);
 		String[] result = new String[settlersFolder.length * subfolders.length];
@@ -73,7 +69,7 @@ public class ConfigurationPropertiesFile {
 		return result;
 	}
 
-	private String getSettlersFolderValue() {
+	public String getSettlersFolderValue() {
 		return properties.getProperty(SETTLERS_FOLDER);
 	}
 
@@ -81,22 +77,10 @@ public class ConfigurationPropertiesFile {
 		return new File(getSettlersFolderValue());
 	}
 
-	public String[] getSndFolders() {
-		return getFolders("SND", "snd", "Snd");
-	}
-
 	public boolean isSettlersFolderSet() {
 		String settlersFolder = getSettlersFolderValue();
-		return settlersFolder != null && settlersFolder.length() > 0 && oneExists(getGfxFolders()) && oneExists(getSndFolders());
-	}
-
-	private boolean oneExists(String[] gfxFolders) {
-		for (String folder : gfxFolders) {
-			if (new File(folder).exists()) {
-				return true;
-			}
-		}
-		return false;
+		SettlerFolderCheck check = new SettlerFolderCheck();
+		return check.check(settlersFolder);
 	}
 
 	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {

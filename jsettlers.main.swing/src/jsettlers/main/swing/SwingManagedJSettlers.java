@@ -23,10 +23,11 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import go.graphics.area.Area;
 import go.graphics.swing.AreaContainer;
@@ -52,6 +53,7 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
+import jsettlers.main.swing.foldertree.SelectSettlerFolderDialog;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -72,6 +74,17 @@ public class SwingManagedJSettlers {
 	 * @throws MapLoadException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
+		// UI will be changed later with the new Swing implementation, but will also be based on Nimbus
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+		}
+
 		OptionableProperties options = MainUtils.loadOptions(args);
 
 		loadOptionalSettings(options);
@@ -104,26 +117,15 @@ public class SwingManagedJSettlers {
 			}
 			firstRun = false;
 
-			JFileChooser fileDialog = new JFileChooser();
-			fileDialog.setAcceptAllFileFilterUsed(false);
-			fileDialog.setFileFilter(new FileFilter() {
+			SelectSettlerFolderDialog folderChooser = new SelectSettlerFolderDialog();
+			SwingUtilities.invokeLater(new Runnable() {
 				@Override
-				public String getDescription() {
-					return null;
-				}
-
-				@Override
-				public boolean accept(File f) {
-					return f.isDirectory();
+				public void run() {
+					folderChooser.setVisible(true);
 				}
 			});
-			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-			fileDialog.setMultiSelectionEnabled(false);
-			fileDialog.setDialogTitle(Labels.getString("select-settlers-3-folder"));
-			fileDialog.showOpenDialog(null);
 
-			File selectedFolder = fileDialog.getSelectedFile();
+			File selectedFolder = folderChooser.waitForUserInput();
 			if (selectedFolder == null) {
 				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
 				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);

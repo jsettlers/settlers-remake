@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.swing.tree.TreeNode;
 
+import jsettlers.graphics.swing.resources.SettlerFolderCheck;
+
 /**
  * Node to display file / folders
  * 
@@ -157,7 +159,7 @@ public class FilesystemTreeNode implements TreeNode {
 	}
 
 	/**
-	 * Load the children to a tmp attribute
+	 * Load the children to a tmp attribute, **this is the only one method which is called from another thread**
 	 */
 	public void loadChildren1() {
 		if (file == null) {
@@ -186,7 +188,14 @@ public class FilesystemTreeNode implements TreeNode {
 				}
 			}
 		}
-		settlerFolder = snd && gfx;
+
+		if (snd && gfx) {
+			SettlerFolderCheck check = new SettlerFolderCheck();
+			settlerFolder = check.check(file.getAbsolutePath());
+		} else {
+			settlerFolder = false;
+		}
+
 		Collections.sort(list, new Comparator<FilesystemTreeNode>() {
 
 			@Override

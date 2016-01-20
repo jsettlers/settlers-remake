@@ -2,8 +2,11 @@ package jsettlers.main.swing.foldertree;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URI;
 
@@ -25,6 +28,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.swing.resources.SettlerFolderCheck;
+
 /**
  * Select settler root folder dialog
  * 
@@ -44,7 +50,7 @@ public class SelectSettlerFolderDialog extends JFrame {
 	private JTree tree;
 
 	/**
-	 * Help URL
+	 * Help URL: TODO Enter a valid help URL!
 	 */
 	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/wiki";
 
@@ -70,9 +76,29 @@ public class SelectSettlerFolderDialog extends JFrame {
 	private final PathPanel pathPanel = new PathPanel(listener);
 
 	/**
+	 * Choosed folder
+	 */
+	private String selectedFolder = null;
+
+	/**
 	 * Panel to display found result
 	 */
-	private final FolderFoundPanel foundPanel = new FolderFoundPanel();
+	private final FolderFoundPanel foundPanel = new FolderFoundPanel(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			selectedFolder = e.getActionCommand();
+			synchronized (syncObject) {
+				syncObject.notifyAll();
+			}
+			dispose();
+		}
+	});
+
+	/**
+	 * For synchronization only
+	 */
+	private final Object syncObject = new Object();
 
 	/**
 	 * Listener for Tree selection
@@ -123,17 +149,64 @@ public class SelectSettlerFolderDialog extends JFrame {
 	 */
 	public SelectSettlerFolderDialog() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setTitle("JSettlers - Siedler Ordner wählen");
+		setTitle(Labels.getString("select-settlers-3-folder-header"));
 		setLayout(new BorderLayout());
 
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				synchronized (syncObject) {
+					syncObject.notifyAll();
+				}
+			}
+		});
+
+		initHeader();
+		initTree();
+
+		add(new JScrollPane(tree), BorderLayout.CENTER);
+
+		add(foundPanel, BorderLayout.SOUTH);
+
+		setSize(750, 640);
+		setLocationRelativeTo(null);
+	}
+
+	/**
+	 * Initialize the header panel with the label, help button and go to button
+	 */
+	private void initHeader() {
 		JPanel pHeader = new JPanel();
 		pHeader.setLayout(new BorderLayout());
 
 		JPanel pHeaderText = new JPanel();
 		pHeaderText.setLayout(new BorderLayout());
 		pHeaderText.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		pHeaderText.add(new JLabel("Wählen Sie den Ordner der Sielder III Installation"), BorderLayout.CENTER);
-		JButton btHelp = new JButton("Ich brauche Hilfe");
+		pHeaderText.add(new JLabel(Labels.getString("select-settlers-3-folder")), BorderLayout.CENTER);
+
+		JPanel pButton = new JPanel();
+		pButton.setLayout(new FlowLayout());
+
+		JButton btGoTo = new JButton(Labels.getString("enter-path"));
+		btGoTo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String path = JOptionPane.showInputDialog(SelectSettlerFolderDialog.this, Labels.getString("enter-path"));
+				if (path != null) {
+					SettlerFolderCheck check = new SettlerFolderCheck();
+					if (check.check(path)) {
+						foundPanel.setFolder(path);
+					} else {
+						JOptionPane.showMessageDialog(SelectSettlerFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
+		pButton.add(btGoTo);
+
+		JButton btHelp = new JButton(Labels.getString("i-need-help-button"));
 		btHelp.addActionListener(new ActionListener() {
 
 			@Override
@@ -141,25 +214,19 @@ public class SelectSettlerFolderDialog extends JFrame {
 				try {
 					Desktop.getDesktop().browse(new URI(HELP_URL));
 				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(SelectSettlerFolderDialog.this, "Could not open URL: " + HELP_URL);
+					JOptionPane.showMessageDialog(SelectSettlerFolderDialog.this, Labels.getString("error-open-url") + ": " + HELP_URL);
 				}
 			}
 		});
-		pHeaderText.add(btHelp, BorderLayout.EAST);
+		pButton.add(btHelp);
+
+		pHeaderText.add(pButton, BorderLayout.EAST);
 
 		pHeader.add(pHeaderText, BorderLayout.CENTER);
 		pHeader.add(pathPanel, BorderLayout.SOUTH);
 
 		add(pHeader, BorderLayout.NORTH);
 
-		initTree();
-
-		add(new JScrollPane(tree), BorderLayout.CENTER);
-
-		add(foundPanel, BorderLayout.SOUTH);
-
-		setSize(640, 640);
-		setLocationRelativeTo(null);
 	}
 
 	/**
@@ -204,5 +271,25 @@ public class SelectSettlerFolderDialog extends JFrame {
 
 		SelectSettlerFolderDialog dlg = new SelectSettlerFolderDialog();
 		dlg.setVisible(true);
+	}
+
+	/**
+	 * Blocks the caller thread, returns when the user confirmed the dialog
+	 * 
+	 * @return Selected file
+	 */
+	public File waitForUserInput() {
+		synchronized (syncObject) {
+			try {
+				syncObject.wait();
+			} catch (InterruptedException e) {
+				// ignore exception here
+			}
+		}
+
+		if (selectedFolder == null) {
+			return null;
+		}
+		return new File(selectedFolder);
 	}
 }
