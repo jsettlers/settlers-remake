@@ -20,8 +20,10 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This class contains the data needed for the GUI to restore it's state.
+ * <p>
+ * It will be seialized with the map on map saves.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class UIState implements Serializable {
 	private static final long serialVersionUID = 4163727213374601975L;
@@ -55,9 +57,9 @@ public class UIState implements Serializable {
 	}
 
 	/**
-	 * Gets the start point. THis point overrides screen center settings.
+	 * Gets the start point. This point overrides screen center settings.
 	 * 
-	 * @return
+	 * @return the point.
 	 */
 	public ShortPoint2D getStartPoint() {
 		return startPoint;

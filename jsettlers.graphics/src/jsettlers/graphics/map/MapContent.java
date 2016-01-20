@@ -418,7 +418,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
 
 			if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
-				this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
+				this.objectDrawer.drawMapObject(underMouse.x, underMouse.y, placementBuilding);
 			}
 		}
 
@@ -432,7 +432,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
-			this.objectDrawer.drawMapObject(this.map, x, y, object);
+			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
 		IMovable movable = map.getMovableAt(x, y);
