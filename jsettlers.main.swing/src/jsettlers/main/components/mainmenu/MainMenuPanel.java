@@ -31,8 +31,10 @@ import jsettlers.main.components.settingsmenu.SettingsMenuPanel;
 import jsettlers.main.swing.SettlersFrame;
 
 import javax.swing.*;
+import javax.swing.text.html.Option;
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private final OpenPanel newMultiPlayerGamePanel;
 	private final OpenPanel joinMultiPlayerGamePanel;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private Optional<IMultiplayerConnector> multiplayerConnector = Optional.empty();
 
 	public MainMenuPanel(SettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
@@ -116,18 +119,21 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		loadSaveGameButton.addActionListener(e -> setCenter("start-loadgame", openSaveGamePanel));
 		newNetworkGameButton.addActionListener(e -> setCenter("start-newmultiplayer-start", newMultiPlayerGamePanel));
 		joinNetworkGameButton.addActionListener(e -> {
-			SettingsManager settingsManager = SettingsManager.getInstance();
-			Player player = settingsManager.getPlayer();
-			IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
+			if (!multiplayerConnector.isPresent()) {
+				SettingsManager settingsManager = SettingsManager.getInstance();
+				Player player = settingsManager.getPlayer();
+				multiplayerConnector = Optional.of(new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(),
+						player.getName()));
 
-			ChangingList<IJoinableGame> joinableMultiplayerGames = connector.getJoinableMultiplayerGames();
-			joinableMultiplayerGames.setListener(networkGames -> {
-				List<MapLoader> mapLoaders = networkGames.getItems()
-						.stream()
-						.map(NetworkGameMapLoader::new)
-						.collect(Collectors.toList());
-				joinMultiPlayerGamePanel.setMapLoaders(mapLoaders);
-			});
+				ChangingList<IJoinableGame> joinableMultiplayerGames = multiplayerConnector.get().getJoinableMultiplayerGames();
+				joinableMultiplayerGames.setListener(networkGames -> {
+					List<MapLoader> mapLoaders = networkGames.getItems()
+							.stream()
+							.map(NetworkGameMapLoader::new)
+							.collect(Collectors.toList());
+					joinMultiPlayerGamePanel.setMapLoaders(mapLoaders);
+				});
+			}
 			setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel);
 		});
 		exitButton.addActionListener(e -> settlersFrame.exit());
