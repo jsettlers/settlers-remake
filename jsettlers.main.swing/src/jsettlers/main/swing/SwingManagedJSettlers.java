@@ -165,10 +165,14 @@ public class SwingManagedJSettlers {
 			String configFileName = options.getProperty("config");
 			file = new ConfigurationPropertiesFile(new File(configFileName));
 		} else {
-			file = new ConfigurationPropertiesFile(new File(defaultConfigDirectory, "config.prp"), new File(defaultConfigDirectory,
-					"configTemplate.prp"));
+			file = createDefaultConfigFile(defaultConfigDirectory);
 		}
 		return file;
+	}
+
+	public static ConfigurationPropertiesFile createDefaultConfigFile(File defaultConfigDirectory) throws FileNotFoundException, IOException {
+		return new ConfigurationPropertiesFile(new File(defaultConfigDirectory, "config.prp"), new File(defaultConfigDirectory,
+				"configTemplate.prp"));
 	}
 
 	public static void loadOptionalSettings(OptionableProperties options) {
