@@ -33,6 +33,8 @@ public class ConfigurationPropertiesFile {
 	private final File configFile;
 	private final Properties properties;
 
+	private final boolean loadedFromFile;
+
 	public ConfigurationPropertiesFile(File file) throws FileNotFoundException, IOException {
 		this(file, null);
 	}
@@ -44,13 +46,17 @@ public class ConfigurationPropertiesFile {
 		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
 		this.properties = new Properties(defaultProperties);
 
+		boolean loaded = false;
 		if (templateFile != null && templateFile.exists()) {
 			this.properties.load(new FileInputStream(templateFile));
+			loaded = true;
 		}
 
 		if (file.exists()) {
 			this.properties.load(new FileInputStream(file));
+			loaded = true;
 		}
+		this.loadedFromFile = loaded;
 	}
 
 	public File getResourcesDirectory() {
@@ -118,5 +124,12 @@ public class ConfigurationPropertiesFile {
 
 	public File getOriginalMapsDirectory() {
 		return new File(getOriginalSettlersDirectory(), "Map");
+	}
+
+	/**
+	 * @return <code>true</code> if one of the settings or the template files has been used.
+	 */
+	public boolean isLoadedFromFile() {
+		return loadedFromFile;
 	}
 }
