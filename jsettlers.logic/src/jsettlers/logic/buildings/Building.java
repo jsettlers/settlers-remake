@@ -41,11 +41,12 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
-import jsettlers.logic.buildings.others.TestTradingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
+import jsettlers.logic.buildings.trading.MarketBuilding;
+import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
@@ -81,7 +82,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
 
-	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
+	private static final ConcurrentLinkedQueue<Building> ALL_BUILDINGS = new ConcurrentLinkedQueue<Building>();
 
 	private final EBuildingType type;
 
@@ -103,12 +104,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.type = type;
 		this.player = player;
 
-		allBuildings.offer(this);
+		ALL_BUILDINGS.add(this);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		allBuildings.add(this);
+		ALL_BUILDINGS.add(this);
 	}
 
 	@Override
@@ -465,7 +466,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		releaseRequestStacks();
-		allBuildings.remove(this);
+		ALL_BUILDINGS.remove(this);
 		this.state = STATE_DESTROYED;
 	}
 
@@ -616,9 +617,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new TempleBuilding(player);
 
 		case MARKET_PLACE:
-			return new TestTradingBuilding(type, player, false);
+			return new MarketBuilding(type, player);
 		case HARBOR:
-			return new TestTradingBuilding(type, player, true);
+			return new TradingBuilding(type, player, true);
 
 		case BIG_TEMPLE:
 			return new BigTemple(player);
@@ -643,11 +644,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public static ConcurrentLinkedQueue<Building> getAllBuildings() {
-		return allBuildings;
+		return ALL_BUILDINGS;
 	}
 
-	public static void dropAllBuildings() {
-		allBuildings.clear();
+	public static void clearState() {
+		ALL_BUILDINGS.clear();
 	}
 
 	@Override

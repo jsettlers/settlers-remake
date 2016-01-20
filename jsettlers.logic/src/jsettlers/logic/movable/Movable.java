@@ -67,7 +67,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private EMovableType movableType;
 	private MovableStrategy strategy;
-	private Player player;
+	private final Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
@@ -890,7 +890,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public final boolean isAttackable() {
-		return movableType.isMoveToAble();
+		return strategy.isAttackable();
 	}
 
 	/**
@@ -906,9 +906,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos, byte attackingPlayer) {
-		this.health -= hitStrength;
-		if (health <= 0) {
-			this.kill();
+		if (strategy.receiveHit()) {
+			this.health -= hitStrength;
+			if (health <= 0) {
+				this.kill();
+			}
 		}
 
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));

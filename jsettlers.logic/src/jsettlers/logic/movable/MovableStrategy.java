@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,6 +29,7 @@ import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
 import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.movable.strategies.DiggerStrategy;
+import jsettlers.logic.movable.strategies.DonkeyStrategy;
 import jsettlers.logic.movable.strategies.soldiers.BowmanStrategy;
 import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
@@ -99,8 +100,10 @@ public abstract class MovableStrategy implements Serializable {
 			return new GeologistStrategy(movable);
 		case THIEF:
 		case MAGE:
-		case DONKEY:
 			return new DummySpecialistStrategy(movable);
+
+		case DONKEY:
+			return new DonkeyStrategy(movable);
 
 		default:
 			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
@@ -272,6 +275,10 @@ public abstract class MovableStrategy implements Serializable {
 		return false;
 	}
 
+	protected boolean isAttackable() {
+		return movable.getMovableType().isMoveToAble();
+	}
+
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
 		if (!path.hasOverNextStep()) { // if path has no position left
 			return path;
@@ -343,5 +350,13 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected boolean isOnOwnGround() {
 		return movable.isOnOwnGround();
+	}
+
+	/**
+	 * 
+	 * @return If true, the hit is received, if false, the hit is ignored.
+	 */
+	protected boolean receiveHit() {
+		return true;
 	}
 }

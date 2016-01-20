@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.buildings.others;
+package jsettlers.logic.buildings.trading;
 
 import java.util.Arrays;
 
@@ -25,7 +25,7 @@ import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
 
-public class TestTradingBuilding extends Building implements IBuilding.ITrading {
+public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final long serialVersionUID = -1760409147232184087L;
 
 	private final boolean isSeaTrading;
@@ -36,7 +36,7 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	private final int[] requestedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
 
-	public TestTradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
+	public TradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
 		super(type, player);
 		this.isSeaTrading = isSeaTrading;
 	}
@@ -94,7 +94,7 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 			drawWaypointLine(false);
 		}
 
-		if (waypointType != WaypointType.DESTINATION && waypoints[waypoints.length - 1] == null) {
+		if (waypointType != WaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = WaypointType.DESTINATION;
 		}
 		if (waypointType == WaypointType.DESTINATION) {
@@ -105,6 +105,14 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 		if (isSelected()) {
 			drawWaypointLine(true);
 		}
+	}
+
+	protected boolean isTargetSet() {
+		return waypoints[waypoints.length - 1] != null;
+	}
+
+	protected ShortPoint2D[] getWaypoints() {
+		return waypoints;
 	}
 
 	@Override
