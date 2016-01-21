@@ -32,10 +32,10 @@ public enum ELandscapeType {
 	 * Flattened grass (for buildings, paths, ...). Must behave exactly like normal grass does!
 	 */
 	FLATTENED(35, new Color(0xff105910), false, false),
-	RIVER1(10, new Color(0xff000073), false, false),
-	RIVER2(10, new Color(0xff000073), false, false),
-	RIVER3(10, new Color(0xff000073), false, false),
-	RIVER4(10, new Color(0xff000073), false, false),
+	RIVER1(10, new Color(0xff4786FC), false, false),
+	RIVER2(10, new Color(0xff4786FC), false, false),
+	RIVER3(10, new Color(0xff4786FC), false, false),
+	RIVER4(10, new Color(0xff4786FC), false, false),
 	MOUNTAINBORDER(21, new Color(0xff424142), false, false),
 	MOUNTAINBORDEROUTER(21, new Color(0xff105910), false, false), // TODO: color
 	WATER1(17, new Color(0xff1863F0), true, true),
