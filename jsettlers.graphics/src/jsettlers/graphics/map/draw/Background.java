@@ -1775,6 +1775,9 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
+	/**
+	 * Invalidates the background texture.
+	 */
 	public static void invalidateTexture() {
 		texture = null;
 	}

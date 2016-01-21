@@ -22,8 +22,6 @@ import java.nio.ByteOrder;
 
 import jsettlers.graphics.map.IGLProvider;
 
-import com.sun.istack.internal.Nullable;
-
 /**
  * This class buffers triangle draw calls and sends them to opengl in bratches. It should only be used during one frame.
  * 
@@ -165,7 +163,7 @@ public class DrawBuffer {
 	 * @throws IllegalBufferException
 	 *             If the texture could not be used.
 	 */
-	public void addImage(@Nullable TextureHandle texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2,
+	public void addImage(TextureHandle texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2,
 			int activeColor)
 			throws IllegalBufferException {
 		Buffer buffer = getBuffer(texture); // get first to make it fail.
@@ -182,7 +180,7 @@ public class DrawBuffer {
 	 * @throws IllegalBufferException
 	 *             If the texture could not be used.
 	 */
-	public Buffer getBuffer(@Nullable TextureHandle texture) throws IllegalBufferException {
+	public Buffer getBuffer(TextureHandle texture) throws IllegalBufferException {
 		for (int i = 0; i < BUFFERS; i++) {
 			if (drawBuffers[i].currentTexture == texture) {
 				return drawBuffers[i];
