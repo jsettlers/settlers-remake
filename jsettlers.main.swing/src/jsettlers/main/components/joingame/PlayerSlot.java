@@ -190,8 +190,9 @@ public class PlayerSlot {
 		for (int i = 0; i < typeComboBox.getItemCount(); i++) {
 			if (typeComboBox.getItemAt(i).getPlayerType() == playerType) {
 				typeComboBox.setSelectedIndex(i);
-				return;
+				break;
 			}
 		}
+		updateAiPlayerName();
 	}
 }

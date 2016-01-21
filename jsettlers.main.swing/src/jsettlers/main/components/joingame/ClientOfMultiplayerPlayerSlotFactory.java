@@ -30,7 +30,7 @@ public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
 
 		}
-		playerSlot.setPossibleTypes(new EPlayerType[] {EPlayerType.HUMAN});
+		playerSlot.setPossibleTypes(new EPlayerType[] {EPlayerType.HUMAN, EPlayerType.AI_VERY_HARD});
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
 		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));

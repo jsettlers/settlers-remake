@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
+import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
@@ -26,6 +30,7 @@ import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.SettlersFrame;
+import jsettlers.network.server.match.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -206,7 +211,18 @@ public class JoinGamePanel extends BackgroundPanel {
 
 		prepareUiFor(mapLoader);
 
+		joinMultiPlayerMap.getPlayers().setListener(this::onPlayersChanges);
 	}
+
+	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers) {
+		List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
+		for (int i = 0; i < players.size(); i++) {
+			playerSlots.get(i).setPlayerName(players.get(i).getName());
+		}
+		for (int i = players.size(); i < playerSlots.size(); i++) {
+			playerSlots.get(i).setTypeComboBox(EPlayerType.AI_VERY_HARD);
+		}
+	};
 
 	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;

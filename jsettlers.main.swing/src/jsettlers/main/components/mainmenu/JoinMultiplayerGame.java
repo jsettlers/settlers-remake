@@ -28,7 +28,10 @@ public class JoinMultiplayerGame implements ActionListener {
 
 	@Override public void actionPerformed(ActionEvent e) {
 		NetworkGameMapLoader networkGameMapLoader = (NetworkGameMapLoader) relatedOpenPanel.getSelectedMap();
-		IJoiningGame joiningGame = settlersFrame.getMultiPlayerConnector().joinMultiplayerGame(networkGameMapLoader.getJoinableGame());
+		IJoiningGame joiningGame = settlersFrame
+				.getMultiPlayerConnector()
+				.joinMultiplayerGame(networkGameMapLoader
+						.getJoinableGame());
 		joiningGame.setListener(new IJoiningGameListener() {
 			@Override public void joinProgressChanged(EProgressState state, float progress) {
 
