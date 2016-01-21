@@ -21,13 +21,13 @@ import jsettlers.common.Color;
 
 public enum ELandscapeType {
 	// DO NOT sort, order is important!
-	GRASS(0, new Color(0xff198219), false, false),
-	DRY_GRASS(1, new Color(0xff82601C), false, false),
-	DESERT(18, new Color(0xffA07038), false, false),
+	GRASS(0, new Color(0xff156E15), false, false),
+	DRY_GRASS(1, new Color(0xffAD8432), false, false),
+	DESERT(18, new Color(0xffA09738), false, false),
 	EARTH(2, new Color(0xffa2653e), false, false), // TODO: color
-	MOUNTAIN(21, new Color(0xff424142), false, false),
-	SNOW(25, new Color(0xffc7dee0), false, true),
-	SAND(3, new Color(0xff949200), false, false),
+	MOUNTAIN(21, new Color(0xff5C5C5C), false, false),
+	SNOW(25, new Color(0xffC0CDCF), false, true),
+	SAND(3, new Color(0xffADAB00), false, false),
 	/**
 	 * Flattened grass (for buildings, paths, ...). Must behave exactly like normal grass does!
 	 */
