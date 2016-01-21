@@ -58,9 +58,8 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private final OpenPanel newMultiPlayerGamePanel;
 	private final OpenPanel joinMultiPlayerGamePanel;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private Optional<IMultiplayerConnector> multiplayerConnector = Optional.empty();
 
-	public MainMenuPanel(SettlersFrame settlersFrame) {
+	public MainMenuPanel(SettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
 		ShowNewSinglePlayerGame showNewSinglePlayerGame = new ShowNewSinglePlayerGame(settlersFrame);
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), showNewSinglePlayerGame);
@@ -80,7 +79,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		createStructure();
 		setStyle();
 		localize();
-		addListener();
+		addListener(multiPlayerConnector);
 	}
 
 	private List<MapLoader> transformRemakeMapLoadersToMapLoaders(List<RemakeMapLoader> remakeMapLoaders) {
@@ -114,33 +113,25 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		joinNetworkGameButton.setText(Labels.getString("start-joinmultiplayer"));
 	}
 
-	private void addListener() {
+	private void addListener(IMultiplayerConnector multiPlayerConnector) {
 		newSinglePlayerGameButton.addActionListener(e -> setCenter("main-panel-new-single-player-game-button", openSinglePlayerPanel));
 		loadSaveGameButton.addActionListener(e -> setCenter("start-loadgame", openSaveGamePanel));
 		newNetworkGameButton.addActionListener(e -> setCenter("start-newmultiplayer-start", newMultiPlayerGamePanel));
-		joinNetworkGameButton.addActionListener(e -> {
-			if (!multiplayerConnector.isPresent()) {
-				SettingsManager settingsManager = SettingsManager.getInstance();
-				Player player = settingsManager.getPlayer();
-				multiplayerConnector = Optional.of(new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(),
-						player.getName()));
-
-				ChangingList<IJoinableGame> joinableMultiplayerGames = multiplayerConnector.get().getJoinableMultiplayerGames();
-				joinableMultiplayerGames.setListener(networkGames -> {
-					List<MapLoader> mapLoaders = networkGames.getItems()
-							.stream()
-							.map(NetworkGameMapLoader::new)
-							.collect(Collectors.toList());
-					joinMultiPlayerGamePanel.setMapLoaders(mapLoaders);
-				});
-			}
-			setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel);
-		});
+		joinNetworkGameButton.addActionListener(e -> setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel));
 		exitButton.addActionListener(e -> settlersFrame.exit());
 		settingsButton.addActionListener(e -> {
 			setCenter("settings-title", settingsPanel);
 			settingsPanel.initializeValues();
 		});
+		multiPlayerConnector
+			.getJoinableMultiplayerGames()
+			.setListener(networkGames -> {
+				List<MapLoader> mapLoaders = networkGames.getItems()
+					.stream()
+					.map(NetworkGameMapLoader::new)
+					.collect(Collectors.toList());
+				joinMultiPlayerGamePanel.setMapLoaders(mapLoaders);
+			});
 	}
 
 	private void createStructure() {

@@ -20,29 +20,40 @@ import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.graphics.map.MapContent;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.components.joingame.JoinGamePanel;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
 import jsettlers.main.components.startinggamemenu.StartingGamePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.function.Supplier;
 
 /**
  * @author codingberlin
  */
 public class SettlersFrame extends JFrame {
 
-	private final MainMenuPanel mainPanel = new MainMenuPanel(this);
+	private final IMultiplayerConnector multiPlayerConnector;
+	private final MainMenuPanel mainPanel;
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private SoundPlayer soundPlayer = new SwingSoundPlayer();
 
+
 	public SettlersFrame() throws HeadlessException {
+		SettingsManager settingsManager = SettingsManager.getInstance();
+		Player player = settingsManager.getPlayer();
+		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
+		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
@@ -101,5 +112,10 @@ public class SettlersFrame extends JFrame {
 	public void showNewMultiPlayerGameMenu(MapLoader mapLoader, IMultiplayerConnector connector) {
 		joinGamePanel.setNewMultiPlayerMap(mapLoader, connector);
 		setNewContentPane(joinGamePanel);
+	}
+
+	public IMultiplayerConnector getMultiPlayerConnector() {
+		return multiPlayerConnector;
+
 	}
 }

@@ -22,6 +22,6 @@ public class JoinMultiplayerGame implements ActionListener {
 	}
 
 	@Override public void actionPerformed(ActionEvent e) {
-
+		NetworkGameMapLoader networkGameMapLoader = (NetworkGameMapLoader) relatedOpenPanel.getSelectedMap();
 	}
 }
