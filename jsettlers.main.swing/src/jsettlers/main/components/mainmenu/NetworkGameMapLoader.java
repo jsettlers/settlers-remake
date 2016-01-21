@@ -22,11 +22,16 @@ public class NetworkGameMapLoader extends MapLoader {
 
 	private final MapLoader mapLoader;
 	private final String gameName;
+	private final IJoinableGame joinableGame;
 
 	public NetworkGameMapLoader(IJoinableGame joinableGame) {
-
+		this.joinableGame = joinableGame;
 		this.mapLoader = MapList.getDefaultList().getMapById(joinableGame.getMap().getMapId());
 		this.gameName = joinableGame.getName();
+	}
+
+	public IJoinableGame getJoinableGame() {
+		return joinableGame;
 	}
 
 	@Override public MapFileHeader getFileHeader() {

@@ -21,23 +21,16 @@ import jsettlers.logic.map.MapLoader;
 /**
  * @author codingberlin
  */
-public class HostOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
+public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 
 	@Override public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
 		PlayerSlot playerSlot = new PlayerSlot();
-
 		if (slot == 0) {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
-			playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN});
-		} else {
-			playerSlot.setPossibleTypes(new EPlayerType[] {
-					EPlayerType.HUMAN,
-					EPlayerType.AI_VERY_HARD
-			});
-			playerSlot.setTypeComboBox(EPlayerType.AI_VERY_HARD);
-		}
 
+		}
+		playerSlot.setPossibleTypes(new EPlayerType[] {EPlayerType.HUMAN});
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
 		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));

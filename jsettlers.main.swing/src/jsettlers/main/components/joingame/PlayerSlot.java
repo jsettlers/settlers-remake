@@ -178,10 +178,20 @@ public class PlayerSlot {
 	}
 
 	public void setCivilisation(ECivilisation civilisation) {
-		civilisationComboBox.setSelectedItem(new CivilisationUiWrapper(civilisation));
+		for (int i = 0; i < civilisationComboBox.getItemCount(); i++) {
+			if (civilisationComboBox.getItemAt(i).getCivilisation() == civilisation) {
+				civilisationComboBox.setSelectedIndex(i);
+				return;
+			}
+		}
 	}
 
 	public void setTypeComboBox(EPlayerType playerType) {
-		typeComboBox.setSelectedItem(new PlayerTypeUiWrapper(playerType));
+		for (int i = 0; i < typeComboBox.getItemCount(); i++) {
+			if (typeComboBox.getItemAt(i).getPlayerType() == playerType) {
+				typeComboBox.setSelectedIndex(i);
+				return;
+			}
+		}
 	}
 }

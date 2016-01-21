@@ -15,6 +15,7 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.EMapStartResources;
@@ -159,6 +160,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		numberOfPlayersComboBox.setEnabled(true);
 		peaceTimeComboBox.setEnabled(true);
 		startResourcesComboBox.setEnabled(true);
+		startGameButton.setVisible(true);
 		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		setStartButtonActionListener(e -> {
 			long randomSeed = System.currentTimeMillis();
@@ -181,15 +183,29 @@ public class JoinGamePanel extends BackgroundPanel {
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
+		startGameButton.setVisible(true);
 		cancelButton.addActionListener(e -> {
 			settlersFrame.showMainMenu();
-			connector.shutdown();
 		});
 		setStartButtonActionListener(e -> {
 			//TODO fill with code
 		});
 
 		prepareUiFor(mapLoader);
+	}
+
+	public void setJoinMultiPlayerMap(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap, MapLoader mapLoader) {
+		this.playerSlotFactory =  new ClientOfMultiplayerPlayerSlotFactory();
+		numberOfPlayersComboBox.setEnabled(false);
+		peaceTimeComboBox.setEnabled(false);
+		startResourcesComboBox.setEnabled(false);
+		cancelButton.addActionListener(e -> {
+			settlersFrame.showMainMenu();
+		});
+		startGameButton.setVisible(false);
+
+		prepareUiFor(mapLoader);
+
 	}
 
 	private void prepareUiFor(MapLoader mapLoader) {
