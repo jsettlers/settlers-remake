@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
+import jsettlers.common.*;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.image.*;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.lookandfeel.LFStyle;
 
 import javax.swing.*;
@@ -33,9 +37,12 @@ public class PlayerSlot {
 	private final JComboBox<PlayerTypeUiWrapper> typeComboBox = new JComboBox<>();
 	private final JComboBox<Byte> slotComboBox = new JComboBox<>();
 	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
+	private final JButton readyButton = new JButton();
 	private byte oldSlotValue;
 	private SlotListener slotListener;
 	private boolean isAvailable;
+	private boolean isReady = true;
+	private IJoinPhaseMultiplayerGameConnector gameToBeInformedAboutReady;
 
 	public PlayerSlot() {
 		isAvailable = true;
@@ -49,28 +56,33 @@ public class PlayerSlot {
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
 		constraints.gridy = row + 1;
+		constraints.gridwidth = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(readyButton, constraints);
+		constraints.gridx = 1;
+		constraints.gridy = row + 1;
 		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(playerNameLabel, constraints);
-		constraints.gridx = 4;
+		constraints.gridx = 5;
 		constraints.gridy = row + 1;
 		constraints.gridwidth = 2;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(civilisationComboBox, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 6;
+		constraints.gridx = 7;
 		constraints.gridy = row + 1;
 		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(typeComboBox, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 10;
+		constraints.gridx = 11;
 		constraints.gridy = row + 1;
 		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(slotComboBox, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 11;
+		constraints.gridx = 12;
 		constraints.gridy = row + 1;
 		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -79,6 +91,17 @@ public class PlayerSlot {
 
 	private void setStyle() {
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
+		updateReadyButtonStyle();
+	}
+
+	private void updateReadyButtonStyle() {
+		if (isReady()){
+			readyButton.setIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(0)).generateBufferedImage()));
+			readyButton.setPressedIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(1)).generateBufferedImage()));
+		} else {
+			readyButton.setIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(0)).generateBufferedImage()));
+			readyButton.setPressedIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(1)).generateBufferedImage()));
+		}
 	}
 
 	private void localize() {
@@ -92,6 +115,12 @@ public class PlayerSlot {
 				slotListener.slotHasChanged(oldSlotValue, getSlot());
 			}
 			oldSlotValue = getSlot();
+		});
+		readyButton.addActionListener(e -> {
+			setReady(!isReady());
+			if (gameToBeInformedAboutReady != null) {
+				gameToBeInformedAboutReady.setReady(isReady());
+			}
 		});
 	}
 
@@ -170,11 +199,24 @@ public class PlayerSlot {
 		this.slotListener = slotListener;
 	}
 
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean ready) {
+		isReady = ready;
+		updateReadyButtonStyle();
+	}
+
 	public void disableAllInputs() {
 		slotComboBox.setEnabled(false);
 		civilisationComboBox.setEnabled(false);
 		teamComboBox.setEnabled(false);
 		typeComboBox.setEnabled(false);
+	}
+
+	public void setReadyButtonEnabled(boolean isEnabled) {
+		readyButton.setEnabled(isEnabled);
 	}
 
 	public void setCivilisation(ECivilisation civilisation) {
@@ -194,5 +236,9 @@ public class PlayerSlot {
 			}
 		}
 		updateAiPlayerName();
+	}
+
+	public void informGameAboutReady(IJoinPhaseMultiplayerGameConnector gameToBeInformedAboutReady) {
+		this.gameToBeInformedAboutReady = gameToBeInformedAboutReady;
 	}
 }

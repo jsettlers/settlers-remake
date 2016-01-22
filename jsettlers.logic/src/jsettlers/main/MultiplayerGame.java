@@ -148,7 +148,7 @@ public class MultiplayerGame {
 			playerSettings[i] = new PlayerSetting(true, i);
 		}
 
-		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : null;
+		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : EPlayerType.HUMAN;
 
 		for (; i < availablePlayers.length; i++) {
 			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN, i);

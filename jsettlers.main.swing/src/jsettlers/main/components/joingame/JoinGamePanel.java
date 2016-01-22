@@ -16,12 +16,9 @@ package jsettlers.main.components.joingame;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.graphics.startscreen.interfaces.*;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
@@ -30,7 +27,6 @@ import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.SettlersFrame;
-import jsettlers.network.server.match.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -178,6 +174,9 @@ public class JoinGamePanel extends BackgroundPanel {
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
 		});
+		setCancelButtonActionListener(e -> {
+			settlersFrame.showMainMenu();
+		});
 
 		prepareUiFor(mapLoader);
 	}
@@ -195,6 +194,10 @@ public class JoinGamePanel extends BackgroundPanel {
 		setStartButtonActionListener(e -> {
 			//TODO fill with code
 		});
+		setCancelButtonActionListener(e -> {
+			//TODO fill with code
+			settlersFrame.showMainMenu();
+		});
 
 		prepareUiFor(mapLoader);
 	}
@@ -211,17 +214,42 @@ public class JoinGamePanel extends BackgroundPanel {
 
 		prepareUiFor(mapLoader);
 
-		joinMultiPlayerMap.getPlayers().setListener(this::onPlayersChanges);
+		joinMultiPlayerMap.getPlayers().setListener(changingPlayers -> {
+			onPlayersChanges(changingPlayers, joinMultiPlayerMap);
+		});
+		joinMultiPlayerMap.setMultiplayerListener(new IMultiplayerListener() {
+			@Override public void gameIsStarting(IStartingGame game) {
+				settlersFrame.showStartingGamePanel(game);
+			}
+
+			@Override public void gameAborted() {
+				settlersFrame.showMainMenu();
+			}
+		});
 	}
 
-	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers) {
+	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers, IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
 		List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
+		String myId = SettingsManager.getInstance().get(SettingsManager.SETTING_UUID);
 		for (int i = 0; i < players.size(); i++) {
-			playerSlots.get(i).setPlayerName(players.get(i).getName());
+			PlayerSlot playerSlot = playerSlots.get(i);
+			IMultiplayerPlayer player = players.get(i);
+			playerSlot.setPlayerName(player.getName());
+			playerSlot.setReady(player.isReady());
+			if (player.getId().equals(myId)) {
+				playerSlot.setReadyButtonEnabled(true);
+				playerSlot.informGameAboutReady(joinMultiPlayerMap);
+			} else {
+				playerSlot.setReadyButtonEnabled(false);
+			}
 		}
 		for (int i = players.size(); i < playerSlots.size(); i++) {
 			playerSlots.get(i).setTypeComboBox(EPlayerType.AI_VERY_HARD);
 		}
+		setCancelButtonActionListener(e -> {
+			joinMultiPlayerMap.abort();
+			settlersFrame.showMainMenu();
+		});
 	};
 
 	private void prepareUiFor(MapLoader mapLoader) {
@@ -260,6 +288,12 @@ public class JoinGamePanel extends BackgroundPanel {
 		startGameButton.addActionListener(actionListener);
 	}
 
+	private void setCancelButtonActionListener(ActionListener actionListener) {
+		ActionListener[] actionListeners = cancelButton.getActionListeners();
+		Arrays.asList(actionListeners).stream().forEach(cancelButton::removeActionListener);
+		cancelButton.addActionListener(actionListener);
+	}
+
 	private void resetNumberOfPlayersComboBox() {
 		numberOfPlayersComboBox.removeAllItems();
 		for (int i = 1; i < mapLoader.getMaxPlayers() + 1; i++) {
@@ -288,30 +322,30 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void addPlayerSlotHeadline() {
 		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx = 0;
+		constraints.gridx = 1;
 		constraints.gridy = 0;
 		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.add(slotsHeadlinePlayerNameLabel, constraints);
-		constraints.gridx = 4;
+		constraints.gridx = 5;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.add(slotsHeadlineCivilisation, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 6;
+		constraints.gridx = 7;
 		constraints.gridy = 0;
 		constraints.gridwidth = 4;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.add(slotsHeadlineType, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 10;
+		constraints.gridx = 11;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.add(slotsHeadlineMapSlot, constraints);
 		constraints = new GridBagConstraints();
-		constraints.gridx = 11;
+		constraints.gridx = 12;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
 		constraints.fill = GridBagConstraints.HORIZONTAL;

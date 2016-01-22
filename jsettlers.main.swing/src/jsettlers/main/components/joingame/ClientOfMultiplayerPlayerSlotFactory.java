@@ -15,7 +15,6 @@
 package jsettlers.main.components.joingame;
 
 import jsettlers.common.ai.EPlayerType;
-import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.MapLoader;
 
 /**
@@ -25,14 +24,11 @@ public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 
 	@Override public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
 		PlayerSlot playerSlot = new PlayerSlot();
-		if (slot == 0) {
-			SettingsManager settingsManager = SettingsManager.getInstance();
-			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
-
-		}
 		playerSlot.setPossibleTypes(new EPlayerType[] {EPlayerType.HUMAN, EPlayerType.AI_VERY_HARD});
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
+		playerSlot.setReady(false);
+		playerSlot.setReadyButtonEnabled(false);
 		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));
 		playerSlot.disableAllInputs();
 		return playerSlot;
