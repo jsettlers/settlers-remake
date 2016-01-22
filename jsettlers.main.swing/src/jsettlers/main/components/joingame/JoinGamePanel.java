@@ -176,6 +176,7 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	public void setSinglePlayerMap(MapLoader mapLoader) {
 		this.playerSlotFactory =  new SinglePlayerSlotFactory();
+		titleLabel.setText(Labels.getString("join-game-panel-new-single-player-game-title"));
 		numberOfPlayersComboBox.setEnabled(true);
 		peaceTimeComboBox.setEnabled(true);
 		startResourcesComboBox.setEnabled(true);
@@ -210,6 +211,7 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
 		this.playerSlotFactory =  new HostOfMultiplayerPlayerSlotFactory();
+		titleLabel.setText(Labels.getString("join-game-panel-new-multi-player-game-title"));
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
@@ -257,6 +259,7 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	public void setJoinMultiPlayerMap(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap, MapLoader mapLoader) {
 		this.playerSlotFactory =  new ClientOfMultiplayerPlayerSlotFactory();
+		titleLabel.setText(Labels.getString("join-game-panel-join-multi-player-game-title"));
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
@@ -293,14 +296,18 @@ public class JoinGamePanel extends BackgroundPanel {
 				chatArea.append(Labels.getString("network-message-" + message.name()) + "\n");
 			}
 		});
-		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
-		sendChatMessageButton.addActionListener(e -> {
+		ActionListener sendChatMessage = e -> {
 			String message = chatInputField.getText();
 			if (!message.equals("")) {
 				joinMultiPlayerMap.sendChatMessage(message);
 				chatInputField.setText("");
 			}
-		});
+		};
+		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
+		Arrays.asList(chatInputField.getActionListeners()).stream().forEach(chatInputField::removeActionListener);
+		sendChatMessageButton.addActionListener(sendChatMessage);
+		chatInputField.addActionListener(sendChatMessage);
+
 	}
 
 	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers, IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
@@ -331,7 +338,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		this.mapLoader = mapLoader;
 		mapNameLabel.setText(mapLoader.getMapName());
 		mapImage.setIcon(new ImageIcon(JSettlersSwingUtil.createBufferedImageFrom(mapLoader)));
-		titleLabel.setText(Labels.getString("join-game-panel-new-single-player-game-title"));
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
 		startResourcesComboBox.removeAllItems();
