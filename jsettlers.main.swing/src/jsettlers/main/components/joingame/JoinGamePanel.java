@@ -290,7 +290,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			}
 
 			@Override public void systemMessageReceived(IMultiplayerPlayer author, ENetworkMessage message) {
-				chatArea.append(message.name() + "\n");
+				chatArea.append(Labels.getString("network-message-" + message.name()) + "\n");
 			}
 		});
 		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
