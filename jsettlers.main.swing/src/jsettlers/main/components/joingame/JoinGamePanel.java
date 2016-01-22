@@ -17,10 +17,12 @@ package jsettlers.main.components.joingame;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.*;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
@@ -182,20 +184,44 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
-		connector.openNewMultiplayerGame(new OpenMultiPlayerGameInfo(mapLoader));
 		this.playerSlotFactory =  new HostOfMultiplayerPlayerSlotFactory();
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
 		startGameButton.setVisible(true);
+		setStartButtonActionListener(e -> {});
+		IJoiningGame joiningGame = connector.openNewMultiplayerGame(new OpenMultiPlayerGameInfo(mapLoader));
+		joiningGame.setListener(new IJoiningGameListener() {
+			@Override public void joinProgressChanged(EProgressState state, float progress) {
+
+			}
+
+			@Override public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+				setStartButtonActionListener(e -> {
+					connector.startGame();
+				});
+				connector.getPlayers().setListener(changingPlayers -> {
+					onPlayersChanges(changingPlayers, connector);
+				});
+				connector.setMultiplayerListener(new IMultiplayerListener() {
+					@Override public void gameIsStarting(IStartingGame game) {
+						settlersFrame.showStartingGamePanel(game);
+					}
+
+					@Override public void gameAborted() {
+						settlersFrame.showMainMenu();
+					}
+				});
+
+			}
+		});
 		cancelButton.addActionListener(e -> {
+			joiningGame.abort();
 			settlersFrame.showMainMenu();
 		});
-		setStartButtonActionListener(e -> {
-			//TODO fill with code
-		});
+
 		setCancelButtonActionListener(e -> {
-			//TODO fill with code
+			joiningGame.abort();
 			settlersFrame.showMainMenu();
 		});
 
