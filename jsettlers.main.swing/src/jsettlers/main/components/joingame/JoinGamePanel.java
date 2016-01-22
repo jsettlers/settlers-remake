@@ -22,10 +22,10 @@ import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.*;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
+import jsettlers.lookandfeel.ui.BorderButton;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.SettlersFrame;
@@ -66,6 +66,9 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JLabel slotsHeadlineType = new JLabel();
 	private final JLabel slotsHeadlineMapSlot = new JLabel();
 	private final JLabel slotsHeadlineTeam = new JLabel();
+	private final JTextField chatInputField = new JTextField();
+	private final JTextArea chatArea = new JTextArea();
+	private final JButton sendChatMessageButton = new JButton();
 	private MapLoader mapLoader;
 	private List<PlayerSlot> playerSlots = new Vector<>();
 	private PlayerSlotFactory playerSlotFactory;
@@ -108,6 +111,15 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
+		JPanel chatPanel = new JPanel();
+		chatPanel.setLayout(new BorderLayout());
+		JPanel chatInputPanel = new JPanel();
+		chatInputPanel.add(chatArea, BorderLayout.CENTER);
+		chatInputPanel.setLayout(new BorderLayout());
+		chatPanel.add(chatInputPanel, BorderLayout.SOUTH);
+		chatInputPanel.add(chatInputField, BorderLayout.CENTER);
+		chatInputPanel.add(sendChatMessageButton, BorderLayout.EAST);
+		centerPanel.add(chatInputPanel, BorderLayout.CENTER);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx=0;
 		constraints.gridy=0;
@@ -138,6 +150,9 @@ public class JoinGamePanel extends BackgroundPanel {
 		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
 		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
 		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		sendChatMessageButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		chatInputField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+		chatArea.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 
@@ -164,6 +179,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.setEnabled(true);
 		startResourcesComboBox.setEnabled(true);
 		startGameButton.setVisible(true);
+		setChatVisible(false);
 		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		setStartButtonActionListener(e -> {
 			long randomSeed = System.currentTimeMillis();
@@ -183,12 +199,21 @@ public class JoinGamePanel extends BackgroundPanel {
 		prepareUiFor(mapLoader);
 	}
 
+	private void setChatVisible(boolean isVisible) {
+		chatArea.setVisible(isVisible);
+		chatInputField.setVisible(isVisible);
+		sendChatMessageButton.setVisible(isVisible);
+		chatArea.setText("");
+		chatInputField.setText("");
+	}
+
 	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
 		this.playerSlotFactory =  new HostOfMultiplayerPlayerSlotFactory();
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
 		startGameButton.setVisible(true);
+		setChatVisible(true);
 		setStartButtonActionListener(e -> {});
 		IJoiningGame joiningGame = connector.openNewMultiplayerGame(new OpenMultiPlayerGameInfo(mapLoader));
 		joiningGame.setListener(new IJoiningGameListener() {
@@ -197,6 +222,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			}
 
 			@Override public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+				initializeChatFor(connector);
 				setStartButtonActionListener(e -> {
 					connector.startGame();
 				});
@@ -233,6 +259,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
+		setChatVisible(true);
 		cancelButton.addActionListener(e -> {
 			settlersFrame.showMainMenu();
 		});
@@ -250,6 +277,27 @@ public class JoinGamePanel extends BackgroundPanel {
 
 			@Override public void gameAborted() {
 				settlersFrame.showMainMenu();
+			}
+		});
+		initializeChatFor(joinMultiPlayerMap);
+	}
+
+	private void initializeChatFor(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
+		joinMultiPlayerMap.setChatListener(new IChatMessageListener() {
+			@Override public void chatMessageReceived(String authorId, String message) {
+				chatArea.append(authorId + ": " + message);
+			}
+
+			@Override public void systemMessageReceived(IMultiplayerPlayer author, ENetworkMessage message) {
+				chatArea.append(message.name());
+			}
+		});
+		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
+		sendChatMessageButton.addActionListener(e -> {
+			String message = chatInputField.getText();
+			if (!message.equals("")) {
+				joinMultiPlayerMap.sendChatMessage(message);
+				chatInputField.setText("");
 			}
 		});
 	}
