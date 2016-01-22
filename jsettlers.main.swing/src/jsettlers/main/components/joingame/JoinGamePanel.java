@@ -114,12 +114,12 @@ public class JoinGamePanel extends BackgroundPanel {
 		JPanel chatPanel = new JPanel();
 		chatPanel.setLayout(new BorderLayout());
 		JPanel chatInputPanel = new JPanel();
-		chatInputPanel.add(chatArea, BorderLayout.CENTER);
 		chatInputPanel.setLayout(new BorderLayout());
+		chatPanel.add(chatArea, BorderLayout.CENTER);
 		chatPanel.add(chatInputPanel, BorderLayout.SOUTH);
 		chatInputPanel.add(chatInputField, BorderLayout.CENTER);
 		chatInputPanel.add(sendChatMessageButton, BorderLayout.EAST);
-		centerPanel.add(chatInputPanel, BorderLayout.CENTER);
+		centerPanel.add(chatPanel, BorderLayout.CENTER);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx=0;
 		constraints.gridy=0;
@@ -167,6 +167,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		slotsHeadlineType.setText(Labels.getString("join-game-panel-player-type"));
 		slotsHeadlineMapSlot.setText(Labels.getString("join-game-panel-map-slot"));
 		slotsHeadlineTeam.setText(Labels.getString("join-game-panel-team"));
+		sendChatMessageButton.setText(Labels.getString("join-game-panel-send-chat-message"));
 	}
 
 	private void addListener() {
@@ -285,11 +286,11 @@ public class JoinGamePanel extends BackgroundPanel {
 	private void initializeChatFor(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
 		joinMultiPlayerMap.setChatListener(new IChatMessageListener() {
 			@Override public void chatMessageReceived(String authorId, String message) {
-				chatArea.append(authorId + ": " + message);
+				chatArea.append(authorId + ": " + message + "\n");
 			}
 
 			@Override public void systemMessageReceived(IMultiplayerPlayer author, ENetworkMessage message) {
-				chatArea.append(message.name());
+				chatArea.append(message.name() + "\n");
 			}
 		});
 		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
