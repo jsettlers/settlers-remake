@@ -1,16 +1,33 @@
 package jsettlers.main.components.openpanel;
 
-import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.main.swing.JSettlersSwingUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import jsettlers.graphics.localization.Labels;
+import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.swing.JSettlersSwingUtil;
 
 /**
  * Render to open an existing map
@@ -23,60 +40,60 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Selected background color
 	 */
-	private static final Color SELECTION_BACKGROUND = new Color(0x9EB1CD);
+	private final Color SELECTION_BACKGROUND = UIManager.getColor("MapListCellRenderer.backgroundSelected");
 
 	/**
 	 * Background even
 	 */
-	private static final Color BACKGROUND1 = Color.WHITE;
+	private final Color BACKGROUND1 = UIManager.getColor("MapListCellRenderer.backgroundColor1");
 
 	/**
 	 * Background odd
 	 */
-	private static final Color BACKGROUND2 = new Color(0xE0E0E0);
+	private final Color BACKGROUND2 = UIManager.getColor("MapListCellRenderer.backgroundColor2");
 
 	/**
-	 * Foreground
+	 * Font color
 	 */
-	private static final Color FOREGROUND = Color.BLACK;
+	private final Color FOREGROUND = UIManager.getColor("MapListCellRenderer.foregroundColor");
 
 	/**
 	 * Right part of the panel with all texts
 	 */
-	private Box pRight = Box.createVerticalBox();
+	private final Box pRight = Box.createVerticalBox();
 
 	/**
 	 * Main Panel
 	 */
-	private JPanel pContents = new JPanel();
+	private final JPanel pContents = new JPanel();
 
 	/**
 	 * Name of the Map
 	 */
-	private JLabel lbName = new JLabel();
+	private final JLabel lbName = new JLabel();
 
 	/**
 	 * Count of players
 	 */
-	private JLabel lbPlayerCount = new JLabel();
+	private final JLabel lbPlayerCount = new JLabel();
 
 	/**
 	 * ID of the Map and the creation date
 	 */
-	private JLabel lbMapId = new JLabel();
+	private final JLabel lbMapId = new JLabel();
 
 	/**
 	 * Description of the Map
 	 */
-	private JLabel lbDescription = new JLabel();
+	private final JLabel lbDescription = new JLabel();
 
 	/**
 	 * Preview of the map
 	 */
-	private JLabel lbIcon = new JLabel();
+	private final JLabel lbIcon = new JLabel();
 
 	/**
-	 * Empty icon, if there is noe
+	 * Empty icon, if there is no image
 	 */
 	private final Icon EMPTY_ICON = new Icon() {
 
@@ -86,24 +103,24 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 
 		@Override
 		public int getIconWidth() {
-			return MapFileHeader.PREVIEW_IMAGE_SIZE / 2;
+			return 1;
 		}
 
 		@Override
 		public int getIconHeight() {
-			return MapFileHeader.PREVIEW_IMAGE_SIZE / 2;
+			return 1;
 		}
 	};
 
 	/**
 	 * Format for date display
 	 */
-	private SimpleDateFormat df = new SimpleDateFormat(Labels.getString("date.date-only"));
+	private final SimpleDateFormat df = new SimpleDateFormat(Labels.getString("date.date-only"));
 
 	/**
 	 * Cache for preview images
 	 */
-	private Map<MapLoader, Icon> previewImageCache = new HashMap<>();
+	private final Map<MapLoader, Icon> previewImageCache = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -134,8 +151,13 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		pContents.setLayout(new BorderLayout());
 		pContents.add(pRight, BorderLayout.CENTER);
 		pContents.add(lbIcon, BorderLayout.WEST);
+		pContents.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DRAW_BG_CUSTOM);
+
 		lbIcon.setOpaque(false);
 		lbIcon.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
+
+		// Update UI
+		SwingUtilities.updateComponentTreeUI(pContents);
 	}
 
 	/**

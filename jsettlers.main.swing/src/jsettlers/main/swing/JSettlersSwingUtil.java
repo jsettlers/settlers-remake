@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import java.awt.image.BufferedImage;
+
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
-
-import java.awt.image.BufferedImage;
 
 /**
  * @author Andreas Butti
@@ -26,23 +26,25 @@ import java.awt.image.BufferedImage;
 public class JSettlersSwingUtil {
 
 	public static BufferedImage createBufferedImageFrom(MapLoader mapLoader) {
-		short[] imageColors = mapLoader.getImage();
+		short[] data = mapLoader.getImage();
 		int xOffset = MapFileHeader.PREVIEW_IMAGE_SIZE;
-		BufferedImage resultingImage = new BufferedImage(MapFileHeader.PREVIEW_IMAGE_SIZE + xOffset,
+		BufferedImage img = new BufferedImage(MapFileHeader.PREVIEW_IMAGE_SIZE + xOffset,
 				MapFileHeader.PREVIEW_IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB);
 
 		xOffset--;
 		for (int y = 0; y < MapFileHeader.PREVIEW_IMAGE_SIZE; y++) {
 			for (int x = 0; x < MapFileHeader.PREVIEW_IMAGE_SIZE; x++) {
 				int index = y * MapFileHeader.PREVIEW_IMAGE_SIZE + x;
-				jsettlers.common.Color c = jsettlers.common.Color.fromShort(imageColors[index]);
-				resultingImage.setRGB(x + xOffset, y, c.getARGB());
+				jsettlers.common.Color c = jsettlers.common.Color.fromShort(data[index]);
+				img.setRGB(x + xOffset, y, c.getARGB());
 			}
-			if (xOffset > 1) {
+			if (xOffset > 1 && (y % 2 == 0)) {
 				xOffset--;
 			}
 		}
-		return resultingImage;
+
+		int displaySize = MapFileHeader.PREVIEW_IMAGE_SIZE / 2;
+		return img;
 	}
 
 }
