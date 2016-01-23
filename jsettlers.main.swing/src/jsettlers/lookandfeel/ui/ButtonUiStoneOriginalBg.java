@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JComponent;
+import javax.swing.JToggleButton;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -56,10 +57,14 @@ public class ButtonUiStoneOriginalBg extends BasicButtonUI {
 		AbstractButton b = (AbstractButton) c;
 		ButtonModel model = b.getModel();
 
-		boolean pressed = false;
-		// perform UI specific press action, e.g. Windows L&F shifts text
-		if (model.isArmed() && model.isPressed()) {
-			pressed = true;
+		boolean down;
+		if (c instanceof JToggleButton) {
+			down = ((JToggleButton) c).isSelected();
+		} else {
+			down = model.isArmed() && model.isPressed();
+		}
+
+		if (down) {
 			g.drawImage(backgroundPressedImage, 0, 0, b.getWidth(), b.getHeight(), c);
 		} else {
 			g.drawImage(backgroundImage, 0, 0, b.getWidth(), b.getHeight(), c);
@@ -68,7 +73,7 @@ public class ButtonUiStoneOriginalBg extends BasicButtonUI {
 		int y = b.getHeight() / 2 + (g.getFontMetrics().getAscent() / 2);
 		int x = 10;
 
-		if (pressed) {
+		if (down) {
 			x += 1;
 			y += 1;
 		}
