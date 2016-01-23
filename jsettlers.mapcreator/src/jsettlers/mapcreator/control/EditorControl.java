@@ -300,6 +300,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			}
 
 		};
+
 		registerActions();
 		window.initMenubarAndToolbar();
 		initActions();
@@ -328,7 +329,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 		connector.addListener(this);
 		window.setVisible(true);
-		displayPanel.requestFocusInWindow();
+		displayPanel.requestFocus();
 	}
 
 	/**
