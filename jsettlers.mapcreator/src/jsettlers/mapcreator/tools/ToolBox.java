@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import javax.swing.Icon;
+
 /**
  * This is a tool that only holds some more tools.
  * 
@@ -21,9 +23,24 @@ package jsettlers.mapcreator.tools;
  */
 public class ToolBox implements ToolNode {
 
+	/**
+	 * Name of the node
+	 */
 	private final String name;
+
+	/**
+	 * Array with the tools
+	 */
 	private final ToolNode[] tools;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name
+	 *            Name of the node
+	 * @param tools
+	 *            Array with the tools
+	 */
 	public ToolBox(String name, ToolNode[] tools) {
 		this.name = name;
 		this.tools = tools;
@@ -34,7 +51,27 @@ public class ToolBox implements ToolNode {
 		return name;
 	}
 
-	public ToolNode[] getTools() {
-		return tools;
+	/**
+	 * Get tool at index
+	 * 
+	 * @param index
+	 *            Index
+	 * @return Tool
+	 */
+	public ToolNode getTool(int index) {
+		return tools[index];
+	}
+
+	/**
+	 * @return Tool length
+	 */
+	public int getToolLength() {
+		return tools.length;
+	}
+
+	@Override
+	public Icon getIcon() {
+		// use default icon
+		return null;
 	}
 }

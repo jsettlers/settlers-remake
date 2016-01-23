@@ -103,8 +103,21 @@ public class MapList implements IMapListerCallable {
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
+		
+		MapLoader loader;
+		
 		try {
-			MapLoader loader = MapLoader.getLoaderForListedMap(map);
+			loader = MapLoader.getLoaderForListedMap(map);
+		} catch (Exception e) {
+			System.err.println("Cought exception while loading header for " + map.getFileName());
+			e.printStackTrace();
+			return;
+		}
+		
+		MapFileHeader mapHead = loader.getFileHeader();
+		
+		//- if the map can't be load (e.g. caused by wrong format) the mapHead gets NULL! -> hide/ignore this map from user
+		if (mapHead != null) {
 			MapType type = loader.getFileHeader().getType();
 
 			if ((type == MapType.SAVED_SINGLE)) {
@@ -112,9 +125,6 @@ public class MapList implements IMapListerCallable {
 			} else {
 				freshMaps.add(loader);
 			}
-		} catch (Exception e) {
-			System.err.println("Cought exception while loading header for " + map.getFileName());
-			e.printStackTrace();
 		}
 	}
 

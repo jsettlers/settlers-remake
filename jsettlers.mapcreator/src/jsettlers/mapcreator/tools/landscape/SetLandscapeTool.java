@@ -14,53 +14,44 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.landscape;
 
+import java.awt.Color;
+
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
+import jsettlers.mapcreator.main.window.sidebar.RectIcon;
+import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.buffers.ByteMapArea;
 import jsettlers.mapcreator.tools.buffers.GlobalShapeBuffer;
-import jsettlers.mapcreator.tools.shapes.LineCircleShape;
-import jsettlers.mapcreator.tools.shapes.LineShape;
-import jsettlers.mapcreator.tools.shapes.NoisyLineCircleShape;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class SetLandscapeTool implements Tool {
-
-	private static final ShapeType[] SHAPES = new ShapeType[] {
-			new PointShape(),
-			new LineShape(),
-			new LineCircleShape(),
-			new NoisyLineCircleShape(),
-	};
-
-	private static final ShapeType[] RIVERSHAPES = new ShapeType[] {
-			new PointShape(), new LineShape(),
-	};
+/**
+ * Tool to set landscape
+ * 
+ * @author Andreas Butti
+ */
+public class SetLandscapeTool extends AbstractTool {
 
 	private final ELandscapeType type;
-
-	private final boolean isRiver;
 
 	private GlobalShapeBuffer buffer;
 
 	public SetLandscapeTool(ELandscapeType type, boolean isRiver) {
+		super(new RectIcon(16, new Color(type.color.getARGB())),
+				String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));
 		this.type = type;
-		this.isRiver = isRiver;
-	}
 
-	@Override
-	public String getName() {
-		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape_" + type));
-	}
+		shapeTypes.add(EShapeType.POINT);
+		shapeTypes.add(EShapeType.LINE);
 
-	@Override
-	public ShapeType[] getShapes() {
-		return isRiver ? RIVERSHAPES : SHAPES;
+		if (!isRiver) {
+			shapeTypes.add(EShapeType.LINE_CIRCLE);
+			shapeTypes.add(EShapeType.NOISY_LINE_CIRCLE);
+		}
 	}
 
 	@Override
@@ -79,18 +70,13 @@ public class SetLandscapeTool implements Tool {
 		int usedminy = Math.min(starty, endy) - (int) (size / MapCircle.Y_SCALE) - 3;
 		int usedmaxx = Math.max(startx, endx) + size + 3;
 		int usedmaxy = Math.max(starty, endy) + (int) (size / MapCircle.Y_SCALE) + 3;
-		byte[][] array =
-				buffer.getArray(usedminx, usedminy, usedmaxx, usedmaxy);
+		byte[][] array = buffer.getArray(usedminx, usedminy, usedmaxx, usedmaxy);
 
 		shape.setAffectedStatus(array, start, end);
 
 		IMapArea area = new ByteMapArea(array);
 
 		map.fill(type, area);
-	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
 
 }
