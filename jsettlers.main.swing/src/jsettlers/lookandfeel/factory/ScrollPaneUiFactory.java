@@ -1,11 +1,13 @@
 package jsettlers.lookandfeel.factory;
 
-import jsettlers.lookandfeel.ui.UIDefaults;
+import java.awt.Graphics;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollPaneUI;
-import java.awt.*;
+
+import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
  * ScrollPanel UI factory

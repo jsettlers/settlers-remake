@@ -1,6 +1,7 @@
 package jsettlers.lookandfeel.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 
 /**
  * Constant colors for L&F

@@ -1,9 +1,9 @@
 package jsettlers.lookandfeel.factory;
 
-import jsettlers.lookandfeel.LFStyle;
-
-import javax.swing.*;
+import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
+
+import jsettlers.lookandfeel.LFStyle;
 
 /**
  * Button UI factory

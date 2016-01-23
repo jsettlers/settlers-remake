@@ -1,10 +1,19 @@
 package jsettlers.lookandfeel;
 
-import jsettlers.lookandfeel.factory.*;
+import java.awt.Color;
 
-import javax.swing.*;
+import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import java.awt.*;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
+import jsettlers.lookandfeel.factory.ButtonUiFactory;
+import jsettlers.lookandfeel.factory.LabelUiFactory;
+import jsettlers.lookandfeel.factory.PanelUiFactory;
+import jsettlers.lookandfeel.factory.ProgressBarUiFactory;
+import jsettlers.lookandfeel.factory.ScrollPaneUiFactory;
+import jsettlers.lookandfeel.factory.TextFieldUiFactory;
+import jsettlers.lookandfeel.factory.ToggleButtonUiFactory;
 
 /**
  * Look and Feel for JSettlers

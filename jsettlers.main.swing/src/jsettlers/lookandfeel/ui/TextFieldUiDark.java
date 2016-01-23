@@ -1,11 +1,15 @@
 package jsettlers.lookandfeel.ui;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Insets;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.plaf.metal.MetalTextFieldUI;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
 
 /**
  * Text field UI for dark backgrounds

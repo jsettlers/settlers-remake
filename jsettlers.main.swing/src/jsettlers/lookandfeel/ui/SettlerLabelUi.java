@@ -1,12 +1,16 @@
 package jsettlers.lookandfeel.ui;
 
-import jsettlers.graphics.map.draw.ImageProvider;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicLabelUI;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+
+import jsettlers.graphics.map.draw.ImageProvider;
 
 /**
  * Label UI, with different stylings

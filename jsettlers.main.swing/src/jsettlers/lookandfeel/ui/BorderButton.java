@@ -1,7 +1,11 @@
 package jsettlers.lookandfeel.ui;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Insets;
+
 import javax.swing.border.Border;
-import java.awt.*;
 
 /**
  * Border for Button 3D effects

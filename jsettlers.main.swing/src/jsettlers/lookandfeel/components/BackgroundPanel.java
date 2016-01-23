@@ -1,7 +1,8 @@
 package jsettlers.lookandfeel.components;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
 
 /**
  * Panel with background texture and Border

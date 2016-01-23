@@ -1,9 +1,11 @@
 package jsettlers.lookandfeel.factory;
 
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import javax.swing.JComponent;
+import javax.swing.UIManager;
+import javax.swing.plaf.ComponentUI;
 
 /**
  * Forward the unhandled calls to the default look and feel factory

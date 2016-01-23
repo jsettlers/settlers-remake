@@ -1,14 +1,18 @@
 package jsettlers.lookandfeel.ui;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.TexturePaint;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JComponent;
+import javax.swing.plaf.PanelUI;
+
 import jsettlers.lookandfeel.DrawHelper;
 import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.lookandfeel.ui.img.UiImageLoader;
-
-import javax.swing.*;
-import javax.swing.plaf.PanelUI;
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 
 /**
  * Background Panel UI

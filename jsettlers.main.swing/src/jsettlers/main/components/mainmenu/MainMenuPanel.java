@@ -14,29 +14,28 @@
  *******************************************************************************/
 package jsettlers.main.components.mainmenu;
 
-import jsettlers.common.utils.collections.ChangingList;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.List;
+import java.util.Vector;
+import java.util.stream.Collectors;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
-import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.main.components.settingsmenu.SettingsMenuPanel;
 import jsettlers.main.swing.SettlersFrame;
-
-import javax.swing.*;
-import javax.swing.text.html.Option;
-import java.awt.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 /**
  * @author codingberlin
@@ -70,7 +69,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 				startSaveGame);
 		startSaveGame.setRelatedOpenPanel(openSaveGamePanel);
 		NewMultiPlayerGame newMultiplayerGame = new NewMultiPlayerGame(settlersFrame);
-		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(),	newMultiplayerGame);
+		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), newMultiplayerGame);
 		newMultiplayerGame.setRelatedOpenPanel(newMultiPlayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
 		JoinMultiplayerGame joinMultiPlayerGame = new JoinMultiplayerGame(settlersFrame);
@@ -89,11 +88,11 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	}
 
 	private void setStyle() {
-		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
-		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
-		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
-		newNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
-		joinNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		newNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		joinNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		exitButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 
 		SwingUtilities.updateComponentTreeUI(this);
@@ -124,14 +123,14 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 			settingsPanel.initializeValues();
 		});
 		multiPlayerConnector
-			.getJoinableMultiplayerGames()
-			.setListener(networkGames -> {
-				List<MapLoader> mapLoaders = networkGames.getItems()
-					.stream()
-					.map(NetworkGameMapLoader::new)
-					.collect(Collectors.toList());
-				SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
-			});
+				.getJoinableMultiplayerGames()
+				.setListener(networkGames -> {
+					List<MapLoader> mapLoaders = networkGames.getItems()
+							.stream()
+							.map(NetworkGameMapLoader::new)
+							.collect(Collectors.toList());
+					SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
+				});
 	}
 
 	private void createStructure() {

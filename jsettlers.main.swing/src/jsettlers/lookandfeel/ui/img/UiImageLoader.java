@@ -1,10 +1,11 @@
 package jsettlers.lookandfeel.ui.img;
 
-import jsettlers.lookandfeel.DrawHelper;
-
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+
+import jsettlers.lookandfeel.DrawHelper;
 
 /**
  * Image loader for UI Images

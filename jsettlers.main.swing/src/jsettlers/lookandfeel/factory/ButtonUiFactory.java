@@ -1,12 +1,12 @@
 package jsettlers.lookandfeel.factory;
 
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.ui.BorderButton;
 import jsettlers.lookandfeel.ui.ButtonUiStone;
 import jsettlers.lookandfeel.ui.ButtonUiStoneOriginalBg;
-
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
 
 /**
  * Button UI factory

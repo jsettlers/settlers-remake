@@ -1,12 +1,17 @@
 package jsettlers.lookandfeel.ui;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.JComponent;
+import javax.swing.plaf.basic.BasicButtonUI;
+
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.lookandfeel.DrawHelper;
-
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**
  * Button UI Implementation

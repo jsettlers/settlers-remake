@@ -1,9 +1,14 @@
 package jsettlers.lookandfeel.ui;
 
-import jsettlers.lookandfeel.DrawHelper;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Polygon;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+
+import jsettlers.lookandfeel.DrawHelper;
 
 /**
  * Scroll bar up / down / left / right button

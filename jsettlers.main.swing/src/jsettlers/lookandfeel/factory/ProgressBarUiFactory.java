@@ -1,10 +1,10 @@
 package jsettlers.lookandfeel.factory;
 
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.ui.SettlerProgressbar;
-
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
 
 /**
  * Button UI factory

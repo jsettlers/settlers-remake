@@ -1,11 +1,11 @@
 package jsettlers.lookandfeel.factory;
 
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.ui.SettlerLabelUi;
 import jsettlers.lookandfeel.ui.UIDefaults;
-
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
 
 /**
  * Label UI factory

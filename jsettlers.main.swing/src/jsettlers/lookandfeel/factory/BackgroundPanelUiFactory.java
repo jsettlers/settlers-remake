@@ -1,9 +1,9 @@
 package jsettlers.lookandfeel.factory;
 
-import jsettlers.lookandfeel.ui.BackgroundPanelUi;
-
-import javax.swing.*;
+import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
+
+import jsettlers.lookandfeel.ui.BackgroundPanelUi;
 
 /**
  * Factory for Background panel UIs

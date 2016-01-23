@@ -1,9 +1,10 @@
 package jsettlers.lookandfeel.components;
 
-import jsettlers.lookandfeel.LFStyle;
+import java.awt.Dimension;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+
+import jsettlers.lookandfeel.LFStyle;
 
 /**
  * Panel with background texture and Border

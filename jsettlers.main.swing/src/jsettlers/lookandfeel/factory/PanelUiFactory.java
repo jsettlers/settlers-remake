@@ -1,13 +1,14 @@
 package jsettlers.lookandfeel.factory;
 
+import java.awt.Graphics2D;
+
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.PanelUI;
+
 import jsettlers.lookandfeel.DrawHelper;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.ui.UIDefaults;
-
-import javax.swing.*;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.PanelUI;
-import java.awt.*;
 
 /**
  * Panel UI factory

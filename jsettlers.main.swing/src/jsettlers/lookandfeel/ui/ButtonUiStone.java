@@ -1,13 +1,20 @@
 package jsettlers.lookandfeel.ui;
 
-import jsettlers.lookandfeel.ui.img.UiImageLoader;
-import sun.swing.SwingUtilities2;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.JComponent;
+import javax.swing.JToggleButton;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+
+import jsettlers.lookandfeel.ui.img.UiImageLoader;
+import sun.swing.SwingUtilities2;
 
 /**
  * Stone toggle Button UI

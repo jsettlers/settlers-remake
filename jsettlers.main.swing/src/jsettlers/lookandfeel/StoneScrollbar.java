@@ -1,15 +1,22 @@
 package jsettlers.lookandfeel;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JScrollBar;
+import javax.swing.plaf.ScrollBarUI;
+import javax.swing.plaf.ScrollBarUI;
+
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.lookandfeel.ui.ScrollBarButton;
 import jsettlers.lookandfeel.ui.ScrollBarButton.Orientation;
-
-import javax.swing.*;
-import javax.swing.plaf.ScrollBarUI;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 /**
  * Stone looking scrollbar.

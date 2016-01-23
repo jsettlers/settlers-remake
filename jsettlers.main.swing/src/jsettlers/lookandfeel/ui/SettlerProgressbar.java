@@ -1,8 +1,11 @@
 package jsettlers.lookandfeel.ui;
 
-import javax.swing.*;
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JProgressBar;
 import javax.swing.plaf.basic.BasicProgressBarUI;
-import java.awt.*;
 
 /**
  * ProgressBar ui

@@ -1,6 +1,10 @@
 package jsettlers.lookandfeel.ui;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Stroke;
 
 /**
  * Draws the yellow border on the stone texture
