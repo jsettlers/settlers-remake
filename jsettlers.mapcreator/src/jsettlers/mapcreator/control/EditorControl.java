@@ -270,6 +270,9 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		FixData fixData = new FixData(data, undoRedo, validator);
 		sidebar.setFixData(fixData);
 		autoFixErrorAction.setFixData(fixData);
+
+		// Go to center of the map
+		connector.scrollTo(new ShortPoint2D(header.getWidth() / 2, header.getHeight() / 2), false);
 	}
 
 	/**
