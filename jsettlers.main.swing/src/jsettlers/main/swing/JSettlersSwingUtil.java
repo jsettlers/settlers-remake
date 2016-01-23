@@ -43,7 +43,6 @@ public class JSettlersSwingUtil {
 			}
 		}
 
-		int displaySize = MapFileHeader.PREVIEW_IMAGE_SIZE / 2;
 		return img;
 	}
 
