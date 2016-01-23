@@ -87,10 +87,10 @@ public final class MapDrawContext implements IGLProvider {
 
 			// Additional 12 Colors
 			new Color(0xFFBAFF45),
-			new Color(0xFFFFC800),
+			new Color(0xFFCD0973),
 			new Color(0xFFD9F1AF),
 			new Color(0xFF6E005F),
-			new Color(0xFF96FF8D),
+			new Color(0xFFA3C503),
 			new Color(0xFF64B3B9),
 			new Color(0xFFB3F6FB),
 			new Color(0xFF8E592B),
