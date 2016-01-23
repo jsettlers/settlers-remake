@@ -36,8 +36,7 @@ public class ToolTreeModel implements TreeModel {
 		this.root = root;
 	}
 
-	private final LinkedList<TreeModelListener> listeners =
-			new LinkedList<TreeModelListener>();
+	private final LinkedList<TreeModelListener> listeners = new LinkedList<TreeModelListener>();
 
 	@Override
 	public void addTreeModelListener(TreeModelListener l) {
@@ -47,7 +46,7 @@ public class ToolTreeModel implements TreeModel {
 	@Override
 	public Object getChild(Object parent, int index) {
 		if (parent instanceof ToolBox) {
-			return ((ToolBox) parent).getTools()[index];
+			return ((ToolBox) parent).getTool(index);
 		}
 		return null;
 	}
@@ -55,7 +54,7 @@ public class ToolTreeModel implements TreeModel {
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent instanceof ToolBox) {
-			return ((ToolBox) parent).getTools().length;
+			return ((ToolBox) parent).getToolLength();
 		}
 		return 0;
 	}
@@ -63,12 +62,13 @@ public class ToolTreeModel implements TreeModel {
 	@Override
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent instanceof ToolBox) {
-			int i = 0;
-			for (ToolNode t : ((ToolBox) parent).getTools()) {
-				if (t == child) {
+			ToolBox tb = ((ToolBox) parent);
+
+			for (int i = 0; i < tb.getToolLength(); i++) {
+				ToolNode t = tb.getTool(i);
+				if (t.equals(child)) {
 					return i;
 				}
-				i++;
 			}
 		}
 		return 0;

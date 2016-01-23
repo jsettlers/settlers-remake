@@ -1,0 +1,5 @@
+## This file contains a list with all translators
+
+Andreas Eberle, 2012 - 2016 (Deutsch / German)
+Andreas Butti, 2015 - 2016 (Deutsch / German)
+Github contributers add here!, xxxx

@@ -15,6 +15,8 @@
 package jsettlers.graphics.map.minimap;
 
 import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,7 +46,7 @@ public final class Minimap {
 	private final MapCoordinateConverter converter;
 	private int width;
 	private int height;
-	private int imageIndex = -1;
+	private TextureHandle texture = null;
 	private final float stride;
 
 	private boolean imageIsValid = false;
@@ -78,65 +80,81 @@ public final class Minimap {
 	}
 
 	public void draw(GLDrawContext context) {
-		synchronized (update_syncobj) {
-			if (!imageIsValid) {
-				if (imageIndex > 0) {
-					context.deleteTexture(imageIndex);
+		boolean imageWasCreatedJustNow = false;
+		try {
+			synchronized (update_syncobj) {
+				if (!imageIsValid) {
+					imageWasCreatedJustNow = true;
+					if (texture != null) {
+						texture.delete();
+						texture = null;
+					}
+					ShortBuffer data =
+							ByteBuffer.allocateDirect(width * height * 2)
+									.order(ByteOrder.nativeOrder()).asShortBuffer();
+					for (int i = 0; i < width * height; i++) {
+						data.put(LineLoader.BLACK);
+					}
+					data.position(0);
+					texture = context.generateTexture(width, height, data);
+					updatedLines.clear();
+					imageIsValid = true;
 				}
-				ShortBuffer data =
-						ByteBuffer.allocateDirect(width * height * 2)
-								.order(ByteOrder.nativeOrder()).asShortBuffer();
-				for (int i = 0; i < width * height; i++) {
-					data.put(LineLoader.BLACK);
+
+				if (!updatedLines.isEmpty()) {
+					ShortBuffer currData =
+							ByteBuffer.allocateDirect(width * 2)
+									.order(ByteOrder.nativeOrder()).asShortBuffer();
+					for (Integer currLine : updatedLines) {
+						currData.position(0);
+						currData.put(buffer[currLine]);
+						currData.position(0);
+
+						context.updateTexture(texture, 0, currLine, width, 1,
+								currData);
+					}
+					updatedLines.clear();
 				}
-				data.position(0);
-				imageIndex = context.generateTexture(width, height, data);
-				updatedLines.clear();
-				imageIsValid = true;
+				update_syncobj.notifyAll();
 			}
 
-			if (!updatedLines.isEmpty()) {
-				ShortBuffer currData =
-						ByteBuffer.allocateDirect(width * 2)
-								.order(ByteOrder.nativeOrder()).asShortBuffer();
-				for (Integer currLine : updatedLines) {
-					currData.position(0);
-					currData.put(buffer[currLine]);
-					currData.position(0);
+			context.color(1, 1, 1, 1);
+			context.drawQuadWithTexture(texture, new float[] {
+					0,
+					0,
+					0,
+					0,
+					0,
+					width,
+					0,
+					0,
+					1,
+					0,
+					(stride + 1) * width,
+					height,
+					0,
+					1,
+					1,
+					stride * width,
+					height,
+					0,
+					0,
+					1,
+			});
 
-					context.updateTexture(imageIndex, 0, currLine, width, 1,
-							currData);
+			drawViewmark(context);
+		} catch (IllegalBufferException e) {
+			if (imageWasCreatedJustNow) {
+				// TODO: Error reporting
+				e.printStackTrace();
+			} else {
+				// Retry with a new image.
+				synchronized (update_syncobj) {
+					imageIsValid = false;
 				}
-				updatedLines.clear();
+				draw(context);
 			}
-			update_syncobj.notifyAll();
 		}
-
-		context.color(1, 1, 1, 1);
-		context.drawQuadWithTexture(imageIndex, new float[] {
-				0,
-				0,
-				0,
-				0,
-				0,
-				width,
-				0,
-				0,
-				1,
-				0,
-				(stride + 1) * width,
-				height,
-				0,
-				1,
-				1,
-				stride * width,
-				height,
-				0,
-				0,
-				1,
-		});
-
-		drawViewmark(context);
 	}
 
 	private void drawViewmark(GLDrawContext context) {

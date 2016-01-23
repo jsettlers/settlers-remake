@@ -26,11 +26,29 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
+/**
+ * Wrapper for map display
+ * 
+ * @author Andreas Butti
+ */
 public class MapGraphics implements IGraphicsGrid {
 
+	/**
+	 * Original map
+	 */
 	private final MapData data;
+
+	/**
+	 * Display resources in the game map
+	 */
 	private boolean showResources = false;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param data
+	 *            Original map
+	 */
 	public MapGraphics(MapData data) {
 		this.data = data;
 	}
@@ -52,21 +70,18 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		if (showResources) {
+		ObjectContainer container = data.getMapObjectContainer(x, y);
+		if (container instanceof IMapObject) {
+			return (IMapObject) container;
+		} else
+			if (showResources) {
 			byte amount = data.getResourceAmount((short) x, (short) y);
 			if (amount > 0) {
 				return ResourceMapObject.get(data.getResourceType((short) x, (short) y), amount);
-			} else {
-				return null;
-			}
-		} else {
-			ObjectContainer container = data.getMapObjectContainer(x, y);
-			if (container instanceof IMapObject) {
-				return (IMapObject) container;
-			} else {
-				return null;
 			}
 		}
+
+		return null;
 	}
 
 	@Override
@@ -104,8 +119,12 @@ public class MapGraphics implements IGraphicsGrid {
 		data.setListener(backgroundListener);
 	}
 
-	public void setShowResources(boolean b) {
-		showResources = b;
+	/**
+	 * @param showResources
+	 *            Display resources in the game map
+	 */
+	public void setShowResources(boolean showResources) {
+		this.showResources = showResources;
 	}
 
 	@Override

@@ -14,11 +14,20 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import jsettlers.graphics.map.IGLProvider;
 
+/**
+ * This class buffers triangle draw calls and sends them to opengl in bratches. It should only be used during one frame.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class DrawBuffer {
 
 	private static final int BUFFERS = 5;
@@ -36,7 +45,7 @@ public class DrawBuffer {
 		/**
 		 * The last texture we set.
 		 */
-		private int currentTexture = 0;
+		private TextureHandle currentTexture = null;
 
 		private int currentTriangles = 0;
 
@@ -48,8 +57,12 @@ public class DrawBuffer {
 			byteBuffer.order(ByteOrder.nativeOrder());
 		}
 
-		protected void setForTexture(int texture) {
+		protected void setForTexture(TextureHandle texture) throws IllegalBufferException {
 			if (currentTexture != texture) {
+				if (texture != null && !texture.isValid()) {
+					throw new IllegalBufferException("The texture " + texture + " is not valid.");
+				}
+
 				if (currentTriangles != 0) {
 					draw();
 				}
@@ -58,9 +71,13 @@ public class DrawBuffer {
 		}
 
 		protected void draw() {
-			// System.out.println("draw " + currentTriangles + " tris of " + currentTexture);
-			byteBuffer.rewind();
-			context.getGl().drawTrianglesWithTextureColored(currentTexture, byteBuffer, currentTriangles);
+			try {
+				byteBuffer.rewind();
+				context.getGl().drawTrianglesWithTextureColored(currentTexture, byteBuffer, currentTriangles);
+			} catch (IllegalBufferException e) {
+				// TODO: Crash report. Should not happen since we check texture in advance.
+				e.printStackTrace();
+			}
 			byteBuffer.rewind();
 			currentTriangles = 0;
 		}
@@ -79,7 +96,7 @@ public class DrawBuffer {
 		}
 
 		public void addTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
-									float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+				float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
 			if (currentTriangles >= BUFFER_TRIANGLES - 1) {
 				draw();
 			}
@@ -110,12 +127,14 @@ public class DrawBuffer {
 		}
 	}
 
-	public void addImage(int texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
+	public void addImage(TextureHandle texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor)
+			throws IllegalBufferException {
+		Buffer buffer = getBuffer(texture); // get first to make it fail.
 		setZ(getZ() + .00001f);
-		getBuffer(texture).addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
+		buffer.addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
 	}
 
-	public Buffer getBuffer(int texture) {
+	public Buffer getBuffer(TextureHandle texture) throws IllegalBufferException {
 		for (int i = 0; i < BUFFERS; i++) {
 			if (drawBuffers[i].currentTexture == texture) {
 				return drawBuffers[i];

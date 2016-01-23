@@ -19,6 +19,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.TestUtils;
 import jsettlers.network.client.task.TestTaskPacket;
@@ -27,10 +31,6 @@ import jsettlers.network.infrastructure.channel.Channel;
 import jsettlers.network.infrastructure.channel.listeners.BufferingPacketListener;
 import jsettlers.network.server.match.lockstep.TaskCollectingListener;
 import jsettlers.network.server.packets.ServersideTaskPacket;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests the {@link ServersideTaskPacket} and the {@link TaskCollectingListener} classes and that they are correctly send and received over a
@@ -70,7 +70,7 @@ public class TaskCollectingListenerTest {
 		TestTaskPacket testPacket2 = new TestTaskPacket("Bla B�b B�n0928�38(/�/)\"=$(;:I\"H))!", -2342323, (byte) 4);
 		client.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
 
-		Thread.sleep(10);
+		Thread.sleep(50);
 
 		List<ServersideTaskPacket> serversideTaskPackets = serverListener.getAndResetTasks(); // get collected tasks of server
 
@@ -82,7 +82,7 @@ public class TaskCollectingListenerTest {
 			server.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, curr);
 		}
 
-		Thread.sleep(10);
+		Thread.sleep(50);
 
 		List<TaskPacket> packets = clientListener.popBufferedPackets();
 

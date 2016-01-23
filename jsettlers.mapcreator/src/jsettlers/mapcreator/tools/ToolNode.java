@@ -14,6 +14,22 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import javax.swing.Icon;
+
+/**
+ * Tool node, to display in the tree
+ * 
+ * @author Andreas Butti
+ */
 public interface ToolNode {
-	String getName();
+
+	/**
+	 * @return Name to display
+	 */
+	public String getName();
+
+	/**
+	 * @return Icon to display in the tree
+	 */
+	public Icon getIcon();
 }
