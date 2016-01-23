@@ -12,6 +12,104 @@ import java.awt.*;
 public class BorderButton implements Border {
 
 	/**
+	 * UP Border, 4px border
+	 */
+	public static final BorderButton BUTTON_UP_4PX = new BorderButton(new ColorTypes(
+			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180), new Color(0xff, 0xff, 0xff, 160),
+					new Color(0xff, 0xff, 0xff, 60) },
+			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180), new Color(0xff, 0xff, 0xff, 160),
+					new Color(0xff, 0xff, 0xff, 60) },
+			new Color[] { Color.BLACK, new Color(0, 0, 0, 120), new Color(0, 0, 0, 40) },
+			new Color[] { Color.BLACK, new Color(0, 0, 0, 120), new Color(0, 0, 0, 40) }));
+
+	/**
+	 * for BUTTON_UP_BIG
+	 */
+	private static final Color[] COLOR_BIG_TOP_LEFT_UP = new Color[] {
+			new Color(0, 0, 0, 40),
+			new Color(0xff, 0xff, 0xff, 20),
+			new Color(0xff, 0xff, 0xff, 20),
+			new Color(0xff, 0xff, 0xff, 60),
+			new Color(0xff, 0xff, 0xff, 60),
+			new Color(0xff, 0xff, 0xff, 120),
+			new Color(0xff, 0xff, 0xff, 120),
+			new Color(0xff, 0xff, 0xff, 180),
+			new Color(0xff, 0xff, 0xff, 180),
+			new Color(0xff, 0xff, 0xff, 120),
+			new Color(0xff, 0xff, 0xff, 80),
+			new Color(0xff, 0xff, 0xff, 80),
+			new Color(0xff, 0xff, 0xff, 20),
+	};
+
+	/**
+	 * for BUTTON_UP_BIG
+	 */
+	private static final Color[] COLOR_BIG_BOTTOM_RIGHT_UP = new Color[] {
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 200),
+			new Color(0, 0, 0, 200),
+			new Color(0, 0, 0, 180),
+			new Color(0, 0, 0, 180),
+			new Color(0, 0, 0, 120),
+			new Color(0, 0, 0, 120),
+			new Color(0, 0, 0, 100),
+			new Color(0, 0, 0, 80),
+			new Color(0, 0, 0, 80),
+			new Color(0, 0, 0, 20),
+	};
+
+	/**
+	 * UP Border, 10px border
+	 */
+	public static final BorderButton BUTTON_UP_BIG = new BorderButton(new ColorTypes(
+			COLOR_BIG_TOP_LEFT_UP, COLOR_BIG_TOP_LEFT_UP, COLOR_BIG_BOTTOM_RIGHT_UP, COLOR_BIG_BOTTOM_RIGHT_UP));
+
+	/**
+	 * for BUTTON_UP_BIG
+	 */
+	private static final Color[] COLOR_BIG_TOP_LEFT_DOWN = new Color[] {
+			new Color(0, 0, 0, 40),
+			new Color(0xff, 0xff, 0xff, 20),
+			new Color(0xff, 0xff, 0xff, 60),
+			new Color(0xff, 0xff, 0xff, 120),
+			new Color(0xff, 0xff, 0xff, 180),
+			new Color(0xff, 0xff, 0xff, 120),
+			new Color(0xff, 0xff, 0xff, 80),
+			new Color(0xff, 0xff, 0xff, 20),
+	};
+
+	/**
+	 * for BUTTON_UP_BIG
+	 */
+	private static final Color[] COLOR_BIG_BOTTOM_RIGHT_DOWN = new Color[] {
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 200),
+			new Color(0, 0, 0, 180),
+			new Color(0, 0, 0, 120),
+			new Color(0, 0, 0, 100),
+			new Color(0, 0, 0, 80),
+			new Color(0, 0, 0, 20),
+	};
+
+	/**
+	 * UP Border, 10px border
+	 */
+	public static final BorderButton BUTTON_DOWN_BIG = new BorderButton(new ColorTypes(
+			COLOR_BIG_TOP_LEFT_DOWN, COLOR_BIG_TOP_LEFT_DOWN, COLOR_BIG_BOTTOM_RIGHT_DOWN, COLOR_BIG_BOTTOM_RIGHT_DOWN));
+
+	/**
+	 * Down button to 4px border
+	 */
+	public static final BorderButton BUTTON_DOWN_4PX = new BorderButton(new ColorTypes(
+			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180) },
+			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180) },
+			new Color[] { Color.BLACK, new Color(0, 0, 0, 120) },
+			new Color[] { Color.BLACK, new Color(0, 0, 0, 120) }));
+
+	/**
 	 * Definitions for borders
 	 */
 	private static class ColorTypes {
@@ -57,38 +155,18 @@ public class BorderButton implements Border {
 	}
 
 	/**
-	 * Button released
+	 * Color definitions
 	 */
-	private static final ColorTypes UP = new ColorTypes(
-			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180), new Color(0xff, 0xff, 0xff, 160),
-					new Color(0xff, 0xff, 0xff, 60) },
-			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180), new Color(0xff, 0xff, 0xff, 160),
-					new Color(0xff, 0xff, 0xff, 60) },
-			new Color[] { Color.BLACK, new Color(0, 0, 0, 120), new Color(0, 0, 0, 40) },
-			new Color[] { Color.BLACK, new Color(0, 0, 0, 120), new Color(0, 0, 0, 40) });
-
-	/**
-	 * Button pressed
-	 */
-	private static final ColorTypes DOWN = new ColorTypes(
-			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180) },
-			new Color[] { new Color(0, 0, 0, 40), new Color(0xff, 0xff, 0xff, 180) },
-			new Color[] { Color.BLACK, new Color(0, 0, 0, 120) },
-			new Color[] { Color.BLACK, new Color(0, 0, 0, 120) });
-
-	/**
-	 * true down: false up
-	 */
-	private boolean down;
+	private final ColorTypes colors;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param down
-	 *            true down: false up
+	 * @param colors
+	 *            Color definitions
 	 */
-	public BorderButton(boolean down) {
-		this.down = down;
+	public BorderButton(ColorTypes colors) {
+		this.colors = colors;
 	}
 
 	@Override
@@ -114,30 +192,23 @@ public class BorderButton implements Border {
 		 * </pre>
 		 */
 
-		ColorTypes current;
-		if (down) {
-			current = DOWN;
-		} else {
-			current = UP;
-		}
-
-		for (int i = 0; i < current.top.length; i++) {
-			g.setColor(current.top[i]);
+		for (int i = 0; i < colors.top.length; i++) {
+			g.setColor(colors.top[i]);
 			g.drawLine(i, i, w - i, i);
 		}
 
-		for (int i = 0; i < current.bottom.length; i++) {
-			g.setColor(current.bottom[i]);
+		for (int i = 0; i < colors.bottom.length; i++) {
+			g.setColor(colors.bottom[i]);
 			g.drawLine(i, h - i - 1, w - i, h - i - 1);
 		}
 
-		for (int i = 0; i < current.left.length; i++) {
-			g.setColor(current.left[i]);
+		for (int i = 0; i < colors.left.length; i++) {
+			g.setColor(colors.left[i]);
 			g.drawLine(i, i, i, h - i - 1);
 		}
 
-		for (int i = 0; i < current.right.length; i++) {
-			g.setColor(current.right[i]);
+		for (int i = 0; i < colors.right.length; i++) {
+			g.setColor(colors.right[i]);
 			g.drawLine(w - i - 1, i + 1, w - i - 1, h - i - 1);
 		}
 

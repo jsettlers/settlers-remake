@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Andreas Butti
  */
-public class ButtonUIStone extends BasicButtonUI {
+public class ButtonUiStoneOriginalBg extends BasicButtonUI {
 
 	/**
 	 * Background Image
@@ -28,7 +28,7 @@ public class ButtonUIStone extends BasicButtonUI {
 	/**
 	 * Constructor
 	 */
-	public ButtonUIStone() {
+	public ButtonUiStoneOriginalBg() {
 		ImageProvider prv = ImageProvider.getInstance();
 		backgroundImage = prv.getGuiImage(3, 326).generateBufferedImage();
 		backgroundPressedImage = prv.getGuiImage(3, 329).generateBufferedImage();

@@ -4,6 +4,7 @@ import jsettlers.lookandfeel.ui.img.UiImageLoader;
 import sun.swing.SwingUtilities2;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,7 +14,7 @@ import java.awt.image.BufferedImage;
  * 
  * @author Andreas Butti
  */
-public class ToggleButtonUiStone extends BasicToggleButtonUI {
+public class ButtonUiStone extends BasicToggleButtonUI {
 
 	/**
 	 * Background Image
@@ -23,12 +24,12 @@ public class ToggleButtonUiStone extends BasicToggleButtonUI {
 	/**
 	 * Button down
 	 */
-	private static final BorderButton BUTTON_DOWN = new BorderButton(true);
+	private final Border borderDown;
 
 	/**
 	 * Button up
 	 */
-	private static final BorderButton BUTTON_UP = new BorderButton(false);
+	private final Border borderUp;
 
 	/**
 	 * Offset
@@ -37,15 +38,22 @@ public class ToggleButtonUiStone extends BasicToggleButtonUI {
 
 	/**
 	 * Constructor
+	 * 
+	 * @param borderUp
+	 *            Button up
+	 * @param borderDown
+	 *            Button down
 	 */
-	public ToggleButtonUiStone() {
+	public ButtonUiStone(Border borderUp, Border borderDown) {
+		this.borderUp = borderUp;
+		this.borderDown = borderDown;
 	}
 
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
 		c.setOpaque(false);
-		c.setBorder(BUTTON_UP);
+		c.setBorder(borderUp);
 		c.setFont(UIDefaults.FONT_PLAIN);
 		c.setForeground(UIDefaults.LABEL_TEXT_COLOR);
 	}
@@ -55,19 +63,42 @@ public class ToggleButtonUiStone extends BasicToggleButtonUI {
 		int w = c.getWidth();
 		int h = c.getHeight();
 
-		// TODO: Choose random!
-		int sx1 = 25;
-		int sy1 = 25;
+		Integer sx0 = (Integer) c.getClientProperty("ButtonUiStone.bgx");
+		Integer sy0 = (Integer) c.getClientProperty("ButtonUiStone.bgy");
 
-		g.drawImage(backgroundImage, 0, 0, w, h, sx1, sy1, sx1 + w, sy1 + h, c);
+		if (sx0 == null || sy0 == null) {
+			sx0 = (int) Math.random() * backgroundImage.getWidth();
+			sy0 = (int) Math.random() * backgroundImage.getHeight();
+			c.putClientProperty("ButtonUiStone.bgx", sx0);
+			c.putClientProperty("ButtonUiStone.bgy", sy0);
+		}
 
-		if (((JToggleButton) c).isSelected()) {
-			c.setBorder(BUTTON_DOWN);
-			g.setColor(new Color(0, 0, 0, 60));
+		int sx1 = sx0;
+		int sy1 = sy0;
+
+		for (int x = sx1; x < c.getWidth(); x += backgroundImage.getWidth()) {
+			for (int y = sy1; y < c.getWidth(); y += backgroundImage.getHeight()) {
+				g.drawImage(backgroundImage, x, y, c);
+			}
+		}
+
+		boolean down;
+		if (c instanceof JToggleButton) {
+			down = ((JToggleButton) c).isSelected();
+		} else {
+			down = false;
+			AbstractButton b = (AbstractButton) c;
+			ButtonModel model = b.getModel();
+			down = model.isArmed() && model.isPressed();
+		}
+
+		if (down) {
+			c.setBorder(borderDown);
+			g.setColor(new Color(0, 0, 0, 90));
 			g.fillRect(2, 2, w - 4, h - 4);
 			shiftOffset = 1;
 		} else {
-			c.setBorder(BUTTON_UP);
+			c.setBorder(borderUp);
 			shiftOffset = 0;
 		}
 

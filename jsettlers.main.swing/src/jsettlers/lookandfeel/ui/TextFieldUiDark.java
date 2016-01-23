@@ -15,6 +15,11 @@ import java.awt.*;
 public class TextFieldUiDark extends MetalTextFieldUI {
 
 	/**
+	 * Selection color
+	 */
+	private static final Color SELECTION_COLOR = new Color(0x726825);
+
+	/**
 	 * Constructor
 	 */
 	public TextFieldUiDark() {
@@ -37,6 +42,7 @@ public class TextFieldUiDark extends MetalTextFieldUI {
 		txt.setBorder(border);
 		txt.setBackground(Color.BLUE);
 		txt.setForeground(Color.WHITE);
+		txt.setSelectionColor(SELECTION_COLOR);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package jsettlers.lookandfeel.factory;
 
 import jsettlers.lookandfeel.LFStyle;
+import jsettlers.lookandfeel.ui.SettlerProgressbar;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -10,7 +11,7 @@ import javax.swing.plaf.ComponentUI;
  * 
  * @author Andreas Butti
  */
-public class ToggleButtonUiFactory {
+public class ProgressBarUiFactory {
 
 	/**
 	 * Forward calls
@@ -26,11 +27,8 @@ public class ToggleButtonUiFactory {
 	 */
 	public static ComponentUI createUI(JComponent c) {
 		Object style = c.getClientProperty(LFStyle.KEY);
-		if (LFStyle.TOGGLE_BUTTON_STONE == style) {
-			return ButtonUiFactory.STONE_UI_SMALL;
-		}
-		if (LFStyle.BUTTON_MENU == style) {
-			return ButtonUiFactory.MENU_UI;
+		if (LFStyle.PROGRESSBAR_SLIDER == style) {
+			return new SettlerProgressbar();
 		}
 
 		return FORWARD.create(c);

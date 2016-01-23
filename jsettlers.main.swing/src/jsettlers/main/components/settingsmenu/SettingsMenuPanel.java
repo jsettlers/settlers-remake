@@ -17,6 +17,7 @@ package jsettlers.main.components.settingsmenu;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.components.general.VolumeSlider;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
 import jsettlers.main.swing.SettlersFrame;
 
@@ -31,7 +32,7 @@ public class SettingsMenuPanel extends JPanel {
 	private final JLabel playerNameLabel = new JLabel();
 	private final JTextField playerNameField = new JTextField();
 	private final JLabel volumeLabel = new JLabel();
-	private final JSlider volumeSlider = new JSlider();
+	private final VolumeSlider volumeSlider = new VolumeSlider();
 	private final JButton cancelButton = new JButton();
 	private final JButton saveButton = new JButton();
 

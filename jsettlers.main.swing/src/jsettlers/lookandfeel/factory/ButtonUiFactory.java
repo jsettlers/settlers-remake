@@ -1,7 +1,9 @@
 package jsettlers.lookandfeel.factory;
 
 import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.ui.ButtonUIStone;
+import jsettlers.lookandfeel.ui.BorderButton;
+import jsettlers.lookandfeel.ui.ButtonUiStone;
+import jsettlers.lookandfeel.ui.ButtonUiStoneOriginalBg;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -21,7 +23,12 @@ public class ButtonUiFactory {
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	private static final ButtonUIStone stoneUI = new ButtonUIStone();
+	protected static final ButtonUiStone STONE_UI_SMALL = new ButtonUiStone(BorderButton.BUTTON_UP_4PX, BorderButton.BUTTON_DOWN_4PX);
+
+	/**
+	 * Instance of the UI, for all Button the same instance
+	 */
+	protected static final ButtonUiStoneOriginalBg MENU_UI = new ButtonUiStoneOriginalBg();
 
 	/**
 	 * Create PLAF
@@ -32,8 +39,11 @@ public class ButtonUiFactory {
 	 */
 	public static ComponentUI createUI(JComponent c) {
 		Object style = c.getClientProperty(LFStyle.KEY);
+		if (LFStyle.BUTTON_STONE == style) {
+			return STONE_UI_SMALL;
+		}
 		if (LFStyle.BUTTON_MENU == style) {
-			return stoneUI;
+			return MENU_UI;
 		}
 
 		return FORWARD.create(c);

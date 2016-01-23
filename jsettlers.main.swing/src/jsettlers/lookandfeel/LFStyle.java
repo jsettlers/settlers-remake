@@ -8,6 +8,11 @@ package jsettlers.lookandfeel;
 public enum LFStyle {
 
 	/**
+	 * Stone look button
+	 */
+	BUTTON_STONE,
+
+	/**
 	 * Stone look menu button
 	 */
 	BUTTON_MENU,
@@ -45,7 +50,12 @@ public enum LFStyle {
 	/**
 	 * Supports transparent background colors
 	 */
-	PANEL_DRAW_BG_CUSTOM;
+	PANEL_DRAW_BG_CUSTOM,
+
+	/**
+	 * Settler Slider, based on progressbar
+	 */
+	PROGRESSBAR_SLIDER;
 
 	/**
 	 * Key used for putClientProperty
