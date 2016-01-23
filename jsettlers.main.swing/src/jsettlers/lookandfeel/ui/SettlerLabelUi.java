@@ -33,7 +33,7 @@ public class SettlerLabelUi extends BasicLabelUI {
 	/**
 	 * Border
 	 */
-	private Border border = BorderFactory.createEmptyBorder(2, 5, 2, 5);
+	private final Border border = BorderFactory.createEmptyBorder(2, 5, 2, 5);
 
 	/**
 	 * Constructor

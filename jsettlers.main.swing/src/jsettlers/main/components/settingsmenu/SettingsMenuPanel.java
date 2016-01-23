@@ -14,15 +14,19 @@
  *******************************************************************************/
 package jsettlers.main.components.settingsmenu;
 
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.main.components.general.VolumeSlider;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
-import jsettlers.main.swing.SettlersFrame;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * @author codingberlin
@@ -48,6 +52,8 @@ public class SettingsMenuPanel extends JPanel {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(0, 2, 20, 20));
 		panel.add(playerNameLabel);
+		playerNameField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+		SwingUtilities.updateComponentTreeUI(playerNameField);
 		panel.add(playerNameField);
 		panel.add(volumeLabel);
 		panel.add(volumeSlider);
