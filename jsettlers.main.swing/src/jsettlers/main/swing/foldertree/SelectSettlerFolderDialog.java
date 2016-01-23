@@ -63,11 +63,6 @@ public class SelectSettlerFolderDialog extends JFrame {
 		public void jumpTo(Object[] pathToJumpTo) {
 			tree.setSelectionPath(new TreePath(pathToJumpTo));
 		}
-
-		@Override
-		public void goToHome() {
-			tree.setSelectionInterval(0, 0);
-		}
 	};
 
 	/**

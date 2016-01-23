@@ -46,32 +46,6 @@ public class PathPanel extends JPanel {
 	}
 
 	/**
-	 * Home Icon
-	 */
-	private final JComponent HOME = new JComponent() {
-		private static final long serialVersionUID = 1L;
-
-		{
-			setPreferredSize(new Dimension(25, 25));
-		}
-
-		@Override
-		public void paint(Graphics g1) {
-			Graphics2D g = (Graphics2D) g1;
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setColor(Color.WHITE);
-			g.setStroke(new BasicStroke(2));
-			int w = getWidth();
-			int h = getHeight();
-
-			g.drawLine(2, 10, w / 2, 1);
-			g.drawLine(w / 2, 1, w - 3, 10);
-			g.drawLine(5, 9, 5, h);
-			g.drawLine(w - 6, 9, w - 6, h);
-		}
-	};
-
-	/**
 	 * Listener
 	 */
 	private final PathPanelListener listener;
@@ -83,14 +57,8 @@ public class PathPanel extends JPanel {
 	 *            Listener
 	 */
 	public PathPanel(PathPanelListener listener) {
-		add(HOME);
 		this.listener = listener;
-		HOME.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				listener.goToHome();
-			}
-		});
+		setPath(new Object[] {});
 	}
 
 	/**
@@ -101,9 +69,11 @@ public class PathPanel extends JPanel {
 	 * @param pathToJumpTo
 	 */
 	private void addPath(String path, Object[] pathToJumpTo) {
-		Separator s = new Separator();
-		s.setPreferredSize(new Dimension(6, 25));
-		add(s);
+		if (getComponentCount() > 0) {
+			Separator s = new Separator();
+			s.setPreferredSize(new Dimension(6, 25));
+			add(s);
+		}
 
 		JLabel lb = new JLabel(path);
 		lb.setForeground(Color.WHITE);
@@ -136,7 +106,6 @@ public class PathPanel extends JPanel {
 	 */
 	public void setPath(Object[] path) {
 		removeAll();
-		add(HOME);
 
 		List<Object> pathToJump = new ArrayList<>();
 
@@ -154,6 +123,14 @@ public class PathPanel extends JPanel {
 			}
 
 			addPath(name, pathToJump.toArray());
+		}
+
+		if (getComponentCount() < 2) {
+			// to make sure, the alignment is the same without a Separator
+			JPanel p = new JPanel();
+			p.setPreferredSize(new Dimension(1, 25));
+			p.setOpaque(false);
+			add(p);
 		}
 
 		revalidate();
