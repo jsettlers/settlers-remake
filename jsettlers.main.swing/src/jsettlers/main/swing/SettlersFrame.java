@@ -45,6 +45,7 @@ public class SettlersFrame extends JFrame {
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private SoundPlayer soundPlayer = new SwingSoundPlayer();
+	private Timer redrawTimer;
 
 
 	public SettlersFrame() throws HeadlessException {
@@ -59,7 +60,15 @@ public class SettlersFrame extends JFrame {
 		setVisible(true);
 	}
 
+	private void abortRedrawTimerIfPresent() {
+		if (redrawTimer != null) {
+			redrawTimer.cancel();
+			redrawTimer = null;
+		}
+	}
+
 	public void showMainMenu() {
+		abortRedrawTimerIfPresent();
 		setNewContentPane(mainPanel);
 	}
 
@@ -69,12 +78,14 @@ public class SettlersFrame extends JFrame {
 	}
 
 	private void setNewContentPane(Container newContent) {
+		abortRedrawTimerIfPresent();
 		setContentPane(newContent);
 		revalidate();
 		repaint();
 	}
 
 	public void exit() {
+		abortRedrawTimerIfPresent();
 		System.exit(0);
 	}
 
@@ -88,7 +99,8 @@ public class SettlersFrame extends JFrame {
 		Area area = new Area();
 		area.add(region);
 
-		new Timer("opengl-redraw").schedule(new TimerTask() {
+		redrawTimer = new Timer("opengl-redraw");
+		redrawTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				region.requestRedraw();
