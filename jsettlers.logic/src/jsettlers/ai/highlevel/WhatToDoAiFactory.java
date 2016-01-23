@@ -17,8 +17,9 @@ package jsettlers.ai.highlevel;
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.army.LooserGeneral;
 import jsettlers.ai.army.WinnerGeneral;
+import jsettlers.ai.economy.AdaptableEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.economy.LooserEconomyMinister;
+import jsettlers.ai.economy.MiddleEconomyMinister;
 import jsettlers.ai.economy.WinnerEconomyMinister;
 import jsettlers.common.ai.EWhatToDoAiType;
 import jsettlers.logic.map.grid.MainGrid;
@@ -35,15 +36,17 @@ public class WhatToDoAiFactory {
 			ITaskScheduler
 			taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, aiStatistics, player, movableGrid, taskScheduler);
-		EconomyMinister minister = determineMinister(type);
+		EconomyMinister minister = determineMinister(type, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(EWhatToDoAiType type) {
-		if (type == EWhatToDoAiType.ROMAN_EASY || type == EWhatToDoAiType.ROMAN_VERY_HARD) {
+	private EconomyMinister determineMinister(EWhatToDoAiType type, AiStatistics aiStatistics, Player player) {
+		if (type == EWhatToDoAiType.ROMAN_VERY_EASY) {
+			return new AdaptableEconomyMinister(aiStatistics, player);
+		} else if (type == EWhatToDoAiType.ROMAN_VERY_HARD) {
 			return new WinnerEconomyMinister();
 		}
-		return new LooserEconomyMinister();
+		return new MiddleEconomyMinister();
 	}
 
 	private ArmyGeneral determineArmyGeneral(EWhatToDoAiType type, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {

@@ -121,7 +121,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public String getMapId() {
-		return Integer.toString(mapContent.fileChecksum);
+		return Integer.toString(mapContent.fileChecksum) + getMapName();
 	}
 
 	@Override
