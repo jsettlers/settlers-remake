@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.metal.MetalScrollBarUI;
 
 import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
@@ -54,16 +55,15 @@ public class SettlerLookAndFeel {
 		ToggleButtonUiFactory.FORWARD.loadFromType("ToggleButtonUI");
 		ProgressBarUiFactory.FORWARD.loadFromType("ProgressBarUI");
 
+		UIManager.put("ScrollBar.width", 20);
+
 		Object[] scrollbar = {
-				// "ScrollBarUI", ScrollBarUiFactory.class.getName()
+				"ScrollBarUI", MetalScrollBarUI.class.getName(),
 				"BackgroundPanelUI", BackgroundPanelUiFactory.class.getName(),
 				"TextFieldUI", TextFieldUiFactory.class.getName(),
 				"ButtonUI", ButtonUiFactory.class.getName(),
 				"LabelUI", LabelUiFactory.class.getName(),
 				"PanelUI", PanelUiFactory.class.getName(),
-				// "CheckBoxUI", metalPackageName + "MetalCheckBoxUI",
-				// "ComboBoxUI", metalPackageName + "MetalComboBoxUI",
-				// "LabelUI", metalPackageName + "MetalLabelUI",
 				"ScrollPaneUI", ScrollPaneUiFactory.class.getName(),
 				"ToggleButtonUI", ToggleButtonUiFactory.class.getName(),
 				"ProgressBarUI", ProgressBarUiFactory.class.getName(),
