@@ -225,23 +225,22 @@ public class JoinGamePanel extends BackgroundPanel {
 			}
 
 			@Override public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-				initializeChatFor(connector);
-				setStartButtonActionListener(e -> {
-					connector.startGame();
-				});
-				connector.getPlayers().setListener(changingPlayers -> {
-					onPlayersChanges(changingPlayers, connector);
-				});
-				connector.setMultiplayerListener(new IMultiplayerListener() {
-					@Override public void gameIsStarting(IStartingGame game) {
-						settlersFrame.showStartingGamePanel(game);
-					}
+				SwingUtilities.invokeLater(() -> {
+					initializeChatFor(connector);
+					setStartButtonActionListener(e -> {
+						connector.startGame();
+					});
+					connector.getPlayers().setListener(changingPlayers -> onPlayersChanges(changingPlayers, connector));
+					connector.setMultiplayerListener(new IMultiplayerListener() {
+						@Override public void gameIsStarting(IStartingGame game) {
+							settlersFrame.showStartingGamePanel(game);
+						}
 
-					@Override public void gameAborted() {
-						settlersFrame.showMainMenu();
-					}
+						@Override public void gameAborted() {
+							settlersFrame.showMainMenu();
+						}
+					});
 				});
-
 			}
 		});
 		cancelButton.addActionListener(e -> {
@@ -311,26 +310,28 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers, IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
-		List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
-		String myId = SettingsManager.getInstance().get(SettingsManager.SETTING_UUID);
-		for (int i = 0; i < players.size(); i++) {
-			PlayerSlot playerSlot = playerSlots.get(i);
-			IMultiplayerPlayer player = players.get(i);
-			playerSlot.setPlayerName(player.getName());
-			playerSlot.setReady(player.isReady());
-			if (player.getId().equals(myId)) {
-				playerSlot.setReadyButtonEnabled(true);
-				playerSlot.informGameAboutReady(joinMultiPlayerMap);
-			} else {
-				playerSlot.setReadyButtonEnabled(false);
+		SwingUtilities.invokeLater(() -> {
+			List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
+			String myId = SettingsManager.getInstance().get(SettingsManager.SETTING_UUID);
+			for (int i = 0; i < players.size(); i++) {
+				PlayerSlot playerSlot = playerSlots.get(i);
+				IMultiplayerPlayer player = players.get(i);
+				playerSlot.setPlayerName(player.getName());
+				playerSlot.setReady(player.isReady());
+				if (player.getId().equals(myId)) {
+					playerSlot.setReadyButtonEnabled(true);
+					playerSlot.informGameAboutReady(joinMultiPlayerMap);
+				} else {
+					playerSlot.setReadyButtonEnabled(false);
+				}
 			}
-		}
-		for (int i = players.size(); i < playerSlots.size(); i++) {
-			playerSlots.get(i).setTypeComboBox(EPlayerType.AI_VERY_HARD);
-		}
-		setCancelButtonActionListener(e -> {
-			joinMultiPlayerMap.abort();
-			settlersFrame.showMainMenu();
+			for (int i = players.size(); i < playerSlots.size(); i++) {
+				playerSlots.get(i).setTypeComboBox(EPlayerType.AI_VERY_HARD);
+			}
+			setCancelButtonActionListener(e -> {
+				joinMultiPlayerMap.abort();
+				settlersFrame.showMainMenu();
+			});
 		});
 	};
 

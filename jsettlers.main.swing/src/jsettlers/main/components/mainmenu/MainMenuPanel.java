@@ -130,7 +130,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 					.stream()
 					.map(NetworkGameMapLoader::new)
 					.collect(Collectors.toList());
-				joinMultiPlayerGamePanel.setMapLoaders(mapLoaders);
+				SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
 			});
 	}
 

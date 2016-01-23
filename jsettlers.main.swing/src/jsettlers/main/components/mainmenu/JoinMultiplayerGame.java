@@ -8,6 +8,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.main.components.openpanel.OpenPanel;
 import jsettlers.main.swing.SettlersFrame;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,7 +39,8 @@ public class JoinMultiplayerGame implements ActionListener {
 			}
 
 			@Override public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-				settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId()));
+				SwingUtilities.invokeLater(() ->
+						settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId())));
 			}
 		});
 	}
