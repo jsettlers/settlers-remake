@@ -48,7 +48,7 @@ public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 
 				if (!data.getLandscape(x, y).isBlocking) {
 					ShortPoint2D p = new ShortPoint2D(x, y);
-					addErrorMessage("at-position", p, x, y);
+					addErrorMessage("blockingborder.at-position", p, x, y);
 					fix.addPosition(p);
 				}
 			}

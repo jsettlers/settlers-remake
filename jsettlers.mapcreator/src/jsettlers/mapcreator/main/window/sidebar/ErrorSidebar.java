@@ -15,12 +15,13 @@
 package jsettlers.mapcreator.main.window.sidebar;
 
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
@@ -42,7 +43,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	/**
 	 * List with the error entries
 	 */
-	private JList<AbstractErrorEntry> errorList = new JList<>();
+	private final JList<AbstractErrorEntry> errorList = new JList<>();
 
 	/**
 	 * Interface to scroll to position
@@ -57,10 +58,9 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	/**
 	 * Listener to react to list clicks
 	 */
-	private ListSelectionListener selectionListener = new ListSelectionListener() {
-
+	private final MouseListener mouseListener = new MouseAdapter() {
 		@Override
-		public void valueChanged(ListSelectionEvent e) {
+		public void mouseClicked(MouseEvent e) {
 			AbstractErrorEntry value = errorList.getSelectedValue();
 			if (value == null) {
 				return;
@@ -86,7 +86,6 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 				}
 			}
 		}
-
 	};
 
 	/**
@@ -100,7 +99,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 		setViewportView(errorList);
 		this.scrollTo = scrollTo;
 		this.errorList.setCellRenderer(new ErrorListRenderer());
-		errorList.addListSelectionListener(selectionListener);
+		errorList.addMouseListener(mouseListener);
 
 	}
 

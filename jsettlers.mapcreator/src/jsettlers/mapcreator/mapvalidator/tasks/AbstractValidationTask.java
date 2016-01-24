@@ -24,7 +24,7 @@ import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
- * Base class for validation tasks
+ * Base class for validation tasks, have to be inserted in the validation list in #ValidatorRunnable
  * 
  * @author Andreas Butti
  */

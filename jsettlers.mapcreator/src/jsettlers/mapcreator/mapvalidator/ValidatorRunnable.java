@@ -29,6 +29,7 @@ import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayer;
 import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
 import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateResources;
 import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateSettler;
+import jsettlers.mapcreator.mapvalidator.tasks.warning.ValidateDescription;
 
 /**
  * The validation runnable running in the thread queue
@@ -96,6 +97,9 @@ public class ValidatorRunnable implements Runnable {
 		registerTask(new ValidateResources());
 		registerTask(new ValidatePlayerStartPosition());
 		registerTask(new ValidatePlayer());
+
+		// warnings
+		registerTask(new ValidateDescription());
 	}
 
 	/**

@@ -272,14 +272,22 @@ public class ValidationList {
 				continue;
 			}
 
+			// Errors? Or only warnings?
+			boolean error = false;
 			model.addElement(g.header);
 
 			LocalGroupList groupedList = g.groupSimilar();
 
 			for (LocaleGroup lgl : groupedList) {
 				// only use first entry of the group
-				model.addElement(lgl.entries.get(0));
+				ErrorEntry element = lgl.entries.get(0);
+				model.addElement(element);
+				if (element.isError()) {
+					error = true;
+				}
 			}
+
+			g.header.setError(error);
 		}
 
 		model.prepareToDisplay();

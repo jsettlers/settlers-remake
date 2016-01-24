@@ -54,6 +54,9 @@ public class ErrorEntry extends AbstractErrorEntry {
 		super(text);
 		this.error = error;
 		this.pos = pos;
+		if (pos == null) {
+			throw new IllegalArgumentException("pos has to be set!");
+		}
 		this.typeId = typeId;
 	}
 

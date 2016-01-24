@@ -12,60 +12,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.result;
+package jsettlers.mapcreator.mapvalidator.tasks.warning;
 
-import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Header entry
+ * Validate map descriptions
  * 
  * @author Andreas Butti
  */
-public class ErrorHeader extends AbstractErrorEntry {
-
-	/**
-	 * Fix, if any
-	 */
-	private final AbstractFix fix;
-
-	/**
-	 * true: This header contains at least one error, false: only warning
-	 */
-	private boolean error = true;
+public class ValidateDescription extends AbstractValidationTask {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param text
-	 *            Text to display
-	 * @param fix
-	 *            Fix, if any
 	 */
-	public ErrorHeader(String text, AbstractFix fix) {
-		super(text);
-		this.fix = fix;
+	public ValidateDescription() {
 	}
 
-	/**
-	 * @param error
-	 *            true: This header contains at least one error, false: only warning
-	 */
-	public void setError(boolean error) {
-		this.error = error;
-	}
+	@Override
+	public void doTest() {
+		addHeader("description.header", null);
 
-	/**
-	 * @return true: This header contains at least one error, false: only warning
-	 */
-	public boolean isError() {
-		return error;
-	}
-
-	/**
-	 * @return Fix, if any
-	 */
-	public AbstractFix getFix() {
-		return fix;
+		String description = header.getDescription();
+		if (description == null || description.trim().isEmpty()) {
+			// this is the only one message without a location, place it at the center of the map.
+			// Currently to much work to add errors without position...
+			ShortPoint2D point = new ShortPoint2D(header.getWidth() / 2, header.getHeight() / 2);
+			addWarningMessage("description.no-description", point);
+		}
 	}
 
 }
