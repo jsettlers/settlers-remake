@@ -119,6 +119,20 @@ public abstract class AbstractValidationTask {
 	}
 
 	/**
+	 * Add a warning message to the list
+	 * 
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addWarningMessage(String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(textId, false, pos, parameter);
+	}
+
+	/**
 	 * Add an error message to the list
 	 * 
 	 * @param textId
@@ -129,11 +143,27 @@ public abstract class AbstractValidationTask {
 	 *            Parameter to replace in the text (optional)
 	 */
 	protected void addErrorMessage(String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(textId, true, pos, parameter);
+	}
+
+	/**
+	 * Add an error or warning message to the list
+	 * 
+	 * @param textId
+	 *            text ID to use
+	 * @param error
+	 *            true for error, false for warning
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	private void addErrorWarningMessage(String textId, boolean error, ShortPoint2D pos, Object... parameter) {
 		String translatedText = EditorLabels.getLabel("validation." + textId);
 		if (parameter.length > 0) {
 			translatedText = new Formatter().format(translatedText, parameter).toString();
 		}
 
-		list.addError(translatedText, pos, textId);
+		list.addError(translatedText, error, pos, textId);
 	}
 }

@@ -248,13 +248,15 @@ public class ValidationList {
 	 * 
 	 * @param text
 	 *            Text to display
+	 * @param error
+	 *            true for error, false for warning
 	 * @param pos
 	 *            Position
 	 * @param typeId
 	 *            Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
-	public void addError(String text, ShortPoint2D pos, String typeId) {
-		currentGroup.entries.add(new ErrorEntry(text, pos, typeId));
+	public void addError(String text, boolean error, ShortPoint2D pos, String typeId) {
+		currentGroup.entries.add(new ErrorEntry(text, error, pos, typeId));
 	}
 
 	/**

@@ -12,47 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
+import jsettlers.mapcreator.mapvalidator.result.fix.FreeBorderFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Check the all player are valid
+ * Check if all border positions are blocking
  * 
  * @author Andreas Butti
+ *
  */
-public class ValidatePlayer extends AbstractValidationTask {
-
-	/**
-	 * Fix for wrong placed settlers
-	 */
-	private final DeleteObjectFix fix = new DeleteObjectFix();
+public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 
 	/**
 	 * Constructor
 	 */
-	public ValidatePlayer() {
+	public ValidateBlockingBorderPositions() {
 	}
 
 	@Override
 	public void doTest() {
-		int playerCount = header.getMaxPlayer();
-		addHeader("player.header", fix);
+		FreeBorderFix fix = new FreeBorderFix();
+		addHeader("blockingborder.header", fix);
 
-		for (int x = 0; x < data.getWidth(); x++) {
-			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof IPlayerable) {
-					int p = ((IPlayerable) mapObject).getPlayerId();
-					if (p >= playerCount) {
-						fix.addInvalidObject(new ShortPoint2D(x, y));
-						addErrorMessage("player.text", new ShortPoint2D(x, y));
-					}
+		int width = data.getWidth();
+		int height = data.getHeight();
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (1 <= y && y < height - 2 && 1 <= x && x < width - 2) {
+					continue;
+				}
+
+				if (!data.getLandscape(x, y).isBlocking) {
+					ShortPoint2D p = new ShortPoint2D(x, y);
+					addErrorMessage("at-position", p, x, y);
+					fix.addPosition(p);
 				}
 			}
 		}
 	}
+
 }

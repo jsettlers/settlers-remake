@@ -21,14 +21,14 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateBlockingBorderPositions;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateBuildings;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidateDrawBuildingCircle;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayer;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateSettler;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateBlockingBorderPositions;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateBuildings;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateLandscape;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayer;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateResources;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateSettler;
 
 /**
  * The validation runnable running in the thread queue

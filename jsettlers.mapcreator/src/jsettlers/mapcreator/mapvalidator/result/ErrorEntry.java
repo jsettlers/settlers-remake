@@ -17,7 +17,7 @@ package jsettlers.mapcreator.mapvalidator.result;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * An error entry in the validation list
+ * An error / warning entry in the validation list
  * 
  * @author Andreas Butti
  */
@@ -26,27 +26,42 @@ public class ErrorEntry extends AbstractErrorEntry {
 	/**
 	 * Position of the error
 	 */
-	private ShortPoint2D pos;
+	private final ShortPoint2D pos;
 
 	/**
 	 * Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
-	private String typeId;
+	private final String typeId;
+
+	/**
+	 * true for error, false for warning
+	 */
+	private final boolean error;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param text
 	 *            Text to display
+	 * @param error
+	 *            true for error, false for warning
 	 * @param pos
 	 *            Position of the error
 	 * @param typeId
 	 *            Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
-	public ErrorEntry(String text, ShortPoint2D pos, String typeId) {
+	public ErrorEntry(String text, boolean error, ShortPoint2D pos, String typeId) {
 		super(text);
+		this.error = error;
 		this.pos = pos;
 		this.typeId = typeId;
+	}
+
+	/**
+	 * @return true for error, false for warning
+	 */
+	public boolean isError() {
+		return error;
 	}
 
 	/**

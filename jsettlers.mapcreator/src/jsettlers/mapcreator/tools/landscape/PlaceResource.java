@@ -19,7 +19,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateResources;
 import jsettlers.mapcreator.tools.AbstractTool;
 import jsettlers.mapcreator.tools.icons.ToolIcon;
 import jsettlers.mapcreator.tools.shapes.EShapeType;
