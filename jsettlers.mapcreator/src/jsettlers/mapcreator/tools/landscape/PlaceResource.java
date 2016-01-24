@@ -25,6 +25,11 @@ import jsettlers.mapcreator.tools.icons.ToolIcon;
 import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
+/**
+ * Tool to place resources
+ * 
+ * @author Andreas Butti
+ */
 public class PlaceResource extends AbstractTool implements ResourceTool {
 
 	private final EResourceType type;
