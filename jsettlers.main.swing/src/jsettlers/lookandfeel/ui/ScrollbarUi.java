@@ -15,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.plaf.metal.MetalScrollButton;
 
 import jsettlers.lookandfeel.DrawHelper;
 import jsettlers.lookandfeel.ui.img.UiImageLoader;
@@ -43,10 +42,10 @@ public class ScrollbarUi extends BasicScrollBarUI {
 	 */
 	private static final Color SLIDER_INNER_COLOR = new Color(0xD6, 0xE3, 0xF6, 120);
 
-	protected MetalScrollButton increaseButton;
-	protected MetalScrollButton decreaseButton;
-
-	protected boolean isFreeStanding = true;
+	/**
+	 * Arrow color
+	 */
+	private static final Color ARROW_COLOR = new Color(0x909090);
 
 	/**
 	 * Constructor
@@ -63,6 +62,14 @@ public class ScrollbarUi extends BasicScrollBarUI {
 	}
 
 	@Override
+	protected void installDefaults() {
+		super.installDefaults();
+
+		incrGap = 0;
+		decrGap = 0;
+	}
+
+	@Override
 	public Dimension getPreferredSize(JComponent c) {
 		if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
 			return new Dimension(scrollBarWidth, scrollBarWidth * 3 + 10);
@@ -71,20 +78,14 @@ public class ScrollbarUi extends BasicScrollBarUI {
 		}
 	}
 
-	/**
-	 * Returns the view that represents the decrease view.
-	 */
 	@Override
 	protected JButton createDecreaseButton(int orientation) {
-		decreaseButton = new MetalScrollButton(orientation, scrollBarWidth, isFreeStanding);
-		return decreaseButton;
+		return new ScrollbarUiButton(orientation, ARROW_COLOR);
 	}
 
-	/** Returns the view that represents the increase view. */
 	@Override
 	protected JButton createIncreaseButton(int orientation) {
-		increaseButton = new MetalScrollButton(orientation, scrollBarWidth, isFreeStanding);
-		return increaseButton;
+		return new ScrollbarUiButton(orientation, ARROW_COLOR);
 	}
 
 	@Override
@@ -119,29 +120,6 @@ public class ScrollbarUi extends BasicScrollBarUI {
 	 */
 	private void drawThumbRect(Rectangle thumbBounds, Graphics2D g, int margin) {
 		g.drawRect(1 + margin, 1 + margin, thumbBounds.width - 4 - (2 * margin), thumbBounds.height - 3 - (2 * margin));
-	}
-
-	/**
-	 * Paint the background graphic
-	 * 
-	 * @param g
-	 *            Graphcis
-	 * @param c
-	 *            Component
-	 * @param x
-	 *            Left
-	 * @param y
-	 *            Top
-	 * @param width
-	 *            Width
-	 * @param height
-	 *            Height
-	 */
-	private void paintBackground(Graphics g, JComponent c, int x, int y, int width, int height) {
-		g.setColor(Color.RED);
-		g.fillRect(x, y, width, height);
-		// g.drawImage(backgroundImage, x, y, x + width, y + height, 0, 0, x + width, y + height, c);
-
 	}
 
 	@Override
