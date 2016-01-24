@@ -1,13 +1,10 @@
 package jsettlers.lookandfeel;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.metal.MetalScrollBarUI;
 
 import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
@@ -15,6 +12,7 @@ import jsettlers.lookandfeel.factory.LabelUiFactory;
 import jsettlers.lookandfeel.factory.PanelUiFactory;
 import jsettlers.lookandfeel.factory.ProgressBarUiFactory;
 import jsettlers.lookandfeel.factory.ScrollPaneUiFactory;
+import jsettlers.lookandfeel.factory.ScrollbarUiFactory;
 import jsettlers.lookandfeel.factory.TextFieldUiFactory;
 import jsettlers.lookandfeel.factory.ToggleButtonUiFactory;
 
@@ -58,24 +56,9 @@ public class SettlerLookAndFeel {
 		ProgressBarUiFactory.FORWARD.loadFromType("ProgressBarUI");
 
 		UIManager.put("ScrollBar.width", 20);
-		UIManager.put("ScrollBar.shadow", new Color(0x394048));
-		UIManager.put("ScrollBar.highlight", new Color(0x889CB2));
-		UIManager.put("ScrollBar.darkShadow", new Color(0x394048));
-		UIManager.put("ScrollBar.thumb", new Color(0x394048));
-		UIManager.put("ScrollBar.thumbShadow", new Color(0x142333));
-		UIManager.put("ScrollBar.thumbHighlight", new Color(0x6383A5));
-		UIManager.put("ScrollBar.background", new Color(0x151E27));
-
-		List<Object> scrollbarGradient = new ArrayList<>();
-		scrollbarGradient.add(0.2f);
-		scrollbarGradient.add(0.5f);
-		scrollbarGradient.add(new Color(0x394048));
-		scrollbarGradient.add(new Color(0x516377));
-		scrollbarGradient.add(new Color(0x394048));
-		UIManager.put("ScrollBar.gradient", scrollbarGradient);
 
 		Object[] scrollbar = {
-				"ScrollBarUI", MetalScrollBarUI.class.getName(),
+				"ScrollBarUI", ScrollbarUiFactory.class.getName(),
 				"BackgroundPanelUI", BackgroundPanelUiFactory.class.getName(),
 				"TextFieldUI", TextFieldUiFactory.class.getName(),
 				"ButtonUI", ButtonUiFactory.class.getName(),
