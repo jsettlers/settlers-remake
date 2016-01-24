@@ -388,7 +388,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 				activeRegion.handleEvent(event);
 			}
 		} else if (event instanceof GOZoomEvent) {
-			if (activeRegion == null) {
+			if (activeRegion == null && regionPositions != null && !regionPositions.isEmpty()) {
 				// if there is no active region, set the first active,
 				// so the zoom is working in the Editor, even if you
 				// didn't press a mouse button
