@@ -28,6 +28,7 @@ public class NewSwingManagedJSettlers {
 
 	public static void main(String[] args) throws IOException {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
+		SwingManagedJSettlers.loadOptionalSettings(optionableProperties);
 		SwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
 		try {
 			SettlerLookAndFeel.install();
