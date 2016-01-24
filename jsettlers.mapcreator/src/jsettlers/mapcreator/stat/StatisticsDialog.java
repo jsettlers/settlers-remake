@@ -21,6 +21,8 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -48,9 +50,13 @@ public class StatisticsDialog extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setTitle(EditorLabels.getLabel("statistics.header"));
 
+		StatisticsTableModel model = new StatisticsTableModel(data);
 		JTabbedPane tabs = new JTabbedPane();
-		JTable table = new JTable(new StatisticsTable(data));
-		tabs.add("Table", new JScrollPane(table));
+		JTable table = new JTable(model);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+		table.setRowSorter(sorter);
+
+		tabs.add(EditorLabels.getLabel("statistics.overview"), new JScrollPane(table));
 
 		for (int i = 0; i < data.getPlayerCount(); i++) {
 			tabs.add("player " + i, new PlayerDiagram(data, i));
