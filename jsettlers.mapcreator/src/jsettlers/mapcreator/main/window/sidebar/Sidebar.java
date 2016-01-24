@@ -14,10 +14,16 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main.window.sidebar;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
+import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
+import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 
 /**
@@ -25,7 +31,7 @@ import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
  * 
  * @author Andreas Butti
  */
-public class Sidebar extends JTabbedPane {
+public class Sidebar extends JTabbedPane implements ValidationResultListener {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -37,6 +43,21 @@ public class Sidebar extends JTabbedPane {
 	 * Sidebar with the erros
 	 */
 	private final ErrorSidebar errorSidebar;
+
+	/**
+	 * Drop down icon
+	 */
+	private final Icon errorIcon = new ImageIcon(ErrorListRenderer.class.getResource("error.png"));
+
+	/**
+	 * Drop down icon
+	 */
+	private final Icon warningIcon = new ImageIcon(ErrorListRenderer.class.getResource("warning.png"));
+
+	/**
+	 * Errot ab header
+	 */
+	private final JLabel lbErrorHeader = new JLabel(EditorLabels.getLabel("sidebar.errors"));
 
 	/**
 	 * Constructor
@@ -51,7 +72,12 @@ public class Sidebar extends JTabbedPane {
 		this.errorSidebar = new ErrorSidebar(scrollTo);
 
 		addTab(EditorLabels.getLabel("sidebar.tools"), toolSidebar);
-		addTab(EditorLabels.getLabel("sidebar.errors"), errorSidebar);
+
+		addTab("<errors>", errorSidebar);
+		lbErrorHeader.setIconTextGap(5);
+		lbErrorHeader.setHorizontalTextPosition(SwingConstants.RIGHT);
+		setTabComponentAt(1, lbErrorHeader);
+
 	}
 
 	/**
@@ -60,13 +86,6 @@ public class Sidebar extends JTabbedPane {
 	 */
 	public void setFixData(FixData fixData) {
 		errorSidebar.setFixData(fixData);
-	}
-
-	/**
-	 * @return Sidebar with the erros
-	 */
-	public ErrorSidebar getErrorSidebar() {
-		return errorSidebar;
 	}
 
 	/**
@@ -81,5 +100,18 @@ public class Sidebar extends JTabbedPane {
 	 */
 	public void showTools() {
 		setSelectedComponent(toolSidebar);
+	}
+
+	@Override
+	public void validationFinished(ValidationListModel list) {
+		if (list.getErrorCount() > 0) {
+			lbErrorHeader.setIcon(errorIcon);
+		} else if (list.getWarningCount() > 0) {
+			lbErrorHeader.setIcon(warningIcon);
+		} else {
+			lbErrorHeader.setIcon(null);
+		}
+
+		errorSidebar.validationFinished(list);
 	}
 }

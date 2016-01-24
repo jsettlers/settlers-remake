@@ -262,7 +262,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		map = new MapGraphics(mapData);
 		validator.setData(mapData);
 		validator.setHeader(header);
-		validator.addListener(sidebar.getErrorSidebar());
+		validator.addListener(sidebar);
 		buildMapEditingWindow();
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
