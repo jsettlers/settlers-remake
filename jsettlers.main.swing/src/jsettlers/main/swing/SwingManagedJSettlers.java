@@ -117,7 +117,7 @@ public class SwingManagedJSettlers {
 			}
 			firstRun = false;
 
-			SelectSettlerFolderDialog folderChooser = new SelectSettlerFolderDialog();
+			final SelectSettlerFolderDialog folderChooser = new SelectSettlerFolderDialog();
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

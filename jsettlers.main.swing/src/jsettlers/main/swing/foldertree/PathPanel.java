@@ -68,7 +68,7 @@ public class PathPanel extends JPanel {
 	 *            Path name
 	 * @param pathToJumpTo
 	 */
-	private void addPath(String path, Object[] pathToJumpTo) {
+	private void addPath(String path, final Object[] pathToJumpTo) {
 		if (getComponentCount() > 0) {
 			Separator s = new Separator();
 			s.setPreferredSize(new Dimension(6, 25));

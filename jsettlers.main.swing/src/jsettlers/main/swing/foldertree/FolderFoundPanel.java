@@ -55,7 +55,7 @@ public class FolderFoundPanel extends JPanel {
 	 * @param listener
 	 *            Listener for start
 	 */
-	public FolderFoundPanel(ActionListener listener) {
+	public FolderFoundPanel(final ActionListener listener) {
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setLayout(new BorderLayout());
 		setOpaque(true);

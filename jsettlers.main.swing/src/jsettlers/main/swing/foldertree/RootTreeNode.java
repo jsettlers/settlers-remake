@@ -57,7 +57,7 @@ public class RootTreeNode extends FilesystemTreeNode {
 	 * @param node
 	 *            Node to load
 	 */
-	public void loadAsynchron(FilesystemTreeNode node) {
+	public void loadAsynchron(final FilesystemTreeNode node) {
 		executor.submit(new Runnable() {
 
 			@Override
