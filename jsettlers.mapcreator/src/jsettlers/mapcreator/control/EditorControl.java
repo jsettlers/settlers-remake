@@ -43,6 +43,7 @@ import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -214,7 +215,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		// create a new model, because a swing bug there are sometimes problems updating an existing model
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 		model.setSelectedItem(playerCombobox.getSelectedItem());
-		for (int i = 0; i < data.getPlayerCount(); i++) {
+		for (int i = 0; i < mapData.getPlayerCount(); i++) {
 			model.addElement(i);
 		}
 		playerCombobox.setModel(model);
@@ -255,19 +256,19 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 */
 	public void loadMap(MapFileHeader header, MapData mapData) {
 		setHeader(header);
-		this.data = mapData;
+		this.mapData = mapData;
 		updatePlayerCombobox();
 
-		map = new MapGraphics(data);
-		validator.setData(data);
+		map = new MapGraphics(mapData);
+		validator.setData(mapData);
 		validator.setHeader(header);
 		validator.addListener(sidebar.getErrorSidebar());
 		buildMapEditingWindow();
 
 		new LastUsedHandler().saveUsedMapId(header.getUniqueId());
 
-		undoRedo = new UndoRedoHandler(window, data);
-		FixData fixData = new FixData(data, undoRedo, validator);
+		undoRedo = new UndoRedoHandler(window, mapData);
+		FixData fixData = new FixData(mapData, undoRedo, validator);
 		sidebar.setFixData(fixData);
 		autoFixErrorAction.setFixData(fixData);
 
@@ -556,7 +557,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				StatisticsDialog dlg = new StatisticsDialog(window, data);
+				StatisticsDialog dlg = new StatisticsDialog(window, mapData);
 				dlg.setVisible(true);
 			}
 		});
@@ -606,6 +607,16 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		this.autoFixErrorAction = new AutoFixErrorAction();
 		window.registerAction("auto-fix-error", autoFixErrorAction);
 		validator.addListener(autoFixErrorAction);
+
+		window.registerAction("locate-player", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int playerId = getActivePlayer();
+				scrollTo(mapData.getStartPoint(playerId));
+			}
+		});
 	}
 
 	/**
@@ -627,7 +638,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			@Override
 			public void applyNewHeader(MapFileHeader header) {
 				setHeader(header);
-				data.setMaxPlayers(header.getMaxPlayer());
+				mapData.setMaxPlayers(header.getMaxPlayer());
 				updatePlayerCombobox();
 				validator.reValidate();
 			}
@@ -644,9 +655,9 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			MapFileHeader imagedHeader = generateMapHeader();
 			new LastUsedHandler().saveUsedMapId(imagedHeader.getUniqueId());
 
-			data.doPreSaveActions();
+			mapData.doPreSaveActions();
 			CommonConstants.USE_SAVEGAME_COMPRESSION = false;
-			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
+			MapList.getDefaultList().saveNewMap(imagedHeader, mapData, null);
 			undoRedo.setSaved();
 		} catch (Throwable e) {
 			ExceptionHandler.displayError(e, "Error saving");
@@ -701,8 +712,8 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	protected void play() {
 		try {
 			File temp = File.createTempFile("tmp_map", "");
-			data.doPreSaveActions();
-			MapList.getDefaultList().saveNewMap(generateMapHeader(), data, new FileOutputStream(temp));
+			mapData.doPreSaveActions();
+			MapList.getDefaultList().saveNewMap(generateMapHeader(), mapData, new FileOutputStream(temp));
 
 			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), SwingManagedJSettlers.class.getName(),
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
@@ -755,7 +766,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
-				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
+				tool.apply(mapData, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 
 				validator.reValidate();
 			}
@@ -766,7 +777,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				// only getter call, no Swing calls
 				ShapeType shape = toolSidebar.getActiveShape();
 
-				tool.start(data, shape, lineAction.getPos());
+				tool.start(mapData, shape, lineAction.getPos());
 
 				validator.reValidate();
 			}
@@ -784,11 +795,11 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 				@Override
 				public void run() {
-					MapDataDelta delta = data.getUndoDelta();
+					MapDataDelta delta = mapData.getUndoDelta();
 					if (delta != null) {
-						data.apply(delta);
+						mapData.apply(delta);
 					}
-					data.resetUndoDelta();
+					mapData.resetUndoDelta();
 					validator.reValidate();
 				}
 			});
@@ -802,8 +813,8 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 						ShapeType shape = toolSidebar.getActiveShape();
 
-						tool.start(data, shape, lineAction.getPosition());
-						tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
+						tool.start(mapData, shape, lineAction.getPosition());
+						tool.apply(mapData, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
 						undoRedo.endUseStep();
 						validator.reValidate();
