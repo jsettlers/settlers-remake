@@ -129,7 +129,7 @@ public abstract class AbstractValidationTask {
 	 *            Parameter to replace in the text (optional)
 	 */
 	protected void addWarningMessage(String textId, ShortPoint2D pos, Object... parameter) {
-		addErrorWarningMessage(textId, false, pos, parameter);
+		addErrorWarningMessage(null, textId, false, pos, parameter);
 	}
 
 	/**
@@ -143,12 +143,46 @@ public abstract class AbstractValidationTask {
 	 *            Parameter to replace in the text (optional)
 	 */
 	protected void addErrorMessage(String textId, ShortPoint2D pos, Object... parameter) {
-		addErrorWarningMessage(textId, true, pos, parameter);
+		addErrorWarningMessage(null, textId, true, pos, parameter);
+	}
+
+	/**
+	 * Add a warning message to the list
+	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addWarningMessage(Object additionalErrorData, String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(additionalErrorData, textId, false, pos, parameter);
+	}
+
+	/**
+	 * Add an error message to the list
+	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addErrorMessage(Object additionalErrorData, String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(additionalErrorData, textId, true, pos, parameter);
 	}
 
 	/**
 	 * Add an error or warning message to the list
 	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
 	 * @param textId
 	 *            text ID to use
 	 * @param error
@@ -158,12 +192,12 @@ public abstract class AbstractValidationTask {
 	 * @param parameter
 	 *            Parameter to replace in the text (optional)
 	 */
-	private void addErrorWarningMessage(String textId, boolean error, ShortPoint2D pos, Object... parameter) {
+	private void addErrorWarningMessage(Object additionalErrorData, String textId, boolean error, ShortPoint2D pos, Object... parameter) {
 		String translatedText = EditorLabels.getLabel("validation." + textId);
 		if (parameter.length > 0) {
 			translatedText = new Formatter().format(translatedText, parameter).toString();
 		}
 
-		list.addError(translatedText, error, pos, textId);
+		list.addError(additionalErrorData, translatedText, error, pos, textId);
 	}
 }

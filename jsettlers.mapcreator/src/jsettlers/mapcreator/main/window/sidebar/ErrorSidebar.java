@@ -23,6 +23,7 @@ import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
+import jsettlers.mapcreator.mapvalidator.ErrorMarker;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
@@ -67,8 +68,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 			}
 
 			if (value instanceof ErrorEntry) {
-				ErrorEntry entry = (ErrorEntry) value;
-				scrollTo.scrollTo(entry.getPos());
+				errorEntrySelected((ErrorEntry) value);
 			} else if (value instanceof ErrorHeader) {
 				ErrorHeader header = (ErrorHeader) value;
 				AbstractFix fix = header.getFix();
@@ -101,6 +101,22 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 		this.errorList.setCellRenderer(new ErrorListRenderer());
 		errorList.addMouseListener(mouseListener);
 
+	}
+
+	/**
+	 * An error entry was selected
+	 * 
+	 * @param entry
+	 *            The selected value
+	 */
+	protected void errorEntrySelected(ErrorEntry entry) {
+		if (ErrorMarker.DESCRIPTION_MARKER.equals(entry.getAdditionalErrorData())) {
+			// TODO open the settings dialog?
+		} else if (ErrorMarker.MISSING_LIFE_RESOURCE.equals(entry.getAdditionalErrorData())) {
+			// nothing to do
+		} else {
+			scrollTo.scrollTo(entry.getPos());
+		}
 	}
 
 	/**

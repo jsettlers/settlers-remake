@@ -596,9 +596,14 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			}
 		});
 
-		ShowErrorsAction showErrorsAction = new ShowErrorsAction(sidebar);
+		ShowErrorsAction showErrorsAction = new ShowErrorsAction(sidebar, true);
+		ShowErrorsAction showWarningsAction = new ShowErrorsAction(sidebar, false);
 		window.registerAction("show-errors", showErrorsAction);
+		window.registerAction("show-warnings", showWarningsAction);
 		validator.addListener(showErrorsAction);
+		validator.addListener(showWarningsAction);
+
+		// show-warnings
 
 		GotoNextErrorAction gotoNextErrorAction = new GotoNextErrorAction(this);
 		window.registerAction("goto-error", gotoNextErrorAction);

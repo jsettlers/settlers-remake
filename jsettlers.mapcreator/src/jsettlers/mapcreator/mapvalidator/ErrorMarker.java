@@ -12,32 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks.warning;
-
-import jsettlers.mapcreator.mapvalidator.ErrorMarker;
-import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
+package jsettlers.mapcreator.mapvalidator;
 
 /**
- * Validate map descriptions
+ * Some special error marker for special cases
  * 
  * @author Andreas Butti
+ *
  */
-public class ValidateDescription extends AbstractValidationTask {
+public final class ErrorMarker {
+
+	private ErrorMarker() {
+	}
 
 	/**
-	 * Constructor
+	 * This marker is used to open the description dialog
 	 */
-	public ValidateDescription() {
-	}
+	public static final String DESCRIPTION_MARKER = "ValidateDescription.DESCRIPTION_MARKER";
 
-	@Override
-	public void doTest() {
-		addHeader("description.header", null);
-
-		String description = header.getDescription();
-		if (description == null || description.trim().isEmpty()) {
-			addWarningMessage(ErrorMarker.DESCRIPTION_MARKER, "description.no-description", null);
-		}
-	}
-
+	/**
+	 * This marker is for general missing objects, e.g. no stones on the Map
+	 */
+	public static final String MISSING_LIFE_RESOURCE = "ErrorMarker.NO_LIFE_RESOURCE";
 }

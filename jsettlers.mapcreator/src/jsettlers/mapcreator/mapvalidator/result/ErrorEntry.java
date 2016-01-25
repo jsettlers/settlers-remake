@@ -24,6 +24,11 @@ import jsettlers.common.position.ShortPoint2D;
 public class ErrorEntry extends AbstractErrorEntry {
 
 	/**
+	 * Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 */
+	private final Object additionalErrorData;
+
+	/**
 	 * Position of the error
 	 */
 	private final ShortPoint2D pos;
@@ -41,6 +46,8 @@ public class ErrorEntry extends AbstractErrorEntry {
 	/**
 	 * Constructor
 	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
 	 * @param text
 	 *            Text to display
 	 * @param error
@@ -50,14 +57,19 @@ public class ErrorEntry extends AbstractErrorEntry {
 	 * @param typeId
 	 *            Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
-	public ErrorEntry(String text, boolean error, ShortPoint2D pos, String typeId) {
+	public ErrorEntry(Object additionalErrorData, String text, boolean error, ShortPoint2D pos, String typeId) {
 		super(text);
+		this.additionalErrorData = additionalErrorData;
 		this.error = error;
 		this.pos = pos;
-		if (pos == null) {
-			throw new IllegalArgumentException("pos has to be set!");
-		}
 		this.typeId = typeId;
+	}
+
+	/**
+	 * @return Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 */
+	public Object getAdditionalErrorData() {
+		return additionalErrorData;
 	}
 
 	/**
