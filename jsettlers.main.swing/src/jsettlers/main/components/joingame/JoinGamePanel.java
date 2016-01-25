@@ -34,6 +34,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
@@ -145,6 +146,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.setLayout(new GridBagLayout());
 		JScrollPane playerSlotPanelWrapper = new JScrollPane(playerSlotsPanel);
+		playerSlotsPanel.setBorder(new EmptyBorder(20,25,20,20));
 		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
