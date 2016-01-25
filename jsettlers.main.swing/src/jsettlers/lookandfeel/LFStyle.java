@@ -33,6 +33,11 @@ public enum LFStyle {
 	LABEL_SHORT,
 
 	/**
+	 * Label with dynamic length
+	 */
+	LABEL_DYNAMIC,
+
+	/**
 	 * Half transparent dark panel
 	 */
 	PANEL_DARK,
