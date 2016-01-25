@@ -163,11 +163,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
 		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		startGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
-		slotsHeadlineCivilisation.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
-		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
+		slotsHeadlineCivilisation.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
+		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
+		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
+		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
 		sendChatMessageButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		chatInputField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
 		chatArea.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);

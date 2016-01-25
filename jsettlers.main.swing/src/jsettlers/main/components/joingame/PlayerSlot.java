@@ -90,7 +90,7 @@ public class PlayerSlot {
 	}
 
 	private void setStyle() {
-		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
+		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
 		updateReadyButtonStyle();
 	}
 
