@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -30,7 +29,6 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
 import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStartResources;
-import jsettlers.logic.map.save.MapFileHeader;
 
 /**
  * @author Thomas Zeugner
@@ -62,7 +60,7 @@ public class OriginalMapFileContentReader {
 	private short previewImage[] = null;
 	private short previewWidth = 0;
 	private short previewHeight = 0;
-	 
+
 	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
 
 	/**
@@ -146,19 +144,19 @@ public class OriginalMapFileContentReader {
 		if (mapContent.length <= offset + length)
 			return "";
 
-		//- find \0 char in buffer
+		// - find \0 char in buffer
 		int i = 0;
 		for (; i < length; i++) {
 			if (mapContent[offset + i] == 0) {
 				break;
 			}
 		}
-		
+
 		if (i == 0) {
 			return "";
 		}
-		
-		//- substring + encoding 
+
+		// - substring + encoding
 		return new String(mapContent, offset, i - 1, TEXT_CHARSET);
 	}
 
@@ -184,13 +182,13 @@ public class OriginalMapFileContentReader {
 		int currentChecksum = 0;
 
 		// - Map Content starts at Byte 8
-		for (int i = 8; i < count; i+=4) {
-			
+		for (int i = 8; i < count; i += 4) {
+
 			// - read DWord
 			int currentInt = ((mapContent[i] & 0xFF)) |
-						     ((mapContent[i+1] & 0xFF) << 8) |
-						     ((mapContent[i+2] & 0xFF) << 16) |
-						     ((mapContent[i+3] & 0xFF) << 24);
+					((mapContent[i + 1] & 0xFF) << 8) |
+					((mapContent[i + 2] & 0xFF) << 16) |
+					((mapContent[i + 3] & 0xFF) << 24);
 
 			// - using: Logic Right-Shift-Operator: >>>
 			currentChecksum = ((currentChecksum >>> 31) | ((currentChecksum << 1) ^ currentInt));
@@ -257,9 +255,9 @@ public class OriginalMapFileContentReader {
 		mapData.freeBuffer();
 	}
 
-	//- to process a map File this class loads the whole file to memory. To save memory this File-Buffer is 
-	//-  closed after using/when done processing. If more data are requested from the File, the File-Biffer
-	//-  is loaded again with this reOpen() function.
+	// - to process a map File this class loads the whole file to memory. To save memory this File-Buffer is
+	// - closed after using/when done processing. If more data are requested from the File, the File-Biffer
+	// - is loaded again with this reOpen() function.
 	public void reOpen(InputStream originalMapFile) {
 		// - read File into buffer
 		try {
@@ -273,6 +271,7 @@ public class OriginalMapFileContentReader {
 			element.hasBeenDecrypted = false;
 		}
 	}
+
 	public void readBasicMapInformation() {
 		this.readBasicMapInformation(0, 0);
 	}
@@ -282,7 +281,7 @@ public class OriginalMapFileContentReader {
 		fileChecksum = 0;
 		widthHeight = 0;
 		hasBuildings = false;
-		
+
 		// - safety checks
 		if (mapContent == null)
 			return;
@@ -299,11 +298,11 @@ public class OriginalMapFileContentReader {
 		readMapQuestText();
 		readMapQuestTip();
 
-		//- create preview Image for cache  
+		// - create preview Image for cache
 		if ((previewWidth > 0) && (previewHeight > 0)) {
 			this.previewImage = getPreviewImage(previewWidth, previewHeight);
-			this.previewWidth = (short)previewWidth;
-			this.previewHeight = (short)previewHeight;
+			this.previewWidth = (short) previewWidth;
+			this.previewHeight = (short) previewHeight;
 		}
 
 		// - get resource information for the area to get map height and width
@@ -313,8 +312,9 @@ public class OriginalMapFileContentReader {
 			return;
 		if (filePart.size < 4)
 			return;
-		
-		//TODO: original map: the whole AREA-Block is decrypted but we only need the first 4 byte. Problem... maybe later we need the rest but only if this map is selected for playing AND there was no freeBuffer() and reOpen() call in between.
+
+		// TODO: original map: the whole AREA-Block is decrypted but we only need the first 4 byte. Problem... maybe later we need the rest but only
+		// if this map is selected for playing AND there was no freeBuffer() and reOpen() call in between.
 		// - Decrypt this resource if necessary
 		if (!doDecrypt(filePart))
 			return;
@@ -326,22 +326,21 @@ public class OriginalMapFileContentReader {
 		widthHeight = readBEIntFrom(pos);
 	}
 
-
 	public short[] getPreviewImage() {
-		//- return cached Image
+		// - return cached Image
 		return previewImage;
 	}
-	
+
 	public short[] getPreviewImage(int width, int height) {
-		
-		//- return cached Image if available
+
+		// - return cached Image if available
 		if ((previewWidth == width) && (previewHeight == height) && (previewImage != null)) {
 			return previewImage;
 		}
-		
-		//- create new Image
+
+		// - create new Image
 		short[] outImg = new short[width * height];
-		
+
 		// - get resource information for the area
 		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PREVIEW);
 
@@ -349,44 +348,45 @@ public class OriginalMapFileContentReader {
 			return outImg;
 		if (filePart.size < 4)
 			return outImg;
-		
+
 		// - Decrypt this resource if necessary
 		if (!doDecrypt(filePart))
 			return outImg;
-		
+
 		// - file position
 		int pos = filePart.offset;
 
 		// - height and width are the same
 		int wh = readBEWordFrom(pos);
-		pos+=2;
+		pos += 2;
+		@SuppressWarnings("unused")
 		int unknown = readBEWordFrom(pos);
-		pos+=2;
-		
+		pos += 2;
+
 		float scaleX = wh / width;
 		float scaleY = wh / height;
-		
+
 		int outIndex = 0;
 		int offset = pos;
-		
+
 		for (int y = 0; y < height; y++) {
-			int srcRow =  offset + ((int)(Math.floor(scaleY * y)) * wh) * 2;
-			
-			for (int x = 0; x < width; x++){
-				
-				int inIndex = srcRow + ((int)Math.floor(x * scaleX)) * 2;
-				
+			int srcRow = offset + ((int) (Math.floor(scaleY * y)) * wh) * 2;
+
+			for (int x = 0; x < width; x++) {
+
+				int inIndex = srcRow + ((int) Math.floor(x * scaleX)) * 2;
+
 				int colorValue = ((mapContent[inIndex] & 0xFF)) | ((mapContent[inIndex + 1] & 0xFF) << 8);
-				
-				//- the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b) 
-				outImg[outIndex] = (short)(1 | colorValue << 1);
+
+				// - the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b)
+				outImg[outIndex] = (short) (1 | colorValue << 1);
 				outIndex++;
 			}
 		}
 
 		return outImg;
 	}
-	
+
 	public String readMapQuestText() {
 		if (mapQuestText != null)
 			return mapQuestText;
@@ -407,7 +407,7 @@ public class OriginalMapFileContentReader {
 
 		return mapQuestText;
 	}
-	
+
 	public String readMapQuestTip() {
 
 		if (mapQuestTip != null)
@@ -801,23 +801,23 @@ public class OriginalMapFileContentReader {
 		// - start of data
 		int pos = filePart.offset;
 
-		//- check if the file has enough data
+		// - check if the file has enough data
 		if ((pos + length) >= mapContent.length) {
 			System.err.println("Error: Unable to decrypt map file: out of data!");
 			return false;
 		}
-		
+
 		// - init the key
 		int key = (filePart.cryptKey & 0xFF);
 
 		for (int i = length; i > 0; i--) {
-			
+
 			// - read one byte and uncrypt it
 			int byt = (mapContent[pos] ^ key);
-			
+
 			// - calculate next Key
 			key = (key << 1) ^ byt;
-			
+
 			// - write Byte
 			mapContent[pos] = (byte) byt;
 			pos++;

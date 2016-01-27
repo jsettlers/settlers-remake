@@ -223,8 +223,8 @@ public class JOGLDrawContext implements GLDrawContext {
 				throw new IllegalBufferException("Texture handle is not valid: " + texture);
 			}
 			id = texture.getInternalId();
-			gl2.glBindTexture(GL.GL_TEXTURE_2D, id);
 		}
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, id);
 	}
 
 	void deleteTexture(int textureIndex) {
