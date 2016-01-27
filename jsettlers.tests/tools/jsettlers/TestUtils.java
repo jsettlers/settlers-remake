@@ -83,11 +83,12 @@ public final class TestUtils {
 	}
 
 	private static ConfigurationPropertiesFile getDefaultConfigFile() throws IOException {
-		File configFile = new File("../jsettlers.main.swing/config.prp");
-		if (!configFile.exists()) {
-			throw new IOException("Default config file not found at " + configFile.getAbsolutePath());
+		File directory = new File("../jsettlers.main.swing");
+		ConfigurationPropertiesFile configFile = SwingManagedJSettlers.createDefaultConfigFile(directory);
+		if (!configFile.isLoadedFromFile()) {
+			throw new IOException("Default config file not found at " + directory);
 		}
-		return new ConfigurationPropertiesFile(configFile);
+		return configFile;
 	}
 
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {

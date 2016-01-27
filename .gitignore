@@ -5,7 +5,6 @@ logs
 
 /.metadata
 /.recommenders
-.settings
 .buildScripts
 /jsettlers.main.android/assets/*
 
@@ -22,3 +21,4 @@ logs
 /jsettlers.main.swing/config.prp
 /jsettlers.mapcreator/config.prp
 /jsettlers.common/resources/last-used.properties
+
