@@ -38,8 +38,13 @@ public class ValidatePlayerStartPosition extends AbstractValidationTask {
 			if (players[point.x][point.y] != player) {
 				addErrorMessage("playerstart.text", point, player);
 			}
-			// mark
+
+			// set a visible start point on the map
 			borders[point.x][point.y] = true;
+
+			// even if this startpoint is invalid, display the point in the right player color
+			players[point.x][point.y] = (byte) player;
+
 		}
 	}
 

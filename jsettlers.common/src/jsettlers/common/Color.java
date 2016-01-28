@@ -52,14 +52,12 @@ public final class Color {
 		this.shortColor = toShortColorForced(1);
 	}
 
-	public Color toGreyScale()
-	{
+	public Color toGreyScale() {
 		float intensity = 0.2126f * red + 0.7152f * green + 0.0722f * blue;
 		return new Color(intensity, intensity, intensity, alpha);
 	}
 
-	public Color overlay(Color colour)
-	{
+	public Color overlay(Color colour) {
 		return new Color(red * colour.getRed(), green * colour.getGreen(), blue * colour.getBlue(), alpha * colour.getAlpha());
 	}
 
@@ -154,6 +152,11 @@ public final class Color {
 		return new Color((float) (s >> 11 & 0x1f) / 0x1f,
 				(float) (s >> 6 & 0x1f) / 0x1f, (float) (s >> 1 & 0x1f) / 0x1f,
 				s & 1);
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[argb=" + String.format("%08x", getARGB()) + "]";
 	}
 
 }

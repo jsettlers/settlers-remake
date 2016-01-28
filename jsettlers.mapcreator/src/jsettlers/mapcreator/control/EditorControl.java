@@ -26,11 +26,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -43,7 +43,6 @@ import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
-import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -83,7 +82,6 @@ import jsettlers.mapcreator.main.window.sidebar.ToolSidebar;
 import jsettlers.mapcreator.mapvalidator.AutoFixErrorAction;
 import jsettlers.mapcreator.mapvalidator.GotoNextErrorAction;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
-import jsettlers.mapcreator.mapvalidator.MapValidator;
 import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
@@ -101,12 +99,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
  * 
  * @author Andreas Butti
  */
-public class EditorControl implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
-
-	/**
-	 * Map data
-	 */
-	private MapData data;
+public class EditorControl extends EditorControlBase implements IMapInterfaceListener, ActionFireable, IPlayerSetter, IScrollToAble {
 
 	/**
 	 * Map drawing
@@ -132,11 +125,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * To scrol to positions
 	 */
 	private MapInterfaceConnector connector;
-
-	/**
-	 * Header of the current open map
-	 */
-	private MapFileHeader header;
 
 	/**
 	 * Window displayed
@@ -167,11 +155,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private final Sidebar sidebar = new Sidebar(toolSidebar, this);
 
 	/**
-	 * Validates the map for errors
-	 */
-	private final MapValidator validator = new MapValidator();
-
-	/**
 	 * Timer for redrawing
 	 */
 	private final Timer redrawTimer = new Timer(true);
@@ -192,9 +175,49 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	private boolean showResourcesBecauseOfTool = false;
 
 	/**
+	 * Combobox with the player selection
+	 */
+	private final JComboBox<Integer> playerCombobox = new JComboBox<>();
+
+	/**
 	 * Constructor
 	 */
 	public EditorControl() {
+		// use heavyweight component
+		playerCombobox.setLightWeightPopupEnabled(false);
+		playerCombobox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				currentPlayer = (Integer) playerCombobox.getSelectedItem();
+			}
+		});
+		playerCombobox.setRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+				Integer player = (Integer) value;
+				setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
+				setText(String.format(EditorLabels.getLabel("general.player_x"), player));
+
+				return this;
+			}
+		});
+	}
+
+	/**
+	 * Update the player selection combobox
+	 */
+	private void updatePlayerCombobox() {
+		// create a new model, because a swing bug there are sometimes problems updating an existing model
+		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
+		model.setSelectedItem(playerCombobox.getSelectedItem());
+		for (int i = 0; i < data.getPlayerCount(); i++) {
+			model.addElement(i);
+		}
+		playerCombobox.setModel(model);
 	}
 
 	/**
@@ -231,11 +254,13 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 *            Map to use
 	 */
 	public void loadMap(MapFileHeader header, MapData mapData) {
-		this.header = header;
+		setHeader(header);
 		this.data = mapData;
+		updatePlayerCombobox();
 
 		map = new MapGraphics(data);
 		validator.setData(data);
+		validator.setHeader(header);
 		validator.addListener(sidebar.getErrorSidebar());
 		buildMapEditingWindow();
 
@@ -268,34 +293,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 
 			@Override
 			protected JComponent createPlayerSelectSelection() {
-				Integer[] playerArray = new Integer[data.getPlayerCount()];
-				for (int i = 0; i < data.getPlayerCount(); i++) {
-					playerArray[i] = i;
-				}
-				final JComboBox<Integer> playerCombobox = new JComboBox<>(playerArray);
-				// use heavyweight component
-				playerCombobox.setLightWeightPopupEnabled(false);
-				playerCombobox.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						currentPlayer = (Integer) playerCombobox.getSelectedItem();
-					}
-				});
-				playerCombobox.setRenderer(new DefaultListCellRenderer() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-						super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-						Integer player = (Integer) value;
-						setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
-						setText(String.format(EditorLabels.getLabel("general.player_x"), player));
-
-						return this;
-					}
-				});
-
 				return playerCombobox;
 			}
 
@@ -310,7 +307,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		window.setSize(1200, 800);
 		window.invalidate();
 
-		window.setFilename(header.getName());
+		window.setFilename(getHeader().getName());
 
 		// center on screen
 		window.setLocationRelativeTo(null);
@@ -510,8 +507,7 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 				String name = JOptionPane.showInputDialog(window, EditorLabels.getLabel("ctrl.save-as-name"));
 
 				if (name != null) {
-					header = new MapFileHeader(header.getType(), name, null, header.getDescription(), header.getWidth(),
-							header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), header.getBgimage().clone());
+					createNewHeaderWithName(name);
 					save();
 					window.setFilename(name);
 				}
@@ -621,13 +617,14 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 	 * Display the map settings dialog
 	 */
 	protected void editSettings() {
-		SettingsDialog dlg = new SettingsDialog(window, header) {
+		SettingsDialog dlg = new SettingsDialog(window, getHeader()) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void applyNewHeader(MapFileHeader header) {
-				EditorControl.this.header = header;
+				setHeader(header);
 				data.setMaxPlayers(header.getMaxPlayer());
+				updatePlayerCombobox();
 				validator.reValidate();
 			}
 
@@ -650,14 +647,6 @@ public class EditorControl implements IMapInterfaceListener, ActionFireable, IPl
 		} catch (Throwable e) {
 			ExceptionHandler.displayError(e, "Error saving");
 		}
-	}
-
-	private MapFileHeader generateMapHeader() {
-		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
-				data.getPreviewImageDataSupplier()).getPreviewImage();
-		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getBaseMapId(), header.getDescription(),
-				header.getWidth(), header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
-		return imagedHeader;
 	}
 
 	/**
