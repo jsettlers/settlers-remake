@@ -106,6 +106,9 @@ public class ValidationList {
 
 		/**
 		 * Constructor
+		 * 
+		 * @param entry
+		 *            Entry to group
 		 */
 		public LocaleGroup(ErrorEntry entry) {
 			this.entries.add(entry);
@@ -214,7 +217,7 @@ public class ValidationList {
 	/**
 	 * List with all grouped error entries
 	 */
-	private List<Group> list = new ArrayList<>();
+	private final List<Group> list = new ArrayList<>();
 
 	/**
 	 * Current group, to current header
@@ -257,7 +260,7 @@ public class ValidationList {
 	/**
 	 * Prepare the list for displaying in the JList
 	 * 
-	 * @return
+	 * @return Model to display
 	 */
 	public ValidationListModel toListModel() {
 		ValidationListModel model = new ValidationListModel();
