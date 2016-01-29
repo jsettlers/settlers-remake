@@ -13,6 +13,7 @@ import jsettlers.lookandfeel.factory.PanelUiFactory;
 import jsettlers.lookandfeel.factory.ProgressBarUiFactory;
 import jsettlers.lookandfeel.factory.ScrollPaneUiFactory;
 import jsettlers.lookandfeel.factory.ScrollbarUiFactory;
+import jsettlers.lookandfeel.factory.TextAreaUiFactory;
 import jsettlers.lookandfeel.factory.TextFieldUiFactory;
 import jsettlers.lookandfeel.factory.ToggleButtonUiFactory;
 
@@ -54,6 +55,7 @@ public class SettlerLookAndFeel {
 		// ScrollPaneUiFactory.FORWARD.loadFromType("ScrollPaneUI");
 		ToggleButtonUiFactory.FORWARD.loadFromType("ToggleButtonUI");
 		ProgressBarUiFactory.FORWARD.loadFromType("ProgressBarUI");
+		TextAreaUiFactory.FORWARD.loadFromType("TextAreaUI");
 
 		UIManager.put("ScrollBar.width", 20);
 
@@ -67,6 +69,7 @@ public class SettlerLookAndFeel {
 				"ScrollPaneUI", ScrollPaneUiFactory.class.getName(),
 				"ToggleButtonUI", ToggleButtonUiFactory.class.getName(),
 				"ProgressBarUI", ProgressBarUiFactory.class.getName(),
+				"TextAreaUI", TextAreaUiFactory.class.getName(),
 		};
 		UIManager.getDefaults().putDefaults(scrollbar);
 

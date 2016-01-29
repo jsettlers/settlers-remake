@@ -60,7 +60,12 @@ public enum LFStyle {
 	/**
 	 * Settler Slider, based on progressbar
 	 */
-	PROGRESSBAR_SLIDER;
+	PROGRESSBAR_SLIDER,
+
+	/**
+	 * Combobox in settler style
+	 */
+	COMBOBOX;
 
 	/**
 	 * Key used for putClientProperty

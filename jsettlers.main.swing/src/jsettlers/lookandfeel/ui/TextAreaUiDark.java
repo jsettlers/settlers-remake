@@ -3,19 +3,19 @@ package jsettlers.lookandfeel.ui;
 import java.awt.Graphics;
 
 import javax.swing.JComponent;
-import javax.swing.plaf.metal.MetalTextFieldUI;
+import javax.swing.plaf.basic.BasicTextAreaUI;
 
 /**
  * Text field UI for dark backgrounds
  * 
  * @author Andreas Butti
  */
-public class TextFieldUiDark extends MetalTextFieldUI {
+public class TextAreaUiDark extends BasicTextAreaUI {
 
 	/**
 	 * Constructor
 	 */
-	public TextFieldUiDark() {
+	public TextAreaUiDark() {
 	}
 
 	@Override
