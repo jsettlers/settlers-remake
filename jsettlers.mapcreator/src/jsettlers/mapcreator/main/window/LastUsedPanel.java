@@ -27,11 +27,13 @@ import jsettlers.logic.map.MapLoader;
  *
  */
 public class LastUsedPanel extends OpenPanel {
-
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor
+	 * 
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
 	public LastUsedPanel(ActionListener doubleclickListener) {
 		super(doubleclickListener);

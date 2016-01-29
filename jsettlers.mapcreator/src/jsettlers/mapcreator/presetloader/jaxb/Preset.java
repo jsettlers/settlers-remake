@@ -59,6 +59,7 @@ import javax.xml.bind.annotation.XmlType;
 		"object",
 		"moveable"
 })
+@SuppressWarnings("javadoc")
 public class Preset {
 
 	protected List<Building> building;

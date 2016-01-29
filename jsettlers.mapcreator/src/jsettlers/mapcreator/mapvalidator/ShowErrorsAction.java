@@ -40,8 +40,6 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	/**
 	 * Constructor
 	 * 
-	 * @param list
-	 *            Error list
 	 * @param sidebar
 	 *            Sidebar to select tab
 	 */

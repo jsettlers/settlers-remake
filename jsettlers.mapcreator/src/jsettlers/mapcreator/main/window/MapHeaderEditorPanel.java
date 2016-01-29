@@ -52,6 +52,14 @@ public class MapHeaderEditorPanel extends JPanel {
 	private JTextField nameField;
 	private JTextArea descriptionField;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param header
+	 *            Header to display
+	 * @param sizeChangable
+	 *            If the size is editable or not
+	 */
 	public MapHeaderEditorPanel(MapFileHeader header, boolean sizeChangable) {
 		generate(sizeChangable);
 		setHeader(header);
@@ -151,6 +159,12 @@ public class MapHeaderEditorPanel extends JPanel {
 		return nameField;
 	}
 
+	/**
+	 * Load and display a map header
+	 * 
+	 * @param header
+	 *            Header
+	 */
 	public void setHeader(MapFileHeader header) {
 		nameField.setText(header.getName());
 		descriptionField.setText(header.getDescription());
@@ -160,6 +174,11 @@ public class MapHeaderEditorPanel extends JPanel {
 		maxPlayer.setValue(Integer.valueOf(header.getMaxPlayer()));
 	}
 
+	/**
+	 * Gets a new header from inputfields
+	 * 
+	 * @return Header
+	 */
 	public MapFileHeader getHeader() {
 		String name = nameField.getText();
 		String description = descriptionField.getText();

@@ -17,6 +17,7 @@ package jsettlers.mapcreator.mapvalidator.tasks;
 import java.util.Formatter;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
@@ -33,6 +34,11 @@ public abstract class AbstractValidationTask {
 	 * Map to check
 	 */
 	protected MapData data;
+
+	/**
+	 * Map header
+	 */
+	protected MapFileHeader header;
 
 	/**
 	 * List with the errors
@@ -77,6 +83,14 @@ public abstract class AbstractValidationTask {
 	 */
 	public void setData(MapData data) {
 		this.data = data;
+	}
+
+	/**
+	 * @param header
+	 *            Map header
+	 */
+	public void setHeader(MapFileHeader header) {
+		this.header = header;
 	}
 
 	/**
