@@ -45,12 +45,10 @@ public final class TextComponentHelper {
 	/**
 	 * Install the border
 	 * 
-	 * @param c
-	 *            Component
+	 * @param txt
+	 *            Text component
 	 */
-	public static void installUi(JComponent c) {
-		JTextComponent txt = (JTextComponent) c;
-
+	public static void installUi(JTextComponent txt) {
 		txt.setOpaque(false);
 
 		Insets margin = txt.getMargin();
@@ -82,10 +80,12 @@ public final class TextComponentHelper {
 	 * 
 	 * @param g
 	 *            Graphics
+	 * @param editor
+	 *            Text editor
 	 */
-	public static void paintBackground(Graphics g) {
-		// TODO Auto-generated method stub
-
+	public static void paintBackground(Graphics g, JTextComponent editor) {
+		g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
+		g.fillRect(0, 0, editor.getWidth(), editor.getHeight());
 	}
 
 }

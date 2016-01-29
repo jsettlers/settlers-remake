@@ -4,14 +4,14 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.ui.TextAreaUiDark;
+import jsettlers.lookandfeel.ui.SettlerComboboxUi;
 
 /**
- * Text area UI factory
+ * Combobox UI factory
  * 
  * @author Andreas Butti
  */
-public class TextAreaUiFactory {
+public class ComboboxUiFactory {
 
 	/**
 	 * Forward calls
@@ -26,8 +26,8 @@ public class TextAreaUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		if (LFStyle.TEXT_DEFAULT == c.getClientProperty(LFStyle.KEY)) {
-			return new TextAreaUiDark();
+		if (LFStyle.COMBOBOX == c.getClientProperty(LFStyle.KEY)) {
+			return new SettlerComboboxUi();
 		}
 		return FORWARD.create(c);
 	}

@@ -4,6 +4,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicTextAreaUI;
+import javax.swing.text.JTextComponent;
 
 /**
  * Text field UI for dark backgrounds
@@ -21,7 +22,7 @@ public class TextAreaUiDark extends BasicTextAreaUI {
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
-		TextComponentHelper.installUi(c);
+		TextComponentHelper.installUi((JTextComponent) c);
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class TextAreaUiDark extends BasicTextAreaUI {
 
 	@Override
 	protected void paintBackground(Graphics g) {
-		TextComponentHelper.paintBackground(g);
+		TextComponentHelper.paintBackground(g, getComponent());
 	}
 
 }

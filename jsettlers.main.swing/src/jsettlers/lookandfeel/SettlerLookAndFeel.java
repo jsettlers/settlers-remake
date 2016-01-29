@@ -1,6 +1,7 @@
 package jsettlers.lookandfeel;
 
 import java.awt.Color;
+import java.awt.Insets;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -8,6 +9,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import jsettlers.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.lookandfeel.factory.ButtonUiFactory;
+import jsettlers.lookandfeel.factory.ComboboxUiFactory;
 import jsettlers.lookandfeel.factory.LabelUiFactory;
 import jsettlers.lookandfeel.factory.PanelUiFactory;
 import jsettlers.lookandfeel.factory.ProgressBarUiFactory;
@@ -16,6 +18,7 @@ import jsettlers.lookandfeel.factory.ScrollbarUiFactory;
 import jsettlers.lookandfeel.factory.TextAreaUiFactory;
 import jsettlers.lookandfeel.factory.TextFieldUiFactory;
 import jsettlers.lookandfeel.factory.ToggleButtonUiFactory;
+import jsettlers.lookandfeel.ui.UIDefaults;
 
 /**
  * Look and Feel for JSettlers
@@ -56,8 +59,21 @@ public class SettlerLookAndFeel {
 		ToggleButtonUiFactory.FORWARD.loadFromType("ToggleButtonUI");
 		ProgressBarUiFactory.FORWARD.loadFromType("ProgressBarUI");
 		TextAreaUiFactory.FORWARD.loadFromType("TextAreaUI");
+		ComboboxUiFactory.FORWARD.loadFromType("ComboBoxUI");
 
+		// Scrollbar
 		UIManager.put("ScrollBar.width", 20);
+
+		// ComboBox
+		UIManager.put("ComboBox.background", Color.BLACK);
+		UIManager.put("ComboBox.foreground", UIDefaults.LABEL_TEXT_COLOR);
+		UIManager.put("ComboBox.disabledForeground", Color.WHITE);
+		UIManager.put("ComboBox.disabledBackground", Color.GRAY);
+		// UIManager.put("ComboBox.font", Color.YELLOW);
+		UIManager.put("ComboBox.border", Color.YELLOW);
+		UIManager.put("opaque", false);
+		UIManager.put("ComboBox.squareButton", true);
+		UIManager.put("ComboBox.padding", new Insets(2, 2, 2, 2));
 
 		Object[] scrollbar = {
 				"ScrollBarUI", ScrollbarUiFactory.class.getName(),
@@ -70,6 +86,7 @@ public class SettlerLookAndFeel {
 				"ToggleButtonUI", ToggleButtonUiFactory.class.getName(),
 				"ProgressBarUI", ProgressBarUiFactory.class.getName(),
 				"TextAreaUI", TextAreaUiFactory.class.getName(),
+				"ComboBoxUI", ComboboxUiFactory.class.getName(),
 		};
 		UIManager.getDefaults().putDefaults(scrollbar);
 
