@@ -36,4 +36,9 @@ public interface UIDefaults {
 	 */
 	public static final Color HALFTRANSPARENT_BLACK = new Color(0, 0, 0, 160);
 
+	/**
+	 * Arrow color for Scrollbar and JCombobox
+	 */
+	public static final Color ARROW_COLOR = new Color(0x909090);
+
 }

@@ -43,11 +43,6 @@ public class ScrollbarUi extends BasicScrollBarUI {
 	private static final Color SLIDER_INNER_COLOR = new Color(0xD6, 0xE3, 0xF6, 120);
 
 	/**
-	 * Arrow color
-	 */
-	private static final Color ARROW_COLOR = new Color(0x909090);
-
-	/**
 	 * Constructor
 	 */
 	public ScrollbarUi() {
@@ -80,12 +75,12 @@ public class ScrollbarUi extends BasicScrollBarUI {
 
 	@Override
 	protected JButton createDecreaseButton(int orientation) {
-		return new ScrollbarUiButton(orientation, ARROW_COLOR);
+		return new ScrollbarUiButton(orientation, UIDefaults.ARROW_COLOR);
 	}
 
 	@Override
 	protected JButton createIncreaseButton(int orientation) {
-		return new ScrollbarUiButton(orientation, ARROW_COLOR);
+		return new ScrollbarUiButton(orientation, UIDefaults.ARROW_COLOR);
 	}
 
 	@Override
