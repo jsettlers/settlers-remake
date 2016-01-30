@@ -104,7 +104,7 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void createStructure() {
 		add(contentPanel);
-		contentPanel.setLayout(new BorderLayout());
+		contentPanel.setLayout(new BorderLayout(30, 30));
 		JPanel titleLabelWrapper = new JPanel();
 		contentPanel.add(titleLabelWrapper, BorderLayout.NORTH);
 		titleLabelWrapper.add(titleLabel);
@@ -130,11 +130,11 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(startResourcesComboBox);
 		settingsPanel.add(peaceTimeLabel);
 		settingsPanel.add(peaceTimeComboBox);
-		centerPanel.setLayout(new BorderLayout());
+		centerPanel.setLayout(new BorderLayout(0, 30));
 		JPanel chatPanel = new JPanel();
-		chatPanel.setLayout(new BorderLayout());
+		chatPanel.setLayout(new BorderLayout(0, 10));
 		JPanel chatInputPanel = new JPanel();
-		chatInputPanel.setLayout(new BorderLayout());
+		chatInputPanel.setLayout(new BorderLayout(10, 0));
 		chatPanel.add(chatArea, BorderLayout.CENTER);
 		chatPanel.add(chatInputPanel, BorderLayout.SOUTH);
 		chatInputPanel.add(chatInputField, BorderLayout.CENTER);
@@ -173,6 +173,10 @@ public class JoinGamePanel extends BackgroundPanel {
 		sendChatMessageButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
 		chatInputField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
 		chatArea.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
+		startResourcesComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		numberOfPlayersComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		peaceTimeComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		chatArea.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 

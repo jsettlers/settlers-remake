@@ -91,6 +91,10 @@ public class PlayerSlot {
 
 	private void setStyle() {
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
+		teamComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		slotComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		typeComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		civilisationComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
 		updateReadyButtonStyle();
 	}
 
