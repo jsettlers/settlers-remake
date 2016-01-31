@@ -16,15 +16,35 @@ package go.graphics.event.interpreter;
 
 import go.graphics.event.mouse.GOZoomEvent;
 
+/**
+ * Event to zoom in / out
+ * 
+ * @author Andreas Butti
+ */
 public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEvent {
 
+	/**
+	 * A float. 1 means no zoom, small values mean smaller, big values mean bigger.
+	 */
 	private float zoom;
+
+	/**
+	 * Constructor
+	 */
+	public ConvertedZoomEvent() {
+	}
 
 	@Override
 	public float getZoomFactor() {
 		return zoom;
 	}
 
+	/**
+	 * Sets the zoom factor
+	 * 
+	 * @param factor
+	 *            A float. 1 means no zoom, small values mean smaller, big values mean bigger.
+	 */
 	public void setZoomFactor(float factor) {
 		zoom = factor;
 		fireModalDataRefreshed();
