@@ -71,7 +71,7 @@ public class SelectSettlerFolderDialog extends JFrame {
 	/**
 	 * Listener for the Path panel
 	 */
-	private final PathPanelListener listener = new PathPanelListener() {
+	private final IPathPanelListener listener = new IPathPanelListener() {
 
 		@Override
 		public void jumpTo(Object[] pathToJumpTo) {

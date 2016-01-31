@@ -62,7 +62,7 @@ public class PathPanel extends JPanel {
 	/**
 	 * Listener
 	 */
-	private final PathPanelListener listener;
+	private final IPathPanelListener listener;
 
 	/**
 	 * Constructor
@@ -70,7 +70,7 @@ public class PathPanel extends JPanel {
 	 * @param listener
 	 *            Listener
 	 */
-	public PathPanel(PathPanelListener listener) {
+	public PathPanel(IPathPanelListener listener) {
 		this.listener = listener;
 		setPath(new Object[] {});
 	}

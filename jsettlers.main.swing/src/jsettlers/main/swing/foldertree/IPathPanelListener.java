@@ -19,7 +19,7 @@ package jsettlers.main.swing.foldertree;
  * 
  * @author Andreas Butti
  */
-public interface PathPanelListener {
+public interface IPathPanelListener {
 
 	/**
 	 * Jump to a path
