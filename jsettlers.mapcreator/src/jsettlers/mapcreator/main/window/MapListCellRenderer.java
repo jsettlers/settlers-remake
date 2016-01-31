@@ -213,12 +213,13 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 					jsettlers.common.Color c = jsettlers.common.Color.fromShort(data[index]);
 					img.setRGB(x + xOffset, y, c.getARGB());
 				}
-				if (xOffset > 1) {
+				if (xOffset > 1 && (y % 2 == 0)) {
 					xOffset--;
 				}
 			}
 
-			Image resized = resize(img, MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE / 2);
+			int displaySize = MapFileHeader.PREVIEW_IMAGE_SIZE / 2;
+			Image resized = resize(img, displaySize + displaySize / 2, displaySize);
 			icon = new ImageIcon(resized);
 			previewImageCache.put(value, icon);
 			return icon;
@@ -233,7 +234,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	@Override
 	public Component getListCellRendererComponent(JList<? extends MapLoader> list, MapLoader value, int index, boolean isSelected,
 			boolean cellHasFocus) {
-		lbName.setText(value.getMapName());
+		lbName.setText(value.getMapName().trim());
 		String date = "???";
 		if (value.getCreationDate() != null) {
 			date = df.format(value.getCreationDate());
