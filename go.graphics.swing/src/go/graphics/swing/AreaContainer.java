@@ -108,6 +108,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 			canvas = glCanvas;
 		}
 
+		// Listener for Key-, Mouse- etc. events
 		new GOSwingEventConverter(canvas, this);
 
 		area.addRedrawListener(this);
@@ -177,6 +178,14 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	@Override
 	public void requestRedraw() {
 		canvas.repaint();
+	}
+
+	/**
+	 * Forward the focus call to the Input canvas
+	 */
+	@Override
+	public void requestFocus() {
+		canvas.requestFocus();
 	}
 
 	@Override
