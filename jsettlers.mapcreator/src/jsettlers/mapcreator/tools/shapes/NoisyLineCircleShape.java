@@ -17,11 +17,16 @@ package jsettlers.mapcreator.tools.shapes;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.noise.NoiseGenerator;
 
+/**
+ * Shape to draw some random shapes
+ * 
+ * @author Andreas Butti
+ */
 public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 
-	private int noiseSize = 100;
+	private final int noiseSize = 100;
 
-	private NoiseGenerator noise = new NoiseGenerator();
+	private final NoiseGenerator noise = new NoiseGenerator();
 
 	/**
 	 * Constructor
@@ -32,8 +37,7 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 
 	@Override
 	protected byte getFieldRating(int x, int y, double distance) {
-		if (distance > (double) getRadius() * (Byte.MAX_VALUE + noiseSize)
-				/ Byte.MAX_VALUE) {
+		if (distance > (double) getRadius() * (Byte.MAX_VALUE + noiseSize) / Byte.MAX_VALUE) {
 			return 0;
 		} else {
 			double sloped = getSlopedRating(distance);

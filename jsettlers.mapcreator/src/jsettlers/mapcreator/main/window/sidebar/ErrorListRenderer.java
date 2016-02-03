@@ -17,6 +17,7 @@ package jsettlers.mapcreator.main.window.sidebar;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -39,12 +40,12 @@ public class ErrorListRenderer extends DefaultListCellRenderer {
 	/**
 	 * Default font
 	 */
-	private Font defaultFont = getFont();
+	private final Font defaultFont = getFont();
 
 	/**
 	 * Header font
 	 */
-	private Font headerFont = getFont().deriveFont(Font.BOLD);
+	private final Font headerFont = getFont().deriveFont(Font.BOLD);
 
 	/**
 	 * Header background
@@ -54,17 +55,68 @@ public class ErrorListRenderer extends DefaultListCellRenderer {
 	/**
 	 * Drop down icon
 	 */
-	private Icon dropDownIcon = new ImageIcon(ErrorListRenderer.class.getResource("dropdown.png"));
+	private final Icon errorIcon = new ImageIcon(ErrorListRenderer.class.getResource("error.png"));
 
 	/**
 	 * Drop down icon
 	 */
-	private Icon errorIcon = new ImageIcon(ErrorListRenderer.class.getResource("error.png"));
+	private final Icon fixAvailableIcon = new ImageIcon(ErrorListRenderer.class.getResource("fix-available.png"));
+
+	/**
+	 * Drop down icon
+	 */
+	private final Icon warningIcon = new ImageIcon(ErrorListRenderer.class.getResource("warning.png"));
+
+	/**
+	 * Icon class to draw two icons
+	 */
+	private static class DoubleIcon implements Icon {
+
+		/**
+		 * Left icon
+		 */
+		private Icon icon1;
+
+		/**
+		 * Right icon
+		 */
+		private Icon icon2;
+
+		/**
+		 * Constructor
+		 */
+		public DoubleIcon() {
+		}
+
+		@Override
+		public void paintIcon(Component c, Graphics g, int x, int y) {
+			int yOffset = y + (getIconHeight() - icon1.getIconHeight()) / 2;
+			icon1.paintIcon(c, g, x, y + yOffset);
+			yOffset = y + (getIconHeight() - icon2.getIconHeight()) / 2;
+			icon2.paintIcon(c, g, icon1.getIconWidth() + 2 + x, y + yOffset);
+		}
+
+		@Override
+		public int getIconWidth() {
+			return icon1.getIconWidth() + icon2.getIconWidth() + 2;
+		}
+
+		@Override
+		public int getIconHeight() {
+			return Math.max(icon1.getIconHeight(), icon2.getIconHeight());
+		}
+	}
+
+	/**
+	 * Icon with two icons
+	 */
+	private final DoubleIcon doubleIcon = new DoubleIcon();
 
 	/**
 	 * Constructor
 	 */
 	public ErrorListRenderer() {
+		doubleIcon.icon2 = fixAvailableIcon;
 	}
 
 	@Override
@@ -79,17 +131,36 @@ public class ErrorListRenderer extends DefaultListCellRenderer {
 			if (!isSelected) {
 				setBackground(BACKGROUND_HEADER);
 			}
-			AbstractFix fix = ((ErrorHeader) entry).getFix();
-			if (fix != null && fix.isFixAvailable()) {
-				setIcon(dropDownIcon);
-			} else {
-				setIcon(errorIcon);
-			}
+
+			applyIcon(((ErrorHeader) entry));
 		} else {
 			setIcon(null);
 			setFont(defaultFont);
 		}
 
 		return this;
+	}
+
+	/**
+	 * Set the icon for the Header
+	 * 
+	 * @param header
+	 *            Error header
+	 */
+	private void applyIcon(ErrorHeader header) {
+		Icon typeIcon;
+		if (header.isError()) {
+			typeIcon = errorIcon;
+		} else {
+			typeIcon = warningIcon;
+		}
+
+		AbstractFix fix = header.getFix();
+		if (fix != null && fix.isFixAvailable()) {
+			doubleIcon.icon1 = typeIcon;
+			setIcon(doubleIcon);
+		} else {
+			setIcon(typeIcon);
+		}
 	}
 }

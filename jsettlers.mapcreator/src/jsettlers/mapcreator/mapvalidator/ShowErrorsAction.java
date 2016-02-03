@@ -38,13 +38,21 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	private final Sidebar sidebar;
 
 	/**
+	 * true: show errors, false: show warnings
+	 */
+	private final boolean error;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param sidebar
 	 *            Sidebar to select tab
+	 * @param error
+	 *            true: show errors, false: show warnings
 	 */
-	public ShowErrorsAction(Sidebar sidebar) {
+	public ShowErrorsAction(Sidebar sidebar, boolean error) {
 		this.sidebar = sidebar;
+		this.error = error;
 		putValue(EditorFrame.DISPLAY_TEXT_IN_TOOLBAR, true);
 	}
 
@@ -58,10 +66,20 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 	 */
 	@Override
 	public void validationFinished(ValidationListModel list) {
-		if (list.getErrorCount() == 0) {
-			putValue(Action.NAME, EditorLabels.getLabel("action.show-errors"));
+		int count;
+		String name;
+		if (error) {
+			count = list.getErrorCount();
+			name = "errors";
 		} else {
-			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-errors_n"), list.getErrorCount()));
+			count = list.getWarningCount();
+			name = "warnings";
+		}
+
+		if (count == 0) {
+			putValue(Action.NAME, EditorLabels.getLabel("action.show-" + name));
+		} else {
+			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-" + name + "_n"), count));
 		}
 	}
 }

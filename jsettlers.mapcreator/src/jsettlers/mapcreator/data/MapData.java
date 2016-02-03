@@ -57,7 +57,7 @@ import jsettlers.mapcreator.data.objects.ProtectContainer;
 import jsettlers.mapcreator.data.objects.StackContainer;
 import jsettlers.mapcreator.data.objects.StoneObjectContainer;
 import jsettlers.mapcreator.data.objects.TreeObjectContainer;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
 
 /**
  * This is the map data of a map that is beeing created by the editor.

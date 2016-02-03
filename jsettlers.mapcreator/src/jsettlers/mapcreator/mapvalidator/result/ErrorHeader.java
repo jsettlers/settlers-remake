@@ -26,7 +26,12 @@ public class ErrorHeader extends AbstractErrorEntry {
 	/**
 	 * Fix, if any
 	 */
-	private AbstractFix fix;
+	private final AbstractFix fix;
+
+	/**
+	 * true: This header contains at least one error, false: only warning
+	 */
+	private boolean error = true;
 
 	/**
 	 * Constructor
@@ -39,6 +44,21 @@ public class ErrorHeader extends AbstractErrorEntry {
 	public ErrorHeader(String text, AbstractFix fix) {
 		super(text);
 		this.fix = fix;
+	}
+
+	/**
+	 * @param error
+	 *            true: This header contains at least one error, false: only warning
+	 */
+	public void setError(boolean error) {
+		this.error = error;
+	}
+
+	/**
+	 * @return true: This header contains at least one error, false: only warning
+	 */
+	public boolean isError() {
+		return error;
 	}
 
 	/**

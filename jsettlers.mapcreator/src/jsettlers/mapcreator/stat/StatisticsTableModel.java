@@ -26,7 +26,12 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 
-public class StatisticsTable extends AbstractTableModel {
+/**
+ * Table model to display statistics
+ * 
+ * @author Andreas Butti
+ */
+public class StatisticsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1;
 
 	private static final int MATERIAL_START = 0;
@@ -35,9 +40,15 @@ public class StatisticsTable extends AbstractTableModel {
 	private static final int END_POS = BUILDING_START + EBuildingType.NUMBER_OF_BUILDINGS;
 	private final int playercount;
 	private final int[][] counts;
-	private String[] rowNames;
+	private final String[] rowNames;
 
-	public StatisticsTable(MapData data) {
+	/**
+	 * Constructor
+	 * 
+	 * @param data
+	 *            Map to display
+	 */
+	public StatisticsTableModel(MapData data) {
 		playercount = data.getPlayerCount();
 		int allRows = END_POS;
 		int[][] allCounts = new int[allRows][playercount];
@@ -110,7 +121,7 @@ public class StatisticsTable extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int col) {
 		if (col > 0) {
-			return Integer.toString(counts[row][col - 1]);
+			return counts[row][col - 1];
 		} else {
 			return rowNames[row];
 		}

@@ -15,13 +15,15 @@
 package jsettlers.mapcreator.main.window.sidebar;
 
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
+import jsettlers.mapcreator.mapvalidator.ErrorMarker;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
@@ -42,7 +44,7 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	/**
 	 * List with the error entries
 	 */
-	private JList<AbstractErrorEntry> errorList = new JList<>();
+	private final JList<AbstractErrorEntry> errorList = new JList<>();
 
 	/**
 	 * Interface to scroll to position
@@ -57,18 +59,16 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 	/**
 	 * Listener to react to list clicks
 	 */
-	private ListSelectionListener selectionListener = new ListSelectionListener() {
-
+	private final MouseListener mouseListener = new MouseAdapter() {
 		@Override
-		public void valueChanged(ListSelectionEvent e) {
+		public void mouseClicked(MouseEvent e) {
 			AbstractErrorEntry value = errorList.getSelectedValue();
 			if (value == null) {
 				return;
 			}
 
 			if (value instanceof ErrorEntry) {
-				ErrorEntry entry = (ErrorEntry) value;
-				scrollTo.scrollTo(entry.getPos());
+				errorEntrySelected((ErrorEntry) value);
 			} else if (value instanceof ErrorHeader) {
 				ErrorHeader header = (ErrorHeader) value;
 				AbstractFix fix = header.getFix();
@@ -86,7 +86,6 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 				}
 			}
 		}
-
 	};
 
 	/**
@@ -100,8 +99,24 @@ public class ErrorSidebar extends JScrollPane implements ValidationResultListene
 		setViewportView(errorList);
 		this.scrollTo = scrollTo;
 		this.errorList.setCellRenderer(new ErrorListRenderer());
-		errorList.addListSelectionListener(selectionListener);
+		errorList.addMouseListener(mouseListener);
 
+	}
+
+	/**
+	 * An error entry was selected
+	 * 
+	 * @param entry
+	 *            The selected value
+	 */
+	protected void errorEntrySelected(ErrorEntry entry) {
+		if (ErrorMarker.DESCRIPTION_MARKER.equals(entry.getAdditionalErrorData())) {
+			// TODO open the settings dialog?
+		} else if (ErrorMarker.MISSING_LIFE_RESOURCE.equals(entry.getAdditionalErrorData())) {
+			// nothing to do
+		} else {
+			scrollTo.scrollTo(entry.getPos());
+		}
 	}
 
 	/**
