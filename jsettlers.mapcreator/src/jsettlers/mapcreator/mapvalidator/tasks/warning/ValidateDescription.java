@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,75 +12,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.tools;
+package jsettlers.mapcreator.mapvalidator.tasks.warning;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
+import jsettlers.mapcreator.mapvalidator.ErrorMarker;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Tool list with dynamic content
+ * Validate map descriptions
  * 
  * @author Andreas Butti
- *
  */
-public class DynamicToolBox extends ToolBox {
-
-	/**
-	 * Tools
-	 */
-	private final List<ToolNode> tools = new ArrayList<>();
+public class ValidateDescription extends AbstractValidationTask {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param name
-	 *            Name of the node
 	 */
-	public DynamicToolBox(String name) {
-		super(name, null);
+	public ValidateDescription() {
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param name
-	 *            Name of the node
-	 * @param tools
-	 *            Array with the tools
-	 */
-	public DynamicToolBox(String name, ToolNode[] tools) {
-		super(name, null);
+	@Override
+	public void doTest() {
+		addHeader("description.header", null);
 
-		for (ToolNode t : tools) {
-			this.tools.add(t);
+		String description = header.getDescription();
+		if (description == null || description.trim().isEmpty()) {
+			addWarningMessage(ErrorMarker.DESCRIPTION_MARKER, "description.no-description", null);
 		}
 	}
 
-	@Override
-	public ToolNode getTool(int index) {
-		return tools.get(index);
-	}
-
-	@Override
-	public int getToolLength() {
-		return tools.size();
-	}
-
-	/**
-	 * Add a tool
-	 * 
-	 * @param t
-	 *            To add
-	 */
-	public void add(ToolNode t) {
-		tools.add(t);
-	}
-
-	@Override
-	public Icon getIcon() {
-		// use default icon
-		return null;
-	}
 }

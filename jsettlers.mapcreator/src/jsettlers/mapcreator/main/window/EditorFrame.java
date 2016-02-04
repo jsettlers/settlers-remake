@@ -125,7 +125,7 @@ public abstract class EditorFrame extends JFrame {
 		this.splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, root, sidebar);
 		splitter.setResizeWeight(1);
 		add(splitter, BorderLayout.CENTER);
-		splitter.setDividerLocation(1000);
+		splitter.setDividerLocation(980);
 
 	}
 

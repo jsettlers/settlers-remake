@@ -23,7 +23,7 @@ public abstract class EditorControlBase {
 	/**
 	 * Map data
 	 */
-	protected MapData data;
+	protected MapData mapData;
 
 	/**
 	 * Header of the current open map
@@ -43,7 +43,7 @@ public abstract class EditorControlBase {
 	 */
 	protected MapFileHeader generateMapHeader() {
 		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
-				data.getPreviewImageDataSupplier()).getPreviewImage();
+				mapData.getPreviewImageDataSupplier()).getPreviewImage();
 		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getBaseMapId(), header.getDescription(),
 				header.getWidth(), header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
 		return imagedHeader;

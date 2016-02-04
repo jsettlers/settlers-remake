@@ -12,47 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
-
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
+package jsettlers.mapcreator.mapvalidator;
 
 /**
- * Check the all player are valid
+ * Some special error marker for special cases
  * 
  * @author Andreas Butti
+ *
  */
-public class ValidatePlayer extends AbstractValidationTask {
+public final class ErrorMarker {
 
-	/**
-	 * Fix for wrong placed settlers
-	 */
-	private final DeleteObjectFix fix = new DeleteObjectFix();
-
-	/**
-	 * Constructor
-	 */
-	public ValidatePlayer() {
+	private ErrorMarker() {
 	}
 
-	@Override
-	public void doTest() {
-		int playerCount = header.getMaxPlayer();
-		addHeader("player.header", fix);
+	/**
+	 * This marker is used to open the description dialog
+	 */
+	public static final String DESCRIPTION_MARKER = "ValidateDescription.DESCRIPTION_MARKER";
 
-		for (int x = 0; x < data.getWidth(); x++) {
-			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof IPlayerable) {
-					int p = ((IPlayerable) mapObject).getPlayerId();
-					if (p >= playerCount) {
-						fix.addInvalidObject(new ShortPoint2D(x, y));
-						addErrorMessage("player.text", new ShortPoint2D(x, y));
-					}
-				}
-			}
-		}
-	}
+	/**
+	 * This marker is for general missing objects, e.g. no stones on the Map
+	 */
+	public static final String MISSING_LIFE_RESOURCE = "ErrorMarker.NO_LIFE_RESOURCE";
 }

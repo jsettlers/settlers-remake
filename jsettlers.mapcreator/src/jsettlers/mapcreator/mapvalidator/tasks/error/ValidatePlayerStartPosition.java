@@ -12,45 +12,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.mapvalidator.result.fix.FreeBorderFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Check if all border positions are blocking
+ * Validate all players start position
  * 
  * @author Andreas Butti
- *
  */
-public class ValidateBlockingBorderPositions extends AbstractValidationTask {
+public class ValidatePlayerStartPosition extends AbstractValidationTask {
 
 	/**
 	 * Constructor
 	 */
-	public ValidateBlockingBorderPositions() {
+	public ValidatePlayerStartPosition() {
 	}
 
 	@Override
 	public void doTest() {
-		FreeBorderFix fix = new FreeBorderFix();
-		addHeader("blockingborder.header", fix);
+		addHeader("playerstart.header", null /* no autofix possible */);
 
-		int width = data.getWidth();
-		int height = data.getHeight();
-
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (1 <= y && y < height - 2 && 1 <= x && x < width - 2) {
-					continue;
-				}
-
-				if (!data.getLandscape(x, y).isBlocking) {
-					ShortPoint2D p = new ShortPoint2D(x, y);
-					addErrorMessage("at-position", p, x, y);
-					fix.addPosition(p);
-				}
+		for (int player = 0; player < data.getPlayerCount(); player++) {
+			ShortPoint2D point = data.getStartPoint(player);
+			if (players[point.x][point.y] != player) {
+				addErrorMessage("playerstart.text", point, player);
 			}
+
+			// set a visible start point on the map
+			borders[point.x][point.y] = true;
+
+			// even if this startpoint is invalid, display the point in the right player color
+			players[point.x][point.y] = (byte) player;
+
 		}
 	}
 
