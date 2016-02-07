@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,22 +12,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.swing.resources;
-
-import java.io.IOException;
+package jsettlers.main.swing.foldertree;
 
 /**
+ * Listener for the Path panel
  * 
- * 
- * @author michael
- * @author Andreas Eberle
- * 
- * 
+ * @author Andreas Butti
  */
-public class InvalidSettlersDirectoryException extends IOException {
-	private static final long serialVersionUID = 1L;
+public interface IPathPanelListener {
 
-	public InvalidSettlersDirectoryException(String message) {
-		super(message);
-	}
+	/**
+	 * Jump to a path
+	 * 
+	 * @param pathToJumpTo
+	 *            The path
+	 */
+	void jumpTo(Object[] pathToJumpTo);
+
 }
