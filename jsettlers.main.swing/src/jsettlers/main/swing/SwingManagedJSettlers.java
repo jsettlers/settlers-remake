@@ -32,6 +32,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import go.graphics.area.Area;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
@@ -197,10 +198,7 @@ public class SwingManagedJSettlers {
 	/**
 	 * Creates a new SWING GUI for the game.
 	 * 
-	 * @param argsList
-	 * @return
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @return JSettlersScreen
 	 */
 	public static JSettlersScreen startGui() {
 		Area area = new Area();
