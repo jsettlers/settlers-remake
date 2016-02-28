@@ -43,7 +43,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.swing.resources.SettlerFolderChecker;
+import jsettlers.graphics.swing.resources.SettlersFolderChecker;
 
 /**
  * Select settler root folder dialog
@@ -205,7 +205,7 @@ public class SelectSettlersFolderDialog extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String path = JOptionPane.showInputDialog(SelectSettlersFolderDialog.this, Labels.getString("enter-path"));
 				if (path != null) {
-					if (SettlerFolderChecker.checkSettlersFolder(path).isValidSettlersFolder()) {
+					if (SettlersFolderChecker.checkSettlersFolder(path).isValidSettlersFolder()) {
 						foundPanel.setFolder(path);
 					} else {
 						JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",

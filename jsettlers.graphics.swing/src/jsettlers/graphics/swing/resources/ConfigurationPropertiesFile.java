@@ -65,7 +65,7 @@ public class ConfigurationPropertiesFile {
 
 	public boolean isValidSettlersFolderSet() {
 		String settlersFolder = getSettlersFolderValue();
-		return SettlerFolderChecker.checkSettlersFolder(settlersFolder).isValidSettlersFolder();
+		return SettlersFolderChecker.checkSettlersFolder(settlersFolder).isValidSettlersFolder();
 	}
 
 	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {

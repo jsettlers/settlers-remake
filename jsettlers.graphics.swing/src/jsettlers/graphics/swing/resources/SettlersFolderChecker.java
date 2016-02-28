@@ -24,12 +24,12 @@ import jsettlers.graphics.reader.DatFileType;
  * @author Andreas Butti
  * @author Andreas Eberle
  */
-public final class SettlerFolderChecker {
+public final class SettlersFolderChecker {
 
 	/**
 	 * No Instances of class allowed
 	 */
-	private SettlerFolderChecker() {
+	private SettlersFolderChecker() {
 	}
 
 	/**

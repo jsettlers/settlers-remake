@@ -20,7 +20,7 @@ import java.io.IOException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.swing.resources.SettlerFolderChecker.SettlersFoldersResult;
+import jsettlers.graphics.swing.resources.SettlersFolderChecker.SettlersFoldersResult;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -57,7 +57,7 @@ public class SwingResourceLoader {
 			throw new IOException("Not a resources folder: " + configFile.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
 		}
 
-		SettlersFoldersResult settlersFoldersResult = SettlerFolderChecker.checkSettlersFolder(configFile.getSettlersFolderValue());
+		SettlersFoldersResult settlersFoldersResult = SettlersFolderChecker.checkSettlersFolder(configFile.getSettlersFolderValue());
 		if (!settlersFoldersResult.isValidSettlersFolder()) {
 			StringBuilder err = new StringBuilder();
 			if (settlersFoldersResult.gfxFolder == null) {

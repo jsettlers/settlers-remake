@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.swing.tree.TreeNode;
 
-import jsettlers.graphics.swing.resources.SettlerFolderChecker;
+import jsettlers.graphics.swing.resources.SettlersFolderChecker;
 
 /**
  * Node to display file / folders
@@ -204,7 +204,7 @@ public class FilesystemTreeNode implements TreeNode {
 		}
 
 		if (snd && gfx) {
-			settlerFolder = SettlerFolderChecker.checkSettlersFolder(file.getAbsolutePath()).isValidSettlersFolder();
+			settlerFolder = SettlersFolderChecker.checkSettlersFolder(file.getAbsolutePath()).isValidSettlersFolder();
 		} else {
 			settlerFolder = false;
 		}
