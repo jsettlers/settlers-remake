@@ -20,6 +20,7 @@ import java.io.IOException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.swing.resources.SettlerFolderChecker.SettlersFoldersResult;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -36,13 +37,12 @@ public class SwingResourceLoader {
 	}
 
 	public static void setupGraphicsAndSoundResources(ConfigurationPropertiesFile configFile) throws IOException {
-		SettlerFolderCheck check = new SettlerFolderCheck();
-		testConfig(configFile, check);
+		SettlersFoldersResult settlersFoldersResult = testSettlersFolderConfig(configFile);
 
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		imageProvider.addLookupPath(check.getGfxFolder());
+		imageProvider.addLookupPath(settlersFoldersResult.gfxFolder);
 
-		SoundManager.addLookupPath(check.getSndFolder());
+		SoundManager.addLookupPath(settlersFoldersResult.sndFolder);
 
 		imageProvider.startPreloading();
 	}
@@ -51,18 +51,20 @@ public class SwingResourceLoader {
 		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesDirectory(), configFile.getOriginalMapsDirectory()));
 	}
 
-	private static void testConfig(ConfigurationPropertiesFile cf, SettlerFolderCheck check)
+	private static SettlersFoldersResult testSettlersFolderConfig(ConfigurationPropertiesFile configFile)
 			throws IOException {
-		if (!isResourceDir(cf.getResourcesDirectory())) {
-			throw new IOException("Not a resources folder: " + cf.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
+		if (!isResourceDir(configFile.getResourcesDirectory())) {
+			throw new IOException("Not a resources folder: " + configFile.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
 		}
-		if (!check.check(cf.getSettlersFolderValue())) {
+
+		SettlersFoldersResult settlersFoldersResult = SettlerFolderChecker.checkSettlersFolder(configFile.getSettlersFolderValue());
+		if (!settlersFoldersResult.isValidSettlersFolder()) {
 			StringBuilder err = new StringBuilder();
-			if (check.getGfxFolder() == null) {
+			if (settlersFoldersResult.gfxFolder == null) {
 				err.append("graphics (GFX) folder not found / empty");
 			}
 
-			if (check.getSndFolder() != null) {
+			if (settlersFoldersResult.sndFolder != null) {
 				if (err.length() != 0) {
 					err.append(" and ");
 				}
@@ -72,6 +74,8 @@ public class SwingResourceLoader {
 
 			throw new InvalidSettlersDirectoryException(err.toString());
 		}
+
+		return settlersFoldersResult;
 	}
 
 	private static boolean isResourceDir(File dir) {

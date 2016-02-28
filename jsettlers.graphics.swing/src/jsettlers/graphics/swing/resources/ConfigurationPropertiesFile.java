@@ -28,7 +28,6 @@ import java.util.Properties;
  */
 public class ConfigurationPropertiesFile {
 	private static final String SETTLERS_FOLDER = "settlers-folder";
-	private static final String SPLIT_CHARACTER = ";";
 
 	private final File configFile;
 	private final Properties properties;
@@ -56,19 +55,6 @@ public class ConfigurationPropertiesFile {
 		return dir.getAbsoluteFile();
 	}
 
-	private String[] getFolders(String... subfolders) {
-		String[] settlersFolder = properties.getProperty("settlers-folder").split(SPLIT_CHARACTER);
-		String[] result = new String[settlersFolder.length * subfolders.length];
-
-		int resultIdx = 0;
-		for (int subfolderIdx = 0; subfolderIdx < subfolders.length; subfolderIdx++) {
-			for (int folderIdx = 0; folderIdx < settlersFolder.length; folderIdx++) {
-				result[resultIdx++] = settlersFolder[folderIdx].replaceFirst("/?$", "/" + subfolders[subfolderIdx]);
-			}
-		}
-		return result;
-	}
-
 	public String getSettlersFolderValue() {
 		return properties.getProperty(SETTLERS_FOLDER);
 	}
@@ -77,10 +63,9 @@ public class ConfigurationPropertiesFile {
 		return new File(getSettlersFolderValue());
 	}
 
-	public boolean isSettlersFolderSet() {
+	public boolean isValidSettlersFolderSet() {
 		String settlersFolder = getSettlersFolderValue();
-		SettlerFolderCheck check = new SettlerFolderCheck();
-		return check.check(settlersFolder);
+		return SettlerFolderChecker.checkSettlersFolder(settlersFolder).isValidSettlersFolder();
 	}
 
 	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {

@@ -22,89 +22,78 @@ import jsettlers.graphics.reader.DatFileType;
  * Checks if a settler folder is valid
  * 
  * @author Andreas Butti
+ * @author Andreas Eberle
  */
-public class SettlerFolderCheck {
+public final class SettlerFolderChecker {
 
 	/**
-	 * Sound folder, if found
+	 * No Instances of class allowed
 	 */
-	private File sndFolder;
-
-	/**
-	 * Graphics folder if found
-	 */
-	private File gfxFolder;
-
-	/**
-	 * Constructor
-	 */
-	public SettlerFolderCheck() {
+	private SettlerFolderChecker() {
 	}
 
 	/**
-	 * Checks a folder
+	 * Checks a potential Settlers III installation folder and extracts the gfx and snd folders.
 	 * 
-	 * @param settlersFolder
-	 *            Folder
-	 * @return true if a valid settler folder
+	 * @param settlersBaseFolder
+	 *            Folder of Settlers III installation
+	 * @return Instance of {@link SettlersFoldersResult}.
 	 */
-	public boolean check(String settlersFolder) {
-		if (settlersFolder == null) {
-			return false;
+	public static SettlersFoldersResult checkSettlersFolder(String settlersBaseFolder) {
+		if (settlersBaseFolder == null) {
+			return new SettlersFoldersResult();
 		}
 
-		if (settlersFolder.isEmpty()) {
-			return false;
+		if (settlersBaseFolder.isEmpty()) {
+			return new SettlersFoldersResult();
 		}
 
-		File file = new File(settlersFolder);
-		if (!file.exists()) {
-			return false;
+		File settlersBaseFolderFile = new File(settlersBaseFolder);
+		if (!settlersBaseFolderFile.exists() || !settlersBaseFolderFile.isDirectory()) {
+			return new SettlersFoldersResult();
 		}
 
-		File[] files = file.listFiles();
+		File[] files = settlersBaseFolderFile.listFiles();
 		if (files == null) {
-			return false;
+			return new SettlersFoldersResult();
 		}
 
-		boolean sndFolderFound = false;
-		boolean gfxFolderFound = false;
+		File sndFolder = null;
+		File gfxFolder = null;
 
 		for (File f : files) {
 			if (f.getName().toLowerCase().equals("snd")) {
 				File testSndFile = new File(f, "Siedler3_00.dat");
 				if (testSndFile.exists()) {
-					this.sndFolder = f;
-					sndFolderFound = true;
+					sndFolder = f;
 				}
 			} else if (f.getName().toLowerCase().equals("gfx")) {
 				for (DatFileType t : DatFileType.values()) {
 					if (new File(f, "siedler3_00" + t.getFileSuffix()).exists()) {
-						gfxFolderFound = true;
-						this.gfxFolder = f;
+						gfxFolder = f;
 					}
 				}
 			}
 		}
 
-		return sndFolderFound && gfxFolderFound;
+		return new SettlersFoldersResult(sndFolder, gfxFolder);
 	}
 
-	/**
-	 * Return last result, if check() was true
-	 * 
-	 * @return Sound folder
-	 */
-	public File getSndFolder() {
-		return sndFolder;
-	}
+	public static class SettlersFoldersResult {
+		public final File sndFolder;
+		public final File gfxFolder;
 
-	/**
-	 * Return last result, if check() was true
-	 * 
-	 * @return Graphics folder
-	 */
-	public File getGfxFolder() {
-		return gfxFolder;
+		SettlersFoldersResult() {
+			this(null, null);
+		}
+
+		SettlersFoldersResult(File sndFolder, File gfxFolder) {
+			this.sndFolder = sndFolder;
+			this.gfxFolder = gfxFolder;
+		}
+
+		public boolean isValidSettlersFolder() {
+			return sndFolder != null && gfxFolder != null;
+		}
 	}
 }

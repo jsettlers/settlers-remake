@@ -111,7 +111,7 @@ public class SwingManagedJSettlers {
 
 		boolean firstRun = true;
 
-		while (!configFile.isSettlersFolderSet() || !trySettingUpResources(configFile)) {
+		while (!configFile.isValidSettlersFolderSet() || !trySettingUpResources(configFile)) {
 			if (!firstRun) {
 				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
 			}
