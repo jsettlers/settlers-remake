@@ -30,7 +30,7 @@ import jsettlers.mapcreator.presetloader.jaxb.Moveable;
 import jsettlers.mapcreator.presetloader.jaxb.Object;
 import jsettlers.mapcreator.presetloader.jaxb.Preset;
 import jsettlers.mapcreator.presetloader.jaxb.Presets;
-import jsettlers.mapcreator.tools.DynamicToolBox;
+import jsettlers.mapcreator.tools.ToolBox;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateBuilding;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateMovable;
@@ -49,12 +49,12 @@ public class PresetLoader {
 	/**
 	 * Node to add presets to
 	 */
-	private final DynamicToolBox node;
+	private final ToolBox node;
 
 	/**
 	 * Interface to get current player
 	 */
-	private IPlayerSetter player;
+	private final IPlayerSetter player;
 
 	/**
 	 * Constructor
@@ -64,7 +64,7 @@ public class PresetLoader {
 	 * @param player
 	 *            Interface to get current player
 	 */
-	public PresetLoader(DynamicToolBox node, IPlayerSetter player) {
+	public PresetLoader(ToolBox node, IPlayerSetter player) {
 		this.node = node;
 		this.player = player;
 	}

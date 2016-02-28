@@ -50,18 +50,17 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 70 * MINUTES);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_EASY, EWhatToDoAiType.ROMAN_VERY_EASY, 60 * MINUTES);
 	}
 
-	@Ignore
 	@Test
 	public void hardShouldConquerEasy() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 60 * MINUTES);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 70 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() {
-		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 70 * MINUTES);
+		holdBattleBetween(EWhatToDoAiType.ROMAN_VERY_HARD, EWhatToDoAiType.ROMAN_HARD, 80 * MINUTES);
 	}
 
 	@Test

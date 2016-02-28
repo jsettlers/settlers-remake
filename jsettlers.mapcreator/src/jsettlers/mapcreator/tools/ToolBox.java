@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Icon;
 
 /**
@@ -29,9 +32,19 @@ public class ToolBox implements ToolNode {
 	private final String name;
 
 	/**
-	 * Array with the tools
+	 * Tools
 	 */
-	private final ToolNode[] tools;
+	private final List<ToolNode> tools = new ArrayList<>();
+
+	/**
+	 * Constructor
+	 * 
+	 * @param name
+	 *            Name of the node
+	 */
+	public ToolBox(String name) {
+		this.name = name;
+	}
 
 	/**
 	 * Constructor
@@ -42,8 +55,11 @@ public class ToolBox implements ToolNode {
 	 *            Array with the tools
 	 */
 	public ToolBox(String name, ToolNode[] tools) {
-		this.name = name;
-		this.tools = tools;
+		this(name);
+
+		for (ToolNode t : tools) {
+			this.tools.add(t);
+		}
 	}
 
 	@Override
@@ -59,14 +75,24 @@ public class ToolBox implements ToolNode {
 	 * @return Tool
 	 */
 	public ToolNode getTool(int index) {
-		return tools[index];
+		return tools.get(index);
 	}
 
 	/**
 	 * @return Tool length
 	 */
 	public int getToolLength() {
-		return tools.length;
+		return tools.size();
+	}
+
+	/**
+	 * Add a tool
+	 * 
+	 * @param t
+	 *            To add
+	 */
+	public void add(ToolNode t) {
+		tools.add(t);
 	}
 
 	@Override

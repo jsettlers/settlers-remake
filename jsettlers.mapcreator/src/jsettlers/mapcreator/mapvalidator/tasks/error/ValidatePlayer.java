@@ -12,70 +12,48 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Check that all "normal" settlers are within the land of the right player
+ * Check the all player are valid
  * 
  * @author Andreas Butti
  */
-public class ValidateSettler extends AbstractValidationTask {
+public class ValidatePlayer extends AbstractValidationTask {
 
 	/**
 	 * Fix for wrong placed settlers
 	 */
-	private DeleteObjectFix fix = new DeleteObjectFix();
+	private final DeleteObjectFix fix = new DeleteObjectFix();
 
 	/**
 	 * Constructor
 	 */
-	public ValidateSettler() {
+	public ValidatePlayer() {
 	}
 
 	@Override
 	public void doTest() {
-		addHeader("settler.header", fix);
+		int playerCount = header.getMaxPlayer();
+		addHeader("player.header", fix);
 
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
 				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof MovableObject) {
-					testMoveableObject(x, y, (MovableObject) mapObject);
+				if (mapObject instanceof IPlayerable) {
+					int p = ((IPlayerable) mapObject).getPlayerId();
+					if (p >= playerCount) {
+						fix.addInvalidObject(new ShortPoint2D(x, y));
+						addErrorMessage("player.text", new ShortPoint2D(x, y));
+					}
 				}
 			}
 		}
 	}
-
-	/**
-	 * Test if this movable object is valid at this position
-	 * 
-	 * @param x
-	 *            X Pos
-	 * @param y
-	 *            Y Pos
-	 * @param movableObject
-	 *            MovableObject
-	 */
-	private void testMoveableObject(int x, int y, MovableObject movableObject) {
-		EMovableType type = movableObject.getType();
-
-		if (!type.needsPlayersGround()) {
-			// don't need player ground, so don't check it here
-			return;
-		}
-
-		if (players[x][y] != movableObject.getPlayerId()) {
-			ShortPoint2D point = new ShortPoint2D(x, y);
-			addErrorMessage("settler.wrong-land", point, Labels.getName(type), movableObject.getPlayerId(), players[x][y]);
-			fix.addInvalidObject(point);
-		}
-	}
-
 }

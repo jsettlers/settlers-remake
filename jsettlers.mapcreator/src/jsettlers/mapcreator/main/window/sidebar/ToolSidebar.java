@@ -38,7 +38,6 @@ import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
 import jsettlers.mapcreator.main.tools.ToolTreeModel;
 import jsettlers.mapcreator.presetloader.PresetLoader;
-import jsettlers.mapcreator.tools.DynamicToolBox;
 import jsettlers.mapcreator.tools.SetStartpointTool;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.ToolBox;
@@ -76,7 +75,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 	/**
 	 * Presets, Templates: Loaded from .xml file
 	 */
-	private final DynamicToolBox PRESETS = new DynamicToolBox(EditorLabels.getLabel("presets"));
+	private final ToolBox PRESETS = new ToolBox(EditorLabels.getLabel("presets"));
 
 	// @formatter:off
 	private final ToolNode TOOLBOX = new ToolBox("<toolbox root>, hidden", new ToolNode[] {
