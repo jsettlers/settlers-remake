@@ -36,32 +36,28 @@ import jsettlers.graphics.localization.Labels;
  *
  */
 public class FolderFoundPanel extends JPanel {
+
+	private static final Color NOT_FOUND_BACKGROUND_TOP = new Color(0xFFD17C);
+	private static final Color NOT_FOUND_BACKGROUND_BOTTOM = new Color(0xC06C4C);
+	private static final Color FOUND_BACKGROUND_TOP = new Color(0xA4FF92);
+	private static final Color FOUND_BACKGROUND_BOTTOM = new Color(0x4CC04E);
+
 	private static final long serialVersionUID = 1L;
 
+	private final String notFoundText = Labels.getString("select-valid-settlers-3-folder");
 	/**
 	 * Information label
 	 */
-	private final JLabel label = new JLabel(Labels.getString("select-valid-settlers-3-folder"));
+	private final JLabel label = new JLabel(notFoundText);
+	private final JButton continueButton;
 
-	/**
-	 * Gradient color top
-	 */
-	private Color background1 = new Color(0xFFD17C);
-
-	/**
-	 * Gradient color bottom
-	 */
-	private Color background2 = new Color(0xC06C4C);
+	private Color backgroundTop = NOT_FOUND_BACKGROUND_TOP;
+	private Color backgroundBottom = NOT_FOUND_BACKGROUND_BOTTOM;
 
 	/**
 	 * Folder to start
 	 */
 	private String startFolder;
-
-	/**
-	 * Start button
-	 */
-	private final JButton btContinue;
 
 	/**
 	 * Constructor
@@ -76,16 +72,16 @@ public class FolderFoundPanel extends JPanel {
 
 		add(label, BorderLayout.CENTER);
 
-		this.btContinue = new JButton(Labels.getString("button-start"));
-		btContinue.setEnabled(false);
-		btContinue.addActionListener(new ActionListener() {
+		this.continueButton = new JButton(Labels.getString("button-start"));
+		continueButton.setEnabled(false);
+		continueButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				listener.actionPerformed(new ActionEvent(this, 0, startFolder));
 			}
 		});
-		add(btContinue, BorderLayout.EAST);
+		add(continueButton, BorderLayout.EAST);
 	}
 
 	/**
@@ -95,11 +91,22 @@ public class FolderFoundPanel extends JPanel {
 	 *            Absolute path
 	 */
 	public void setFolder(String folder) {
-		background1 = new Color(0xA4FF92);
-		background2 = new Color(0x4CC04E);
+		backgroundTop = FOUND_BACKGROUND_TOP;
+		backgroundBottom = FOUND_BACKGROUND_BOTTOM;
 		label.setText(folder);
 		startFolder = folder;
-		btContinue.setEnabled(true);
+		continueButton.setEnabled(true);
+
+		repaint();
+	}
+
+	public void resetFolder() {
+		backgroundTop = NOT_FOUND_BACKGROUND_TOP;
+		backgroundBottom = NOT_FOUND_BACKGROUND_BOTTOM;
+		label.setText(notFoundText);
+		startFolder = null;
+		continueButton.setEnabled(false);
+
 		repaint();
 	}
 
@@ -108,7 +115,7 @@ public class FolderFoundPanel extends JPanel {
 		Graphics2D g = (Graphics2D) g1;
 		int w = getWidth();
 		int h = getHeight();
-		GradientPaint gp = new GradientPaint(0, 0, background1, 0, h, background2);
+		GradientPaint gp = new GradientPaint(0, 0, backgroundTop, 0, h, backgroundBottom);
 		g.setPaint(gp);
 		g.fillRect(0, 0, w, h);
 	}

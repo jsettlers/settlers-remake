@@ -53,7 +53,7 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
-import jsettlers.main.swing.foldertree.SelectSettlerFolderDialog;
+import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -117,7 +117,7 @@ public class SwingManagedJSettlers {
 			}
 			firstRun = false;
 
-			final SelectSettlerFolderDialog folderChooser = new SelectSettlerFolderDialog();
+			final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

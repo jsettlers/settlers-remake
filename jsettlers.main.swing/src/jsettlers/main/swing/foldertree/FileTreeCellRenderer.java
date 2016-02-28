@@ -23,7 +23,6 @@ import java.awt.RenderingHints;
 import java.io.File;
 
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -46,13 +45,10 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 	 * Icon to display this is a settler folder
 	 */
 	private static final Icon SETTLER_FOLDER_ICON = new Icon() {
-
 		@Override
 		public void paintIcon(Component c, Graphics g1, int x, int y) {
 			Graphics2D g = (Graphics2D) g1;
-			g.setRenderingHint(
-					RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setColor(Color.RED);
 			Polygon arrow = new Polygon();
 			arrow.addPoint(16, 8);
@@ -76,23 +72,17 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 		}
 	};
 
-	/**
-	 * Constructor
-	 */
-	public FileTreeCellRenderer() {
-	}
-
 	@Override
-	public JComponent getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row,
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
 
-		super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+		Component superResult = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
 		if (value instanceof FilesystemTreeNode) {
 			FilesystemTreeNode node = (FilesystemTreeNode) value;
 			File file = node.getFile();
 			if (file == null) {
-				return this;
+				return superResult;
 			}
 
 			setIcon(fileSystemView.getSystemIcon(file));
@@ -102,8 +92,9 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 			if (node.isSettlerFolder()) {
 				setIcon(SETTLER_FOLDER_ICON);
 			}
+			return this;
 		}
 
-		return this;
+		return superResult;
 	}
 }

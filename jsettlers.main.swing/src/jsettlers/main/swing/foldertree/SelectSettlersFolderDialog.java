@@ -50,7 +50,7 @@ import jsettlers.graphics.swing.resources.SettlerFolderChecker;
  * 
  * @author Andreas Butti
  */
-public class SelectSettlerFolderDialog extends JFrame {
+public class SelectSettlersFolderDialog extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -129,6 +129,8 @@ public class SelectSettlerFolderDialog extends JFrame {
 
 				if (ft.isSettlerFolder()) {
 					foundPanel.setFolder(ft.getFile().getAbsolutePath());
+				} else {
+					foundPanel.resetFolder();
 				}
 			}
 		}
@@ -156,7 +158,7 @@ public class SelectSettlerFolderDialog extends JFrame {
 	/**
 	 * Constructor
 	 */
-	public SelectSettlerFolderDialog() {
+	public SelectSettlersFolderDialog() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setTitle(Labels.getString("select-settlers-3-folder-header"));
 		setLayout(new BorderLayout());
@@ -201,12 +203,12 @@ public class SelectSettlerFolderDialog extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String path = JOptionPane.showInputDialog(SelectSettlerFolderDialog.this, Labels.getString("enter-path"));
+				String path = JOptionPane.showInputDialog(SelectSettlersFolderDialog.this, Labels.getString("enter-path"));
 				if (path != null) {
 					if (SettlerFolderChecker.checkSettlersFolder(path).isValidSettlersFolder()) {
 						foundPanel.setFolder(path);
 					} else {
-						JOptionPane.showMessageDialog(SelectSettlerFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",
+						JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
@@ -222,7 +224,7 @@ public class SelectSettlerFolderDialog extends JFrame {
 				try {
 					Desktop.getDesktop().browse(new URI(HELP_URL));
 				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(SelectSettlerFolderDialog.this, Labels.getString("error-open-url") + ": " + HELP_URL);
+					JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("error-open-url") + ": " + HELP_URL);
 				}
 			}
 		});
@@ -277,7 +279,7 @@ public class SelectSettlerFolderDialog extends JFrame {
 		} catch (Exception e) {
 		}
 
-		SelectSettlerFolderDialog dlg = new SelectSettlerFolderDialog();
+		SelectSettlersFolderDialog dlg = new SelectSettlersFolderDialog();
 		dlg.setVisible(true);
 	}
 
