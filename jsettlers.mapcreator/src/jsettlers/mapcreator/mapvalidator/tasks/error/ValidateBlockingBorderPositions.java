@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,75 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.tools;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.mapvalidator.result.fix.FreeBorderFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
- * Tool list with dynamic content
+ * Check if all border positions are blocking
  * 
  * @author Andreas Butti
  *
  */
-public class DynamicToolBox extends ToolBox {
-
-	/**
-	 * Tools
-	 */
-	private final List<ToolNode> tools = new ArrayList<>();
+public class ValidateBlockingBorderPositions extends AbstractValidationTask {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param name
-	 *            Name of the node
 	 */
-	public DynamicToolBox(String name) {
-		super(name, null);
+	public ValidateBlockingBorderPositions() {
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param name
-	 *            Name of the node
-	 * @param tools
-	 *            Array with the tools
-	 */
-	public DynamicToolBox(String name, ToolNode[] tools) {
-		super(name, null);
+	@Override
+	public void doTest() {
+		FreeBorderFix fix = new FreeBorderFix();
+		addHeader("blockingborder.header", fix);
 
-		for (ToolNode t : tools) {
-			this.tools.add(t);
+		int width = data.getWidth();
+		int height = data.getHeight();
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (1 <= y && y < height - 2 && 1 <= x && x < width - 2) {
+					continue;
+				}
+
+				if (!data.getLandscape(x, y).isBlocking) {
+					ShortPoint2D p = new ShortPoint2D(x, y);
+					addErrorMessage("blockingborder.at-position", p, x, y);
+					fix.addPosition(p);
+				}
+			}
 		}
 	}
 
-	@Override
-	public ToolNode getTool(int index) {
-		return tools.get(index);
-	}
-
-	@Override
-	public int getToolLength() {
-		return tools.size();
-	}
-
-	/**
-	 * Add a tool
-	 * 
-	 * @param t
-	 *            To add
-	 */
-	public void add(ToolNode t) {
-		tools.add(t);
-	}
-
-	@Override
-	public Icon getIcon() {
-		// use default icon
-		return null;
-	}
 }

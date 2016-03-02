@@ -17,8 +17,8 @@ package jsettlers.mapcreator.data.objects;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
@@ -28,7 +28,7 @@ import jsettlers.common.selectable.ESelectionType;
 public class MovableObjectContainer implements ObjectContainer, IMovable {
 
 	private final MovableObject movableObject;
-	private ShortPoint2D pos;
+	private final ShortPoint2D pos;
 
 	public MovableObjectContainer(MovableObject movableObject, int x, int y) {
 		this.movableObject = movableObject;

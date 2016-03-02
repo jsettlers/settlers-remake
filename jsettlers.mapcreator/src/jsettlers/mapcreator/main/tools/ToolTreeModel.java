@@ -30,8 +30,17 @@ import jsettlers.mapcreator.tools.ToolNode;
  */
 public class ToolTreeModel implements TreeModel {
 
+	/**
+	 * Root node
+	 */
 	private final ToolNode root;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param root
+	 *            Root node
+	 */
 	public ToolTreeModel(ToolNode root) {
 		this.root = root;
 	}

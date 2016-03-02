@@ -27,17 +27,26 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 
+/**
+ * Display player diagram
+ */
 public class PlayerDiagram extends JPanel {
+	private static final long serialVersionUID = 1L;
+
 	private static final int IMAGE_HEIGHT = 300;
-	/**
-     * 
-     */
-	private static final long serialVersionUID = 7407475056117799112L;
 	private static final int WATCHED_DISTANCE = 300;
 	private static final int TYPE_COUNT = 2;
 	private final int[][] founds;
 	private final int[] polylinex = new int[WATCHED_DISTANCE];
 
+	/**
+	 * Constructor
+	 * 
+	 * @param data
+	 *            Map data to display
+	 * @param player
+	 *            Player
+	 */
 	public PlayerDiagram(MapData data, int player) {
 		ShortPoint2D start = data.getStartPoint(player);
 		int startx = start.x;
@@ -102,18 +111,21 @@ public class PlayerDiagram extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		((Graphics2D) g).scale(1, -1);
-		((Graphics2D) g).translate(0, -IMAGE_HEIGHT);
-
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, WATCHED_DISTANCE * 2, IMAGE_HEIGHT);
 
 		g.setColor(Color.DARK_GRAY);
+		g.drawString("Stones", 50, 30);
+		g.setColor(Color.GREEN);
+		g.drawString("Trees", 50, 45);
+
+		((Graphics2D) g).scale(1, -1);
+		((Graphics2D) g).translate(0, -IMAGE_HEIGHT);
+
+		g.setColor(Color.DARK_GRAY);
 		g.drawPolyline(polylinex, founds[1], WATCHED_DISTANCE);
-		g.drawString("Stones", WATCHED_DISTANCE * 2 - 100, IMAGE_HEIGHT - 20);
 
 		g.setColor(Color.GREEN);
 		g.drawPolyline(polylinex, founds[0], WATCHED_DISTANCE);
-		g.drawString("Trees", WATCHED_DISTANCE * 2 - 100, IMAGE_HEIGHT - 30);
 	}
 }

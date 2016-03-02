@@ -12,35 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
-
-import jsettlers.common.position.ShortPoint2D;
+package jsettlers.mapcreator.mapvalidator;
 
 /**
- * Validate all players start position
+ * Some special error marker for special cases
  * 
  * @author Andreas Butti
+ *
  */
-public class ValidatePlayerStartPosition extends AbstractValidationTask {
+public final class ErrorMarker {
+
+	private ErrorMarker() {
+	}
 
 	/**
-	 * Constructor
+	 * This marker is used to open the description dialog
 	 */
-	public ValidatePlayerStartPosition() {
-	}
+	public static final String DESCRIPTION_MARKER = "ValidateDescription.DESCRIPTION_MARKER";
 
-	@Override
-	public void doTest() {
-		addHeader("playerstart.header", null /* no autofix possible */);
-
-		for (int player = 0; player < data.getPlayerCount(); player++) {
-			ShortPoint2D point = data.getStartPoint(player);
-			if (players[point.x][point.y] != player) {
-				addErrorMessage("playerstart.text", point, player);
-			}
-			// mark
-			borders[point.x][point.y] = true;
-		}
-	}
-
+	/**
+	 * This marker is for general missing objects, e.g. no stones on the Map
+	 */
+	public static final String MISSING_LIFE_RESOURCE = "ErrorMarker.NO_LIFE_RESOURCE";
 }

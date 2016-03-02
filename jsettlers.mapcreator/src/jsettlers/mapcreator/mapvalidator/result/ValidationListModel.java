@@ -31,6 +31,11 @@ public class ValidationListModel extends DefaultListModel<AbstractErrorEntry> {
 	private int errorCount;
 
 	/**
+	 * Warning count without header
+	 */
+	private int warningCount;
+
+	/**
 	 * Constructor
 	 */
 	public ValidationListModel() {
@@ -42,10 +47,23 @@ public class ValidationListModel extends DefaultListModel<AbstractErrorEntry> {
 	public void prepareToDisplay() {
 		errorCount = 0;
 		for (int i = 0; i < getSize(); i++) {
-			if (getElementAt(i) instanceof ErrorEntry) {
-				errorCount++;
+			AbstractErrorEntry element = getElementAt(i);
+			if (element instanceof ErrorEntry) {
+				ErrorEntry e = (ErrorEntry) element;
+				if (e.isError()) {
+					errorCount++;
+				} else {
+					warningCount++;
+				}
 			}
 		}
+	}
+
+	/**
+	 * @return Warning count without header
+	 */
+	public int getWarningCount() {
+		return warningCount;
 	}
 
 	/**

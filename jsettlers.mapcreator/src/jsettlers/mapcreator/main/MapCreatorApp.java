@@ -17,6 +17,7 @@ package jsettlers.mapcreator.main;
 import java.io.File;
 
 import javax.swing.JFrame;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -47,6 +48,8 @@ public class MapCreatorApp {
 					break;
 				}
 			}
+
+			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 		} catch (Exception e) {
 			// could not be loaded, ignore error
 		}

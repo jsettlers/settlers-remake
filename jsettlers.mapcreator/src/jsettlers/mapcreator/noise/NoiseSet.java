@@ -14,18 +14,42 @@
  *******************************************************************************/
 package jsettlers.mapcreator.noise;
 
+/**
+ * Part of the noise generator
+ * 
+ * @author Andreas Butti
+ */
 public class NoiseSet {
 
-	private int prime1;
-	private int prime2;
-	private int prime3;
+	private final int prime1;
+	private final int prime2;
+	private final int prime3;
 
-	public NoiseSet(int prime1, int prime2, int prim3) {
+	/**
+	 * Constructor
+	 * 
+	 * @param prime1
+	 *            prime 1
+	 * @param prime2
+	 *            prime 2
+	 * @param prime3
+	 *            prime 3
+	 */
+	public NoiseSet(int prime1, int prime2, int prime3) {
 		this.prime1 = prime1;
 		this.prime2 = prime2;
-		this.prime3 = prim3;
+		this.prime3 = prime3;
 	}
 
+	/**
+	 * Get noise value for Position
+	 * 
+	 * @param x
+	 *            X Pos
+	 * @param y
+	 *            Y pos
+	 * @return Value
+	 */
 	public float getInterpolated(float x, float y) {
 		int intx = (int) x;
 		int inty = (int) y;
@@ -49,16 +73,11 @@ public class NoiseSet {
 		return start * (1 - f) + end * f;
 	}
 
-	public float getSmoothNoise(int x, int y) {
+	private float getSmoothNoise(int x, int y) {
 		// smooth corners:
-		float cornerSum =
-				getNoise(x - 1, y - 1) + getNoise(x + 1, y - 1)
-						+ getNoise(x - 1, y + 1) + getNoise(x + 1, y + 1);
-		float edgeSum =
-				getNoise(x, y - 1) + getNoise(x + 1, y)
-						+ getNoise(x, y + 1) + getNoise(x - 1, y);
-		return getNoise(x, y) * .25f + edgeSum / 4 * .5f + cornerSum / 4
-				* .25f;
+		float cornerSum = getNoise(x - 1, y - 1) + getNoise(x + 1, y - 1) + getNoise(x - 1, y + 1) + getNoise(x + 1, y + 1);
+		float edgeSum = getNoise(x, y - 1) + getNoise(x + 1, y) + getNoise(x, y + 1) + getNoise(x - 1, y);
+		return getNoise(x, y) * .25f + edgeSum / 4 * .5f + cornerSum / 4 * .25f;
 	}
 
 	private float getNoise(int x, int y) {
