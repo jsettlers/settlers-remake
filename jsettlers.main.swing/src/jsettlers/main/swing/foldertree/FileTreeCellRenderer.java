@@ -39,7 +39,7 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 	/**
 	 * Filesystem view
 	 */
-	private final FileSystemView fileSystemView = FileSystemView.getFileSystemView();
+	private static final FileSystemView fileSystemView = FileSystemView.getFileSystemView();
 
 	/**
 	 * Icon to display this is a settler folder
