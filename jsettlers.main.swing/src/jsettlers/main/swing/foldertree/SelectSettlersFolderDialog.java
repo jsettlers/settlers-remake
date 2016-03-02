@@ -66,7 +66,7 @@ public class SelectSettlersFolderDialog extends JFrame {
 	/**
 	 * Help URL: TODO Enter a valid help URL!
 	 */
-	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/wiki";
+	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/blob/master/README.md";
 
 	/**
 	 * Listener for the Path panel

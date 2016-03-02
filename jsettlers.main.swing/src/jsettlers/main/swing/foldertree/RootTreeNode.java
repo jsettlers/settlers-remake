@@ -66,7 +66,7 @@ public class RootTreeNode extends FilesystemTreeNode {
 	}
 
 	/**
-	 * Does the loading task asynchron
+	 * Does the loading task asynchronously
 	 * 
 	 * @param node
 	 *            Node to load
