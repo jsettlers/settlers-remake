@@ -117,7 +117,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateResources());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -130,7 +130,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateResources());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -143,7 +143,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateResources());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -156,7 +156,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateResources());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -171,7 +171,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidatePlayerStartPosition());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -186,7 +186,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidatePlayerStartPosition());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -201,7 +201,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBlockingBorderPositions());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -216,7 +216,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBlockingBorderPositions());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -232,7 +232,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -248,7 +248,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -264,7 +264,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -280,7 +280,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -295,7 +295,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -310,7 +310,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -329,7 +329,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -348,7 +348,7 @@ public class ValidationTest {
 		// preparation
 		tasks.add(new ValidateDrawBuildingCircle());
 		tasks.add(new ValidateBuildings());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -365,7 +365,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateLandscape());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -382,7 +382,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateLandscape());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -399,7 +399,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateLandscape());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);
@@ -416,7 +416,7 @@ public class ValidationTest {
 
 		List<AbstractValidationTask> tasks = new ArrayList<>();
 		tasks.add(new ValidateLandscape());
-		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, tasks);
+		ValidatorRunnable validator = new ValidatorRunnable(resultListener, map, null, tasks);
 		validator.run();
 
 		assertNotNull(resultListener.list);

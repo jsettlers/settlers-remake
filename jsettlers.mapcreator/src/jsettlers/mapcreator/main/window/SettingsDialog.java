@@ -39,11 +39,13 @@ public abstract class SettingsDialog extends AbstractOkCancelDialog {
 	/**
 	 * Original map header
 	 */
-	private MapFileHeader header;
+	private final MapFileHeader header;
 
 	/**
 	 * Constructor
 	 * 
+	 * @param parent
+	 *            Parent to center the dialog on
 	 * @param header
 	 *            Header to edit
 	 */

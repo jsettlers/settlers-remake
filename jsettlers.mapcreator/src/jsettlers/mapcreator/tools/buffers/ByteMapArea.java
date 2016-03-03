@@ -19,14 +19,21 @@ import java.util.Iterator;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
 
+/**
+ * This class represents a two dimensional array, used as helper class for editing tools
+ * 
+ * @author Andreas Butti
+ */
 public class ByteMapArea implements IMapArea {
-	/**
-     * 
-     */
-	private static final long serialVersionUID = 882939657993150266L;
-
+	private static final long serialVersionUID = 1L;
 	private final byte[][] status;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param status
+	 *            Byte map
+	 */
 	public ByteMapArea(byte[][] status) {
 		this.status = status;
 	}

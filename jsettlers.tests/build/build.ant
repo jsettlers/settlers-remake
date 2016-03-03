@@ -167,7 +167,7 @@
 	</target>
 
 	<target name="autoReplayIT" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
@@ -178,7 +178,7 @@
 	</target>
 
 	<target name="replayValidationIT" depends="build">
-			<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+			<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
 				<formatter type="brief" usefile="false" />
 				<classpath refid="jsettlers.tests.classpath" />
 
@@ -189,7 +189,7 @@
 	</target>
 	
 	<target name="aiDifficultiesIT" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 

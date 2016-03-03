@@ -17,8 +17,9 @@ package jsettlers.ai.highlevel;
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.army.LooserGeneral;
 import jsettlers.ai.army.WinnerGeneral;
+import jsettlers.ai.economy.AdaptableEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.economy.LooserEconomyMinister;
+import jsettlers.ai.economy.MiddleEconomyMinister;
 import jsettlers.ai.economy.WinnerEconomyMinister;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
@@ -37,16 +38,17 @@ public class WhatToDoAiFactory {
 			ITaskScheduler
 					taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
-		EconomyMinister minister = determineMinister(type, civilisation);
+		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation) {
-		//TODO: use civilisation to determine different ministers when there is more than ROMAN
-		if (type == EPlayerType.AI_EASY || type == EPlayerType.AI_VERY_HARD) {
+	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
+		if (type == EPlayerType.AI_VERY_EASY) {
+			return new AdaptableEconomyMinister(aiStatistics, player);
+		} else if (type == EPlayerType.AI_VERY_HARD) {
 			return new WinnerEconomyMinister();
 		}
-		return new LooserEconomyMinister();
+		return new MiddleEconomyMinister();
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,

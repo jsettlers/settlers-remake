@@ -12,13 +12,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeFader;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.fix.InvalidLandscapeFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
  * Test landscape height and constelation

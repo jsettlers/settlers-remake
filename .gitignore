@@ -22,3 +22,4 @@ logs
 /jsettlers.main.swing/config.prp
 /jsettlers.mapcreator/config.prp
 /jsettlers.common/resources/last-used.properties
+/jsettlers.graphics.androidui/gen/jsettlers/graphics/androidui/BuildConfig.java

@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.original;
 
-import java.util.List;
-import java.util.Vector;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -24,8 +21,6 @@ import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;

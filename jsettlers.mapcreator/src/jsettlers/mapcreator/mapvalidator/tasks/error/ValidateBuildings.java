@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -24,6 +24,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
+import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
 
 /**
  * Validate all buildings, check player, ground and position

@@ -18,21 +18,28 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.ToolBox;
-import jsettlers.mapcreator.tools.ToolNode;
 import jsettlers.mapcreator.tools.objects.PlaceStackTool;
 
+/**
+ * Tree folder with sub elements to place <code>type</code> from 0 ... <code>maxcount</code>
+ * 
+ * @author Andreas Butti
+ */
 public class PlaceStackToolbox extends ToolBox {
 
+	/**
+	 * Constructor
+	 * 
+	 * @param type
+	 *            Type to place
+	 * @param maxcount
+	 *            max count
+	 */
 	public PlaceStackToolbox(EMaterialType type, int maxcount) {
-		super(String.format(EditorLabels.getLabel("place_stacks"), Labels.getName(type, true)), getToolArray(type, maxcount));
-	}
+		super(String.format(EditorLabels.getLabel("place_stacks"), Labels.getName(type, true)));
 
-	private static ToolNode[] getToolArray(EMaterialType type, int maxcount) {
-		ToolNode[] tools = new ToolNode[maxcount];
 		for (int i = 0; i < maxcount; i++) {
-			tools[i] = new PlaceStackTool(type, i + 1);
+			add(new PlaceStackTool(type, i + 1));
 		}
-		return tools;
 	}
-
 }

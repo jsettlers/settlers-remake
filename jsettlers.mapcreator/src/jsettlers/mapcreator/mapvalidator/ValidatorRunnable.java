@@ -17,16 +17,20 @@ package jsettlers.mapcreator.mapvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateBlockingBorderPositions;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateBuildings;
 import jsettlers.mapcreator.mapvalidator.tasks.ValidateDrawBuildingCircle;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateLandscape;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidatePlayerStartPosition;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateResources;
-import jsettlers.mapcreator.mapvalidator.tasks.ValidateSettler;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateBlockingBorderPositions;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateBuildings;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateLandscape;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayer;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidatePlayerStartPosition;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateResources;
+import jsettlers.mapcreator.mapvalidator.tasks.error.ValidateSettler;
+import jsettlers.mapcreator.mapvalidator.tasks.warning.ValidateDescription;
+import jsettlers.mapcreator.mapvalidator.tasks.warning.ValidateMinumumLifeResources;
 
 /**
  * The validation runnable running in the thread queue
@@ -38,17 +42,17 @@ public class ValidatorRunnable implements Runnable {
 	/**
 	 * List with the errors
 	 */
-	private ValidationList list = new ValidationList();
+	private final ValidationList list = new ValidationList();
 
 	/**
 	 * Listener for validation result
 	 */
-	private ValidationResultListener resultListener;
+	private final ValidationResultListener resultListener;
 
 	/**
 	 * Validation tasks
 	 */
-	private List<AbstractValidationTask> tasks = new ArrayList<>();
+	private final List<AbstractValidationTask> tasks = new ArrayList<>();
 
 	/**
 	 * Map to check
@@ -66,16 +70,24 @@ public class ValidatorRunnable implements Runnable {
 	protected boolean[][] borders;
 
 	/**
+	 * Map header
+	 */
+	private final MapFileHeader header;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param resultListener
 	 *            Listener for validation result
 	 * @param data
 	 *            Map to check
+	 * @param header
+	 *            Map header
 	 */
-	public ValidatorRunnable(ValidationResultListener resultListener, MapData data) {
+	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, MapFileHeader header) {
 		this.resultListener = resultListener;
 		this.data = data;
+		this.header = header;
 
 		// keep order, will be executed in this order
 		registerTask(new ValidateBlockingBorderPositions());
@@ -85,6 +97,11 @@ public class ValidatorRunnable implements Runnable {
 		registerTask(new ValidateLandscape());
 		registerTask(new ValidateResources());
 		registerTask(new ValidatePlayerStartPosition());
+		registerTask(new ValidatePlayer());
+
+		// warnings
+		registerTask(new ValidateDescription());
+		registerTask(new ValidateMinumumLifeResources());
 	}
 
 	/**
@@ -94,12 +111,15 @@ public class ValidatorRunnable implements Runnable {
 	 *            Listener for validation result
 	 * @param data
 	 *            Map to check
+	 * @param header
+	 *            Map header
 	 * @param tasks
 	 *            Tasks to execute
 	 */
-	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, List<AbstractValidationTask> tasks) {
+	public ValidatorRunnable(ValidationResultListener resultListener, MapData data, MapFileHeader header, List<AbstractValidationTask> tasks) {
 		this.resultListener = resultListener;
 		this.data = data;
+		this.header = header;
 
 		for (AbstractValidationTask t : tasks) {
 			registerTask(t);
@@ -129,6 +149,7 @@ public class ValidatorRunnable implements Runnable {
 	private void registerTask(AbstractValidationTask task) {
 		tasks.add(task);
 		task.setData(data);
+		task.setHeader(header);
 		task.setList(list);
 	}
 

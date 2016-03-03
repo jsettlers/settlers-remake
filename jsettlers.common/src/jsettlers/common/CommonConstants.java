@@ -21,7 +21,7 @@ public abstract class CommonConstants {
 	public static final int FOG_OF_WAR_EXPLORED = 50;
 
 	public static final short TOWER_RADIUS = 40;
-	public static final int MAX_PLAYERS = 16;
+	public static final int MAX_PLAYERS = 32;
 
 	/**
 	 * If true, all players of a map will always be positioned on startup.

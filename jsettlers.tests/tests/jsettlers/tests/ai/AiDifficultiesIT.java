@@ -16,7 +16,6 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -51,18 +50,17 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 70 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 60 * MINUTES);
 	}
 
-	@Ignore
 	@Test
 	public void hardShouldConquerEasy() {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 60 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 70 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 70 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 80 * MINUTES);
 	}
 
 	@Test
