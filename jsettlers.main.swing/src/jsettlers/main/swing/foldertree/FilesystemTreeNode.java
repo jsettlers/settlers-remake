@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 
 import jsettlers.graphics.swing.resources.SettlersFolderChecker;
@@ -41,17 +42,12 @@ public class FilesystemTreeNode implements TreeNode {
 	/**
 	 * If this is a settler folder
 	 */
-	private boolean settlerFolder = false;
+	private boolean settlersFolder = false;
 
 	/**
 	 * To expand the node on the first selection
 	 */
 	private boolean wasExpanded = false;
-
-	/**
-	 * Tmp loaded child list
-	 */
-	private final List<FilesystemTreeNode> list = new ArrayList<>();
 
 	/**
 	 * Current child list
@@ -107,8 +103,7 @@ public class FilesystemTreeNode implements TreeNode {
 	private void loadChildren() {
 		RootTreeNode root = findRoot();
 		if (root == null) {
-			loadChildren1();
-			applyLoadedChildren();
+			this.children = loadChildrenNodes();
 		} else {
 			root.loadAsynchron(this);
 		}
@@ -132,8 +127,8 @@ public class FilesystemTreeNode implements TreeNode {
 	/**
 	 * @return if this is a settler folder
 	 */
-	public boolean isSettlerFolder() {
-		return settlerFolder;
+	public boolean isSettlersFolder() {
+		return settlersFolder;
 	}
 
 	/**
@@ -170,31 +165,38 @@ public class FilesystemTreeNode implements TreeNode {
 	 */
 	public void add(FilesystemTreeNode node) {
 		children.add(node);
+		node.setParent(this);
 	}
 
 	/**
-	 * Load the children to a tmp attribute, **this is the only one method which is called from another thread**
+	 * Load the children to a tmp attribute
+	 * 
+	 * @return **
 	 */
-	public void loadChildren1() {
+	public List<FilesystemTreeNode> loadChildrenNodes() {
 		if (file == null) {
-			return;
+			return Collections.emptyList();
 		}
 
 		if (!file.isDirectory()) {
-			return;
+			return Collections.emptyList();
 		}
 
 		File[] files = file.listFiles();
 		if (files == null) {
-			return;
+			return Collections.emptyList();
 		}
 
 		boolean snd = false;
 		boolean gfx = false;
 
+		List<FilesystemTreeNode> list = new ArrayList<FilesystemTreeNode>();
+
 		for (File f : files) {
 			if (f.isDirectory()) {
-				list.add(new FilesystemTreeNode(f));
+				FilesystemTreeNode node = new FilesystemTreeNode(f);
+				list.add(node);
+				node.setParent(this);
 				if ("gfx".equalsIgnoreCase(f.getName())) {
 					gfx = true;
 				} else if ("snd".equalsIgnoreCase(f.getName())) {
@@ -204,25 +206,31 @@ public class FilesystemTreeNode implements TreeNode {
 		}
 
 		if (snd && gfx) {
-			settlerFolder = SettlersFolderChecker.checkSettlersFolder(file.getAbsolutePath()).isValidSettlersFolder();
+			settlersFolder = SettlersFolderChecker.checkSettlersFolder(file.getAbsolutePath()).isValidSettlersFolder();
 		} else {
-			settlerFolder = false;
+			settlersFolder = false;
 		}
 
 		Collections.sort(list, new Comparator<FilesystemTreeNode>() {
-
 			@Override
 			public int compare(FilesystemTreeNode o1, FilesystemTreeNode o2) {
 				return o1.getFile().getName().compareTo(o2.getFile().getName());
 			}
 		});
+
+		return list;
 	}
 
-	/**
-	 * Apply the loaded children
-	 */
-	public void applyLoadedChildren() {
-		children = list;
+	public void loadChildrenNodesAsync() {
+		final List<FilesystemTreeNode> childrenNodes = this.loadChildrenNodes();
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				FilesystemTreeNode.this.children = childrenNodes;
+				findRoot().nodeStructureChanged(FilesystemTreeNode.this);
+			}
+		});
 	}
 
 	@Override
@@ -273,5 +281,4 @@ public class FilesystemTreeNode implements TreeNode {
 			}
 		};
 	}
-
 }

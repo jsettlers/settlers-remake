@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.TreeExpansionEvent;
@@ -127,7 +128,7 @@ public class SelectSettlersFolderDialog extends JFrame {
 					tree.expandPath(path);
 				}
 
-				if (ft.isSettlerFolder()) {
+				if (ft.isSettlersFolder()) {
 					foundPanel.setFolder(ft.getFile().getAbsolutePath());
 				} else {
 					foundPanel.resetFolder();
@@ -176,7 +177,6 @@ public class SelectSettlersFolderDialog extends JFrame {
 		initTree();
 
 		add(new JScrollPane(tree), BorderLayout.CENTER);
-
 		add(foundPanel, BorderLayout.SOUTH);
 
 		setSize(750, 640);
@@ -249,17 +249,25 @@ public class SelectSettlersFolderDialog extends JFrame {
 			root.add(new FilesystemTreeNode(f));
 		}
 
+		System.err.println(root + "  " + root.getChildCount());
 		model = new DefaultTreeModel(root);
 
 		// to fire change event when the loading is finished
 		root.setModel(model);
 		tree = new JTree(model);
+
 		tree.addTreeSelectionListener(selectionListener);
 		tree.addTreeExpansionListener(expansionListener);
-		tree.setCellRenderer(new FileTreeCellRenderer());
-		tree.setRootVisible(false);
-		tree.expandRow(0);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.expandRow(0);
+		tree.setRootVisible(false);
+
+		SwingUtilities.invokeLater(new Runnable() { // this invoke later prevents an out of bounds exception in the tree
+			@Override
+			public void run() {
+				tree.setCellRenderer(new FileTreeCellRenderer());
+			}
+		});
 	}
 
 	/**

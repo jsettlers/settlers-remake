@@ -89,7 +89,7 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 			setText(fileSystemView.getSystemDisplayName(file));
 			setToolTipText(file.getPath());
 
-			if (node.isSettlerFolder()) {
+			if (node.isSettlersFolder()) {
 				setIcon(SETTLER_FOLDER_ICON);
 			}
 			return this;
