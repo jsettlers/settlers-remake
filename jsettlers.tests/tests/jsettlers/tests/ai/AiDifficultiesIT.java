@@ -25,6 +25,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
@@ -67,10 +68,10 @@ public class AiDifficultiesIT {
 	@Test
 	public void verHardShouldProduceCertainAmountOfSoldiersWithin75Minutes() {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
-		playerSettings[0] = new PlayerSetting(true, EPlayerType.AI_VERY_HARD);
-		playerSettings[1] = new PlayerSetting(false);
-		playerSettings[2] = new PlayerSetting(false);
-		playerSettings[3] = new PlayerSetting(false);
+		playerSettings[0] = new PlayerSetting(true, EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[1] = new PlayerSetting(false, (byte) -1);
+		playerSettings[2] = new PlayerSetting(false, (byte) -1);
+		playerSettings[3] = new PlayerSetting(false, (byte) -1);
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
@@ -89,10 +90,10 @@ public class AiDifficultiesIT {
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
-		playerSettings[0] = new PlayerSetting(true, expectedLooser);
-		playerSettings[1] = new PlayerSetting(true, expectedWinner);
-		playerSettings[2] = new PlayerSetting(false);
-		playerSettings[3] = new PlayerSetting(false);
+		playerSettings[0] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[1] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 1);
+		playerSettings[2] = new PlayerSetting(false, (byte) -1);
+		playerSettings[3] = new PlayerSetting(false, (byte) -1);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);

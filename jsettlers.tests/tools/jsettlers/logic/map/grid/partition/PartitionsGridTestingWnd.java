@@ -37,6 +37,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
+import jsettlers.logic.player.PlayerSetting;
 
 public class PartitionsGridTestingWnd {
 
@@ -70,17 +71,18 @@ public class PartitionsGridTestingWnd {
 	private final PartitionsGrid grid;
 
 	private PartitionsGridTestingWnd() {
-		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, new IPartitionsGridBlockingProvider() {
+		this.grid = new PartitionsGrid(WIDTH, HEIGHT, PlayerSetting.createDefaultSettings((byte) 0, (byte) 10),
+				new IPartitionsGridBlockingProvider() {
 
-			@Override
-			public boolean isBlocked(int x, int y) {
-				return blockedGrid.get(x + y * WIDTH);
-			}
+					@Override
+					public boolean isBlocked(int x, int y) {
+						return blockedGrid.get(x + y * WIDTH);
+					}
 
-			@Override
-			public void registerBlockingChangedListener(IBlockingChangedListener listener) {
-			}
-		});
+					@Override
+					public void registerBlockingChangedListener(IBlockingChangedListener listener) {
+					}
+				});
 	}
 
 	private void startTest() {
