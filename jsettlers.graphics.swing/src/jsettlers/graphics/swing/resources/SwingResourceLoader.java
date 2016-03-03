@@ -19,8 +19,8 @@ import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.swing.resources.SettlersFolderChecker.SettlersFoldersResult;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -37,16 +37,12 @@ public class SwingResourceLoader {
 	}
 
 	public static void setupGraphicsAndSoundResources(ConfigurationPropertiesFile configFile) throws IOException {
-		testConfig(configFile);
+		SettlersFoldersResult settlersFoldersResult = testSettlersFolderConfig(configFile);
 
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		for (String gfxFolder : configFile.getGfxFolders()) {
-			imageProvider.addLookupPath(new File(gfxFolder));
-		}
+		imageProvider.addLookupPath(settlersFoldersResult.gfxFolder);
 
-		for (String sndFolder : configFile.getSndFolders()) {
-			SoundManager.addLookupPath(new File(sndFolder));
-		}
+		SoundManager.addLookupPath(settlersFoldersResult.sndFolder);
 
 		imageProvider.startPreloading();
 	}
@@ -55,28 +51,31 @@ public class SwingResourceLoader {
 		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesDirectory(), configFile.getOriginalMapsDirectory()));
 	}
 
-	private static void testConfig(ConfigurationPropertiesFile cf)
+	private static SettlersFoldersResult testSettlersFolderConfig(ConfigurationPropertiesFile configFile)
 			throws IOException {
-		if (!isResourceDir(cf.getResourcesDirectory())) {
-			throw new IOException("Not a resources folder: " + cf.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
+		if (!isResourceDir(configFile.getResourcesDirectory())) {
+			throw new IOException("Not a resources folder: " + configFile.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
 		}
 
-		boolean hasSndDir = false;
-		boolean hasGfxDir = false;
-
-		for (String sndFolder : cf.getSndFolders()) {
-			hasSndDir = hasSndDir || new File(sndFolder, "Siedler3_00.dat").exists();
-		}
-
-		for (String gfxFolder : cf.getGfxFolders()) {
-			for (DatFileType t : DatFileType.values()) {
-				hasGfxDir = hasGfxDir || new File(gfxFolder, "siedler3_00" + t.getFileSuffix()).exists();
+		SettlersFoldersResult settlersFoldersResult = SettlersFolderChecker.checkSettlersFolder(configFile.getSettlersFolderValue());
+		if (!settlersFoldersResult.isValidSettlersFolder()) {
+			StringBuilder err = new StringBuilder();
+			if (settlersFoldersResult.gfxFolder == null) {
+				err.append("graphics (GFX) folder not found / empty");
 			}
+
+			if (settlersFoldersResult.sndFolder != null) {
+				if (err.length() != 0) {
+					err.append(" and ");
+				}
+
+				err.append("sound (SND) folder not found / empty");
+			}
+
+			throw new InvalidSettlersDirectoryException(err.toString());
 		}
 
-		if (!hasSndDir || !hasGfxDir) {
-			throw new InvalidSettlersDirectoryException(cf.getSndFolders(), cf.getGfxFolders(), true);
-		}
+		return settlersFoldersResult;
 	}
 
 	private static boolean isResourceDir(File dir) {
