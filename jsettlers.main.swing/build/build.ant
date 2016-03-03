@@ -17,8 +17,8 @@
     <property name="jsettlers.network.location" value="../jsettlers.network"/>
     <property name="jsettlers.logic.location" value="../jsettlers.logic"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.7"/>
-    <property name="source" value="1.7"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
     <path id="go.graphics.classpath">
         <pathelement location="${go.graphics.location}/bin"/>
     </path>
