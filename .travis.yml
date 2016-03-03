@@ -15,3 +15,11 @@ env:
   - TARGET=runReplayValidationIT
 
 script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
+
+
+matrix:
+  exclude:
+    - jdk: oraclejdk7
+      env: TARGET=buildSwing
+    - jdk: openjdk7
+      env: TARGET=buildSwing
