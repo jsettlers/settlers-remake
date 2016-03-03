@@ -24,9 +24,8 @@ public interface IPathPanelListener {
 	/**
 	 * Jump to a path
 	 * 
-	 * @param pathToJumpTo
-	 *            The path
+	 * @param newPath
+	 *            The new path
 	 */
-	void jumpTo(Object[] pathToJumpTo);
-
+	void pathChanged(Object[] newPath);
 }

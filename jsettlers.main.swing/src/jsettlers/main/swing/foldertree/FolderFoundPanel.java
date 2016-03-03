@@ -45,18 +45,12 @@ public class FolderFoundPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private final String notFoundText = Labels.getString("select-valid-settlers-3-folder");
-	/**
-	 * Information label
-	 */
-	private final JLabel label = new JLabel(notFoundText);
+	private final JLabel informationLabel = new JLabel(notFoundText);
 	private final JButton continueButton;
 
 	private Color backgroundTop = NOT_FOUND_BACKGROUND_TOP;
 	private Color backgroundBottom = NOT_FOUND_BACKGROUND_BOTTOM;
 
-	/**
-	 * Folder to start
-	 */
 	private String startFolder;
 
 	/**
@@ -70,12 +64,11 @@ public class FolderFoundPanel extends JPanel {
 		setLayout(new BorderLayout());
 		setOpaque(true);
 
-		add(label, BorderLayout.CENTER);
+		add(informationLabel, BorderLayout.CENTER);
 
 		this.continueButton = new JButton(Labels.getString("button-start"));
 		continueButton.setEnabled(false);
 		continueButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				listener.actionPerformed(new ActionEvent(this, 0, startFolder));
@@ -93,7 +86,7 @@ public class FolderFoundPanel extends JPanel {
 	public void setFolder(String folder) {
 		backgroundTop = FOUND_BACKGROUND_TOP;
 		backgroundBottom = FOUND_BACKGROUND_BOTTOM;
-		label.setText(folder);
+		informationLabel.setText(folder);
 		startFolder = folder;
 		continueButton.setEnabled(true);
 
@@ -103,7 +96,7 @@ public class FolderFoundPanel extends JPanel {
 	public void resetFolder() {
 		backgroundTop = NOT_FOUND_BACKGROUND_TOP;
 		backgroundBottom = NOT_FOUND_BACKGROUND_BOTTOM;
-		label.setText(notFoundText);
+		informationLabel.setText(notFoundText);
 		startFolder = null;
 		continueButton.setEnabled(false);
 

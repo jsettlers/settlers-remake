@@ -23,6 +23,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URI;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -54,6 +57,17 @@ import jsettlers.graphics.swing.resources.SettlersFolderChecker;
 public class SelectSettlersFolderDialog extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/blob/master/README.md";
+
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread thread = new Thread(r, "fs-loader-thread");
+			thread.setDaemon(true);
+			return thread;
+		}
+	});
+
 	/**
 	 * Tree model
 	 */
@@ -65,28 +79,17 @@ public class SelectSettlersFolderDialog extends JFrame {
 	private JTree tree;
 
 	/**
-	 * Help URL: TODO Enter a valid help URL!
-	 */
-	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/blob/master/README.md";
-
-	/**
-	 * Listener for the Path panel
-	 */
-	private final IPathPanelListener listener = new IPathPanelListener() {
-
-		@Override
-		public void jumpTo(Object[] pathToJumpTo) {
-			tree.setSelectionPath(new TreePath(pathToJumpTo));
-		}
-	};
-
-	/**
 	 * Panel with the current path
 	 */
-	private final PathPanel pathPanel = new PathPanel(listener);
+	private final PathPanel pathPanel = new PathPanel(new IPathPanelListener() {
+		@Override
+		public void pathChanged(Object[] newPath) {
+			tree.setSelectionPath(new TreePath(newPath));
+		}
+	});
 
 	/**
-	 * Choosed folder
+	 * Chosen folder
 	 */
 	private String selectedFolder = null;
 
@@ -116,20 +119,20 @@ public class SelectSettlersFolderDialog extends JFrame {
 	private final TreeSelectionListener selectionListener = new TreeSelectionListener() {
 
 		@Override
-		public void valueChanged(TreeSelectionEvent e) {
-			TreePath path = e.getPath();
+		public void valueChanged(TreeSelectionEvent event) {
+			TreePath path = event.getPath();
 			pathPanel.setPath(path.getPath());
 
-			Object last = path.getLastPathComponent();
-			if (last instanceof FilesystemTreeNode) {
-				FilesystemTreeNode ft = (FilesystemTreeNode) last;
-				if (!ft.wasExpanded()) {
-					ft.setWasExpanded(true);
+			Object lastPathComponent = path.getLastPathComponent();
+			if (lastPathComponent instanceof FilesystemTreeNode) {
+				FilesystemTreeNode fileSystemTreeNode = (FilesystemTreeNode) lastPathComponent;
+				if (!fileSystemTreeNode.wasExpanded()) {
+					fileSystemTreeNode.setWasExpanded(true);
 					tree.expandPath(path);
 				}
 
-				if (ft.isSettlersFolder()) {
-					foundPanel.setFolder(ft.getFile().getAbsolutePath());
+				if (fileSystemTreeNode.isSettlersFolder()) {
+					foundPanel.setFolder(fileSystemTreeNode.getFile().getAbsolutePath());
 				} else {
 					foundPanel.resetFolder();
 				}
@@ -144,10 +147,10 @@ public class SelectSettlersFolderDialog extends JFrame {
 
 		@Override
 		public void treeExpanded(TreeExpansionEvent event) {
-			Object last = event.getPath().getLastPathComponent();
-			if (last instanceof FilesystemTreeNode) {
-				FilesystemTreeNode ft = (FilesystemTreeNode) last;
-				ft.setWasExpanded(true);
+			Object lastPathComponent = event.getPath().getLastPathComponent();
+			if (lastPathComponent instanceof FilesystemTreeNode) {
+				FilesystemTreeNode fileSystemTreeNode = (FilesystemTreeNode) lastPathComponent;
+				fileSystemTreeNode.setWasExpanded(true);
 			}
 		}
 
@@ -243,13 +246,12 @@ public class SelectSettlersFolderDialog extends JFrame {
 	 * Initialize the Tree with the filesystem
 	 */
 	private void initTree() {
-		RootTreeNode root = new RootTreeNode();
+		RootTreeNode root = new RootTreeNode(executorService);
 
 		for (File f : File.listRoots()) {
 			root.add(new FilesystemTreeNode(f));
 		}
 
-		System.err.println(root + "  " + root.getChildCount());
 		model = new DefaultTreeModel(root);
 
 		// to fire change event when the loading is finished
@@ -300,8 +302,7 @@ public class SelectSettlersFolderDialog extends JFrame {
 		synchronized (syncObject) {
 			try {
 				syncObject.wait();
-			} catch (InterruptedException e) {
-				// ignore exception here
+			} catch (InterruptedException e) { // ignore exception here
 			}
 		}
 
@@ -309,5 +310,11 @@ public class SelectSettlersFolderDialog extends JFrame {
 			return null;
 		}
 		return new File(selectedFolder);
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		executorService.shutdownNow();
 	}
 }

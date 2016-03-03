@@ -48,20 +48,17 @@ public class PathPanel extends JPanel {
 
 		@Override
 		public void paint(Graphics g1) {
-			Graphics2D g = (Graphics2D) g1;
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setColor(Color.WHITE);
-			g.setStroke(new BasicStroke(2));
+			Graphics2D graphics = (Graphics2D) g1;
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(Color.WHITE);
+			graphics.setStroke(new BasicStroke(2));
 			int w = getWidth();
 			int h = getHeight();
-			g.drawLine(0, 0, w - 1, h / 2);
-			g.drawLine(w - 1, h / 2, 0, h);
+			graphics.drawLine(0, 0, w - 1, h / 2);
+			graphics.drawLine(w - 1, h / 2, 0, h);
 		}
 	}
 
-	/**
-	 * Listener
-	 */
 	private final IPathPanelListener listener;
 
 	/**
@@ -72,7 +69,7 @@ public class PathPanel extends JPanel {
 	 */
 	public PathPanel(IPathPanelListener listener) {
 		this.listener = listener;
-		setPath(new Object[] {});
+		setPath(new Object[0]);
 	}
 
 	/**
@@ -80,22 +77,22 @@ public class PathPanel extends JPanel {
 	 * 
 	 * @param path
 	 *            Path name
-	 * @param pathToJumpTo
+	 * @param newPath
 	 */
-	private void addPath(String path, final Object[] pathToJumpTo) {
+	private void addPath(String path, final Object[] newPath) {
 		if (getComponentCount() > 0) {
-			Separator s = new Separator();
-			s.setPreferredSize(new Dimension(6, 25));
-			add(s);
+			Separator separator = new Separator();
+			separator.setPreferredSize(new Dimension(6, 25));
+			this.add(separator);
 		}
 
-		JLabel lb = new JLabel(path);
-		lb.setForeground(Color.WHITE);
-		add(lb);
-		lb.addMouseListener(new MouseAdapter() {
+		JLabel pathLabel = new JLabel(path);
+		pathLabel.setForeground(Color.WHITE);
+		this.add(pathLabel);
+		pathLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listener.jumpTo(pathToJumpTo);
+				listener.pathChanged(newPath);
 			}
 		});
 	}
@@ -103,13 +100,12 @@ public class PathPanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g1) {
 		super.paintComponent(g1);
-		Graphics2D g = (Graphics2D) g1;
-		int w = getWidth();
-		int h = getHeight();
-		GradientPaint gp = new GradientPaint(
-				0, 0, new Color(0x444444), 0, h, new Color(0x777777));
-		g.setPaint(gp);
-		g.fillRect(0, 0, w, h);
+		Graphics2D grapics = (Graphics2D) g1;
+		int width = getWidth();
+		int height = getHeight();
+		GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(0x444444), 0, height, new Color(0x777777));
+		grapics.setPaint(gradientPaint);
+		grapics.fillRect(0, 0, width, height);
 	}
 
 	/**
@@ -141,10 +137,10 @@ public class PathPanel extends JPanel {
 
 		if (getComponentCount() < 2) {
 			// to make sure, the alignment is the same without a Separator
-			JPanel p = new JPanel();
-			p.setPreferredSize(new Dimension(1, 25));
-			p.setOpaque(false);
-			add(p);
+			JPanel panel = new JPanel();
+			panel.setPreferredSize(new Dimension(1, 25));
+			panel.setOpaque(false);
+			add(panel);
 		}
 
 		revalidate();

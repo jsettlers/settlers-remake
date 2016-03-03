@@ -15,8 +15,6 @@
 package jsettlers.main.swing.foldertree;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -30,18 +28,7 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class RootTreeNode extends FilesystemTreeNode {
 
-	/**
-	 * Threadpool
-	 */
-	private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "fs-loader-thread");
-			t.setDaemon(true);
-			return t;
-		}
-	});
-
+	private final ExecutorService executorService;
 	/**
 	 * Tree model to fire update events
 	 */
@@ -50,8 +37,9 @@ public class RootTreeNode extends FilesystemTreeNode {
 	/**
 	 * Constructor
 	 */
-	public RootTreeNode() {
+	public RootTreeNode(ExecutorService executorService) {
 		super(null);
+		this.executorService = executorService;
 		loaded = true;
 	}
 
@@ -70,7 +58,7 @@ public class RootTreeNode extends FilesystemTreeNode {
 	 *            Node to load
 	 */
 	public void loadAsynchron(final FilesystemTreeNode node) {
-		executor.submit(new Runnable() {
+		executorService.submit(new Runnable() {
 			@Override
 			public void run() {
 				node.loadChildrenNodesAsync();

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -103,7 +102,7 @@ public class FilesystemTreeNode implements TreeNode {
 	private void loadChildren() {
 		RootTreeNode root = findRoot();
 		if (root == null) {
-			this.children = loadChildrenNodes();
+			this.children = calculateChildrenNodes();
 		} else {
 			root.loadAsynchron(this);
 		}
@@ -137,7 +136,6 @@ public class FilesystemTreeNode implements TreeNode {
 	private synchronized void loadIfNotLoaded() {
 		if (!loaded) {
 			loaded = true;
-
 			loadChildren();
 		}
 	}
@@ -169,11 +167,11 @@ public class FilesystemTreeNode implements TreeNode {
 	}
 
 	/**
-	 * Load the children to a tmp attribute
+	 * Calculates the children and returns them.
 	 * 
-	 * @return **
+	 * @return
 	 */
-	public List<FilesystemTreeNode> loadChildrenNodes() {
+	private List<FilesystemTreeNode> calculateChildrenNodes() {
 		if (file == null) {
 			return Collections.emptyList();
 		}
@@ -192,14 +190,14 @@ public class FilesystemTreeNode implements TreeNode {
 
 		List<FilesystemTreeNode> list = new ArrayList<FilesystemTreeNode>();
 
-		for (File f : files) {
-			if (f.isDirectory()) {
-				FilesystemTreeNode node = new FilesystemTreeNode(f);
+		for (File file : files) {
+			if (file.isDirectory()) {
+				FilesystemTreeNode node = new FilesystemTreeNode(file);
 				list.add(node);
 				node.setParent(this);
-				if ("gfx".equalsIgnoreCase(f.getName())) {
+				if ("gfx".equalsIgnoreCase(file.getName())) {
 					gfx = true;
-				} else if ("snd".equalsIgnoreCase(f.getName())) {
+				} else if ("snd".equalsIgnoreCase(file.getName())) {
 					snd = true;
 				}
 			}
@@ -222,7 +220,7 @@ public class FilesystemTreeNode implements TreeNode {
 	}
 
 	public void loadChildrenNodesAsync() {
-		final List<FilesystemTreeNode> childrenNodes = this.loadChildrenNodes();
+		final List<FilesystemTreeNode> childrenNodes = this.calculateChildrenNodes();
 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -263,22 +261,6 @@ public class FilesystemTreeNode implements TreeNode {
 
 	@Override
 	public Enumeration<?> children() {
-		return new Enumeration<Object>() {
-
-			/**
-			 * Iterator
-			 */
-			private final Iterator<FilesystemTreeNode> it = children.iterator();
-
-			@Override
-			public boolean hasMoreElements() {
-				return it.hasNext();
-			}
-
-			@Override
-			public Object nextElement() {
-				return it.next();
-			}
-		};
+		return Collections.enumeration(children);
 	}
 }

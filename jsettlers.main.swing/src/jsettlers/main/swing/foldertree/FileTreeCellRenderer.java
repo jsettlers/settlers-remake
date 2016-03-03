@@ -36,9 +36,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Filesystem view
-	 */
 	private static final FileSystemView fileSystemView = FileSystemView.getFileSystemView();
 
 	/**
@@ -47,9 +44,9 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 	private static final Icon SETTLER_FOLDER_ICON = new Icon() {
 		@Override
 		public void paintIcon(Component c, Graphics g1, int x, int y) {
-			Graphics2D g = (Graphics2D) g1;
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setColor(Color.RED);
+			Graphics2D graphics = (Graphics2D) g1;
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setColor(Color.RED);
 			Polygon arrow = new Polygon();
 			arrow.addPoint(16, 8);
 			arrow.addPoint(10, 16);
@@ -58,7 +55,7 @@ public class FileTreeCellRenderer extends DefaultTreeCellRenderer {
 			arrow.addPoint(0, 5);
 			arrow.addPoint(10, 5);
 			arrow.addPoint(10, 0);
-			g.fill(arrow);
+			graphics.fill(arrow);
 		}
 
 		@Override
