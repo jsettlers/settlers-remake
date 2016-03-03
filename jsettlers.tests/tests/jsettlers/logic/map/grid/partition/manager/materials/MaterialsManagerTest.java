@@ -21,6 +21,7 @@ import org.junit.Test;
 import jsettlers.TestUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.manager.materials.JoblessSupplierMock;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 

@@ -19,6 +19,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
+	
     <path id="go.graphics.classpath">
         <pathelement location="${go.graphics.location}/bin"/>
     </path>
@@ -62,6 +63,8 @@
         <path refid="go.graphics.swing.classpath"/>
         <path refid="jsettlers.network.classpath"/>
     </path>
+	
+	
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
@@ -71,9 +74,11 @@
             </fileset>
         </copy>
     </target>
+	
     <target name="clean">
         <delete dir="bin"/>
     </target>
+	
     <target depends="clean" name="cleanall">
         <ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="clean"/>
@@ -83,7 +88,9 @@
         <ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean"/>
     </target>
+    	
     <target depends="build-subprojects,build-project" name="build"/>
+	
     <target name="build-subprojects">
         <ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="build-project">
             <propertyset>
@@ -121,6 +128,7 @@
             </propertyset>
         </ant>
     </target>
+	
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
@@ -128,6 +136,7 @@
             <classpath refid="jsettlers.main.swing.classpath"/>
         </javac>
     </target>
+	
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
         <ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build">
