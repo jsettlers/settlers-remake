@@ -41,6 +41,7 @@ import jsettlers.main.swing.SettlersFrame;
  * @author codingberlin
  */
 public class MainMenuPanel extends SplitedBackgroundPanel {
+	private static final long serialVersionUID = -6745474019479693347L;
 
 	public static final Dimension PREFERRED_EAST_SIZE = new Dimension(300, 300);
 	private final SettlersFrame settlersFrame;

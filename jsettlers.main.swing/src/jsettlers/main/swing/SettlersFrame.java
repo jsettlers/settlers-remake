@@ -14,6 +14,16 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.HeadlessException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
@@ -21,32 +31,28 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.graphics.startscreen.interfaces.*;
+import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.components.joingame.JoinGamePanel;
 import jsettlers.main.components.mainmenu.MainMenuPanel;
 import jsettlers.main.components.startinggamemenu.StartingGamePanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Optional;
-import java.util.TimerTask;
-import java.util.Timer;
-import java.util.function.Supplier;
-
 /**
  * @author codingberlin
  */
 public class SettlersFrame extends JFrame {
+	private static final long serialVersionUID = 2607082717493797224L;
 
 	private final IMultiplayerConnector multiPlayerConnector;
 	private final MainMenuPanel mainPanel;
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
-	private SoundPlayer soundPlayer = new SwingSoundPlayer();
+	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
 	private Timer redrawTimer;
-
 
 	public SettlersFrame() throws HeadlessException {
 		SettingsManager settingsManager = SettingsManager.getInstance();

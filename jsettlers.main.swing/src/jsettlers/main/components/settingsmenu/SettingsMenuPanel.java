@@ -32,6 +32,8 @@ import jsettlers.main.components.mainmenu.MainMenuPanel;
  * @author codingberlin
  */
 public class SettingsMenuPanel extends JPanel {
+	private static final long serialVersionUID = 7440094092937597684L;
+
 	private final MainMenuPanel mainMenuPanel;
 	private final JLabel playerNameLabel = new JLabel();
 	private final JTextField playerNameField = new JTextField();

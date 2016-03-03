@@ -63,6 +63,7 @@ import jsettlers.main.swing.SettlersFrame;
  * @author codingberlin
  */
 public class JoinGamePanel extends BackgroundPanel {
+	private static final long serialVersionUID = -1186791399814385303L;
 
 	private final SettlersFrame settlersFrame;
 	private final JLabel titleLabel = new JLabel();
@@ -146,7 +147,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		playerSlotsPanel.setLayout(new GridBagLayout());
 		JScrollPane playerSlotPanelWrapper = new JScrollPane(playerSlotsPanel);
-		playerSlotsPanel.setBorder(new EmptyBorder(20,25,20,20));
+		playerSlotsPanel.setBorder(new EmptyBorder(20, 25, 20, 20));
 		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
 		JPanel southPanelWrapper = new JPanel();
 		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);

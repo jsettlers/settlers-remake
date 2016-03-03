@@ -14,18 +14,22 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
-import jsettlers.common.*;
+import java.awt.GridBagConstraints;
+import java.util.Arrays;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
-import jsettlers.graphics.image.*;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.lookandfeel.LFStyle;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
 
 /**
  * @author codingberlin
@@ -99,12 +103,16 @@ public class PlayerSlot {
 	}
 
 	private void updateReadyButtonStyle() {
-		if (isReady()){
-			readyButton.setIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(0)).generateBufferedImage()));
-			readyButton.setPressedIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(1)).generateBufferedImage()));
+		if (isReady()) {
+			readyButton.setIcon(
+					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(0)).generateBufferedImage()));
+			readyButton.setPressedIcon(
+					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(1)).generateBufferedImage()));
 		} else {
-			readyButton.setIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(0)).generateBufferedImage()));
-			readyButton.setPressedIcon(new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(1)).generateBufferedImage()));
+			readyButton.setIcon(
+					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(0)).generateBufferedImage()));
+			readyButton.setPressedIcon(
+					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(1)).generateBufferedImage()));
 		}
 	}
 

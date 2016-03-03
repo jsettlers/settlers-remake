@@ -14,6 +14,13 @@
  *******************************************************************************/
 package jsettlers.main.components.startinggamemenu;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.MapContent;
@@ -24,16 +31,13 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
-import jsettlers.lookandfeel.ui.BorderDrawer;
 import jsettlers.main.swing.SettlersFrame;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * @author codingberlin
  */
 public class StartingGamePanel extends BackgroundPanel implements IStartingGameListener {
+	private static final long serialVersionUID = -2242937805688362838L;
 
 	private final JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
 	private final SettlersFrame settlersFrame;
@@ -67,22 +71,26 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 		startingGame.setListener(this);
 	}
 
-	@Override public void startProgressChanged(EProgressState state, float progress) {
+	@Override
+	public void startProgressChanged(EProgressState state, float progress) {
 		SwingUtilities.invokeLater(() -> messageLabel.setText(Labels.getProgress(state)));
 	}
 
-	@Override public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
+	@Override
+	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
 		MapContent content = new MapContent(game, settlersFrame.getSoundPlayer());
 		SwingUtilities.invokeLater(() -> settlersFrame.setContent(content));
 		game.setGameExitListener(exitGame -> SwingUtilities.invokeLater(settlersFrame::showMainMenu));
 		return content.getInterfaceConnector();
 	}
 
-	@Override public void startFailed(EGameError errorType, Exception exception) {
+	@Override
+	public void startFailed(EGameError errorType, Exception exception) {
 
 	}
 
-	@Override public void startFinished() {
+	@Override
+	public void startFinished() {
 
 	}
 
