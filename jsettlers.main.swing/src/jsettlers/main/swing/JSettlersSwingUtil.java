@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import jsettlers.logic.map.MapLoader;
@@ -24,6 +25,8 @@ import jsettlers.logic.map.save.MapFileHeader;
  * @author codingberlin
  */
 public class JSettlersSwingUtil {
+
+	public static final Color DISABLE_COLOR = new Color(28, 34, 40, 150);
 
 	public static BufferedImage createBufferedImageFrom(MapLoader mapLoader) {
 		short[] data = mapLoader.getImage();
@@ -44,6 +47,27 @@ public class JSettlersSwingUtil {
 		}
 
 		return img;
+	}
+
+	public static BufferedImage createDisabledImage(BufferedImage image) {
+		return JSettlersSwingUtil.dye(image, DISABLE_COLOR);
+	}
+
+
+	/**
+	 * code taken from: http://stackoverflow.com/questions/21382966/colorize-a-picture-in-java
+     */
+	public static BufferedImage dye(BufferedImage image, Color color) {
+		int w = image.getWidth();
+		int h = image.getHeight();
+		BufferedImage dyed = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = dyed.createGraphics();
+		g.drawImage(image, 0,0, null);
+		g.setComposite(AlphaComposite.SrcAtop);
+		g.setColor(color);
+		g.fillRect(0,0,w,h);
+		g.dispose();
+		return dyed;
 	}
 
 }
