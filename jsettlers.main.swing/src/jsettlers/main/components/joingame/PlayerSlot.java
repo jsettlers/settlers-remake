@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.components.joingame;
 
-import java.awt.GridBagConstraints;
+import java.awt.*;
 import java.util.Arrays;
 
 import javax.swing.ImageIcon;
@@ -36,6 +36,12 @@ import jsettlers.lookandfeel.LFStyle;
  */
 public class PlayerSlot {
 
+	public static final int READY_BUTTON_WIDTH = 40;
+	public static final int READY_BUTTON_HEIGHT = 25;
+	public static final ImageIcon READY_IMAGE = new ImageIcon(getReadyButtonImage(2, 17, 0));
+	public static final ImageIcon READY_PRESSED_IMAGE = new ImageIcon(getReadyButtonImage(2, 17, 1));
+	public static final ImageIcon NOT_READY_IMAGE = new ImageIcon(getReadyButtonImage(2, 18, 0));
+	public static final ImageIcon NOT_READY_PRESSED_IMAGE = new ImageIcon(getReadyButtonImage(2, 18, 1));
 	private final JLabel playerNameLabel = new JLabel();
 	private final JComboBox<CivilisationUiWrapper> civilisationComboBox = new JComboBox<>();
 	private final JComboBox<PlayerTypeUiWrapper> typeComboBox = new JComboBox<>();
@@ -94,6 +100,10 @@ public class PlayerSlot {
 	}
 
 	private void setStyle() {
+		readyButton.setSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
+		readyButton.setMaximumSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
+		readyButton.setPreferredSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
+		readyButton.setMinimumSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
 		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
 		teamComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
 		slotComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
@@ -104,15 +114,11 @@ public class PlayerSlot {
 
 	private void updateReadyButtonStyle() {
 		if (isReady()) {
-			readyButton.setIcon(
-					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(0)).generateBufferedImage()));
-			readyButton.setPressedIcon(
-					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 17).getImage(1)).generateBufferedImage()));
+			readyButton.setIcon(READY_IMAGE);
+			readyButton.setPressedIcon(READY_PRESSED_IMAGE);
 		} else {
-			readyButton.setIcon(
-					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(0)).generateBufferedImage()));
-			readyButton.setPressedIcon(
-					new ImageIcon(((SingleImage) ImageProvider.getInstance().getSettlerSequence(2, 18).getImage(1)).generateBufferedImage()));
+			readyButton.setIcon(NOT_READY_IMAGE);
+			readyButton.setPressedIcon(NOT_READY_PRESSED_IMAGE);
 		}
 	}
 
@@ -252,5 +258,10 @@ public class PlayerSlot {
 
 	public void informGameAboutReady(IJoinPhaseMultiplayerGameConnector gameToBeInformedAboutReady) {
 		this.gameToBeInformedAboutReady = gameToBeInformedAboutReady;
+	}
+
+	private static Image getReadyButtonImage(int file, int seqnumber, int imagenumber) {
+		SingleImage readyImage = (SingleImage) ImageProvider.getInstance().getSettlerSequence(file, seqnumber).getImage(imagenumber);
+		return readyImage.generateBufferedImage().getScaledInstance(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT, Image.SCALE_SMOOTH);
 	}
 }
