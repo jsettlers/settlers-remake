@@ -132,6 +132,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(peaceTimeLabel);
 		settingsPanel.add(peaceTimeComboBox);
 		centerPanel.setLayout(new BorderLayout(0, 30));
+		sendChatMessageButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 15));
 		JPanel chatPanel = new JPanel();
 		chatPanel.setLayout(new BorderLayout(0, 10));
 		JPanel chatInputPanel = new JPanel();
@@ -154,7 +155,9 @@ public class JoinGamePanel extends BackgroundPanel {
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new GridLayout(0, 3, 20, 20));
 		southPanelWrapper.add(southPanel);
+		cancelButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 15));
 		southPanel.add(cancelButton);
+		startGameButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 15));
 		southPanel.add(startGameButton);
 	}
 
