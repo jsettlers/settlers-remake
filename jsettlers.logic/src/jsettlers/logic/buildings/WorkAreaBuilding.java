@@ -51,7 +51,7 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	public final void setWorkAreaCenter(ShortPoint2D newWorkAreaCenter) {
-		int distance = super.getPos().getOnGridDistTo(newWorkAreaCenter);
+		int distance = super.pos.getOnGridDistTo(newWorkAreaCenter);
 
 		if (distance < Constants.BUILDINGS_MAX_WORKRADIUS_FACTOR * super.getBuildingType().getWorkradius()) {
 			if (isSelected()) {
@@ -84,7 +84,7 @@ public abstract class WorkAreaBuilding extends Building {
 	}
 
 	private void drawWorkAreaCircle(boolean draw) {
-		super.grid.drawWorkAreaCircle(super.getPos(), workAreaCenter, super.getBuildingType().getWorkradius(), draw);
+		super.grid.drawWorkAreaCircle(super.pos, workAreaCenter, super.getBuildingType().getWorkradius(), draw);
 	}
 
 	@Override

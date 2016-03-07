@@ -125,7 +125,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		super.setPlayer(newPlayer);
 
 		if (occupiedArea) { // free the area if it had been occupied.
-			super.grid.changePlayerOfTower(super.getPos(), newPlayer, getGroundArea());
+			super.grid.changePlayerOfTower(super.pos, newPlayer, getGroundArea());
 		} else {
 			occupyAreaIfNeeded();
 		}
@@ -143,7 +143,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private FreeMapArea getGroundArea() {
-		return new FreeMapArea(super.getPos(), getBuildingType().getProtectedTiles());
+		return new FreeMapArea(super.pos, getBuildingType().getProtectedTiles());
 	}
 
 	private void resetSoldierSearch() {
@@ -175,7 +175,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		if (!searchedSoldiers.isEmpty()) {
 			if (request == null) {
-				request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
+				request = new DijkstraContinuableRequest(this, super.pos.x, super.pos.y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
 			}
 			request.setSearchType(searchedSoldiers.peek());
 
@@ -234,7 +234,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private void freeArea() {
-		super.grid.freeAreaOccupiedByTower(super.getPos());
+		super.grid.freeAreaOccupiedByTower(super.pos);
 	}
 
 	@Override
@@ -326,7 +326,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place) {
-		ShortPoint2D pos = place.getPosition().calculatePoint(super.getPos());
+		ShortPoint2D pos = place.getPosition().calculatePoint(super.pos);
 		// FIXME @Andreas Eberle introduce new field in the buildings xml file
 		ShortPoint2D position = new ShortPoint2D(pos.x + 3, pos.y + 6);
 		return position;
@@ -346,7 +346,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
-			MapCircle occupying = new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
+			MapCircle occupying = new MapCircle(super.pos, CommonConstants.TOWER_RADIUS);
 			super.grid.occupyAreaByTower(super.getPlayer(), occupying, getGroundArea());
 			occupiedArea = true;
 		}
@@ -364,7 +364,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public final ShortPoint2D getPosition(IBuildingOccupyableMovable soldier) {
 		for (TowerOccupier curr : sortedOccupiers) {
 			if (curr.getSoldier() == soldier) {
-				return curr.place.getPosition().calculatePoint(super.getPos());
+				return curr.place.getPosition().calculatePoint(super.pos);
 			}
 		}
 		return null;
@@ -524,7 +524,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					inFight = true;
 
 					OccupyingBuilding.this.grid.getMapObjectsManager()
-							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
+							.addSelfDeletingMapObject(pos, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pullNewDefender(attackerPos);
 				}
@@ -549,7 +549,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				changePlayerTo(attackerPos);
 			} else {
 				currDefender = removeSoldier();
-				currDefender.getSoldier().setDefendingAt(getPos());
+				currDefender.getSoldier().setDefendingAt(pos);
 			}
 		}
 

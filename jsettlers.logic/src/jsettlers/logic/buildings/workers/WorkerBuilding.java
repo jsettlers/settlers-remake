@@ -91,7 +91,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 	@Override
 	public MaterialProductionSettings getMaterialProduction() {
-		return grid.getMaterialProductionAt(getPos().x, getPos().y);
+		return grid.getMaterialProductionAt(pos.x, pos.y);
 	}
 
 	@Override

@@ -131,6 +131,6 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	private void drawWaypointLine(boolean draw) {
-		super.grid.drawTradingPathLine(super.getPos(), waypoints, draw);
+		super.grid.drawTradingPathLine(super.pos, waypoints, draw);
 	}
 }
