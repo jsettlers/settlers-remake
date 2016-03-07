@@ -40,6 +40,14 @@ public class SetLandscapeTool extends AbstractTool {
 
 	private GlobalShapeBuffer buffer;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param type
+	 *            Type to set
+	 * @param isRiver
+	 *            if this is a river
+	 */
 	public SetLandscapeTool(ELandscapeType type, boolean isRiver) {
 		super(new RectIcon(16, new Color(type.color.getARGB())),
 				String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));

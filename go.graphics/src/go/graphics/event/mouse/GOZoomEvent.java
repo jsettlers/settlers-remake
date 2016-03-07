@@ -16,7 +16,13 @@ package go.graphics.event.mouse;
 
 import go.graphics.event.GOEvent;
 
+/**
+ * Interface for Zoom events, usually created by scroll wheel move
+ * 
+ * @author Andreas Butti
+ */
 public interface GOZoomEvent extends GOEvent {
+
 	/**
 	 * Gets the zoom factor
 	 * 

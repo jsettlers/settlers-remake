@@ -39,6 +39,11 @@ public class ValidationList {
 		private final ErrorHeader header;
 
 		/**
+		 * Special entries without position
+		 */
+		private final List<ErrorEntry> entriesWithoutPositions = new ArrayList<>();
+
+		/**
 		 * Entries of this group
 		 */
 		private final List<ErrorEntry> entries = new ArrayList<>();
@@ -60,12 +65,37 @@ public class ValidationList {
 		 */
 		public LocalGroupList groupSimilar() {
 			LocalGroupList list = new LocalGroupList();
-
 			for (ErrorEntry e : entries) {
 				list.putIntoGroup(e);
 			}
 
 			return list;
+		}
+
+		/**
+		 * @return true if this group contains entries
+		 */
+		public boolean isEmpty() {
+			return entriesWithoutPositions.isEmpty() && entries.isEmpty();
+		}
+
+		/**
+		 * @return true if this group contains at least one error, false if it contains only warnings
+		 */
+		public boolean containsErrors() {
+			for (ErrorEntry e : entriesWithoutPositions) {
+				if (e.isError()) {
+					return true;
+				}
+			}
+
+			for (ErrorEntry e : entries) {
+				if (e.isError()) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 	}
@@ -106,14 +136,18 @@ public class ValidationList {
 
 		/**
 		 * Constructor
+		 * 
+		 * @param entry
+		 *            Entry to group
 		 */
 		public LocaleGroup(ErrorEntry entry) {
 			this.entries.add(entry);
-			int x = entry.getPos().x;
+			ShortPoint2D pos = entry.getPos();
+			int x = pos.x;
 			x1 = x;
 			x2 = x;
 
-			int y = entry.getPos().y;
+			int y = pos.y;
 			y1 = y;
 			y2 = y;
 		}
@@ -126,12 +160,13 @@ public class ValidationList {
 		 */
 		public void add(ErrorEntry entry) {
 			this.entries.add(entry);
+			ShortPoint2D pos = entry.getPos();
 
-			int x = entry.getPos().x;
+			int x = pos.x;
 			x1 = Math.min(x1, x);
 			x2 = Math.max(x2, x);
 
-			int y = entry.getPos().y;
+			int y = pos.y;
 			y1 = Math.min(y1, y);
 			y2 = Math.max(y2, y);
 		}
@@ -214,7 +249,7 @@ public class ValidationList {
 	/**
 	 * List with all grouped error entries
 	 */
-	private List<Group> list = new ArrayList<>();
+	private final List<Group> list = new ArrayList<>();
 
 	/**
 	 * Current group, to current header
@@ -243,38 +278,57 @@ public class ValidationList {
 	/**
 	 * Add an error entry
 	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
 	 * @param text
 	 *            Text to display
+	 * @param error
+	 *            true for error, false for warning
 	 * @param pos
 	 *            Position
 	 * @param typeId
 	 *            Type ID of the error, all errors of the same type at nearly the same position are grouped
 	 */
-	public void addError(String text, ShortPoint2D pos, String typeId) {
-		currentGroup.entries.add(new ErrorEntry(text, pos, typeId));
+	public void addError(Object additionalErrorData, String text, boolean error, ShortPoint2D pos, String typeId) {
+		ErrorEntry entry = new ErrorEntry(additionalErrorData, text, error, pos, typeId);
+		if (pos == null) {
+			currentGroup.entriesWithoutPositions.add(entry);
+		} else {
+			currentGroup.entries.add(entry);
+		}
 	}
 
 	/**
 	 * Prepare the list for displaying in the JList
 	 * 
-	 * @return
+	 * @return Model to display
 	 */
 	public ValidationListModel toListModel() {
 		ValidationListModel model = new ValidationListModel();
 
 		for (Group g : list) {
-			if (g.entries.isEmpty()) {
+			if (g.isEmpty()) {
 				continue;
 			}
 
+			// Errors? Or only warnings?
+			final boolean error = g.containsErrors();
 			model.addElement(g.header);
 
 			LocalGroupList groupedList = g.groupSimilar();
 
 			for (LocaleGroup lgl : groupedList) {
 				// only use first entry of the group
-				model.addElement(lgl.entries.get(0));
+				ErrorEntry element = lgl.entries.get(0);
+				model.addElement(element);
 			}
+
+			// but add all special entries without position
+			for (ErrorEntry e : g.entriesWithoutPositions) {
+				model.addElement(e);
+			}
+
+			g.header.setError(error);
 		}
 
 		model.prepareToDisplay();

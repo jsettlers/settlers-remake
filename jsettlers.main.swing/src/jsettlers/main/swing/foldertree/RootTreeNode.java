@@ -12,35 +12,61 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks;
+package jsettlers.main.swing.foldertree;
 
-import jsettlers.common.position.ShortPoint2D;
+import java.util.concurrent.ExecutorService;
+
+import javax.swing.tree.DefaultTreeModel;
 
 /**
- * Validate all players start position
+ * Root node of the tree, with the functionality to load from filesystem and display blocking panel
+ * 
+ * Usually control operation and model should not be mixed, but in this case it's the easyest solution, and its only data loading, not really
+ * controlling
  * 
  * @author Andreas Butti
  */
-public class ValidatePlayerStartPosition extends AbstractValidationTask {
+public class RootTreeNode extends FilesystemTreeNode {
+
+	private final ExecutorService executorService;
+	/**
+	 * Tree model to fire update events
+	 */
+	private DefaultTreeModel model;
 
 	/**
 	 * Constructor
 	 */
-	public ValidatePlayerStartPosition() {
+	public RootTreeNode(ExecutorService executorService) {
+		super(null);
+		this.executorService = executorService;
+		loaded = true;
 	}
 
-	@Override
-	public void doTest() {
-		addHeader("playerstart.header", null /* no autofix possible */);
+	/**
+	 * @param model
+	 *            Tree model to fire update events
+	 */
+	public void setModel(DefaultTreeModel model) {
+		this.model = model;
+	}
 
-		for (int player = 0; player < data.getPlayerCount(); player++) {
-			ShortPoint2D point = data.getStartPoint(player);
-			if (players[point.x][point.y] != player) {
-				addErrorMessage("playerstart.text", point, player);
+	/**
+	 * Does the loading task asynchronously
+	 * 
+	 * @param node
+	 *            Node to load
+	 */
+	public void loadAsynchron(final FilesystemTreeNode node) {
+		executorService.submit(new Runnable() {
+			@Override
+			public void run() {
+				node.loadChildrenNodesAsync();
 			}
-			// mark
-			borders[point.x][point.y] = true;
-		}
+		});
 	}
 
+	public void nodeStructureChanged(FilesystemTreeNode node) {
+		model.nodeStructureChanged(node);
+	}
 }

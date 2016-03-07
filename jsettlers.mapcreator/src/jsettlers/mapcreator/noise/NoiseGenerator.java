@@ -14,6 +14,11 @@
  *******************************************************************************/
 package jsettlers.mapcreator.noise;
 
+/**
+ * Used to draw some random shapes
+ * 
+ * @author Andreas Butti
+ */
 public class NoiseGenerator {
 	private static final float PERSISTENCE = .5f;
 
@@ -23,6 +28,15 @@ public class NoiseGenerator {
 			new NoiseSet(15731, 789221, 2350883)
 	};
 
+	/**
+	 * Get noise value for Position
+	 * 
+	 * @param x
+	 *            X Pos
+	 * @param y
+	 *            Y Pos
+	 * @return Noise value
+	 */
 	public float getNoise(int x, int y) {
 		return getRealNoise(x * .3f, y * .3f);
 	}

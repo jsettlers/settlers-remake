@@ -16,8 +16,19 @@ package jsettlers.mapcreator.mapvalidator;
 
 import jsettlers.common.position.ShortPoint2D;
 
+/**
+ * Interface to scroll to defined position
+ * 
+ * @author Andreas Butti
+ */
 public interface IScrollToAble {
 
+	/**
+	 * Scroll to position
+	 * 
+	 * @param pos
+	 *            Position
+	 */
 	void scrollTo(ShortPoint2D pos);
 
 }
