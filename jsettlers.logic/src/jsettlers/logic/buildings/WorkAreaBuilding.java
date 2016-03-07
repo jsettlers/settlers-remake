@@ -36,8 +36,8 @@ public abstract class WorkAreaBuilding extends Building {
 
 	private boolean cannotWork = false;
 
-	protected WorkAreaBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	protected WorkAreaBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public abstract class WorkAreaBuilding extends Building {
 	}
 
 	private void drawWorkAreaCircle(boolean draw) {
-		super.getGrid().drawWorkAreaCircle(super.getPos(), workAreaCenter, super.getBuildingType().getWorkradius(), draw);
+		super.grid.drawWorkAreaCircle(super.getPos(), workAreaCenter, super.getBuildingType().getWorkradius(), draw);
 	}
 
 	@Override

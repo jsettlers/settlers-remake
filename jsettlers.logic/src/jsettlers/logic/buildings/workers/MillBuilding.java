@@ -16,6 +16,8 @@ package jsettlers.logic.buildings.workers;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -29,8 +31,8 @@ public final class MillBuilding extends WorkerBuilding implements IBuilding.IMil
 	private boolean rotating;
 	private boolean soundPlayed;
 
-	public MillBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	public MillBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override

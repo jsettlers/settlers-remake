@@ -18,6 +18,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -29,8 +30,8 @@ import jsettlers.logic.player.Player;
 public final class DefaultBuilding extends Building {
 	private static final long serialVersionUID = 1L;
 
-	public DefaultBuilding(EBuildingType buildingType, Player player) {
-		super(buildingType, player);
+	public DefaultBuilding(EBuildingType buildingType, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(buildingType, player, position, buildingsGrid);
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.algorithms.datastructures.BooleanMovingAverage;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -13,12 +15,13 @@ import jsettlers.logic.player.Player;
  */
 public class ResourceBuilding extends WorkerBuilding implements IBuilding.IResourceBuilding {
 	private static final long serialVersionUID = -828476867565686860L;
+	private static final int NUMBER_OF_MOVING_AVERAGE_ELEMENTS = 12;
 
 	private final BooleanMovingAverage movingAverage;
 
-	public ResourceBuilding(EBuildingType type, Player player, int movingAverageElements) {
-		super(type, player);
-		movingAverage = new BooleanMovingAverage(movingAverageElements, false);
+	public ResourceBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
+		movingAverage = new BooleanMovingAverage(NUMBER_OF_MOVING_AVERAGE_ELEMENTS, false);
 	}
 
 	@Override
@@ -26,6 +29,7 @@ public class ResourceBuilding extends WorkerBuilding implements IBuilding.IResou
 		return movingAverage.getAverage();
 	}
 
+	@Override
 	public int getRemainingResourceAmount() {
 		return -1;
 	}

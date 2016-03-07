@@ -16,6 +16,8 @@ package jsettlers.logic.buildings.spawn;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -29,8 +31,8 @@ public final class MediumLivinghouse extends SpawnBuilding {
 
 	private static final byte PRODUCE_LIMIT = 30;
 
-	public MediumLivinghouse(Player player) {
-		super(EBuildingType.MEDIUM_LIVINGHOUSE, player);
+	public MediumLivinghouse(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.MEDIUM_LIVINGHOUSE, player, position, buildingsGrid);
 	}
 
 	@Override

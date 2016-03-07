@@ -22,6 +22,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.IRequestStackListener;
 import jsettlers.logic.buildings.stack.RequestStack;
@@ -36,8 +37,8 @@ import jsettlers.logic.player.Player;
 public final class Barrack extends WorkAreaBuilding implements IBarrack, IRequestStackListener {
 	private static final long serialVersionUID = -6541972855836598068L;
 
-	public Barrack(Player player) {
-		super(EBuildingType.BARRACK, player);
+	public Barrack(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.BARRACK, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public void bearerRequestFailed() {
-		super.getGrid().requestSoilderable(this);
+		super.grid.requestSoilderable(this);
 	}
 
 	@Override
@@ -104,6 +105,6 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public void materialDelivered(RequestStack stack) {
-		getGrid().requestSoilderable(Barrack.this);
+		super.grid.requestSoilderable(Barrack.this);
 	}
 }

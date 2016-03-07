@@ -16,6 +16,8 @@ package jsettlers.logic.buildings.spawn;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -32,8 +34,8 @@ public final class BigTemple extends SpawnBuilding {
 	private static final int PRODUCE_PERIOD = 600000;
 	private int nextProduceMillis = 0;
 
-	public BigTemple(Player player) {
-		super(EBuildingType.BIG_TEMPLE, player);
+	public BigTemple(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.BIG_TEMPLE, player, position, buildingsGrid);
 	}
 
 	@Override

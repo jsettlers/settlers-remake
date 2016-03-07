@@ -23,6 +23,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 public class TradingBuilding extends Building implements IBuilding.ITrading {
@@ -36,8 +37,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private final int[] requestedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
 
-	public TradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
-		super(type, player);
+	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
+		super(type, player, position, buildingsGrid);
 		this.isSeaTrading = isSeaTrading;
 	}
 
@@ -130,6 +131,6 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	private void drawWaypointLine(boolean draw) {
-		super.getGrid().drawTradingPathLine(super.getPos(), waypoints, draw);
+		super.grid.drawTradingPathLine(super.getPos(), waypoints, draw);
 	}
 }

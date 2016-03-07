@@ -39,8 +39,8 @@ public final class MineBuilding extends ResourceBuilding {
 
 	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
-	public MineBuilding(EBuildingType type, Player player) {
-		super(type, player, 12);
+	public MineBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public final class MineBuilding extends ResourceBuilding {
 		int randomPositionIndex = MatchConstants.random().nextInt(blockedPositions.length);
 		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
 
-		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());
+		boolean resourceTaken = super.grid.tryTakingResource(randomPosition, getProducedResource());
 		super.productivityActionExecuted(resourceTaken);
 		return resourceTaken;
 	}
@@ -108,7 +108,7 @@ public final class MineBuilding extends ResourceBuilding {
 
 	@Override
 	public int getRemainingResourceAmount() {
-		return super.getGrid().getAmountOfResource(getProducedResource(),
+		return super.grid.getAmountOfResource(getProducedResource(),
 				new RelativeToRealPointIterable(super.getBuildingType().getBlockedTiles(), super.getPos()));
 	}
 }

@@ -21,6 +21,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.player.Player;
 
@@ -36,8 +37,8 @@ public final class TempleBuilding extends Building {
 	private static final int CHECK_DELAY = 1500;
 	private static final int CONSUME_DELAY = 30000;
 
-	public TempleBuilding(Player player) {
-		super(EBuildingType.TEMPLE, player);
+	public TempleBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.TEMPLE, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public final class TempleBuilding extends Building {
 
 	@Override
 	protected int constructionFinishedEvent() {
-		super.getGrid().getMapObjectsManager().addWineBowl(super.getDoor(), getWineStack());
+		super.grid.getMapObjectsManager().addWineBowl(super.getDoor(), getWineStack());
 		return CHECK_DELAY;
 	}
 
@@ -84,6 +85,6 @@ public final class TempleBuilding extends Building {
 	@Override
 	protected void killedEvent() {
 		ShortPoint2D door = super.getDoor();
-		super.getGrid().getMapObjectsManager().removeMapObjectType(door.x, door.y, EMapObjectType.WINE_BOWL);
+		super.grid.getMapObjectsManager().removeMapObjectType(door.x, door.y, EMapObjectType.WINE_BOWL);
 	}
 }

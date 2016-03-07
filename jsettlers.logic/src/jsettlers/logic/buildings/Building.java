@@ -85,9 +85,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final ConcurrentLinkedQueue<Building> ALL_BUILDINGS = new ConcurrentLinkedQueue<Building>();
 
 	protected final EBuildingType type;
+	protected final ShortPoint2D pos;
+	protected final IBuildingsGrid grid;
 
-	private ShortPoint2D pos;
-	private IBuildingsGrid grid;
 	private Player player;
 	private byte state = STATE_CREATED;
 	private EPriority priority = EPriority.DEFAULT;
@@ -100,9 +100,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private transient boolean selected;
 
-	protected Building(EBuildingType type, Player player) {
+	protected Building(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		this.type = type;
 		this.player = player;
+		this.pos = position;
+		this.grid = buildingsGrid;
 
 		ALL_BUILDINGS.add(this);
 	}
@@ -127,41 +129,46 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	// TODO @Andreas Eberle: refactor building creating
-	public final void constructAt(IBuildingsGrid grid, ShortPoint2D pos, boolean fullyConstructed) {
-		if (fullyConstructed) {
-			appearAt(grid, pos);
-		} else {
-			assert state == STATE_CREATED : "building can not be positioned in this state";
+	public final void construct(boolean fullyConstructed) {
+		assert state == STATE_CREATED : "building can not be constructed in this state";
 
-			boolean itWorked = positionAt(grid, pos);
-
-			if (itWorked) {
-				stacks = createConstructionStacks();
-
-				placeAdditionalMapObjects(grid, pos, true);
-
-				this.state = STATE_IN_FLATTERNING;
-				RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
-
-				requestDiggers();
-			}
-		}
-	}
-
-	private final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
-		this.state = STATE_CONSTRUCTED;
-
-		boolean itWorked = positionAt(grid, pos);
+		boolean itWorked = grid.setBuilding(pos, this);
 
 		if (itWorked) {
-			grid.setBlocked(getBuildingArea(), true);
-			finishConstruction();
+			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
+				placeFlag(true);
+			}
+			positionedEvent(pos);
 
-			appearedEvent();
+			if (fullyConstructed) {
+				appearFullyConstructed();
+			} else {
+				initConstruction();
+			}
 		} else {
 			kill();
 		}
+	}
+
+	private void appearFullyConstructed() {
+		this.state = STATE_CONSTRUCTED;
+
+		grid.setBlocked(getBuildingArea(), true);
+		finishConstruction();
+
+		appearedEvent();
+
+	}
+
+	private void initConstruction() {
+		stacks = createConstructionStacks();
+
+		placeAdditionalMapObjects(grid, pos, true);
+
+		this.state = STATE_IN_FLATTERNING;
+		RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
+
+		requestDiggers();
 	}
 
 	private List<RequestStack> createConstructionStacks() {
@@ -204,21 +211,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				grid.getMapObjectsManager().removeMapObjectType(postPos.x, postPos.y, EMapObjectType.BUILDINGSITE_POST);
 			}
 		}
-	}
-
-	private boolean positionAt(IBuildingsGrid grid, ShortPoint2D pos) {
-		boolean couldBePlaced = grid.setBuilding(pos, this);
-		if (couldBePlaced) {
-			this.pos = pos;
-			this.grid = grid;
-
-			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
-				placeFlag(true);
-			}
-
-			positionedEvent(pos);
-		}
-		return couldBePlaced;
 	}
 
 	/**
@@ -569,14 +561,16 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return state != STATE_DESTROYED;
 	}
 
-	public static Building getBuilding(EBuildingType type, Player player) {
+	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid,
+			boolean fullyConstructed) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
-			return new BigLivinghouse(player);
+			return new BigLivinghouse(player, position, buildingsGrid);
 		case MEDIUM_LIVINGHOUSE:
-			return new MediumLivinghouse(player);
+			return new MediumLivinghouse(player, position, buildingsGrid);
 		case SMALL_LIVINGHOUSE:
-			return new SmallLivinghouse(player);
+			return new SmallLivinghouse(player, position, buildingsGrid);
+
 		case CHARCOAL_BURNER:
 		case BAKER:
 		case DONKEY_FARM:
@@ -593,54 +587,50 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case WEAPONSMITH:
 		case WATERWORKS:
 		case WINEGROWER:
-			return new WorkerBuilding(type, player);
+			return new WorkerBuilding(type, player, position, buildingsGrid);
 
 		case MILL:
-			return new MillBuilding(type, player);
+			return new MillBuilding(type, player, position, buildingsGrid);
 
 		case TOWER:
 		case BIG_TOWER:
 		case CASTLE:
-			return new OccupyingBuilding(type, player);
+			return new OccupyingBuilding(type, player, position, buildingsGrid);
 
 		case BARRACK:
-			return new Barrack(player);
+			return new Barrack(player, position, buildingsGrid);
 
 		case IRONMINE:
 		case GOLDMINE:
 		case COALMINE:
-			return new MineBuilding(type, player);
+			return new MineBuilding(type, player, position, buildingsGrid);
 
 		case FISHER:
-			return new ResourceBuilding(EBuildingType.FISHER, player, 12);
+			return new ResourceBuilding(EBuildingType.FISHER, player, position, buildingsGrid);
 
 		case STOCK:
-			return new StockBuilding(player);
+			return new StockBuilding(player, position, buildingsGrid);
 
 		case TEMPLE:
-			return new TempleBuilding(player);
+			return new TempleBuilding(player, position, buildingsGrid);
 
 		case MARKET_PLACE:
-			return new MarketBuilding(type, player);
+			return new MarketBuilding(type, player, position, buildingsGrid);
 		case HARBOR:
-			return new TradingBuilding(type, player, true);
+			return new TradingBuilding(type, player, position, buildingsGrid, true);
 
 		case BIG_TEMPLE:
-			return new BigTemple(player);
+			return new BigTemple(player, position, buildingsGrid);
 
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
 		case DOCKYARD:
-			return new DefaultBuilding(type, player);
+			return new DefaultBuilding(type, player, position, buildingsGrid);
 
 		default:
 			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
 			return null;
 		}
-	}
-
-	public IBuildingsGrid getGrid() {
-		return grid;
 	}
 
 	protected List<RequestStack> getStacks() {

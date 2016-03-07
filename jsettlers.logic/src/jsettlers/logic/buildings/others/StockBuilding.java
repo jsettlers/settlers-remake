@@ -20,6 +20,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.player.Player;
 
 /**
@@ -31,8 +32,8 @@ import jsettlers.logic.player.Player;
 public final class StockBuilding extends Building implements IBuilding.IStock {
 	private static final long serialVersionUID = 1L;
 
-	public StockBuilding(Player player) {
-		super(EBuildingType.STOCK, player);
+	public StockBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.STOCK, player, position, buildingsGrid);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.movable.strategies.DonkeyStrategy.IDonkeyMarket;
 import jsettlers.logic.player.Player;
@@ -52,8 +53,8 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 		ALL_MARKETS.clear();
 	}
 
-	public MarketBuilding(EBuildingType type, Player player) {
-		super(type, player, false);
+	public MarketBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid, false);
 		ALL_MARKETS.add(this);
 	}
 

@@ -22,6 +22,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.RequestStack;
@@ -45,8 +46,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	 */
 	private List<Tuple<ShortPoint2D, EMapObjectType>> cleanupPositions = null;
 
-	public WorkerBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	public WorkerBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	private void requestWorker() {
-		super.getGrid().requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
+		super.grid.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 	@Override
 	public MaterialProductionSettings getMaterialProduction() {
-		return getGrid().getMaterialProductionAt(getPos().x, getPos().y);
+		return grid.getMaterialProductionAt(getPos().x, getPos().y);
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 		if (cleanupPositions != null) {
 			for (Tuple<ShortPoint2D, EMapObjectType> cleanup : cleanupPositions) {
-				getGrid().getMapObjectsManager().removeMapObjectType(cleanup.e1.x, cleanup.e1.y, cleanup.e2);
+				grid.getMapObjectsManager().removeMapObjectType(cleanup.e1.x, cleanup.e1.y, cleanup.e2);
 			}
 		}
 		super.killedEvent();

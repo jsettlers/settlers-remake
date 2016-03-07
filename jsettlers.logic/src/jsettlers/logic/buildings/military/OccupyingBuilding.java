@@ -39,6 +39,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
@@ -72,8 +73,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final int[] maximumRequestedSoldiers = new int[ESoldierClass.NUMBER_OF_VALUES];
 	private final int[] currentlyCommingSoldiers = new int[ESoldierClass.NUMBER_OF_VALUES];
 
-	public OccupyingBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	public OccupyingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 
 		this.sortedOccupiers = new LinkedList<TowerOccupier>(); // for testing purposes
 
@@ -103,9 +104,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private void setAttackableTowerObject(boolean set) {
 		if (set) {
 			attackableTowerObject = new AttackableTowerMapObject();
-			super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDoor(), attackableTowerObject);
+			super.grid.getMapObjectsManager().addAttackableTowerObject(getDoor(), attackableTowerObject);
 		} else {
-			super.getGrid().getMapObjectsManager().removeMapObjectType(getDoor().x, getDoor().y, EMapObjectType.ATTACKABLE_TOWER);
+			super.grid.getMapObjectsManager().removeMapObjectType(getDoor().x, getDoor().y, EMapObjectType.ATTACKABLE_TOWER);
 			attackableTowerObject = null;
 		}
 	}
@@ -113,7 +114,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	void changePlayerTo(ShortPoint2D attackerPos) {
 		assert sortedOccupiers.isEmpty() : "there cannot be any occupiers in the tower when changing the player.";
 
-		Movable enemy = super.getGrid().getMovable(attackerPos);
+		Movable enemy = super.grid.getMovable(attackerPos);
 		Player newPlayer = enemy.getPlayer();
 
 		setAttackableTowerObject(false);
@@ -124,7 +125,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		super.setPlayer(newPlayer);
 
 		if (occupiedArea) { // free the area if it had been occupied.
-			super.getGrid().changePlayerOfTower(super.getPos(), newPlayer, getGroundArea());
+			super.grid.changePlayerOfTower(super.getPos(), newPlayer, getGroundArea());
 		} else {
 			occupyAreaIfNeeded();
 		}
@@ -178,9 +179,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			}
 			request.setSearchType(searchedSoldiers.peek());
 
-			Path path = super.getGrid().getDijkstra().find(request);
+			Path path = super.grid.getDijkstra().find(request);
 			if (path != null) {
-				Movable soldier = super.getGrid().getMovable(path.getTargetPos());
+				Movable soldier = super.grid.getMovable(path.getTargetPos());
 				if (soldier != null && soldier.setOccupyableBuilding(this)) {
 					ESearchType searchedSoldier = searchedSoldiers.pop();
 					currentlyCommingSoldiers[getSoldierClass(searchedSoldier).ordinal]++;
@@ -233,7 +234,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private void freeArea() {
-		super.getGrid().freeAreaOccupiedByTower(super.getPos());
+		super.grid.freeAreaOccupiedByTower(super.getPos());
 	}
 
 	@Override
@@ -316,9 +317,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			ShortPoint2D position = getTowerBowmanSearchPosition(soldier.place);
 
 			if (add) {
-				super.getGrid().getMapObjectsManager().addInformableMapObjectAt(position, soldier.getSoldier().getMovable());
+				super.grid.getMapObjectsManager().addInformableMapObjectAt(position, soldier.getSoldier().getMovable());
 			} else {
-				super.getGrid().getMapObjectsManager().removeMapObjectType(position.x, position.y, EMapObjectType.INFORMABLE_MAP_OBJECT);
+				super.grid.getMapObjectsManager().removeMapObjectType(position.x, position.y, EMapObjectType.INFORMABLE_MAP_OBJECT);
 			}
 		}
 	}
@@ -346,7 +347,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
 			MapCircle occupying = new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
-			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying, getGroundArea());
+			super.grid.occupyAreaByTower(super.getPlayer(), occupying, getGroundArea());
 			occupiedArea = true;
 		}
 	}
@@ -510,7 +511,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-			Movable attacker = getGrid().getMovable(attackerPos);
+			Movable attacker = grid.getMovable(attackerPos);
 			if (attacker != null && attacker.getPlayer() == getPlayer()) {
 				return; // this can happen directly after the tower changed its player
 			}
@@ -522,7 +523,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					doorHealth = 0;
 					inFight = true;
 
-					OccupyingBuilding.this.getGrid().getMapObjectsManager()
+					OccupyingBuilding.this.grid.getMapObjectsManager()
 							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pullNewDefender(attackerPos);
