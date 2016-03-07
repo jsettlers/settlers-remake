@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.stack;
+package jsettlers.logic.buildings.stack;
 
 /**
  * This interface defines a listener for a {@link RequestStack}. The listener can be registered on a {@link RequestStack} to receive events when a

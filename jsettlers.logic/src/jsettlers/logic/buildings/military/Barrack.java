@@ -23,10 +23,10 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
+import jsettlers.logic.buildings.stack.IRequestStackListener;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.IRequestStackListener;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  * This is the barrack building. It requests weapons and bearers to make them to soldiers.

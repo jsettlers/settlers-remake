@@ -26,6 +26,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.stack.IStackSizeSupplier;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IInformable;
@@ -47,7 +48,6 @@ import jsettlers.logic.objects.growing.tree.Tree;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.IStackSizeSupplier;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 

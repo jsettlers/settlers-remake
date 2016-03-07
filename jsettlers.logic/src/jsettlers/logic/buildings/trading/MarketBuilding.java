@@ -25,9 +25,9 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.movable.strategies.DonkeyStrategy.IDonkeyMarket;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  * 
@@ -39,7 +39,7 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 
 	private static final List<MarketBuilding> ALL_MARKETS = new ArrayList<MarketBuilding>();
 
-	public static Iterable<MarketBuilding> getAllMarkets(Player player) {
+	public static Iterable<MarketBuilding> getAllMarkets(final Player player) {
 		return new IteratorFilter<>(ALL_MARKETS, new IPredicate<MarketBuilding>() {
 			@Override
 			public boolean evaluate(MarketBuilding building) {
@@ -113,6 +113,11 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 		@Override
 		public ShortPoint2D next() {
 			return waypoints[i++];
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

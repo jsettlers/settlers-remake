@@ -45,6 +45,7 @@ import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
@@ -57,7 +58,6 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IConstr
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
@@ -84,7 +84,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private static final ConcurrentLinkedQueue<Building> ALL_BUILDINGS = new ConcurrentLinkedQueue<Building>();
 
-	private final EBuildingType type;
+	protected final EBuildingType type;
 
 	private ShortPoint2D pos;
 	private IBuildingsGrid grid;
@@ -175,14 +175,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return result;
 	}
 
-	protected void createWorkStacks() {
+	protected final void initWorkStacks() {
+		this.stacks = createWorkStacks();
+	}
+
+	protected List<RequestStack> createWorkStacks() {
 		List<RequestStack> newStacks = new LinkedList<RequestStack>();
 
 		for (RelativeStack stack : type.getRequestStacks()) {
 			newStacks.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority));
 		}
 
-		this.stacks = newStacks;
+		return newStacks;
 	}
 
 	protected void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
@@ -406,7 +410,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		this.state = STATE_CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
-			createWorkStacks();
+			stacks = createWorkStacks();
 		} else {
 			stacks = new LinkedList<>(); // create a new stacks list
 		}

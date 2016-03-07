@@ -24,10 +24,10 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  * This class is a building with a worker that can fulfill it's job.
@@ -84,7 +84,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		if (super.isNotDestroyed()) {
 			this.worker = worker;
 			super.placeFlag(true);
-			super.createWorkStacks();
+			super.initWorkStacks();
 		}
 	}
 

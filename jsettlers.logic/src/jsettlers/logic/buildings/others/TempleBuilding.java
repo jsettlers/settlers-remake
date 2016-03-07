@@ -21,8 +21,8 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  *

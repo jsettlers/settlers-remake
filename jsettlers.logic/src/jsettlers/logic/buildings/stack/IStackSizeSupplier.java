@@ -1,4 +1,4 @@
-package jsettlers.logic.stack;
+package jsettlers.logic.buildings.stack;
 
 public interface IStackSizeSupplier {
 	int getStackSize();

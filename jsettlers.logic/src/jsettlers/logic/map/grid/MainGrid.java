@@ -81,6 +81,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -111,7 +112,6 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
