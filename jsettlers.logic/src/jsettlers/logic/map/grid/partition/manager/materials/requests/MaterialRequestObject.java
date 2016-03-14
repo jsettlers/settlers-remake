@@ -32,7 +32,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 
 	private EPriority priority = EPriority.DEFAULT;
 	AbstractMaterialRequestPriorityQueue requestQueue;
-	int inDelivery;
+	byte inDelivery;
 
 	/**
 	 * Updates the priority of this {@link MaterialRequestObject} to the given {@link EPriority}.
@@ -116,7 +116,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract EBuildingType getBuildingType();
 
 	public byte getInDelivery() {
-		return (byte) inDelivery;
+		return inDelivery;
 	}
 
 	public boolean isFinished() {

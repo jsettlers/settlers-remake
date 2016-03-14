@@ -36,6 +36,9 @@ import jsettlers.logic.constants.MatchConstants;
 public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMaterialRequestPriorityQueue {
 	private static final long serialVersionUID = 4856036773080549412L;
 
+	private static final EBuildingType[] ADDITIONAL_BUILDINGS = { EBuildingType.STOCK, EBuildingType.HARBOR, EBuildingType.MARKET_PLACE };
+	private static final int NUMBER_OF_ADDITIONAL_BUILDINGS = ADDITIONAL_BUILDINGS.length;
+
 	private final DoubleLinkedList<MaterialRequestObject> queues[][];
 
 	private final IMaterialsDistributionSettings settings;
@@ -48,7 +51,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		queues = new DoubleLinkedList[EPriority.NUMBER_OF_PRIORITIES][];
 		for (int i = 0; i < queues.length; i++) {
-			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings());
+			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings() + NUMBER_OF_ADDITIONAL_BUILDINGS);
 		}
 
 		calculateBuildingTypesToIndex();
@@ -60,8 +63,12 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		for (int i = 0; i < buildingTypesToIndex.length; i++) {
 			buildingTypesToIndex[i] = -1;
 		}
-		for (int i = 0; i < settings.getNumberOfBuildings(); i++) {
+		int numberOfBuildings = settings.getNumberOfBuildings();
+		for (int i = 0; i < numberOfBuildings; i++) {
 			buildingTypesToIndex[settings.getBuildingType(i).ordinal] = i;
+		}
+		for (int i = 0; i < NUMBER_OF_ADDITIONAL_BUILDINGS; i++) {
+			buildingTypesToIndex[ADDITIONAL_BUILDINGS[i].ordinal] = numberOfBuildings + i;
 		}
 	}
 
@@ -85,11 +92,13 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		int startIndex = getRandomStartIndex();
 
-		final int numberOfBuildings = settings.getNumberOfBuildings();
+		final int numberOfSettingsBuildings = settings.getNumberOfBuildings();
+		final int numberOfBuildings = numberOfSettingsBuildings + NUMBER_OF_ADDITIONAL_BUILDINGS;
 		for (int i = 0; i < numberOfBuildings; i++) {
 			int buildingIdx = (i + startIndex) % numberOfBuildings;
 
-			if (settings.getProbablity(buildingIdx) <= 0.0f) // if this building type should not receive any materials, skip it
+			// if this building type should not receive any materials, skip it; if it is additional building, always check it
+			if (buildingIdx < numberOfSettingsBuildings && settings.getProbablity(buildingIdx) <= 0.0f)
 				continue;
 
 			MaterialRequestObject foundRequest = findRequestInQueue(queues[buildingIdx]);
