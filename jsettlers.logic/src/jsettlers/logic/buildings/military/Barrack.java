@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.military;
 
-import java.util.List;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -24,6 +22,7 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.WorkAreaBuilding;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.IRequestStackListener;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
@@ -48,12 +47,11 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public EMovableType popWeaponForBearer() {
-		List<RequestStack> stacks = super.getStacks();
-		for (RequestStack stack : stacks) {
-			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
-					|| stack.getMaterialType() == EMaterialType.SPEAR) {
+		for (IRequestStack stack : super.getStacks()) {
+			EMaterialType materialType = stack.getMaterialType();
+			if (materialType == EMaterialType.BOW || materialType == EMaterialType.SWORD || materialType == EMaterialType.SPEAR) {
 				if (stack.pop()) {
-					return getSoldierType(stack.getMaterialType());
+					return getSoldierType(materialType);
 				}
 			}
 		}
@@ -86,7 +84,7 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	protected int constructionFinishedEvent() {
-		for (RequestStack curr : super.getStacks()) {
+		for (IRequestStack curr : super.getStacks()) {
 			curr.setListener(this);
 		}
 		return -1;

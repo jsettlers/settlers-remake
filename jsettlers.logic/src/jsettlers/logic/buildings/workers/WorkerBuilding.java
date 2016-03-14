@@ -25,7 +25,7 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.buildings.stack.RequestStack;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
@@ -72,7 +72,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	protected final boolean popMaterialFromStack(EMaterialType material) {
-		for (RequestStack stack : super.getStacks()) {
+		for (IRequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == material) {
 				return stack.pop();
 			}

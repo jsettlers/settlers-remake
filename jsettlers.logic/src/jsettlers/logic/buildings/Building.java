@@ -17,6 +17,7 @@ package jsettlers.logic.buildings;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,6 +46,7 @@ import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.BigTemple;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
@@ -96,7 +98,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private byte heightAvg;
 
 	private short remainingMaterialActions = 0;
-	private List<RequestStack> stacks;
+	private List<IRequestStack> stacks;
 
 	private transient boolean selected;
 
@@ -171,8 +173,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		requestDiggers();
 	}
 
-	private List<RequestStack> createConstructionStacks() {
-		List<RequestStack> result = new LinkedList<RequestStack>();
+	private List<IRequestStack> createConstructionStacks() {
+		List<IRequestStack> result = new LinkedList<IRequestStack>();
 
 		for (ConstructionStack stack : type.getConstructionStacks()) {
 			result.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority,
@@ -186,8 +188,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.stacks = createWorkStacks();
 	}
 
-	protected List<RequestStack> createWorkStacks() {
-		List<RequestStack> newStacks = new LinkedList<RequestStack>();
+	protected List<IRequestStack> createWorkStacks() {
+		List<IRequestStack> newStacks = new LinkedList<IRequestStack>();
 
 		for (RelativeStack stack : type.getRequestStacks()) {
 			newStacks.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority));
@@ -319,7 +321,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (stacks == null)
 			return true;
 
-		for (RequestStack stack : stacks) {
+		for (IRequestStack stack : stacks) {
 			if (stack.hasMaterial())
 				return true;
 		}
@@ -361,7 +363,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (remainingMaterialActions > 0) {
 			return true;
 		} else {
-			RequestStack stack = getStackWithMaterial();
+			IRequestStack stack = getStackWithMaterial();
 			if (priority != EPriority.STOPPED && stack != null) {
 				stack.pop();
 				remainingMaterialActions = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
@@ -379,7 +381,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private boolean areAllStacksFullfilled() {
-		for (RequestStack curr : stacks) {
+		for (IRequestStack curr : stacks) {
 			if (!curr.isFullfilled()) {
 				return false;
 			}
@@ -387,8 +389,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return true;
 	}
 
-	protected RequestStack getStackWithMaterial() {
-		for (RequestStack curr : stacks) {
+	protected IRequestStack getStackWithMaterial() {
+		for (IRequestStack curr : stacks) {
 			if (curr.hasMaterial()) {
 				return curr;
 			}
@@ -479,7 +481,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
 			}
 		} else {
-			for (RequestStack stack : stacks) {
+			for (IRequestStack stack : stacks) {
 				posIdx += 2;
 				int paybackAmount = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
 				if (paybackAmount > 0) {
@@ -495,10 +497,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	protected void releaseRequestStacks() {
 		if (stacks != null) {
-			for (RequestStack curr : stacks) {
+			for (IRequestStack curr : stacks) {
 				curr.releaseRequests();
 			}
-			stacks = new LinkedList<RequestStack>();
+			stacks = Collections.emptyList();
 		}
 	}
 
@@ -633,7 +635,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
-	protected List<RequestStack> getStacks() {
+	protected List<IRequestStack> getStacks() {
 		return stacks;
 	}
 
@@ -667,7 +669,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public List<IBuildingMaterial> getMaterials() {
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
 
-		for (RequestStack stack : stacks) {
+		for (IRequestStack stack : stacks) {
 			if (state == STATE_CONSTRUCTED) {
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
 			} else { // during construction
@@ -688,7 +690,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void setPriority(EPriority newPriority) {
 		this.priority = newPriority;
 		if (stacks != null) {
-			for (RequestStack curr : stacks) {
+			for (IRequestStack curr : stacks) {
 				curr.setPriority(newPriority);
 			}
 		}

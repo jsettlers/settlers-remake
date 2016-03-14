@@ -22,7 +22,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.stack.RequestStack;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.player.Player;
 
 /**
@@ -52,7 +52,7 @@ public final class TempleBuilding extends Building {
 
 	@Override
 	protected int subTimerEvent() {
-		RequestStack wineStack = getWineStack();
+		IRequestStack wineStack = getWineStack();
 
 		if (wineStack.pop()) {
 			getPlayer().getManaInformation().increaseMana();
@@ -62,11 +62,11 @@ public final class TempleBuilding extends Building {
 		}
 	}
 
-	private RequestStack getWineStack() {
-		List<RequestStack> stacks = super.getStacks();
+	private IRequestStack getWineStack() {
+		List<IRequestStack> stacks = super.getStacks();
 		assert stacks.size() == 1;
 
-		RequestStack wineStack = stacks.get(0);
+		IRequestStack wineStack = stacks.get(0);
 		assert wineStack.getMaterialType() == EMaterialType.WINE;
 		return wineStack;
 	}

@@ -26,7 +26,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.stack.RequestStack;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.movable.strategies.DonkeyStrategy.IDonkeyMarket;
 import jsettlers.logic.player.Player;
 
@@ -80,7 +80,7 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 			return null;
 		}
 
-		RequestStack stack = super.getStackWithMaterial();
+		IRequestStack stack = super.getStackWithMaterial();
 
 		if (stack != null && stack.pop()) {
 			return stack.getMaterialType();
