@@ -92,36 +92,9 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 			if (settings.getProbablity(buildingIdx) <= 0.0f) // if this building type should not receive any materials, skip it
 				continue;
 
-			DoubleLinkedList<MaterialRequestObject> queue = queues[buildingIdx];
-
-			int numberOfElements = queue.size();
-
-			for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
-				MaterialRequestObject result = queue.getFront();
-
-				int inDelivery = result.inDelivery;
-				int stillNeeded = result.getStillNeeded();
-
-				// if the request is done
-				if (stillNeeded <= 0) {
-					result.requestQueue = null;
-					queue.popFront(); // remove the request
-					numberOfElements--;
-				}
-
-				// if all needed are in delivery, or there can not be any more in delivery
-				else if (stillNeeded <= inDelivery || inDelivery >= result.getInDeliveryable()) {
-					queue.pushEnd(queue.popFront()); // move the request to the end.
-				}
-
-				// everything fine, take this request
-				else {
-					if (result.isRoundRobinRequest()) {
-						queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
-					}
-
-					return result;
-				}
+			MaterialRequestObject foundRequest = findRequestInQueue(queues[buildingIdx]);
+			if (foundRequest != null) {
+				return foundRequest;
 			}
 		}
 

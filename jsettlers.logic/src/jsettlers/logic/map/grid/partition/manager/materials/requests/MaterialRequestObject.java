@@ -91,7 +91,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	}
 
 	@Override
-	public final void deliveryFulfilled() {
+	public void deliveryFulfilled() {
 		materialDelivered();
 		inDelivery--;
 	}
@@ -102,7 +102,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract void materialDelivered();
 
 	@Override
-	public final void deliveryAborted() {
+	public void deliveryAborted() {
 		inDelivery--;
 	}
 
@@ -114,4 +114,16 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract boolean isRoundRobinRequest();
 
 	protected abstract EBuildingType getBuildingType();
+
+	public byte getInDelivery() {
+		return (byte) inDelivery;
+	}
+
+	public boolean isFinished() {
+		return inDelivery <= 0 && getStillNeeded() <= 0;
+	}
+
+	public boolean canTakeMoreOffers() {
+		return inDelivery < getStillNeeded() && inDelivery < getInDeliveryable();
+	}
 }

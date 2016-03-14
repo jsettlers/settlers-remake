@@ -71,6 +71,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 		assertTrue(request.isInQueue());
 
 		request.stillNeeded = 0;
+		request.inDelivery = 0;
 		assertNull(popHighest(queue)); // now the request should be removed
 		assertFalse(request.isInQueue());
 	}
@@ -186,7 +187,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 		private final ShortPoint2D position;
 
 		private short stillNeeded;
-		private int onStack;
+		private final int onStack;
 
 		public TestMaterialRequest(ShortPoint2D position, short stillNeeded, int onStack) {
 			this.position = position;
