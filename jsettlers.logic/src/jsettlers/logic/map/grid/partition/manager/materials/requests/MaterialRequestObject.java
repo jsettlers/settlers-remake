@@ -108,7 +108,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 
 	@Override
 	public boolean isActive() {
-		return priority != EPriority.STOPPED && inDelivery <= getStillNeeded() && inDelivery <= getInDeliveryable();
+		return priority != EPriority.STOPPED && getStillNeeded() >= 0 && inDelivery <= getInDeliveryable();
 	}
 
 	protected abstract boolean isRoundRobinRequest();
@@ -124,6 +124,6 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	}
 
 	public boolean canTakeMoreOffers() {
-		return inDelivery < getStillNeeded() && inDelivery < getInDeliveryable();
+		return getStillNeeded() > 0 && inDelivery < getInDeliveryable();
 	}
 }

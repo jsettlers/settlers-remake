@@ -70,7 +70,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 		assertNull(popHighest(queue)); // still needed is not 0 so it should stay in the queue
 		assertTrue(request.isInQueue());
 
-		request.stillNeeded = 0;
+		request.stillRequired = 0;
 		request.inDelivery = 0;
 		assertNull(popHighest(queue)); // now the request should be removed
 		assertFalse(request.isInQueue());
@@ -186,12 +186,12 @@ public class SimpleMaterialRequestPriorityQueueTest {
 
 		private final ShortPoint2D position;
 
-		private short stillNeeded;
+		private short stillRequired;
 		private final int onStack;
 
 		public TestMaterialRequest(ShortPoint2D position, short stillNeeded, int onStack) {
 			this.position = position;
-			this.stillNeeded = stillNeeded;
+			this.stillRequired = stillNeeded;
 			this.onStack = onStack;
 		}
 
@@ -201,7 +201,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 
 		@Override
 		public short getStillNeeded() {
-			return stillNeeded;
+			return (short) (stillRequired - inDelivery);
 		}
 
 		@Override
@@ -216,7 +216,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 
 		@Override
 		protected void materialDelivered() {
-			stillNeeded--;
+			stillRequired--;
 		}
 
 		@Override
@@ -235,7 +235,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 			int result = 1;
 			result = prime * result + onStack;
 			result = prime * result + ((position == null) ? 0 : position.hashCode());
-			result = prime * result + stillNeeded;
+			result = prime * result + stillRequired;
 			return result;
 		}
 
@@ -255,7 +255,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 					return false;
 			} else if (!position.equals(other.position))
 				return false;
-			if (stillNeeded != other.stillNeeded)
+			if (stillRequired != other.stillRequired)
 				return false;
 			return true;
 		}

@@ -35,6 +35,6 @@ public class MultiRequestStackSharedData {
 			}
 		}
 
-		return requestedMaterials[materialType.ordinal];
+		return (short) (requestedMaterials[materialType.ordinal] - inDelivery[materialType.ordinal]);
 	}
 }

@@ -20,10 +20,10 @@ public interface IRequestStack extends ILocatable, IStackSizeSupplier, Serializa
 
 	void releaseRequests();
 
-	short getStillNeeded();
-
 	void setPriority(EPriority newPriority);
 
 	void setListener(IRequestStackListener listener);
+
+	short getStillRequired();
 
 }

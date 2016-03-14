@@ -121,7 +121,7 @@ public class MultiRequestStack implements IRequestStack {
 	}
 
 	@Override
-	public short getStillNeeded() {
+	public short getStillRequired() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -194,7 +194,7 @@ public class MultiRequestStack implements IRequestStack {
 					short requested = sharedData.requestedMaterials[materialType.ordinal];
 					byte overAllInDelivery = sharedData.inDelivery[materialType.ordinal];
 
-					return (short) (requested - Math.max(0, overAllInDelivery - super.getInDelivery()));
+					return (short) (requested - overAllInDelivery);
 				} else {
 					return 0;
 				}

@@ -157,7 +157,12 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public short getStillNeeded() {
+	protected short getStillNeeded() {
+		return (short) (stillNeeded - getInDelivery());
+	}
+
+	@Override
+	public short getStillRequired() {
 		return stillNeeded;
 	}
 

@@ -673,7 +673,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			if (state == STATE_CONSTRUCTED) {
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
 			} else { // during construction
-				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillNeeded()));
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillRequired()));
 			}
 		}
 
