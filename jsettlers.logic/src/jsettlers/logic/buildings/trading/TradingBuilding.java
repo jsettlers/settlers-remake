@@ -15,15 +15,21 @@
 package jsettlers.logic.buildings.trading;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.stack.IRequestStack;
+import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
+import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
 
 public class TradingBuilding extends Building implements IBuilding.ITrading {
@@ -34,7 +40,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
-	private final int[] requestedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
+	private final short[] requestedMaterials = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
 
 	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
@@ -87,7 +93,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			newValue += old;
 		}
 
-		requestedMaterials[material.ordinal] = (int) Math.max(0, Math.min(Integer.MAX_VALUE, newValue));
+		requestedMaterials[material.ordinal] = (short) Math.max(0, Math.min(Short.MAX_VALUE, newValue));
 	}
 
 	public void setWaypoint(WaypointType waypointType, ShortPoint2D position) {
@@ -132,5 +138,18 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 
 	private void drawWaypointLine(boolean draw) {
 		super.grid.drawTradingPathLine(super.pos, waypoints, draw);
+	}
+
+	@Override
+	protected List<IRequestStack> createWorkStacks() {
+		List<IRequestStack> newStacks = new LinkedList<IRequestStack>();
+
+		MultiRequestStackSharedData sharedData = new MultiRequestStackSharedData(requestedMaterials);
+
+		for (RelativeStack stack : type.getRequestStacks()) {
+			newStacks.add(new MultiRequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), type, super.getPriority(), sharedData));
+		}
+
+		return newStacks;
 	}
 }

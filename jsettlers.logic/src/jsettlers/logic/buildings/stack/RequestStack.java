@@ -29,7 +29,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialReq
  * @author Andreas Eberle
  * 
  */
-public class RequestStack extends MaterialRequestObject implements Serializable, IStackSizeSupplier {
+public class RequestStack extends MaterialRequestObject implements Serializable, IRequestStack {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;
@@ -82,6 +82,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		super.updatePriority(priority);
 	}
 
+	@Override
 	public boolean hasMaterial() {
 		return grid.hasMaterial(position, materialType);
 	}
@@ -91,6 +92,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * 
 	 * @return <code>true</code> if there was a material to be popped from this stack. False otherwise.
 	 */
+	@Override
 	public boolean pop() {
 		if (grid.popMaterial(position, materialType)) {
 			popped++;
@@ -108,6 +110,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * 
 	 * @return Returns the number of materials popped from this stack.
 	 */
+	@Override
 	public short getNumberOfPopped() {
 		return popped;
 	}
@@ -118,6 +121,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
 	 *         false otherwise.
 	 */
+	@Override
 	public boolean isFullfilled() {
 		return stillNeeded <= 0;
 	}
@@ -126,14 +130,17 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		return position;
 	}
 
+	@Override
 	public EMaterialType getMaterialType() {
 		return materialType;
 	}
 
+	@Override
 	public void setPriority(EPriority priority) {
 		super.updatePriority(priority);
 	}
 
+	@Override
 	public void releaseRequests() {
 		stillNeeded = 0;
 		grid.createOffersForAvailableMaterials(position, materialType);
@@ -179,6 +186,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @param listener
 	 *            The new listener or null if the old listener should just be removed.
 	 */
+	@Override
 	public void setListener(IRequestStackListener listener) {
 		this.listener = listener;
 	}
