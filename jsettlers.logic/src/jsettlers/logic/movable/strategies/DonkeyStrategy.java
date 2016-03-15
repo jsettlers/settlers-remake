@@ -34,8 +34,10 @@ public class DonkeyStrategy extends MovableStrategy {
 	private EDonkeyState state = EDonkeyState.JOBLESS;
 
 	private IDonkeyMarket market;
-
 	private Iterator<ShortPoint2D> waypoints;
+
+	private EMaterialType materialType1;
+	private EMaterialType materialType2;
 
 	public DonkeyStrategy(Movable movable) {
 		super(movable);
@@ -60,9 +62,15 @@ public class DonkeyStrategy extends MovableStrategy {
 			break;
 
 		case GOING_TO_MARKET:
-			EMaterialType materialType = market.tryToTakeDonkeyMaterial();
-			if (materialType != null) {
-				super.setMaterial(materialType);
+			EMaterialType materialType1 = market.tryToTakeDonkeyMaterial();
+			EMaterialType materialType2 = market.tryToTakeDonkeyMaterial();
+
+			if (materialType1 != null || materialType2 != null) {
+				super.setMaterial(EMaterialType.BASKET);
+
+				this.materialType1 = materialType1;
+				this.materialType2 = materialType2;
+
 				this.waypoints = market.getWaypointsIterator();
 				if (super.goToPos(this.waypoints.next())) {
 					state = EDonkeyState.GOING_TO_TARGET;
@@ -96,7 +104,14 @@ public class DonkeyStrategy extends MovableStrategy {
 
 	private void dropMaterialIfPossible() {
 		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), super.getMaterial(), true);
+			if (materialType1 != null) {
+				super.getStrategyGrid().dropMaterial(super.getPos(), materialType1, true);
+				materialType1 = null;
+			}
+			if (materialType2 != null) {
+				super.getStrategyGrid().dropMaterial(super.getPos(), materialType2, true);
+				materialType2 = null;
+			}
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
 	}
