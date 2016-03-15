@@ -28,13 +28,17 @@ public class MultiRequestStackSharedData {
 		handlingStacks[materialType.ordinal].remove(stack);
 	}
 
-	public short getStillNeeded(EMaterialType materialType) {
+	public short getStillNeededIfNoOthersHandleIt(EMaterialType materialType) {
 		for (MultiRequestStack stack : handlingStacks[materialType.ordinal]) {
 			if (stack.canAcceptMoreDeliveries()) {
 				return 0;
 			}
 		}
 
+		return getStillNeeded(materialType);
+	}
+
+	public short getStillNeeded(EMaterialType materialType) {
 		return (short) (requestedMaterials[materialType.ordinal] - inDelivery[materialType.ordinal]);
 	}
 }

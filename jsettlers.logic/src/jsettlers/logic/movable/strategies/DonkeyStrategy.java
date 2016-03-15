@@ -105,11 +105,11 @@ public class DonkeyStrategy extends MovableStrategy {
 	private void dropMaterialIfPossible() {
 		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
 			if (materialType1 != null) {
-				super.getStrategyGrid().dropMaterial(super.getPos(), materialType1, true);
+				super.getStrategyGrid().dropMaterial(super.getPos(), materialType1, true, true);
 				materialType1 = null;
 			}
 			if (materialType2 != null) {
-				super.getStrategyGrid().dropMaterial(super.getPos(), materialType2, true);
+				super.getStrategyGrid().dropMaterial(super.getPos(), materialType2, true, true);
 				materialType2 = null;
 			}
 			super.setMaterial(EMaterialType.NO_MATERIAL);

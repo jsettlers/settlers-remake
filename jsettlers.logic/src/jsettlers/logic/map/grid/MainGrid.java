@@ -327,7 +327,7 @@ public final class MainGrid implements Serializable {
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
 		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.dropMaterial(pos, materialType, true);
+			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
 		}
 	}
 
@@ -1145,14 +1145,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
-			if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
-				if (offer) {
-					partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
-				}
-				return true;
-			} else
-				return false;
+		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer, boolean forced) {
+			boolean successful;
+
+			if (forced) {
+				position = mapObjectsManager.pushMaterialForced(position.x, position.y, materialType);
+				successful = position != null;
+			} else if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
+				successful = true;
+			} else {
+				successful = false;
+			}
+
+			if (successful && offer) {
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
+			}
+
+			return successful;
 		}
 
 		@Override
@@ -1432,7 +1441,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf) {
 			for (int i = 0; i < numberOf; i++) {
-				movablePathfinderGrid.dropMaterial(position, type, true);
+				movablePathfinderGrid.dropMaterial(position, type, true, true);
 			}
 		}
 

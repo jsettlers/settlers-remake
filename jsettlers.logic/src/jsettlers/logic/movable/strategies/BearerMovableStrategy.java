@@ -187,7 +187,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
+			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true, false);
 		}
 
 		offer = null;
@@ -204,7 +204,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	private void reoffer() {
 		if (super.getStrategyGrid().takeMaterial(offer, materialType)) {
-			super.getStrategyGrid().dropMaterial(offer, materialType, true);
+			super.getStrategyGrid().dropMaterial(offer, materialType, true, false);
 		}
 	}
 

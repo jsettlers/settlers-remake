@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -392,6 +394,36 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 				return true;
 			}
 		}
+	}
+
+	public ShortPoint2D pushMaterialForced(short x, short y, EMaterialType materialType) {
+		IMapArea mapArea = new HexGridArea(x, y, 0, 200);
+
+		for (ShortPoint2D position : mapArea) {
+			short currX = position.x;
+			short currY = position.y;
+			if (grid.isInBounds(currX, currY) && canPushMaterialClean(currX, currY, materialType)) {
+				pushMaterial(currX, currY, materialType);
+				return position;
+			}
+		}
+		return null;
+	}
+
+	private boolean canPushMaterialClean(short x, short y, EMaterialType materialType) {
+		byte size = 0;
+
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+		while (stackObject != null) {
+			if (stackObject.getMaterialType() != materialType) {
+				return false;
+			} else {
+				size += stackObject.getSize();
+			}
+			stackObject = getNextStackObject(stackObject);
+		}
+
+		return size < Constants.STACK_SIZE;
 	}
 
 	public final boolean popMaterial(short x, short y, EMaterialType materialType) {

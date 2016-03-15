@@ -31,7 +31,7 @@ import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1);
-	private Movable movable;
+	private final Movable movable;
 
 	public static void main(String args[]) throws InterruptedException {
 		new MovableTestWindow();
@@ -71,8 +71,8 @@ public class MovableTestWindow {
 			}
 		});
 
-		grid.getMovableGrid().dropMaterial(new ShortPoint2D(40, 40), EMaterialType.PLANK, true);
-		grid.getMovableGrid().dropMaterial(new ShortPoint2D(60, 60), EMaterialType.STONE, true);
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(40, 40), EMaterialType.PLANK, true, false);
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(60, 60), EMaterialType.STONE, true, false);
 
 		new Movable(grid.getMovableGrid(), EMovableType.BEARER, new ShortPoint2D(30, 30), PLAYER_0);
 		new Movable(grid.getMovableGrid(), EMovableType.BEARER, new ShortPoint2D(31, 31), PLAYER_0);

@@ -191,20 +191,12 @@ public class MultiRequestStack implements IRequestStack {
 		protected short getStillNeeded() {
 			if (currentMaterialType != null) {
 				if (currentMaterialType == materialType) {
-					short requested = sharedData.requestedMaterials[materialType.ordinal];
-					byte overAllInDelivery = sharedData.inDelivery[materialType.ordinal];
-
-					return (short) (requested - overAllInDelivery);
+					return sharedData.getStillNeeded(materialType);
 				} else {
 					return 0;
 				}
 			} else {
-				short stillNeeded = sharedData.getStillNeeded(materialType);
-
-				if (materialType == EMaterialType.PLANK && stillNeeded > 0)
-					System.out.println("stillNeeded @" + getPos() + " : " + stillNeeded);
-
-				return stillNeeded;
+				return sharedData.getStillNeededIfNoOthersHandleIt(materialType);
 			}
 		}
 
