@@ -38,7 +38,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	private final IRequestsStackGrid grid;
 
-	private short stillNeeded;
+	private short stillRequired;
 	private short popped;
 
 	private IRequestStackListener listener = null;
@@ -77,7 +77,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		this.materialType = materialType;
 		this.buildingType = buildingType;
 
-		this.stillNeeded = requestedAmount;
+		this.stillRequired = requestedAmount;
 		grid.request(materialType, this);
 		super.updatePriority(priority);
 	}
@@ -123,7 +123,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 */
 	@Override
 	public boolean isFullfilled() {
-		return stillNeeded <= 0;
+		return stillRequired <= 0;
 	}
 
 	public ShortPoint2D getPosition() {
@@ -142,7 +142,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	@Override
 	public void releaseRequests() {
-		stillNeeded = 0;
+		stillRequired = 0;
 		grid.createOffersForAvailableMaterials(position, materialType);
 	}
 
@@ -158,12 +158,12 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	@Override
 	protected short getStillNeeded() {
-		return (short) (stillNeeded - getInDelivery());
+		return (short) (stillRequired - getInDelivery());
 	}
 
 	@Override
 	public short getStillRequired() {
-		return stillNeeded;
+		return stillRequired;
 	}
 
 	@Override
@@ -173,8 +173,8 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	@Override
 	protected void materialDelivered() {
-		if (stillNeeded < Short.MAX_VALUE) {
-			stillNeeded--;
+		if (stillRequired < Short.MAX_VALUE) {
+			stillRequired--;
 		}
 
 		if (listener != null) {
@@ -198,7 +198,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	@Override
 	protected boolean isRoundRobinRequest() {
-		return stillNeeded == Short.MAX_VALUE;
+		return stillRequired == Short.MAX_VALUE;
 	}
 
 	@Override
