@@ -16,7 +16,6 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;

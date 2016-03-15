@@ -317,8 +317,10 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
+	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
+			EDirection direction = EDirection.getDirection(position, path.getNextPos());
+
 			AbstractStrategyGrid grid = super.getStrategyGrid();
 			EDirection leftDir = direction.getNeighbor(-1);
 			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
@@ -344,7 +346,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 				}
 			}
 		} else {
-			return super.findWayAroundObstacle(direction, position, path);
+			return super.findWayAroundObstacle(position, path);
 		}
 	}
 
