@@ -140,12 +140,16 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	@Override
 	public boolean beforeDroppingMaterial() {
-		if (request != null && request.isActive() && request.getPos().equals(super.getPos())) {
-			request.deliveryFulfilled();
-			return false;
-		} else {
-			return true;
+		if (request != null) {
+			if (request.isActive() && request.getPos().equals(super.getPos())) {
+				request.deliveryFulfilled();
+				return false;
+			} else {
+				request.deliveryAborted();
+				request = null;
+			}
 		}
+		return true; // offer the material
 	}
 
 	private void handleJobFailed(boolean reportAsJobless) {

@@ -82,11 +82,14 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 
 		IRequestStack stack = super.getStackWithMaterial();
 
-		if (stack != null && stack.pop()) {
-			return stack.getMaterialType();
-		} else {
-			return null;
+		if (stack != null) {
+			EMaterialType materialType = stack.getMaterialType(); // get this before pop, as pop may reset the currentType of the stack
+			if (stack.pop()) {
+				return materialType;
+			}
 		}
+
+		return null;
 	}
 
 	@Override
