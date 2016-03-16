@@ -62,7 +62,7 @@ import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.OldSwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -720,7 +720,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			mapData.doPreSaveActions();
 			MapList.getDefaultList().saveNewMap(generateMapHeader(), mapData, new FileOutputStream(temp));
 
-			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), SwingManagedJSettlers.class.getName(),
+			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), OldSwingManagedJSettlers.class.getName(),
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
 			startProcess(args, "game");
 		} catch (IOException e) {

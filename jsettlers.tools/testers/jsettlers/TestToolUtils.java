@@ -12,7 +12,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.OldSwingManagedJSettlers;
 
 public class TestToolUtils extends TestUtils {
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {
@@ -24,7 +24,7 @@ public class TestToolUtils extends TestUtils {
 		setupSwingResources();
 
 		ImageProvider.getInstance().startPreloading();
-		JSettlersScreen content = SwingManagedJSettlers.startGui();
+		JSettlersScreen content = OldSwingManagedJSettlers.startGui();
 		MapContent mapContent = new MapContent(game, new SwingSoundPlayer());
 		content.setContent(mapContent);
 

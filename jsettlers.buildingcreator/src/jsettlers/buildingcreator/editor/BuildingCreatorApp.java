@@ -57,7 +57,8 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.NewSwingManagedJSettlers;
+import jsettlers.main.swing.OldSwingManagedJSettlers;
 
 /**
  * This is the main building creator class.
@@ -73,7 +74,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private JFrame window;
 
 	private BuildingCreatorApp(OptionableProperties options) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
+		NewSwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
 	}
 
 	@Override
@@ -135,7 +136,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	}
 
 	private MapInterfaceConnector startMapWindow() {
-		JSettlersScreen gui = SwingManagedJSettlers.startGui();
+		JSettlersScreen gui = OldSwingManagedJSettlers.startGui();
 		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer());
 		gui.setContent(content);
 		MapInterfaceConnector connector = content.getInterfaceConnector();

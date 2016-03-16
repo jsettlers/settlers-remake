@@ -63,7 +63,7 @@ public class SettlersFrame extends JFrame {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
 		pack();
-		setVisible(true);
+		setLocationRelativeTo(null);
 	}
 
 	private void abortRedrawTimerIfPresent() {

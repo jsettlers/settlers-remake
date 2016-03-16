@@ -18,14 +18,10 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -34,18 +30,13 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.JSettlersScreen;
-import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
-import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
-import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
@@ -53,7 +44,6 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
-import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -61,7 +51,7 @@ import jsettlers.network.client.OfflineNetworkConnector;
  * @author Andreas Eberle
  * @author michael
  */
-public class SwingManagedJSettlers {
+public class OldSwingManagedJSettlers {
 	static {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
@@ -87,111 +77,11 @@ public class SwingManagedJSettlers {
 
 		OptionableProperties options = MainUtils.loadOptions(args);
 
-		loadOptionalSettings(options);
-		setupResourceManagers(options, "config.prp");
+		NewSwingManagedJSettlers.loadOptionalSettings(options);
+		NewSwingManagedJSettlers.setupResourceManagers(options, "config.prp");
 
 		JSettlersScreen content = startGui();
 		generateContent(options, content);
-	}
-
-	/**
-	 * Sets up the {@link ResourceManager} by using a configuration file. <br>
-	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
-	 * file. <br>
-	 * If the parameter is not given, the defaultConfigFile is used.
-	 * 
-	 * @param argsMap
-	 * @param defaultConfigFileName
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	public static void setupResourceManagers(OptionableProperties options, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigFileName);
-		SwingResourceLoader.setupResourcesManager(configFile);
-
-		boolean firstRun = true;
-
-		while (!configFile.isValidSettlersFolderSet() || !trySettingUpResources(configFile)) {
-			if (!firstRun) {
-				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
-			}
-			firstRun = false;
-
-			final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					folderChooser.setVisible(true);
-				}
-			});
-
-			File selectedFolder = folderChooser.waitForUserInput();
-			if (selectedFolder == null) {
-				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
-				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
-				System.err.println(noFolderSelctedMessage);
-				System.exit(1);
-			}
-
-			System.out.println(selectedFolder);
-			try {
-				configFile.setSettlersFolder(selectedFolder);
-			} catch (IOException ex) {
-				String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");
-				System.err.println(errorSavingSettingsMessage);
-				JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
-				ex.printStackTrace();
-			}
-		}
-
-		if (!firstRun) { // the dialog was shown => settlers folder might have changed
-			SwingResourceLoader.setupResourcesManager(configFile);
-		}
-	}
-
-	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
-		try {
-			SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	public static ConfigurationPropertiesFile getConfigFile(Properties options, String defaultConfigFileName) throws IOException {
-		String configFileName = defaultConfigFileName;
-		if (options.containsKey("config")) {
-			configFileName = options.getProperty("config");
-		}
-		return new ConfigurationPropertiesFile(new File(configFileName));
-	}
-
-	public static void loadOptionalSettings(OptionableProperties options) {
-		CommonConstants.CONTROL_ALL = options.isOptionSet("control-all");
-		CommonConstants.ACTIVATE_ALL_PLAYERS = options.isOptionSet("activate-all-players");
-		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
-		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
-		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
-		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
-
-		if (options.containsKey("fixed-ai-type")) {
-			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
-		}
-
-		if (options.isOptionSet("localhost")) {
-			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
-		}
-
-		if (options.containsKey("locale")) {
-			String localeString = options.getProperty("locale");
-			String[] localeParts = localeString.split("_");
-			if (localeParts.length == 2) {
-				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
-			} else {
-				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
-			}
-		}
 	}
 
 	/**

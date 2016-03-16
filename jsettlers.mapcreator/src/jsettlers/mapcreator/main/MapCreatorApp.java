@@ -23,7 +23,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.exceptionhandler.ExceptionHandler;
-import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.NewSwingManagedJSettlers;
 import jsettlers.mapcreator.control.EditorControl;
 import jsettlers.mapcreator.main.window.EditorFrame;
 import jsettlers.mapcreator.main.window.NewFilePanel;
@@ -103,7 +103,7 @@ public class MapCreatorApp {
 			ExceptionHandler.setupDefaultExceptionHandler();
 
 			OptionableProperties options = MainUtils.loadOptions(args);
-			SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
+			NewSwingManagedJSettlers.setupResourceManagers(options, "config.prp");
 			loadLookAndFeel();
 
 			startWithSelectionDialog();
