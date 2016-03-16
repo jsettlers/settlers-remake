@@ -57,7 +57,7 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.main.swing.NewSwingManagedJSettlers;
+import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.OldSwingManagedJSettlers;
 
 /**
@@ -74,7 +74,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private JFrame window;
 
 	private BuildingCreatorApp(OptionableProperties options) throws FileNotFoundException, IOException {
-		NewSwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
+		SwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
 	}
 
 	@Override

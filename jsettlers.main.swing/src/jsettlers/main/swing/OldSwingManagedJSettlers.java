@@ -77,8 +77,8 @@ public class OldSwingManagedJSettlers {
 
 		OptionableProperties options = MainUtils.loadOptions(args);
 
-		NewSwingManagedJSettlers.loadOptionalSettings(options);
-		NewSwingManagedJSettlers.setupResourceManagers(options, "config.prp");
+		SwingManagedJSettlers.loadOptionalSettings(options);
+		SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
 
 		JSettlersScreen content = startGui();
 		generateContent(options, content);

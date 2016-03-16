@@ -49,7 +49,7 @@ import jsettlers.network.client.OfflineNetworkConnector;
  * @author codingberlin
  * @author Andreas Eberle
  */
-public class NewSwingManagedJSettlers {
+public class SwingManagedJSettlers {
 	static {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
@@ -57,7 +57,7 @@ public class NewSwingManagedJSettlers {
 	public static void main(String[] args) throws IOException {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
-		NewSwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
+		SwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
 
 		try {
 			SettlerLookAndFeel.install();
@@ -117,12 +117,12 @@ public class NewSwingManagedJSettlers {
 	 * @throws IOException
 	 */
 	public static void setupResourceManagers(OptionableProperties options, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = NewSwingManagedJSettlers.getConfigFile(options, defaultConfigFileName);
+		ConfigurationPropertiesFile configFile = SwingManagedJSettlers.getConfigFile(options, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		boolean firstRun = true;
 
-		while (!configFile.isValidSettlersFolderSet() || !NewSwingManagedJSettlers.trySettingUpResources(configFile)) {
+		while (!configFile.isValidSettlersFolderSet() || !SwingManagedJSettlers.trySettingUpResources(configFile)) {
 			if (!firstRun) {
 				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
 			}

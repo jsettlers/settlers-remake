@@ -22,7 +22,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
-import jsettlers.main.swing.NewSwingManagedJSettlers;
+import jsettlers.main.swing.SwingManagedJSettlers;
 
 /**
  * 
@@ -35,8 +35,8 @@ public class ReplayToolApp {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 
 		OptionableProperties options = MainUtils.loadOptions(args);
-		NewSwingManagedJSettlers.loadOptionalSettings(options);
-		SwingResourceLoader.setupResourcesManager(NewSwingManagedJSettlers.getConfigFile(options, "config.prp"));
+		SwingManagedJSettlers.loadOptionalSettings(options);
+		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(options, "config.prp"));
 
 		int targetGameTimeMinutes = Integer.valueOf(options.getProperty("targetTime"));
 		String replayFileString = options.getProperty("replayFile");
