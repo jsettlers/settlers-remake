@@ -23,23 +23,24 @@ import jsettlers.logic.map.MapLoader;
  */
 public class SinglePlayerSlotFactory implements PlayerSlotFactory {
 
-	@Override public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
+	@Override
+	public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
 		PlayerSlot playerSlot = new PlayerSlot();
 		if (slot == 0) {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
 			playerSlot.setPossibleTypes(new EPlayerType[] {
 					EPlayerType.HUMAN,
-					EPlayerType.AI_VERY_EASY,
-					EPlayerType.AI_EASY,
+					EPlayerType.AI_VERY_HARD,
 					EPlayerType.AI_HARD,
-					EPlayerType.AI_VERY_HARD });
+					EPlayerType.AI_EASY,
+					EPlayerType.AI_VERY_EASY });
 		} else {
 			playerSlot.setPossibleTypes(new EPlayerType[] {
-					EPlayerType.AI_VERY_EASY,
-					EPlayerType.AI_EASY,
+					EPlayerType.AI_VERY_HARD,
 					EPlayerType.AI_HARD,
-					EPlayerType.AI_VERY_HARD });
+					EPlayerType.AI_EASY,
+					EPlayerType.AI_VERY_EASY });
 		}
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
