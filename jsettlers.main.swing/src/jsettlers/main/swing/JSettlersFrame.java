@@ -29,10 +29,12 @@ import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.MapLoader;
@@ -44,7 +46,7 @@ import jsettlers.main.swing.menu.startinggamemenu.StartingGamePanel;
 /**
  * @author codingberlin
  */
-public class SettlersFrame extends JFrame {
+public class JSettlersFrame extends JFrame {
 	private static final long serialVersionUID = 2607082717493797224L;
 
 	private final IMultiplayerConnector multiPlayerConnector;
@@ -54,7 +56,7 @@ public class SettlersFrame extends JFrame {
 	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
 	private Timer redrawTimer;
 
-	public SettlersFrame() throws HeadlessException {
+	JSettlersFrame() throws HeadlessException {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		Player player = settingsManager.getPlayer();
 		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
@@ -64,6 +66,7 @@ public class SettlersFrame extends JFrame {
 		setPreferredSize(new Dimension(1200, 800));
 		pack();
 		setLocationRelativeTo(null);
+		setVisible(true);
 	}
 
 	private void abortRedrawTimerIfPresent() {
@@ -137,5 +140,12 @@ public class SettlersFrame extends JFrame {
 	public void showJoinMultiplayerMenu(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector, MapLoader mapLoader) {
 		joinGamePanel.setJoinMultiPlayerMap(joinPhaseMultiplayerGameConnector, mapLoader);
 		setNewContentPane(joinGamePanel);
+	}
+
+	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
+		MapContent content = new MapContent(startedGame, soundPlayer);
+		SwingUtilities.invokeLater(() -> setContent(content));
+		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
+		return content.getInterfaceConnector();
 	}
 }

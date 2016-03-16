@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
@@ -32,6 +31,8 @@ import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.IMapInterfaceConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
@@ -39,7 +40,8 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.lookandfeel.SettlerLookAndFeel;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.lookandfeel.SettlersLookAndFeel;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
@@ -54,28 +56,13 @@ public class SwingManagedJSettlers {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
 		SwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
 
-		try {
-			SettlerLookAndFeel.install();
-			SettlersFrame settlersFrame = new SettlersFrame();
-
-			handleStartOptions(optionableProperties, settlersFrame);
-			settlersFrame.setVisible(true);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		} catch (MapLoadException e) {
-			e.printStackTrace();
-		}
+		JSettlersFrame settlersFrame = createJSettlersFrame();
+		handleStartOptions(optionableProperties, settlersFrame);
 	}
 
 	public static void loadOptionalSettings(OptionableProperties options) {
@@ -178,7 +165,7 @@ public class SwingManagedJSettlers {
 		return new ConfigurationPropertiesFile(new File(configFileName));
 	}
 
-	private static void handleStartOptions(OptionableProperties options, SettlersFrame settlersFrame) throws IOException, MapLoadException {
+	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
@@ -224,5 +211,15 @@ public class SwingManagedJSettlers {
 				MatchConstants.clock().fastForwardTo(targetGameTime);
 			}
 		}
+	}
+
+	public static IMapInterfaceConnector showJSettlers(IStartedGame startedGame) throws JSettlersLookAndFeelExecption {
+		JSettlersFrame jSettlersFrame = createJSettlersFrame();
+		return jSettlersFrame.showStartedGame(startedGame);
+	}
+
+	private static JSettlersFrame createJSettlersFrame() throws JSettlersLookAndFeelExecption {
+		SettlersLookAndFeel.install();
+		return new JSettlersFrame();
 	}
 }

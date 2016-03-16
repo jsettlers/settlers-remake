@@ -15,20 +15,21 @@
 package jsettlers.graphics.test;
 
 import jsettlers.TestToolUtils;
-import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.input.SelectionSet;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class WindowTest {
 
-	private WindowTest() {
+	private WindowTest() throws JSettlersLookAndFeelExecption {
 		TestMap map = new TestMap();
 
-		MapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
+		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
 
 		connector.setSelection(new SelectionSet(map.getAllSettlers()));
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JSettlersLookAndFeelExecption {
 		new WindowTest();
 	}
 }

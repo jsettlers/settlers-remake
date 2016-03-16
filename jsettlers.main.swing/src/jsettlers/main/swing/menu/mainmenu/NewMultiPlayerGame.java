@@ -18,7 +18,7 @@ import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.main.MultiplayerConnector;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 
 import java.awt.event.ActionEvent;
@@ -29,10 +29,10 @@ import java.awt.event.ActionListener;
  */
 public class NewMultiPlayerGame implements ActionListener {
 
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private OpenPanel relatedOpenPanel;
 
-	public NewMultiPlayerGame(SettlersFrame settlersFrame){
+	public NewMultiPlayerGame(JSettlersFrame settlersFrame){
 		this.settlersFrame = settlersFrame;
 	}
 

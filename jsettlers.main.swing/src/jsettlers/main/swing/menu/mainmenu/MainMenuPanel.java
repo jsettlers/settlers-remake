@@ -33,7 +33,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
 
@@ -44,7 +44,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private static final long serialVersionUID = -6745474019479693347L;
 
 	public static final Dimension PREFERRED_EAST_SIZE = new Dimension(300, 300);
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private final JPanel emptyPanel = new JPanel();
 	private final SettingsMenuPanel settingsPanel;
 	private final JButton exitButton = new JButton();
@@ -59,7 +59,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private final OpenPanel joinMultiPlayerGamePanel;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
-	public MainMenuPanel(SettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
+	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
 		ShowNewSinglePlayerGame showNewSinglePlayerGame = new ShowNewSinglePlayerGame(settlersFrame);
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), showNewSinglePlayerGame);

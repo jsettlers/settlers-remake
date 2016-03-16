@@ -57,7 +57,7 @@ import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 
 /**
  * @author codingberlin
@@ -65,7 +65,7 @@ import jsettlers.main.swing.SettlersFrame;
 public class JoinGamePanel extends BackgroundPanel {
 	private static final long serialVersionUID = -1186791399814385303L;
 
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private final JLabel titleLabel = new JLabel();
 	private final JPanel contentPanel = new JPanel();
 	private final JPanel westPanel = new JPanel();
@@ -95,7 +95,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final List<PlayerSlot> playerSlots = new Vector<>();
 	private PlayerSlotFactory playerSlotFactory;
 
-	public JoinGamePanel(SettlersFrame settlersFrame) {
+	public JoinGamePanel(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 		createStructure();
 		setStyle();

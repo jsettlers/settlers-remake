@@ -31,18 +31,19 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;
 	protected static final int HEIGHT = 20;
 	private static Map map;
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws JSettlersLookAndFeelExecption {
 		map = new Map();
 
-		MapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
+		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
 		connector.addListener(new IMapInterfaceListener() {
 
 			@Override

@@ -23,7 +23,6 @@ import javax.swing.SwingUtilities;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.interfaces.EGameError;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
@@ -31,7 +30,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.lookandfeel.LFStyle;
 import jsettlers.lookandfeel.components.BackgroundPanel;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 
 /**
  * @author codingberlin
@@ -40,9 +39,9 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 	private static final long serialVersionUID = -2242937805688362838L;
 
 	private final JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 
-	public StartingGamePanel(SettlersFrame settlersFrame) {
+	public StartingGamePanel(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 		createStructure();
 		setStyle();
@@ -78,10 +77,7 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override
 	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-		MapContent content = new MapContent(game, settlersFrame.getSoundPlayer());
-		SwingUtilities.invokeLater(() -> settlersFrame.setContent(content));
-		game.setGameExitListener(exitGame -> SwingUtilities.invokeLater(settlersFrame::showMainMenu));
-		return content.getInterfaceConnector();
+		return settlersFrame.showStartedGame(game);
 	}
 
 	@Override

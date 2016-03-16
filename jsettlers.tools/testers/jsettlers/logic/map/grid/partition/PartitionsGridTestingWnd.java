@@ -35,9 +35,10 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.player.PlayerSetting;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class PartitionsGridTestingWnd {
 
@@ -46,11 +47,11 @@ public class PartitionsGridTestingWnd {
 
 	private final BitSet blockedGrid = new BitSet(WIDTH * HEIGHT);
 
-	public static void main(String args[]) throws InterruptedException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
 
 		// open the window
-		MapInterfaceConnector connector = TestToolUtils.openTestWindow(testWnd.getGraphicsGrid());
+		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(testWnd.getGraphicsGrid());
 		connector.scrollTo(new ShortPoint2D(200, 200), false);
 		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));

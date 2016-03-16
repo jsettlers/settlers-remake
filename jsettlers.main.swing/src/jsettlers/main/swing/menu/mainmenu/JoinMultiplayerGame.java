@@ -5,7 +5,7 @@ import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnec
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 
 import javax.swing.*;
@@ -16,10 +16,10 @@ import java.awt.event.ActionListener;
  * @author codingberlin
  */
 public class JoinMultiplayerGame implements ActionListener {
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private OpenPanel relatedOpenPanel;
 
-	public JoinMultiplayerGame(SettlersFrame settlersFrame) {
+	public JoinMultiplayerGame(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 	}
 

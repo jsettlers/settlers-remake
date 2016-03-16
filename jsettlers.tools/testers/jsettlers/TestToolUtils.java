@@ -1,34 +1,30 @@
 package jsettlers;
 
-import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.main.swing.OldSwingManagedJSettlers;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class TestToolUtils extends TestUtils {
-	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {
+	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption {
 		IStartedGame game = new FakeMapGame(map);
 		return openTestWindow(game);
 	}
 
-	public static MapInterfaceConnector openTestWindow(IStartedGame game) {
+	public static IMapInterfaceConnector openTestWindow(IStartedGame startedGame) throws JSettlersLookAndFeelExecption {
 		setupSwingResources();
-
 		ImageProvider.getInstance().startPreloading();
-		JSettlersScreen content = OldSwingManagedJSettlers.startGui();
-		MapContent mapContent = new MapContent(game, new SwingSoundPlayer());
-		content.setContent(mapContent);
 
-		mapContent.getInterfaceConnector().addListener(
+		IMapInterfaceConnector mapInterfaceConnector = SwingManagedJSettlers.showJSettlers(startedGame);
+
+		mapInterfaceConnector.addListener(
 				new IMapInterfaceListener() {
 					@Override
 					public void action(Action action) {
@@ -41,6 +37,6 @@ public class TestToolUtils extends TestUtils {
 					}
 				});
 
-		return mapContent.getInterfaceConnector();
+		return mapInterfaceConnector;
 	}
 }

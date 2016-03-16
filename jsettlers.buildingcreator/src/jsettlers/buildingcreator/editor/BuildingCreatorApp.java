@@ -35,7 +35,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.buildingcreator.editor.map.BuildingtestMap;
 import jsettlers.buildingcreator.editor.map.PseudoTile;
 import jsettlers.common.Color;
@@ -49,16 +48,14 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.SwingManagedJSettlers;
-import jsettlers.main.swing.OldSwingManagedJSettlers;
 
 /**
  * This is the main building creator class.
@@ -79,28 +76,32 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 
 	@Override
 	public void run() {
-		EBuildingType type = askType();
+		try {
+			EBuildingType type = askType();
 
-		definition = new BuildingDefinition(type);
-		map = new BuildingtestMap(definition);
-		for (int x = 0; x < map.getWidth(); x++) {
-			for (int y = 0; y < map.getHeight(); y++) {
-				reloadColor(new ShortPoint2D(x, y));
+			definition = new BuildingDefinition(type);
+			map = new BuildingtestMap(definition);
+			for (int x = 0; x < map.getWidth(); x++) {
+				for (int y = 0; y < map.getHeight(); y++) {
+					reloadColor(new ShortPoint2D(x, y));
+				}
 			}
+
+			IMapInterfaceConnector connector = startMapWindow();
+			connector.addListener(this);
+
+			JPanel menu = generateMenu();
+
+			window = new JFrame("Edit " + type.toString());
+			window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			window.add(menu);
+			window.pack();
+			window.setVisible(true);
+
+			connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
+		} catch (JSettlersLookAndFeelExecption e) {
+			throw new RuntimeException(e);
 		}
-
-		MapInterfaceConnector connector = startMapWindow();
-		connector.addListener(this);
-
-		JPanel menu = generateMenu();
-
-		window = new JFrame("Edit " + type.toString());
-		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		window.add(menu);
-		window.pack();
-		window.setVisible(true);
-
-		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 	}
 
 	private JPanel generateMenu() {
@@ -135,12 +136,8 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 		return menu;
 	}
 
-	private MapInterfaceConnector startMapWindow() {
-		JSettlersScreen gui = OldSwingManagedJSettlers.startGui();
-		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer());
-		gui.setContent(content);
-		MapInterfaceConnector connector = content.getInterfaceConnector();
-		return connector;
+	private IMapInterfaceConnector startMapWindow() throws JSettlersLookAndFeelExecption {
+		return SwingManagedJSettlers.showJSettlers(new FakeMapGame(map));
 	}
 
 	private JButton createToolChangeBar() {

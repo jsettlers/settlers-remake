@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.mainmenu;
 
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 
 import java.awt.event.ActionEvent;
@@ -25,10 +25,10 @@ import java.awt.event.ActionListener;
  */
 public class ShowNewSinglePlayerGame implements ActionListener {
 
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private OpenPanel relatedOpenPanel;
 
-	public ShowNewSinglePlayerGame(SettlersFrame settlersFrame) {
+	public ShowNewSinglePlayerGame(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 	}
 

@@ -16,6 +16,7 @@ package jsettlers.graphics.map;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.action.Action;
 
 /**
  * @author Andreas Eberle
@@ -36,4 +37,5 @@ public interface IMapInterfaceConnector extends IMessenger {
 
 	void shutdown();
 
+	void fireAction(Action action);
 }

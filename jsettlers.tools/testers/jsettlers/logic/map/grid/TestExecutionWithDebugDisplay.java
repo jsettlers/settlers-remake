@@ -23,11 +23,12 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
 
-	public static void main(String args[]) throws MapLoadException, InterruptedException {
+	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption {
 		TestUtils.setupResourcesManager();
 		MatchConstants.init(new NetworkTimer(true), 0);
 

@@ -20,29 +20,30 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
+import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1);
 	private final Movable movable;
 
-	public static void main(String args[]) throws InterruptedException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption {
 		new MovableTestWindow();
 	}
 
-	private MovableTestWindow() throws InterruptedException {
+	private MovableTestWindow() throws InterruptedException, JSettlersLookAndFeelExecption {
 		MatchConstants.init(new NetworkTimer(true), 1000);
 		MatchConstants.clock().startExecution();
 
 		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
-		MapInterfaceConnector connector = TestToolUtils.openTestWindow(grid);
+		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(grid);
 
 		movable = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(49, 50), PLAYER_0);
 		movable.setSelected(true);

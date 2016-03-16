@@ -7,7 +7,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.save.loader.SavegameLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
-import jsettlers.main.swing.SettlersFrame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 
 /**
@@ -15,10 +15,10 @@ import jsettlers.main.swing.menu.openpanel.OpenPanel;
  */
 public class StartSaveGame implements ActionListener {
 
-	private final SettlersFrame settlersFrame;
+	private final JSettlersFrame settlersFrame;
 	private OpenPanel relatedOpenPanel;
 
-	public StartSaveGame(SettlersFrame settlersFrame) {
+	public StartSaveGame(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;
 	}
 

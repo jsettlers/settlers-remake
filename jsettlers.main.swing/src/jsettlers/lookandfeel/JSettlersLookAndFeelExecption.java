@@ -12,59 +12,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.replay;
+package jsettlers.lookandfeel;
 
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.UIState;
-import jsettlers.graphics.messages.Message;
+/**
+ * 
+ * @author Andreas Eberle
+ *
+ */
+public class JSettlersLookAndFeelExecption extends Exception {
+	private static final long serialVersionUID = 4998706762006095932L;
 
-class DummyMapInterfaceConnector implements IMapInterfaceConnector {
-
-	private UIState uiState;
-
-	public DummyMapInterfaceConnector() {
-		uiState = new UIState(new ShortPoint2D(0, 0));
-	}
-
-	@Override
-	public void showMessage(Message message) {
-	}
-
-	@Override
-	public UIState getUIState() {
-		return uiState;
-	}
-
-	@Override
-	public void loadUIState(UIState uiStateData) {
-		this.uiState = uiStateData;
-	}
-
-	@Override
-	public void addListener(IMapInterfaceListener listener) {
-	}
-
-	@Override
-	public void removeListener(IMapInterfaceListener guiInterface) {
-	}
-
-	@Override
-	public void scrollTo(ShortPoint2D point, boolean mark) {
-	}
-
-	@Override
-	public void setSelection(ISelectionSet selection) {
-	}
-
-	@Override
-	public void shutdown() {
-	}
-
-	@Override
-	public void fireAction(Action action) {
+	public JSettlersLookAndFeelExecption(Throwable cause) {
+		super(cause);
 	}
 }
