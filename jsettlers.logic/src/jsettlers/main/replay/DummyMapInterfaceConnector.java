@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.main.replay;
 
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.UIState;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.UIState;
-import jsettlers.graphics.messages.Message;
 
 class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 
@@ -31,7 +31,7 @@ class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 	}
 
 	@Override
-	public void showMessage(Message message) {
+	public void showMessage(IMessage message) {
 	}
 
 	@Override
@@ -65,6 +65,6 @@ class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 	}
 
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 	}
 }

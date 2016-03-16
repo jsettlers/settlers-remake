@@ -5,8 +5,8 @@ import java.util.List;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.ILoadableMapPlayer;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.IListedMap;

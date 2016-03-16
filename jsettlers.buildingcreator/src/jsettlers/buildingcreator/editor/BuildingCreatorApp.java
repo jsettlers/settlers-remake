@@ -43,17 +43,18 @@ import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.FakeMapGame;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
@@ -180,7 +181,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	}
 
 	@Override
-	public void action(final Action action) {
+	public void action(final IAction action) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -189,7 +190,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 		});
 	}
 
-	private void doAction(Action action) {
+	private void doAction(IAction action) {
 		if (action instanceof PointAction) {
 			PointAction sAction = (PointAction) action;
 			ShortPoint2D pos = sAction.getPosition();

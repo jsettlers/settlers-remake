@@ -47,17 +47,17 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.menu.FakeMapGame;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.exceptionhandler.ExceptionHandler;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
@@ -759,7 +759,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 * This listener is called from different Thread, all swing calls have to be from event dispatcher thread!
 	 */
 	@Override
-	public void action(final Action action) {
+	public void action(final IAction action) {
 		System.out.println("Got action: " + action.getActionType());
 		if (action.getActionType() == EActionType.SELECT_AREA) {
 			// IMapArea area = ((SelectAreaAction) action).getArea();
@@ -830,7 +830,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	}
 
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 		action(action);
 	}
 

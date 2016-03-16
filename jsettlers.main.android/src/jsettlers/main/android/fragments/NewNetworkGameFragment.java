@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragments.progress.JoinGameProgress;
 import jsettlers.main.android.maplist.MapDefinitionListAdapter;

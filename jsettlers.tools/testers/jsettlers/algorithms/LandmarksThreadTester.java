@@ -26,13 +26,13 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class LandmarksThreadTester {
@@ -47,7 +47,7 @@ public class LandmarksThreadTester {
 		connector.addListener(new IMapInterfaceListener() {
 
 			@Override
-			public void action(Action action) {
+			public void action(IAction action) {
 				if (action.getActionType() == EActionType.SELECT_POINT) {
 					System.out.println("clicked: " + ((PointAction) action).getPosition());
 				}

@@ -14,14 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.awt.image.BufferedImage;
+import java.nio.ShortBuffer;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-
-import java.awt.image.BufferedImage;
-import java.nio.ShortBuffer;
-
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
@@ -118,14 +117,12 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				newData[y * textureWidth + x] = data.get(y * width + x);
 			}
 			for (int x = width; x < textureWidth; x++) {
-				newData[y * textureWidth + x] =
-						newData[y * textureWidth + width - 1];
+				newData[y * textureWidth + x] = newData[y * textureWidth + width - 1];
 			}
 		}
 		for (int y = height; y < textureHeight; y++) {
 			for (int x = 0; x < textureWidth; x++) {
-				newData[y * textureWidth + x] =
-						newData[(height - 1) * textureWidth + x];
+				newData[y * textureWidth + x] = newData[(height - 1) * textureWidth + x];
 			}
 		}
 		data = ShortBuffer.wrap(newData);
@@ -146,8 +143,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				}
 				data.position(0);
 			}
-			texture =
-					gl.generateTexture(textureWidth, textureHeight, this.data);
+			texture = gl.generateTexture(textureWidth, textureHeight, this.data);
 		}
 		return this.texture;
 	}
@@ -323,7 +319,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
 					- getOffsetY(), viewX + getOffsetX() + width, viewY
-					- getOffsetY() - height, 0, 0, getTextureScaleX(),
+							- getOffsetY() - height,
+					0, 0, getTextureScaleX(),
 					getTextureScaleY(), iColor);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -388,8 +385,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 					convertV(v2),
 					convertU(u3),
 					convertV(v3),
-					activeColor
-					);
+					activeColor);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

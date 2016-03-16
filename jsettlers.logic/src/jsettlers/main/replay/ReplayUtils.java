@@ -21,14 +21,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
 import jsettlers.common.utils.MutableInt;
 import jsettlers.common.utils.Tuple;
-import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;

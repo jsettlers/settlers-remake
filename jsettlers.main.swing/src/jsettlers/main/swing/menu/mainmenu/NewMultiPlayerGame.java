@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.mainmenu;
 
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.Player;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;

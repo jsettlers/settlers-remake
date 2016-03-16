@@ -16,12 +16,12 @@ package jsettlers.logic.movable;
 
 import jsettlers.TestToolUtils;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
@@ -52,7 +52,7 @@ public class MovableTestWindow {
 
 		connector.addListener(new IMapInterfaceListener() {
 			@Override
-			public void action(Action action) {
+			public void action(IAction action) {
 				switch (action.getActionType()) {
 				case MOVE_TO:
 					movable.moveTo(((PointAction) action).getPosition());

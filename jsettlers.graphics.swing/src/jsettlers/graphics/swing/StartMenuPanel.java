@@ -31,9 +31,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 
 public class StartMenuPanel extends JPanel {
 	private static final long serialVersionUID = 1L;

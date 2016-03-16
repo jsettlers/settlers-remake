@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IMultiplayerListener;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.main.android.ChatAdapter;
 import jsettlers.main.android.PlayerList;
 import jsettlers.main.android.R;

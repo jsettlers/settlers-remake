@@ -20,11 +20,11 @@ import java.io.InputStream;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.progress.EProgressState;
 
 /**
  * This class provides access to all messages.

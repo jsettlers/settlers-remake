@@ -19,7 +19,7 @@ import java.awt.Component;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
+import jsettlers.common.menu.IMapDefinition;
 
 /**
  * Renderer for IMapDefintion

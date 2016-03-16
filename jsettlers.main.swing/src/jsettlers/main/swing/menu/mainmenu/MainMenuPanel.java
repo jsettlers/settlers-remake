@@ -26,8 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;

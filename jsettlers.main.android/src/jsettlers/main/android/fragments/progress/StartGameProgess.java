@@ -14,12 +14,12 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments.progress;
 
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.EGameError;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import android.annotation.SuppressLint;
 
 @SuppressLint("ValidFragment")

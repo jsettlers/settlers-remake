@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.main.replay;
 
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.EGameError;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGameListener;
 
 class DummyStartingGameListener implements IStartingGameListener {
 	private final Object waitMutex = new Object();

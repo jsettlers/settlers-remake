@@ -25,11 +25,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.LFStyle;
 

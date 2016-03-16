@@ -1,14 +1,14 @@
 package jsettlers;
 
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
+import jsettlers.common.menu.FakeMapGame;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
@@ -27,7 +27,7 @@ public class TestToolUtils extends TestUtils {
 		mapInterfaceConnector.addListener(
 				new IMapInterfaceListener() {
 					@Override
-					public void action(Action action) {
+					public void action(IAction action) {
 						if (action.getActionType() == EActionType.SELECT_POINT) {
 							PointAction selectAction = (PointAction) action;
 							System.out.println("Action preformed: " + action.getActionType() + " at: " + selectAction.getPosition());

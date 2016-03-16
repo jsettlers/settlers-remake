@@ -1,9 +1,9 @@
 package jsettlers.main.swing.menu.mainmenu;
 
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;

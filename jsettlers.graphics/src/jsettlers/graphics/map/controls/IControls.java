@@ -18,11 +18,12 @@ import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapDrawContext;
 
 /**
@@ -123,7 +124,7 @@ public interface IControls extends IMapInterfaceListener {
 	 *            The action.
 	 * @return The new action to send. This is often just the old action.
 	 */
-	Action replaceAction(Action action);
+	IAction replaceAction(IAction action);
 
 	/**
 	 * Gets a tooltip for the given map position.

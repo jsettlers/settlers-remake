@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.IAction;
+
 /**
  * This interface provides a method that allows you to fire an action on the object that implements the listener.
  * 
@@ -27,5 +29,5 @@ public interface ActionFireable {
 	 * @param action
 	 *            The action to fire.
 	 */
-	void fireAction(Action action);
+	void fireAction(IAction action);
 }

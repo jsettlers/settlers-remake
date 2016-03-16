@@ -15,7 +15,7 @@
 package jsettlers.graphics.test;
 
 import jsettlers.TestToolUtils;
-import jsettlers.graphics.map.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.input.SelectionSet;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 

@@ -3,7 +3,7 @@ package jsettlers.main.swing.menu.mainmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.logic.map.save.loader.SavegameLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
