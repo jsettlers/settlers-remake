@@ -38,7 +38,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class PartitionsGridTestingWnd {
 

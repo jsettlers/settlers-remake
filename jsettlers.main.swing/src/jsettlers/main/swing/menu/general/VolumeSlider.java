@@ -1,6 +1,6 @@
 package jsettlers.main.swing.menu.general;
 
-import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.LFStyle;
 
 /**
  * Slider to select volume in settings

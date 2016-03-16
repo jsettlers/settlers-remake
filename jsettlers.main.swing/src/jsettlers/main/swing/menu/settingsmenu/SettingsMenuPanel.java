@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.LFStyle;
 import jsettlers.main.swing.menu.general.VolumeSlider;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
 

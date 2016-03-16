@@ -30,8 +30,8 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.lookandfeel.LFStyle;
 import jsettlers.main.swing.JSettlersSwingUtil;
+import jsettlers.main.swing.lookandfeel.LFStyle;
 
 /**
  * @author codingberlin

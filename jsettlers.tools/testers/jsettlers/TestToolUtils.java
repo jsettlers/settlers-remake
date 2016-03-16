@@ -9,8 +9,8 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class TestToolUtils extends TestUtils {
 	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption {

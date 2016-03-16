@@ -27,7 +27,7 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
-import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {

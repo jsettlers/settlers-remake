@@ -53,10 +53,10 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
+import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.swing.JSettlersFrame;
 
 /**

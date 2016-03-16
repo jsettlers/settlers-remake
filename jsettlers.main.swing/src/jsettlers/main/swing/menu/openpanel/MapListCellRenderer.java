@@ -26,8 +26,8 @@ import javax.swing.UIManager;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.lookandfeel.LFStyle;
 import jsettlers.main.swing.JSettlersSwingUtil;
+import jsettlers.main.swing.lookandfeel.LFStyle;
 
 /**
  * Render to open an existing map

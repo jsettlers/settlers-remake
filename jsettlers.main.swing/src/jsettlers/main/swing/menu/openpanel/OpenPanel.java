@@ -23,7 +23,7 @@ import javax.swing.event.DocumentListener;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.LFStyle;
 
 /**
  * Panel to open an existing map

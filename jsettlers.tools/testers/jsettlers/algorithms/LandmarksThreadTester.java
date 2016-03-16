@@ -33,7 +33,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;

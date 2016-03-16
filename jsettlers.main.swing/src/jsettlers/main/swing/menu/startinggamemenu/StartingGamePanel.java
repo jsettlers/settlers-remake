@@ -28,9 +28,9 @@ import jsettlers.graphics.startscreen.interfaces.EGameError;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
-import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.swing.JSettlersFrame;
+import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
 
 /**
  * @author codingberlin

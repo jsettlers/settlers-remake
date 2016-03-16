@@ -12,24 +12,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.test;
+package jsettlers.main.swing.lookandfeel;
 
-import jsettlers.TestToolUtils;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.input.SelectionSet;
-import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+/**
+ * 
+ * @author Andreas Eberle
+ *
+ */
+public class JSettlersLookAndFeelExecption extends Exception {
+	private static final long serialVersionUID = 4998706762006095932L;
 
-public class WindowTest {
-
-	private WindowTest() throws JSettlersLookAndFeelExecption {
-		TestMap map = new TestMap();
-
-		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
-
-		connector.setSelection(new SelectionSet(map.getAllSettlers()));
-	}
-
-	public static void main(String[] args) throws JSettlersLookAndFeelExecption {
-		new WindowTest();
+	public JSettlersLookAndFeelExecption(Throwable cause) {
+		super(cause);
 	}
 }

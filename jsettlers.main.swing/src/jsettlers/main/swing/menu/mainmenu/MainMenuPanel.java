@@ -31,9 +31,9 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
-import jsettlers.lookandfeel.LFStyle;
-import jsettlers.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.main.swing.JSettlersFrame;
+import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
 

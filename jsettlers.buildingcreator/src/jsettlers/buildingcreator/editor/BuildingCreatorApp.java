@@ -54,8 +54,8 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 /**
  * This is the main building creator class.
