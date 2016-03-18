@@ -24,7 +24,13 @@ import jsettlers.main.swing.lookandfeel.ui.SettlerScrollPanelUi;
  * 
  * @author Andreas Butti
  */
-public class ScrollPaneUiFactory {
+public final class ScrollPaneUiFactory {
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private ScrollPaneUiFactory() {
+	}
 
 	/**
 	 * Create PLAF

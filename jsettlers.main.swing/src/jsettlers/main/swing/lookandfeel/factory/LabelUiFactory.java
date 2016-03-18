@@ -17,7 +17,7 @@ package jsettlers.main.swing.lookandfeel.factory;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.SettlerLabelDynamicUi;
 import jsettlers.main.swing.lookandfeel.ui.SettlerLabelUi;
 import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
@@ -27,7 +27,7 @@ import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
  * 
  * @author Andreas Butti
  */
-public class LabelUiFactory {
+public final class LabelUiFactory {
 
 	/**
 	 * Forward calls
@@ -55,6 +55,12 @@ public class LabelUiFactory {
 	private static final SettlerLabelDynamicUi labelDynamic = new SettlerLabelDynamicUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private LabelUiFactory() {
+	}
+
+	/**
 	 * Create PLAF
 	 * 
 	 * @param c
@@ -62,17 +68,17 @@ public class LabelUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		Object style = c.getClientProperty(LFStyle.KEY);
-		if (LFStyle.LABEL_HEADER == style) {
+		Object style = c.getClientProperty(ELFStyle.KEY);
+		if (ELFStyle.LABEL_HEADER == style) {
 			return headerLabel;
 		}
-		if (LFStyle.LABEL_LONG == style) {
+		if (ELFStyle.LABEL_LONG == style) {
 			return labelLong;
 		}
-		if (LFStyle.LABEL_SHORT == style) {
+		if (ELFStyle.LABEL_SHORT == style) {
 			return labelShort;
 		}
-		if (LFStyle.LABEL_DYNAMIC == style) {
+		if (ELFStyle.LABEL_DYNAMIC == style) {
 			return labelDynamic;
 		}
 

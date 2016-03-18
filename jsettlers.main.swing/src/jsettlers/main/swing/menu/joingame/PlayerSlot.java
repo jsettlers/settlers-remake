@@ -31,7 +31,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.swing.JSettlersSwingUtil;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * @author codingberlin
@@ -108,11 +108,11 @@ public class PlayerSlot {
 		readyButton.setMaximumSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
 		readyButton.setPreferredSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
 		readyButton.setMinimumSize(new Dimension(READY_BUTTON_WIDTH, READY_BUTTON_HEIGHT));
-		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		teamComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		slotComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		typeComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		civilisationComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
+		playerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		teamComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		slotComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		typeComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		civilisationComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
 		updateReadyButtonStyle();
 	}
 

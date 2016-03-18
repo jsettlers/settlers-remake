@@ -32,7 +32,7 @@ import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.swing.JSettlersFrame;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
@@ -89,12 +89,12 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	}
 
 	private void setStyle() {
-		newSinglePlayerGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		loadSaveGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		settingsButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		newNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		joinNetworkGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		exitButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
+		newSinglePlayerGameButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		loadSaveGameButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		settingsButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		newNetworkGameButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		joinNetworkGameButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		exitButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
 
 		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(openSinglePlayerPanel);

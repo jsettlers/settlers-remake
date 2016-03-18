@@ -66,7 +66,7 @@ public class ButtonUiStoneOriginalBg extends BasicButtonUI {
 
 	@Override
 	public void paint(Graphics g1, JComponent c) {
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
+		Graphics2D g = DrawHelper.enableAntialiasing(g1);
 
 		AbstractButton b = (AbstractButton) c;
 		ButtonModel model = b.getModel();

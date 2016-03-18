@@ -17,19 +17,25 @@ package jsettlers.main.swing.lookandfeel.factory;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * Button UI factory
  * 
  * @author Andreas Butti
  */
-public class ToggleButtonUiFactory {
+public final class ToggleButtonUiFactory {
 
 	/**
 	 * Forward calls
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private ToggleButtonUiFactory() {
+	}
 
 	/**
 	 * Create PLAF
@@ -39,11 +45,11 @@ public class ToggleButtonUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		Object style = c.getClientProperty(LFStyle.KEY);
-		if (LFStyle.TOGGLE_BUTTON_STONE == style) {
+		Object style = c.getClientProperty(ELFStyle.KEY);
+		if (ELFStyle.TOGGLE_BUTTON_STONE == style) {
 			return ButtonUiFactory.STONE_UI_SMALL;
 		}
-		if (LFStyle.BUTTON_MENU == style) {
+		if (ELFStyle.BUTTON_MENU == style) {
 			return ButtonUiFactory.MENU_UI;
 		}
 

@@ -44,7 +44,7 @@ import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
-import jsettlers.main.swing.lookandfeel.SettlersLookAndFeel;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -219,7 +219,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static JSettlersFrame createJSettlersFrame() throws JSettlersLookAndFeelExecption {
-		SettlersLookAndFeel.install();
+		JSettlersLookAndFeel.install();
 		return new JSettlersFrame();
 	}
 }

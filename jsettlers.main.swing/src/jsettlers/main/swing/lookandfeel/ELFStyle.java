@@ -19,7 +19,7 @@ package jsettlers.main.swing.lookandfeel;
  * 
  * @author Andreas Butti
  */
-public enum LFStyle {
+public enum ELFStyle {
 
 	/**
 	 * Stone look button

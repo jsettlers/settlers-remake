@@ -24,7 +24,12 @@ import jsettlers.main.swing.lookandfeel.ui.ScrollbarUi;
  * 
  * @author Andreas Butti
  */
-public class ScrollbarUiFactory {
+public final class ScrollbarUiFactory {
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private ScrollbarUiFactory() {
+	}
 
 	/**
 	 * Create PLAF

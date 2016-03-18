@@ -41,7 +41,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.main.swing.JSettlersSwingUtil;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * Render to open an existing map
@@ -165,7 +165,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		pContents.setLayout(new BorderLayout());
 		pContents.add(pRight, BorderLayout.CENTER);
 		pContents.add(lbIcon, BorderLayout.WEST);
-		pContents.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DRAW_BG_CUSTOM);
+		pContents.putClientProperty(ELFStyle.KEY, ELFStyle.PANEL_DRAW_BG_CUSTOM);
 
 		lbIcon.setOpaque(false);
 		lbIcon.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));

@@ -17,7 +17,7 @@ package jsettlers.main.swing.lookandfeel.factory;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.TextFieldUiDark;
 
 /**
@@ -25,12 +25,18 @@ import jsettlers.main.swing.lookandfeel.ui.TextFieldUiDark;
  * 
  * @author Andreas Butti
  */
-public class TextFieldUiFactory {
+public final class TextFieldUiFactory {
 
 	/**
 	 * Forward calls
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private TextFieldUiFactory() {
+	}
 
 	/**
 	 * Create PLAF
@@ -40,7 +46,7 @@ public class TextFieldUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		if (LFStyle.TEXT_DEFAULT == c.getClientProperty(LFStyle.KEY)) {
+		if (ELFStyle.TEXT_DEFAULT == c.getClientProperty(ELFStyle.KEY)) {
 			return new TextFieldUiDark();
 		}
 		return FORWARD.create(c);

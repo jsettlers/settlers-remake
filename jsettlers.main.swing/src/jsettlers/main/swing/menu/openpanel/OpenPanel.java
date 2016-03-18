@@ -37,7 +37,7 @@ import javax.swing.event.DocumentListener;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * Panel to open an existing map
@@ -112,7 +112,7 @@ public class OpenPanel extends JPanel {
 		initFilter();
 
 		this.txtSearch = new SearchTextField();
-		txtSearch.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+		txtSearch.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 
 		Box box = Box.createVerticalBox();
 		box.add(pFilter);
@@ -176,14 +176,14 @@ public class OpenPanel extends JPanel {
 	 */
 	private void initFilter() {
 		JLabel filterLabel = new JLabel(Labels.getString("mapfilter.title"));
-		filterLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		filterLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 		pFilter.add(filterLabel);
 
 		boolean first = true;
 		ButtonGroup group = new ButtonGroup();
 		for (final EMapFilter filter : EMapFilter.values()) {
 			JToggleButton bt = new JToggleButton(filter.getName());
-			bt.putClientProperty(LFStyle.KEY, LFStyle.TOGGLE_BUTTON_STONE);
+			bt.putClientProperty(ELFStyle.KEY, ELFStyle.TOGGLE_BUTTON_STONE);
 			bt.addActionListener(e -> {
 				currentFilter = filter;
 				searchChanged();

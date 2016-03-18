@@ -41,7 +41,6 @@ public class SettlerComboboxUi extends BasicComboBoxUI {
 		protected void setValue(JList<? extends Object> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			setText(String.valueOf(value));
 		}
-
 	}
 
 	/**

@@ -23,7 +23,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 /**
- * Base class for all settler list cell renderer (also used for ComboBox)
+ * Base class for all settlers list cell renderers (also used for ComboBox)
  * 
  * @author Andreas Butti
  * @param <T>
@@ -32,15 +32,12 @@ import javax.swing.ListCellRenderer;
 public abstract class BasicSettlerListCellRenderer<T> extends JLabel implements ListCellRenderer<Object> {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Color 1
-	 */
-	protected Color backgroundColor1 = Color.BLACK;
+	private static final Color SELECTED_FOREGROUND_COLOR = Color.BLACK;
+	private static final Color SELECTED_BACKGROUND_COLOR = UIDefaults.LABEL_TEXT_COLOR;
 
-	/**
-	 * Color 2
-	 */
-	protected Color backgroundColor2 = new Color(0x222222);
+	private static final Color UNSELECTED_FOREGROUND_COLOR = UIDefaults.LABEL_TEXT_COLOR;
+	private static final Color UNSELECTED_EVEN_INDEX_BACKGROUND_COLOR = Color.BLACK;
+	private static final Color UNSELECTED_ODD_INDEX_BACKGROUND_COLOR = new Color(0x222222);
 
 	/**
 	 * Constructor
@@ -56,15 +53,15 @@ public abstract class BasicSettlerListCellRenderer<T> extends JLabel implements 
 			boolean cellHasFocus) {
 
 		if (isSelected) {
-			setForeground(Color.BLACK);
-			setBackground(UIDefaults.LABEL_TEXT_COLOR);
+			setForeground(SELECTED_FOREGROUND_COLOR);
+			setBackground(SELECTED_BACKGROUND_COLOR);
 		} else {
+			setForeground(UNSELECTED_FOREGROUND_COLOR);
 			if (index % 2 == 0) {
-				setBackground(backgroundColor1);
+				setBackground(UNSELECTED_EVEN_INDEX_BACKGROUND_COLOR);
 			} else {
-				setBackground(backgroundColor2);
+				setBackground(UNSELECTED_ODD_INDEX_BACKGROUND_COLOR);
 			}
-			setForeground(UIDefaults.LABEL_TEXT_COLOR);
 		}
 		setValue(list, (T) value, index, isSelected, cellHasFocus);
 
@@ -86,5 +83,4 @@ public abstract class BasicSettlerListCellRenderer<T> extends JLabel implements 
 	 *            Index
 	 */
 	protected abstract void setValue(JList<? extends Object> list, T value, int index, boolean isSelected, boolean cellHasFocus);
-
 }

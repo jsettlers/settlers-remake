@@ -24,7 +24,13 @@ import jsettlers.main.swing.lookandfeel.ui.BackgroundPanelUi;
  * 
  * @author Andreas Butti
  */
-public class BackgroundPanelUiFactory {
+public final class BackgroundPanelUiFactory {
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private BackgroundPanelUiFactory() {
+	}
 
 	/**
 	 * Create PLAF

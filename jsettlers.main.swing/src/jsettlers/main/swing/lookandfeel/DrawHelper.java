@@ -36,42 +36,42 @@ public final class DrawHelper {
 	/**
 	 * Turn antialiasing on return casted instanced of graphics
 	 * 
-	 * @param g1
+	 * @param graphics
 	 *            Graphics
 	 * @return casted Graphics2D
 	 */
-	public static Graphics2D antialiasingOn(Graphics g1) {
-		Graphics2D g = (Graphics2D) g1;
-		g.setRenderingHint(
+	public static Graphics2D enableAntialiasing(Graphics graphics) {
+		Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setRenderingHint(
 				RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-		g.setRenderingHint(
+		graphics2D.setRenderingHint(
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
-		return g;
+		return graphics2D;
 	}
 
 	/**
 	 * Converts a given Image into a BufferedImage
 	 *
-	 * @param img
+	 * @param image
 	 *            The Image to be converted
 	 * @return The converted BufferedImage
 	 */
-	public static BufferedImage toBufferedImage(Image img) {
-		if (img instanceof BufferedImage) {
-			return (BufferedImage) img;
+	public static BufferedImage toBufferedImage(Image image) {
+		if (image instanceof BufferedImage) {
+			return (BufferedImage) image;
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
 		// Draw the image on to the buffered image
-		Graphics2D bGr = bimage.createGraphics();
-		bGr.drawImage(img, 0, 0, null);
-		bGr.dispose();
+		Graphics2D graphics = bufferedImage.createGraphics();
+		graphics.drawImage(image, 0, 0, null);
+		graphics.dispose();
 
 		// Return the buffered image
-		return bimage;
+		return bufferedImage;
 	}
 }

@@ -31,7 +31,7 @@ public final class UiImageLoader {
 	/**
 	 * Cached images
 	 */
-	private static HashMap<String, BufferedImage> cache = new HashMap<>();
+	private static final HashMap<String, BufferedImage> IMAGE_CACHE = new HashMap<>();
 
 	/**
 	 * Utility class
@@ -47,14 +47,14 @@ public final class UiImageLoader {
 	 * @return Image, do not change!
 	 */
 	public static BufferedImage get(String name) {
-		BufferedImage img = cache.get(name);
-		if (img != null) {
-			return img;
+		BufferedImage image = IMAGE_CACHE.get(name);
+		if (image != null) {
+			return image;
 		}
 
-		img = DrawHelper.toBufferedImage(new ImageIcon(UiImageLoader.class.getResource(name)).getImage());
+		image = DrawHelper.toBufferedImage(new ImageIcon(UiImageLoader.class.getResource(name)).getImage());
 
-		cache.put(name, img);
-		return img;
+		IMAGE_CACHE.put(name, image);
+		return image;
 	}
 }

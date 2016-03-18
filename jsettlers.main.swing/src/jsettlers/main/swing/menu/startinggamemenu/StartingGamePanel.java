@@ -29,7 +29,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.swing.JSettlersFrame;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
 
 /**
@@ -58,7 +58,7 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 	}
 
 	private void setStyle() {
-		messageLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
+		messageLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_LONG);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 

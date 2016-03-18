@@ -40,12 +40,6 @@ public class ForwardFactory {
 	private Method method;
 
 	/**
-	 * Constructor
-	 */
-	public ForwardFactory() {
-	}
-
-	/**
 	 * Load the current factory type from UIManager
 	 * 
 	 * @param key
@@ -75,5 +69,4 @@ public class ForwardFactory {
 			return null;
 		}
 	}
-
 }

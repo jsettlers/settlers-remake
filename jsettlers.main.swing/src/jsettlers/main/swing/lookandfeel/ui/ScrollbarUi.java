@@ -104,7 +104,7 @@ public class ScrollbarUi extends BasicScrollBarUI {
 
 	@Override
 	protected void paintThumb(Graphics g1, JComponent c, Rectangle thumbBounds) {
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
+		Graphics2D g = DrawHelper.enableAntialiasing(g1);
 		g.translate(thumbBounds.x, thumbBounds.y);
 
 		int margin = 3;

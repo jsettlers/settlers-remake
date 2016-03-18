@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.general;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * Slider to select volume in settings
@@ -34,7 +34,7 @@ public class VolumeSlider extends SettlerSlider {
 		setMaximum(100);
 		setValue(50);
 
-		putClientProperty(LFStyle.KEY, LFStyle.PROGRESSBAR_SLIDER);
+		putClientProperty(ELFStyle.KEY, ELFStyle.PROGRESSBAR_SLIDER);
 		updateUI();
 	}
 

@@ -23,7 +23,10 @@ import java.awt.Font;
  * @author Andreas Butti
  *
  */
-public interface UIDefaults {
+public final class UIDefaults {
+
+	private UIDefaults() {
+	}
 
 	/**
 	 * Label header

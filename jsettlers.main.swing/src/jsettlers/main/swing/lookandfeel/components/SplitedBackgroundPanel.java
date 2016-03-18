@@ -18,7 +18,7 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
  * Panel with background texture and Border
@@ -38,13 +38,13 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 	/**
 	 * Split position
 	 */
-	private int splitPosition = 300;
+	private final int splitPosition = 300;
 
 	/**
 	 * Constructor
 	 */
 	public SplitedBackgroundPanel() {
-		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
+		titleLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_HEADER);
 		add(titleLabel);
 	}
 
@@ -72,14 +72,14 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 		if (getComponentCount() >= 2) {
 			getComponent(1).setBounds(50, 70, splitPosition - 80, getHeight() - 140);
 		}
-		int w = getWidth() - splitPosition - 80;
+		int width = getWidth() - splitPosition - 80;
 		if (getComponentCount() >= 3) {
-			getComponent(2).setBounds(splitPosition + 30, 70, w, getHeight() - 140);
+			getComponent(2).setBounds(splitPosition + 30, 70, width, getHeight() - 140);
 		}
 
-		Dimension pf = titleLabel.getPreferredSize();
-		int x = 320 + (w - pf.width) / 2;
-		titleLabel.setBounds(x, 40, pf.width, pf.height);
+		Dimension preferredLabelSize = titleLabel.getPreferredSize();
+		int x = 320 + (width - preferredLabelSize.width) / 2;
+		titleLabel.setBounds(x, 40, preferredLabelSize.width, preferredLabelSize.height);
 	};
 
 	/**

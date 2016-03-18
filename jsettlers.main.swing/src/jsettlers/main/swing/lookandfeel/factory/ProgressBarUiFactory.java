@@ -17,7 +17,7 @@ package jsettlers.main.swing.lookandfeel.factory;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.SettlerProgressbar;
 
 /**
@@ -25,12 +25,18 @@ import jsettlers.main.swing.lookandfeel.ui.SettlerProgressbar;
  * 
  * @author Andreas Butti
  */
-public class ProgressBarUiFactory {
+public final class ProgressBarUiFactory {
 
 	/**
 	 * Forward calls
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private ProgressBarUiFactory() {
+	}
 
 	/**
 	 * Create PLAF
@@ -40,8 +46,8 @@ public class ProgressBarUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		Object style = c.getClientProperty(LFStyle.KEY);
-		if (LFStyle.PROGRESSBAR_SLIDER == style) {
+		Object style = c.getClientProperty(ELFStyle.KEY);
+		if (ELFStyle.PROGRESSBAR_SLIDER == style) {
 			return new SettlerProgressbar();
 		}
 

@@ -28,14 +28,27 @@ import java.awt.Stroke;
 public class BorderDrawer {
 
 	/**
+	 * Use an even number!
+	 */
+	private static final int CORNER_LENGTH = 26;
+
+	/**
+	 * Padding to the outer border
+	 */
+	private static final int PADDING = 20;
+
+	private static final int SHADOW_OFFSET_X = 2;
+	private static final int SHADOW_OFFSET_Y = 3;
+
+	/**
 	 * Graphics to draw with
 	 */
-	private Graphics2D g;
+	private final Graphics2D graphics;
 
 	/**
 	 * Line with to draw
 	 */
-	private int lineWidth;
+	private final int lineWidth;
 
 	/**
 	 * Paint to use (Texture)
@@ -46,16 +59,6 @@ public class BorderDrawer {
 	 * Original texture to back up
 	 */
 	private Stroke originalStroke;
-
-	/**
-	 * Use an even number!
-	 */
-	private int cornerLength1 = 26;
-
-	/**
-	 * Padding to the outer border
-	 */
-	private int padding = 20;
 
 	/**
 	 * Start x position
@@ -78,16 +81,6 @@ public class BorderDrawer {
 	private int y2;
 
 	/**
-	 * Shadow offset x
-	 */
-	private int shadowX = 2;
-
-	/**
-	 * Shadow offset y
-	 */
-	private int shadowY = 3;
-
-	/**
 	 * Constructor
 	 * 
 	 * @param g
@@ -104,13 +97,12 @@ public class BorderDrawer {
 	 *            End y position
 	 */
 	public BorderDrawer(Graphics2D g, int lineWidth, int x1, int y1, int x2, int y2) {
-		this.g = g;
+		this.graphics = g;
 		this.lineWidth = lineWidth;
 		this.x1 = x1;
 		this.x2 = x2;
 		this.y1 = y1;
 		this.y2 = y2;
-
 	}
 
 	/**
@@ -135,8 +127,8 @@ public class BorderDrawer {
 	 *            Y position
 	 */
 	protected void drawHorizontal(int y) {
-		int cl2 = cornerLength1 / 2;
-		g.drawLine(x1 + cl2 + padding, y, x2 - cl2 - padding, y);
+		int cl2 = CORNER_LENGTH / 2;
+		graphics.drawLine(x1 + cl2 + PADDING, y, x2 - cl2 - PADDING, y);
 	}
 
 	/**
@@ -151,15 +143,15 @@ public class BorderDrawer {
 		initGraphics();
 
 		// draw shadow
-		g.setColor(new Color(0, 0, 0, 150));
-		y1 += shadowY;
-		y2 += shadowY;
-		drawVertical0(x + shadowX, right);
+		graphics.setColor(new Color(0, 0, 0, 150));
+		y1 += SHADOW_OFFSET_Y;
+		y2 += SHADOW_OFFSET_Y;
+		drawVertical0(x + SHADOW_OFFSET_X, right);
 
-		y1 -= shadowY;
-		y2 -= shadowY;
+		y1 -= SHADOW_OFFSET_Y;
+		y2 -= SHADOW_OFFSET_Y;
 
-		g.setPaint(paint);
+		graphics.setPaint(paint);
 		drawVertical0(x, right);
 
 		resetGraphics();
@@ -174,34 +166,34 @@ public class BorderDrawer {
 	 *            Draw the end to the right or the left side
 	 */
 	private void drawVertical0(int x, boolean right) {
-		int cl2 = cornerLength1 / 2;
-		int yA = y1 + cl2 + padding;
-		int yB = y2 - cl2 - padding;
-		g.drawLine(x, yA, x, yB);
+		int cl2 = CORNER_LENGTH / 2;
+		int yA = y1 + cl2 + PADDING;
+		int yB = y2 - cl2 - PADDING;
+		graphics.drawLine(x, yA, x, yB);
 
 		// == corner ==
 
 		if (right) {
-			x -= cornerLength1;
+			x -= CORNER_LENGTH;
 		}
 
 		// UPPER - down
-		g.drawLine(x + cl2, y1 + padding, x + cl2, y1 + padding + cornerLength1);
+		graphics.drawLine(x + cl2, y1 + PADDING, x + cl2, y1 + PADDING + CORNER_LENGTH);
 		// LOWER - up
-		g.drawLine(x + cl2, yB - cl2, x + cl2, yB + cl2);
+		graphics.drawLine(x + cl2, yB - cl2, x + cl2, yB + cl2);
 
 		// UPPER - horizontal
-		g.drawLine(x, yA, x + cornerLength1, yA);
+		graphics.drawLine(x, yA, x + CORNER_LENGTH, yA);
 		// LOWER - horizontal
-		g.drawLine(x, yB, x + cornerLength1, yB);
+		graphics.drawLine(x, yB, x + CORNER_LENGTH, yB);
 
 		// UPPER - up
 		if (right) {
-			x -= cornerLength1;
+			x -= CORNER_LENGTH;
 		}
-		g.drawLine(x + cornerLength1, y1 + padding - cl2, x + cornerLength1, y1 + padding + cl2);
+		graphics.drawLine(x + CORNER_LENGTH, y1 + PADDING - cl2, x + CORNER_LENGTH, y1 + PADDING + cl2);
 		// LOWER - down
-		g.drawLine(x + cornerLength1, yB, x + cornerLength1, yB + cornerLength1);
+		graphics.drawLine(x + CORNER_LENGTH, yB, x + CORNER_LENGTH, yB + CORNER_LENGTH);
 
 	}
 
@@ -210,14 +202,14 @@ public class BorderDrawer {
 	 */
 	private void drawRect0() {
 		// top
-		drawHorizontal(y1 + padding);
+		drawHorizontal(y1 + PADDING);
 		// bottom
-		drawHorizontal(y2 - padding);
+		drawHorizontal(y2 - PADDING);
 
 		// left
-		drawVertical0(x1 + padding, false);
+		drawVertical0(x1 + PADDING, false);
 		// right
-		drawVertical0(x2 - padding, true);
+		drawVertical0(x2 - PADDING, true);
 	}
 
 	/**
@@ -227,19 +219,19 @@ public class BorderDrawer {
 		initGraphics();
 
 		// draw shadow
-		g.setColor(new Color(0, 0, 0, 150));
-		x1 += shadowX;
-		x2 += shadowX;
-		y1 += shadowY;
-		y2 += shadowY;
+		graphics.setColor(new Color(0, 0, 0, 150));
+		x1 += SHADOW_OFFSET_X;
+		x2 += SHADOW_OFFSET_X;
+		y1 += SHADOW_OFFSET_Y;
+		y2 += SHADOW_OFFSET_Y;
 		drawRect0();
 
-		x1 -= shadowX;
-		x2 -= shadowX;
-		y1 -= shadowY;
-		y2 -= shadowY;
+		x1 -= SHADOW_OFFSET_X;
+		x2 -= SHADOW_OFFSET_X;
+		y1 -= SHADOW_OFFSET_Y;
+		y2 -= SHADOW_OFFSET_Y;
 
-		g.setPaint(paint);
+		graphics.setPaint(paint);
 		drawRect0();
 
 		resetGraphics();
@@ -249,16 +241,16 @@ public class BorderDrawer {
 	 * Restore the original stroke
 	 */
 	private void resetGraphics() {
-		g.setStroke(originalStroke);
+		graphics.setStroke(originalStroke);
 	}
 
 	/**
 	 * Initialize the graphics with the stroke
 	 */
 	private void initGraphics() {
-		this.originalStroke = g.getStroke();
+		this.originalStroke = graphics.getStroke();
 
-		g.setStroke(new BasicStroke(lineWidth));
+		graphics.setStroke(new BasicStroke(lineWidth));
 
 	}
 

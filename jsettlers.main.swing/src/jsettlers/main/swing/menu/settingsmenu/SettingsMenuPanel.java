@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.menu.general.VolumeSlider;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
 
@@ -54,7 +54,7 @@ public class SettingsMenuPanel extends JPanel {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(0, 2, 20, 20));
 		panel.add(playerNameLabel);
-		playerNameField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+		playerNameField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 		SwingUtilities.updateComponentTreeUI(playerNameField);
 		panel.add(playerNameField);
 		panel.add(volumeLabel);
@@ -65,10 +65,10 @@ public class SettingsMenuPanel extends JPanel {
 	}
 
 	private void setStyle() {
-		saveButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		playerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		volumeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
+		saveButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		cancelButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		playerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		volumeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
 	}
 
 	private void localize() {

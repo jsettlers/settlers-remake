@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,6 +19,7 @@ import java.awt.Insets;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import jsettlers.main.swing.lookandfeel.factory.BackgroundPanelUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ButtonUiFactory;
@@ -33,15 +34,13 @@ import jsettlers.main.swing.lookandfeel.factory.TextFieldUiFactory;
 import jsettlers.main.swing.lookandfeel.factory.ToggleButtonUiFactory;
 import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
 
-import javax.swing.UnsupportedLookAndFeelException;
-
 /**
  * Look and Feel for JSettlers
  * 
  * @author Andreas Butti
  *
  */
-public class SettlersLookAndFeel {
+public class JSettlersLookAndFeel {
 
 	/**
 	 * Install the look and feel components
@@ -91,7 +90,7 @@ public class SettlersLookAndFeel {
 			UIManager.put("ComboBox.squareButton", true);
 			UIManager.put("ComboBox.padding", new Insets(2, 2, 2, 2));
 
-			Object[] scrollbar = {
+			Object[] uiFactories = {
 					"ScrollBarUI", ScrollbarUiFactory.class.getName(),
 					"BackgroundPanelUI", BackgroundPanelUiFactory.class.getName(),
 					"TextFieldUI", TextFieldUiFactory.class.getName(),
@@ -104,7 +103,7 @@ public class SettlersLookAndFeel {
 					"TextAreaUI", TextAreaUiFactory.class.getName(),
 					"ComboBoxUI", ComboboxUiFactory.class.getName(),
 			};
-			UIManager.getDefaults().putDefaults(scrollbar);
+			UIManager.getDefaults().putDefaults(uiFactories);
 
 			// Map Cell renderer
 			UIManager.put("MapListCellRenderer.backgroundColor1", new Color(0xff, 0xff, 0xff, 40));

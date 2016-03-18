@@ -21,7 +21,7 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.PanelUI;
 
 import jsettlers.main.swing.lookandfeel.DrawHelper;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
 
 /**
@@ -29,13 +29,12 @@ import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
  * 
  * @author Andreas Butti
  */
-public class PanelUiFactory {
+public final class PanelUiFactory {
 
 	/**
 	 * Transparent panel
 	 */
-	private static final PanelUI defaultPanel = new PanelUI() {
-
+	private static final PanelUI DEFAULT_PANEL = new PanelUI() {
 		@Override
 		public void installUI(JComponent c) {
 			super.installUI(c);
@@ -46,8 +45,7 @@ public class PanelUiFactory {
 	/**
 	 * Half transparent dark panel
 	 */
-	private static final PanelUI darkPanel = new PanelUI() {
-
+	private static final PanelUI DARK_PANEL = new PanelUI() {
 		@Override
 		public void installUI(JComponent c) {
 			super.installUI(c);
@@ -56,18 +54,18 @@ public class PanelUiFactory {
 
 		@Override
 		public void paint(java.awt.Graphics g1, JComponent c) {
-			Graphics2D g = DrawHelper.antialiasingOn(g1);
+			Graphics2D g = DrawHelper.enableAntialiasing(g1);
 
 			g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
 			int arc = 15;
 			g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), arc, arc);
 		};
 	};
+
 	/**
 	 * Supports transparent background colors
 	 */
-	private static final PanelUI drawPanelTransparentBg = new PanelUI() {
-
+	private static final PanelUI DRAW_PANEL_TRANSPARENT_BACKGROUND = new PanelUI() {
 		@Override
 		public void installUI(JComponent c) {
 			super.installUI(c);
@@ -82,6 +80,12 @@ public class PanelUiFactory {
 	};
 
 	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private PanelUiFactory() {
+	}
+
+	/**
 	 * Create PLAF
 	 * 
 	 * @param c
@@ -89,14 +93,14 @@ public class PanelUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		if (LFStyle.PANEL_DARK == c.getClientProperty(LFStyle.KEY)) {
-			return darkPanel;
+		if (ELFStyle.PANEL_DARK == c.getClientProperty(ELFStyle.KEY)) {
+			return DARK_PANEL;
 		}
 
-		if (LFStyle.PANEL_DRAW_BG_CUSTOM == c.getClientProperty(LFStyle.KEY)) {
-			return drawPanelTransparentBg;
+		if (ELFStyle.PANEL_DRAW_BG_CUSTOM == c.getClientProperty(ELFStyle.KEY)) {
+			return DRAW_PANEL_TRANSPARENT_BACKGROUND;
 		}
 
-		return defaultPanel;
+		return DEFAULT_PANEL;
 	}
 }

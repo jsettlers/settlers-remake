@@ -38,43 +38,37 @@ public class BackgroundPanelUi extends PanelUI {
 	/**
 	 * Background texture
 	 */
-	private BufferedImage backgroundTextture = UiImageLoader.get("test-pattern-bg.jpg");
-
-	/**
-	 * Current background cache
-	 */
-	private BufferedImage tmpBg = null;
+	private final BufferedImage backgroundTextture = UiImageLoader.get("test-pattern-bg.jpg");
 
 	/**
 	 * Background color image
 	 */
-	private BufferedImage backgroundColor = UiImageLoader.get("stone-background-colors.jpg");
+	private final BufferedImage backgroundColor = UiImageLoader.get("stone-background-colors.jpg");
 
 	/**
 	 * Border texture for the border line
 	 */
-	private BufferedImage borderTexture = UiImageLoader.get("texture-border.png");
+	private final BufferedImage borderTexture = UiImageLoader.get("texture-border.png");
 
 	/**
 	 * Leaf image at the right corner
 	 */
-	private BufferedImage leaves1 = UiImageLoader.get("leaves1b.png");
+	private final BufferedImage leaves1 = UiImageLoader.get("leaves1b.png");
 
 	/**
 	 * Leaf image at the left side
 	 */
-	private BufferedImage leaves2 = UiImageLoader.get("leaves2.png");
+	private final BufferedImage leaves2 = UiImageLoader.get("leaves2.png");
 
 	/**
 	 * Leaf image at the bottom
 	 */
-	private BufferedImage leaves3 = UiImageLoader.get("leaves3.png");
+	private final BufferedImage leaves3 = UiImageLoader.get("leaves3.png");
 
 	/**
-	 * Constructor
+	 * Current background cache
 	 */
-	public BackgroundPanelUi() {
-	}
+	private BufferedImage cachedBackground = null;
 
 	@Override
 	public void installUI(JComponent c) {
@@ -83,87 +77,89 @@ public class BackgroundPanelUi extends PanelUI {
 	}
 
 	@Override
-	public void paint(Graphics g1, JComponent c) {
-		super.paint(g1, c);
+	public void paint(Graphics graphics, JComponent component) {
+		super.paint(graphics, component);
 
-		Graphics2D g = DrawHelper.antialiasingOn(g1);
-		if (tmpBg == null || tmpBg.getWidth() != c.getWidth() || tmpBg.getHeight() != c.getHeight()) {
-			recreateBgImage(c);
+		Graphics2D graphics2D = DrawHelper.enableAntialiasing(graphics);
+		if (cachedBackground == null || cachedBackground.getWidth() != component.getWidth()
+				|| cachedBackground.getHeight() != component.getHeight()) {
+			recreateBackgroundImage(component);
 		}
 
-		g.drawImage(tmpBg, 0, 0, c);
+		graphics2D.drawImage(cachedBackground, 0, 0, component);
 	}
 
 	/**
 	 * Recreate the cached background image, if needed
 	 * 
-	 * @param c
+	 * @param component
 	 *            The component
 	 */
-	private void recreateBgImage(JComponent c) {
-		tmpBg = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_RGB);
+	private void recreateBackgroundImage(JComponent component) {
+		final int width = component.getWidth();
+		final int height = component.getHeight();
 
-		Graphics2D g = tmpBg.createGraphics();
+		cachedBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+		Graphics2D graphics = cachedBackground.createGraphics();
 
 		// scale the background color image
-		g.drawImage(backgroundColor, 0, 0, c.getWidth(), c.getHeight(), c);
+		graphics.drawImage(backgroundColor, 0, 0, width, height, component);
 
-		for (int x = 0; x < c.getWidth(); x += backgroundTextture.getWidth()) {
-			for (int y = 0; y < c.getHeight(); y += backgroundTextture.getHeight()) {
-				multiplyImage(tmpBg, backgroundTextture, x, y);
+		for (int x = 0; x < width; x += backgroundTextture.getWidth()) {
+			for (int y = 0; y < height; y += backgroundTextture.getHeight()) {
+				multiplyImage(cachedBackground, backgroundTextture, x, y);
 			}
 		}
 
-		BorderDrawer border = new BorderDrawer(g, 3, 0, 0, c.getWidth(), c.getHeight());
-		BufferedImage scaledTexture = DrawHelper
-				.toBufferedImage(borderTexture.getScaledInstance(c.getWidth(), c.getHeight(), BufferedImage.SCALE_FAST));
-		TexturePaint tp = new TexturePaint(scaledTexture,
-				new Rectangle2D.Float(0, 0, c.getWidth(), c.getHeight()));
+		BorderDrawer border = new BorderDrawer(graphics, 3, 0, 0, width, height);
+		BufferedImage scaledTexture = DrawHelper.toBufferedImage(borderTexture.getScaledInstance(width, height, BufferedImage.SCALE_FAST));
+		TexturePaint tp = new TexturePaint(scaledTexture, new Rectangle2D.Float(0, 0, width, height));
 		border.setPaint(tp);
 		border.drawRect();
 
-		if (c instanceof SplitedBackgroundPanel) {
-			border.drawVertical(((SplitedBackgroundPanel) c).getSplitPosition(), true);
+		if (component instanceof SplitedBackgroundPanel) {
+			border.drawVertical(((SplitedBackgroundPanel) component).getSplitPosition(), true);
 		}
 
 		float factor = 0.2f;
-		g.drawImage(leaves1, c.getWidth() - 120, -30, (int) (leaves1.getWidth() * factor), (int) (leaves1.getHeight() * factor), c);
+		graphics.drawImage(leaves1, width - 120, -30, (int) (leaves1.getWidth() * factor), (int) (leaves1.getHeight() * factor), component);
 
 		factor = 0.4f;
-		g.drawImage(leaves2, -35, 45, (int) (leaves2.getWidth() * factor), (int) (leaves2.getHeight() * factor), c);
+		graphics.drawImage(leaves2, -35, 45, (int) (leaves2.getWidth() * factor), (int) (leaves2.getHeight() * factor), component);
 
 		factor = 0.3f;
-		g.drawImage(leaves3, 60, c.getHeight() - 60, (int) (leaves3.getWidth() * factor), (int) (leaves3.getHeight() * factor), c);
+		graphics.drawImage(leaves3, 60, height - 60, (int) (leaves3.getWidth() * factor), (int) (leaves3.getHeight() * factor), component);
 
-		g.dispose();
+		graphics.dispose();
 	}
 
 	/**
 	 * Multiply two images, may can be done more efficient
 	 * 
-	 * @param tmpBg
+	 * @param targetImage
 	 *            Source and target
-	 * @param textture
+	 * @param texture
 	 *            source
 	 * @param targetX
-	 *            tmpBg X
+	 *            target start X coordinate
 	 * @param targetY
-	 *            tmpBg Y
+	 *            target start y coordinate
 	 */
-	private void multiplyImage(BufferedImage tmpBg, BufferedImage textture, int targetX, int targetY) {
-		for (int x = 0; x < textture.getWidth(); x++) {
-			for (int y = 0; y < textture.getHeight(); y++) {
-				if (x + targetX >= tmpBg.getWidth() || y + targetY >= tmpBg.getHeight()) {
+	private void multiplyImage(BufferedImage targetImage, BufferedImage texture, int targetX, int targetY) {
+		for (int x = 0; x < texture.getWidth(); x++) {
+			for (int y = 0; y < texture.getHeight(); y++) {
+				if (x + targetX >= targetImage.getWidth() || y + targetY >= targetImage.getHeight()) {
 					continue;
 				}
 
-				int rgb1 = tmpBg.getRGB(x + targetX, y + targetY);
+				int rgb1 = targetImage.getRGB(x + targetX, y + targetY);
 				Color c1 = new Color(rgb1);
 				float r1 = c1.getRed() / 255f;
 				float g1 = c1.getGreen() / 255f;
 				float b1 = c1.getBlue() / 255f;
 
-				int rgb2 = textture.getRGB(x, y);
+				int rgb2 = texture.getRGB(x, y);
 				Color c2 = new Color(rgb2);
 				float addTexture = 0.15f;
 				float r2 = c2.getRed() / 255f + addTexture;
@@ -174,7 +170,7 @@ public class BackgroundPanelUi extends PanelUI {
 				int g = (int) (Math.min(1.0f, g1 * g2) * 255f);
 				int b = (int) (Math.min(1.0f, b1 * b2) * 255f);
 
-				tmpBg.setRGB(x + targetX, y + targetY, r << 16 | g << 8 | b);
+				targetImage.setRGB(x + targetX, y + targetY, r << 16 | g << 8 | b);
 			}
 		}
 	}

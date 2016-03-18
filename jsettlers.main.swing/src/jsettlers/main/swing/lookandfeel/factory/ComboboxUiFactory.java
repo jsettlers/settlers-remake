@@ -17,7 +17,7 @@ package jsettlers.main.swing.lookandfeel.factory;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.SettlerComboboxUi;
 
 /**
@@ -25,12 +25,18 @@ import jsettlers.main.swing.lookandfeel.ui.SettlerComboboxUi;
  * 
  * @author Andreas Butti
  */
-public class ComboboxUiFactory {
+public final class ComboboxUiFactory {
 
 	/**
 	 * Forward calls
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
+
+	/**
+	 * This is only a factory so no objects need to be created.
+	 */
+	private ComboboxUiFactory() {
+	}
 
 	/**
 	 * Create PLAF
@@ -40,7 +46,7 @@ public class ComboboxUiFactory {
 	 * @return UI
 	 */
 	public static ComponentUI createUI(JComponent c) {
-		if (LFStyle.COMBOBOX == c.getClientProperty(LFStyle.KEY)) {
+		if (ELFStyle.COMBOBOX == c.getClientProperty(ELFStyle.KEY)) {
 			return new SettlerComboboxUi();
 		}
 		return FORWARD.create(c);

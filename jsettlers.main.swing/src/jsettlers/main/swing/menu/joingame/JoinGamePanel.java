@@ -55,7 +55,7 @@ import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersSwingUtil;
-import jsettlers.main.swing.lookandfeel.LFStyle;
+import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.swing.JSettlersFrame;
 
@@ -162,25 +162,25 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void setStyle() {
-		mapNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_LONG);
-		numberOfPlayersLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		startResourcesLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		peaceTimeLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_SHORT);
-		titleLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_HEADER);
-		cancelButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		startGameButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		slotsHeadlinePlayerNameLabel.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		slotsHeadlineCivilisation.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		slotsHeadlineType.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		slotsHeadlineMapSlot.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		slotsHeadlineTeam.putClientProperty(LFStyle.KEY, LFStyle.LABEL_DYNAMIC);
-		sendChatMessageButton.putClientProperty(LFStyle.KEY, LFStyle.BUTTON_MENU);
-		chatInputField.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
-		chatArea.putClientProperty(LFStyle.KEY, LFStyle.PANEL_DARK);
-		startResourcesComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		numberOfPlayersComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		peaceTimeComboBox.putClientProperty(LFStyle.KEY, LFStyle.COMBOBOX);
-		chatArea.putClientProperty(LFStyle.KEY, LFStyle.TEXT_DEFAULT);
+		mapNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_LONG);
+		numberOfPlayersLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		startResourcesLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		peaceTimeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		titleLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_HEADER);
+		cancelButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		startGameButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		slotsHeadlinePlayerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		slotsHeadlineCivilisation.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		slotsHeadlineType.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		slotsHeadlineMapSlot.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		slotsHeadlineTeam.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_DYNAMIC);
+		sendChatMessageButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		chatInputField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
+		chatArea.putClientProperty(ELFStyle.KEY, ELFStyle.PANEL_DARK);
+		startResourcesComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		numberOfPlayersComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		peaceTimeComboBox.putClientProperty(ELFStyle.KEY, ELFStyle.COMBOBOX);
+		chatArea.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 
