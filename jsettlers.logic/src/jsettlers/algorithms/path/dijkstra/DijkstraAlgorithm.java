@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.InvalidStartPositionException;
 import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.algorithms.path.astar.AbstractAStar;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
@@ -87,7 +88,7 @@ public final class DijkstraAlgorithm {
 
 	private final Path findPathTo(IPathCalculatable requester, short tx, short ty) {
 		ShortPoint2D pos = requester.getPos();
-		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
+		return aStar.findPath(requester, pos.x, pos.y, tx, ty, new AStarOptions());
 	}
 
 	private final boolean isInBounds(short x, short y) {

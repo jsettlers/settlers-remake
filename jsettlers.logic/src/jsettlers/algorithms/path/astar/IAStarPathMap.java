@@ -20,6 +20,7 @@ import jsettlers.common.Color;
 public interface IAStarPathMap {
 
 	boolean isBlocked(IPathCalculatable requester, int x, int y);
+	boolean isBlockingMovable(IPathCalculatable requester, int x, int y);
 
 	float getCost(int sx, int sy, int tx, int ty);
 

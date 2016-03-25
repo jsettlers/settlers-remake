@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -85,6 +86,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
 	private Movable pushedFrom;
+	private int stuckCounter = 0;
 
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
@@ -287,39 +289,47 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return;
 		}
 
-		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
-		if (blockingMovable == null) { // if we can go on to the next step
-			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+		if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+			Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
+			
+			if (blockingMovable == null) { // if we can go on to the next step
 				goSinglePathStep();
-
-			} else { // next position is invalid
+			} else { // step not possible, so try it next time
 				movableAction = EMovableAction.NO_ACTION;
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
-
-				if (newPath == null) { // no path found
-					setState(EMovableState.DOING_NOTHING);
-
-					strategy.pathAborted(path.getTargetPos()); // inform strategy
-					path = null;
-				} else {
-					this.path = newPath; // continue with new path
-					if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
-						goSinglePathStep();
-					}
+				boolean pushedSuccessfully = blockingMovable.push(this);
+				if (!pushedSuccessfully) {
+					stuckCounter = findWayAroundObstacle(position) ? 0 : stuckCounter +1;
 				}
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD;
 			}
 
-		} else { // step not possible, so try it next time
+		} else { // next position is invalid
 			movableAction = EMovableAction.NO_ACTION;
-			boolean pushedSuccessfully = blockingMovable.push(this);
-			if (!pushedSuccessfully) {
-				path = strategy.findWayAroundObstacle(position, path);
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} else if (movableAction == EMovableAction.NO_ACTION) {
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} // else: push initiated our next step
+			animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+			Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+
+			if (newPath == null) { // no path found
+				setState(EMovableState.DOING_NOTHING);
+
+				strategy.pathAborted(path.getTargetPos()); // inform strategy
+				path = null;
+			} else {
+				this.path = newPath; // continue with new path
+				if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+					goSinglePathStep();
+				}
+			}
 		}
+	}
+	
+	protected boolean findWayAroundObstacle(ShortPoint2D position) {
+		
+		Path newPath = grid.calculatePathTo(this, path.getTargetPos(), new AStarOptions().setIncludeMovables(true));
+		if (newPath != null) {
+			path = newPath;
+			return true;
+		}
+		return false;
 	}
 
 	private void goSinglePathStep() {
@@ -470,15 +480,19 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 	}
 
-	boolean isProbablyPushable(Movable pushingMovable) {
+	public boolean isProbablyPushable() {
 		switch (state) {
 		case DOING_NOTHING:
 			return true;
 		case PATHING:
-			return pushingMovable.path != null && pushingMovable.path.hasNextStep();
+			return !isStuck();
 		default:
 			return false;
 		}
+	}
+
+	public boolean isStuck() {
+		return stuckCounter <= Constants.MOVABLE_RETRIES_UNTIL_STUCK;
 	}
 
 	private boolean goToRandomDirection(Movable pushingMovable) {

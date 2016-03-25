@@ -18,6 +18,7 @@ import java.util.LinkedList;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.common.Color;
@@ -162,8 +163,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos) {
-			return aStar.findPath(pathRequester, targetPos);
+		public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos, AStarOptions opts) {
+			return aStar.findPath(pathRequester, targetPos, opts);
 		}
 
 		@Override

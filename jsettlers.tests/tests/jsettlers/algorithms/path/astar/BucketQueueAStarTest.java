@@ -58,7 +58,7 @@ public class BucketQueueAStarTest {
 	}
 
 	private Path findPath(short sx, short sy, short tx, short ty) {
-		return aStar.findPath(getPathable(sx, sy), new ShortPoint2D(tx, ty));
+		return aStar.findPath(getPathable(sx, sy), new ShortPoint2D(tx, ty), new AStarOptions());
 	}
 
 	private IPathCalculatable getPathable(final short x, final short y) {

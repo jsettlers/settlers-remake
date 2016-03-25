@@ -30,6 +30,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
+
 public final class BucketQueueAStar extends AbstractAStar {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
@@ -63,14 +64,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 	}
 
 	@Override
-	public final Path findPath(IPathCalculatable requester, ShortPoint2D target) {
-		ShortPoint2D pos = requester.getPos();
-		return findPath(requester, pos.x, pos.y, target.x, target.y);
-	}
-
-	@Override
-	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty) {
-		final short blockedAtStartPartition;
+	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty, AStarOptions opts) {
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
 		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
@@ -78,9 +72,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 		} else if (sx == tx && sy == ty) {
 			return null;
 		} else if (isBlocked(requester, sx, sy)) {
-			blockedAtStartPartition = map.getBlockedPartition(sx, sy);
-		} else {
-			blockedAtStartPartition = -1;
+			opts.partition = map.getBlockedPartition(sx, sy);
 		}
 
 		final int targetFlatIdx = getFlatIdx(tx, ty);
@@ -111,7 +103,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 				final int neighborX = x + xDeltaArray[i];
 				final int neighborY = y + yDeltaArray[i];
 
-				if (isValidPosition(requester, neighborX, neighborY, blockedAtStartPartition)) {
+				if (isValidPosition(requester, neighborX, neighborY, opts)) {
 					final int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedBitSet.get(flatNeighborIdx)) {
@@ -185,9 +177,10 @@ public final class BucketQueueAStar extends AbstractAStar {
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, short blockedAtStartPartition) {
-		return isInBounds(x, y)
-				&& (blockedAtStartPartition >= 0 && map.getBlockedPartition(x, y) == blockedAtStartPartition || !isBlocked(requester, x, y));
+	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, AStarOptions opts) {
+		return isInBounds(x, y) 
+			&& ((opts.partition >= 0 && map.getBlockedPartition(x, y) == opts.partition) || !isBlocked(requester, x, y))
+			&& (!opts.includeMovables || !map.isBlockingMovable(requester, x, y));
 	}
 
 	private final boolean isInBounds(int x, int y) {

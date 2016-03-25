@@ -316,7 +316,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
 
-	@Override
+	/*@Override
 	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
@@ -348,7 +348,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		} else {
 			return super.findWayAroundObstacle(position, path);
 		}
-	}
+	}*/
 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
