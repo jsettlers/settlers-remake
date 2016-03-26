@@ -29,6 +29,11 @@ import jsettlers.graphics.ui.Button;
  * @author Michael Zangl
  */
 public class MinimapOccupiedButton extends Button {
+	/**
+	 * This action switches to the next display mode.
+	 * 
+	 * @author Michael Zangl
+	 */
 	private static final class NextDisplayMode extends ExecutableAction {
 		private final MinimapMode minimapSettings;
 
@@ -51,6 +56,12 @@ public class MinimapOccupiedButton extends Button {
 
 	private MinimapMode minimapSettings;
 
+	/**
+	 * Creates a new {@link MinimapOccupiedButton}.
+	 * 
+	 * @param minimapSettings
+	 *            The settings to influence.
+	 */
 	public MinimapOccupiedButton(final MinimapMode minimapSettings) {
 		super(new NextDisplayMode(minimapSettings), null, null, Labels.getString("minimap-occupied"));
 		this.minimapSettings = minimapSettings;
