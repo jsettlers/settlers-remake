@@ -84,8 +84,8 @@ public final class Color {
 	 *            An integer in the hexadecimal form: AARRGGBB
 	 */
 	public Color(int argb) {
-		this(argb, argbFieldToFliat(argb >> SHIFT_ARGB_R), argbFieldToFliat(argb >> SHIFT_ARGB_G), argbFieldToFliat(argb >> SHIFT_ARGB_B),
-				argbFieldToFliat(argb >> SHIFT_ARGB_A));
+		this(argb, argbFieldToFloat(argb >> SHIFT_ARGB_R), argbFieldToFloat(argb >> SHIFT_ARGB_G), argbFieldToFloat(argb >> SHIFT_ARGB_B),
+				argbFieldToFloat(argb >> SHIFT_ARGB_A));
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
@@ -223,7 +223,7 @@ public final class Color {
 		return (int) (f * fieldMax) & fieldMax;
 	}
 
-	private static float argbFieldToFliat(int f) {
+	private static float argbFieldToFloat(int f) {
 		return (float) (f & ARGB_FIELD_MAX) / ARGB_FIELD_MAX;
 	}
 
