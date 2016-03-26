@@ -22,7 +22,7 @@ import jsettlers.graphics.localization.Labels;
 /**
  * This is a message that states that the user was attacked by an other player.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class SimpleMessage implements Message {
 	private final byte sender;
@@ -30,6 +30,18 @@ public class SimpleMessage implements Message {
 	private final String message;
 	private final EMessageType type;
 
+	/**
+	 * Creates a new simple chat message.
+	 * 
+	 * @param type
+	 *            The message type.
+	 * @param message
+	 *            The message string to display.
+	 * @param sender
+	 *            The sender of the message
+	 * @param pos
+	 *            The position the message was sent from.
+	 */
 	public SimpleMessage(EMessageType type, String message, byte sender,
 			ShortPoint2D pos) {
 		this.type = type;
@@ -64,17 +76,42 @@ public class SimpleMessage implements Message {
 		return pos;
 	}
 
+	/**
+	 * Creates a new attacked-message.
+	 * 
+	 * @param otherplayer
+	 *            The attacking player
+	 * @param pos
+	 *            The position that player attacked on.
+	 * @return THe message.
+	 */
 	public static Message attacked(byte otherplayer, ShortPoint2D pos) {
 		String message = Labels.getString("attacked");
 		return new SimpleMessage(EMessageType.ATTACKED, message, otherplayer,
 				pos);
 	}
 
+	/**
+	 * Create a new message if a geologist found minerals.
+	 * 
+	 * @param type
+	 *            The type of minerals.
+	 * @param pos
+	 *            The position
+	 * @return The message object
+	 */
 	public static Message foundMinerals(EMaterialType type, ShortPoint2D pos) {
 		String message = Labels.getString("minerals_" + type.toString());
 		return new SimpleMessage(EMessageType.MINERALS, message, (byte) -1, pos);
 	}
 
+	/**
+	 * Create a new message that a building cannot find any more work.
+	 * 
+	 * @param building
+	 *            The building
+	 * @return THe message object
+	 */
 	public static Message cannotFindWork(IBuilding building) {
 		String message = Labels.getString("cannot_find_work_" + building.getBuildingType());
 		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPos());

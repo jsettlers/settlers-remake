@@ -38,7 +38,7 @@ public class Messenger {
 	}
 
 	/**
-	 * Adds a new message
+	 * Adds a new message.
 	 * 
 	 * @param message
 	 *            The message that should be displayed to the user.
