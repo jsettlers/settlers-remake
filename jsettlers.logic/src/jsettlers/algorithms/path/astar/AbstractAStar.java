@@ -19,10 +19,9 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.position.ShortPoint2D;
 
 public abstract class AbstractAStar {
-	public abstract Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty, AStarOptions opts);
+	public abstract Path findPath(IPathCalculatable requester, final ShortPoint2D startPos, final ShortPoint2D targetPos, AStarOptions opts);
 
 	public Path findPath(IPathCalculatable requester, ShortPoint2D targetPos, AStarOptions opts) {
-		ShortPoint2D pos = requester.getPos();
-		return findPath(requester, pos.x, pos.y, targetPos.x, targetPos.y, opts);
+		return findPath(requester, requester.getPos(), targetPos, opts);
 	}
 }

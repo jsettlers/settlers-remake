@@ -52,6 +52,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  * Central Movable class of JSettlers.
  * 
  * @author Andreas Eberle
+ * @author homoroselaps
  * 
  */
 public final class Movable implements IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
@@ -85,8 +86,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private float health;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
-	private Movable pushedFrom;
 	private int stuckCounter = 0;
+	private int pathChangeBalance = 0;
 
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
@@ -95,6 +96,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
+	private static final short fibSeq[] = {1, 2, 3, 5, 8, 13, 21, 34, 55};
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -280,7 +282,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return animationDuration;
 	}
 
-	private void pathingAction() {
+	private void pathingAction() { 
+		incPathChangeBalance(); // credit for future path change requestsE
+		
 		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
@@ -298,7 +302,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				movableAction = EMovableAction.NO_ACTION;
 				boolean pushedSuccessfully = blockingMovable.push(this);
 				if (!pushedSuccessfully) {
-					stuckCounter = findWayAroundObstacle(position) ? 0 : stuckCounter +1;
+					incStuckCounter();					
+					findWayAroundObstacle(position);
 				}
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD;
 			}
@@ -323,16 +328,21 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 	
 	protected boolean findWayAroundObstacle(ShortPoint2D position) {
-		
-		Path newPath = grid.calculatePathTo(this, path.getTargetPos(), new AStarOptions().setIncludeMovables(true));
-		if (newPath != null) {
-			path = newPath;
-			return true;
+		if (pathChangeAllowed()) {
+			decPathChangeBalance();
+			
+			Path newPath = grid.calculatePathTo(this, path.getTargetPos(), new AStarOptions().setIncludeMovables(true));
+			if (newPath != null) {
+				path = newPath;
+				return true;
+			}
 		}
+		
 		return false;
 	}
 
 	private void goSinglePathStep() {
+		decStuckCounter();
 		initGoingSingleStep(path.getNextPos());
 		path.goToNextStep();
 	}
@@ -439,26 +449,16 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
-				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
+				if (pushingMovable.position.equals(nextPos)) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 
 				} else {
 					if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
+						return true;
 						// this movable isn't blocked, so just let it's pathingAction() handle this
-					} else if (pushedFrom == null) {
-						try {
-							this.pushedFrom = pushingMovable;
-							return grid.getMovableAt(nextPos.x, nextPos.y).push(this);
-						} finally {
-							this.pushedFrom = null;
-						}
 					} else {
-						while (pushingMovable != this) {
-							pushingMovable.goSinglePathStep();
-							pushingMovable = pushingMovable.pushedFrom;
-						}
-						this.goSinglePathStep();
+						return false;	
 					}
 				}
 			}
@@ -479,10 +479,13 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return false;
 		}
 	}
-
+	
 	public boolean isProbablyPushable() {
 		switch (state) {
 		case DOING_NOTHING:
+		case GOING_SINGLE_STEP:
+		case TAKE:
+		case DROP:
 			return true;
 		case PATHING:
 			return !isStuck();
@@ -492,7 +495,36 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	public boolean isStuck() {
-		return stuckCounter <= Constants.MOVABLE_RETRIES_UNTIL_STUCK;
+		return stuckCounter >= Constants.MOVABLE_RETRIES_UNTIL_STUCK;
+	}
+	
+	private void incStuckCounter() {
+		stuckCounter = Math.min(stuckCounter+1, fibSeq.length-1);
+	}
+	
+	private void clearStuckCounter() {
+		stuckCounter = 0;
+	}
+	
+	private void decStuckCounter() {
+		stuckCounter = Math.max(stuckCounter-1, 0);
+	}
+	
+	private boolean pathChangeAllowed() {
+		return pathChangeBalance >= 0;
+	}
+	
+	private void decPathChangeBalance() {
+		// the more its stuck the less its promising to change path
+		pathChangeBalance -= fibSeq[stuckCounter];
+	}
+	
+	private void incPathChangeBalance() {
+		pathChangeBalance = Math.min(pathChangeBalance+1, 0);
+	}
+	
+	private void clearPathChangeBalance() {
+		pathChangeBalance = 0;
 	}
 
 	private boolean goToRandomDirection(Movable pushingMovable) {
@@ -730,7 +762,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param newState
 	 */
 	private void setState(EMovableState newState) {
-		this.state = newState;
+		if (state != newState) {
+			this.state = newState;
+			clearStuckCounter();
+			clearPathChangeBalance();
+		}
 	}
 
 	/**

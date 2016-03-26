@@ -667,7 +667,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isBlockingMovable(IPathCalculatable requester, int x, int y) {
+		public boolean isBlockedByMovable(IPathCalculatable requester, int x, int y) {
 			Movable movable = movableGrid.getMovableAt(x, y);
 			return (movable != null && requester != movable && !movable.isProbablyPushable());
 		}

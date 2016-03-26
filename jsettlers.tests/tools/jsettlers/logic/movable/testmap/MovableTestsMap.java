@@ -448,4 +448,9 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	public boolean isBuilding(int x, int y) {
 		return false;
 	}
+
+	@Override
+	public boolean isBlockedByMovable(IPathCalculatable requester, int x, int y) {
+		return false;
+	}
 }

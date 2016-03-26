@@ -64,4 +64,9 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 	public short getBlockedPartition(int x, int y) {
 		return 1;
 	}
+
+	@Override
+	public boolean isBlockedByMovable(IPathCalculatable requester, int x, int y) {
+		return false;
+	}
 }

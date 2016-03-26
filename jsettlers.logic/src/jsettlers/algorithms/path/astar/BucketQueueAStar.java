@@ -64,25 +64,25 @@ public final class BucketQueueAStar extends AbstractAStar {
 	}
 
 	@Override
-	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty, AStarOptions opts) {
-		if (!isInBounds(sx, sy)) {
-			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
+	public final Path findPath(IPathCalculatable requester, final ShortPoint2D startPos, final ShortPoint2D targetPos, AStarOptions opts) {
+		if (!isInBounds(startPos.x, startPos.y)) {
+			throw new InvalidStartPositionException("Start position is out of bounds!", startPos.x, startPos.y);
+		} else if (!isInBounds(targetPos.x, targetPos.y) || isBlocked(requester, targetPos.x, targetPos.y) || map.getBlockedPartition(startPos.x, startPos.y) != map.getBlockedPartition(targetPos.x, targetPos.y)) {
 			return null; // target can not be reached
-		} else if (sx == tx && sy == ty) {
+		} else if (startPos.equals(targetPos)) {
 			return null;
-		} else if (isBlocked(requester, sx, sy)) {
-			opts.partition = map.getBlockedPartition(sx, sy);
+		} else if (isBlocked(requester, startPos.x, startPos.y)) {
+			opts.partition = map.getBlockedPartition(startPos.x, startPos.y);
 		}
 
-		final int targetFlatIdx = getFlatIdx(tx, ty);
+		final int targetFlatIdx = getFlatIdx(targetPos.x, targetPos.y);
 
 		closedBitSet.clear();
 		openBitSet.clear();
 
 		open.clear();
 		boolean found = false;
-		initStartNode(sx, sy, tx, ty);
+		initStartNode(startPos.x, startPos.y, targetPos.x, targetPos.y);
 
 		while (!open.isEmpty()) {
 			int currFlatIdx = open.deleteMin();
@@ -117,7 +117,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 
-								int heuristicCosts = getHeuristicCost(neighborX, neighborY, tx, ty);
+								int heuristicCosts = getHeuristicCost(neighborX, neighborY, targetPos.x, targetPos.y);
 								open.increasedPriority(flatNeighborIdx, oldCosts + heuristicCosts, newCosts + heuristicCosts);
 							}
 
@@ -126,7 +126,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 							openBitSet.set(flatNeighborIdx);
-							open.insert(flatNeighborIdx, newCosts + getHeuristicCost(neighborX, neighborY, tx, ty));
+							open.insert(flatNeighborIdx, newCosts + getHeuristicCost(neighborX, neighborY, targetPos.x, targetPos.y));
 
 							map.markAsOpen(neighborX, neighborY);
 						}
@@ -136,7 +136,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 		}
 
 		if (found) {
-			int pathlength = depthParentHeap[getDepthIdx(getFlatIdx(tx, ty))];
+			int pathlength = depthParentHeap[getDepthIdx(getFlatIdx(targetPos.x, targetPos.y))];
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
@@ -180,7 +180,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, AStarOptions opts) {
 		return isInBounds(x, y) 
 			&& ((opts.partition >= 0 && map.getBlockedPartition(x, y) == opts.partition) || !isBlocked(requester, x, y))
-			&& (!opts.includeMovables || !map.isBlockingMovable(requester, x, y));
+			&& (!opts.includeMovables || !map.isBlockedByMovable(requester, x, y));
 	}
 
 	private final boolean isInBounds(int x, int y) {
