@@ -20,8 +20,9 @@ package jsettlers.graphics.map;
  * @author Michael Zangl
  */
 public class FramerateComputer {
+	private static final int FRAMES_TO_AVERAGE = 30;
 	private static final long RECOMPUTE_INTERVALL = 500;
-	private final long[] lastFrames = new long[30];
+	private final long[] lastFrames = new long[FRAMES_TO_AVERAGE];
 	private long lastRecompute = 0;
 	private int capturedFrames = 0;
 	private double rate;
