@@ -84,7 +84,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
 
-	private static final ConcurrentLinkedQueue<Building> ALL_BUILDINGS = new ConcurrentLinkedQueue<Building>();
+	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
 	protected final EBuildingType type;
 	protected final ShortPoint2D pos;
@@ -108,12 +108,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.pos = position;
 		this.grid = buildingsGrid;
 
-		ALL_BUILDINGS.add(this);
+		allBuildings.add(this);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		ALL_BUILDINGS.add(this);
+		allBuildings.add(this);
 	}
 
 	@Override
@@ -464,7 +464,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		releaseRequestStacks();
-		ALL_BUILDINGS.remove(this);
+		allBuildings.remove(this);
 		this.state = STATE_DESTROYED;
 	}
 
@@ -640,11 +640,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public static ConcurrentLinkedQueue<Building> getAllBuildings() {
-		return ALL_BUILDINGS;
+		return allBuildings;
 	}
 
 	public static void clearState() {
-		ALL_BUILDINGS.clear();
+		allBuildings.clear();
 	}
 
 	@Override
