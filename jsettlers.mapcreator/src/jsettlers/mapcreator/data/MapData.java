@@ -661,7 +661,7 @@ public class MapData implements IMapData {
 		this.lastBorders = lastBorders;
 	}
 
-	public void setStartPoint(byte activePlayer, ShortPoint2D pos) {
+	public void setStartPoint(int activePlayer, ShortPoint2D pos) {
 		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
 		this.playerStarts[activePlayer] = pos;
 	}

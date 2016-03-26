@@ -73,6 +73,7 @@ public class AiStatistics {
 	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
+	private static final short TOWER_RADIUS_OVERLAP = 1;
 
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;
@@ -331,13 +332,25 @@ public class AiStatistics {
 	}
 
 	private boolean isMilitaryBuildingInHinterland(Building militaryBuilding, byte playerId) {
-		for (ShortPoint2D occupiedPosition : new MapCircle(militaryBuilding.getPos(), CommonConstants.TOWER_RADIUS)) {
-			if (getBorderLandNextToFreeLandForPlayer(playerId).contains(occupiedPosition)
-					&& partitionsGrid.getTowerCountAt(occupiedPosition.x, occupiedPosition.y) == 1) {
+		for (ShortPoint2D influencedPositions : new MapCircle(militaryBuilding.getPos(), CommonConstants.TOWER_RADIUS + TOWER_RADIUS_OVERLAP)) {
+			if (!mainGrid.isInBounds(influencedPositions.x, influencedPositions.y)) {
+				continue;
+			}
+			if (positionIsBorderLandAndIsProtectedOnlyFromOneTower(playerId, influencedPositions) ||
+					positionIsOtherPlayersLand(influencedPositions, playerId)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	private boolean positionIsOtherPlayersLand(ShortPoint2D position, byte playerId) {
+		return mainGrid.getPartitionsGrid().getPartitionIdAt(position.x, position.y) != playerStatistics[playerId].partitionIdToBuildOn;
+	}
+
+	private boolean positionIsBorderLandAndIsProtectedOnlyFromOneTower(byte playerId, ShortPoint2D occupiedPosition) {
+		return getBorderLandNextToFreeLandForPlayer(playerId).contains(occupiedPosition)
+				&& partitionsGrid.getTowerCountAt(occupiedPosition.x, occupiedPosition.y) == 1;
 	}
 
 	public Building getBuildingAt(ShortPoint2D point) {

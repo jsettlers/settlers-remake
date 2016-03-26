@@ -143,7 +143,7 @@ public class MapDataDelta {
 
 	public static class StartPointSetter {
 		StartPointSetter next = null;
-		byte player;
+		int player;
 		ShortPoint2D pos;
 	}
 
@@ -151,7 +151,7 @@ public class MapDataDelta {
 		return startPoints.next;
 	}
 
-	public void setStartPoint(byte player, ShortPoint2D pos) {
+	public void setStartPoint(int player, ShortPoint2D pos) {
 		StartPointSetter cur = startPoints;
 		while (cur.next != null) {
 			if (cur.next.player == player) {

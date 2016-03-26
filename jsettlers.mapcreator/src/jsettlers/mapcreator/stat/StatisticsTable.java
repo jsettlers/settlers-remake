@@ -27,7 +27,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 
 public class StatisticsTable extends AbstractTableModel {
-	private static final long serialVersionUID = -3492356821401542476L;
+	private static final long serialVersionUID = 1;
 
 	private static final int MATERIAL_START = 0;
 	private static final int MOVABLE_START = MATERIAL_START + EMaterialType.NUMBER_OF_MATERIALS;

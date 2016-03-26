@@ -21,43 +21,39 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
-import jsettlers.mapcreator.tools.Tool;
-import jsettlers.mapcreator.tools.shapes.GridCircleShape;
-import jsettlers.mapcreator.tools.shapes.PointShape;
+import jsettlers.mapcreator.tools.AbstractTool;
+import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class PlaceMapObjectTool implements Tool {
-	private static final ShapeType[] SHAPES = new ShapeType[] {
-			new PointShape(), new GridCircleShape(),
-	};
-
+public class PlaceMapObjectTool extends AbstractTool {
 	private final MapObject object;
 
 	public PlaceMapObjectTool(MapObject object) {
-		this.object = object;
-	}
+		super(null, null);
+		shapeTypes.add(EShapeType.POINT);
+		shapeTypes.add(EShapeType.GRID_CIRCLE);
 
-	@Override
-	public String getName() {
+		this.object = object;
+
+		if (object == null) {
+			// initialized in subclass
+			return;
+		}
+
 		if (object instanceof MapStoneObject) {
-			return String.format(EditorLabels.getLabel("stonedescr"),
+			this.translatedName = String.format(EditorLabels.getLabel("tool.stone"),
 					((MapStoneObject) object).getCapacity());
 		} else if (object instanceof MapTreeObject) {
-			return EditorLabels.getLabel("treedescr");
+			this.translatedName = EditorLabels.getLabel("tool.tree");
 		} else if (object instanceof MapDecorationObject) {
-			return String.format(
-					EditorLabels.getLabel("commondescr"),
-					EditorLabels.getLabel("object_"
+			this.translatedName = String.format(
+					EditorLabels.getLabel("tool.place"),
+					EditorLabels.getLabel("tool.object."
 							+ ((MapDecorationObject) object).getType()));
 		} else {
-			return String.format(EditorLabels.getLabel("commondescr"), object
+			this.translatedName = String.format(EditorLabels.getLabel("tool.place"), object
 					.getClass().getSimpleName());
 		}
-	}
-
-	@Override
-	public ShapeType[] getShapes() {
-		return SHAPES;
 	}
 
 	@Override
@@ -78,9 +74,5 @@ public class PlaceMapObjectTool implements Tool {
 
 	public MapObject getObject() {
 		return object;
-	}
-
-	@Override
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
 }

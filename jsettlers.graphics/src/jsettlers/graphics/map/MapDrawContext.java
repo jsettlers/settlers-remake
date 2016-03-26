@@ -62,6 +62,9 @@ public final class MapDrawContext implements IGLProvider {
 	/**
 	 * Those are the colors used for the players. The first color is used for the first player. If there are more players than colors, colors are
 	 * re-used.
+	 * <p>
+	 * TODO Why not use HSV to calculate the colors? The original game uses the HSV Colors, split the Cirlcle into 20 pcs and then you get the
+	 * original colors Andreas Butti
 	 */
 	private final static Color[] PLAYER_COLORS = new Color[] {
 			// red
@@ -108,16 +111,14 @@ public final class MapDrawContext implements IGLProvider {
 	public MapDrawContext(IGraphicsGrid map, ReplaceableTextDrawer textDrawer) {
 		this.map = map;
 		this.textDrawer = textDrawer;
-		float incline =
-				DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
+		float incline = DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
 		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
-		this.converter =
-				MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-						DrawConstants.DISTANCE_Y, map.getWidth(),
-						map.getHeight());
+		this.converter = MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
+				DrawConstants.DISTANCE_Y, map.getWidth(),
+				map.getHeight());
 
 		buffer = new DrawBuffer(this);
 	}
@@ -224,9 +225,8 @@ public final class MapDrawContext implements IGLProvider {
 		ShortPoint2D currentPoint = converter.getMap(screenx, screeny);
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
-		UIPoint onscreen =
-				converter.getView(currentPoint.x, currentPoint.y,
-						getHeight(currentPoint.x, currentPoint.y));
+		UIPoint onscreen = converter.getView(currentPoint.x, currentPoint.y,
+				getHeight(currentPoint.x, currentPoint.y));
 		double currentbest = onscreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
@@ -341,18 +341,16 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl.glPushMatrix();
 		float theight = getHeight(startx, starty);
 		float dheight = getHeight(destinationx, destinationy);
-		float x =
-				(1 - progress)
-						* this.converter.getViewX(startx, starty, theight)
-						+ progress
-						* this.converter.getViewX(destinationx, destinationy,
-								dheight);
-		float y =
-				(1 - progress)
-						* this.converter.getViewY(startx, starty, theight)
-						+ progress
-						* this.converter.getViewY(destinationx, destinationy,
-								dheight);
+		float x = (1 - progress)
+				* this.converter.getViewX(startx, starty, theight)
+				+ progress
+				* this.converter.getViewX(destinationx, destinationy,
+						dheight);
+		float y = (1 - progress)
+				* this.converter.getViewY(startx, starty, theight)
+				+ progress
+				* this.converter.getViewY(destinationx, destinationy,
+						dheight);
 		this.gl.glTranslatef(x, y, 0);
 	}
 
@@ -452,9 +450,8 @@ public final class MapDrawContext implements IGLProvider {
 						currentLine++;
 						currentX = base.getLineStartX(currentLine);
 					}
-					ShortPoint2D point =
-							new ShortPoint2D(currentX,
-									base.getLineY(currentLine));
+					ShortPoint2D point = new ShortPoint2D(currentX,
+							base.getLineY(currentLine));
 					if (contains(point)) {
 						return point;
 					}

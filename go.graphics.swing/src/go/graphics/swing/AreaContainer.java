@@ -14,13 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing;
 
-import go.graphics.RedrawListener;
-import go.graphics.area.Area;
-import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvider;
-import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
-import go.graphics.swing.opengl.JOGLDrawContext;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -34,6 +27,13 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
+
+import go.graphics.RedrawListener;
+import go.graphics.area.Area;
+import go.graphics.event.GOEvent;
+import go.graphics.event.GOEventHandlerProvider;
+import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
+import go.graphics.swing.opengl.JOGLDrawContext;
 
 /**
  * This class lets you embed areas into swing components.
