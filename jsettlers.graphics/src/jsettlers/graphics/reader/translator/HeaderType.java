@@ -14,8 +14,22 @@
  *******************************************************************************/
 package jsettlers.graphics.reader.translator;
 
+/**
+ * The type of header that given {@link DatBitmapTranslator} expects.
+ * 
+ * @author Michael Zangl
+ */
 public enum HeaderType {
+	/**
+	 * A header that contains a x,y displacement of the image.
+	 */
 	DISPLACED,
+	/**
+	 * A special landscape type header.
+	 */
 	LANDSCAPE,
+	/**
+	 * A header with the size for GUI images.
+	 */
 	GUI
 }
