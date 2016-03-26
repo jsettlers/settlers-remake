@@ -781,8 +781,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public final boolean isBlocked(int x, int y) {
+			return flagsGrid.isBlocked(x, y);
+		}
+
+		@Override
 		public final void setBlocked(int x, int y, boolean blocked) {
 			flagsGrid.setBlockedAndProtected(x, y, blocked);
+		}
+
+		@Override
+		public final boolean isProtected(int x, int y) {
+			return flagsGrid.isProtected(x, y);
+		}
+
+		@Override
+		public final void setProtected(int x, int y, boolean protect) {
+			flagsGrid.setProtected(x, y, protect);
 		}
 
 		@Override
@@ -793,11 +808,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 			return objectsGrid.removeMapObject(x, y, mapObject);
-		}
-
-		@Override
-		public final boolean isBlocked(int x, int y) {
-			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -823,11 +833,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
-		}
-
-		@Override
-		public final void setProtected(int x, int y, boolean protect) {
-			flagsGrid.setProtected(x, y, protect);
 		}
 
 		@Override

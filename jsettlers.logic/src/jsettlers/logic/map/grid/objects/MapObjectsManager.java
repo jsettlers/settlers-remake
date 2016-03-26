@@ -402,7 +402,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		for (ShortPoint2D position : mapArea) {
 			short currX = position.x;
 			short currY = position.y;
-			if (grid.isInBounds(currX, currY) && canPushMaterialClean(currX, currY, materialType)) {
+			if (grid.isInBounds(currX, currY) && canForcePushMaterial(currX, currY, materialType)) {
 				pushMaterial(currX, currY, materialType);
 				return position;
 			}
@@ -410,7 +410,19 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return null;
 	}
 
-	private boolean canPushMaterialClean(short x, short y, EMaterialType materialType) {
+	/**
+	 * Checks if there is no stack of another material at the given location and there is space on a stack of this material type.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param materialType
+	 * @return
+	 */
+	private boolean canForcePushMaterial(short x, short y, EMaterialType materialType) {
+		if (grid.isBlocked(x, y)) {
+			return false;
+		}
+
 		byte size = 0;
 
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
@@ -423,7 +435,11 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			stackObject = getNextStackObject(stackObject);
 		}
 
-		return size < Constants.STACK_SIZE;
+		if (size == 0) {
+			return !grid.isProtected(x, y); // if there is no stack yet, don't create a stack on protected locations
+		} else {
+			return size < Constants.STACK_SIZE; // if there is a stack of this material already, check if it is not full
+		}
 	}
 
 	public final boolean popMaterial(short x, short y, EMaterialType materialType) {
