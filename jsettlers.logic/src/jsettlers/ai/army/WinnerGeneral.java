@@ -49,6 +49,8 @@ public class WinnerGeneral implements ArmyGeneral {
 	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS = 10;
 	private static final byte RUSH_DEFENSE_SPEARMEN = 20;
 	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
+	private static final EBuildingType[] MIN_BUILDING_REQUIREMENTS_FOR_ATTACK =
+			{EBuildingType.COALMINE, EBuildingType.IRONMINE, EBuildingType.IRONMELT, EBuildingType.WEAPONSMITH, EBuildingType.BARRACK};
 
 	private final AiStatistics aiStatistics;
 	private final Player player;
@@ -137,6 +139,12 @@ public class WinnerGeneral implements ArmyGeneral {
 		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
 		if (enemies.size() == 0) {
 			return null;
+		}
+
+		for (EBuildingType requiredType : MIN_BUILDING_REQUIREMENTS_FOR_ATTACK) {
+			if (aiStatistics.getNumberOfBuildingTypeForPlayer(requiredType, player.playerId) < 1) {
+				return null;
+			}
 		}
 
 		AttackInformation resultAttackInformation = null;

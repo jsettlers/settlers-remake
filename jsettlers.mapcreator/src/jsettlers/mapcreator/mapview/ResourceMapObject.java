@@ -26,15 +26,39 @@ import jsettlers.common.mapobject.IMapObject;
  */
 public class ResourceMapObject implements IMapObject {
 
+	/**
+	 * Amount of the resources
+	 */
 	private final byte resourceAmount;
+
+	/**
+	 * Type of the resource
+	 */
 	private final EResourceType resourceType;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param resourceType
+	 *            Type of the resource
+	 * @param resourceAmount
+	 *            Amount of the resources
+	 */
 	public ResourceMapObject(EResourceType resourceType, byte resourceAmount) {
 		this.resourceType = resourceType;
 		this.resourceAmount = resourceAmount;
 
 	}
 
+	/**
+	 * Gets the resource object
+	 * 
+	 * @param resourceType
+	 *            Type of the resource
+	 * @param resourceAmount
+	 *            Amount of the resources
+	 * @return IMapObject
+	 */
 	public static IMapObject get(EResourceType resourceType, byte resourceAmount) {
 		return new ResourceMapObject(resourceType, resourceAmount);
 	}
@@ -42,32 +66,31 @@ public class ResourceMapObject implements IMapObject {
 	@Override
 	public EMapObjectType getObjectType() {
 		switch (resourceType) {
-			case COAL:
-				return EMapObjectType.FOUND_COAL;
-	
-			case GOLDORE:
-				return EMapObjectType.FOUND_GOLD;
-	
-			case IRONORE:
-				return EMapObjectType.FOUND_IRON;
-	
-			case FISH:
-				return EMapObjectType.FISH_DECORATION;
-				
-			case NOTHING:
-				return EMapObjectType.FOUND_NOTHING;
-				
-			case GEMSTONE:
-				return EMapObjectType.FOUND_GEMSTONE;
-				
-			case BRIMSTONE:
-				return EMapObjectType.FOUND_BRIMSTONE;
-				
-			default:
-				return EMapObjectType.FOUND_NOTHING;
+		case COAL:
+			return EMapObjectType.FOUND_COAL;
+
+		case GOLDORE:
+			return EMapObjectType.FOUND_GOLD;
+
+		case IRONORE:
+			return EMapObjectType.FOUND_IRON;
+
+		case FISH:
+			return EMapObjectType.FISH_DECORATION;
+
+		case NOTHING:
+			return EMapObjectType.FOUND_NOTHING;
+
+		case GEMSTONE:
+			return EMapObjectType.FOUND_GEMSTONE;
+
+		case BRIMSTONE:
+			return EMapObjectType.FOUND_BRIMSTONE;
+
+		default:
+			return EMapObjectType.FOUND_NOTHING;
 		}
-		
-		
+
 	}
 
 	@Override

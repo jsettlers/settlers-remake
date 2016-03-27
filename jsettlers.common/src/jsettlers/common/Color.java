@@ -301,4 +301,9 @@ public final class Color {
 				/ SHORT_FIELD_MAX, s & SHORT_MASK_ALPHA);
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getName() + "[argb=" + String.format("%08x", getARGB()) + "]";
+	}
+
 }

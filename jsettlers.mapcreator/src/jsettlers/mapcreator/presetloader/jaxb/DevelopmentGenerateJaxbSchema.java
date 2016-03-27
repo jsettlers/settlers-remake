@@ -23,6 +23,7 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+@SuppressWarnings("javadoc")
 public class DevelopmentGenerateJaxbSchema {
 
 	public static void main(String[] args) throws JAXBException, IOException {

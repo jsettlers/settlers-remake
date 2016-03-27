@@ -63,32 +63,45 @@ public final class MapDrawContext implements IGLProvider {
 	 * Those are the colors used for the players. The first color is used for the first player. If there are more players than colors, colors are
 	 * re-used.
 	 * <p>
-	 * TODO Why not use HSV to calculate the colors? The original game uses the HSV Colors, split the Cirlcle into 20 pcs and then you get the
-	 * original colors Andreas Butti
+	 * Color for settler player, the first 20 colors are copied from an original settler 3 editor screenshot, the other 12 colors are choosen so they
+	 * are unique
 	 */
-	private final static Color[] PLAYER_COLORS = new Color[] {
-			// red
-			new Color(0xffe50000),
-			// blue
-			new Color(0xff0343df),
-			// green
-			new Color(0xff15b01a),
-			// yellow
-			new Color(0xffffff14),
-			// purple
-			new Color(0xff7e1e9c),
-			// teal
-			new Color(0xff029386),
-			// orange
-			new Color(0xfff97306),
-			// magenta
-			new Color(0xffc20078),
-			// grey
-			new Color(0xff929591),
-			// violet
-			new Color(0xff9a0eea),
-			// olive
-			new Color(0xff6e750e),
+	private static final Color[] PLAYER_COLORS = new Color[] {
+			// Color 0 .. 19 Original settler colors
+			new Color(0xFFF71000),
+			new Color(0xFF108CF7),
+			new Color(0xFFF7F700),
+			new Color(0xFF29B552),
+			new Color(0xFFF78C00),
+			new Color(0xFF00F7F7),
+			new Color(0xFFF700F7),
+			new Color(0xFF292929),
+			new Color(0xFFF7F7F7),
+			new Color(0xFF0010F7),
+			new Color(0xFFCE4A10),
+			new Color(0xFF8C8C8C),
+			new Color(0xFFAD08DE),
+			new Color(0xFF006B00),
+			new Color(0xFFF7BDBD),
+			new Color(0xFF84EFA5),
+			new Color(0xFF9C0831),
+			new Color(0xFFCE8CE7),
+			new Color(0xFFF7CE94),
+			new Color(0xFF8CBDEF),
+
+			// Additional 12 Colors
+			new Color(0xFFBAFF45),
+			new Color(0xFFCD0973),
+			new Color(0xFFD9F1AF),
+			new Color(0xFF6E005F),
+			new Color(0xFFA3C503),
+			new Color(0xFF64B3B9),
+			new Color(0xFFB3F6FB),
+			new Color(0xFF8E592B),
+			new Color(0xFF8E882B),
+			new Color(0xFFD9E0FF),
+			new Color(0xFFD4D4D4),
+			new Color(0xFFFF578F)
 	};
 
 	public boolean ENABLE_ORIGINAL = true;

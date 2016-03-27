@@ -14,6 +14,10 @@
  *******************************************************************************/
 package go.graphics.area;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -34,10 +38,6 @@ import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 /**
  * This class represents an area. This is a rectangular part of the screen that consists of multiple regions.
  *
@@ -54,8 +54,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	private final ArrayList<Region> regions = new ArrayList<Region>();
 
-	private final LinkedList<RedrawListener> redrawListeners =
-			new LinkedList<RedrawListener>();
+	private final LinkedList<RedrawListener> redrawListeners = new LinkedList<RedrawListener>();
 
 	private ArrayList<PositionedRegion> regionPositions;
 
@@ -162,9 +161,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 						size = top - bottom;
 					}
 
-					position =
-							new PositionedRegion(r, top, top - size, left,
-									right);
+					position = new PositionedRegion(r, top, top - size, left,
+							right);
 
 					top -= size;
 					break;
@@ -174,8 +172,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 						size = top - bottom;
 					}
 
-					position =
-							new PositionedRegion(r, size, 0, left, right);
+					position = new PositionedRegion(r, size, 0, left, right);
 
 					bottom += size;
 					break;
@@ -185,8 +182,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 						size = right - left;
 					}
 
-					position =
-							new PositionedRegion(r, top, bottom, 0, size);
+					position = new PositionedRegion(r, top, bottom, 0, size);
 
 					left += size;
 					break;
@@ -196,18 +192,16 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 						size = right - left;
 					}
 
-					position =
-							new PositionedRegion(r, top, bottom, right
-									- size, right);
+					position = new PositionedRegion(r, top, bottom, right
+							- size, right);
 
 					left += size;
 					break;
 
 				case Region.POSITION_CENTER:
 				default:
-					position =
-							new PositionedRegion(r, top, bottom, left,
-									right);
+					position = new PositionedRegion(r, top, bottom, left,
+							right);
 					top = bottom; // break;
 					break;
 				}
@@ -246,9 +240,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			PositionedRegion pos = regionPositions.get(i);
 			if (pos.contentContains(event.getDrawPosition())) {
 				setActiveRegion(regionPositions.get(i).getRegion());
-				GODrawEventProxy displacedEvent =
-						new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
-								pos.getBottom()));
+				GODrawEventProxy displacedEvent = new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
+						pos.getBottom()));
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
 			}
@@ -306,24 +299,24 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			}
 		}
 
-        private void startWithRegion(UIPoint areaPoint) {
-            sendEvent = new SimpleHoverEvent();
-            changePoint(areaPoint);
-            currentRegion.getRegion().handleEvent(sendEvent);
-            sendEvent.initialized();
-        }
+		private void startWithRegion(UIPoint areaPoint) {
+			sendEvent = new SimpleHoverEvent();
+			changePoint(areaPoint);
+			currentRegion.getRegion().handleEvent(sendEvent);
+			sendEvent.initialized();
+		}
 
-        private void endWithRegion(UIPoint point) {
-            changePoint(point);
-            sendEvent.finish();
-            sendEvent = null;
-        }
+		private void endWithRegion(UIPoint point) {
+			changePoint(point);
+			sendEvent.finish();
+			sendEvent = null;
+		}
 
-        private void changePoint(UIPoint point) {
-            double x = point.getX() - currentRegion.getLeft();
-            double y = point.getY() - currentRegion.getBottom();
-            sendEvent.setMousePosition(new UIPoint(x, y));
-        }
+		private void changePoint(UIPoint point) {
+			double x = point.getX() - currentRegion.getLeft();
+			double y = point.getY() - currentRegion.getBottom();
+			sendEvent.setMousePosition(new UIPoint(x, y));
+		}
 	}
 
 	private class SimpleHoverEvent extends AbstractMouseEvent implements
@@ -360,9 +353,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		for (int i = 0; i < regionPositions.size(); i++) {
 			PositionedRegion pos = regionPositions.get(i);
 			if (pos.contentContains(event.getCommandPosition())) {
-				GOCommandEventProxy displacedEvent =
-						new GOCommandEventProxy(event,
-								new UIPoint(pos.getLeft(), pos.getBottom()));
+				GOCommandEventProxy displacedEvent = new GOCommandEventProxy(event,
+						new UIPoint(pos.getLeft(), pos.getBottom()));
 				setActiveRegion(regionPositions.get(i).getRegion());
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
@@ -396,6 +388,12 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 				activeRegion.handleEvent(event);
 			}
 		} else if (event instanceof GOZoomEvent) {
+			if (activeRegion == null && regionPositions != null && !regionPositions.isEmpty()) {
+				// if there is no active region, set the first active,
+				// so the zoom is working in the Editor, even if you
+				// didn't press a mouse button
+				setActiveRegion(regionPositions.get(0).getRegion());
+			}
 			if (activeRegion != null) {
 				activeRegion.handleEvent(event);
 			}

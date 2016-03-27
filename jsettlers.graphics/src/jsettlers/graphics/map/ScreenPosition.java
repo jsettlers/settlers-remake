@@ -14,10 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import go.graphics.UIPoint;
-
 import java.util.Hashtable;
 
+import go.graphics.UIPoint;
 import jsettlers.common.position.FloatRectangle;
 
 /**
@@ -27,7 +26,14 @@ import jsettlers.common.position.FloatRectangle;
  */
 public class ScreenPosition {
 
+	/**
+	 * Minimum zoom allowed
+	 */
 	private static final float MINIMUM_ZOOM = .2f;
+
+	/**
+	 * Maximum zoom allowed
+	 */
 	private static final float MAXIMUM_ZOOM = 3f;
 
 	private static final int TOPBORDER = 100;
@@ -45,8 +51,7 @@ public class ScreenPosition {
 	private float screenCenterX;
 	private float screenCenterY;
 
-	private final Hashtable<Object, UIPoint> panProgresses =
-			new Hashtable<Object, UIPoint>();
+	private final Hashtable<Object, UIPoint> panProgresses = new Hashtable<Object, UIPoint>();
 
 	private final int mapWidth;
 
@@ -97,10 +102,17 @@ public class ScreenPosition {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Set the new zoom factor.
 	 * 
 	 * @param newzoom
 	 *            The new zoom factor. It is automatically clamped.
+=======
+	 * Sets the zoom factor
+	 * 
+	 * @param newzoom
+	 *            from <code>MINIMUM_ZOOM</code> to <code>MAXIMUM_ZOOM</code>
+>>>>>>> master
 	 */
 	public void setZoom(float newzoom) {
 		this.zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);
@@ -178,8 +190,7 @@ public class ScreenPosition {
 		int top = this.mapHeight + TOPBORDER;
 		int bottom = 0;
 
-		float newCenterY =
-				clamp(bottom + newHeight / 2, top - newHeight / 2, centery);
+		float newCenterY = clamp(bottom + newHeight / 2, top - newHeight / 2, centery);
 		float miny = newCenterY - newHeight / 2;
 		float maxy = miny + newHeight;
 
@@ -187,8 +198,7 @@ public class ScreenPosition {
 		int left = (int) (this.incline * miny);
 		int right = (int) (this.incline * maxy) + this.mapWidth;
 
-		float newCenterX =
-				clamp(left + newWidth / 2, right - newWidth / 2, centerx);
+		float newCenterX = clamp(left + newWidth / 2, right - newWidth / 2, centerx);
 		float minx = newCenterX - newWidth / 2;
 		float maxx = minx + newWidth;
 

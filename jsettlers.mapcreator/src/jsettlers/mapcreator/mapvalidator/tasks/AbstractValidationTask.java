@@ -17,13 +17,14 @@ package jsettlers.mapcreator.mapvalidator.tasks;
 import java.util.Formatter;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.result.fix.AbstractFix;
 
 /**
- * Base class for validation tasks
+ * Base class for validation tasks, have to be inserted in the validation list in #ValidatorRunnable
  * 
  * @author Andreas Butti
  */
@@ -33,6 +34,11 @@ public abstract class AbstractValidationTask {
 	 * Map to check
 	 */
 	protected MapData data;
+
+	/**
+	 * Map header
+	 */
+	protected MapFileHeader header;
 
 	/**
 	 * List with the errors
@@ -80,6 +86,14 @@ public abstract class AbstractValidationTask {
 	}
 
 	/**
+	 * @param header
+	 *            Map header
+	 */
+	public void setHeader(MapFileHeader header) {
+		this.header = header;
+	}
+
+	/**
 	 * @param list
 	 *            List with the errors
 	 */
@@ -105,6 +119,20 @@ public abstract class AbstractValidationTask {
 	}
 
 	/**
+	 * Add a warning message to the list
+	 * 
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addWarningMessage(String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(null, textId, false, pos, parameter);
+	}
+
+	/**
 	 * Add an error message to the list
 	 * 
 	 * @param textId
@@ -115,11 +143,61 @@ public abstract class AbstractValidationTask {
 	 *            Parameter to replace in the text (optional)
 	 */
 	protected void addErrorMessage(String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(null, textId, true, pos, parameter);
+	}
+
+	/**
+	 * Add a warning message to the list
+	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addWarningMessage(Object additionalErrorData, String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(additionalErrorData, textId, false, pos, parameter);
+	}
+
+	/**
+	 * Add an error message to the list
+	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 * @param textId
+	 *            text ID to use
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	protected void addErrorMessage(Object additionalErrorData, String textId, ShortPoint2D pos, Object... parameter) {
+		addErrorWarningMessage(additionalErrorData, textId, true, pos, parameter);
+	}
+
+	/**
+	 * Add an error or warning message to the list
+	 * 
+	 * @param additionalErrorData
+	 *            Used for special cases... Can be anything, needs a special implementation in the sidebar also
+	 * @param textId
+	 *            text ID to use
+	 * @param error
+	 *            true for error, false for warning
+	 * @param pos
+	 *            Position
+	 * @param parameter
+	 *            Parameter to replace in the text (optional)
+	 */
+	private void addErrorWarningMessage(Object additionalErrorData, String textId, boolean error, ShortPoint2D pos, Object... parameter) {
 		String translatedText = EditorLabels.getLabel("validation." + textId);
 		if (parameter.length > 0) {
 			translatedText = new Formatter().format(translatedText, parameter).toString();
 		}
 
-		list.addError(translatedText, pos, textId);
+		list.addError(additionalErrorData, translatedText, error, pos, textId);
 	}
 }

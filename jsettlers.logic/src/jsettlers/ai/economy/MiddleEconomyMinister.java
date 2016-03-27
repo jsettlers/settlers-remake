@@ -28,11 +28,11 @@ import static jsettlers.common.buildings.EBuildingType.*;
  *
  * @author codingberlin
  */
-public class LooserEconomyMinister implements EconomyMinister {
+public class MiddleEconomyMinister implements EconomyMinister {
 
 	private final List<EBuildingType> buildingsToBuild;
 
-	public LooserEconomyMinister() {
+	public MiddleEconomyMinister() {
 		buildingsToBuild = new Vector<EBuildingType>();
 		initializeBuildingsToBuild();
 	}

@@ -16,12 +16,6 @@ package jsettlers.common;
 
 import jsettlers.common.ai.EWhatToDoAiType;
 
-/**
- * Common constants that influence the game. With this class you can also influence the debugging output of the game.
- * 
- * @author Andreas Eberle
- * @author Michael Zangl
- */
 public abstract class CommonConstants {
 	/**
 	 * A byte value indicating that the given position is visible.
@@ -37,9 +31,9 @@ public abstract class CommonConstants {
 	 */
 	public static final short TOWER_RADIUS = 40;
 	/**
-	 * Maximum number of players allowed to play. Should be 127 or less.
+	 * Maximum number of players allowed to play. Should be 2..127.
 	 */
-	public static final int MAX_PLAYERS = 16;
+	public static final int MAX_PLAYERS = 32;
 
 	/**
 	 * If true, all players of a map will always be positioned on startup.
@@ -47,7 +41,7 @@ public abstract class CommonConstants {
 	public static boolean ACTIVATE_ALL_PLAYERS = false;
 
 	/**
-	 * If true, all System.err and System.out will be printed to the console instead of a file.
+	 * If true, all System.err and System.out will be printed to the console instead of a file
 	 */
 	public static boolean ENABLE_CONSOLE_LOGGING = true;
 
@@ -97,9 +91,8 @@ public abstract class CommonConstants {
 	 * Option to disable the loading of original maps.
 	 */
 	public static boolean DISABLE_ORIGINAL_MAPS = false;
-
 	/**
 	 * Disables the checksum test for original maps.
 	 */
-	public static final boolean DISABLE_ORIGINAL_MAPS_CHECKSUM = false;
+	public static boolean DISABLE_ORIGINAL_MAPS_CHECKSUM = false;
 }

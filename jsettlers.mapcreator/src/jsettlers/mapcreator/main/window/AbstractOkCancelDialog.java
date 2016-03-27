@@ -83,7 +83,7 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		btCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!beforeCancelAction()) {
+				if (beforeCancelAction()) {
 					dispose();
 				}
 			}
