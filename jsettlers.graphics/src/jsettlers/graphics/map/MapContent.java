@@ -33,6 +33,7 @@ import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.crash.CrashReporting;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -301,8 +302,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 						+ foregroundtime + "ms, UI: " + uitime + "ms");
 			}
 		} catch (Throwable t) {
-			System.err.println("Main draw handler cought throwable:");
-			t.printStackTrace(System.err);
+			CrashReporting.create(t).warn();
 		}
 	}
 
@@ -482,19 +482,23 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawTile(int x, int y) {
-		IMapObject object = map.getMapObjectsAt(x, y);
-		if (object != null) {
-			this.objectDrawer.drawMapObject(x, y, object);
-		}
+		try {
+			IMapObject object = map.getMapObjectsAt(x, y);
+			if (object != null) {
+				this.objectDrawer.drawMapObject(x, y, object);
+			}
 
-		IMovable movable = map.getMovableAt(x, y);
-		if (movable != null) {
-			this.objectDrawer.draw(movable);
-		}
+			IMovable movable = map.getMovableAt(x, y);
+			if (movable != null) {
+				this.objectDrawer.draw(movable);
+			}
 
-		if (map.isBorder(x, y)) {
-			byte player = map.getPlayerIdAt(x, y);
-			objectDrawer.drawPlayerBorderObject(x, y, player);
+			if (map.isBorder(x, y)) {
+				byte player = map.getPlayerIdAt(x, y);
+				objectDrawer.drawPlayerBorderObject(x, y, player);
+			}
+		} catch (Throwable t) {
+			CrashReporting.create(t).put("x", x).put("y", y).warn();
 		}
 	}
 

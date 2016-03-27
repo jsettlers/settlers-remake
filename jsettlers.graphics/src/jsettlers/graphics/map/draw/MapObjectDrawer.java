@@ -25,6 +25,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuilding.IOccupyed;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.crash.CrashReporting;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -185,16 +186,25 @@ public class MapObjectDrawer {
 	public void drawMapObject(int x, int y, IMapObject object) {
 		forceSetup();
 
-		byte fogstatus = context.getVisibleStatus(x, y);
-		if (fogstatus == 0) {
-			return; // break
+		try {
+			byte fogstatus = context.getVisibleStatus(x, y);
+			if (fogstatus == 0) {
+				return; // break
+			}
+			float color = getColor(fogstatus);
+
+			drawObject(x, y, object, color);
+		} catch (Throwable t) {
+			throw CrashReporting.create(t).put("object", object).put("type", object.getObjectType());
 		}
-		float color = getColor(fogstatus);
 
-		drawObject(x, y, object, color);
-
-		if (object.getNextObject() != null) {
-			drawMapObject(x, y, object.getNextObject());
+		try {
+			IMapObject nextObject = object.getNextObject();
+			if (nextObject != null) {
+				drawMapObject(x, y, nextObject);
+			}
+		} catch (Throwable t) {
+			throw CrashReporting.create(t).put("parent", object);
 		}
 	}
 
@@ -476,15 +486,19 @@ public class MapObjectDrawer {
 	}
 
 	private void playMovableSound(IMovable movable) {
-		if (!movable.isSoundPlayed()) {
-			final EMovableAction action = movable.getAction();
-			if (action == EMovableAction.ACTION1) {
-				playSoundAction1(movable.getMovableType());
-				movable.setSoundPlayed();
-			} else if (action == EMovableAction.ACTION2) {
-				playSoundAction2(movable.getMovableType());
-				movable.setSoundPlayed();
+		try {
+			if (!movable.isSoundPlayed()) {
+				final EMovableAction action = movable.getAction();
+				if (action == EMovableAction.ACTION1) {
+					playSoundAction1(movable.getMovableType());
+					movable.setSoundPlayed();
+				} else if (action == EMovableAction.ACTION2) {
+					playSoundAction2(movable.getMovableType());
+					movable.setSoundPlayed();
+				}
 			}
+		} catch (Throwable t) {
+			throw CrashReporting.create(t).put("movable", movable);
 		}
 	}
 
@@ -526,34 +540,38 @@ public class MapObjectDrawer {
 	}
 
 	private void drawMovableAt(IMovable movable, int x, int y) {
-		byte fogstatus = context.getVisibleStatus(x, y);
-		if (fogstatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
-			return; // break
-		}
+		try {
+			byte fogstatus = context.getVisibleStatus(x, y);
+			if (fogstatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
+				return; // break
+			}
 
-		final float moveProgress = movable.getMoveProgress();
-		final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
+			final float moveProgress = movable.getMoveProgress();
+			final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
 
-		Color color = context.getPlayerColor(movable.getPlayerId());
-		float shade = MapObjectDrawer.getColor(fogstatus);
+			Color color = context.getPlayerColor(movable.getPlayerId());
+			float shade = MapObjectDrawer.getColor(fogstatus);
 
-		float viewX;
-		float viewY;
-		if (movable.getAction() == EMovableAction.WALKING) {
-			int originx = x - movable.getDirection().getGridDeltaX();
-			int originy = y - movable.getDirection().getGridDeltaY();
-			viewX = betweenTilesX(originx, originy, x, y, moveProgress);
-			viewY = betweenTilesY;
-		} else {
-			int height = context.getHeight(x, y);
-			viewX = context.getConverter().getViewX(x, y, height);
-			viewY = context.getConverter().getViewY(x, y, height);
-		}
-		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
-				color, shade);
+			float viewX;
+			float viewY;
+			if (movable.getAction() == EMovableAction.WALKING) {
+				int originx = x - movable.getDirection().getGridDeltaX();
+				int originy = y - movable.getDirection().getGridDeltaY();
+				viewX = betweenTilesX(originx, originy, x, y, moveProgress);
+				viewY = betweenTilesY;
+			} else {
+				int height = context.getHeight(x, y);
+				viewX = context.getConverter().getViewX(x, y, height);
+				viewY = context.getConverter().getViewY(x, y, height);
+			}
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
+					color, shade);
 
-		if (movable.isSelected()) {
-			drawSelectionMark(viewX, viewY, movable.getHealth() / movable.getMovableType().getHealth());
+			if (movable.isSelected()) {
+				drawSelectionMark(viewX, viewY, movable.getHealth() / movable.getMovableType().getHealth());
+			}
+		} catch (Throwable t) {
+			throw CrashReporting.create(t).put("movable", movable);
 		}
 	}
 
