@@ -87,7 +87,7 @@ public final class StackMapObject extends AbstractHexMapObject implements IStack
 
 	@Override
 	public final EMaterialType getMaterialType() {
-		return EMaterialType.values[materialType];
+		return EMaterialType.VALUES[materialType];
 	}
 
 	@Override

@@ -16,12 +16,27 @@ package jsettlers.graphics.action;
 
 import jsettlers.common.material.EMaterialType;
 
+/**
+ * This {@link Action} changes the trading request of a market place.
+ * 
+ * @author Michael Zangl
+ */
 public class ChangeTradingRequestAction extends Action {
 
 	private final EMaterialType material;
 	private final int amount;
 	private final boolean relative;
 
+	/**
+	 * Create a new {@link ChangeTradingRequestAction}.
+	 * 
+	 * @param material
+	 *            Which material to change
+	 * @param amount
+	 *            The new amount of materials
+	 * @param relative
+	 *            If <code>true</code>, the amount is treated as relative value.
+	 */
 	public ChangeTradingRequestAction(EMaterialType material, int amount, boolean relative) {
 		super(EActionType.CHANGE_TRADING_REQUEST);
 		this.material = material;

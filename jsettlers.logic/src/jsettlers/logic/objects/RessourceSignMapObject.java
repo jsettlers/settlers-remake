@@ -39,7 +39,7 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 
 	@Override
 	public EMapObjectType getObjectType() {
-		return EMapObjectType.values[objectType];
+		return EMapObjectType.VALUES[objectType];
 	}
 
 	@Override

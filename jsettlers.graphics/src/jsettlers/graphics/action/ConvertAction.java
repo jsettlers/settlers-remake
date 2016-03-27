@@ -17,7 +17,7 @@ package jsettlers.graphics.action;
 import jsettlers.common.movable.EMovableType;
 
 /**
- * This action is used to convert any movables to the given {@link EMovableType}
+ * This action is used to convert any movables to the given {@link EMovableType}.
  * 
  * @author Andreas Eberle
  */

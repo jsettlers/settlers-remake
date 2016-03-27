@@ -22,15 +22,21 @@ import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
- * This class translates settler images.
+ * This class translates settler images. Settler images are packed in sequences.
  *
- * @author michael
+ * @author Michael Zangl
  *
  */
 public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	private final DatFileType type;
 
+	/**
+	 * Creates a new {@link SettlerTranslator}.
+	 * 
+	 * @param type
+	 *            The {@link DatFileType} to convert colors.
+	 */
 	public SettlerTranslator(DatFileType type) {
 		this.type = type;
 	}

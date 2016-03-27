@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
+import go.graphics.area.Area;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,9 +33,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import go.graphics.area.Area;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
@@ -187,7 +188,7 @@ public class SwingManagedJSettlers {
 			String localeString = options.getProperty("locale");
 			String[] localeParts = localeString.split("_");
 			if (localeParts.length == 2) {
-				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
+				AbstractLabels.setPreferredLocale(new Locale(localeParts[0], localeParts[1]));
 			} else {
 				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
 			}

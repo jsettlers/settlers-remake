@@ -181,7 +181,7 @@ public class FreshMapSerializer {
 				data.setPlayerStart((byte) player, x, y);
 			}
 
-			ELandscapeType[] types = ELandscapeType.values;
+			ELandscapeType[] types = ELandscapeType.VALUES;
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 					byte type = stream.readByte();
@@ -200,7 +200,7 @@ public class FreshMapSerializer {
 				for (int y = 0; y < height; y++) {
 					byte t = stream.readByte();
 					byte amount = stream.readByte();
-					data.setResources(x, y, EResourceType.values[t], amount);
+					data.setResources(x, y, EResourceType.VALUES[t], amount);
 				}
 			}
 

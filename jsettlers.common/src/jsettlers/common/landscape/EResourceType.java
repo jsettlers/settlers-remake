@@ -31,7 +31,7 @@ public enum EResourceType {
 	BRIMSTONE(EMapObjectType.FOUND_BRIMSTONE),
 	NOTHING(EMapObjectType.FOUND_NOTHING);
 
-	public static final EResourceType[] values = EResourceType.values();
+	public static final EResourceType[] VALUES = EResourceType.values();
 
 	public final byte ordinal;
 	public final EMapObjectType mapObjectType;

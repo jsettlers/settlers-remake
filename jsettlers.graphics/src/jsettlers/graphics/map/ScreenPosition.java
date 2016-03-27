@@ -19,6 +19,11 @@ import java.util.Hashtable;
 import go.graphics.UIPoint;
 import jsettlers.common.position.FloatRectangle;
 
+/**
+ * This class defines and handles the position of the map view.
+ * 
+ * @author Michael Zangl
+ */
 public class ScreenPosition {
 
 	/**
@@ -55,11 +60,12 @@ public class ScreenPosition {
 	private final float incline;
 
 	/**
-	 * Sets the map size, the max border, widthout the automatically added additional border.
+	 * Sets the map size, the max border, without the automatically added additional border.
 	 * 
 	 * @param mapWidth
+	 *            The map width in pixel on the screen.
 	 * @param mapHeight
-	 *            The width in pixel
+	 *            The map height in pixel.
 	 * @param incline
 	 *            The incline of the parallelogram side.
 	 */
@@ -96,19 +102,20 @@ public class ScreenPosition {
 	}
 
 	/**
+<<<<<<< HEAD
+	 * Set the new zoom factor.
+	 * 
+	 * @param newzoom
+	 *            The new zoom factor. It is automatically clamped.
+=======
 	 * Sets the zoom factor
 	 * 
 	 * @param newzoom
 	 *            from <code>MINIMUM_ZOOM</code> to <code>MAXIMUM_ZOOM</code>
+>>>>>>> master
 	 */
 	public void setZoom(float newzoom) {
-		if (newzoom < MINIMUM_ZOOM) {
-			this.zoom = MINIMUM_ZOOM;
-		} else if (newzoom > MAXIMUM_ZOOM) {
-			this.zoom = MAXIMUM_ZOOM;
-		} else {
-			this.zoom = newzoom;
-		}
+		this.zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);
 	}
 
 	/**
@@ -126,7 +133,7 @@ public class ScreenPosition {
 	}
 
 	/**
-	 * Gets the current center of the screen
+	 * Gets the current center of the screen.
 	 * 
 	 * @return The x coordinate of the center. This also includes any ongoing pan operations.
 	 */
@@ -135,7 +142,7 @@ public class ScreenPosition {
 	}
 
 	/**
-	 * Gets the current center of the screen
+	 * Gets the current center of the screen.
 	 * 
 	 * @return The y coordinate of the center. This also includes any ongoing pan operations.
 	 */
@@ -167,9 +174,13 @@ public class ScreenPosition {
 	 * Sets the screen, and clamps it.
 	 * 
 	 * @param centerx
+	 *            Screen center, in pixel.
 	 * @param centery
+	 *            Screen center, in pixel.
 	 * @param newWidth
+	 *            Screen width in pixel
 	 * @param newHeight
+	 *            Screen height in pixel
 	 */
 	private void setScreen(float centerx, float centery, float newWidth,
 			float newHeight) {

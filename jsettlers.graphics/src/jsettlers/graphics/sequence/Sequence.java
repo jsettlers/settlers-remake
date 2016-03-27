@@ -16,6 +16,14 @@ package jsettlers.graphics.sequence;
 
 import jsettlers.graphics.image.Image;
 
+/**
+ * This is a sequence of images, describing e.g. an animation.
+ * 
+ * @author Michael Zangl
+ *
+ * @param <T>
+ *            The image type.
+ */
 public interface Sequence<T extends Image> {
 
 	/**
@@ -23,7 +31,7 @@ public interface Sequence<T extends Image> {
 	 * 
 	 * @return The number of images in the seuqence.
 	 */
-	public abstract int length();
+	int length();
 
 	/**
 	 * Gets a image at a given position.
@@ -34,7 +42,7 @@ public interface Sequence<T extends Image> {
 	 * @throws IndexOutOfBoundsException
 	 *             if the index is out of the ounds of the base array.
 	 */
-	public abstract T getImage(int index);
+	T getImage(int index);
 
 	/**
 	 * Gets a image at a given position.
@@ -43,6 +51,6 @@ public interface Sequence<T extends Image> {
 	 *            The image index in the sequence.
 	 * @return The image, or a null image if the index is out of bounds
 	 */
-	public abstract Image getImageSafe(int index);
+	Image getImageSafe(int index);
 
 }

@@ -20,7 +20,15 @@ import jsettlers.graphics.image.Torso;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
+/**
+ * This class reads the torso image. That image is always a grayscale image.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class TorsoTranslator implements DatBitmapTranslator<Torso> {
+	private static final int TORSO_BITS = 0x1f;
+
 	@Override
 	public short getTransparentColor() {
 		return 0x00;
@@ -28,9 +36,8 @@ public class TorsoTranslator implements DatBitmapTranslator<Torso> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		int read = (reader.read8() & 0x1f); // only 5 bit.
+		int read = reader.read8() & TORSO_BITS; // only 5 bit.
 		return (short) (read << 11 | read << 6 | read << 1 | 0x01);
-		// return (short) ((read & 0xff) | 0xff00);
 	}
 
 	@Override

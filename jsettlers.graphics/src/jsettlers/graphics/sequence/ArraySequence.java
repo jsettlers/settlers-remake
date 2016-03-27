@@ -24,8 +24,9 @@ import jsettlers.graphics.image.SingleImage;
 /**
  * This class defines an image sequence.
  * 
- * @author michael
+ * @author Michael Zangl
  * @param <T>
+ *            The image type images of this sequence are of.
  */
 public final class ArraySequence<T extends Image> implements Iterable<T>, Sequence<T> {
 	private static Sequence<SingleImage> nullSequence;

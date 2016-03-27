@@ -21,10 +21,22 @@ import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
+/**
+ * This class converts the background landscape images.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> {
 
 	private final DatFileType type;
 
+	/**
+	 * Create a new {@link LandscapeTranslator}.
+	 * 
+	 * @param type
+	 *            The {@link DatFileType} to convert colors.
+	 */
 	public LandscapeTranslator(DatFileType type) {
 		this.type = type;
 	}

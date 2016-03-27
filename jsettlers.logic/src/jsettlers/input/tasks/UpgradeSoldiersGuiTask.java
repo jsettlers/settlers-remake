@@ -49,6 +49,6 @@ public class UpgradeSoldiersGuiTask extends SimpleGuiTask {
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		soldierType = ESoldierType.values[dis.readInt()];
+		soldierType = ESoldierType.VALUES[dis.readInt()];
 	}
 }

@@ -37,9 +37,11 @@ import jsettlers.graphics.reader.ImageArrayProvider;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
- * The map background
+ * The map background.
+ * <p>
+ * This class draws the map background (landscape) layer. It has support for smooth FOW transitions and buffers the background to make it faster.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class Background implements IGraphicsBackgroundListener {
 
@@ -1773,6 +1775,9 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 	}
 
+	/**
+	 * Invalidates the background texture.
+	 */
 	public static void invalidateTexture() {
 		texture = null;
 	}

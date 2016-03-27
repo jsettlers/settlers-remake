@@ -38,7 +38,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 	private final int[] numberOfFutureProducedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
 	public MaterialProductionSettings() {
-		for (EMaterialType type : EMaterialType.values) {
+		for (EMaterialType type : EMaterialType.VALUES) {
 			ratios[type.ordinal] = 0;
 			numberOfFutureProducedMaterials[type.ordinal] = 0;
 		}

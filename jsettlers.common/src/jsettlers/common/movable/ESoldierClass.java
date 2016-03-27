@@ -9,8 +9,8 @@ public enum ESoldierClass {
 	INFANTRY,
 	BOWMAN;
 
-	public static final ESoldierClass[] values = ESoldierClass.values();
-	public static final int NUMBER_OF_VALUES = values.length;
+	public static final ESoldierClass[] VALUES = ESoldierClass.values();
+	public static final int NUMBER_OF_VALUES = VALUES.length;
 
 	public final int ordinal;
 

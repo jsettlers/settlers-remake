@@ -14,22 +14,21 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import go.graphics.UIPoint;
-
 import java.util.ArrayList;
 
+import go.graphics.UIPoint;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.ui.Button;
 
 /**
  * This is a map of actions.
  * <p>
- * It assigns actions to rectangulr areas of the screen.
+ * It assigns actions to rectangular areas of the screen.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class ActionMap {
-	ArrayList<PositionedAction> actions = new ArrayList<PositionedAction>();
+	private final ArrayList<PositionedAction> actions = new ArrayList<PositionedAction>();
 
 	/**
 	 * Creates an empty map.
@@ -82,22 +81,38 @@ public class ActionMap {
 	}
 
 	/**
-	 * This is a combination of an action and its position.
+	 * This is a combination of an action and its position on screen.
 	 * 
-	 * @author michael
+	 * @author Michael Zangl
 	 */
-	private class PositionedAction {
+	private static class PositionedAction {
 		private final Action action;
 		private final FloatRectangle position;
 		private final Button button;
 
-		public PositionedAction(Action action, FloatRectangle position) {
+		/**
+		 * Creates a new positioned action.
+		 * 
+		 * @param action
+		 *            The action
+		 * @param position
+		 *            The position the action is at.
+		 */
+		PositionedAction(Action action, FloatRectangle position) {
 			this.action = action;
 			this.position = position;
 			this.button = null;
 		}
 
-		public PositionedAction(Action action, Button button) {
+		/**
+		 * Creates a new positioned action.
+		 * 
+		 * @param action
+		 *            The action
+		 * @param position
+		 *            The button the action is for.
+		 */
+		PositionedAction(Action action, Button button) {
 			this.action = action;
 			this.button = button;
 			this.position = null;
@@ -116,6 +131,9 @@ public class ActionMap {
 		}
 	}
 
+	/**
+	 * Clears this action map.
+	 */
 	public void removeAll() {
 		this.actions.clear();
 	}

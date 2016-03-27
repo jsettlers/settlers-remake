@@ -15,9 +15,9 @@
 package jsettlers.graphics.map.draw;
 
 /**
- * All texture types a texture can have.
+ * All texture types a texture can have. This is used for the background.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public enum ETextureOrientation {
 

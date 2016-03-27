@@ -14,9 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import go.graphics.GLDrawContext;
+
 import java.util.ConcurrentModificationException;
 
-import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -28,7 +29,6 @@ import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
@@ -57,8 +57,14 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class MapObjectDrawer {
 
-	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
-	private static final OriginalImageLink INSIDE_BUILDING_LEFT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
+	private static final int SOUND_MILL = 42;
+	private static final int SOUND_BUILDING_DESTROYED = 36;
+	private static final int SOUND_SETTLER_KILLED = 35;
+	private static final int SOUND_FALLING_TREE = 4;
+	private static final OriginalImageLink INSIDE_BUILDING_RIGHT =
+			new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
+	private static final OriginalImageLink INSIDE_BUILDING_LEFT =
+			new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int OBJECTS_FILE = 1;
 	private static final int BUILDINGS_FILE = 13;
@@ -73,7 +79,7 @@ public class MapObjectDrawer {
 	};
 
 	/**
-	 * First images in tree cutting sequence
+	 * First images in tree cutting sequence.
 	 */
 	private static final int TREE_FALL_IMAGES = 4;
 
@@ -137,8 +143,14 @@ public class MapObjectDrawer {
 	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
 	private static final float FLAG_ROOF_Z = 0.89f;
 
-	int animationStep = 0;
+	/**
+	 * An animation counter, used for trees and other waving/animated things.
+	 */
+	private int animationStep = 0;
 
+	/**
+	 * The image provider that supplies us with the images we need.
+	 */
 	private ImageProvider imageProvider;
 	private final SoundManager sound;
 
@@ -147,6 +159,14 @@ public class MapObjectDrawer {
 	private SettlerImageMap imageMap;
 	private float betweenTilesY;
 
+	/**
+	 * Creates a new {@link MapObjectDrawer}.
+	 * 
+	 * @param context
+	 *            The context to use for computing the positions.
+	 * @param sound
+	 *            The sound manager to send sounds to play to.
+	 */
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
 		this.sound = sound;
@@ -155,16 +175,14 @@ public class MapObjectDrawer {
 	/**
 	 * Draws a map object at a given position.
 	 *
-	 * @param context
-	 *            The context.
-	 * @param map
-	 *            For these damned arrwos
-	 * @param pos
+	 * @param x
+	 *            THe position to draw the object.
+	 * @param y
 	 *            THe position to draw the object.
 	 * @param object
 	 *            The object (tree, ...) to draw.
 	 */
-	public void drawMapObject(IGraphicsGrid map, int x, int y, IMapObject object) {
+	public void drawMapObject(int x, int y, IMapObject object) {
 		forceSetup();
 
 		byte fogstatus = context.getVisibleStatus(x, y);
@@ -173,229 +191,265 @@ public class MapObjectDrawer {
 		}
 		float color = getColor(fogstatus);
 
+		drawObject(x, y, object, color);
+
+		if (object.getNextObject() != null) {
+			drawMapObject(x, y, object.getNextObject());
+		}
+	}
+
+	private void drawObject(int x, int y, IMapObject object, float color) {
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
 
-		if (type == EMapObjectType.ARROW) {
+		switch (type) {
+		case ARROW:
 			drawArrow(context, (IArrowMapObject) object, color);
-		} else {
-			float z;
-
-			switch (type) {
-
-			case TREE_ADULT:
-				if (context.ENABLE_ORIGINAL) {
-					drawTree(x, y, color);
-				} else {
-					drawTreeTest(x, y, color);
-				}
-				break;
-
-			case TREE_DEAD:
-				// TODO: falling tree sound.
-				playSound(object, 4);
-				drawFallingTree(x, y, progress, color);
-				break;
-
-			case TREE_GROWING:
-				drawGrowingTree(x, y, progress, color);
-				break;
-
-			case CORN_GROWING:
-				drawGrowingCorn(x, y, object, color);
-				break;
-			case CORN_ADULT:
-				drawCorn(x, y, color);
-				break;
-			case CORN_DEAD:
-				drawDeadCorn(x, y, color);
-				break;
-
-			case WINE_GROWING:
-				drawGrowingWine(x, y, object, color);
-				break;
-			case WINE_HARVESTABLE:
-				drawHarvestableWine(x, y, color);
-				break;
-			case WINE_DEAD:
-				drawDeadWine(x, y, color);
-				break;
-
-			case WINE_BOWL:
-				drawWineBowl(x, y, object, color);
-				break;
-
-			case WAVES:
-				drawWaves(x, y, color);
-				break;
-
-			case STONE:
-				drawStones(x, y, object, color);
-				break;
-
-			case GHOST:
-				drawPlayerableByProgress(x, y, 12, 27, object, color);
-				playSound(object, 35);
-				break;
-
-			case BUILDING_DECONSTRUCTION_SMOKE:
-				drawByProgress(x, y, 13, 38, object.getStateProgress(),
-						color);
-				playSound(object, 36);
-				break;
-
-			case FOUND_COAL:
-				drawByProgress(x, y, OBJECTS_FILE, 94, object.getStateProgress(),
-						color);
-				break;
-
-			case FOUND_GEMSTONE:
-				drawByProgress(x, y, OBJECTS_FILE, 95, object.getStateProgress(),
-						color);
-				break;
-
-			case FOUND_GOLD:
-				drawByProgress(x, y, OBJECTS_FILE, 96, object.getStateProgress(),
-						color);
-				break;
-
-			case FOUND_IRON:
-				drawByProgress(x, y, OBJECTS_FILE, 97, object.getStateProgress(),
-						color);
-				break;
-
-			case FOUND_BRIMSTONE:
-				drawByProgress(x, y, OBJECTS_FILE, 98, object.getStateProgress(),
-						color);
-				break;
-
-			case FOUND_NOTHING:
-				drawByProgress(x, y, OBJECTS_FILE, 99, object.getStateProgress(),
-						color);
-				break;
-
-			case BUILDINGSITE_SIGN:
-				drawByProgress(x, y, OBJECTS_FILE, 93, object.getStateProgress(),
-						color);
-				break;
-
-			case BUILDINGSITE_POST:
-				drawByProgress(x, y, OBJECTS_FILE, 92, object.getStateProgress(),
-						color);
-				break;
-
-			case WORKAREA_MARK:
-				drawByProgress(x, y, OBJECTS_FILE, 91, object.getStateProgress(),
-						color);
-				break;
-
-			case FLAG_DOOR:
-				drawPlayerableWaving(x, y, 13, 63, object, color);
-				break;
-
-			case CONSTRUCTION_MARK:
-				z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
-				drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
-				context.getDrawBuffer().setZ(z);
-				break;
-
-			case FLAG_ROOF:
-				z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(FLAG_ROOF_Z);
-				drawPlayerableWaving(x, y, 13, 64, object, color);
-				context.getDrawBuffer().setZ(z);
-				break;
-
-			case BUILDING:
-				drawBuilding(x, y, (IBuilding) object, color);
-				break;
-
-			case PLACEMENT_BUILDING:
-				z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
-				drawBuilding(x, y, (IBuilding) object, color);
-				context.getDrawBuffer().setZ(z);
-				break;
-
-			case STACK_OBJECT:
-				drawStack(x, y, (IStackMapObject) object, color);
-				break;
-
-			case SMOKE:
-				drawByProgress(x, y, 13, 42, progress, color);
-				break;
-
-			case WINE:
-				drawByProgress(x, y, 1, 25, progress, color);
-				break;
-
-			case PLANT_DECORATION: {
-				int step = (x * 13 + y * 233) % 8;
-
-				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
-
-				draw(seq.getImageSafe(step), x, y, color);
+			break;
+		case TREE_ADULT:
+			if (context.ENABLE_ORIGINAL) {
+				drawTree(x, y, color);
+			} else {
+				drawTreeTest(x, y, color);
 			}
-				break;
+			break;
 
-			case DESERT_DECORATION: {
-				int step = (x * 13 + y * 233) % 5 + 10;
+		case TREE_DEAD:
+			// TODO: falling tree sound.
+			playSound(object, SOUND_FALLING_TREE);
+			drawFallingTree(x, y, progress, color);
+			break;
 
-				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
+		case TREE_GROWING:
+			drawGrowingTree(x, y, progress, color);
+			break;
 
-				draw(seq.getImageSafe(step), x, y, color);
-			}
-				break;
+		case CORN_GROWING:
+			drawGrowingCorn(x, y, object, color);
+			break;
+		case CORN_ADULT:
+			drawCorn(x, y, color);
+			break;
+		case CORN_DEAD:
+			drawDeadCorn(x, y, color);
+			break;
 
-			case PIG: {
-				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+		case WINE_GROWING:
+			drawGrowingWine(x, y, object, color);
+			break;
+		case WINE_HARVESTABLE:
+			drawHarvestableWine(x, y, color);
+			break;
+		case WINE_DEAD:
+			drawDeadWine(x, y, color);
+			break;
+
+		case WINE_BOWL:
+			drawWineBowl(x, y, object, color);
+			break;
+
+		case WAVES:
+			drawWaves(x, y, color);
+			break;
+
+		case STONE:
+			drawStones(x, y, object, color);
+			break;
+
+		case GHOST:
+			drawPlayerableByProgress(x, y, 12, 27, object, color);
+			playSound(object, SOUND_SETTLER_KILLED);
+			break;
+
+		case BUILDING_DECONSTRUCTION_SMOKE:
+			drawByProgress(x, y, 13, 38, object.getStateProgress(),
+					color);
+			playSound(object, SOUND_BUILDING_DESTROYED);
+			break;
+
+		case FOUND_COAL:
+			drawByProgress(x, y, OBJECTS_FILE, 94, object.getStateProgress(),
+					color);
+			break;
+
+		case FOUND_GEMSTONE:
+			drawByProgress(x, y, OBJECTS_FILE, 95, object.getStateProgress(),
+					color);
+			break;
+
+		case FOUND_GOLD:
+			drawByProgress(x, y, OBJECTS_FILE, 96, object.getStateProgress(),
+					color);
+			break;
+
+		case FOUND_IRON:
+			drawByProgress(x, y, OBJECTS_FILE, 97, object.getStateProgress(),
+					color);
+			break;
+
+		case FOUND_BRIMSTONE:
+			drawByProgress(x, y, OBJECTS_FILE, 98, object.getStateProgress(),
+					color);
+			break;
+
+		case FOUND_NOTHING:
+			drawByProgress(x, y, OBJECTS_FILE, 99, object.getStateProgress(),
+					color);
+			break;
+
+		case BUILDINGSITE_SIGN:
+			drawByProgress(x, y, OBJECTS_FILE, 93, object.getStateProgress(),
+					color);
+			break;
+
+		case BUILDINGSITE_POST:
+			drawByProgress(x, y, OBJECTS_FILE, 92, object.getStateProgress(),
+					color);
+			break;
+
+		case WORKAREA_MARK:
+			drawByProgress(x, y, OBJECTS_FILE, 91, object.getStateProgress(),
+					color);
+			break;
+
+		case FLAG_DOOR:
+			drawPlayerableWaving(x, y, 13, 63, object, color);
+			break;
+
+		case CONSTRUCTION_MARK:
+			drawConstructionMark(x, y, object, color);
+			break;
+
+		case FLAG_ROOF:
+			drawRoofFlag(x, y, object, color);
+			break;
+
+		case BUILDING:
+			drawBuilding(x, y, (IBuilding) object, color);
+			break;
+
+		case PLACEMENT_BUILDING:
+			drawPlacementBuilding(x, y, object, color);
+			break;
+
+		case STACK_OBJECT:
+			drawStack(x, y, (IStackMapObject) object, color);
+			break;
+
+		case SMOKE:
+			drawByProgress(x, y, 13, 42, progress, color);
+			break;
+
+		case WINE:
+			drawByProgress(x, y, 1, 25, progress, color);
+			break;
+
+		case PLANT_DECORATION:
+			drawPlantDecoration(x, y, color);
+			break;
+
+		case DESERT_DECORATION:
+			drawDesertDecoration(x, y, color);
+			break;
+
+		case PIG:
+			drawPig(x, y, color);
+			break;
+
+		case DONKEY:
+			drawDonkey(x, y, object, color);
+			break;
+
+		case FISH_DECORATION:
+			drawDecorativeFish(x, y, color);
+			break;
+
+		case ATTACKABLE_TOWER:
+			drawAttackableTower(x, y, object);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	private void drawConstructionMark(int x, int y, IMapObject object, float color) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
+		drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
+		context.getDrawBuffer().setZ(z);
+	}
+
+	private void drawRoofFlag(int x, int y, IMapObject object, float color) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(FLAG_ROOF_Z);
+		drawPlayerableWaving(x, y, 13, 64, object, color);
+		context.getDrawBuffer().setZ(z);
+	}
+
+	private void drawPlacementBuilding(int x, int y, IMapObject object, float color) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
+		drawBuilding(x, y, (IBuilding) object, color);
+		context.getDrawBuffer().setZ(z);
+	}
+
+	private void drawPlantDecoration(int x, int y, float color) {
+		int step = (x * 13 + y * 233) % 8;
+
+		Sequence<? extends Image> seq =
+				this.imageProvider.getSettlerSequence(1, 27);
+
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawDesertDecoration(int x, int y, float color) {
+		int step = (x * 13 + y * 233) % 5 + 10;
+
+		Sequence<? extends Image> seq =
+				this.imageProvider.getSettlerSequence(1, 27);
+
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawPig(int x, int y, float color) {
+		Sequence<? extends Image> seq =
+				this.imageProvider.getSettlerSequence(ANIMALS_FILE,
 						PIG_SEQ);
 
-				if (seq.length() > 0) {
-					int i = getAnimationStep(x, y) / 2;
-					int step = i % seq.length();
-					draw(seq.getImageSafe(step), x, y, color);
-				}
-			}
-				break;
-
-			case DONKEY: {
-				int i = (getAnimationStep(x, y) / 20) % 6;
-				Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
-				draw(image, x, y, getColor(object), color);
-			}
-				break;
-
-			case FISH_DECORATION: {
-				int step = getAnimationStep(x, y);
-				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(ANIMALS_FILE,
-						FISH_SEQ);
-				int substep = step % 1024;
-				if (substep < 15) {
-					int subseq = (step / 1024) % 4;
-					draw(seq.getImageSafe(subseq * 15 + substep), x, y,
-							color);
-				}
-			}
-				break;
-
-			case ATTACKABLE_TOWER: {
-				IMovable movable = ((IAttackableTowerMapObject) object).getMovable();
-				if (movable != null) {
-					drawMovableAt(movable, x, y);
-					playMovableSound(movable);
-				}
-			}
-				break;
-
-			default:
-				break;
-			}
+		if (seq.length() > 0) {
+			int i = getAnimationStep(x, y) / 2;
+			int step = i % seq.length();
+			draw(seq.getImageSafe(step), x, y, color);
 		}
-		if (object.getNextObject() != null) {
-			drawMapObject(map, x, y, object.getNextObject());
+	}
+
+	private void drawDonkey(int x, int y, IMapObject object, float color) {
+		int i = (getAnimationStep(x, y) / 20) % 6;
+		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
+		draw(image, x, y, getColor(object), color);
+	}
+
+	private void drawDecorativeFish(int x, int y, float color) {
+		int step = getAnimationStep(x, y);
+		Sequence<? extends Image> seq =
+				this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+						FISH_SEQ);
+		int substep = step % 1024;
+		if (substep < 15) {
+			int subseq = (step / 1024) % 4;
+			draw(seq.getImageSafe(subseq * 15 + substep), x, y,
+					color);
+		}
+	}
+
+	private void drawAttackableTower(int x, int y, IMapObject object) {
+		IMovable movable =
+				((IAttackableTowerMapObject) object).getMovable();
+		if (movable != null) {
+			drawMovableAt(movable, x, y);
+			playMovableSound(movable);
 		}
 	}
 
@@ -407,7 +461,7 @@ public class MapObjectDrawer {
 	}
 
 	/**
-	 * Draws a movable
+	 * Draws any type of movable.
 	 *
 	 * @param movable
 	 *            The movable.
@@ -511,13 +565,13 @@ public class MapObjectDrawer {
 		float x = (1 - progress)
 				* converter.getViewX(startx, starty, theight)
 				+ progress
-						* converter.getViewX(destinationx, destinationy,
-								dheight);
+				* converter.getViewX(destinationx, destinationy,
+						dheight);
 		betweenTilesY = (1 - progress)
 				* converter.getViewY(startx, starty, theight)
 				+ progress
-						* converter.getViewY(destinationx, destinationy,
-								dheight);
+				* converter.getViewY(destinationx, destinationy,
+						dheight);
 		return x;
 	}
 
@@ -840,7 +894,7 @@ public class MapObjectDrawer {
 					int step = i % seq.length();
 					draw(seq.getImageSafe(step), x, y, color);
 				}
-				playSound(building, 42);
+				playSound(building, SOUND_MILL);
 
 			} else {
 				ImageLink[] images = type.getImages();

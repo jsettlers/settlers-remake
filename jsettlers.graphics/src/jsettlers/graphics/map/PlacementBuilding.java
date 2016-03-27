@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2015
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package jsettlers.graphics.map;
 
 import java.util.List;
@@ -11,11 +25,23 @@ import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
+/**
+ * This is a fake building that is drawn under the mouse while we are in the build mode.
+ * 
+ * @author ?
+ *
+ */
 public class PlacementBuilding implements IBuilding, IBuilding.IMill {
-	private final EBuildingType type;
+	private final EBuildingType typeToPlace;
 
+	/**
+	 * Create a new, fake {@link PlacementBuilding}.
+	 * 
+	 * @param type
+	 *            The type.
+	 */
 	public PlacementBuilding(EBuildingType type) {
-		this.type = type;
+		this.typeToPlace = type;
 	}
 
 	@Override
@@ -25,7 +51,7 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 
 	@Override
 	public EBuildingType getBuildingType() {
-		return type;
+		return typeToPlace;
 	}
 
 	@Override
@@ -98,7 +124,11 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 
 	@Override
 	public IMapObject getMapObject(EMapObjectType type) {
-		return type == getObjectType() ? this : null;
+		if (type == getObjectType()) {
+			return this;
+		} else {
+			return null;
+		}
 	}
 
 	@Override

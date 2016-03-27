@@ -36,7 +36,7 @@ public class BestWinegrowerConstructionPositionFinder implements IBestConstructi
 
 	static {
 		workAreaPoints = new Vector<RelativePoint>();
-		RelativePoint center = EBuildingType.WINEGROWER.getWorkcenter();
+		RelativePoint center = EBuildingType.WINEGROWER.getDefaultWorkcenter();
 		short workRadius = EBuildingType.WINEGROWER.getWorkradius();
 		for (short x = (short) -workRadius; x < workRadius; x++) {
 			for (short y = (short) -workRadius; y < workRadius; y++) {

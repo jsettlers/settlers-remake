@@ -295,7 +295,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
-			for (EDirection currDir : EDirection.values) {
+			for (EDirection currDir : EDirection.VALUES) {
 				borderVisitor.visit(currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
 			}
 
@@ -753,8 +753,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 			// check all neighbors for merges
 			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-				int currNeighborX = x + EDirection.values[i].gridDeltaX;
-				int currNeighborY = y + EDirection.values[i].gridDeltaY;
+				int currNeighborX = x + EDirection.VALUES[i].gridDeltaX;
+				int currNeighborY = y + EDirection.VALUES[i].gridDeltaY;
 
 				// if the neighbor is not blocked (if it is blocked, we can not merge)
 				if (!blockingProvider.isBlocked(currNeighborX, currNeighborY)) {

@@ -23,10 +23,10 @@ public enum EWhatToDoAiType {
 	ROMAN_HARD,
 	ROMAN_VERY_HARD;
 
-	public static final EWhatToDoAiType[] values = EWhatToDoAiType.values();
-	public static final int NUMBER_OF_AI_TYPES = values.length;
+	public static final EWhatToDoAiType[] VALUES = EWhatToDoAiType.values();
+	public static final int NUMBER_OF_AI_TYPES = VALUES.length;
 
 	public static EWhatToDoAiType getTypeByIndex(int index) {
-		return values[index % NUMBER_OF_AI_TYPES];
+		return VALUES[index % NUMBER_OF_AI_TYPES];
 	}
 }

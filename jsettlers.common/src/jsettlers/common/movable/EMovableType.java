@@ -79,8 +79,8 @@ public enum EMovableType {
 	public static final float DEFAULT_HEALTH = 100f;
 	public static final float DEFAULT_STRENGTH = 0f;
 
-	public static final EMovableType[] values = EMovableType.values();
-	public static final int NUMBER_OF_MOVABLETYPES = values.length;
+	public static final EMovableType[] VALUES = EMovableType.values();
+	public static final int NUMBER_OF_MOVABLETYPES = VALUES.length;
 
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;

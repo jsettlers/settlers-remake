@@ -27,11 +27,11 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
- * This is the base for all images.
+ * This is the base for all images that are directly loaded from the image file.
  * <p>
  * This class interprets the image data in 5-5-5-1-Format. To change the interpretation, it is possible to subclass this class.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class SingleImage extends Image implements ImageDataPrivider {
 
@@ -72,8 +72,10 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	/**
 	 * Creates a new image by linking this images data to the data of the provider.
 	 * 
-	 * @param provider
-	 *            The provider.
+	 * @param metadata
+	 *            The mata data to use.
+	 * @param data
+	 *            The data to use.
 	 */
 	protected SingleImage(ImageMetadata metadata, short[] data) {
 		this.data = ShortBuffer.wrap(data);
@@ -134,7 +136,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	/**
 	 * Generates the texture, if needed, and returns the index of that texutre.
 	 * 
-	 * @return The gl index or 0 if the texture is not allocated.
+	 * @param gl
+	 *            The gl context to use to generate the image.
+	 * @return The gl handle or <code>null</code> if the texture is not allocated.
 	 */
 	public TextureHandle getTextureIndex(GLDrawContext gl) {
 		if (texture == null || !texture.isValid()) {
@@ -152,7 +156,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return this.texture;
 	}
 
-	static private float[] tmpBuffer = new float[] {
+	private static float[] TMP_BUFFER = new float[] {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
@@ -162,23 +166,23 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-			tmpBuffer[0] = left;
-			tmpBuffer[1] = top;
+			TMP_BUFFER[0] = left;
+			TMP_BUFFER[1] = top;
 
-			tmpBuffer[5] = left;
-			tmpBuffer[6] = bottom;
-			tmpBuffer[9] = (float) height / textureHeight;
+			TMP_BUFFER[5] = left;
+			TMP_BUFFER[6] = bottom;
+			TMP_BUFFER[9] = (float) height / textureHeight;
 
-			tmpBuffer[10] = right;
-			tmpBuffer[11] = bottom;
-			tmpBuffer[13] = (float) width / textureWidth;
-			tmpBuffer[14] = (float) height / textureHeight;
+			TMP_BUFFER[10] = right;
+			TMP_BUFFER[11] = bottom;
+			TMP_BUFFER[13] = (float) width / textureWidth;
+			TMP_BUFFER[14] = (float) height / textureHeight;
 
-			tmpBuffer[15] = right;
-			tmpBuffer[16] = top;
-			tmpBuffer[18] = (float) width / textureWidth;
+			TMP_BUFFER[15] = right;
+			TMP_BUFFER[16] = top;
+			TMP_BUFFER[18] = (float) width / textureWidth;
 
-			gl.drawQuadWithTexture(textureHandle, tmpBuffer);
+			gl.drawQuadWithTexture(textureHandle, TMP_BUFFER);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

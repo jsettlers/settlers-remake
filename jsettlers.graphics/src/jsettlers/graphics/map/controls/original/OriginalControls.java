@@ -44,7 +44,14 @@ import jsettlers.graphics.map.minimap.MinimapMode;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
 
+/**
+ * This is the entry class for the {@link OriginalControls} map overlay.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class OriginalControls implements IControls {
+	private static final int DEFAULT_LAYOUT_SIZE = 480;
 	private ControlPanelLayoutProperties layoutProperties;
 	private UIPanel uiBase;
 
@@ -54,44 +61,27 @@ public class OriginalControls implements IControls {
 
 	private final MainPanel mainPanel;
 
-	private final Button btnChat;
+	private final Button chatButton;
 
-	boolean lastSelectionWasNull = true;
+	private boolean lastSelectionWasNull = true;
 
 	private MapDrawContext context;
 
+	/**
+	 * Creates a new {@link OriginalControls} overlay.
+	 * 
+	 * @param actionFireable
+	 *            The {@link ActionFireable} to send actions from the user to.
+	 * @param player
+	 *            The player this interface should be for.
+	 */
 	public OriginalControls(ActionFireable actionFireable, IInGamePlayer player) {
-		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(480);
+		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(DEFAULT_LAYOUT_SIZE);
 		final MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
 		mainPanel = new MainPanel(actionFireable, player);
 
-		btnChat = new Button(
-				new ExecutableAction() {
-					MessageContent messageContent = new MessageContent(
-							"This is not yet implemented.",
-							"Cancel",
-							new ExecutableAction() {
-						@Override
-						public void execute() {
-							mainPanel.setContent(ContentType.BUILD_NORMAL);
-							btnChat.setActive(false);
-						}
-					},
-							"Ok",
-							new ExecutableAction() {
-						@Override
-						public void execute() {
-							mainPanel.setContent(ContentType.BUILD_NORMAL);
-							btnChat.setActive(false);
-						}
-					});
-
-					@Override
-					public void execute() {
-						mainPanel.setContent(messageContent);
-						btnChat.setActive(true); // TODO needs to be unset when content changes.
-					}
-				}, miniMap.IMAGELINK_BUTTON_CHAT_ACTIVE, miniMap.IMAGELINK_BUTTON_CHAT_INACTIVE, "");
+		chatButton = new Button(
+				new ShowChatAction(), miniMap.IMAGELINK_BUTTON_CHAT_ACTIVE, miniMap.IMAGELINK_BUTTON_CHAT_INACTIVE, "");
 
 		uiBase = createInterface();
 		mainPanel.layoutPanel(layoutProperties);
@@ -119,38 +109,38 @@ public class OriginalControls implements IControls {
 
 	private void addMiniMap(UIPanel panel) {
 		MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
-		UIPanel minimapbg_left = new UIPanel();
-		minimapbg_left.setBackground(miniMap.LEFT_DECORATION);
-		minimapbg_left.addChild(
-				btnChat,
+		UIPanel minimapbgLeft = new UIPanel();
+		minimapbgLeft.setBackground(miniMap.LEFT_DECORATION);
+		minimapbgLeft.addChild(
+				chatButton,
 				miniMap.BUTTON_CHAT_LEFT,
 				miniMap.BUTTON_CHAT_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_CHAT_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_CHAT_TOP);
-		minimapbg_left.addChild(
+		minimapbgLeft.addChild(
 				new MinimapOccupiedButton(minimapSettings),
 				miniMap.BUTTON_FEATURES_LEFT,
 				miniMap.BUTTON_FEATURES_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_FEATURES_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_FEATURES_TOP);
-		minimapbg_left.addChild(
+		minimapbgLeft.addChild(
 				new MinimapSettlersButton(minimapSettings),
 				miniMap.BUTTON_SETTLERS_LEFT,
 				miniMap.BUTTON_SETTLERS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_SETTLERS_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_SETTLERS_TOP);
-		minimapbg_left.addChild(
+		minimapbgLeft.addChild(
 				new MinimapBuildingButton(minimapSettings),
 				miniMap.BUTTON_BUILDINGS_LEFT,
 				miniMap.BUTTON_BUILDINGS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_BUILDINGS_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_BUILDINGS_TOP);
 
-		UIPanel minimapbg_right = new UIPanel();
-		minimapbg_right.setBackground(miniMap.RIGHT_DECORATION);
+		UIPanel minimapbgRight = new UIPanel();
+		minimapbgRight.setBackground(miniMap.RIGHT_DECORATION);
 
-		panel.addChild(minimapbg_left, 0, layoutProperties.MAIN_PANEL_TOP, miniMap.RIGHT_DECORATION_LEFT, 1);
-		panel.addChild(minimapbg_right, miniMap.RIGHT_DECORATION_LEFT, layoutProperties.MAIN_PANEL_TOP, 1, 1);
+		panel.addChild(minimapbgLeft, 0, layoutProperties.MAIN_PANEL_TOP, miniMap.RIGHT_DECORATION_LEFT, 1);
+		panel.addChild(minimapbgRight, miniMap.RIGHT_DECORATION_LEFT, layoutProperties.MAIN_PANEL_TOP, 1, 1);
 	}
 
 	@Override
@@ -200,7 +190,8 @@ public class OriginalControls implements IControls {
 	 * Gets the X-Offset of the minimap at the given y position.
 	 *
 	 * @param y
-	 * @return
+	 *            The y position
+	 * @return The x offset for that row.
 	 */
 	private double getMinimapOffset(double y) {
 		float width = uiBase.getPosition().getWidth();
@@ -229,6 +220,17 @@ public class OriginalControls implements IControls {
 		}
 	}
 
+	/**
+	 * Gets the action for a click on the minimap.
+	 * 
+	 * @param relativex
+	 *            The position on the minimap.
+	 * @param relativey
+	 *            The position on the minimap.
+	 * @param selecting
+	 *            <code>true</code> if it was a selection click and the view should move there.
+	 * @return the action for that point or <code>null</code> for no action.
+	 */
 	private Action getForMinimap(float relativex, float relativey,
 			boolean selecting) {
 		float minimapx = (relativex - layoutProperties.miniMap.MAP_LEFT)
@@ -300,6 +302,41 @@ public class OriginalControls implements IControls {
 		return getForMinimap(relativex, relativey, true);
 	}
 
+	/**
+	 * This should one day display the chat.
+	 */
+	private final class ShowChatAction extends ExecutableAction {
+		private final MessageContent messageContent = new MessageContent(
+				"This is not yet implemented.",
+				"Cancel",
+				new ExecutableAction() {
+					@Override
+					public void execute() {
+						mainPanel.setContent(ContentType.BUILD_NORMAL);
+						chatButton.setActive(false);
+					}
+				},
+				"Ok",
+				new ExecutableAction() {
+					@Override
+					public void execute() {
+						mainPanel.setContent(ContentType.BUILD_NORMAL);
+						chatButton.setActive(false);
+					}
+				});
+
+		@Override
+		public void execute() {
+			mainPanel.setContent(messageContent);
+			chatButton.setActive(true); // TODO needs to be unset when content changes.
+		}
+	}
+
+	/**
+	 * This class handles a draw action (mouse pressed and moved) on the mini map.
+	 * 
+	 * @author Michael Zangl
+	 */
 	private class DrawMinimapHandler implements GOModalEventHandler {
 		@Override
 		public void phaseChanged(GOEvent event) {

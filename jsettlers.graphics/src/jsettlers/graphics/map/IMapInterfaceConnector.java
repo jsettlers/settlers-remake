@@ -18,22 +18,65 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 
 /**
+ * This is the interface that the map logic uses to access the UI.
+ * 
  * @author Andreas Eberle
  */
 public interface IMapInterfaceConnector extends IMessenger {
 
+	/**
+	 * Gets the current state of the UI.
+	 * 
+	 * @return A state that can later be passed to {@link #loadUIState(UIState)}
+	 */
 	UIState getUIState();
 
+	/**
+	 * Restores a UI state.
+	 * 
+	 * @param uiStateData
+	 *            The state to restore.
+	 * @see #getUIState()
+	 */
 	void loadUIState(UIState uiStateData);
 
+	/**
+	 * Adds a new {@link IMapInterfaceListener} to listen to UI actions.
+	 * 
+	 * @param listener
+	 *            The listener
+	 */
 	void addListener(IMapInterfaceListener listener);
 
+	/**
+	 * Removes a listener added by {@link #addListener(IMapInterfaceListener)}.
+	 * 
+	 * @param guiInterface
+	 *            The listener
+	 */
 	void removeListener(IMapInterfaceListener guiInterface);
 
+	/**
+	 * Moves the center of the view to a given point.
+	 * 
+	 * @param point
+	 *            The position to scroll to.
+	 * @param mark
+	 *            <code>true</code> if we should highlight the exact point to the user.
+	 */
 	void scrollTo(ShortPoint2D point, boolean mark);
 
+	/**
+	 * Updates the selection the UI should display.
+	 * 
+	 * @param selection
+	 *            The selection.
+	 */
 	void setSelection(ISelectionSet selection);
 
+	/**
+	 * Kills the UI and releases all resources. Should only be called once.
+	 */
 	void shutdown();
 
 }

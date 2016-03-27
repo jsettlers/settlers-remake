@@ -17,7 +17,7 @@ package jsettlers.graphics.action;
 /**
  * This enum defines the type of the action.
  * 
- * @author michael
+ * @author Michael Zangl
  * @author Andreas Eberle
  */
 public enum EActionType {
@@ -60,21 +60,39 @@ public enum EActionType {
 	FAST_FORWARD,
 
 	// - - - - - - SPEED - - - - -
+	/**
+	 * Pauses or resumes the game.
+	 */
 	SPEED_TOGGLE_PAUSE,
+	/**
+	 * Increases game speed.
+	 */
 	SPEED_FASTER,
+	/**
+	 * Decreases game speed.
+	 */
 	SPEED_SLOWER,
+	/**
+	 * Sets the game speed to slow.
+	 */
 	SPEED_SLOW,
+	/**
+	 * Sets the game speed to the default value.
+	 */
 	SPEED_NORMAL,
+	/**
+	 * Sets the game speed to fast.
+	 */
 	SPEED_FAST,
 
 	// - - - - - - SELECTION - - - - - - -
 	/**
-	 * Lets the currently selected settlers start working
+	 * Lets the currently selected settlers start working.
 	 */
 	START_WORKING,
 
 	/**
-	 * Lets the currently selected settlers stop working
+	 * Lets the currently selected settlers stop working.
 	 */
 	STOP_WORKING,
 
@@ -117,7 +135,7 @@ public enum EActionType {
 	SCREEN_CHANGE,
 
 	/**
-	 * used for debugging (should be fired on pressing d)
+	 * used for debugging (should be fired on pressing d).
 	 */
 	DEBUG_ACTION,
 
@@ -129,7 +147,7 @@ public enum EActionType {
 	CHANGE_PANEL,
 
 	/**
-	 * Toggles debug tile display
+	 * Toggles debug tile display.
 	 */
 	TOGGLE_DEBUG,
 
@@ -151,17 +169,17 @@ public enum EActionType {
 	TOGGLE_FOG_OF_WAR,
 
 	/**
-	 * Zoom in
+	 * Zoom in.
 	 */
 	ZOOM_IN,
 
 	/**
-	 * Zoom out
+	 * Zoom out.
 	 */
 	ZOOM_OUT,
 
 	/**
-	 * Save the game
+	 * Save the game.
 	 */
 	SAVE,
 
@@ -173,14 +191,32 @@ public enum EActionType {
 	CONVERT,
 
 	/**
-	 * Start menu constants, never used in game
+	 * Start menu constant, never used in game.
 	 */
 	SHOW_START_NEW,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	SHOW_LOAD,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	SHOW_START_NETWORK,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	SHOW_JOIN_NETWORK,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	SHOW_RECOVER_NETWORK,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	START_NEW_GAME,
+	/**
+	 * Start menu constant, never used in game.
+	 */
 	LOAD_GAME,
 
 	/**
@@ -226,7 +262,13 @@ public enum EActionType {
 	 * Gets called when a network game should be started.
 	 */
 	START_NETWORK,
+	/**
+	 * Gets called when a network game should be joined.
+	 */
 	JOIN_NETWORK,
+	/**
+	 * Gets called when the user wants to toggle the allow start button.
+	 */
 	TOGGLE_ALLOW_START,
 
 	/**
@@ -261,12 +303,26 @@ public enum EActionType {
 	SET_MATERIAL_PRIORITIES,
 
 	/**
-	 * Focus a UI Input
+	 * Focus a UI Input.
 	 */
 	FOCUS,
 
+	/**
+	 * Select the next movable or building of a given type.
+	 */
 	NEXT_OF_TYPE,
+	/**
+	 * Request an upgrade of the soldiers.
+	 * 
+	 * @see UpgradeSoldiersAction
+	 */
 	UPGRADE_SOLDIERS,
+
+	/**
+	 * Set the material production.
+	 * 
+	 * @see SetMaterialProductionAction
+	 */
 	SET_MATERIAL_PRODUCTION,
 
 	/**
@@ -285,13 +341,13 @@ public enum EActionType {
 	 */
 	SOLDIERS_ONE,
 	/**
-	 * Add one more soldier of this type to the building
+	 * Add one more soldier of this type to the building.
 	 * 
 	 * @see SoldierAction
 	 */
 	SOLDIERS_MORE,
 	/**
-	 * Add one more soldier of this type to the building
+	 * Add one more soldier of this type to the building.
 	 * 
 	 * @see SoldierAction
 	 */
