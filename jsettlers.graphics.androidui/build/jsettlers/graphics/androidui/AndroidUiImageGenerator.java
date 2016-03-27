@@ -107,7 +107,7 @@ public class AndroidUiImageGenerator {
 
 		ImageProvider i = ImageProvider.getInstance();
 
-		for (EBuildingType t : EBuildingType.values) {
+		for (EBuildingType t : EBuildingType.VALUES) {
 			String name = "bui_" + t.toString().toLowerCase();
 			File file = new File(destinationDirectory, name + ".png");
 
@@ -129,7 +129,7 @@ public class AndroidUiImageGenerator {
 
 		ImageProvider i = ImageProvider.getInstance();
 
-		for (EMaterialType t : EMaterialType.values()) {
+		for (EMaterialType t : EMaterialType.VALUES) {
 			String name = "mat_" + t.toString().toLowerCase();
 			File file = new File(destinationDirectory, name + ".png");
 
