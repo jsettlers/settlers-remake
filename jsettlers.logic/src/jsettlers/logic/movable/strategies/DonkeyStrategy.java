@@ -14,12 +14,15 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.trading.MarketBuilding;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -117,26 +120,25 @@ public class DonkeyStrategy extends MovableStrategy {
 	}
 
 	private IDonkeyMarket findNextMarketNeedingDonkey() {
-		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(super.getPlayer());
-		ShortPoint2D ownPosition = super.getPos();
+		if (this.market != null && this.market.needsDonkey()) {
+			return this.market;
+		}
 
-		IDonkeyMarket market = null;
-		int distance = Integer.MAX_VALUE;
+		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(super.getPlayer());
+		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<IDonkeyMarket>();
 
 		for (IDonkeyMarket currMarket : markets) {
-
 			if (currMarket.needsDonkey()) {
-				int currDistance = currMarket.getPos().getOnGridDistTo(ownPosition);
-
-				if (currDistance < distance) {
-					market = currMarket;
-					distance = currDistance;
-					break;
-				}
+				marketsNeedingDonkeys.add(currMarket);
 			}
 		}
 
-		return market;
+		if (!marketsNeedingDonkeys.isEmpty()) {
+			// randomly distribute the donkeys onto the markets needing them
+			return marketsNeedingDonkeys.get(MatchConstants.random().nextInt(marketsNeedingDonkeys.size()));
+		} else {
+			return null;
+		}
 	}
 
 	@Override
