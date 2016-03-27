@@ -36,6 +36,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.crash.CrashReporting;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
@@ -75,6 +76,8 @@ public class SwingManagedJSettlers {
 	 * @throws MapLoadException
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
+		CrashReporting.setupUncaughtExceptionHandler();
+
 		// UI will be changed later with the new Swing implementation, but will also be based on Nimbus
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
