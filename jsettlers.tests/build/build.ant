@@ -167,7 +167,7 @@
 	</target>
 
 	<target name="autoReplayIT" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" showoutput="true">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
