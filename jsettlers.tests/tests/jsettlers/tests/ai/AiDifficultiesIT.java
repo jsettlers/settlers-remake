@@ -16,6 +16,7 @@ package jsettlers.tests.ai;
 
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.TestUtils;
@@ -53,6 +54,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test
+	@Ignore // currently disabled as the difficulty levels still need to be balanced.
 	public void hardShouldConquerEasy() {
 		holdBattleBetween(EWhatToDoAiType.ROMAN_HARD, EWhatToDoAiType.ROMAN_EASY, 70 * MINUTES);
 	}
@@ -63,7 +65,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test
-	public void verHardShouldProduceCertainAmountOfSoldiersWithin75Minutes() {
+	public void verHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, EWhatToDoAiType.ROMAN_VERY_HARD);
 		playerSettings[1] = new PlayerSetting(false, null);
@@ -72,10 +74,11 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
-		MatchConstants.clock().fastForwardTo(75 * MINUTES);
+		MatchConstants.clock().fastForwardTo(85 * MINUTES);
+
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 250;
+		short expectedMinimalProducedSoldiers = 300;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("ROMAN_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
