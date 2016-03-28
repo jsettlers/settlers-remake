@@ -88,6 +88,7 @@ public class OriginalMapFileDataStructs {
 		FREE_CHOICE(255),
 		NOT_DEFINED(256);
 
+		private static final EMapNations[] VALUES = EMapNations.values();
 		public final int value;
 
 		EMapNations(int value) {
@@ -95,16 +96,15 @@ public class OriginalMapFileDataStructs {
 		}
 
 		public static EMapNations fromMapValue(int mapValue) {
-			for (int i = 0; i < EMapNations.values().length; i++) {
-				if (EMapNations.values()[i].value == mapValue)
-					return EMapNations.values()[i];
+			for (int i = 0; i < EMapNations.VALUES.length; i++) {
+				if (EMapNations.VALUES[i].value == mapValue)
+					return EMapNations.VALUES[i];
 			}
 
 			System.err.println("wrong value for 'EMapNations' " + Integer.toString(mapValue) + "!");
 
 			return EMapNations.ROMANS;
 		}
-
 	}
 
 	// --------------------------------------------------//
@@ -113,6 +113,7 @@ public class OriginalMapFileDataStructs {
 		MEDIUM_GOODS(2),
 		HIGH_GOODS(3);
 
+		private static final EMapStartResources[] VALUES = EMapStartResources.values();
 		public final int value;
 
 		EMapStartResources(int value) {
@@ -120,9 +121,9 @@ public class OriginalMapFileDataStructs {
 		}
 
 		public static EMapStartResources fromMapValue(int mapValue) {
-			for (int i = 0; i < EMapStartResources.values().length; i++) {
-				if (EMapStartResources.values()[i].value == mapValue)
-					return EMapStartResources.values()[i];
+			for (int i = 0; i < EMapStartResources.VALUES.length; i++) {
+				if (EMapStartResources.VALUES[i].value == mapValue)
+					return EMapStartResources.VALUES[i];
 			}
 
 			System.err.println("wrong value for 'EMapStartResources' " + Integer.toString(mapValue) + "!");
@@ -559,7 +560,8 @@ public class OriginalMapFileDataStructs {
 		NOT_A_TYPE(null); // - has to be the last item
 
 		// - length of THIS enum (without END_OF_LIST)
-		public static final int length = EOriginalLandscapeType.values().length - 1;
+		private static final EOriginalLandscapeType[] VALUES = EOriginalLandscapeType.values();
+		private static final int NUMBER_OF_ELEMENTS = VALUES.length;
 		public final ELandscapeType value;
 
 		EOriginalLandscapeType(ELandscapeType value) {
@@ -567,12 +569,10 @@ public class OriginalMapFileDataStructs {
 		}
 
 		public static EOriginalLandscapeType getTypeByInt(int type) {
-			if (type < 0)
-				return NOT_A_TYPE;
-			if (type >= EOriginalLandscapeType.length)
+			if (type < 0 || type > EOriginalLandscapeType.NUMBER_OF_ELEMENTS)
 				return NOT_A_TYPE;
 
-			return EOriginalLandscapeType.values()[type];
+			return EOriginalLandscapeType.VALUES[type];
 		}
 	}
 

@@ -66,7 +66,7 @@ public final class BorderTraversingAlgorithm {
 		boolean foundOutsidePos = false;
 
 		// determine first outside position
-		for (EDirection dir : EDirection.values) {
+		for (EDirection dir : EDirection.VALUES) {
 			outsideX = insideX + dir.gridDeltaX;
 			outsideY = insideY + dir.gridDeltaY;
 

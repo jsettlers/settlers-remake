@@ -19,116 +19,160 @@ import java.util.BitSet;
 import jsettlers.common.position.RelativePoint;
 
 /**
- * 
+ * This class defines the area for a building using a rectangular bitset.
  * 
  * @author Andreas Eberle
  * 
  */
 public final class BuildingAreaBitSet {
-	public final BitSet bitSet;
-	public final RelativePoint aPosition;
-	public final short width;
-	public final short height;
-	public final short minX;
-	public final short minY;
-	public final short maxX;
-	public final short maxY;
-	public final int numberOfPositions;
+  /**
+   * The bit set for the area. It has a size of width*height. For each relative (x,y) point the bit
+   * x + width * y is set if that position is contained in this set.
+   */
+  public final BitSet bitSet;
+  /**
+   * One position that is contained in this set.
+   */
+  public final RelativePoint aPosition;
+  /**
+   * The (maximum) width of this set.
+   */
+  public final short width;
+  /**
+   * The (maximum) height of the area of this set.
+   */
+  public final short height;
+  /**
+   * Minimum X value in this set.
+   */
+  public final short minX;
+  /**
+   * Minimum Y value in this set.
+   */
+  public final short minY;
+  /**
+   * Maximum X value in this set.
+   */
+  public final short maxX;
+  /**
+   * Maximum Y value in this set.
+   */
+  public final short maxY;
+  /**
+   * Number of positions contained in this set.
+   */
+  public final int numberOfPositions;
 
-	public final short xJumps[];
-	public final short yJumps[];
+  /**
+   * A jump table used by the construction mark algorithm.
+   */
+  public final short[] xJumps;
+  /**
+   * A jump table used by the construction mark algorithm.
+   */
+  public final short[] yJumps;
 
-	public BuildingAreaBitSet(RelativePoint[] protectedTiles) {
-		short minX = protectedTiles[0].getDx();
-		short maxX = protectedTiles[0].getDx();
-		short minY = protectedTiles[0].getDy();
-		short maxY = protectedTiles[0].getDy();
-		for (int i = 0; i < protectedTiles.length; i++) {
-			minX = min(minX, protectedTiles[i].getDx());
-			maxX = max(maxX, protectedTiles[i].getDx());
-			minY = min(minY, protectedTiles[i].getDy());
-			maxY = max(maxY, protectedTiles[i].getDy());
-		}
+  /**
+   * Creates a new area bit set.
+   * 
+   * @param protectedTiles
+   *          The points that should be contained in this set.
+   */
+  public BuildingAreaBitSet(RelativePoint[] protectedTiles) {
+    short minX = protectedTiles[0].getDx();
+    short maxX = protectedTiles[0].getDx();
+    short minY = protectedTiles[0].getDy();
+    short maxY = protectedTiles[0].getDy();
+    for (int i = 0; i < protectedTiles.length; i++) {
+      minX = min(minX, protectedTiles[i].getDx());
+      maxX = max(maxX, protectedTiles[i].getDx());
+      minY = min(minY, protectedTiles[i].getDy());
+      maxY = max(maxY, protectedTiles[i].getDy());
+    }
 
-		this.aPosition = protectedTiles[0];
-		this.numberOfPositions = protectedTiles.length;
+    this.aPosition = protectedTiles[0];
+    this.numberOfPositions = protectedTiles.length;
 
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+    this.minX = minX;
+    this.minY = minY;
+    this.maxX = maxX;
+    this.maxY = maxY;
 
-		this.width = (short) (maxX - minX + 1);
-		this.height = (short) (maxY - minY + 1);
+    this.width = (short) (maxX - minX + 1);
+    this.height = (short) (maxY - minY + 1);
 
-		this.bitSet = new BitSet(width * height);
+    this.bitSet = new BitSet(width * height);
 
-		for (int i = 0; i < protectedTiles.length; i++) {
-			set(protectedTiles[i].getDx(), protectedTiles[i].getDy());
-		}
+    for (int i = 0; i < protectedTiles.length; i++) {
+      set(protectedTiles[i].getDx(), protectedTiles[i].getDy());
+    }
 
-		// calculate jump tables
-		this.xJumps = new short[width * height];
-		calculateXJumps();
-		this.yJumps = new short[width * height];
-		calculateYJumps();
-	}
+    // calculate jump tables
+    this.xJumps = new short[width * height];
+    calculateXJumps();
+    this.yJumps = new short[width * height];
+    calculateYJumps();
+  }
 
-	private void calculateXJumps() {
-		for (int y = 0; y < height; y++) {
-			short jumpsCtr = 0;
-			for (int x = 0; x < width; x++) {
-				final int index = x + y * width;
+  private void calculateXJumps() {
+    for (int y = 0; y < height; y++) {
+      short jumpsCtr = 0;
+      for (int x = 0; x < width; x++) {
+        final int index = x + y * width;
 
-				if (bitSet.get(index)) { // if position blocked
-					xJumps[index] = ++jumpsCtr;
-				} else { // if it's free, let the default value (0) in the array and reset jumpsCtr
-					jumpsCtr = 0;
-				}
-			}
-		}
-	}
+        if (bitSet.get(index)) { // if position blocked
+          xJumps[index] = ++jumpsCtr;
+        } else { // if it's free, let the default value (0) in the array and reset jumpsCtr
+          jumpsCtr = 0;
+        }
+      }
+    }
+  }
 
-	private void calculateYJumps() {
-		for (int x = 0; x < width; x++) {
-			short jumpsCtr = 0;
-			for (int y = 0; y < height; y++) {
-				final int index = x + y * width;
+  private void calculateYJumps() {
+    for (int x = 0; x < width; x++) {
+      short jumpsCtr = 0;
+      for (int y = 0; y < height; y++) {
+        final int index = x + y * width;
 
-				if (bitSet.get(index)) { // if position blocked
-					yJumps[index] = ++jumpsCtr;
-				} else { // if it's free, let the default value (0) in the array and reset jumpsCtr
-					jumpsCtr = 0;
-				}
-			}
-		}
-	}
+        if (bitSet.get(index)) { // if position blocked
+          yJumps[index] = ++jumpsCtr;
+        } else { // if it's free, let the default value (0) in the array and reset jumpsCtr
+          jumpsCtr = 0;
+        }
+      }
+    }
+  }
 
-	public final boolean getWithoutOffset(short x, short y) {
-		return this.bitSet.get((x) + width * (y));
-	}
+  public boolean getWithoutOffset(short x, short y) {
+    return this.bitSet.get(index(x, y));
+  }
 
-	public final void set(short x, short y) {
-		this.bitSet.set((x - minX) + width * (y - minY));
-	}
+  public void set(short x, short y) {
+    this.bitSet.set(index(x - minX, y - minY));
+  }
 
-	public final boolean get(short x, short y) {
-		return this.bitSet.get((x - minX) + width * (y - minY));
-	}
+  public boolean get(short x, short y) {
+    return this.bitSet.get(index(x - minX, y - minY));
+  }
 
-	private final static short max(short first, short second) {
-		if (first > second) {
-			return first;
-		} else {
-			return second;
-		}
-	}
+  private int index(int relativeX, int relativeY) {
+    return relativeX + width * relativeY;
+  }
 
-	private final static short min(short first, short second) {
-		if (first < second) {
-			return first;
-		} else {
-			return second;
-		}
-	}
+  private static short max(short first, short second) {
+    if (first > second) {
+      return first;
+    } else {
+      return second;
+    }
+  }
+
+  private static short min(short first, short second) {
+    if (first < second) {
+      return first;
+    } else {
+      return second;
+    }
+  }
 }

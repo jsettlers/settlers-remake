@@ -36,7 +36,7 @@ public final class MaterialsOfBuildings {
 			buildingsForMaterials[i] = new LinkedList<EBuildingType>();
 		}
 
-		for (EBuildingType buildingType : EBuildingType.values) {
+		for (EBuildingType buildingType : EBuildingType.VALUES) {
 			for (RelativeStack requestStack : buildingType.getRequestStacks()) {
 				buildingsForMaterials[requestStack.getMaterialType().ordinal].add(buildingType);
 			}

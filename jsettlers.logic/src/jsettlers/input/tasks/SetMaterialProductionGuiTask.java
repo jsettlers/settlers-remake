@@ -72,8 +72,8 @@ public class SetMaterialProductionGuiTask extends SimpleGuiTask {
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		position = SimpleGuiTask.deserializePosition(dis);
-		materialType = EMaterialType.values[dis.readInt()];
-		productionType = SetMaterialProductionAction.EMaterialProductionType.values[dis.readInt()];
+		materialType = EMaterialType.VALUES[dis.readInt()];
+		productionType = SetMaterialProductionAction.EMaterialProductionType.VALUES[dis.readInt()];
 		ratio = dis.readFloat();
 	}
 }

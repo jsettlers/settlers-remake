@@ -17,12 +17,16 @@ package jsettlers.graphics.font;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.common.images.DirectImageLink;
 import jsettlers.graphics.map.IGLProvider;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
+/**
+ * This class generates a (cached) fall back font drawer.
+ * 
+ * @author Michael Zangl
+ * @see FontDrawer
+ */
 public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
-	private static final DirectImageLink TEXTURE = new DirectImageLink("font.0");
 
 	private GLDrawContext lastGl = null;
 	private FontDrawer[] cache;

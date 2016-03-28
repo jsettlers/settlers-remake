@@ -19,7 +19,14 @@ import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
+/**
+ * This is an image that is stored in the image index file.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class ImageIndexImage extends Image {
+	private static final float IMAGE_DRAW_OFFSET = .5f;
 	private final short width;
 	private final short height;
 	private final float[] geometry;
@@ -31,6 +38,30 @@ public class ImageIndexImage extends Image {
 	private final float umax;
 	private final float vmax;
 
+	private static final float[] TEMP_BUFFER = new float[5 * 6];
+
+	/**
+	 * Constructs a new image in an image index.
+	 * 
+	 * @param texture
+	 *            The texture this image is part of.
+	 * @param offsetX
+	 *            The x-offset to the center of the image.
+	 * @param offsetY
+	 *            The y-offset to the center of the image.
+	 * @param width
+	 *            The width of the image
+	 * @param height
+	 *            The height of the image.
+	 * @param umin
+	 *            The bounds of the image on the texture (0..1).
+	 * @param vmin
+	 *            The bounds of the image on the texture (0..1).
+	 * @param umax
+	 *            The bounds of the image on the texture (0..1).
+	 * @param vmax
+	 *            The bounds of the image on the texture (0..1).
+	 */
 	protected ImageIndexImage(ImageIndexTexture texture, int offsetX,
 			int offsetY, short width, short height, float umin, float vmin,
 			float umax, float vmax) {
@@ -50,16 +81,13 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float x, float y) {
-		drawAt(gl, x, y, null);
+	public int getWidth() {
+		return width;
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
-		gl.glPushMatrix();
-		gl.glTranslatef(x, y, 0);
-		draw(gl, color);
-		gl.glPopMatrix();
+	public int getHeight() {
+		return height;
 	}
 
 	@Override
@@ -95,16 +123,28 @@ public class ImageIndexImage extends Image {
 	}
 
 	@Override
-	public int getWidth() {
-		return width;
+	public void drawAt(GLDrawContext gl, float x, float y) {
+		drawAt(gl, x, y, null);
 	}
 
 	@Override
-	public int getHeight() {
-		return height;
+	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
+		gl.glPushMatrix();
+		gl.glTranslatef(x, y, 0);
+		draw(gl, color);
+		gl.glPopMatrix();
 	}
 
-	private static final float IMAGE_DRAW_OFFSET = .5f;
+	@Override
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
+		try {
+			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin,
+					vmin,
+					umax, vmax, iColor);
+		} catch (IllegalBufferException e) {
+			handleIllegalBufferException(e);
+		}
+	}
 
 	private static float[] createGeometry(int offsetX, int offsetY, int width,
 			int height, float umin, float vmin, float umax, float vmax) {
@@ -152,37 +192,24 @@ public class ImageIndexImage extends Image {
 		};
 	}
 
-	static private float[] tmpBuffer = new float[5 * 6];
-
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
 			float maxX, float maxY) {
-		System.arraycopy(geometry, 0, tmpBuffer, 0, 4 * 5);
-		tmpBuffer[0] = minX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
-		tmpBuffer[5] = minX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[6] = minY + IMAGE_DRAW_OFFSET;
-		tmpBuffer[10] = maxX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[11] = minY + IMAGE_DRAW_OFFSET;
-		tmpBuffer[15] = maxX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[16] = maxY + IMAGE_DRAW_OFFSET;
-		tmpBuffer[20] = minX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[21] = maxY + IMAGE_DRAW_OFFSET;
-		tmpBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
-		tmpBuffer[26] = minY + IMAGE_DRAW_OFFSET;
+		System.arraycopy(geometry, 0, TEMP_BUFFER, 0, 4 * 5);
+		TEMP_BUFFER[0] = minX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[1] = maxY + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[5] = minX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[6] = minY + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[10] = maxX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[11] = minY + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[15] = maxX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[16] = maxY + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[20] = minX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[21] = maxY + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[25] = maxX + IMAGE_DRAW_OFFSET;
+		TEMP_BUFFER[26] = minY + IMAGE_DRAW_OFFSET;
 
-		draw(gl, tmpBuffer);
-	}
-
-	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
-		try {
-			buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin,
-					vmin,
-					umax, vmax, iColor);
-		} catch (IllegalBufferException e) {
-			handleIllegalBufferException(e);
-		}
+		draw(gl, TEMP_BUFFER);
 	}
 
 }

@@ -32,8 +32,8 @@ public enum EDirection {
 	private static final double TAN_67_5 = Math.tan(Math.toRadians(45 + 22.5));
 	private static final double TAN_22_5 = Math.tan(Math.toRadians(22.5));
 
-	public static final EDirection[] values = EDirection.values();
-	public static final byte NUMBER_OF_DIRECTIONS = (byte) values.length;
+	public static final EDirection[] VALUES = EDirection.values();
+	public static final byte NUMBER_OF_DIRECTIONS = (byte) VALUES.length;
 
 	public final byte gridDeltaX;
 	public final byte gridDeltaY;
@@ -176,7 +176,7 @@ public enum EDirection {
 	}
 
 	public final static EDirection getDirection(int dx, int dy) {
-		for (EDirection currDir : values) {
+		for (EDirection currDir : VALUES) {
 			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
 				return currDir;
 			}
@@ -225,7 +225,7 @@ public enum EDirection {
 	 * @return
 	 */
 	public EDirection getNeighbor(int direction) {
-		return values[(ordinal() + NUMBER_OF_DIRECTIONS - direction) % EDirection.NUMBER_OF_DIRECTIONS];
+		return VALUES[(ordinal() + NUMBER_OF_DIRECTIONS - direction) % EDirection.NUMBER_OF_DIRECTIONS];
 	}
 
 	public EDirection getInverseDirection() {
@@ -235,7 +235,7 @@ public enum EDirection {
 	public static byte[] getXDeltaArray() {
 		byte[] result = new byte[NUMBER_OF_DIRECTIONS];
 		for (int i = 0; i < NUMBER_OF_DIRECTIONS; i++) {
-			result[i] = EDirection.values[i].gridDeltaX;
+			result[i] = EDirection.VALUES[i].gridDeltaX;
 		}
 		return result;
 	}
@@ -243,7 +243,7 @@ public enum EDirection {
 	public static byte[] getYDeltaArray() {
 		byte[] result = new byte[NUMBER_OF_DIRECTIONS];
 		for (int i = 0; i < NUMBER_OF_DIRECTIONS; i++) {
-			result[i] = EDirection.values[i].gridDeltaY;
+			result[i] = EDirection.VALUES[i].gridDeltaY;
 		}
 		return result;
 	}

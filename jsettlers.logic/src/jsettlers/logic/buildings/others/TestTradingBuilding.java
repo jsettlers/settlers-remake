@@ -34,7 +34,7 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
 	private final int[] requestedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
-	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.values.length];
+	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.VALUES.length];
 
 	public TestTradingBuilding(EBuildingType type, Player player, boolean isSeaTrading) {
 		super(type, player);

@@ -20,8 +20,10 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This class contains the data needed for the GUI to restore it's state.
+ * <p>
+ * It will be serialized with the map on map saves.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class UIState implements Serializable {
 	private static final long serialVersionUID = 4163727213374601975L;
@@ -31,33 +33,64 @@ public class UIState implements Serializable {
 	private final float zoom;
 	private ShortPoint2D startPoint = null;
 
+	/**
+	 * Creates a {@link UIState} object for the given pixel position.
+	 * 
+	 * @param screenCenterX
+	 *            Screen center
+	 * @param screenCenterY
+	 *            Screen center
+	 * @param zoom
+	 *            The zoom factor
+	 */
 	public UIState(float screenCenterX, float screenCenterY, float zoom) {
 		this.screenCenterX = screenCenterX;
 		this.screenCenterY = screenCenterY;
 		this.zoom = zoom;
 	}
 
+	/**
+	 * Creates a {@link UIState} for the given starting point.
+	 * 
+	 * @param startPoint
+	 *            The point to center on
+	 */
 	public UIState(ShortPoint2D startPoint) {
 		this(0, 0, 0);
 		this.startPoint = startPoint;
 	}
 
+	/**
+	 * Gets the pixel center of the screen.
+	 * 
+	 * @return The screen center x.
+	 */
 	public float getScreenCenterX() {
 		return screenCenterX;
 	}
 
+	/**
+	 * Gets the pixel center of the screen.
+	 * 
+	 * @return The screen center y.
+	 */
 	public float getScreenCenterY() {
 		return screenCenterY;
 	}
 
+	/**
+	 * Gets the zoom factor to use. Might be 0 to indicate default zoom.
+	 * 
+	 * @return The zoom.
+	 */
 	public float getZoom() {
 		return zoom;
 	}
 
 	/**
-	 * Gets the start point. THis point overrides screen center settings.
+	 * Gets the start point. This point overrides screen center settings.
 	 * 
-	 * @return
+	 * @return the point.
 	 */
 	public ShortPoint2D getStartPoint() {
 		return startPoint;

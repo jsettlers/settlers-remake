@@ -174,7 +174,7 @@ public class MapData implements IMapData {
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
 
-		assert(isAllFalse(this.doneBuffer));
+		assert (isAllFalse(this.doneBuffer));
 
 		System.out.println("filling");
 		int ymin = Integer.MAX_VALUE;
@@ -227,7 +227,7 @@ public class MapData implements IMapData {
 			for (int x = xmin; x < xmax; x++) {
 				// we cannot use done[x][y], because done flag is set for other tiles, too.
 				if (area.contains(new ShortPoint2D(x, y))) {
-					for (EDirection dir : EDirection.values) {
+					for (EDirection dir : EDirection.VALUES) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
 						if (contains(tx, ty) && !doneBuffer[tx][ty]) {
@@ -264,7 +264,7 @@ public class MapData implements IMapData {
 
 			ELandscapeType newLandscape = fade[1];
 			setLandscape(task.x, task.y, newLandscape);
-			for (EDirection dir : EDirection.values) {
+			for (EDirection dir : EDirection.VALUES) {
 				int nx = task.x + dir.getGridDeltaX();
 				int ny = task.y + dir.getGridDeltaY();
 				if (contains(nx, ny) && !doneBuffer[nx][ny]) {
@@ -293,7 +293,7 @@ public class MapData implements IMapData {
 				doneBuffer[x][y] = false;
 			}
 		}
-		assert(isAllFalse(this.doneBuffer));
+		assert (isAllFalse(this.doneBuffer));
 	}
 
 	private static boolean isAllFalse(boolean[][] doneBuffer2) {

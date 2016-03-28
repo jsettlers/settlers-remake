@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,17 +12,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.action;
-
-import jsettlers.common.movable.ESoldierType;
+package jsettlers.common.crash;
 
 /**
- * @author codingberlin
- * @author Andreas Eberle
+ * This is a simple crash handler that prints all crashes to {@link System#err}. No filtering is done.
+ * 
+ * @author Michael Zangl
+ *
  */
-public class UpgradeSoldiersAction extends SoldierAction {
+public class ConsoleCrashHandler implements CrashHandler {
 
-	public UpgradeSoldiersAction(ESoldierType soldierType) {
-		super(EActionType.UPGRADE_SOLDIERS, soldierType);
+	@Override
+	public void handleCrash(CrashReportedException exception, CrashHandlerResultReceiver r) {
+		exception.printReportTo(System.err, new CrashReportSettings(false, true));
+		r.crashHandled(exception);
 	}
+
 }

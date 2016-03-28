@@ -55,12 +55,12 @@ public class MapNeighboursArea implements IMapArea {
 
 		@Override
 		public boolean hasNext() {
-			return directionIndex < EDirection.values.length;
+			return directionIndex < EDirection.VALUES.length;
 		}
 
 		@Override
 		public ShortPoint2D next() {
-			return EDirection.values[directionIndex++].getNextHexPoint(x, y);
+			return EDirection.VALUES[directionIndex++].getNextHexPoint(x, y);
 		}
 
 		@Override

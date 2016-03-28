@@ -37,9 +37,10 @@ import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
- * This is a map of multile images of one sequence. It always contains the settler image and the torso
+ * This is a map of multiple images of one sequence. It always contains the settler image and the torso. This class allows packing the settler images
+ * to a single, big texture.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 
@@ -57,6 +58,17 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 
 	private final File cacheFile;
 
+	/**
+	 * Creates a new {@link MultiImageMap}.
+	 * 
+	 * @param width
+	 *            The width of the base image.
+	 * @param height
+	 *            The height of the base image.
+	 * @param id
+	 *            The id of the map.
+	 * @see #addSequences(AdvancedDatFileReader, int[], Sequence[])
+	 */
 	public MultiImageMap(int width, int height, String id) {
 		this.width = width;
 		this.height = height;
@@ -70,12 +82,24 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		buffers = byteBuffer.asShortBuffer();
 	}
 
+	/**
+	 * Adds a list of textures to this file. The images can be referenced by the image handles added to addTo.
+	 * 
+	 * @param dfr
+	 *            The reader to read the textures from.
+	 * @param sequenceIndexes
+	 *            The indexes where the sequences start.
+	 * @param addTo
+	 *            The image sequence to add image references to the newly added images to.
+	 * @throws IOException
+	 *             If the file could not be read.
+	 */
 	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
 			Sequence<Image>[] addTo) throws IOException {
 		allocateBuffers();
 
 		ImageMetadata settlermeta = new ImageMetadata();
-		ImageMetadata torsometa = new ImageMetadata();
+		ImageMetadata reusableTorsometa = new ImageMetadata();
 		for (int seqindex : sequenceIndexes) {
 			long[] settlers = dfr.getSettlerPointers(seqindex);
 			long[] torsos = dfr.getTorsoPointers(seqindex);
@@ -95,7 +119,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 
 				int torsox = 0;
 				int torsoy = 0;
+
+				ImageMetadata torsometa;
 				if (torsos != null) {
+					torsometa = reusableTorsometa;
 					reader = dfr.getReaderForPointer(torsos[i]);
 					if (reader != null) {
 						DatBitmapReader.uncompressImage(reader,
@@ -104,21 +131,19 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 						torsox = drawx - torsometa.width;
 						torsoy = linetop;
 					}
+				} else {
+					torsometa = null;
 				}
-				// System.out.println("Got image Data: settlerx = " + settlerx +
-				// ", settlery = " + settlery + ", w=" + settlermeta.width +
-				// ", h=" + settlermeta.height);
 
 				images[i] =
 						new MultiImageImage(this, settlermeta, settlerx,
-								settlery, torsos == null ? null : torsometa,
+								settlery, torsometa,
 								torsox, torsoy);
 			}
 			addTo[seqindex] = new ArraySequence<Image>(images);
 		}
 
 		// request a opengl rerender, or do it ourselves on the next image
-		// request
 		textureValid = false;
 		ImageProvider.getInstance().addPreloadTask(this);
 	}
@@ -160,14 +185,19 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		}
 	}
 
+	/**
+	 * Checks if this image map is can be loaded from the cache instead of regenerating it.
+	 * 
+	 * @return <code>true</code> iff this file is cached.
+	 */
 	public synchronized boolean hasCache() {
 		return cacheFile.isFile();
 	}
 
 	@Override
-	public void startImage(int width, int height) throws IOException {
-		if (this.width < drawx + width) {
-			if (linebottom + height <= this.height) {
+	public void startImage(int imageWidth, int imageHeight) throws IOException {
+		if (this.width < drawx + imageWidth) {
+			if (linebottom + imageHeight <= this.height) {
 				linetop = linebottom;
 				drawx = 0;
 			} else {
@@ -178,12 +208,12 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			}
 		}
 
-		if (linetop + height < this.height) {
+		if (linetop + imageHeight < this.height) {
 			drawEnabled = true;
 			textureValid = false;
 			drawpointer = drawx + linetop * this.width;
-			drawx += width;
-			linebottom = Math.max(linebottom, linetop + height);
+			drawx += imageWidth;
+			linebottom = Math.max(linebottom, linetop + imageHeight);
 		} else {
 			System.err.println("Error adding image to texture: "
 					+ "Line to low");
@@ -202,19 +232,30 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		}
 	}
 
+	/**
+	 * Gets the width of the underlying texture.
+	 * 
+	 * @return The width.
+	 */
 	public int getWidth() {
 		return width;
 	}
 
+	/**
+	 * Gets the height of the underlying texture.
+	 * 
+	 * @return The height.
+	 */
 	public int getHeight() {
 		return height;
 	}
 
 	/**
-	 * Gets the texture index.
+	 * Gets the texture handle.
 	 * 
 	 * @param gl
-	 * @return
+	 *            The gl context to use when creating the texutre.
+	 * @return A valid texture handle.
 	 */
 	public TextureHandle getTexture(GLDrawContext gl) {
 		if (!textureValid || !texture.isValid()) {

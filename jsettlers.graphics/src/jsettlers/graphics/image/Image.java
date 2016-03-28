@@ -19,10 +19,52 @@ import go.graphics.IllegalBufferException;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
+/**
+ * This is an image that can be displayed on the GUI.
+ * 
+ * @author michael
+ *
+ */
 public abstract class Image {
 
 	/**
-	 * Convenience method, calls drawAt(gl, x, y, -1);
+	 * Gets the (pixel) width of this image.
+	 * 
+	 * @return The image width.
+	 */
+	public abstract int getWidth();
+
+	/**
+	 * Gets the (pixel) height of this image.
+	 * 
+	 * @return The image height.
+	 */
+	public abstract int getHeight();
+
+	/**
+	 * Draws the image around 0,0 with the given color.
+	 * 
+	 * @param gl
+	 *            The gl context
+	 * @param color
+	 *            The color to use. If it is <code>null</code>, white is used.
+	 */
+	public abstract void draw(GLDrawContext gl, Color color);
+
+	/**
+	 * Draws the image around 0,0 with the given color.
+	 * 
+	 * @param gl
+	 *            The gl context
+	 * @param color
+	 *            The color to use. If it is <code>null</code>, white is used.
+	 * @param multiply
+	 *            A number to multiply all color values with.
+	 */
+	public abstract void draw(GLDrawContext gl, Color color, float multiply);
+
+	/**
+	 * Convenience method, calls drawAt(gl, x, y, -1).
 	 * 
 	 * @param gl
 	 *            The context.
@@ -48,43 +90,70 @@ public abstract class Image {
 	public abstract void drawAt(GLDrawContext gl, float x, float y, Color color);
 
 	/**
-	 * Draws the image around 0,0 with the given color.
+	 * Draws the image at a given {@link DrawBuffer}.
 	 * 
 	 * @param gl
-	 *            The gl context
+	 *            The gl context to use.
+	 * @param buffer
+	 *            The draw buffer to draw the image to.
+	 * @param viewX
+	 *            The x position the center of the image should be.
+	 * @param viewY
+	 *            The y position the center of the image should be.
 	 * @param color
-	 *            The color to use. If it is <code>null</code>, white is used.
+	 *            The color the image should have (argb)
 	 */
-	public abstract void draw(GLDrawContext gl, Color color);
+	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
+			float viewX, float viewY, int color);
 
 	/**
-	 * Draws the image around 0,0 with the given color.
+	 * Draws the image at a given {@link DrawBuffer}.
 	 * 
 	 * @param gl
-	 *            The gl context
+	 *            The gl context to use.
+	 * @param buffer
+	 *            The draw buffer to draw the image to.
+	 * @param viewX
+	 *            The x position the center of the image should be.
+	 * @param viewY
+	 *            The y position the center of the image should be.
 	 * @param color
-	 *            The color to use. If it is <code>null</code>, white is used.
+	 *            The color the image should have (argb)
 	 * @param multiply
-	 *            A number to multiply all color values with.
+	 *            A value to multiply the color with.
 	 */
-	public abstract void draw(GLDrawContext gl, Color color, float multiply);
-
-	public abstract int getWidth();
-
-	public abstract int getHeight();
-
-	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
-			float minY, float maxX, float maxY);
-
-	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
-			float viewX, float viewY, int iColor);
-
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 			float viewY, Color color, float multiply) {
 		int iColor = dimColor(color, multiply);
 		drawAt(gl, buffer, viewX, viewY, iColor);
 	}
 
+	/**
+	 * Draws the image at a given rectangle.
+	 * 
+	 * @param gl
+	 *            The gl context to draw on.
+	 * @param minX
+	 *            The x coordinate to draw the left bound to.
+	 * @param minY
+	 *            The y coordinate to draw the top bound to.
+	 * @param maxX
+	 *            The x coordinate to draw the right bound to.
+	 * @param maxY
+	 *            The y coordinate to draw the bottom bound to.
+	 */
+	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
+			float minY, float maxX, float maxY);
+
+	/**
+	 * Multiplies the color with an float.
+	 * 
+	 * @param color
+	 *            The color
+	 * @param multiply
+	 *            The value to multiply with in [0, 1]
+	 * @return The dimmed (blacker) color.
+	 */
 	public static int dimColor(Color color, float multiply) {
 		int iColor;
 		if (multiply == 1) {

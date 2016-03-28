@@ -22,11 +22,11 @@ import jsettlers.graphics.font.ITextDrawerFactory;
 /**
  * This is a text drawer that uses the text drawer provided by opengl or the provided text drawer if one is given.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class ReplaceableTextDrawer implements ITextDrawerFactory {
 
-	private ITextDrawerFactory drawerFactory;
+	private ITextDrawerFactory textDrawerFactory;
 
 	/**
 	 * Sets the factory to use to generate text drawer if needed.
@@ -35,18 +35,25 @@ public class ReplaceableTextDrawer implements ITextDrawerFactory {
 	 *            The factory to use. <code>null</code> to use the default.
 	 */
 	public void setTextDrawerFactory(ITextDrawerFactory drawerFactory) {
-		this.drawerFactory = drawerFactory;
+		this.textDrawerFactory = drawerFactory;
 	}
 
 	/**
 	 * Gets the text drawer to use.
 	 * 
+	 * @param gl
+	 *            The gl context to use as fallback
 	 * @param size
-	 * @return
+	 *            The font size
+	 * @return A text drawer.
 	 */
 	@Override
 	public TextDrawer getTextDrawer(GLDrawContext gl, EFontSize size) {
-		return drawerFactory != null ? drawerFactory.getTextDrawer(gl, size) : gl.getTextDrawer(size);
+		if (textDrawerFactory != null) {
+			return textDrawerFactory.getTextDrawer(gl, size);
+		} else {
+			return gl.getTextDrawer(size);
+		}
 	}
 
 }

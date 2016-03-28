@@ -13,6 +13,7 @@
 	<property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator" />
 	<property name="jsettlers.tests.location" value="../jsettlers.tests" />
 	<property name="debuglevel" value="source,lines,vars" />
+	<property name="junit.maxmemory" value="512m" />
 
 	<path id="jsettlers.common.classpath">
 		<pathelement location="${jsettlers.common.location}/bin" />
@@ -145,7 +146,7 @@
 	</target>
 
 	<target name="unitTests" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="${junit.maxmemory}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
@@ -156,7 +157,7 @@
 	</target>
 
 	<target name="unitTests.network" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="${junit.maxmemory}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
@@ -167,7 +168,7 @@
 	</target>
 
 	<target name="autoReplayIT" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="${junit.maxmemory}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
@@ -178,7 +179,7 @@
 	</target>
 
 	<target name="replayValidationIT" depends="build">
-			<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
+			<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="${junit.maxmemory}">
 				<formatter type="brief" usefile="false" />
 				<classpath refid="jsettlers.tests.classpath" />
 
@@ -189,7 +190,7 @@
 	</target>
 	
 	<target name="aiDifficultiesIT" depends="build">
-		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="256m">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}" maxmemory="${junit.maxmemory}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 

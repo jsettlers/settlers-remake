@@ -74,8 +74,8 @@ public enum EMaterialType {
 	TREE((short) 0, (short) 0, (short) 0, false, -1, false),
 	PLANT((short) 0, (short) 0, (short) 0, false, -1, false);
 
-	public static final EMaterialType[] values = EMaterialType.values();
-	public static final int NUMBER_OF_MATERIALS = values.length;
+	public static final EMaterialType[] VALUES = EMaterialType.values();
+	public static final int NUMBER_OF_MATERIALS = VALUES.length;
 	/**
 	 * The droppable {@link EMaterialType}s in the order of their default priority.
 	 */
@@ -87,15 +87,15 @@ public enum EMaterialType {
 		// the default priority order. (not all materials have priority index but may be dropped)
 		int numberOfDroppable = 0;
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
+			if (VALUES[i].droppable && VALUES[i].defaultPrioIdx >= 0) {
 				numberOfDroppable++;
 			}
 		}
 		NUMBER_OF_DROPPABLE_MATERIALS = numberOfDroppable;
 		DROPPABLE_MATERIALS = new EMaterialType[numberOfDroppable];
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
-				DROPPABLE_MATERIALS[values[i].defaultPrioIdx] = values[i];
+			if (VALUES[i].droppable && VALUES[i].defaultPrioIdx >= 0) {
+				DROPPABLE_MATERIALS[VALUES[i].defaultPrioIdx] = VALUES[i];
 			}
 		}
 	}

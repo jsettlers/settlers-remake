@@ -54,7 +54,7 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		waypointType = WaypointType.values[dis.readByte()];
+		waypointType = WaypointType.VALUES[dis.readByte()];
 		position = deserializePosition(dis);
 	}
 

@@ -23,7 +23,8 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.IManaInformation;
-import jsettlers.graphics.action.UpgradeSoldiersAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
@@ -47,7 +48,7 @@ public class WarriorsPanel extends AbstractContentProvider {
 			return;
 		}
 		panel = new WarriorsLayout()._root;
-		for (UIElement element : panel.getChildren()) {
+		for (final UIElement element : panel.getChildren()) {
 			if (element instanceof IManaInformationConsument) {
 				((IManaInformationConsument) element).setManaInformation(player.getManaInformation());
 			}
@@ -137,7 +138,7 @@ public class WarriorsPanel extends AbstractContentProvider {
 		private final ImageLink[] imageLinksInActive;
 
 		public UpgradeButton(ESoldierType soldierType) {
-			super(new UpgradeSoldiersAction(soldierType), null, null, "");
+			super(new SoldierAction(EActionType.UPGRADE_SOLDIERS, soldierType), null, null, "");
 			this.soldierType = soldierType;
 			switch (soldierType) {
 			case SWORDSMAN:

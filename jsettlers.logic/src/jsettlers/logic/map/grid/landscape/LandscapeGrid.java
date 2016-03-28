@@ -108,7 +108,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
-		return ELandscapeType.values[landscapeGrid[x + y * width]];
+		return ELandscapeType.VALUES[landscapeGrid[x + y * width]];
 	}
 
 	public final int getLandscapeIdAt(int x, int y) {
@@ -206,7 +206,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final EResourceType getResourceTypeAt(int x, int y) {
-		return EResourceType.values[resourceType[x + y * width]];
+		return EResourceType.VALUES[resourceType[x + y * width]];
 	}
 
 	public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
