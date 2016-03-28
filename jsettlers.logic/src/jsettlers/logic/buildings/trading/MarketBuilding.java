@@ -16,6 +16,7 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +98,8 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 		return new WaypointsIterator(getWaypoints());
 	}
 
-	private static class WaypointsIterator implements Iterator<ShortPoint2D> {
+	private static class WaypointsIterator implements Iterator<ShortPoint2D>, Serializable {
+		private static final long serialVersionUID = 5229610228646171358L;
 
 		private final ShortPoint2D[] waypoints;
 		private int i = 0;
