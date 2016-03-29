@@ -41,7 +41,7 @@ public final class StockBuilding extends Building implements IBuilding.IStock {
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
+	protected void placedAtEvent(ShortPoint2D pos) {
 	}
 
 	@Override

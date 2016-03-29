@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.InvalidStartPositionException;
 import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.algorithms.path.astar.AbstractAStar;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
@@ -56,7 +57,7 @@ public final class DijkstraAlgorithm {
 		if (minRadius <= 0) {
 			map.setDijkstraSearched(cX, cY);
 			if (map.fitsSearchType(cX, cY, type, requester)) {
-				Path path = findPathTo(requester, cX, cY);
+				Path path = findPathTo(requester, new ShortPoint2D(cX, cY));
 				if (path != null)
 					return path;
 			}
@@ -73,7 +74,7 @@ public final class DijkstraAlgorithm {
 					if (isInBounds(x, y)) {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, type, requester)) {
-							Path path = findPathTo(requester, x, y);
+							Path path = findPathTo(requester, new ShortPoint2D(x, y));
 							if (path != null)
 								return path;
 						}
@@ -85,9 +86,8 @@ public final class DijkstraAlgorithm {
 		return null;
 	}
 
-	private final Path findPathTo(IPathCalculatable requester, short tx, short ty) {
-		ShortPoint2D pos = requester.getPos();
-		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
+	private final Path findPathTo(IPathCalculatable requester, ShortPoint2D targetPos) {
+		return aStar.findPath(requester, requester.getPos(), targetPos, new AStarOptions());
 	}
 
 	private final boolean isInBounds(short x, short y) {
@@ -162,7 +162,7 @@ public final class DijkstraAlgorithm {
 					if (circle.contains(x, y) && isInBounds(x, y)) {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, request.searchType, request.requester)) {
-							Path path = findPathTo(request.requester, x, y);
+							Path path = findPathTo(request.requester, new ShortPoint2D(x, y));
 							if (path != null) {
 								request.setRadius(radius);
 								return path;

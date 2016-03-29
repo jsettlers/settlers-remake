@@ -39,7 +39,7 @@ public final class DefaultBuilding extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
+	protected void placedAtEvent(ShortPoint2D pos) {
 	}
 
 	@Override

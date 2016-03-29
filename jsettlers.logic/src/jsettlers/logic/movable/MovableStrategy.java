@@ -16,7 +16,6 @@ package jsettlers.logic.movable;
 
 import java.io.Serializable;
 
-import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -270,48 +269,6 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected boolean isMoveToAble() {
 		return false;
-	}
-
-	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
-		if (!path.hasOverNextStep()) { // if path has no position left
-			return path;
-		}
-
-		AbstractStrategyGrid grid = movable.getStrategyGrid();
-
-		EDirection leftDir = direction.getNeighbor(-1);
-		EDirection rightDir = direction.getNeighbor(1);
-
-		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
-
-		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
-		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
-		ShortPoint2D twoStraight = direction.getNextHexPoint(position, 2);
-
-		ShortPoint2D overNextPos = path.getOverNextPos();
-
-		if (twoStraight.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y) && isValidPosition(leftStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, leftPos, leftStraightPos);
-			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y) && isValidPosition(rightStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, rightPos, rightStraightPos);
-			} else {
-				// TODO @Andreas Eberle maybe calculate a new path
-			}
-		} else if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y)) {
-			path.goToNextStep();
-			path = new Path(path, leftPos);
-		} else if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y)) {
-			path.goToNextStep();
-			path = new Path(path, rightPos);
-		} else {
-			// TODO @Andreas Eberle maybe calculate a new path
-		}
-
-		return path;
 	}
 
 	protected void stopOrStartWorking(boolean stop) {

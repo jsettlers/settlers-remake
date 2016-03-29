@@ -80,7 +80,7 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract byte getProduceLimit();
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
+	protected void placedAtEvent(ShortPoint2D pos) {
 	}
 
 	@Override

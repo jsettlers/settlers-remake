@@ -34,6 +34,7 @@ import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.algorithms.path.area.InAreaFinder;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.algorithms.path.astar.AbstractAStar;
 import jsettlers.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.algorithms.path.astar.IAStarPathMap;
@@ -665,6 +666,12 @@ public final class MainGrid implements Serializable {
 			return landscapeGrid.getBlockedPartitionAt(x, y);
 		}
 
+		@Override
+		public boolean isBlockedByMovable(IPathCalculatable requester, int x, int y) {
+			Movable movable = movableGrid.getMovableAt(x, y);
+			return (movable != null && requester != movable && !movable.isProbablyPushable());
+		}
+
 	}
 
 	final class GraphicsGrid implements IGraphicsGrid {
@@ -1251,15 +1258,15 @@ public final class MainGrid implements Serializable {
 				objectsGrid.informObjectsAboutAttackble(position, movable, informFullArea, !EMovableType.isBowman(movable.getMovableType()));
 			}
 		}
-
+		
 		@Override
-		public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos) {
-			return aStar.findPath(pathRequester, targetPos);
+		public Path calculatePathTo(IPathCalculatable requester, ShortPoint2D targetPos, AStarOptions opts) {
+			return aStar.findPath(requester, targetPos, opts);
 		}
 
 		@Override
-		public Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
-			return dijkstra.find(pathCalculateable, centerX, centerY, (short) 0, radius, searchType);
+		public Path searchDijkstra(IPathCalculatable requester, short centerX, short centerY, short radius, ESearchType searchType) {
+			return dijkstra.find(requester, centerX, centerY, (short) 0, radius, searchType);
 		}
 
 		@Override

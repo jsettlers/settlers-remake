@@ -20,6 +20,19 @@ import jsettlers.common.Color;
 public interface IAStarPathMap {
 
 	boolean isBlocked(IPathCalculatable requester, int x, int y);
+	
+	/**
+	 * is there a movable which should be treated as obstacle
+	 * 
+	 * @param requester
+	 * 			to make sure its not the requester
+	 * @param x
+	 * 			x coordinate
+	 * @param y
+	 * 			x coordinate
+	 * @return
+	 */
+	boolean isBlockedByMovable(IPathCalculatable requester, int x, int y);
 
 	float getCost(int sx, int sy, int tx, int ty);
 

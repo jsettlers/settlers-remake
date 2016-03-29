@@ -22,8 +22,6 @@ import jsettlers.common.position.ShortPoint2D;
 public interface IConstructableBuilding extends IPlayerable {
 	boolean tryToTakeMaterial();
 
-	ShortPoint2D calculateRealPoint(short dx, short dy);
-
 	EBuildingType getBuildingType();
 
 	boolean isBricklayerRequestActive();

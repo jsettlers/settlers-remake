@@ -16,6 +16,7 @@ package jsettlers.logic.movable.interfaces;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AStarOptions;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
@@ -59,13 +60,15 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	 */
 	public abstract void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea);
 
-	public abstract Path calculatePathTo(IPathCalculatable pathCalculatable, ShortPoint2D targetPos);
+	public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos) {
+		return calculatePathTo(pathRequester, targetPos, new AStarOptions());
+	}
+	
+	public abstract Path calculatePathTo(IPathCalculatable requester, ShortPoint2D targetPos, AStarOptions opts);
 
-	public abstract Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchDijkstra(IPathCalculatable requester, short centerX, short centerY, short radius, ESearchType searchType);
 
-	public abstract Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
-
-	public abstract Movable getMovableAt(short x, short y);
+	public abstract Path searchInArea(IPathCalculatable requester, short centerX, short centerY, short radius, ESearchType searchType);
 
 	public abstract boolean isBlocked(short x, short y);
 

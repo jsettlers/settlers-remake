@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -24,7 +23,6 @@ import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
@@ -315,39 +313,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected boolean isMoveToAble() {
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
-
-	@Override
-	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
-		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
-			AbstractStrategyGrid grid = super.getStrategyGrid();
-			EDirection leftDir = direction.getNeighbor(-1);
-			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-			EDirection rightDir = direction.getNeighbor(1);
-			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
-
-			if (grid.isFreePosition(leftPos)) {
-				return new Path(leftPos);
-			} else if (grid.isFreePosition(rightPos)) {
-				return new Path(rightPos);
-			} else {
-				EDirection twoLeftDir = direction.getNeighbor(-2);
-				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
-				EDirection twoRightDir = direction.getNeighbor(2);
-				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
-
-				if (grid.isFreePosition(twoLeftPos)) {
-					return new Path(twoLeftPos);
-				} else if (grid.isFreePosition(twoRightPos)) {
-					return new Path(twoRightPos);
-				} else {
-					return path;
-				}
-			}
-		} else {
-			return super.findWayAroundObstacle(direction, position, path);
-		}
-	}
-
+	
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (building != null) {
