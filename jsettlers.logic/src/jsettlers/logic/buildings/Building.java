@@ -64,13 +64,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		IDebugable, IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
-	private static final byte STATE_CREATED = 0;
-	private static final byte STATE_IN_FLATTERNING = 1;
-	private static final byte STATE_WAITING_FOR_MATERIAL = 2;
-	private static final byte STATE_CONSTRUCTED = 3;
-	private static final byte STATE_DESTROYED = 4;
-	private static final byte STATE_BRICKLAYERS_REQUESTED = 5;
-
 	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.2f;
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
@@ -88,7 +81,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private ShortPoint2D pos;
 	private IBuildingsGrid grid;
 	private Player player;
-	private byte state = STATE_CREATED;
+	private EBuildingState state = EBuildingState.CREATED;
 	private EPriority priority = EPriority.DEFAULT;
 
 	private float constructionProgress = 0.0f;
@@ -131,16 +124,16 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (fullyConstructed) {
 			appearAt(grid, pos);
 		} else {
-			assert state == STATE_CREATED : "building can not be positioned in this state";
+			assert state == EBuildingState.CREATED : "building can not be positioned in this state";
 
-			boolean itWorked = positionAt(grid, pos);
+			boolean itWorked = placeAt(grid, pos);
 
 			if (itWorked) {
 				stacks = createConstructionStacks();
 
 				placeAdditionalMapObjects(grid, pos, true);
 
-				this.state = STATE_IN_FLATTERNING;
+				this.state = EBuildingState.FLATTERNING;
 				RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
 
 				requestDiggers();
@@ -149,9 +142,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
-		this.state = STATE_CONSTRUCTED;
+		this.state = EBuildingState.CONSTRUCTED;
 
-		boolean itWorked = positionAt(grid, pos);
+		boolean itWorked = placeAt(grid, pos);
 
 		if (itWorked) {
 			grid.setBlocked(getBuildingArea(), true);
@@ -162,6 +155,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			kill();
 		}
 	}
+	
+	protected void appearedEvent() { }
 
 	private List<RequestStack> createConstructionStacks() {
 		List<RequestStack> result = new LinkedList<RequestStack>();
@@ -201,20 +196,22 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
-	private boolean positionAt(IBuildingsGrid grid, ShortPoint2D pos) {
+	private boolean placeAt(IBuildingsGrid grid, ShortPoint2D pos) {
 		boolean couldBePlaced = grid.setBuilding(pos, this);
 		if (couldBePlaced) {
 			this.pos = pos;
 			this.grid = grid;
 
 			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
-				placeFlag(true);
+				showFlag(true);
 			}
 
-			positionedEvent(pos);
+			placedAtEvent(pos);
 		}
 		return couldBePlaced;
 	}
+	
+	protected abstract void placedAtEvent(ShortPoint2D pos);
 
 	/**
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
@@ -222,7 +219,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	 * @param place
 	 *            specifies whether the flag should appear or not.
 	 */
-	protected void placeFlag(boolean place) {
+	protected void showFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
 
 		if (place) {
@@ -230,11 +227,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		} else {
 			grid.getMapObjectsManager().removeMapObjectType(flagPosition.x, flagPosition.y, getFlagType());
 		}
-	}
-
-	protected abstract void positionedEvent(ShortPoint2D pos);
-
-	protected void appearedEvent() {
 	}
 
 	private void requestDiggers() {
@@ -276,36 +268,36 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public int timerEvent() {
 		switch (state) {
-		case STATE_CREATED:
+		case CREATED:
 			assert false : "this should never happen!";
 			return -1;
-		case STATE_IN_FLATTERNING:
+		case FLATTERNING:
 			if (!isFlatened()) {
 				return IS_FLATTENED_RECHECK_PERIOD;
 			} else {
 				placeAdditionalMapObjects(grid, pos, false);
 				grid.setBlocked(getBuildingArea(), true);
-				this.state = STATE_WAITING_FOR_MATERIAL;
+				this.state = EBuildingState.WAITING_FOR_MATERIAL;
 				// directly go into the next case!
 			}
 
-		case STATE_WAITING_FOR_MATERIAL:
+		case WAITING_FOR_MATERIAL:
 			if (priority != EPriority.STOPPED && isMaterialAvailable()) {
-				state = STATE_BRICKLAYERS_REQUESTED;
+				state = EBuildingState.BRICKLAYERS_REQUESTED;
 				requestBricklayers();
 				return -1; // no new scheduling
 			} else {
 				return WAITING_FOR_MATERIAL_PERIOD;
 			}
 
-		case STATE_BRICKLAYERS_REQUESTED: // the state changes are handled by tryToTakeMaterial()
+		case BRICKLAYERS_REQUESTED: // the state changes are handled by tryToTakeMaterial()
 			assert false : "Building.timerEvent() should not be called in state: " + state;
 			return -1;
 
-		case STATE_CONSTRUCTED:
+		case CONSTRUCTED:
 			return subTimerEvent();
 
-		case STATE_DESTROYED:
+		case DESTROYED:
 		default:
 			return -1;
 		}
@@ -331,11 +323,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public ShortPoint2D calculateRealPoint(short dx, short dy) {
-		return new RelativePoint(dx, dy).calculatePoint(pos);
-	}
-
-	@Override
 	public final EBuildingType getBuildingType() {
 		return type;
 	}
@@ -355,7 +342,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public boolean tryToTakeMaterial() {
-		if (state != STATE_BRICKLAYERS_REQUESTED) {
+		if (state != EBuildingState.BRICKLAYERS_REQUESTED) {
 			return false;
 		}
 
@@ -373,7 +360,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				if (areAllStacksFullfilled()) {
 					finishConstruction();
 				} else {
-					state = STATE_WAITING_FOR_MATERIAL;
+					state = EBuildingState.WAITING_FOR_MATERIAL;
 					RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD);
 				}
 				return false;
@@ -403,7 +390,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		constructionProgress = 1;
 		this.setPriority(EPriority.DEFAULT);
 
-		this.state = STATE_CONSTRUCTED;
+		this.state = EBuildingState.CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
 			createWorkStacks();
 		} else {
@@ -436,7 +423,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final boolean isConstructionFinished() {
-		return state == STATE_CONSTRUCTED || state == STATE_DESTROYED;
+		return state == EBuildingState.CONSTRUCTED || state == EBuildingState.DESTROYED;
 	}
 
 	protected abstract EMapObjectType getFlagType();
@@ -447,7 +434,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void kill() {
-		if (this.state == STATE_DESTROYED) {
+		if (this.state == EBuildingState.DESTROYED) {
 			return;
 		}
 
@@ -458,7 +445,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
 					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
 			placeAdditionalMapObjects(grid, pos, false);
-			placeFlag(false);
+			showFlag(false);
 			placeReusableMaterials();
 
 			killedEvent();
@@ -466,8 +453,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		releaseRequestStacks();
 		allBuildings.remove(this);
-		this.state = STATE_DESTROYED;
+		this.state = EBuildingState.DESTROYED;
 	}
+	
+	protected void killedEvent() { }
 
 	private void placeReusableMaterials() {
 		int posIdx = 0;
@@ -491,9 +480,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				}
 			}
 		}
-	}
-
-	protected void killedEvent() {
 	}
 
 	protected void releaseRequestStacks() {
@@ -529,7 +515,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public boolean isDiggerRequestActive() {
-		return state == STATE_IN_FLATTERNING;
+		return state == EBuildingState.FLATTERNING;
 	}
 
 	@Override
@@ -541,7 +527,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public boolean isBricklayerRequestActive() {
-		return state == STATE_BRICKLAYERS_REQUESTED;
+		return state == EBuildingState.BRICKLAYERS_REQUESTED;
 	}
 
 	@Override
@@ -561,7 +547,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final boolean isNotDestroyed() {
-		return state != STATE_DESTROYED;
+		return state != EBuildingState.DESTROYED;
 	}
 
 	public static Building getBuilding(EBuildingType type, Player player) {
@@ -673,14 +659,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
 
 		for (RequestStack stack : stacks) {
-			if (state == STATE_CONSTRUCTED) {
+			if (state == EBuildingState.CONSTRUCTED) {
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
 			} else { // during construction
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillNeeded()));
 			}
 		}
 
-		if (state == STATE_CONSTRUCTED) {
+		if (state == EBuildingState.CONSTRUCTED) {
 			for (RelativeStack offerStack : type.getOfferStacks()) {
 				byte stackSize = grid.getRequestStackGrid().getStackSize(offerStack.calculatePoint(pos), offerStack.getMaterialType());
 				materials.add(new BuildingMaterial(offerStack.getMaterialType(), stackSize, true));
@@ -715,4 +701,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public boolean cannotWork() {
 		return false;
 	}
+
+	private static enum EBuildingState {
+		CREATED,
+		FLATTERNING,
+		WAITING_FOR_MATERIAL,
+		CONSTRUCTED,
+		DESTROYED,
+		BRICKLAYERS_REQUESTED
+	}
 }
+

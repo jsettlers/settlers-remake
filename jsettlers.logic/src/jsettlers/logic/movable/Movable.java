@@ -96,7 +96,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
-	private static final short fibSeq[] = {1, 2, 3, 5, 8, 13, 21, 34, 55};
+	private static final short fibSeq[] = { 1, 2, 3, 5, 8, 13, 21, 34, 55 };
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -282,9 +282,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return animationDuration;
 	}
 
-	private void pathingAction() { 
+	private void pathingAction() {
 		incPathChangeBalance(); // credit for future path change requestsE
-		
+
 		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
@@ -295,14 +295,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
 			Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
-			
+
 			if (blockingMovable == null) { // if we can go on to the next step
 				goSinglePathStep();
 			} else { // step not possible, so try it next time
 				movableAction = EMovableAction.NO_ACTION;
 				boolean pushedSuccessfully = blockingMovable.push(this);
 				if (!pushedSuccessfully) {
-					incStuckCounter();					
+					incStuckCounter();
 					findWayAroundObstacle(position);
 				}
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD;
@@ -326,18 +326,18 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			}
 		}
 	}
-	
+
 	protected boolean findWayAroundObstacle(ShortPoint2D position) {
 		if (pathChangeAllowed()) {
 			decPathChangeBalance();
-			
+
 			Path newPath = grid.calculatePathTo(this, path.getTargetPos(), new AStarOptions().setIncludeMovables(true));
 			if (newPath != null) {
 				path = newPath;
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -458,7 +458,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 						return true;
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else {
-						return false;	
+						return false;
 					}
 				}
 			}
@@ -479,7 +479,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return false;
 		}
 	}
-	
+
 	public boolean isProbablyPushable() {
 		switch (state) {
 		case DOING_NOTHING:
@@ -497,32 +497,32 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	public boolean isStuck() {
 		return stuckCounter >= Constants.MOVABLE_RETRIES_UNTIL_STUCK;
 	}
-	
+
 	private void incStuckCounter() {
-		stuckCounter = Math.min(stuckCounter+1, fibSeq.length-1);
+		stuckCounter = Math.min(stuckCounter + 1, fibSeq.length - 1);
 	}
-	
+
 	private void clearStuckCounter() {
 		stuckCounter = 0;
 	}
-	
+
 	private void decStuckCounter() {
-		stuckCounter = Math.max(stuckCounter-1, 0);
+		stuckCounter = Math.max(stuckCounter - 1, 0);
 	}
-	
+
 	private boolean pathChangeAllowed() {
 		return pathChangeBalance >= 0;
 	}
-	
+
 	private void decPathChangeBalance() {
 		// the more its stuck the less its promising to change path
 		pathChangeBalance -= fibSeq[stuckCounter];
 	}
-	
+
 	private void incPathChangeBalance() {
-		pathChangeBalance = Math.min(pathChangeBalance+1, 0);
+		pathChangeBalance = Math.min(pathChangeBalance + 1, 0);
 	}
-	
+
 	private void clearPathChangeBalance() {
 		pathChangeBalance = 0;
 	}
