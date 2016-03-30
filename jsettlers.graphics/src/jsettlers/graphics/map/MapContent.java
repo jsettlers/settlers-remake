@@ -277,7 +277,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawMessages(GLDrawContext gl) {
-		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 		// TODO: don't let logic wait until we rendered.
 		synchronized (messenger) {
 			int messageIndex = 0;
@@ -286,6 +286,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
 				float a = Math.max(0f, 1f-(float)m.getAge()/Messenger.MESSAGE_TTL);
+				a *= m.getAge() < 2000 ? (m.getAge()/250) % 2 : 1;
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
 					Color color = context.getPlayerColor(m.getSender());

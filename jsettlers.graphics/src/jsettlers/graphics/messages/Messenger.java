@@ -30,11 +30,11 @@ public class Messenger {
 	/**
 	 * Longest duration for which messages should remain in queue, in milliseconds.
 	 */
-	public static final long MESSAGE_TTL = 60000;
+	public static final long MESSAGE_TTL = 90000;
 	/**
 	 * Map grid distance beyond which two messages should be considered sufficiently different to be prompted separately.
 	 */
-	public static final int MESSAGE_DIST_THRESHOLD = 50;
+	public static final int MESSAGE_DIST_THRESHOLD = 24;
 
 	LinkedList<Message> messages = new LinkedList<Message>();
 
