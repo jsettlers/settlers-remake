@@ -82,4 +82,15 @@ public class SimpleMessage implements Message {
 		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPos());
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Message) {
+			Message o = (Message)obj;
+			return this.getType().equals(o.getType())
+					&& this.getSender() == o.getSender()
+					&& this.getPosition().equals(o.getPosition())
+					&& this.getMessage().equals(o.getMessage());
+		}
+		return super.equals(obj);
+	}
 }
