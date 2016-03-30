@@ -60,30 +60,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	public final static ConcurrentLinkedQueue<Movable> getAllMovables() {
-		return allMovables;
-	}
-
-	/**
-	 * Used for networking to identify movables over the network.
-	 * 
-	 * @param id
-	 *            id to be looked for
-	 * @return returns the movable with the given ID<br>
-	 *         or null if the id can not be found
-	 */
-	public final static Movable getMovableByID(int id) {
-		return movablesByID.get(id);
-	}
-
-	public static void resetState() {
-		allMovables.clear();
-		movablesByID.clear();
-		nextID = Integer.MIN_VALUE;
-	}
-
 	private final AbstractMovableGrid grid;
 	private final int id;
+
 	private EMovableState state = EMovableState.DOING_NOTHING;
 
 	private EMovableType movableType;
@@ -92,20 +71,19 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
-
 	private EDirection direction;
 
 	private int animationStartTime;
 	private short animationDuration;
 
 	private ShortPoint2D position;
+
 	private ShortPoint2D targetPosition = null;
 	private Path path;
-	private float health;
 
+	private float health;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
-
 	private Movable pushedFrom;
 
 	private boolean isRightstep = false;
@@ -114,7 +92,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private EMaterialType takeDropMaterial;
 
 	private transient boolean selected = false;
-
 	private transient boolean soundPlayed = false;
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
@@ -136,162 +113,29 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		grid.enterPosition(position, this, true);
 	}
 
-	public final boolean canOccupyBuilding() {
-		return movableType.getSelectionType() == ESelectionType.SOLDIERS;
+	/**
+	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
+	 * 
+	 * @param ois
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		movablesByID.put(this.id, this);
+		allMovables.add(this);
+		nextID = Math.max(nextID, this.id + 1);
 	}
 
-	public void checkPlayerOfPosition(Player playerOfPosition) {
-		if (playerOfPosition != player && movableType.needsPlayersGround() && strategy.getClass() != FleeStrategy.class) {
-			setStrategy(new FleeStrategy(this));
+	/**
+	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
+	 * 
+	 * @param targetPosition
+	 */
+	public final void moveTo(ShortPoint2D targetPosition) {
+		if (movableType.isMoveToAble() && strategy.isAbleToMove()) {
+			this.targetPosition = targetPosition;
 		}
-	}
-
-	/**
-	 * Converts this movable to a movable of the given {@link EMovableType}.
-	 * 
-	 * @param newMovableType
-	 */
-	public final void convertTo(EMovableType newMovableType) {
-		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
-			return; // can't convert to bearer if the ground does not belong to the player
-		}
-
-		this.health = (this.health * newMovableType.getHealth()) / this.movableType.getHealth();
-		this.movableType = newMovableType;
-		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
-	}
-
-	@Override
-	public final void debug() {
-		System.out.println("debug: " + this);
-	}
-
-	@Override
-	public final EMovableAction getAction() {
-		return movableAction;
-	}
-
-	@Override
-	public final EDirection getDirection() {
-		return direction;
-	}
-
-	/**
-	 * 
-	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
-	 */
-	public final AbstractMovableGrid getGrid() {
-		return grid;
-	}
-
-	@Override
-	public final float getHealth() {
-		return health;
-	}
-
-	@Override
-	public final int getID() {
-		return id;
-	}
-
-	@Override
-	public final EMaterialType getMaterial() {
-		return materialType;
-	}
-
-	@Override
-	public final EMovableType getMovableType() {
-		return movableType;
-	}
-
-	@Override
-	public final float getMoveProgress() {
-		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
-	}
-
-	/**
-	 * Gets the player object of this movable.
-	 * 
-	 * @return The player object of this movable.
-	 */
-	public final Player getPlayer() {
-		return player;
-	}
-
-	@Override
-	public final byte getPlayerId() {
-		return player.playerId;
-	}
-
-	@Override
-	public final ShortPoint2D getPos() {
-		return position;
-	}
-
-	@Override
-	public final ESelectionType getSelectionType() {
-		return movableType.getSelectionType();
-	}
-
-	@Override
-	public final short getViewDistance() {
-		return Constants.MOVABLE_VIEW_DISTANCE;
-	}
-
-	/**
-	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
-	 * 
-	 * @param other
-	 *            The other movable.
-	 */
-	@Override
-	public final void informAboutAttackable(IAttackable other) {
-		strategy.informAboutAttackable(other);
-	}
-
-	@Override
-	public final boolean isAttackable() {
-		return movableType.isMoveToAble();
-	}
-
-	@Override
-	public final boolean isRightstep() {
-		return isRightstep;
-	}
-
-	@Override
-	public final boolean isSelected() {
-		return selected;
-	}
-
-	@Override
-	public final boolean isSoundPlayed() {
-		return soundPlayed;
-	}
-
-	@Override
-	public boolean isTower() {
-		return false;
-	}
-
-	/**
-	 * kills this movable.
-	 */
-	@Override
-	public final void kill() {
-		if (state == EMovableState.DEAD) {
-			return; // this movable already died.
-		}
-
-		grid.leavePosition(this.position, this);
-		this.health = -200;
-		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
-		this.state = EMovableState.DEAD;
-
-		movablesByID.remove(this.getID());
-		allMovables.remove(this);
-
-		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
 	public void leavePosition() {
@@ -312,55 +156,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				}
 			}
 		}
-	}
-
-	/**
-	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
-	 * 
-	 * @param targetPosition
-	 */
-	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isUserControlled()) {
-			this.targetPosition = targetPosition;
-		}
-	}
-
-	@Override
-	public final boolean needsPlayersGround() {
-		return movableType.needsPlayersGround();
-	}
-
-	@Override
-	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos, byte attackingPlayer) {
-		this.health -= hitStrength;
-		if (health <= 0) {
-			this.kill();
-		}
-
-		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
-	}
-
-	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
-		if (canOccupyBuilding()) {
-			return ((SoldierStrategy) strategy).setOccupyableBuilding(building);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public final void setSelected(boolean selected) {
-		this.selected = selected;
-	}
-
-	@Override
-	public final void setSoundPlayed() {
-		this.soundPlayed = true;
-	}
-
-	@Override
-	public final void stopOrStartWorking(boolean stop) {
-		strategy.stopOrStartWorking(stop);
 	}
 
 	@Override
@@ -410,7 +205,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 
 		if (targetPosition != null) {
-			if (strategy.isUserControlled()) {
+			if (strategy.isAbleToMove()) {
 				switch (state) {
 				case PATHING:
 					// if we're currently pathing, stop former pathing and calculate a new path
@@ -483,14 +278,62 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return animationDuration;
 	}
 
-	@Override
-	public String toString() {
-		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
-				+ " direction: " + direction + " material: " + materialType;
+	private void pathingAction() {
+		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+			// if path is finished, or canceled by strategy return from here
+			setState(EMovableState.DOING_NOTHING);
+			movableAction = EMovableAction.NO_ACTION;
+			path = null;
+			return;
+		}
+
+		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
+		if (blockingMovable == null) { // if we can go on to the next step
+			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
+				goSinglePathStep();
+
+			} else { // next position is invalid
+				movableAction = EMovableAction.NO_ACTION;
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+
+				if (newPath == null) { // no path found
+					setState(EMovableState.DOING_NOTHING);
+
+					strategy.pathAborted(path.getTargetPos()); // inform strategy
+					path = null;
+				} else {
+					this.path = newPath; // continue with new path
+					if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+						goSinglePathStep();
+					}
+				}
+			}
+
+		} else { // step not possible, so try it next time
+			movableAction = EMovableAction.NO_ACTION;
+			boolean pushedSuccessfully = blockingMovable.push(this);
+			if (!pushedSuccessfully) {
+				path = strategy.findWayAroundObstacle(direction, position, path);
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+			} else if (movableAction == EMovableAction.NO_ACTION) {
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+			} // else: push initiated our next step
+		}
 	}
 
-	private void checkPlayerOfCurrentPosition() {
-		checkPlayerOfPosition(grid.getPlayerAt(position));
+	private void goSinglePathStep() {
+		initGoingSingleStep(path.getNextPos());
+		path.goToNextStep();
+	}
+
+	private void initGoingSingleStep(ShortPoint2D position) {
+		direction = EDirection.getDirection(this.position, position);
+		playAnimation(EMovableAction.WALKING, movableType.getStepDurationMs());
+		grid.leavePosition(this.position, this);
+		grid.enterPosition(position, this, false);
+		this.position = position;
+		isRightstep = !isRightstep;
 	}
 
 	private int doingNothingAction() {
@@ -540,91 +383,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			flockDelay = Math.min(flockDelay + 100, 1000);
 			return false;
 		}
-	}
-
-	private void followPath(Path path) {
-		this.path = path;
-		setState(EMovableState.PATHING);
-		this.movableAction = EMovableAction.NO_ACTION;
-		pathingAction();
-	}
-
-	private void goSinglePathStep() {
-		initGoingSingleStep(path.getNextPos());
-		path.goToNextStep();
-	}
-
-	private boolean goToRandomDirection(Movable pushingMovable) {
-		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
-
-		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private void initGoingSingleStep(ShortPoint2D position) {
-		direction = EDirection.getDirection(this.position, position);
-		playAnimation(EMovableAction.WALKING, movableType.getStepDurationMs());
-		grid.leavePosition(this.position, this);
-		grid.enterPosition(position, this, false);
-		this.position = position;
-		isRightstep = !isRightstep;
-	}
-
-	private void pathingAction() {
-		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
-			// if path is finished, or canceled by strategy return from here
-			setState(EMovableState.DOING_NOTHING);
-			movableAction = EMovableAction.NO_ACTION;
-			path = null;
-			return;
-		}
-
-		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
-		if (blockingMovable == null) { // if we can go on to the next step
-			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
-				goSinglePathStep();
-
-			} else { // next position is invalid
-				movableAction = EMovableAction.NO_ACTION;
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
-
-				if (newPath == null) { // no path found
-					setState(EMovableState.DOING_NOTHING);
-
-					strategy.pathAborted(path.getTargetPos()); // inform strategy
-					path = null;
-				} else {
-					this.path = newPath; // continue with new path
-					if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
-						goSinglePathStep();
-					}
-				}
-			}
-
-		} else { // step not possible, so try it next time
-			movableAction = EMovableAction.NO_ACTION;
-			boolean pushedSuccessfully = blockingMovable.push(this);
-			if (!pushedSuccessfully) {
-				path = strategy.findWayAroundObstacle(direction, position, path);
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} else if (movableAction == EMovableAction.NO_ACTION) {
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
-			} // else: push initiated our next step
-		}
-	}
-
-	private void playAnimation(EMovableAction movableAction, short duration) {
-		this.animationStartTime = MatchConstants.clock().getTime();
-		this.animationDuration = duration;
-		this.movableAction = movableAction;
 	}
 
 	/**
@@ -713,40 +471,70 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 	}
 
-	/**
-	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
-	 * 
-	 * @param ois
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		movablesByID.put(this.id, this);
-		allMovables.add(this);
-		nextID = Math.max(nextID, this.id + 1);
+	private boolean goToRandomDirection(Movable pushingMovable) {
+		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
+		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+
+		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
-	 * Sets the state to the given one and resets the movable to a clean start of this state.
+	 * Sets the material this movable is carrying to the given one.
 	 * 
-	 * @param newState
+	 * @param materialType
+	 * @return {@link EMaterialType} that has been set before.
 	 */
-	private void setState(EMovableState newState) {
-		this.state = newState;
+	final EMaterialType setMaterial(EMaterialType materialType) {
+		assert materialType != null : "MaterialType may not be null";
+		EMaterialType former = this.materialType;
+		this.materialType = materialType;
+		return former;
 	}
 
-	private void setStrategy(MovableStrategy newStrategy) {
-		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
-		this.strategy = newStrategy;
-		this.movableAction = EMovableAction.NO_ACTION;
-		setState(EMovableState.DOING_NOTHING);
+	/**
+	 * Lets this movable execute the given action with given duration.
+	 * 
+	 * @param movableAction
+	 *            action to be animated.
+	 * @param duration
+	 *            duration the animation should last (in seconds). // TODO change to milliseconds
+	 */
+	final void playAction(EMovableAction movableAction, float duration) {
+		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
+
+		playAnimation(movableAction, (short) (duration * 1000));
+		setState(EMovableState.PLAYING_ACTION);
+		this.soundPlayed = false;
 	}
 
-	void abortPath() {
-		setState(EMovableState.DOING_NOTHING);
-		movableAction = EMovableAction.NO_ACTION;
-		path = null;
+	private void playAnimation(EMovableAction movableAction, short duration) {
+		this.animationStartTime = MatchConstants.clock().getTime();
+		this.animationDuration = duration;
+		this.movableAction = movableAction;
+	}
+
+	/**
+	 * 
+	 * @param materialToTake
+	 * @return true if the animation will be executed.
+	 */
+	final boolean take(EMaterialType materialToTake, boolean takeFromMap) {
+		if (!takeFromMap || grid.canTakeMaterial(position, materialToTake)) {
+			this.takeDropMaterial = materialToTake;
+
+			playAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+			setState(EMovableState.TAKE);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	final void drop(EMaterialType materialToDrop) {
@@ -756,13 +544,45 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		setState(EMovableState.DROP);
 	}
 
-	final void enableNothingToDoAction(boolean enable) {
-		this.enableNothingToDo = enable;
+	/**
+	 * 
+	 * @param sleepTime
+	 *            time to sleep in milliseconds
+	 */
+	final void sleep(short sleepTime) {
+		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
+
+		playAnimation(EMovableAction.NO_ACTION, sleepTime);
+		setState(EMovableState.WAITING);
 	}
 
-	final void followPresearchedPath() {
-		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
-		followPath(this.path);
+	/**
+	 * Lets this movable look in the given direction.
+	 * 
+	 * @param direction
+	 */
+	final void lookInDirection(EDirection direction) {
+		this.direction = direction;
+	}
+
+	/**
+	 * Lets this movable go to the given position.
+	 * 
+	 * @param targetPos
+	 *            position to move to.
+	 * @return true if it was possible to calculate a path to the given position<br>
+	 *         false if it wasn't possible to get a path.
+	 */
+	final boolean goToPos(ShortPoint2D targetPos) {
+		assert state == EMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
+
+		Path path = grid.calculatePathTo(this, targetPos);
+		if (path == null) {
+			return false;
+		} else {
+			followPath(path);
+			return this.path != null;
+		}
 	}
 
 	/**
@@ -787,52 +607,31 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	/**
-	 * Lets this movable go to the given position.
 	 * 
-	 * @param targetPos
-	 *            position to move to.
-	 * @return true if it was possible to calculate a path to the given position<br>
-	 *         false if it wasn't possible to get a path.
+	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
 	 */
-	final boolean goToPos(ShortPoint2D targetPos) {
-		assert state == EMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
+	public final AbstractMovableGrid getGrid() {
+		return grid;
+	}
 
-		Path path = grid.calculatePathTo(this, targetPos);
-		if (path == null) {
-			return false;
-		} else {
-			followPath(path);
-			return this.path != null;
+	final void setPos(ShortPoint2D position) {
+		if (visible) {
+			grid.leavePosition(this.position, this);
+			grid.enterPosition(position, this, true);
 		}
+
+		this.position = position;
 	}
 
-	boolean isOnOwnGround() {
-		return grid.getPlayerAt(position) == player;
-	}
+	final void setVisible(boolean visible) {
+		if (this.visible == visible) { // nothing to change
+		} else if (this.visible) { // is visible and gets invisible
+			grid.leavePosition(position, this);
+		} else {
+			grid.enterPosition(position, this, true);
+		}
 
-	/**
-	 * Lets this movable look in the given direction.
-	 * 
-	 * @param direction
-	 */
-	final void lookInDirection(EDirection direction) {
-		this.direction = direction;
-	}
-
-	/**
-	 * Lets this movable execute the given action with given duration.
-	 * 
-	 * @param movableAction
-	 *            action to be animated.
-	 * @param duration
-	 *            duration the animation should last (in seconds). // TODO change to milliseconds
-	 */
-	final void playAction(EMovableAction movableAction, float duration) {
-		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
-
-		playAnimation(movableAction, (short) (duration * 1000));
-		setState(EMovableState.PLAYING_ACTION);
-		this.soundPlayed = false;
+		this.visible = visible;
 	}
 
 	/**
@@ -858,66 +657,266 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return path != null;
 	}
 
-	/**
-	 * Sets the material this movable is carrying to the given one.
-	 * 
-	 * @param materialType
-	 * @return {@link EMaterialType} that has been set before.
-	 */
-	final EMaterialType setMaterial(EMaterialType materialType) {
-		assert materialType != null : "MaterialType may not be null";
-		EMaterialType former = this.materialType;
-		this.materialType = materialType;
-		return former;
+	final void followPresearchedPath() {
+		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
+		followPath(this.path);
 	}
 
-	final void setPos(ShortPoint2D position) {
-		if (visible) {
-			grid.leavePosition(this.position, this);
-			grid.enterPosition(position, this, true);
+	final void enableNothingToDoAction(boolean enable) {
+		this.enableNothingToDo = enable;
+	}
+
+	void abortPath() {
+		setState(EMovableState.DOING_NOTHING);
+		movableAction = EMovableAction.NO_ACTION;
+		path = null;
+	}
+
+	boolean isOnOwnGround() {
+		return grid.getPlayerAt(position) == player;
+	}
+
+	private void followPath(Path path) {
+		this.path = path;
+		setState(EMovableState.PATHING);
+		this.movableAction = EMovableAction.NO_ACTION;
+		pathingAction();
+	}
+
+	/**
+	 * Sets the state to the given one and resets the movable to a clean start of this state.
+	 * 
+	 * @param newState
+	 */
+	private void setState(EMovableState newState) {
+		this.state = newState;
+	}
+
+	private void setStrategy(MovableStrategy newStrategy) {
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.strategy = newStrategy;
+		this.movableAction = EMovableAction.NO_ACTION;
+		setState(EMovableState.DOING_NOTHING);
+	}
+
+	/**
+	 * Used for networking to identify movables over the network.
+	 * 
+	 * @param id
+	 *            id to be looked for
+	 * @return returns the movable with the given ID<br>
+	 *         or null if the id can not be found
+	 */
+	public final static Movable getMovableByID(int id) {
+		return movablesByID.get(id);
+	}
+
+	public final static ConcurrentLinkedQueue<Movable> getAllMovables() {
+		return allMovables;
+	}
+
+	public static void resetState() {
+		allMovables.clear();
+		movablesByID.clear();
+		nextID = Integer.MIN_VALUE;
+	}
+
+	/**
+	 * kills this movable.
+	 */
+	@Override
+	public final void kill() {
+		if (state == EMovableState.DEAD) {
+			return; // this movable already died.
 		}
 
-		this.position = position;
+		grid.leavePosition(this.position, this);
+		this.health = -200;
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.state = EMovableState.DEAD;
+
+		movablesByID.remove(this.getID());
+		allMovables.remove(this);
+
+		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
-	final void setVisible(boolean visible) {
-		if (this.visible == visible) { // nothing to change
-		} else if (this.visible) { // is visible and gets invisible
-			grid.leavePosition(position, this);
-		} else {
-			grid.enterPosition(position, this, true);
+	@Override
+	public final byte getPlayerId() {
+		return player.playerId;
+	}
+
+	/**
+	 * Gets the player object of this movable.
+	 * 
+	 * @return The player object of this movable.
+	 */
+	public final Player getPlayer() {
+		return player;
+	}
+
+	@Override
+	public final boolean isSelected() {
+		return selected;
+	}
+
+	@Override
+	public final void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	@Override
+	public final void stopOrStartWorking(boolean stop) {
+		strategy.stopOrStartWorking(stop);
+	}
+
+	@Override
+	public final ESelectionType getSelectionType() {
+		return movableType.getSelectionType();
+	}
+
+	@Override
+	public final void setSoundPlayed() {
+		this.soundPlayed = true;
+	}
+
+	@Override
+	public final boolean isSoundPlayed() {
+		return soundPlayed;
+	}
+
+	@Override
+	public final EMovableType getMovableType() {
+		return movableType;
+	}
+
+	@Override
+	public final EMovableAction getAction() {
+		return movableAction;
+	}
+
+	@Override
+	public final EDirection getDirection() {
+		return direction;
+	}
+
+	@Override
+	public final float getMoveProgress() {
+		return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
+	}
+
+	@Override
+	public final EMaterialType getMaterial() {
+		return materialType;
+	}
+
+	@Override
+	public final ShortPoint2D getPos() {
+		return position;
+	}
+
+	@Override
+	public final float getHealth() {
+		return health;
+	}
+
+	@Override
+	public final boolean isRightstep() {
+		return isRightstep;
+	}
+
+	@Override
+	public final boolean needsPlayersGround() {
+		return movableType.needsPlayersGround();
+	}
+
+	@Override
+	public final short getViewDistance() {
+		return Constants.MOVABLE_VIEW_DISTANCE;
+	}
+
+	@Override
+	public final void debug() {
+		System.out.println("debug: " + this);
+	}
+
+	@Override
+	public final int getID() {
+		return id;
+	}
+
+	/**
+	 * Converts this movable to a movable of the given {@link EMovableType}.
+	 * 
+	 * @param newMovableType
+	 */
+	public final void convertTo(EMovableType newMovableType) {
+		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
+			return; // can't convert to bearer if the ground does not belong to the player
 		}
 
-		this.visible = visible;
+		this.health = (this.health * newMovableType.getHealth()) / this.movableType.getHealth();
+		this.movableType = newMovableType;
+		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
 	}
 
-	/**
-	 * 
-	 * @param sleepTime
-	 *            time to sleep in milliseconds
-	 */
-	final void sleep(short sleepTime) {
-		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
-
-		playAnimation(EMovableAction.NO_ACTION, sleepTime);
-		setState(EMovableState.WAITING);
-	}
-
-	/**
-	 * 
-	 * @param materialToTake
-	 * @return true if the animation will be executed.
-	 */
-	final boolean take(EMaterialType materialToTake, boolean takeFromMap) {
-		if (!takeFromMap || grid.canTakeMaterial(position, materialToTake)) {
-			this.takeDropMaterial = materialToTake;
-
-			playAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
-			setState(EMovableState.TAKE);
-			return true;
+	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
+		if (canOccupyBuilding()) {
+			return ((SoldierStrategy) strategy).setOccupyableBuilding(building);
 		} else {
 			return false;
 		}
+	}
+
+	public final boolean canOccupyBuilding() {
+		return movableType.getSelectionType() == ESelectionType.SOLDIERS;
+	}
+
+	@Override
+	public final boolean isAttackable() {
+		return movableType.isMoveToAble();
+	}
+
+	/**
+	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
+	 * 
+	 * @param other
+	 *            The other movable.
+	 */
+	@Override
+	public final void informAboutAttackable(IAttackable other) {
+		strategy.informAboutAttackable(other);
+	}
+
+	@Override
+	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos, byte attackingPlayer) {
+		this.health -= hitStrength;
+		if (health <= 0) {
+			this.kill();
+		}
+
+		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
+	}
+
+	@Override
+	public boolean isTower() {
+		return false;
+	}
+
+	private void checkPlayerOfCurrentPosition() {
+		checkPlayerOfPosition(grid.getPlayerAt(position));
+	}
+
+	public void checkPlayerOfPosition(Player playerOfPosition) {
+		if (playerOfPosition != player && movableType.needsPlayersGround() && strategy.getClass() != FleeStrategy.class) {
+			setStrategy(new FleeStrategy(this));
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
+				+ " direction: " + direction + " material: " + materialType;
 	}
 
 	private static enum EMovableState {
