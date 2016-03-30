@@ -213,7 +213,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return couldBePlaced;
 	}
 
-	protected abstract void placedAtEvent(ShortPoint2D pos);
+	protected void placedAtEvent(ShortPoint2D pos) {
+	};
 
 	/**
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.

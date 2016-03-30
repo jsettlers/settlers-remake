@@ -17,6 +17,7 @@ package jsettlers.common.buildings.jobs;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a building job, a job that can be done by a worker.
@@ -68,6 +69,14 @@ public interface IBuildingJob {
 	 * @return The y distance.
 	 */
 	short getDy();
+
+	/**
+	 * calculates the point on the grid from the given start point.
+	 * 
+	 * @param start
+	 * @return
+	 */
+	public ShortPoint2D calculatePoint(ShortPoint2D start);
 
 	/**
 	 * Gets the direction associated with this job.
