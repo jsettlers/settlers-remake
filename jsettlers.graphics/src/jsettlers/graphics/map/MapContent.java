@@ -99,7 +99,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final int MAX_MESSAGES = 10;
-	private static final float MESSAGE_OFFSET_X = 200;
+	private static final float MESSAGE_OFFSET_X = 300;
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final int MESSAGE_LINEHIEGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
@@ -293,13 +293,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					float bright = color.getRed() + color.getGreen() + color.getBlue();
 					if (bright < .9f) {
 						// black
-						gl.color(1, 1, 1, a/2);
-						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+						drawer.setColor(1, 1, 1, a/2);
 					} else if (bright < 2f) {
 						// bad visibility
-						gl.color(0, 0, 0, a/2);
-						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+						drawer.setColor(0, 0, 0, a/2);
 					}
+					for (int i=-1; i<3; i++)
+						drawer.drawString(x+i, y-1, name);
 					drawer.setColor(color.getRed(), color.getGreen(),
 							color.getBlue(), a);
 					drawer.drawString(x, y, name);
