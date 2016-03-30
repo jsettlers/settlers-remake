@@ -50,25 +50,39 @@ public class Messenger {
 	}
 
 	public void addMessage(Message message) {
-		Message latest = null;
-		if (!messages.isEmpty()) {
-			if (messages.contains(message))
-				return;
-			latest = messages.getFirst();
-		}
-		if ((latest == null)
-				|| (message.getPosition().getOnGridDistTo(latest.getPosition()) > MESSAGE_DIST_THRESHOLD)
-				|| (message.getSender() != latest.getSender())
-				|| (latest.getAge() > MESSAGE_TTL / 2)
-				|| (!latest.getType().equals(message.getType()))) {
+		if (isNews(message)) {
 			messages.addFirst(message);
-			if (messages.size() > MAX_MESSAGES) {
+			if (messages.size() > MAX_MESSAGES)
 				messages.removeLast();
-			}
 		}
 	}
 
 	public void removeOld() {
-		for (; (messages.size()>0) && (messages.getLast().getAge()>MESSAGE_TTL); messages.removeLast());
+		for (; (messages.size() > 0)
+				&& (messages.getLast().getAge()>MESSAGE_TTL);
+				messages.removeLast());
+	}
+
+	boolean isNews(Message msg) {
+		if (messages.isEmpty()) {
+			return true;
+		}
+		for (Message m : messages) {
+			if ((m.getSender() == msg.getSender())
+					&& m.getMessage().equals(msg.getMessage())
+					&& m.getType() == msg.getType()) {
+				if (m.getAge() < MESSAGE_TTL / 6) {
+					if ((msg.getType() == EMessageType.ATTACKED)
+							|| (msg.getType() == EMessageType.MINERALS)) {
+						if (msg.getPosition().getOnGridDistTo(m.getPosition()) 
+								< MESSAGE_DIST_THRESHOLD) {
+							return false;
+						}
+					} else if (msg.getPosition().equals(m.getPosition()))
+						return false;
+				}
+			}
+		}
+		return true;
 	}
 }
