@@ -17,6 +17,7 @@ package jsettlers.graphics.map.draw;
 import java.util.ConcurrentModificationException;
 
 import go.graphics.GLDrawContext;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -71,6 +72,10 @@ public class MapObjectDrawer {
 	private static final int[] TREE_CHANGING_SEQUENCES = new int[] {
 			3, 3, 6, 9, 9, 18, 18,
 	};
+	static final float TREE_CUT_1 = 0.03F;
+	static final float TREE_CUT_2 = 0.06F;
+	static final float TREE_CUT_3 = 0.09F;
+	static final float TREE_TAKEN = 0.1F;
 
 	/**
 	 * First images in tree cutting sequence
@@ -681,23 +686,23 @@ public class MapObjectDrawer {
 		int treeType = getTreeType(x, y);
 		int imageStep = 0;
 
-		if (progress < IMapObject.TREE_CUT_1) {
+		if (progress < TREE_CUT_1) {
 			imageStep = (int) (progress * TREE_FALLING_SPEED);
 			if (imageStep >= TREE_FALL_IMAGES) {
 				imageStep = TREE_FALL_IMAGES - 1;
 			}
-		} else if (progress < IMapObject.TREE_CUT_2) {
+		} else if (progress < TREE_CUT_2) {
 			// cut image 1
 			imageStep = TREE_FALL_IMAGES;
-		} else if (progress < IMapObject.TREE_CUT_3) {
+		} else if (progress < TREE_CUT_3) {
 			// cut image 2
 			imageStep = TREE_FALL_IMAGES + 1;
-		} else if (progress < IMapObject.TREE_TAKEN) {
+		} else if (progress < TREE_TAKEN) {
 			// cut image 3
 			imageStep = TREE_FALL_IMAGES + 2;
 		} else {
-			int relativeStep = (int) ((progress - IMapObject.TREE_TAKEN)
-					/ (1 - IMapObject.TREE_TAKEN) * TREE_ROT_IMAGES);
+			int relativeStep = (int) ((progress - TREE_TAKEN)
+					/ (1 - TREE_TAKEN) * TREE_ROT_IMAGES);
 
 			imageStep = relativeStep + TREE_FALL_IMAGES + 3;
 		}
