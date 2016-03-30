@@ -285,7 +285,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			for (Message m : messenger.getMessages()) {
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
-				float a = Math.max(0f, 1f-(float)m.getAge()/60000);
+				float a = Math.max(0f, 1f-(float)m.getAge()/Messenger.MESSAGE_TTL);
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
 					Color color = context.getPlayerColor(m.getSender());
@@ -310,7 +310,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;
-				if (messageIndex >= MAX_MESSAGES) {
+				if (messageIndex >= Messenger.MAX_MESSAGES) {
 					break;
 				}
 			}

@@ -23,7 +23,19 @@ import java.util.List;
  * @author michael
  */
 public class Messenger {
-	private static final int MAX_MESSAGES = 50;
+	/**
+	 * Number of messages that queue can hold at largest.
+	 */
+	public static final int MAX_MESSAGES = 16;
+	/**
+	 * Longest duration for which messages should remain in queue, in milliseconds.
+	 */
+	public static final long MESSAGE_TTL = 60000;
+	/**
+	 * Map grid distance beyond which two messages should be considered sufficiently different to be prompted separately.
+	 */
+	public static final int MESSAGE_DIST_THRESHOLD = 50;
+
 	LinkedList<Message> messages = new LinkedList<Message>();
 
 	/**
@@ -38,10 +50,16 @@ public class Messenger {
 	}
 
 	public void addMessage(Message message) {
-		Message latest = messages.isEmpty() ? null : messages.getFirst();
-		if ((latest == null) || (message.getPosition().getOnGridDistTo(latest.getPosition()) > 50)
+		Message latest = null;
+		if (!messages.isEmpty()) {
+			if (messages.contains(message))
+				return;
+			latest = messages.getFirst();
+		}
+		if ((latest == null)
+				|| (message.getPosition().getOnGridDistTo(latest.getPosition()) > MESSAGE_DIST_THRESHOLD)
 				|| (message.getSender() != latest.getSender())
-				|| (latest.getAge() > 30000)
+				|| (latest.getAge() > MESSAGE_TTL / 2)
 				|| (!latest.getType().equals(message.getType()))) {
 			messages.addFirst(message);
 			if (messages.size() > MAX_MESSAGES) {
@@ -51,6 +69,6 @@ public class Messenger {
 	}
 
 	public void removeOld() {
-		for (; (messages.size()>0) && (messages.getLast().getAge()>60000); messages.removeLast());
+		for (; (messages.size()>0) && (messages.getLast().getAge()>MESSAGE_TTL); messages.removeLast());
 	}
 }
