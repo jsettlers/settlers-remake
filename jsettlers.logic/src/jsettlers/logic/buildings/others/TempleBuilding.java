@@ -46,7 +46,7 @@ public final class TempleBuilding extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
+	protected void placedAtEvent(ShortPoint2D pos) {
 	}
 
 	@Override
