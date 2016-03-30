@@ -60,7 +60,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		case PLAYING_ACTION:
 			executeDigg();
 			if (!requester.isDiggerRequestActive()) {
-				super.getStrategyGrid().setMarked(super.getPos(), false);
+				grid.setMarked(super.getPos(), false);
 				reportJobless();
 				break;
 			}
@@ -80,16 +80,16 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 
 	private void executeDigg() {
 		ShortPoint2D pos = super.getPos();
-		super.getStrategyGrid().changeHeightTowards(pos.x, pos.y, requester.getAverageHeight());
+		grid.changeHeightTowards(pos.x, pos.y, requester.getAverageHeight());
 	}
 
 	private void goToDiggablePosition() {
-		super.getStrategyGrid().setMarked(super.getPos(), false);
+		grid.setMarked(super.getPos(), false);
 		ShortPoint2D diggablePos = getDiggablePosition();
 		if (diggablePos != null) {
 			if (super.goToPos(diggablePos)) {
 				state = EDiggerState.GOING_TO_POS;
-				super.getStrategyGrid().setMarked(diggablePos, true);
+				grid.setMarked(diggablePos, true);
 			} else {
 				reportJobless();
 			}
@@ -105,7 +105,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 
 		for (int i = 0; i < blockedTiles.length; i++) {
 			ShortPoint2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
-			if (!super.getStrategyGrid().isMarked(pos) && needsToBeWorkedOn(pos)) {
+			if (!grid.isMarked(pos) && needsToBeWorkedOn(pos)) {
 				return pos;
 			}
 		}
@@ -117,17 +117,17 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	}
 
 	private boolean isNotFlattened(ShortPoint2D pos) {
-		return super.getStrategyGrid().getLandscapeTypeAt(pos.x, pos.y) != ELandscapeType.FLATTENED;
+		return grid.getLandscapeTypeAt(pos.x, pos.y) != ELandscapeType.FLATTENED;
 	}
 
 	private boolean needsToChangeHeight(ShortPoint2D pos) {
-		return super.getStrategyGrid().getHeightAt(pos) != requester.getAverageHeight();
+		return grid.getHeightAt(pos) != requester.getAverageHeight();
 	}
 
 	private void reportJobless() {
 		this.state = EDiggerState.JOBLESS;
 		this.requester = null;
-		super.getStrategyGrid().addJobless(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 			}
 
 			if (pathTarget != null) {
-				super.getStrategyGrid().setMarked(pathTarget, false);
+				grid.setMarked(pathTarget, false);
 			}
 			return false;
 		}
@@ -149,15 +149,15 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (pathTarget != null) {
-			super.getStrategyGrid().setMarked(pathTarget, false);
+			grid.setMarked(pathTarget, false);
 		}
 
 		switch (state) {
 		case JOBLESS:
-			super.getStrategyGrid().removeJobless(this);
+			grid.removeJobless(this);
 			break;
 		case PLAYING_ACTION:
-			super.getStrategyGrid().setMarked(super.getPos(), false);
+			grid.setMarked(super.getPos(), false);
 			break;
 		default:
 			break;
@@ -173,7 +173,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		if (requester != null) {
-			super.getStrategyGrid().setMarked(pathTarget, false);
+			grid.setMarked(pathTarget, false);
 			abortJob();
 			reportJobless();
 		}

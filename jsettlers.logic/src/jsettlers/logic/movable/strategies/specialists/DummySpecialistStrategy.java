@@ -34,7 +34,7 @@ public final class DummySpecialistStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean isAbleToMove() {
 		return true;
 	}
 }

@@ -24,8 +24,8 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -120,7 +120,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case WALK:
 			IBuildingJob job = currentJob;
-			super.forceGoInDirection(currentJob.getDirection());
+			super.goInDirection(currentJob.getDirection(), true);
 			if (currentJob == job) { // the path could fail and call abortPath().
 				jobFinished();
 			}
@@ -196,7 +196,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case AVAILABLE:
-			if (super.getStrategyGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (grid.canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -204,7 +204,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case NOT_FULL:
-			if (super.getStrategyGrid().canPushMaterial(getCurrentJobPos())) {
+			if (grid.canPushMaterial(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -213,7 +213,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case SMOKE_ON:
 		case SMOKE_OFF: {
-			super.getStrategyGrid().placeSmoke(getCurrentJobPos(), currentJob.getType() == EBuildingJobType.SMOKE_ON);
+			grid.placeSmoke(getCurrentJobPos(), currentJob.getType() == EBuildingJobType.SMOKE_ON);
 			building.addMapObjectCleanupPosition(getCurrentJobPos(), EMapObjectType.SMOKE);
 			jobFinished();
 			break;
@@ -228,7 +228,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case PIG_IS_ADULT:
-			if (super.getStrategyGrid().isPigAdult(getCurrentJobPos())) {
+			if (grid.isPigAdult(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -236,7 +236,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case PIG_IS_THERE:
-			if (super.getStrategyGrid().hasPigAt(getCurrentJobPos())) {
+			if (grid.hasPigAt(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -273,14 +273,14 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
-		super.getStrategyGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
+		grid.placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
 		building.addMapObjectCleanupPosition(pos, EMapObjectType.PIG);
 		jobFinished();
 	}
 
 	private void growDonkeyAction() {
 		ShortPoint2D pos = getCurrentJobPos();
-		if (super.getStrategyGrid().feedDonkeyAt(pos)) {
+		if (grid.feedDonkeyAt(pos)) {
 			building.addMapObjectCleanupPosition(pos, EMapObjectType.DONKEY);
 			jobFinished();
 		} else {
@@ -295,7 +295,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void popToolRequestAction() {
 		ShortPoint2D pos = building.getDoor();
-		poppedMaterial = super.getStrategyGrid().popToolProductionRequest(pos);
+		poppedMaterial = grid.popToolProductionRequest(pos);
 		if (poppedMaterial != null) {
 			jobFinished();
 		} else {
@@ -304,7 +304,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
-		if (super.getStrategyGrid().executeSearchType(super.getMovable(), super.getPos(), currentJob.getSearchType())) {
+		if (grid.executeSearchType(movable, super.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -359,8 +359,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private boolean tryTakingResource() {
 		switch (building.getBuildingType()) {
 		case FISHER:
-			EDirection fishDirection = super.getMovable().getDirection();
-			return super.getStrategyGrid().tryTakingRecource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
+			EDirection fishDirection = movable.getDirection();
+			return grid.tryTakingRecource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
@@ -397,7 +397,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void lookAtSearched() {
-		EDirection direction = super.getStrategyGrid().getDirectionOfSearched(super.getPos(), currentJob.getSearchType());
+		EDirection direction = grid.getDirectionOfSearched(super.getPos(), currentJob.getSearchType());
 		if (direction != null) {
 			super.lookInDirection(direction);
 			jobFinished();
@@ -432,13 +432,13 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropCurrentMaterial() {
 		EMaterialType material = super.getMaterial();
 		if (material.isDroppable()) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), material, true);
+			grid.dropMaterial(super.getPos(), material, true);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
 	}
 
 	private void reportAsJobless() {
-		super.getStrategyGrid().addJobless(this);
+		grid.addJobless(this);
 		super.enableNothingToDoAction(true);
 		this.currentJob = null;
 		this.building = null;
@@ -450,7 +450,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		dropCurrentMaterial();
 
 		if (isJobless()) {
-			super.getStrategyGrid().removeJobless(this);
+			grid.removeJobless(this);
 		} else {
 			super.enableNothingToDoAction(true);
 			currentJob = null;

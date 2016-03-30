@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies;
 
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IConstructableBuilding;
@@ -58,7 +58,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	}
 
 	private void reportJobless() {
-		super.getStrategyGrid().addJobless(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (state == EBricklayerState.JOBLESS) {
-			super.getStrategyGrid().removeJobless(this);
+			grid.removeJobless(this);
 		} else {
 			abortJob();
 		}

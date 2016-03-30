@@ -49,7 +49,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	private void reportAsJobless() {
-		super.getStrategyGrid().addJobless(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public boolean beforeDroppingMaterial() {
+	public boolean droppingMaterial() {
 		if (request != null && request.isActive() && request.getPos().equals(super.getPos())) {
 			request.deliveryFulfilled();
 			return false;
@@ -187,7 +187,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
+			grid.dropMaterial(super.getPos(), materialType, true);
 		}
 
 		offer = null;
@@ -203,8 +203,8 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	private void reoffer() {
-		if (super.getStrategyGrid().takeMaterial(offer, materialType)) {
-			super.getStrategyGrid().dropMaterial(offer, materialType, true);
+		if (grid.takeMaterial(offer, materialType)) {
+			grid.dropMaterial(offer, materialType, true);
 		}
 	}
 
@@ -256,7 +256,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (state == EBearerState.JOBLESS) {
-			super.getStrategyGrid().removeJobless(this);
+			grid.removeJobless(this);
 		} else {
 			handleJobFailed(false);
 		}

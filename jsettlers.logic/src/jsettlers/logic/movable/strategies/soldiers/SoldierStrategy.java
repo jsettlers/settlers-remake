@@ -24,7 +24,6 @@ import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
@@ -91,7 +90,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		case SEARCH_FOR_ENEMIES:
 			final short minSearchDistance = getMinSearchDistance();
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), minSearchDistance,
+			enemy = grid.getEnemyInSearchArea(getAttackPosition(), movable, minSearchDistance,
 					getMaxSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsafe mode again.
@@ -102,13 +101,13 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
 				if (minSearchDistance > 0) {
-					IAttackable toCloseEnemy = super.getStrategyGrid().getEnemyInSearchArea(
-							getAttackPosition(), super.getMovable(), (short) 0, minSearchDistance, !defending);
+					IAttackable toCloseEnemy = grid.getEnemyInSearchArea(
+							getAttackPosition(), movable, (short) 0, minSearchDistance, !defending);
 					if (toCloseEnemy != null) {
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
 							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), getMovable().getPos());
 							super.goInDirection(escapeDirection, false);
-							super.getMovable().moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
 
@@ -246,7 +245,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public Movable getMovable() {
-		return super.getMovable();
+		return movable;
 	}
 
 	@Override
@@ -259,11 +258,6 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		building = null;
 		defending = false;
 		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
-	}
-
-	@Override
-	public void setSelected(boolean selected) {
-		super.setSelected(selected);
 	}
 
 	@Override
@@ -312,14 +306,13 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean isAbleToMove() {
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
 
 	@Override
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
-			AbstractStrategyGrid grid = super.getStrategyGrid();
 			EDirection leftDir = direction.getNeighbor(-1);
 			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 			EDirection rightDir = direction.getNeighbor(1);
