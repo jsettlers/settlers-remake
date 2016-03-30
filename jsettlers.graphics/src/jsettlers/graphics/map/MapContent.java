@@ -904,17 +904,19 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	public void addMessage(Message message) {
+		boolean printMsg;
 		synchronized (messenger) {
-			messenger.addMessage(message);
+			printMsg = messenger.addMessage(message);
 		}
-		switch (message.getType()) {
-		case ATTACKED:
-			soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
-			break;
+		if (printMsg)
+			switch (message.getType()) {
+			case ATTACKED:
+				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+				break;
 
-		default:
-			break;
-		}
+			default:
+				break;
+			}
 	}
 
 	@Override

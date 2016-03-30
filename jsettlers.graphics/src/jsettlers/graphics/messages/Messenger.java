@@ -49,12 +49,14 @@ public class Messenger {
 		return messages;
 	}
 
-	public void addMessage(Message message) {
+	public boolean addMessage(Message message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
 			if (messages.size() > MAX_MESSAGES)
 				messages.removeLast();
+			return true;
 		}
+		return false;
 	}
 
 	public void removeOld() {
