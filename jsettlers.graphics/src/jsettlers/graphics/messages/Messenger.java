@@ -38,9 +38,15 @@ public class Messenger {
 	}
 
 	public void addMessage(Message message) {
-		messages.addFirst(message);
-		if (messages.size() > MAX_MESSAGES) {
-			messages.removeLast();
+		Message latest = messages.isEmpty() ? null : messages.getFirst();
+		if ((latest == null) || (message.getPosition().getOnGridDistTo(latest.getPosition()) > 50)
+				|| (message.getSender() != latest.getSender())
+				|| (latest.getAge() > 30000)
+				|| (!latest.getType().equals(message.getType()))) {
+			messages.addFirst(message);
+			if (messages.size() > MAX_MESSAGES) {
+				messages.removeLast();
+			}
 		}
 	}
 
