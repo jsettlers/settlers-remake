@@ -24,7 +24,6 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
@@ -177,7 +176,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected final boolean fitsSearchType(ShortPoint2D pos, ESearchType searchType) {
-		return movable.getGrid().fitsSearchType(movable, pos, searchType);
+		return grid.fitsSearchType(movable, pos, searchType);
 	}
 
 	public final ShortPoint2D getPos() {
@@ -257,7 +256,7 @@ public abstract class MovableStrategy implements Serializable {
 	protected void informAboutAttackable(IAttackable other) {
 	}
 
-	protected boolean isAbleToMove() {
+	protected boolean isUserControlled() {
 		return false;
 	}
 
@@ -269,8 +268,6 @@ public abstract class MovableStrategy implements Serializable {
 		if (!path.hasOverNextStep()) { // if path has no position left
 			return path;
 		}
-
-		AbstractStrategyGrid grid = movable.getGrid();
 
 		EDirection leftDir = direction.getNeighbor(-1);
 		EDirection rightDir = direction.getNeighbor(1);
