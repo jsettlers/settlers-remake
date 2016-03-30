@@ -43,4 +43,8 @@ public class Messenger {
 			messages.removeLast();
 		}
 	}
+
+	public void removeOld() {
+		for (; (messages.size()>0) && (messages.getLast().getAge()>60000); messages.removeLast());
+	}
 }

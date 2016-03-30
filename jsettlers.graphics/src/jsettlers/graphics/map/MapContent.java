@@ -281,9 +281,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		// TODO: don't let logic wait until we rendered.
 		synchronized (messenger) {
 			int messageIndex = 0;
+			messenger.removeOld();
 			for (Message m : messenger.getMessages()) {
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+				float a = Math.max(0f, 1f-(float)m.getAge()/60000);
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
 					Color color = context.getPlayerColor(m.getSender());
@@ -291,20 +293,20 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					float bright = color.getRed() + color.getGreen() + color.getBlue();
 					if (bright < .9f) {
 						// black
-						gl.color(1, 1, 1, .5f);
+						gl.color(1, 1, 1, a/2);
 						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
 					} else if (bright < 2f) {
 						// bad visibility
-						gl.color(0, 0, 0, .5f);
+						gl.color(0, 0, 0, a/2);
 						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
 					}
 					drawer.setColor(color.getRed(), color.getGreen(),
-							color.getBlue(), 1);
+							color.getBlue(), a);
 					drawer.drawString(x, y, name);
 					x += width + 10;
 				}
 
-				drawer.setColor(1, 1, 1, 1);
+				drawer.setColor(1, 1, 1, a);
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;
@@ -312,6 +314,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					break;
 				}
 			}
+			drawer.setColor(1, 1, 1, 1);
 		}
 	}
 

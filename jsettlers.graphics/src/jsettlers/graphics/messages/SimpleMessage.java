@@ -29,6 +29,7 @@ public class SimpleMessage implements Message {
 	private final ShortPoint2D pos;
 	private final String message;
 	private final EMessageType type;
+	private final long time;
 
 	public SimpleMessage(EMessageType type, String message, byte sender,
 			ShortPoint2D pos) {
@@ -36,6 +37,7 @@ public class SimpleMessage implements Message {
 		this.message = message;
 		this.sender = sender;
 		this.pos = pos;
+		this.time = System.currentTimeMillis();
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class SimpleMessage implements Message {
 	@Override
 	public long getAge() {
 		// TODO: implement a message aging process.
-		return 0;
+		return System.currentTimeMillis() - this.time;
 	}
 
 	@Override
