@@ -312,7 +312,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean canBeControlledByPlayer() {
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
 

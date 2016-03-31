@@ -133,7 +133,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isMoveToAble()) {
+		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer()) {
 			this.moveToRequest = targetPosition;
 		}
 	}
@@ -205,7 +205,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 
 		if (moveToRequest != null) {
-			if (strategy.isMoveToAble()) {
+			if (strategy.canBeControlledByPlayer()) {
 				switch (state) {
 				case PATHING:
 					// if we're currently pathing, stop former pathing and calculate a new path
@@ -411,7 +411,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
-				} else if (pushingMovable.getMovableType().isMoveToAble() || isValidPosition(pushingMovable.getPos())) { // exchange positions
+				} else if (pushingMovable.getMovableType().isPlayerControllable()
+						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, true);

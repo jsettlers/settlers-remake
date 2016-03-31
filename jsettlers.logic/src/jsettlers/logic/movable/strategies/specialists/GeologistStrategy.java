@@ -126,7 +126,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean canBeControlledByPlayer() {
 		return true;
 	}
 

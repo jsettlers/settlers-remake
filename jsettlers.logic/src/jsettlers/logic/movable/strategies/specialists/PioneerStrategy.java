@@ -119,7 +119,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean canBeControlledByPlayer() {
 		return true;
 	}
 

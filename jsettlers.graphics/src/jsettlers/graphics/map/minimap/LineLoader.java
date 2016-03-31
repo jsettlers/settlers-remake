@@ -191,13 +191,14 @@ class LineLoader implements Runnable {
 		short settlerColor = TRANSPARENT;
 		short buildingColor = TRANSPARENT;
 
-		for (int y = mapminY; y < mapmaxY && (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); y++) {
+		for (int y = mapminY; y < mapmaxY
+				&& (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); y++) {
 			for (int x = mapminX; x < mapmaxX
 					&& (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); x++) {
 				boolean visible = map.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED;
 				if (visible && displaySettlers != SettlersMode.NONE) {
 					IMovable settler = map.getMovableAt(x, y);
-					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isMoveToAble())) {
+					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isPlayerControllable())) {
 						settlerColor = context.getPlayerColor(settler.getPlayerId()).toShortColor(1);
 						// don't search any more.
 						displaySettlers = SettlersMode.NONE;
