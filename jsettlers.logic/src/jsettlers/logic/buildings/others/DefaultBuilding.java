@@ -16,7 +16,6 @@ package jsettlers.logic.buildings.others;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
 
@@ -36,10 +35,6 @@ public final class DefaultBuilding extends Building {
 	@Override
 	public boolean isOccupied() {
 		return true;
-	}
-
-	@Override
-	protected void placedAtEvent(ShortPoint2D pos) {
 	}
 
 	@Override

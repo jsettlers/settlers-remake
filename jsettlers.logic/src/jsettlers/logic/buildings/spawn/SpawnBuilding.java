@@ -17,7 +17,6 @@ package jsettlers.logic.buildings.spawn;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
@@ -78,10 +77,6 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract EMovableType getMovableType();
 
 	protected abstract byte getProduceLimit();
-
-	@Override
-	protected void placedAtEvent(ShortPoint2D pos) {
-	}
 
 	@Override
 	public final boolean isOccupied() {

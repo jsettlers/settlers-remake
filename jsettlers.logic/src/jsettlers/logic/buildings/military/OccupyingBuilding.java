@@ -203,10 +203,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected void placedAtEvent(ShortPoint2D pos) {
-	}
-
-	@Override
 	protected final void killedEvent() {
 		setSelected(false);
 
