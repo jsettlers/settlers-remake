@@ -48,7 +48,7 @@ public class Messenger {
 	}
 
 	public void removeOld() {
-		while ((messages.size() > 0)
+		while (!messages.isEmpty()
 				&& (messages.getLast().getAge() > Message.MESSAGE_TTL))
 			messages.removeLast();
 	}
