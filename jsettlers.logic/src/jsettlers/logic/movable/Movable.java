@@ -78,7 +78,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private ShortPoint2D position;
 
-	private ShortPoint2D targetPosition = null;
+	private ShortPoint2D requestedTargetPosition = null;
 	private Path path;
 
 	private float health;
@@ -133,8 +133,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isAbleToMove()) {
-			this.targetPosition = targetPosition;
+		if (movableType.isUserControlled() && strategy.isUserControlled()) {
+			this.requestedTargetPosition = targetPosition;
 		}
 	}
 
@@ -204,8 +204,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			break;
 		}
 
-		if (targetPosition != null) {
-			if (strategy.isAbleToMove()) {
+		if (requestedTargetPosition != null) {
+			if (strategy.isUserControlled()) {
 				switch (state) {
 				case PATHING:
 					// if we're currently pathing, stop former pathing and calculate a new path
@@ -216,8 +216,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				case DOING_NOTHING:
 					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
 					ShortPoint2D oldPos = position;
-					boolean foundPath = goToPos(targetPosition); // progress is reset in here
-					targetPosition = null;
+					boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
+					requestedTargetPosition = null;
 
 					if (foundPath) {
 						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
@@ -230,7 +230,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 					break;
 				}
 			} else {
-				targetPosition = null;
+				requestedTargetPosition = null;
 			}
 		}
 
@@ -411,8 +411,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
-				} else if (pushingMovable.getMovableType().isMoveToAble() || strategy.isValidPosition(pushingMovable.getPos())) { // exchange
-																																	// positions
+				} else if (pushingMovable.getMovableType().isUserControlled() || strategy.isValidPosition(pushingMovable.getPos())) { // exchange
+																																		// positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, true);
@@ -874,7 +874,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public final boolean isAttackable() {
-		return movableType.isMoveToAble();
+		return movableType.isUserControlled();
 	}
 
 	/**

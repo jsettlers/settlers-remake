@@ -97,6 +97,9 @@ public enum EMovableType {
 	private static final Set<EMovableType> pikemen = EnumSet.of(
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
+	private static final Set<EMovableType> bowmen = EnumSet.of(
+			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
+
 	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
 		this(tool, selectionType, needsPlayersGround, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
 	}
@@ -136,16 +139,16 @@ public enum EMovableType {
 		return health;
 	}
 
-	public final boolean isMoveToAble() {
+	public final boolean isUserControlled() {
 		return !needsPlayersGround;
-	}
-
-	public static boolean isBowman(EMovableType movableType) {
-		return movableType.getTool() == EMaterialType.BOW;
 	}
 
 	public short getStepDurationMs() {
 		return stepDurationMs;
+	}
+
+	public static boolean isBowman(EMovableType movableType) {
+		return bowmen.contains(movableType);
 	}
 
 	public static boolean isSoldier(EMovableType movableType) {
