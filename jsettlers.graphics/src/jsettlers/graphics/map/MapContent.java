@@ -98,7 +98,6 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
-	private static final int MAX_MESSAGES = 10;
 	private static final float MESSAGE_OFFSET_X = 300;
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final int MESSAGE_LINEHIEGHT = 18;
