@@ -322,7 +322,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					break;
 				}
 			}
-			drawer.setColor(1, 1, 1, 1);
 		}
 	}
 
