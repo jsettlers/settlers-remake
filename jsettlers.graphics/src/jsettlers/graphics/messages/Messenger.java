@@ -54,9 +54,6 @@ public class Messenger {
 	}
 
 	boolean isNews(Message msg) {
-		if (messages.isEmpty()) {
-			return true;
-		}
 		for (Message m : messages) {
 			if (msg.duplicates(m)) {
 				return false;
