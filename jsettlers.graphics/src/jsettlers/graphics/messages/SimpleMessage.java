@@ -66,6 +66,25 @@ public class SimpleMessage implements Message {
 		return pos;
 	}
 
+	@Override
+	public boolean duplicates(Message m) {
+		if ((m.getSender() == this.sender)
+				&& m.getMessage().equals(this.message)
+				&& m.getType() == this.type) {
+			if (m.getAge() < MESSAGE_TTL / 6) {
+				if ((this.type == EMessageType.ATTACKED)
+						|| (this.type == EMessageType.MINERALS)) {
+					if (this.pos.getOnGridDistTo(m.getPosition())
+							< MESSAGE_DIST_THRESHOLD) {
+						return true;
+					}
+				} else if (this.pos.equals(m.getPosition()))
+					return true;
+			}
+		}
+		return false;
+	}
+
 	public static Message attacked(byte otherplayer, ShortPoint2D pos) {
 		String message = Labels.getString("attacked");
 		return new SimpleMessage(EMessageType.ATTACKED, message, otherplayer,

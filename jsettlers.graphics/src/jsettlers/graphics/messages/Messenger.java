@@ -23,18 +23,6 @@ import java.util.List;
  * @author michael
  */
 public class Messenger {
-	/**
-	 * Number of messages that queue can hold at largest.
-	 */
-	public static final int MAX_MESSAGES = 16;
-	/**
-	 * Longest duration for which messages should remain in queue, in milliseconds.
-	 */
-	public static final long MESSAGE_TTL = 90000;
-	/**
-	 * Map grid distance beyond which two messages should be considered sufficiently different to be prompted separately.
-	 */
-	public static final int MESSAGE_DIST_THRESHOLD = 24;
 
 	LinkedList<Message> messages = new LinkedList<Message>();
 
@@ -52,7 +40,7 @@ public class Messenger {
 	public boolean addMessage(Message message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
-			if (messages.size() > MAX_MESSAGES)
+			if (messages.size() > Message.MAX_MESSAGES)
 				messages.removeLast();
 			return true;
 		}
@@ -60,9 +48,9 @@ public class Messenger {
 	}
 
 	public void removeOld() {
-		for (; (messages.size() > 0)
-				&& (messages.getLast().getAge()>MESSAGE_TTL);
-				messages.removeLast());
+		while ((messages.size() > 0)
+				&& (messages.getLast().getAge() > Message.MESSAGE_TTL))
+			messages.removeLast();
 	}
 
 	boolean isNews(Message msg) {
@@ -70,19 +58,8 @@ public class Messenger {
 			return true;
 		}
 		for (Message m : messages) {
-			if ((m.getSender() == msg.getSender())
-					&& m.getMessage().equals(msg.getMessage())
-					&& m.getType() == msg.getType()) {
-				if (m.getAge() < MESSAGE_TTL / 6) {
-					if ((msg.getType() == EMessageType.ATTACKED)
-							|| (msg.getType() == EMessageType.MINERALS)) {
-						if (msg.getPosition().getOnGridDistTo(m.getPosition()) 
-								< MESSAGE_DIST_THRESHOLD) {
-							return false;
-						}
-					} else if (msg.getPosition().equals(m.getPosition()))
-						return false;
-				}
+			if (msg.duplicates(m)) {
+				return false;
 			}
 		}
 		return true;

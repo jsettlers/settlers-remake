@@ -279,9 +279,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private float messageAlpha(Message m) {
 		return (m.getAge() < 5000) ?
 			(m.getAge() < 1500
-				? (m.getAge()/250) % 2 : 1)
+				? (m.getAge() / 250) % 2 : 1)
 				: Math.max(0,
-					1f-(float)m.getAge()/Messenger.MESSAGE_TTL);
+					1f - (float)m.getAge() / Message.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -318,7 +318,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;
-				if (messageIndex >= Messenger.MAX_MESSAGES) {
+				if (messageIndex >= Message.MAX_MESSAGES) {
 					break;
 				}
 			}
