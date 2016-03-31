@@ -276,11 +276,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private float messageAlpha(Message m) {
-		return (m.getAge() < 5000) ?
-			(m.getAge() < 1500
-				? (m.getAge() / 250) % 2 : 1)
+		int age = (int) m.getAge();
+		return (age < 5000) ?
+			(age < 1500
+				? (age / 250) % 2 : 1)
 				: Math.max(0,
-					1f - (float)m.getAge() / Message.MESSAGE_TTL);
+					1f - (float)age / Message.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {

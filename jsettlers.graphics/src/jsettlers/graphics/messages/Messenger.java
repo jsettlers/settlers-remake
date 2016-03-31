@@ -48,9 +48,9 @@ public class Messenger {
 	}
 
 	public void removeOld() {
-		while (!messages.isEmpty()
-				&& (messages.getLast().getAge() > Message.MESSAGE_TTL))
-			messages.removeLast();
+		for (Message m : messages)
+			if (m.getAge() > Message.MESSAGE_TTL)
+				while (!messages.pollLast().equals(m));
 	}
 
 	boolean isNews(Message msg) {
