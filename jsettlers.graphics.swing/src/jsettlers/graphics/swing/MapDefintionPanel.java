@@ -33,7 +33,7 @@ public class MapDefintionPanel extends JPanel {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd HH:mm");
 
 	/**
-	 * Create the panel.
+	 * Create a panel with fake content.
 	 */
 	public MapDefintionPanel() {
 		this("map name", "additional info", new Date(), true);
