@@ -33,7 +33,7 @@ import jsettlers.main.swing.lookandfeel.DrawHelper;
  *
  * @author Andreas Butti
  */
-public class ButtonUiStoneOriginalBg extends BasicButtonUI {
+public class ButtonUiStoneOriginalBackground extends BasicButtonUI {
 
 	/**
 	 * Background Image
@@ -48,16 +48,16 @@ public class ButtonUiStoneOriginalBg extends BasicButtonUI {
 	/**
 	 * Constructor
 	 */
-	public ButtonUiStoneOriginalBg() {
-		ImageProvider prv = ImageProvider.getInstance();
-		backgroundImage = prv.getGuiImage(3, 326).generateBufferedImage();
-		backgroundPressedImage = prv.getGuiImage(3, 329).generateBufferedImage();
+	public ButtonUiStoneOriginalBackground() {
+		ImageProvider imageProvider = ImageProvider.getInstance();
+		backgroundImage = imageProvider.getGuiImage(3, 326).generateBufferedImage();
+		backgroundPressedImage = imageProvider.getGuiImage(3, 329).generateBufferedImage();
 	}
 
 	@Override
-	public void installDefaults(AbstractButton b) {
-		b.setFont(UIDefaults.FONT);
-		b.setForeground(UIDefaults.LABEL_TEXT_COLOR);
+	public void installDefaults(AbstractButton button) {
+		button.setFont(UIDefaults.FONT);
+		button.setForeground(UIDefaults.LABEL_TEXT_COLOR);
 	}
 
 	@Override

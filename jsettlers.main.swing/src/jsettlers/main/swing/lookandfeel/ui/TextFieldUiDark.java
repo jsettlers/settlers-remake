@@ -27,12 +27,6 @@ import javax.swing.text.JTextComponent;
  */
 public class TextFieldUiDark extends MetalTextFieldUI {
 
-	/**
-	 * Constructor
-	 */
-	public TextFieldUiDark() {
-	}
-
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
@@ -56,5 +50,4 @@ public class TextFieldUiDark extends MetalTextFieldUI {
 	protected void paintBackground(Graphics g) {
 		TextComponentHelper.paintBackground(g, getComponent());
 	}
-
 }

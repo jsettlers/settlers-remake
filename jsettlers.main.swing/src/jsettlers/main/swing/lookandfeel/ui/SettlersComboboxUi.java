@@ -29,12 +29,12 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
  * 
  * @author Andreas Butti
  */
-public class SettlerComboboxUi extends BasicComboBoxUI {
+public class SettlersComboboxUi extends BasicComboBoxUI {
 
 	/**
-	 * Renderer
+	 * Renderer of list cells
 	 */
-	private static class SettlerListCellRenderer extends BasicSettlerListCellRenderer<Object> {
+	private static class SettlersListCellRenderer extends BasicSettlerListCellRenderer<Object> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -43,19 +43,12 @@ public class SettlerComboboxUi extends BasicComboBoxUI {
 		}
 	}
 
-	/**
-	 * Constructor
-	 */
-	public SettlerComboboxUi() {
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
 		c.setOpaque(false);
 
-		((JComboBox<Object>) c).setRenderer(new SettlerListCellRenderer());
+		((JComboBox<?>) c).setRenderer(new SettlersListCellRenderer());
 		c.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 	}
 

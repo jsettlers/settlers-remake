@@ -32,9 +32,6 @@ public class BorderDrawer {
 	 */
 	private static final int CORNER_LENGTH = 26;
 
-	/**
-	 * Padding to the outer border
-	 */
 	private static final int PADDING = 20;
 
 	private static final int SHADOW_OFFSET_X = 2;
@@ -60,24 +57,9 @@ public class BorderDrawer {
 	 */
 	private Stroke originalStroke;
 
-	/**
-	 * Start x position
-	 */
 	private int x1;
-
-	/**
-	 * Start y position
-	 */
 	private int y1;
-
-	/**
-	 * End x position
-	 */
 	private int x2;
-
-	/**
-	 * End y position
-	 */
 	private int y2;
 
 	/**
@@ -144,15 +126,10 @@ public class BorderDrawer {
 
 		// draw shadow
 		graphics.setColor(new Color(0, 0, 0, 150));
-		y1 += SHADOW_OFFSET_Y;
-		y2 += SHADOW_OFFSET_Y;
-		drawVertical0(x + SHADOW_OFFSET_X, right);
-
-		y1 -= SHADOW_OFFSET_Y;
-		y2 -= SHADOW_OFFSET_Y;
+		drawVertical0(x + SHADOW_OFFSET_X, y1 + SHADOW_OFFSET_Y, y2 + SHADOW_OFFSET_Y, right);
 
 		graphics.setPaint(paint);
-		drawVertical0(x, right);
+		drawVertical0(x, y1, y2, right);
 
 		resetGraphics();
 	}
@@ -165,7 +142,7 @@ public class BorderDrawer {
 	 * @param right
 	 *            Draw the end to the right or the left side
 	 */
-	private void drawVertical0(int x, boolean right) {
+	private void drawVertical0(int x, int y1, int y2, boolean right) {
 		int cl2 = CORNER_LENGTH / 2;
 		int yA = y1 + cl2 + PADDING;
 		int yB = y2 - cl2 - PADDING;
@@ -200,16 +177,12 @@ public class BorderDrawer {
 	/**
 	 * Internal draw rect, without initialize graphics
 	 */
-	private void drawRect0() {
-		// top
-		drawHorizontal(y1 + PADDING);
-		// bottom
-		drawHorizontal(y2 - PADDING);
+	private void drawRectInternal(int x1, int y1, int x2, int y2) {
+		drawHorizontal(y1 + PADDING); // top
+		drawHorizontal(y2 - PADDING); // bottom
 
-		// left
-		drawVertical0(x1 + PADDING, false);
-		// right
-		drawVertical0(x2 - PADDING, true);
+		drawVertical0(x1 + PADDING, y1, y2, false); // left
+		drawVertical0(x2 - PADDING, y1, y2, true); // right
 	}
 
 	/**
@@ -220,19 +193,10 @@ public class BorderDrawer {
 
 		// draw shadow
 		graphics.setColor(new Color(0, 0, 0, 150));
-		x1 += SHADOW_OFFSET_X;
-		x2 += SHADOW_OFFSET_X;
-		y1 += SHADOW_OFFSET_Y;
-		y2 += SHADOW_OFFSET_Y;
-		drawRect0();
-
-		x1 -= SHADOW_OFFSET_X;
-		x2 -= SHADOW_OFFSET_X;
-		y1 -= SHADOW_OFFSET_Y;
-		y2 -= SHADOW_OFFSET_Y;
+		drawRectInternal(x1 += SHADOW_OFFSET_X, y1 += SHADOW_OFFSET_Y, x2 += SHADOW_OFFSET_X, y2 += SHADOW_OFFSET_Y);
 
 		graphics.setPaint(paint);
-		drawRect0();
+		drawRectInternal(x1, y1, x2, y2);
 
 		resetGraphics();
 	}
@@ -249,9 +213,6 @@ public class BorderDrawer {
 	 */
 	private void initGraphics() {
 		this.originalStroke = graphics.getStroke();
-
 		graphics.setStroke(new BasicStroke(lineWidth));
-
 	}
-
 }

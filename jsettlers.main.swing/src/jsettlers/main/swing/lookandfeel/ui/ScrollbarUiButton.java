@@ -118,7 +118,6 @@ public class ScrollbarUiButton extends JButton implements SwingConstants {
 	 *            {@code SwingConstants.EAST} or {@code SwingConstants.WEST}
 	 */
 	public void paintTriangle(Graphics g, int x, int y, int size, int direction) {
-		int j = 0;
 		size = Math.max(size, 2);
 		int mid = (size / 2) - 1;
 
@@ -132,10 +131,8 @@ public class ScrollbarUiButton extends JButton implements SwingConstants {
 			}
 			break;
 		case SOUTH:
-			j = 0;
-			for (int i = size - 1; i >= 0; i--) {
+			for (int i = size - 1, j = 0; i >= 0; i--, j++) {
 				g.drawLine(mid - i, j, mid + i, j);
-				j++;
 			}
 			break;
 		case WEST:
@@ -144,14 +141,11 @@ public class ScrollbarUiButton extends JButton implements SwingConstants {
 			}
 			break;
 		case EAST:
-			j = 0;
-			for (int i = size - 1; i >= 0; i--) {
+			for (int i = size - 1, j = 0; i >= 0; i--, j++) {
 				g.drawLine(j, mid - i, j, mid + i);
-				j++;
 			}
 			break;
 		}
 		g.translate(-x, -y);
 	}
-
 }

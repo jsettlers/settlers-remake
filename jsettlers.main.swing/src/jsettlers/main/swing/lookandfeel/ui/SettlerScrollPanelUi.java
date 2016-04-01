@@ -27,12 +27,6 @@ import javax.swing.plaf.metal.MetalScrollPaneUI;
  */
 public class SettlerScrollPanelUi extends MetalScrollPaneUI {
 
-	/**
-	 * Constructor
-	 */
-	public SettlerScrollPanelUi() {
-	}
-
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);

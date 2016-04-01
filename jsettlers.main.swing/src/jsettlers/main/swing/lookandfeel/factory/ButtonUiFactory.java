@@ -20,7 +20,7 @@ import javax.swing.plaf.ComponentUI;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.ui.BorderButton;
 import jsettlers.main.swing.lookandfeel.ui.ButtonUiStone;
-import jsettlers.main.swing.lookandfeel.ui.ButtonUiStoneOriginalBg;
+import jsettlers.main.swing.lookandfeel.ui.ButtonUiStoneOriginalBackground;
 
 /**
  * Button UI factory
@@ -42,7 +42,7 @@ public final class ButtonUiFactory {
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	static final ButtonUiStoneOriginalBg MENU_UI = new ButtonUiStoneOriginalBg();
+	static final ButtonUiStoneOriginalBackground MENU_UI = new ButtonUiStoneOriginalBackground();
 
 	/**
 	 * This is only a factory so no objects need to be created.

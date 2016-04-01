@@ -37,6 +37,9 @@ import sun.swing.SwingUtilities2;
  */
 public class ButtonUiStone extends BasicToggleButtonUI {
 
+	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET = "ButtonUiStone.randomBackgroundXOffset";
+	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET = "ButtonUiStone.randomBackgroundYOffset";
+
 	/**
 	 * Background Image
 	 */
@@ -80,50 +83,46 @@ public class ButtonUiStone extends BasicToggleButtonUI {
 	}
 
 	@Override
-	public void update(Graphics g, JComponent c) {
-		int w = c.getWidth();
-		int h = c.getHeight();
+	public void update(Graphics graphics, JComponent component) {
+		int width = component.getWidth();
+		int height = component.getHeight();
 
-		Integer sx0 = (Integer) c.getClientProperty("ButtonUiStone.bgx");
-		Integer sy0 = (Integer) c.getClientProperty("ButtonUiStone.bgy");
+		Integer randomBackgroundXOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET);
+		Integer randomBackgroundYOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET);
 
-		if (sx0 == null || sy0 == null) {
-			sx0 = (int) Math.random() * backgroundImage.getWidth();
-			sy0 = (int) Math.random() * backgroundImage.getHeight();
-			c.putClientProperty("ButtonUiStone.bgx", sx0);
-			c.putClientProperty("ButtonUiStone.bgy", sy0);
+		if (randomBackgroundXOffset == null || randomBackgroundYOffset == null) {
+			randomBackgroundXOffset = (int) (Math.random() * backgroundImage.getWidth());
+			randomBackgroundYOffset = (int) (Math.random() * backgroundImage.getHeight());
+			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET, randomBackgroundXOffset);
+			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET, randomBackgroundYOffset);
 		}
 
-		int sx1 = sx0;
-		int sy1 = sy0;
-
-		for (int x = sx1; x < c.getWidth(); x += backgroundImage.getWidth()) {
-			for (int y = sy1; y < c.getWidth(); y += backgroundImage.getHeight()) {
-				g.drawImage(backgroundImage, x, y, c);
+		for (int x = -randomBackgroundXOffset; x < component.getWidth(); x += backgroundImage.getWidth()) {
+			for (int y = -randomBackgroundYOffset; y < component.getHeight(); y += backgroundImage.getHeight()) {
+				graphics.drawImage(backgroundImage, x, y, component);
 			}
 		}
 
 		boolean down;
-		if (c instanceof JToggleButton) {
-			down = ((JToggleButton) c).isSelected();
+		if (component instanceof JToggleButton) {
+			down = ((JToggleButton) component).isSelected();
 		} else {
-			down = false;
-			AbstractButton b = (AbstractButton) c;
+			AbstractButton b = (AbstractButton) component;
 			ButtonModel model = b.getModel();
 			down = model.isArmed() && model.isPressed();
 		}
 
 		if (down) {
-			c.setBorder(borderDown);
-			g.setColor(new Color(0, 0, 0, 90));
-			g.fillRect(2, 2, w - 4, h - 4);
+			component.setBorder(borderDown);
+			graphics.setColor(new Color(0, 0, 0, 90));
+			graphics.fillRect(2, 2, width - 4, height - 4);
 			shiftOffset = 1;
 		} else {
-			c.setBorder(borderUp);
+			component.setBorder(borderUp);
 			shiftOffset = 0;
 		}
 
-		super.update(g, c);
+		super.update(graphics, component);
 	}
 
 	@Override

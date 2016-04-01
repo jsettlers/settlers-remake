@@ -18,8 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.main.swing.lookandfeel.ELFStyle;
-import jsettlers.main.swing.lookandfeel.ui.SettlerLabelDynamicUi;
-import jsettlers.main.swing.lookandfeel.ui.SettlerLabelUi;
+import jsettlers.main.swing.lookandfeel.ui.SettlersDynamicLabelUi;
+import jsettlers.main.swing.lookandfeel.ui.SettlersLabelUi;
 import jsettlers.main.swing.lookandfeel.ui.UIDefaults;
 
 /**
@@ -37,22 +37,22 @@ public final class LabelUiFactory {
 	/**
 	 * Header Label
 	 */
-	private static final SettlerLabelUi headerLabel = new SettlerLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
+	private static final SettlersLabelUi headerLabel = new SettlersLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
 	 * Label short
 	 */
-	private static final SettlerLabelUi labelShort = new SettlerLabelUi(UIDefaults.LABEL_TEXT_COLOR, 19, 324, 122, 26);
+	private static final SettlersLabelUi labelShort = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 19, 324, 122, 26);
 
 	/**
 	 * Label long
 	 */
-	private static final SettlerLabelUi labelLong = new SettlerLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
+	private static final SettlersLabelUi labelLong = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
 	 * Label long
 	 */
-	private static final SettlerLabelDynamicUi labelDynamic = new SettlerLabelDynamicUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
+	private static final SettlersDynamicLabelUi labelDynamic = new SettlersDynamicLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
 
 	/**
 	 * This is only a factory so no objects need to be created.

@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.main.swing.lookandfeel.ELFStyle;
-import jsettlers.main.swing.lookandfeel.ui.SettlerComboboxUi;
+import jsettlers.main.swing.lookandfeel.ui.SettlersComboboxUi;
 
 /**
  * Combobox UI factory
@@ -47,7 +47,7 @@ public final class ComboboxUiFactory {
 	 */
 	public static ComponentUI createUI(JComponent c) {
 		if (ELFStyle.COMBOBOX == c.getClientProperty(ELFStyle.KEY)) {
-			return new SettlerComboboxUi();
+			return new SettlersComboboxUi();
 		}
 		return FORWARD.create(c);
 	}

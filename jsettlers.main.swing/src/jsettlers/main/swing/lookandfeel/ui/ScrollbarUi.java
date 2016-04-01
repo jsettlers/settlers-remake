@@ -83,7 +83,7 @@ public class ScrollbarUi extends BasicScrollBarUI {
 		if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
 			return new Dimension(scrollBarWidth, scrollBarWidth * 3 + 10);
 		} else { // Horizontal
-			return new Dimension(scrollBarWidth * 3 + 10, scrollBarWidth);
+			return new Dimension(scrollBarWidth * 3 + 10, scrollBarWidth); // WAT?????????????????? zwei mal width
 		}
 	}
 

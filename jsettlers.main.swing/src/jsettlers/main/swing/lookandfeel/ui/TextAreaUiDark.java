@@ -27,12 +27,6 @@ import javax.swing.text.JTextComponent;
  */
 public class TextAreaUiDark extends BasicTextAreaUI {
 
-	/**
-	 * Constructor
-	 */
-	public TextAreaUiDark() {
-	}
-
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
@@ -56,5 +50,4 @@ public class TextAreaUiDark extends BasicTextAreaUI {
 	protected void paintBackground(Graphics g) {
 		TextComponentHelper.paintBackground(g, getComponent());
 	}
-
 }

@@ -87,5 +87,4 @@ public final class TextComponentHelper {
 		g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
 		g.fillRect(0, 0, editor.getWidth(), editor.getHeight());
 	}
-
 }

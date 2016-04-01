@@ -60,5 +60,4 @@ public class SettlerProgressbar extends BasicProgressBarUI {
 	protected Color getSelectionBackground() {
 		return Color.WHITE;
 	}
-
 }
