@@ -26,6 +26,7 @@ import javax.swing.JToggleButton;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.swing.utils.ImageUtils;
 import jsettlers.main.swing.lookandfeel.DrawHelper;
 
 /**
@@ -50,8 +51,8 @@ public class ButtonUiStoneOriginalBackground extends BasicButtonUI {
 	 */
 	public ButtonUiStoneOriginalBackground() {
 		ImageProvider imageProvider = ImageProvider.getInstance();
-		backgroundImage = imageProvider.getGuiImage(3, 326).generateBufferedImage();
-		backgroundPressedImage = imageProvider.getGuiImage(3, 329).generateBufferedImage();
+		backgroundImage = ImageUtils.convertToBufferedImage(imageProvider.getGuiImage(3, 326));
+		backgroundPressedImage = ImageUtils.convertToBufferedImage(imageProvider.getGuiImage(3, 329));
 	}
 
 	@Override

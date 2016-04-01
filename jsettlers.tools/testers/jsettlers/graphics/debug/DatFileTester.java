@@ -14,15 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -32,6 +23,16 @@ import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import jsettlers.common.Color;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
@@ -42,6 +43,7 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.swing.utils.ImageUtils;
 
 public class DatFileTester {
 	private static final DatFileType TYPE = DatFileType.RGB555;
@@ -382,7 +384,7 @@ public class DatFileTester {
 
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		BufferedImage rendered = image.generateBufferedImage();
+		BufferedImage rendered = ImageUtils.convertToBufferedImage(image);
 		if (rendered == null) {
 			return;
 		}

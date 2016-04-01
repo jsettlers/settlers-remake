@@ -25,6 +25,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicLabelUI;
 
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.swing.utils.ImageUtils;
 
 /**
  * Label UI, with different stylings
@@ -55,7 +56,7 @@ public class SettlersLabelUi extends BasicLabelUI {
 	public SettlersLabelUi(Color foregroundColor, int x, int y, int width, int heigth) {
 		this.foregroundColor = foregroundColor;
 		ImageProvider prv = ImageProvider.getInstance();
-		BufferedImage img = prv.getGuiImage(2, 13).generateBufferedImage();
+		BufferedImage img = ImageUtils.convertToBufferedImage(prv.getGuiImage(2, 13));
 
 		backgroundImage = img.getSubimage(x, y, width, heigth);
 	}
