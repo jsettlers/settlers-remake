@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.datatypes;
 
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
+import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.network.common.packets.PlayerInfoPacket;
 
 /**

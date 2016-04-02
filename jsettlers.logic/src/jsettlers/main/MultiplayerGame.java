@@ -17,17 +17,18 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.menu.ENetworkMessage;
+import jsettlers.common.menu.IChatMessageListener;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IJoiningGameListener;
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IMultiplayerListener;
+import jsettlers.common.menu.IMultiplayerPlayer;
+import jsettlers.common.menu.IOpenMultiplayerGameInfo;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
-import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
-import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
@@ -144,13 +145,13 @@ public class MultiplayerGame {
 
 		byte i = 0;
 		for (; i < playersList.getItems().size(); i++) {
-			playerSettings[i] = new PlayerSetting(true);
+			playerSettings[i] = new PlayerSetting(true, i);
 		}
 
-		EWhatToDoAiType aiType = iAmTheHost ? EWhatToDoAiType.ROMAN_VERY_HARD : null;
+		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : EPlayerType.HUMAN;
 
 		for (; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, aiType);
+			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN, i);
 		}
 
 		return playerSettings;

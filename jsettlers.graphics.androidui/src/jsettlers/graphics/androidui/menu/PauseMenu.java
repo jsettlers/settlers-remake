@@ -15,8 +15,8 @@
 package jsettlers.graphics.androidui.menu;
 
 import go.graphics.UIPoint;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.androidui.R;
 import android.os.Bundle;
 import android.view.LayoutInflater;

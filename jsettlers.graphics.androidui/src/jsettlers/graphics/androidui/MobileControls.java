@@ -14,18 +14,20 @@
  *******************************************************************************/
 package jsettlers.graphics.androidui;
 
+import android.os.Handler;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.androidui.actions.ConstructBuilding;
@@ -37,7 +39,6 @@ import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.PauseMenu;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import android.os.Handler;
 
 /**
  * This is the main navigation and menu circle.
@@ -135,8 +136,8 @@ public class MobileControls implements IControls, ContextActionListener {
 	}
 
 	@Override
-	public Action replaceAction(Action action) {
-		Action replaced = action;
+	public IAction replaceAction(IAction action) {
+		IAction replaced = action;
 		synchronized (activeActionMutex) {
 			if (activeAction != null) {
 				replaced = activeAction.replaceAction(replaced);
@@ -166,7 +167,7 @@ public class MobileControls implements IControls, ContextActionListener {
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(IAction action) {
 		if (action.getActionType() == EActionType.SPEED_SET_PAUSE) {
 			setActiveMenu(pauseMenu);
 		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE

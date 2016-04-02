@@ -1,0 +1,5 @@
+== License information ==
+
+Texture for the yellow borders. Painted for JSettlers by Andreas Butti
+
+Same license as JSettlers

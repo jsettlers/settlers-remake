@@ -17,8 +17,8 @@ package jsettlers.main.android.maplist;
 import java.util.Comparator;
 import java.util.List;
 
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import android.view.LayoutInflater;
 
 public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListAdapter<T> {

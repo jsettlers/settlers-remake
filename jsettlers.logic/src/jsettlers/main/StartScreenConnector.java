@@ -14,12 +14,12 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartScreen;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.Player;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;

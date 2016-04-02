@@ -23,9 +23,10 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.map.UIState;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
+import jsettlers.common.menu.ILoadableMapPlayer;
+import jsettlers.common.menu.UIState;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IListedMap;
@@ -42,7 +43,7 @@ public class OriginalMapLoader extends MapLoader {
 	private final Date creationDate;
 	private final String fileName;
 	private Boolean isMapOK = false;
-	
+
 	public OriginalMapLoader(IListedMap listedMap) throws IOException {
 		this.listedMap = listedMap;
 		fileName = listedMap.getFileName();
@@ -58,14 +59,14 @@ public class OriginalMapLoader extends MapLoader {
 
 		// - read all important information from file
 		if (!mapContent.loadMapResources()) {
-				System.out.println("Unable to open original map (" + fileName + ")!");
-				return;
+			System.out.println("Unable to open original map (" + fileName + ")!");
+			return;
 		}
 		mapContent.readBasicMapInformation(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);
 
 		// - free the DataBuffer
 		mapContent.freeBuffer();
-		
+
 		isMapOK = true;
 	}
 
@@ -76,16 +77,16 @@ public class OriginalMapLoader extends MapLoader {
 	public MapFileHeader getFileHeader() {
 		if (isMapOK) {
 			return new MapFileHeader(
-				MapFileHeader.MapType.NORMAL,
-				getMapName(),
-				getMapId(),
-				getDescription(),
-				(short) mapContent.widthHeight,
-				(short) mapContent.widthHeight,
-				(short) getMinPlayers(),
-				(short) getMaxPlayers(),
-				getCreationDate(),
-				getImage());
+					MapFileHeader.MapType.NORMAL,
+					getMapName(),
+					getMapId(),
+					getDescription(),
+					(short) mapContent.widthHeight,
+					(short) mapContent.widthHeight,
+					(short) getMinPlayers(),
+					(short) getMaxPlayers(),
+					getCreationDate(),
+					getImage());
 		}
 		return null;
 	}
@@ -100,9 +101,10 @@ public class OriginalMapLoader extends MapLoader {
 	// ------------------------------//
 	@Override
 	public String getMapName() {
-		//- remove the extension {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
-		if (fileName == null) return "";
-		
+		// - remove the extension {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
+		if (fileName == null)
+			return "";
+
 		int pos = fileName.lastIndexOf('.');
 		if (pos >= 0) {
 			return fileName.substring(0, pos).replace('_', ' ');
@@ -133,7 +135,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		return mapContent.getPreviewImage();	
+		return mapContent.getPreviewImage();
 	}
 
 	@Override
@@ -152,6 +154,11 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
+		return loadMainGrid(playerSettings, EMapStartResources.HIGH_GOODS);
+	}
+
+	@Override
+	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 
 		try {
@@ -160,7 +167,6 @@ public class OriginalMapLoader extends MapLoader {
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 		}
-		
 
 		// - load all common map information
 		if (!mapContent.loadMapResources()) {
@@ -178,7 +184,7 @@ public class OriginalMapLoader extends MapLoader {
 		// - read the buildings
 		mapContent.readBuildings();
 		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers();
+		mapContent.addStartTowerMaterialsAndSettlers(startResources);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();
@@ -191,7 +197,7 @@ public class OriginalMapLoader extends MapLoader {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true, null);
+				playerSettings[i] = new PlayerSetting(true, (byte) i);
 			}
 		}
 
@@ -215,13 +221,13 @@ public class OriginalMapLoader extends MapLoader {
 		} catch (Exception e) {
 			throw new MapLoadException(e);
 		}
-		
+
 		// - load all common map information
 		if (!mapContent.loadMapResources()) {
 			System.out.println("Unable to open original map (" + fileName + ")!");
 			throw new MapLoadException();
 		}
-		
+
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
@@ -233,7 +239,7 @@ public class OriginalMapLoader extends MapLoader {
 		// - read the buildings
 		mapContent.readBuildings();
 		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers();
+		mapContent.addStartTowerMaterialsAndSettlers(EMapStartResources.HIGH_GOODS);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();

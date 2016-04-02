@@ -17,8 +17,8 @@ package jsettlers.mapcreator.main.action;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 
 /**
@@ -36,7 +36,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	/**
 	 * Queue
 	 */
-	private BlockingQueue<Action> toFire = new LinkedBlockingQueue<Action>();
+	private final BlockingQueue<IAction> toFire = new LinkedBlockingQueue<IAction>();
 
 	/**
 	 * Target
@@ -83,9 +83,8 @@ public class CombiningActionFirerer implements ActionFireable {
 	 * @throws InterruptedException
 	 */
 	protected void forwardSingleAction() throws InterruptedException {
-		Action action = toFire.take();
-		if (action instanceof DrawLineAction
-				&& toFire.peek() instanceof DrawLineAction) {
+		IAction action = toFire.take();
+		if (action instanceof DrawLineAction && toFire.peek() instanceof DrawLineAction) {
 			ShortPoint2D start = ((DrawLineAction) action).getStart();
 			ShortPoint2D end = ((DrawLineAction) action).getEnd();
 			double uidy = ((DrawLineAction) action).getUidy();
@@ -100,7 +99,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	}
 
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 		toFire.offer(action);
 	}
 

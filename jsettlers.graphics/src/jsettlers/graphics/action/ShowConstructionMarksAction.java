@@ -1,6 +1,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * Instructs the logic to compute and display the constructions mark for the given building.

@@ -14,36 +14,26 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
-import go.graphics.area.Area;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
-import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
@@ -52,46 +42,54 @@ import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
-import jsettlers.main.StartScreenConnector;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
- * 
+ * @author codingberlin
  * @author Andreas Eberle
- * @author michael
  */
 public class SwingManagedJSettlers {
 	static {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
 
-	/**
-	 * @param args
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws MapLoadException
-	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
-		// UI will be changed later with the new Swing implementation, but will also be based on Nimbus
-		try {
-			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (Exception e) {
+	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
+		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
+		loadOptionalSettings(optionableProperties);
+		SwingManagedJSettlers.setupResourceManagers(optionableProperties, "config.prp");
+
+		JSettlersFrame settlersFrame = createJSettlersFrame();
+		handleStartOptions(optionableProperties, settlersFrame);
+	}
+
+	public static void loadOptionalSettings(OptionableProperties options) {
+		CommonConstants.CONTROL_ALL = options.isOptionSet("control-all");
+		CommonConstants.ACTIVATE_ALL_PLAYERS = options.isOptionSet("activate-all-players");
+		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
+		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
+		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
+		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
+
+		if (options.containsKey("fixed-ai-type")) {
+			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
 		}
 
-		OptionableProperties options = MainUtils.loadOptions(args);
+		if (options.isOptionSet("localhost")) {
+			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
+		}
 
-		loadOptionalSettings(options);
-		setupResourceManagers(options, "config.prp");
-
-		JSettlersScreen content = startGui();
-		generateContent(options, content);
+		if (options.containsKey("locale")) {
+			String localeString = options.getProperty("locale");
+			String[] localeParts = localeString.split("_");
+			if (localeParts.length == 2) {
+				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
+			} else {
+				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
+			}
+		}
 	}
 
 	/**
@@ -106,12 +104,12 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 */
 	public static void setupResourceManagers(OptionableProperties options, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigFileName);
+		ConfigurationPropertiesFile configFile = SwingManagedJSettlers.getConfigFile(options, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		boolean firstRun = true;
 
-		while (!configFile.isValidSettlersFolderSet() || !trySettingUpResources(configFile)) {
+		while (!configFile.isValidSettlersFolderSet() || !SwingManagedJSettlers.trySettingUpResources(configFile)) {
 			if (!firstRun) {
 				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
 			}
@@ -167,53 +165,7 @@ public class SwingManagedJSettlers {
 		return new ConfigurationPropertiesFile(new File(configFileName));
 	}
 
-	public static void loadOptionalSettings(OptionableProperties options) {
-		CommonConstants.CONTROL_ALL = options.isOptionSet("control-all");
-		CommonConstants.ACTIVATE_ALL_PLAYERS = options.isOptionSet("activate-all-players");
-		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
-		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
-		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
-		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
-
-		if (options.containsKey("fixed-ai-type")) {
-			CommonConstants.FIXED_AI_TYPE = EWhatToDoAiType.valueOf(options.getProperty("fixed-ai-type"));
-		}
-
-		if (options.isOptionSet("localhost")) {
-			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
-		}
-
-		if (options.containsKey("locale")) {
-			String localeString = options.getProperty("locale");
-			String[] localeParts = localeString.split("_");
-			if (localeParts.length == 2) {
-				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
-			} else {
-				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
-			}
-		}
-	}
-
-	/**
-	 * Creates a new SWING GUI for the game.
-	 * 
-	 * @param argsList
-	 * @return
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	public static JSettlersScreen startGui() {
-		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), getBuild());
-		area.add(content.getRegion());
-
-		startJogl(area);
-
-		startRedrawTimer(content);
-		return content;
-	}
-
-	private static void generateContent(OptionableProperties options, JSettlersScreen content) throws IOException, MapLoadException {
+	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
@@ -247,8 +199,7 @@ public class SwingManagedJSettlers {
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}
-			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
-			content.setContent(toDisplay);
+			settlersFrame.showStartingGamePanel(game);
 
 			if (targetGameTime > 0) {
 				while (!game.isStartupFinished()) {
@@ -259,37 +210,16 @@ public class SwingManagedJSettlers {
 				}
 				MatchConstants.clock().fastForwardTo(targetGameTime);
 			}
-		} else {
-			content.goToStartScreen("");
 		}
 	}
 
-	private static void startRedrawTimer(final JSettlersScreen content) {
-		new Timer("opengl-redraw").schedule(new TimerTask() {
-			@Override
-			public void run() {
-				content.getRegion().requestRedraw();
-			}
-		}, 100, 25);
+	public static IMapInterfaceConnector showJSettlers(IStartedGame startedGame) throws JSettlersLookAndFeelExecption {
+		JSettlersFrame jSettlersFrame = createJSettlersFrame();
+		return jSettlersFrame.showStartedGame(startedGame);
 	}
 
-	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
-
-		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
-		AreaContainer panel = new AreaContainer(area);
-		panel.setPreferredSize(new Dimension(640, 480));
-		jsettlersWnd.add(panel);
-		panel.requestFocusInWindow();
-
-		jsettlersWnd.pack();
-		jsettlersWnd.setSize(1200, 800);
-		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jsettlersWnd.setVisible(true);
-		jsettlersWnd.setLocationRelativeTo(null);
-	}
-
-	private static String getBuild() {
-		return Labels.getString("version-build", CommitInfo.COMMIT_HASH_SHORT);
+	private static JSettlersFrame createJSettlersFrame() throws JSettlersLookAndFeelExecption {
+		JSettlersLookAndFeel.install();
+		return new JSettlersFrame();
 	}
 }

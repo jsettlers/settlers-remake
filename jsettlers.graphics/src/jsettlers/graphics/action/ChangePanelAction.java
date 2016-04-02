@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 
 public class ChangePanelAction extends Action {
