@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.joingame;
 
+import java.util.Random;
+
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.localization.Labels;
-
-import java.util.Random;
 
 /**
  * @author codingberlin
@@ -29,7 +29,6 @@ public class CivilisationUiWrapper {
 
 	public CivilisationUiWrapper() {
 		this(determineRandomCivilisation(), true);
-
 	};
 
 	public CivilisationUiWrapper(ECivilisation civilisation) {
@@ -49,7 +48,8 @@ public class CivilisationUiWrapper {
 		return civilisation;
 	}
 
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		if (isRandom) {
 			return Labels.getString("civilisation-random");
 		}

@@ -20,15 +20,17 @@ import java.awt.event.MouseEvent;
 import javax.swing.JProgressBar;
 
 /**
+ * Slider based on a {@link JProgressBar}, looks more like the original in the settlers game.
+ * <p />
  * This slider is technically based on a progress bar, but looks and works like the production sliders in the original game. (blue bars) The slider
  * lets the user select a value from 0 to 100%, the value is also displayed as string
  * 
  * @author Andreas Butti
  */
-public class SettlerSlider extends JProgressBar {
+public class SettlersSlider extends JProgressBar {
 	private static final long serialVersionUID = 1L;
 
-	public SettlerSlider() {
+	public SettlersSlider() {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -37,13 +39,11 @@ public class SettlerSlider extends JProgressBar {
 		});
 
 		addMouseMotionListener(new MouseAdapter() {
-
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				handleMouseEvent(e);
 			}
 		});
-
 	}
 
 	/**
@@ -73,5 +73,4 @@ public class SettlerSlider extends JProgressBar {
 
 		setValue(progressBarVal);
 	}
-
 }

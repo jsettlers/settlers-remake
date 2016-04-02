@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,9 +22,10 @@ import jsettlers.logic.map.MapLoader;
  */
 public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 
-	@Override public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
+	@Override
+	public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
 		PlayerSlot playerSlot = new PlayerSlot();
-		playerSlot.setPossibleTypes(new EPlayerType[] {EPlayerType.HUMAN, EPlayerType.AI_VERY_HARD});
+		playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN, EPlayerType.AI_VERY_HARD });
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setSlot(slot);
 		playerSlot.setReady(false);
@@ -33,5 +34,4 @@ public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 		playerSlot.disableAllInputs();
 		return playerSlot;
 	}
-
 }

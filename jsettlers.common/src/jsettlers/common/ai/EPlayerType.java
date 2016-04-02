@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,14 +24,14 @@ public enum EPlayerType {
 	AI_VERY_HARD,
 	HUMAN;
 
-	public static final EPlayerType[] values = EPlayerType.values();
-	public static final int NUMBER_OF_PLAYER_TYPES = values.length;
+	public static final EPlayerType[] VALUES = EPlayerType.values();
+	public static final int NUMBER_OF_PLAYER_TYPES = VALUES.length;
 
 	public static EPlayerType getTypeByIndex(int index) {
-		return values[index % NUMBER_OF_PLAYER_TYPES];
+		return VALUES[index % NUMBER_OF_PLAYER_TYPES];
 	}
 
 	public boolean isAi() {
-		return  !(HUMAN == this);
+		return !(HUMAN == this);
 	}
 }

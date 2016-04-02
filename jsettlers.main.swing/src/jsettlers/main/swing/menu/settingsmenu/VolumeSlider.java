@@ -12,21 +12,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.general;
+package jsettlers.main.swing.menu.settingsmenu;
 
 import jsettlers.main.swing.lookandfeel.ELFStyle;
+import jsettlers.main.swing.menu.general.SettlersSlider;
 
 /**
  * Slider to select volume in settings
+ * <p />
+ * This slider is technically based on a progress bar, but looks and works like the production sliders in the original game. (blue bars) The slider
+ * lets the user select a value from 0 to 100%, the value is also displayed as string
  * 
  * @author Andreas Butti
  */
-public class VolumeSlider extends SettlerSlider {
+public class VolumeSlider extends SettlersSlider {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor
-	 */
 	public VolumeSlider() {
 		setStringPainted(true);
 
@@ -43,5 +44,4 @@ public class VolumeSlider extends SettlerSlider {
 		super.setValue(n);
 		setString(n + "%");
 	}
-
 }
