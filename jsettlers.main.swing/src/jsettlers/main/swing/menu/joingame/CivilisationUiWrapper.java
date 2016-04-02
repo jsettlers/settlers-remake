@@ -29,7 +29,7 @@ public class CivilisationUiWrapper {
 
 	public CivilisationUiWrapper() {
 		this(determineRandomCivilisation(), true);
-	};
+	}
 
 	public CivilisationUiWrapper(ECivilisation civilisation) {
 		this(civilisation, false);

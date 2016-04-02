@@ -23,15 +23,15 @@ import jsettlers.logic.map.MapLoader;
  */
 public class HostOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 
-	@Override public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
+	@Override
+	public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {
 		PlayerSlot playerSlot = new PlayerSlot();
 
 		if (slot == 0) {
 			SettingsManager settingsManager = SettingsManager.getInstance();
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
-			playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN});
+			playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN });
 			playerSlot.setReadyButtonEnabled(true);
-			playerSlot.setReady(false);
 		} else {
 			playerSlot.setPossibleTypes(new EPlayerType[] {
 					EPlayerType.HUMAN,
@@ -39,14 +39,11 @@ public class HostOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 			});
 			playerSlot.setTypeComboBox(EPlayerType.AI_VERY_HARD);
 			playerSlot.setReadyButtonEnabled(false);
-			playerSlot.setReady(false);
 		}
 
+		playerSlot.setReady(false);
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
-		playerSlot.setSlot(slot);
-		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));
 		playerSlot.disableAllInputs();
 		return playerSlot;
 	}
-
 }

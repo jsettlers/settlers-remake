@@ -27,10 +27,8 @@ public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 		PlayerSlot playerSlot = new PlayerSlot();
 		playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN, EPlayerType.AI_VERY_HARD });
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
-		playerSlot.setSlot(slot);
 		playerSlot.setReady(false);
 		playerSlot.setReadyButtonEnabled(false);
-		playerSlot.setTeam((byte) (slot < mapLoader.getMaxPlayers() / 2 ? 0 : 1));
 		playerSlot.disableAllInputs();
 		return playerSlot;
 	}
