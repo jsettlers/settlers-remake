@@ -15,6 +15,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * @see EActionType#SCREEN_CHANGE

@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
@@ -34,11 +34,6 @@ public class SpecialistSelectionContent extends AbstractSelectionContent {
 			EMovableType.PIONEER, EMovableType.THIEF, EMovableType.GEOLOGIST,
 	};
 
-	/**
-	 * Rows of selectables
-	 */
-	public static int ROWS = 10;
-
 	private final UIPanel panel;
 
 	public SpecialistSelectionContent(ISelectionSet selection) {
@@ -46,21 +41,18 @@ public class SpecialistSelectionContent extends AbstractSelectionContent {
 
 		SoilderSelectionContent.addRowsToPanel(panel, selection, specialists);
 
-		UIPanel stop =
-				new LabeledButton(Labels.getString("stop"),
-						new Action(EActionType.STOP_WORKING));
-		UIPanel work =
-				new LabeledButton(Labels.getString("work"), new Action(
-						EActionType.START_WORKING));
+		UIPanel stop = new LabeledButton(Labels.getString("stop"),
+				new Action(EActionType.STOP_WORKING));
+		UIPanel work = new LabeledButton(Labels.getString("work"), new Action(
+				EActionType.START_WORKING));
 
 		panel.addChild(stop, .1f, .1f, .5f, .2f);
 		panel.addChild(work, .5f, .1f, .9f, .2f);
 
 		if (selection.getMovableCount(EMovableType.PIONEER) > 0) {
-			UIPanel convert =
-					new LabeledButton(Labels.getString("convert_all_to_BEARER"),
-							new ConvertAction(EMovableType.BEARER,
-									Short.MAX_VALUE));
+			UIPanel convert = new LabeledButton(Labels.getString("convert_all_to_BEARER"),
+					new ConvertAction(EMovableType.BEARER,
+							Short.MAX_VALUE));
 			panel.addChild(convert, .1f, .2f, .9f, .3f);
 		}
 	}

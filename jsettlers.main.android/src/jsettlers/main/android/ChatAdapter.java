@@ -18,16 +18,16 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
-import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import jsettlers.common.menu.ENetworkMessage;
+import jsettlers.common.menu.IChatMessageListener;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IMultiplayerPlayer;
 
 public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 

@@ -20,6 +20,8 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -27,7 +29,6 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ChangePanelAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
@@ -50,7 +51,7 @@ public class OriginalControls implements IControls {
 
 	private Minimap minimap;
 
-	private MinimapMode minimapSettings = new MinimapMode();
+	private final MinimapMode minimapSettings = new MinimapMode();
 
 	private final MainPanel mainPanel;
 
@@ -71,20 +72,20 @@ public class OriginalControls implements IControls {
 							"This is not yet implemented.",
 							"Cancel",
 							new ExecutableAction() {
-						@Override
-						public void execute() {
-							mainPanel.setContent(ContentType.BUILD_NORMAL);
-							btnChat.setActive(false);
-						}
-					},
+								@Override
+								public void execute() {
+									mainPanel.setContent(ContentType.BUILD_NORMAL);
+									btnChat.setActive(false);
+								}
+							},
 							"Ok",
 							new ExecutableAction() {
-						@Override
-						public void execute() {
-							mainPanel.setContent(ContentType.BUILD_NORMAL);
-							btnChat.setActive(false);
-						}
-					});
+								@Override
+								public void execute() {
+									mainPanel.setContent(ContentType.BUILD_NORMAL);
+									btnChat.setActive(false);
+								}
+							});
 
 					@Override
 					public void execute() {
@@ -266,7 +267,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(IAction action) {
 	}
 
 	private ShortPoint2D startMapPosition;
@@ -370,7 +371,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public Action replaceAction(Action action) {
+	public IAction replaceAction(IAction action) {
 		return mainPanel.catchAction(action);
 	}
 

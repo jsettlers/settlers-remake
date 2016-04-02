@@ -17,6 +17,8 @@ package jsettlers.graphics.messages;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.menu.messages.IMessage;
+
 /**
  * This is a messenger, that lets you display messages on the users screen.
  * 
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class Messenger {
 
-	LinkedList<Message> messages = new LinkedList<Message>();
+	LinkedList<IMessage> messages = new LinkedList<IMessage>();
 
 	/**
 	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
@@ -33,14 +35,14 @@ public class Messenger {
 	 * 
 	 * @return The messages to display.
 	 */
-	public List<Message> getMessages() {
+	public List<IMessage> getMessages() {
 		return messages;
 	}
 
-	public boolean addMessage(Message message) {
+	public boolean addMessage(IMessage message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
-			if (messages.size() > Message.MAX_MESSAGES)
+			if (messages.size() > IMessage.MAX_MESSAGES)
 				messages.removeLast();
 			return true;
 		}
@@ -48,13 +50,13 @@ public class Messenger {
 	}
 
 	public void removeOld() {
-		for (Message m : messages)
-			if (m.getAge() > Message.MESSAGE_TTL)
+		for (IMessage m : messages)
+			if (m.getAge() > IMessage.MESSAGE_TTL)
 				while (!messages.pollLast().equals(m));
 	}
 
-	boolean isNews(Message msg) {
-		for (Message m : messages) {
+	boolean isNews(IMessage msg) {
+		for (IMessage m : messages) {
 			if (msg.duplicates(m)) {
 				return false;
 			}

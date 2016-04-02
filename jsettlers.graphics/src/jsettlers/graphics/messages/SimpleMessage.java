@@ -16,6 +16,8 @@ package jsettlers.graphics.messages;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.messages.EMessageType;
+import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
 
@@ -24,7 +26,7 @@ import jsettlers.graphics.localization.Labels;
  * 
  * @author michael
  */
-public class SimpleMessage implements Message {
+public class SimpleMessage implements IMessage {
 	private final byte sender;
 	private final ShortPoint2D pos;
 	private final String message;
@@ -66,7 +68,7 @@ public class SimpleMessage implements Message {
 	}
 
 	@Override
-	public boolean duplicates(Message m) {
+	public boolean duplicates(IMessage m) {
 		if ((m.getSender() == this.sender)
 				&& m.getMessage().equals(this.message)
 				&& m.getType() == this.type) {
@@ -84,18 +86,18 @@ public class SimpleMessage implements Message {
 		return false;
 	}
 
-	public static Message attacked(byte otherplayer, ShortPoint2D pos) {
+	public static IMessage attacked(byte otherplayer, ShortPoint2D pos) {
 		String message = Labels.getString("attacked");
 		return new SimpleMessage(EMessageType.ATTACKED, message, otherplayer,
 				pos);
 	}
 
-	public static Message foundMinerals(EMaterialType type, ShortPoint2D pos) {
+	public static IMessage foundMinerals(EMaterialType type, ShortPoint2D pos) {
 		String message = Labels.getString("minerals_" + type.toString());
 		return new SimpleMessage(EMessageType.MINERALS, message, (byte) -1, pos);
 	}
 
-	public static Message cannotFindWork(IBuilding building) {
+	public static IMessage cannotFindWork(IBuilding building) {
 		String message = Labels.getString("cannot_find_work_" + building.getBuildingType());
 		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPos());
 	}

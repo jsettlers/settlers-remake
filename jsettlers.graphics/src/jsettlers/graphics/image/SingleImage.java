@@ -19,7 +19,6 @@ import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
 
-import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
@@ -118,14 +117,12 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				newData[y * textureWidth + x] = data.get(y * width + x);
 			}
 			for (int x = width; x < textureWidth; x++) {
-				newData[y * textureWidth + x] =
-						newData[y * textureWidth + width - 1];
+				newData[y * textureWidth + x] = newData[y * textureWidth + width - 1];
 			}
 		}
 		for (int y = height; y < textureHeight; y++) {
 			for (int x = 0; x < textureWidth; x++) {
-				newData[y * textureWidth + x] =
-						newData[(height - 1) * textureWidth + x];
+				newData[y * textureWidth + x] = newData[(height - 1) * textureWidth + x];
 			}
 		}
 		data = ShortBuffer.wrap(newData);
@@ -146,8 +143,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				}
 				data.position(0);
 			}
-			texture =
-					gl.generateTexture(textureWidth, textureHeight, this.data);
+			texture = gl.generateTexture(textureWidth, textureHeight, this.data);
 		}
 		return this.texture;
 	}
@@ -323,7 +319,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			TextureHandle textureIndex = getTextureIndex(gl);
 			buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
 					- getOffsetY(), viewX + getOffsetX() + width, viewY
-					- getOffsetY() - height, 0, 0, getTextureScaleX(),
+					- getOffsetY() - height,
+					0, 0, getTextureScaleX(),
 					getTextureScaleY(), iColor);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
@@ -388,33 +385,9 @@ public class SingleImage extends Image implements ImageDataPrivider {
 					convertV(v2),
 					convertU(u3),
 					convertV(v3),
-					activeColor
-					);
+					activeColor);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}
-	}
-
-	public BufferedImage generateBufferedImage() {
-		if (width <= 0 || height <= 0) {
-			return null;
-		}
-
-		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		ShortBuffer data = this.data.duplicate();
-		data.rewind();
-
-		int[] rgbArray = new int[data.remaining()];
-		for (int i = 0; i < rgbArray.length; i++) {
-			short myColor = data.get();
-			float red = (float) ((myColor >> 11) & 0x1f) / 0x1f;
-			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
-			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
-			float alpha = myColor & 0x1;
-			rgbArray[i] = Color.getARGB(red, green, blue, alpha);
-		}
-
-		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
-		return rendered;
 	}
 }

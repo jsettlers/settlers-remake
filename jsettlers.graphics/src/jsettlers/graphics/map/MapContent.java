@@ -40,6 +40,12 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.UIState;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -49,7 +55,6 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
@@ -61,11 +66,9 @@ import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
-import jsettlers.graphics.messages.Message;
 import jsettlers.graphics.messages.Messenger;
 import jsettlers.graphics.sound.BackgroundSound;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen region.
@@ -162,7 +165,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		this.map = game.getMap();
 		this.playerStatistics = game.getPlayerStatistics();
 		textDrawer = new ReplaceableTextDrawer();
-		this.context = new MapDrawContext(map, textDrawer);
+		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
@@ -275,13 +278,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private float messageAlpha(Message m) {
+	private float messageAlpha(IMessage m) {
 		int age = (int) m.getAge();
 		return (age < 5000) ?
 			(age < 1500
 				? (age / 250) % 2 : 1)
 				: Math.max(0,
-					1f - (float)age / Message.MESSAGE_TTL);
+					1f - (float)age / IMessage.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -290,7 +293,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		synchronized (messenger) {
 			int messageIndex = 0;
 			messenger.removeOld();
-			for (Message m : messenger.getMessages()) {
+			for (IMessage m : messenger.getMessages()) {
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
 				float a = messageAlpha(m);
@@ -318,7 +321,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;
-				if (messageIndex >= Message.MAX_MESSAGES) {
+				if (messageIndex >= IMessage.MAX_MESSAGES) {
 					break;
 				}
 			}
@@ -856,7 +859,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(IAction action) {
 		controls.action(action);
 		switch (action.getActionType()) {
 		case TOGGLE_DEBUG:
@@ -902,7 +905,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		reapplyContentSizes();
 	}
 
-	public void addMessage(Message message) {
+	public void addMessage(IMessage message) {
 		boolean printMsg;
 		synchronized (messenger) {
 			printMsg = messenger.addMessage(message);
@@ -919,8 +922,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	@Override
-	public void fireAction(Action action) {
-		Action fire = controls.replaceAction(action);
+	public void fireAction(IAction action) {
+		IAction fire = controls.replaceAction(action);
 		if (fire != null) {
 			getInterfaceConnector().fireAction(fire);
 		}

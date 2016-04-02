@@ -20,6 +20,7 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -79,7 +80,7 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(IAction action) {
 	}
 
 	@Override
@@ -127,7 +128,7 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-	public Action replaceAction(Action action) {
+	public IAction replaceAction(IAction action) {
 		return action;
 	}
 
