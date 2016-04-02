@@ -24,8 +24,8 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -393,7 +393,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private ShortPoint2D getCurrentJobPos() {
-		return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+		return currentJob.calculatePoint(building.getPos());
 	}
 
 	private void lookAtSearched() {

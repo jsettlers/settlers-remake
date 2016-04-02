@@ -47,10 +47,6 @@ public class TestTradingBuilding extends Building implements IBuilding.ITrading 
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
-	}
-
-	@Override
 	protected int subTimerEvent() {
 		return -1;
 	}

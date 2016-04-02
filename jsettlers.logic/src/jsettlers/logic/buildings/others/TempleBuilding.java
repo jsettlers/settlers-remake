@@ -46,10 +46,6 @@ public final class TempleBuilding extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
-	}
-
-	@Override
 	protected int subTimerEvent() {
 		RequestStack wineStack = getWineStack();
 
