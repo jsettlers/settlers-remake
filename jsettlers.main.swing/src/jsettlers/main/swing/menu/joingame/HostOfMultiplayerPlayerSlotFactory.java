@@ -32,16 +32,17 @@ public class HostOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
 			playerSlot.setPlayerName(settingsManager.getPlayer().getName());
 			playerSlot.setPossibleTypes(new EPlayerType[] { EPlayerType.HUMAN });
 			playerSlot.setReadyButtonEnabled(true);
+			playerSlot.setReady(false);
 		} else {
 			playerSlot.setPossibleTypes(new EPlayerType[] {
 					EPlayerType.HUMAN,
 					EPlayerType.AI_VERY_HARD
 			});
-			playerSlot.setTypeComboBox(EPlayerType.AI_VERY_HARD);
+			playerSlot.setPlayerType(EPlayerType.AI_VERY_HARD);
 			playerSlot.setReadyButtonEnabled(false);
+			playerSlot.setReady(true);
 		}
 
-		playerSlot.setReady(false);
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.disableAllInputs();
 		return playerSlot;

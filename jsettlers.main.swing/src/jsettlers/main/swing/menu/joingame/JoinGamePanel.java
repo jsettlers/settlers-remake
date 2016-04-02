@@ -229,14 +229,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		prepareUiFor(mapLoader);
 	}
 
-	private void setChatVisible(boolean isVisible) {
-		chatArea.setVisible(isVisible);
-		chatInputField.setVisible(isVisible);
-		sendChatMessageButton.setVisible(isVisible);
-		chatArea.setText("");
-		chatInputField.setText("");
-	}
-
 	public void setNewMultiPlayerMap(MapLoader mapLoader, IMultiplayerConnector connector) {
 		this.playerSlotFactory = new HostOfMultiplayerPlayerSlotFactory();
 		titleLabel.setText(Labels.getString("join-game-panel-new-multi-player-game-title"));
@@ -273,6 +265,8 @@ public class JoinGamePanel extends BackgroundPanel {
 							settlersFrame.showMainMenu();
 						}
 					});
+
+					onPlayersChanges(connector.getPlayers(), connector); // init the UI with the players
 				});
 			}
 		});
@@ -344,6 +338,14 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	}
 
+	private void setChatVisible(boolean isVisible) {
+		chatArea.setVisible(isVisible);
+		chatInputField.setVisible(isVisible);
+		sendChatMessageButton.setVisible(isVisible);
+		chatArea.setText("");
+		chatInputField.setText("");
+	}
+
 	private void onPlayersChanges(ChangingList<? extends IMultiplayerPlayer> changingPlayers, IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
 		SwingUtilities.invokeLater(() -> {
 			List<? extends IMultiplayerPlayer> players = changingPlayers.getItems();
@@ -361,7 +363,7 @@ public class JoinGamePanel extends BackgroundPanel {
 				}
 			}
 			for (int i = players.size(); i < playerSlots.size(); i++) {
-				playerSlots.get(i).setTypeComboBox(EPlayerType.AI_VERY_HARD);
+				playerSlots.get(i).setPlayerType(EPlayerType.AI_VERY_HARD);
 			}
 			setCancelButtonActionListener(e -> {
 				joinMultiPlayerMap.abort();

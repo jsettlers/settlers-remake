@@ -156,10 +156,12 @@ public class PlayerSlot {
 			return;
 		}
 
-		if (!EPlayerType.HUMAN.equals(((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
-			setPlayerName(Labels.getString(
-					"player-name-" + getCivilisation().name() + "-" +
-							((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
+		if (EPlayerType.HUMAN != (((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
+			setPlayerName(Labels.getString("player-name-" + getCivilisation().name() + "-" +
+					((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
+			setReady(true);
+		} else {
+			setReady(false);
 		}
 	}
 
@@ -255,7 +257,7 @@ public class PlayerSlot {
 		}
 	}
 
-	public void setTypeComboBox(EPlayerType playerType) {
+	public void setPlayerType(EPlayerType playerType) {
 		for (int i = 0; i < typeComboBox.getItemCount(); i++) {
 			if (typeComboBox.getItemAt(i).getPlayerType() == playerType) {
 				typeComboBox.setSelectedIndex(i);
