@@ -29,6 +29,7 @@ import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+import jsettlers.common.CommitInfo;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
@@ -57,6 +58,8 @@ public class JSettlersFrame extends JFrame {
 	private Timer redrawTimer;
 
 	JSettlersFrame() throws HeadlessException {
+		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
+
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		Player player = settingsManager.getPlayer();
 		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());

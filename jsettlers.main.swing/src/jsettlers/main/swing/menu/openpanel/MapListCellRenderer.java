@@ -19,12 +19,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -74,43 +73,42 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Right part of the panel with all texts
 	 */
-	private final Box pRight = Box.createVerticalBox();
+	private final Box rightPanelPart = Box.createVerticalBox();
 
 	/**
 	 * Main Panel
 	 */
-	private final JPanel pContents = new JPanel();
+	private final JPanel contentsPanel = new JPanel();
 
 	/**
 	 * Name of the Map
 	 */
-	private final JLabel lbName = new JLabel();
+	private final JLabel mapNameLabel = new JLabel();
 
 	/**
 	 * Count of players
 	 */
-	private final JLabel lbPlayerCount = new JLabel();
+	private final JLabel playerCountLabel = new JLabel();
 
 	/**
 	 * ID of the Map and the creation date
 	 */
-	private final JLabel lbMapId = new JLabel();
+	private final JLabel mapIdLabel = new JLabel();
 
 	/**
 	 * Description of the Map
 	 */
-	private final JLabel lbDescription = new JLabel();
+	private final JLabel descriptionLabel = new JLabel();
 
 	/**
 	 * Preview of the map
 	 */
-	private final JLabel lbIcon = new JLabel();
+	private final JLabel iconLabel = new JLabel();
 
 	/**
 	 * Empty icon, if there is no image
 	 */
 	private final Icon EMPTY_ICON = new Icon() {
-
 		@Override
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 		}
@@ -134,7 +132,7 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	/**
 	 * Cache for preview images
 	 */
-	private final Map<MapLoader, Icon> previewImageCache = new HashMap<>();
+	private final Map<MapLoader, Icon> previewImageCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Constructor
@@ -143,79 +141,58 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 		JPanel pFirst = new JPanel();
 		pFirst.setOpaque(false);
 		pFirst.setLayout(new BorderLayout(5, 0));
-		pFirst.add(lbName, BorderLayout.CENTER);
-		pFirst.add(lbPlayerCount, BorderLayout.EAST);
+		pFirst.add(mapNameLabel, BorderLayout.CENTER);
+		pFirst.add(playerCountLabel, BorderLayout.EAST);
 		pFirst.setAlignmentX(Component.LEFT_ALIGNMENT);
-		pRight.add(pFirst);
-		pRight.add(lbMapId);
-		lbMapId.setAlignmentX(Component.LEFT_ALIGNMENT);
-		pRight.add(lbDescription);
-		lbDescription.setAlignmentX(Component.LEFT_ALIGNMENT);
+		rightPanelPart.add(pFirst);
+		rightPanelPart.add(mapIdLabel);
+		mapIdLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		rightPanelPart.add(descriptionLabel);
+		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		pRight.setOpaque(false);
-		pRight.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		lbName.setFont(lbName.getFont().deriveFont(Font.BOLD));
-		lbName.setAlignmentX(Component.LEFT_ALIGNMENT);
+		rightPanelPart.setOpaque(false);
+		rightPanelPart.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		mapNameLabel.setFont(mapNameLabel.getFont().deriveFont(Font.BOLD));
+		mapNameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		lbName.setForeground(FOREGROUND);
-		lbMapId.setForeground(FOREGROUND);
-		lbDescription.setForeground(FOREGROUND);
-		lbPlayerCount.setForeground(Color.BLUE);
+		mapNameLabel.setForeground(FOREGROUND);
+		mapIdLabel.setForeground(FOREGROUND);
+		descriptionLabel.setForeground(FOREGROUND);
+		playerCountLabel.setForeground(Color.BLUE);
 
-		pContents.setLayout(new BorderLayout());
-		pContents.add(pRight, BorderLayout.CENTER);
-		pContents.add(lbIcon, BorderLayout.WEST);
-		pContents.putClientProperty(ELFStyle.KEY, ELFStyle.PANEL_DRAW_BG_CUSTOM);
+		contentsPanel.setLayout(new BorderLayout());
+		contentsPanel.add(rightPanelPart, BorderLayout.CENTER);
+		contentsPanel.add(iconLabel, BorderLayout.WEST);
+		contentsPanel.putClientProperty(ELFStyle.KEY, ELFStyle.PANEL_DRAW_BG_CUSTOM);
 
-		lbIcon.setOpaque(false);
-		lbIcon.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
+		iconLabel.setOpaque(false);
+		iconLabel.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
 
 		// Update UI
-		SwingUtilities.updateComponentTreeUI(pContents);
+		SwingUtilities.updateComponentTreeUI(contentsPanel);
 	}
 
 	/**
-	 * Resize image
-	 *
-	 * @param img
-	 *            Source image
-	 * @param newW
-	 *            Width
-	 * @param newH
-	 *            Height
-	 * @return Rescaled image
-	 */
-	private static Image resize(BufferedImage img, int newW, int newH) {
-		Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-		BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
-
-		Graphics2D g2d = dimg.createGraphics();
-		g2d.drawImage(tmp, 0, 0, null);
-		g2d.dispose();
-
-		return dimg;
-	}
-
-	/**
-	 * Gets the preview image for a map
+	 * Gets the preview icon for a map
 	 *
 	 * @param value
 	 *            Map
 	 * @return Image, <code>null</code> if none or error
 	 */
-	private Icon getPreviewImage(MapLoader value) {
-		Icon icon = previewImageCache.get(value);
-		if (icon != null) {
-			return icon;
+	private Icon getPreviewIcon(MapLoader value) {
+		Icon mapPreviewIcon = previewImageCache.get(value);
+		if (mapPreviewIcon != null) {
+			return mapPreviewIcon;
 		}
 
 		try {
-			BufferedImage img = JSettlersSwingUtil.createBufferedImageFrom(value);
+			BufferedImage previewImage = JSettlersSwingUtil.createBufferedImageFrom(value);
 
-			Image resized = resize(img, MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE / 2);
-			icon = new ImageIcon(resized);
-			previewImageCache.put(value, icon);
-			return icon;
+			Image resizedPreviewImage = previewImage.getScaledInstance(MapFileHeader.PREVIEW_IMAGE_SIZE,
+					MapFileHeader.PREVIEW_IMAGE_SIZE / 2, Image.SCALE_SMOOTH);
+			mapPreviewIcon = new ImageIcon(resizedPreviewImage);
+			previewImageCache.put(value, mapPreviewIcon);
+			return mapPreviewIcon;
 		} catch (Exception e) {
 			System.err.println("Error converting preview image");
 			e.printStackTrace();
@@ -227,37 +204,37 @@ public class MapListCellRenderer implements ListCellRenderer<MapLoader> {
 	@Override
 	public Component getListCellRendererComponent(JList<? extends MapLoader> list, MapLoader value, int index, boolean isSelected,
 			boolean cellHasFocus) {
-		lbName.setText(value.getMapName());
+		mapNameLabel.setText(value.getMapName());
 		String date = "???";
 		if (value.getCreationDate() != null) {
 			date = df.format(value.getCreationDate());
 		}
 
-		lbMapId.setText(date + " / " + value.getMapId());
-		lbPlayerCount.setText("Player: " + value.getMinPlayers() + " - " + value.getMaxPlayers());
+		mapIdLabel.setText(date + " / " + value.getMapId());
+		playerCountLabel.setText("Player: " + value.getMinPlayers() + " - " + value.getMaxPlayers());
 
 		if (value.getDescription() != null && !value.getDescription().isEmpty()) {
-			lbDescription.setText(value.getDescription());
+			descriptionLabel.setText(value.getDescription());
 		} else {
-			lbDescription.setText("<no description>");
+			descriptionLabel.setText("<no description>");
 		}
 
-		Icon img = getPreviewImage(value);
-		if (img == null) {
-			img = EMPTY_ICON;
+		Icon previewIcon = getPreviewIcon(value);
+		if (previewIcon == null) {
+			previewIcon = EMPTY_ICON;
 		}
-		lbIcon.setIcon(img);
+		iconLabel.setIcon(previewIcon);
 
 		if (isSelected) {
-			pContents.setBackground(SELECTION_BACKGROUND);
+			contentsPanel.setBackground(SELECTION_BACKGROUND);
 		} else {
 			if (index % 2 == 0) {
-				pContents.setBackground(BACKGROUND1);
+				contentsPanel.setBackground(BACKGROUND1);
 			} else {
-				pContents.setBackground(BACKGROUND2);
+				contentsPanel.setBackground(BACKGROUND2);
 			}
 		}
 
-		return pContents;
+		return contentsPanel;
 	}
 }

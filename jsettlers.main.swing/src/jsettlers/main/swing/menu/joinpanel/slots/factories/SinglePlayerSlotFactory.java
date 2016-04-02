@@ -45,6 +45,7 @@ public class SinglePlayerSlotFactory implements IPlayerSlotFactory {
 		}
 		playerSlot.setSlotAndTeams((byte) mapLoader.getMaxPlayers());
 		playerSlot.setReadyButtonEnabled(false);
+		playerSlot.setReady(true);
 		return playerSlot;
 	}
 

@@ -92,5 +92,4 @@ public class SettingsMenuPanel extends JPanel {
 		});
 		cancelButton.addActionListener(e -> mainMenuPanel.reset());
 	}
-
 }

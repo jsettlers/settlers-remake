@@ -82,12 +82,9 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
-
 	}
 
 	@Override
 	public void startFinished() {
-
 	}
-
 }

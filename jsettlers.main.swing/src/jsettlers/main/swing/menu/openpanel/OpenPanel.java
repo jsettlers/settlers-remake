@@ -49,7 +49,22 @@ public class OpenPanel extends JPanel {
 	/**
 	 * List with the Maps to select
 	 */
-	private JList<MapLoader> mapList;
+	private final JList<MapLoader> mapList;
+
+	/**
+	 * Filtered list model
+	 */
+	private final DefaultListModel<MapLoader> listModelFiltered = new DefaultListModel<>();
+
+	/**
+	 * Filter buttons
+	 */
+	private final JPanel filterPanel = new JPanel();
+
+	/**
+	 * Search Textfield
+	 */
+	private final SearchTextField searchTextField;
 
 	/**
 	 * List with all maps
@@ -60,21 +75,6 @@ public class OpenPanel extends JPanel {
 	 * Unfiltered map list
 	 */
 	private MapLoader[] mapsAvailable;
-
-	/**
-	 * Filtered list model
-	 */
-	private DefaultListModel<MapLoader> listModelFiltered = new DefaultListModel<>();
-
-	/**
-	 * Search Textfield
-	 */
-	private SearchTextField txtSearch;
-
-	/**
-	 * Filter buttons
-	 */
-	private JPanel pFilter = new JPanel();
 
 	/**
 	 * Currently active filter
@@ -109,17 +109,16 @@ public class OpenPanel extends JPanel {
 
 		initFilter();
 
-		this.txtSearch = new SearchTextField();
-		txtSearch.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
+		this.searchTextField = new SearchTextField();
+		searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 
 		Box box = Box.createVerticalBox();
-		box.add(pFilter);
-		box.add(txtSearch);
+		box.add(filterPanel);
+		box.add(searchTextField);
 
 		add(box, BorderLayout.NORTH);
 
-		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
-
+		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				searchChanged();
@@ -175,7 +174,7 @@ public class OpenPanel extends JPanel {
 	private void initFilter() {
 		JLabel filterLabel = new JLabel(Labels.getString("mapfilter.title"));
 		filterLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-		pFilter.add(filterLabel);
+		filterPanel.add(filterLabel);
 
 		boolean first = true;
 		ButtonGroup group = new ButtonGroup();
@@ -193,7 +192,7 @@ public class OpenPanel extends JPanel {
 			}
 
 			group.add(bt);
-			pFilter.add(bt);
+			filterPanel.add(bt);
 		}
 	}
 
@@ -201,7 +200,7 @@ public class OpenPanel extends JPanel {
 	 * Search has changed, update the list
 	 */
 	protected void searchChanged() {
-		String search = txtSearch.getText().toLowerCase();
+		String search = searchTextField.getText().toLowerCase();
 
 		listModelFiltered.clear();
 		for (MapLoader m : mapsAvailable) {
