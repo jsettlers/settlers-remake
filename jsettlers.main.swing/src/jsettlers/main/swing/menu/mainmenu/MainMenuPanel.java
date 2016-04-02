@@ -26,11 +26,22 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.Player;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.logic.map.save.loader.SavegameLoader;
+import jsettlers.logic.player.PlayerSetting;
+import jsettlers.main.JSettlersGame;
+import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.SplitedBackgroundPanel;
@@ -61,25 +72,59 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
-		ShowNewSinglePlayerGame showNewSinglePlayerGame = new ShowNewSinglePlayerGame(settlersFrame);
-		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), showNewSinglePlayerGame);
-		showNewSinglePlayerGame.setRelatedOpenPanel(openSinglePlayerPanel);
-		StartSaveGame startSaveGame = new StartSaveGame(settlersFrame);
-		openSaveGamePanel = new OpenPanel(
-				transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
-				startSaveGame);
-		startSaveGame.setRelatedOpenPanel(openSaveGamePanel);
-		NewMultiPlayerGame newMultiplayerGame = new NewMultiPlayerGame(settlersFrame);
-		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), newMultiplayerGame);
-		newMultiplayerGame.setRelatedOpenPanel(newMultiPlayerGamePanel);
+
+		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showdNewSingleplayerGamePanel);
+		openSaveGamePanel = new OpenPanel(transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
+				this::loadSavegame);
+		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
+		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), this::showJoinMultiplayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
-		JoinMultiplayerGame joinMultiPlayerGame = new JoinMultiplayerGame(settlersFrame);
-		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), joinMultiPlayerGame);
-		joinMultiPlayerGame.setRelatedOpenPanel(joinMultiPlayerGamePanel);
+
 		createStructure();
 		setStyle();
 		localize();
 		addListener(multiPlayerConnector);
+	}
+
+	private void loadSavegame(MapLoader map) {
+		SavegameLoader savegameLoader = (SavegameLoader) map;
+		if (savegameLoader != null) {
+			// TODO: read playersettings out of savegame file
+			long randomSeed = 4711L;
+			byte playerId = 0;
+			PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) savegameLoader.getMaxPlayers());
+			JSettlersGame game = new JSettlersGame(savegameLoader, randomSeed, playerId, playerSettings);
+			IStartingGame startingGame = game.start();
+			settlersFrame.showStartingGamePanel(startingGame);
+		}
+	}
+
+	private void showdNewSingleplayerGamePanel(MapLoader map) {
+		settlersFrame.showNewSinglePlayerGameMenu(map);
+	}
+
+	private void showNewMultiplayerGamePanel(MapLoader map) {
+		SettingsManager settingsManager = SettingsManager.getInstance();
+		Player player = settingsManager.getPlayer();
+		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER),
+				player.getId(), player.getName());
+		settlersFrame.showNewMultiPlayerGameMenu(map, connector);
+	}
+
+	private void showJoinMultiplayerGamePanel(MapLoader map) {
+		NetworkGameMapLoader networkGameMapLoader = (NetworkGameMapLoader) map;
+		IJoiningGame joiningGame = settlersFrame.getMultiPlayerConnector().joinMultiplayerGame(networkGameMapLoader.getJoinableGame());
+		joiningGame.setListener(new IJoiningGameListener() {
+			@Override
+			public void joinProgressChanged(EProgressState state, float progress) {
+			}
+
+			@Override
+			public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+				SwingUtilities.invokeLater(
+						() -> settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId())));
+			}
+		});
 	}
 
 	private List<MapLoader> transformRemakeMapLoadersToMapLoaders(List<RemakeMapLoader> remakeMapLoaders) {

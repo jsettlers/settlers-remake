@@ -15,8 +15,6 @@
 package jsettlers.main.swing.menu.openpanel;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
@@ -91,8 +89,8 @@ public class OpenPanel extends JPanel {
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener) {
-		this(maps, doubleclickListener, new MapListCellRenderer());
+	public OpenPanel(final List<MapLoader> maps, IMapSelectedListener mapSelectedListener) {
+		this(maps, mapSelectedListener, new MapListCellRenderer());
 	}
 
 	/**
@@ -105,7 +103,7 @@ public class OpenPanel extends JPanel {
 	 * @param cellRenderer
 	 *            Cell renderer to use
 	 */
-	public OpenPanel(final List<MapLoader> maps, final ActionListener doubleclickListener, final ListCellRenderer<MapLoader> cellRenderer) {
+	public OpenPanel(final List<MapLoader> maps, final IMapSelectedListener mapSelectedListener, final ListCellRenderer<MapLoader> cellRenderer) {
 		setMapLoadersWithoutSearchChanged(maps);
 		setLayout(new BorderLayout());
 
@@ -144,8 +142,8 @@ public class OpenPanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					if (doubleclickListener != null) {
-						doubleclickListener.actionPerformed(new ActionEvent(e, 0, "dblclick"));
+					if (mapSelectedListener != null) {
+						mapSelectedListener.mapSelected(getSelectedMap());
 					}
 				}
 			}

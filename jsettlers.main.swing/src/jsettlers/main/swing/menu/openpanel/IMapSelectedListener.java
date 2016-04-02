@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,31 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.mainmenu;
+package jsettlers.main.swing.menu.openpanel;
 
-import jsettlers.main.swing.JSettlersFrame;
-import jsettlers.main.swing.menu.openpanel.OpenPanel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import jsettlers.logic.map.MapLoader;
 
 /**
- * @author codingberlin
+ * 
+ * @author Andreas Eberle
+ *
  */
-public class ShowNewSinglePlayerGame implements ActionListener {
-
-	private final JSettlersFrame settlersFrame;
-	private OpenPanel relatedOpenPanel;
-
-	public ShowNewSinglePlayerGame(JSettlersFrame settlersFrame) {
-		this.settlersFrame = settlersFrame;
-	}
-
-	public void setRelatedOpenPanel(OpenPanel relatedOpenPanel) {
-		this.relatedOpenPanel = relatedOpenPanel;
-	}
-
-	@Override public void actionPerformed(ActionEvent e) {
-		settlersFrame.showNewSinglePlayerGameMenu(relatedOpenPanel.getSelectedMap());
-	}
+public interface IMapSelectedListener {
+	void mapSelected(MapLoader map);
 }
