@@ -247,6 +247,9 @@ public class PlayerSlot {
 
 	public void setReadyButtonEnabled(boolean isEnabled) {
 		readyButton.setEnabled(isEnabled);
+		if (!isEnabled) {
+			setReady(true);
+		}
 	}
 
 	public void setCivilisation(ECivilisation civilisation) {

@@ -54,7 +54,8 @@ import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
 public class MainMenuPanel extends SplitedBackgroundPanel {
 	private static final long serialVersionUID = -6745474019479693347L;
 
-	public static final Dimension PREFERRED_EAST_SIZE = new Dimension(300, 300);
+	private static final Dimension PREFERRED_WEST_PANEL_SIZE = new Dimension(300, 300);
+
 	private final JSettlersFrame settlersFrame;
 	private final JPanel emptyPanel = new JPanel();
 	private final SettingsMenuPanel settingsPanel;
@@ -196,7 +197,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		buttonGroup.add(joinNetworkGameButton);
 		add(emptyPanel);
 		getTitleLabel().setVisible(false);
-		westPanel.setPreferredSize(PREFERRED_EAST_SIZE);
+		westPanel.setPreferredSize(PREFERRED_WEST_PANEL_SIZE);
 	}
 
 	public void reset() {
