@@ -54,10 +54,10 @@ import jsettlers.logic.map.EMapStartResources;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
+import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
-import jsettlers.main.swing.JSettlersFrame;
 
 /**
  * @author codingberlin
@@ -276,10 +276,6 @@ public class JoinGamePanel extends BackgroundPanel {
 				});
 			}
 		});
-		cancelButton.addActionListener(e -> {
-			joiningGame.abort();
-			settlersFrame.showMainMenu();
-		});
 
 		setCancelButtonActionListener(e -> {
 			joiningGame.abort();
@@ -290,7 +286,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	public void setJoinMultiPlayerMap(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap, MapLoader mapLoader) {
-		this.playerSlotFactory = new ClientOfMultiplayerPlayerSlotFactory();
+		playerSlotFactory = new ClientOfMultiplayerPlayerSlotFactory();
 		titleLabel.setText(Labels.getString("join-game-panel-join-multi-player-game-title"));
 		numberOfPlayersComboBox.setEnabled(false);
 		peaceTimeComboBox.setEnabled(false);
@@ -318,6 +314,8 @@ public class JoinGamePanel extends BackgroundPanel {
 			}
 		});
 		initializeChatFor(joinMultiPlayerMap);
+
+		onPlayersChanges(joinMultiPlayerMap.getPlayers(), joinMultiPlayerMap); // init the UI with the players
 	}
 
 	private void initializeChatFor(IJoinPhaseMultiplayerGameConnector joinMultiPlayerMap) {
