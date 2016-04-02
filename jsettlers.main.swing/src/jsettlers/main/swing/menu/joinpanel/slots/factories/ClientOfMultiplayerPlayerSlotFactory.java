@@ -12,15 +12,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
+package jsettlers.main.swing.menu.joinpanel.slots.factories;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.logic.map.MapLoader;
+import jsettlers.main.swing.menu.joinpanel.slots.PlayerSlot;
 
 /**
  * @author codingberlin
  */
-public class ClientOfMultiplayerPlayerSlotFactory implements PlayerSlotFactory {
+public class ClientOfMultiplayerPlayerSlotFactory implements IPlayerSlotFactory {
 
 	@Override
 	public PlayerSlot createPlayerSlot(byte slot, MapLoader mapLoader) {

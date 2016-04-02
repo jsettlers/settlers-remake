@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
+package jsettlers.main.swing.menu.joinpanel.slots;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -49,6 +49,7 @@ public class PlayerSlot {
 	public static final ImageIcon NOT_READY_IMAGE = new ImageIcon(getReadyButtonImage(2, 18, 0, true));
 	public static final ImageIcon NOT_READY_PRESSED_IMAGE = new ImageIcon(getReadyButtonImage(2, 18, 1, true));
 	public static final ImageIcon NOT_READY_DISABLED_IMAGE = new ImageIcon(getReadyButtonImage(2, 18, 0, false));
+
 	private final JLabel playerNameLabel = new JLabel();
 	private final JComboBox<CivilisationUiWrapper> civilisationComboBox = new JComboBox<>();
 	private final JComboBox<PlayerTypeUiWrapper> typeComboBox = new JComboBox<>();
@@ -56,7 +57,7 @@ public class PlayerSlot {
 	private final JComboBox<Byte> teamComboBox = new JComboBox<>();
 	private final JButton readyButton = new JButton();
 	private byte oldSlotValue;
-	private SlotListener slotListener;
+	private ISlotListener slotListener;
 	private boolean isAvailable;
 	private boolean isReady = true;
 	private IJoinPhaseMultiplayerGameConnector gameToBeInformedAboutReady;
@@ -224,7 +225,7 @@ public class PlayerSlot {
 		return ((CivilisationUiWrapper) civilisationComboBox.getSelectedItem()).getCivilisation();
 	}
 
-	public void setSlotListener(SlotListener slotListener) {
+	public void setSlotListener(ISlotListener slotListener) {
 		this.slotListener = slotListener;
 	}
 

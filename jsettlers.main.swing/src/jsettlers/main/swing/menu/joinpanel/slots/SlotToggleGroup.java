@@ -12,19 +12,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
+package jsettlers.main.swing.menu.joinpanel.slots;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * @author codingberlin
  */
 public class SlotToggleGroup {
 
-	List<PlayerSlot> playerSlots = new Vector<>();
-
-	public SlotToggleGroup() {}
+	private final List<PlayerSlot> playerSlots = new ArrayList<>();
 
 	public void add(final PlayerSlot playerSlot) {
 		playerSlots.add(playerSlot);
@@ -36,6 +34,4 @@ public class SlotToggleGroup {
 			});
 		});
 	}
-
-
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,31 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
+package jsettlers.main.swing.menu.joinpanel.slots;
 
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.menu.IOpenMultiplayerGameInfo;
-import jsettlers.graphics.startscreen.SettingsManager;
+import java.util.Random;
 
-final class OpenMultiPlayerGameInfo implements IOpenMultiplayerGameInfo {
-	private final IMapDefinition map;
+import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.localization.Labels;
 
-	public OpenMultiPlayerGameInfo(IMapDefinition map) {
-		this.map = map;
+/**
+ * @author codingberlin
+ */
+public class CivilisationUiWrapper {
+
+	private final ECivilisation civilisation;
+	private final boolean isRandom;
+
+	public CivilisationUiWrapper() {
+		this(determineRandomCivilisation(), true);
+	}
+
+	public CivilisationUiWrapper(ECivilisation civilisation) {
+		this(civilisation, false);
+	}
+
+	private CivilisationUiWrapper(ECivilisation civilisation, boolean isRandom) {
+		this.civilisation = civilisation;
+		this.isRandom = isRandom;
+	}
+
+	private static ECivilisation determineRandomCivilisation() {
+		return ECivilisation.values()[new Random().nextInt(ECivilisation.values().length)];
+	}
+
+	public ECivilisation getCivilisation() {
+		return civilisation;
 	}
 
 	@Override
-	public int getMaxPlayers() {
-		return map.getMaxPlayers();
-	}
-
-	@Override
-	public String getMatchName() {
-		return "TODO Matchname (" + SettingsManager.getInstance().get(SettingsManager.SETTING_USERNAME) + ")";
-	}
-
-	@Override
-	public IMapDefinition getMapDefinition() {
-		return map;
+	public String toString() {
+		if (isRandom) {
+			return Labels.getString("civilisation-random");
+		}
+		return Labels.getString("civilisation-" + civilisation.name());
 	}
 }

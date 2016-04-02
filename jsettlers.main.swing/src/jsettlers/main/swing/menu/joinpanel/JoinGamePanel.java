@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
+package jsettlers.main.swing.menu.joinpanel;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -58,6 +58,12 @@ import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
+import jsettlers.main.swing.menu.joinpanel.slots.PlayerSlot;
+import jsettlers.main.swing.menu.joinpanel.slots.SlotToggleGroup;
+import jsettlers.main.swing.menu.joinpanel.slots.factories.ClientOfMultiplayerPlayerSlotFactory;
+import jsettlers.main.swing.menu.joinpanel.slots.factories.HostOfMultiplayerPlayerSlotFactory;
+import jsettlers.main.swing.menu.joinpanel.slots.factories.IPlayerSlotFactory;
+import jsettlers.main.swing.menu.joinpanel.slots.factories.SinglePlayerSlotFactory;
 
 /**
  * @author codingberlin
@@ -93,7 +99,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JButton sendChatMessageButton = new JButton();
 	private MapLoader mapLoader;
 	private final List<PlayerSlot> playerSlots = new Vector<>();
-	private PlayerSlotFactory playerSlotFactory;
+	private IPlayerSlotFactory playerSlotFactory;
 
 	public JoinGamePanel(JSettlersFrame settlersFrame) {
 		this.settlersFrame = settlersFrame;

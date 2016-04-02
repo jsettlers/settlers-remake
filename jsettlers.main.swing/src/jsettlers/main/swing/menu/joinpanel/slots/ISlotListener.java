@@ -12,27 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.swing.menu.joingame;
-
-import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.EMapStartResources;
+package jsettlers.main.swing.menu.joinpanel.slots;
 
 /**
  * @author codingberlin
  */
-public class MapStartResourcesUIWrapper {
+public interface ISlotListener {
 
-	private final EMapStartResources startResources;
-
-	public MapStartResourcesUIWrapper(EMapStartResources startResources) {
-		this.startResources = startResources;
-	}
-
-	public EMapStartResources getStartResources() {
-		return startResources;
-	}
-
-	@Override public String toString() {
-		return Labels.getString("map-start-resources-" + startResources.name());
-	}
+	void slotHasChanged(byte oldSlot, byte newSlot);
 }
