@@ -65,7 +65,7 @@ public class AiDifficultiesIT {
 	}
 
 	@Test
-	public void verHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() {
+	public void veryHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() {
 		PlayerSetting[] playerSettings = new PlayerSetting[4];
 		playerSettings[0] = new PlayerSetting(true, EWhatToDoAiType.ROMAN_VERY_HARD);
 		playerSettings[1] = new PlayerSetting(false, null);
