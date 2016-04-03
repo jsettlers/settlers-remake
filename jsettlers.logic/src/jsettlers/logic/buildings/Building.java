@@ -563,8 +563,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return state != STATE_DESTROYED;
 	}
 
-	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid,
-			boolean fullyConstructed) {
+	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
 			return new BigLivinghouse(player, position, buildingsGrid);

@@ -72,13 +72,6 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	void checkIfCurrentMaterialShouldBeReset() {
-		if (currentMaterialType != null && materialRequests[currentMaterialType.ordinal].getInDelivery() <= 0 && getStackSize() == 0) {
-			sharedData.unregisterHandlingStack(currentMaterialType, this);
-			currentMaterialType = null;
-		}
-	}
-
 	@Override
 	public boolean hasMaterial() {
 		return currentMaterialType != null && grid.hasMaterial(position, currentMaterialType);
@@ -97,6 +90,13 @@ public class MultiRequestStack implements IRequestStack {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	void checkIfCurrentMaterialShouldBeReset() {
+		if (currentMaterialType != null && materialRequests[currentMaterialType.ordinal].getInDelivery() <= 0 && getStackSize() == 0) {
+			sharedData.unregisterHandlingStack(currentMaterialType, this);
+			currentMaterialType = null;
 		}
 	}
 

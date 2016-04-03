@@ -23,6 +23,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
 import jsettlers.logic.buildings.Building;
@@ -36,6 +37,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
 
 	private static final long serialVersionUID = -1760409147232184087L;
+
+	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 
 	private final boolean isSeaTrading;
 
@@ -170,5 +173,10 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 
 		return newStacks;
+	}
+
+	@Override
+	public EPriority[] getSupportedPriorities() {
+		return SUPPORTED_PRIORITIES;
 	}
 }

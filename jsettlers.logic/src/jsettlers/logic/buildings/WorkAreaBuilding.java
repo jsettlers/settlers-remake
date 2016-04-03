@@ -89,17 +89,15 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	public EPriority[] getSupportedPriorities() {
-		EPriority[] priorities = super.getSupportedPriorities();
-
-		if (priorities.length == 0) {
-			if (super.getStacks().isEmpty()) { // has no request stacks
-				priorities = SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS;
+		if (isConstructionFinished()) {
+			if (getBuildingType().getRequestStacks().length == 0) { // has no request stacks
+				return SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS;
 			} else {
-				priorities = SUPPORTED_PRIORITIES_FOR_REQUESTERS;
+				return SUPPORTED_PRIORITIES_FOR_REQUESTERS;
 			}
+		} else {
+			return super.getSupportedPriorities();
 		}
-
-		return priorities;
 	}
 
 	@Override

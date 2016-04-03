@@ -391,7 +391,7 @@ public final class MainGrid implements Serializable {
 	 * @return The newly created building.
 	 */
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
-		Building building = Building.createBuilding(type, player, position, buildingsGrid, fullyConstructed);
+		Building building = Building.createBuilding(type, player, position, buildingsGrid);
 		building.construct(fullyConstructed);
 
 		if (fullyConstructed) {
