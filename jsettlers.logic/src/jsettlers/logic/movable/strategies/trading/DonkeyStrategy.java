@@ -12,14 +12,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.movable.strategies;
+package jsettlers.logic.movable.strategies.trading;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
@@ -153,16 +152,6 @@ public class DonkeyStrategy extends MovableStrategy {
 			super.abortPath();
 		}
 		return false;
-	}
-
-	public static interface IDonkeyMarket extends ILocatable {
-		boolean needsDonkey();
-
-		ShortPoint2D getDoor();
-
-		EMaterialType tryToTakeDonkeyMaterial();
-
-		Iterator<ShortPoint2D> getWaypointsIterator();
 	}
 
 	private static enum EDonkeyState {

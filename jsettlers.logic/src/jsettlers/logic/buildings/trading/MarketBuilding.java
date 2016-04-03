@@ -28,7 +28,7 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
-import jsettlers.logic.movable.strategies.DonkeyStrategy.IDonkeyMarket;
+import jsettlers.logic.movable.strategies.trading.IDonkeyMarket;
 import jsettlers.logic.player.Player;
 
 /**
