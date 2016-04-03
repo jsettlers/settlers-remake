@@ -30,15 +30,6 @@ import jsettlers.graphics.reader.ImageMetadata;
  * @author michael
  */
 public class LandscapeImage extends SingleImage {
-	/**
-	 * States that you request the image in the top right border of the texture.
-	 */
-	public static final int TRI_TOPRIGHT = 0;
-	public static final int TRI_BOTTOMRIGHT = 1;
-	public static final int TRI_BOTTOM = 2;
-	public static final int TRI_BOTTOMLEFT = 3;
-	public static final int TRI_TOP = 4;
-	public static final int TRI_TOPLEFT = 5;
 
 	public LandscapeImage(ImageMetadata metadata, short[] data) {
 		super(metadata, data);
@@ -52,5 +43,4 @@ public class LandscapeImage extends SingleImage {
 	public boolean isContinuous() {
 		return this.width > 50 && this.height > 50;
 	}
-
 }

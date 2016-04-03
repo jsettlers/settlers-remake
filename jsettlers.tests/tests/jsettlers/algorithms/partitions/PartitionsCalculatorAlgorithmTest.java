@@ -20,11 +20,6 @@ import java.util.BitSet;
 
 import org.junit.Test;
 
-import jsettlers.GraphicsGridAdapter;
-import jsettlers.TestUtils;
-import jsettlers.common.Color;
-import jsettlers.common.map.EDebugColorModes;
-
 public class PartitionsCalculatorAlgorithmTest {
 
 	private static final int HEIGHT = 100;
@@ -55,27 +50,27 @@ public class PartitionsCalculatorAlgorithmTest {
 		assertEquals(PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS + 2, algo.getNumberOfPartitions());
 	}
 
-	@SuppressWarnings("unused")
-	private void visualizeAlgoResult(final IBlockingProvider blockingProvider, final PartitionCalculatorAlgorithm algo) {
-		TestUtils.openTestWindow(new GraphicsGridAdapter(WIDTH, HEIGHT) {
-			@Override
-			public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
-				int value;
-
-				value = algo.getPartitionAt(x, y) + 1;
-
-				// boolean isBlocked = blockingProvider.isBlocked(x, y);
-				boolean isBlocked = false;
-
-				return isBlocked ? Color.BLACK.getABGR() : Color
-						.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-			}
-		});
-
-		try {
-			Thread.sleep(60000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+	// @SuppressWarnings("unused")
+	// private void visualizeAlgoResult(final IBlockingProvider blockingProvider, final PartitionCalculatorAlgorithm algo) {
+	// TestUtils.openTestWindow(new GraphicsGridAdapter(WIDTH, HEIGHT) {
+	// @Override
+	// public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
+	// int value;
+	//
+	// value = algo.getPartitionAt(x, y) + 1;
+	//
+	// // boolean isBlocked = blockingProvider.isBlocked(x, y);
+	// boolean isBlocked = false;
+	//
+	// return isBlocked ? Color.BLACK.getABGR() : Color
+	// .getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+	// }
+	// });
+	//
+	// try {
+	// Thread.sleep(60000);
+	// } catch (InterruptedException e) {
+	// e.printStackTrace();
+	// }
+	// }
 }

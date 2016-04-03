@@ -22,8 +22,8 @@ import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;

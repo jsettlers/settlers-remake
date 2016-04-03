@@ -18,8 +18,6 @@ import java.util.Iterator;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -107,8 +105,6 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	private final DrawBuffer buffer;
 
-	private final ReplaceableTextDrawer textDrawer;
-
 	// private long beginTime;
 
 	/**
@@ -117,9 +113,8 @@ public final class MapDrawContext implements IGLProvider {
 	 * @param map
 	 *            The map.
 	 */
-	public MapDrawContext(IGraphicsGrid map, ReplaceableTextDrawer textDrawer) {
+	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
-		this.textDrawer = textDrawer;
 		float incline = DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
 		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
@@ -142,18 +137,6 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public void setSize(float windowWidth, float windowHeight) {
 		this.screen.setSize(windowWidth, windowHeight);
-	}
-
-	/**
-	 * Sets the center of the screen.
-	 * 
-	 * @param x
-	 *            X in pixels.
-	 * @param y
-	 *            Y in pixels.
-	 */
-	public void setScreenCenter(int x, int y) {
-		this.screen.setScreenCenter(x, y);
 	}
 
 	/**
@@ -195,16 +178,6 @@ public final class MapDrawContext implements IGLProvider {
 
 	public DrawBuffer getDrawBuffer() {
 		return buffer;
-	}
-
-	/**
-	 * Gets the text drawer for the draw context. Use this method instead of the opengl one, because we might override it.
-	 * 
-	 * @param size
-	 * @return
-	 */
-	public TextDrawer getTextDrawer(EFontSize size) {
-		return textDrawer.getTextDrawer(gl, size);
 	}
 
 	/**
@@ -320,34 +293,6 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public void endTileContext() {
 		this.gl.glPopMatrix();
-	}
-
-	/**
-	 * Sets up drawing between two tiles.
-	 * 
-	 * @param tile
-	 *            The start tile
-	 * @param destination
-	 *            The second tile
-	 * @param progress
-	 *            The progress between those two bytes.
-	 */
-	public void beginBetweenTileContext(int startx, int starty,
-			int destinationx, int destinationy, float progress) {
-		this.gl.glPushMatrix();
-		float theight = getHeight(startx, starty);
-		float dheight = getHeight(destinationx, destinationy);
-		float x = (1 - progress)
-				* this.converter.getViewX(startx, starty, theight)
-				+ progress
-						* this.converter.getViewX(destinationx, destinationy,
-								dheight);
-		float y = (1 - progress)
-				* this.converter.getViewY(startx, starty, theight)
-				+ progress
-						* this.converter.getViewY(destinationx, destinationy,
-								dheight);
-		this.gl.glTranslatef(x, y, 0);
 	}
 
 	/**

@@ -18,6 +18,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jsettlers.common.menu.action.IAction;
+
 /**
  * This class lets you schedule the firing of actions in a separate thread.
  *
@@ -34,8 +36,7 @@ public class ActionFirerer implements ActionFireable {
 	/**
 	 * The actions that are queued to fire.
 	 */
-	private final LinkedBlockingQueue<FireringAction> toFire =
-			new LinkedBlockingQueue<FireringAction>();
+	private final LinkedBlockingQueue<FireringAction> toFire = new LinkedBlockingQueue<FireringAction>();
 
 	private final Object toFireMutex = new Object();
 
@@ -132,9 +133,9 @@ public class ActionFirerer implements ActionFireable {
 	 */
 	private static class FireringAction {
 		private final long startTime;
-		private final Action action;
+		private final IAction action;
 
-		FireringAction(Action action, long startTime) {
+		FireringAction(IAction action, long startTime) {
 			this.action = action;
 			this.startTime = startTime;
 		}
@@ -191,7 +192,7 @@ public class ActionFirerer implements ActionFireable {
 	 * Schedules an action to be fired.
 	 */
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 		synchronized (toFireMutex) {
 			toFire.offer(new FireringAction(action, System.currentTimeMillis()));
 			toFireMutex.notifyAll();
