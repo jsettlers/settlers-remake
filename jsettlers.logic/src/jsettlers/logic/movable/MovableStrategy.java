@@ -179,7 +179,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @param centerY
 	 * @param radius
 	 * @param searchType
-	 * @return
+	 * @return true if a path has been found.
 	 */
 	protected final boolean preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);

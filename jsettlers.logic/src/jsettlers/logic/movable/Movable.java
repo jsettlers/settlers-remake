@@ -655,7 +655,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param centerY
 	 * @param radius
 	 * @param searchType
-	 * @return
+	 * @return true if a path has been found.
 	 */
 	final boolean preSearchPath(boolean dikjstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		assert state == EMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";

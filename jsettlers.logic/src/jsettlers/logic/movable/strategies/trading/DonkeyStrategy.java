@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
@@ -32,6 +33,8 @@ import jsettlers.logic.movable.MovableStrategy;
  */
 public class DonkeyStrategy extends MovableStrategy {
 	private static final long serialVersionUID = 1L;
+
+	private static final short DONKEY_WAYPOINT_SEARCH_RADIUS = 20;
 
 	private EDonkeyState state = EDonkeyState.JOBLESS;
 
@@ -67,25 +70,22 @@ public class DonkeyStrategy extends MovableStrategy {
 			EMaterialType materialType1 = market.tryToTakeDonkeyMaterial();
 			EMaterialType materialType2 = market.tryToTakeDonkeyMaterial();
 
-			if (materialType1 != null || materialType2 != null) {
+			if (materialType1 == null && materialType2 == null) {
+				reset();
+				break;
+
+			} else {
 				super.setMaterial(EMaterialType.BASKET);
 
 				this.materialType1 = materialType1;
 				this.materialType2 = materialType2;
 
 				this.waypoints = market.getWaypointsIterator();
-				if (super.goToPos(this.waypoints.next())) {
-					state = EDonkeyState.GOING_TO_TARGET;
-					break;
-				}
+				state = EDonkeyState.GOING_TO_TARGET;
 			}
-			reset();
-			break;
 
 		case GOING_TO_TARGET:
-			if (waypoints.hasNext()) {
-				super.goToPos(waypoints.next());
-			} else {
+			if (!goToNextWaypoint()) { // no waypoint left
 				dropMaterialIfPossible();
 				waypoints = null;
 				state = EDonkeyState.INIT_GOING_TO_MARKET;
@@ -95,6 +95,18 @@ public class DonkeyStrategy extends MovableStrategy {
 		default:
 			break;
 		}
+	}
+
+	private boolean goToNextWaypoint() {
+		while (waypoints.hasNext()) {
+			ShortPoint2D nextPosition = waypoints.next();
+			if (super.preSearchPath(true, nextPosition.x, nextPosition.y, DONKEY_WAYPOINT_SEARCH_RADIUS, ESearchType.VALID_FREE_POSITION)) {
+				super.followPresearchedPath();
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private void reset() {
