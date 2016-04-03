@@ -168,4 +168,7 @@ public interface IBuildingsGrid {
 
 	MaterialProductionSettings getMaterialProductionAt(int x, int y);
 
+	ShortPoint2D getClosestReachablePosition(ShortPoint2D start, ShortPoint2D target, boolean needsPlayersGround, byte playerId,
+			short targetRadius);
+
 }

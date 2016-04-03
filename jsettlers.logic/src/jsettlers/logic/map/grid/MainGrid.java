@@ -1707,6 +1707,31 @@ public final class MainGrid implements Serializable {
 		public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
 			return partitionsGrid.getMaterialProductionAt(x, y);
 		}
+
+		@Override
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround,
+				final byte playerId, short targetRadius) {
+			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public ShortPoint2D getPos() {
+					return start;
+				}
+
+				@Override
+				public byte getPlayerId() {
+					return playerId;
+				}
+
+				@Override
+				public boolean needsPlayersGround() {
+					return needsPlayersGround;
+				}
+			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
+
+			return path != null ? path.getTargetPos() : null;
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {

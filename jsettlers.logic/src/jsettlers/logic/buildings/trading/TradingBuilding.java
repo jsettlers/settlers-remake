@@ -33,6 +33,8 @@ import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
 
 public class TradingBuilding extends Building implements IBuilding.ITrading {
+	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
+
 	private static final long serialVersionUID = -1760409147232184087L;
 
 	private final boolean isSeaTrading;
@@ -107,11 +109,28 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (waypointType == WaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
-		waypoints[waypointType.ordinal()] = position;
+
+		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
+
+		waypoints[waypointType.ordinal()] = closeReachableLocation;
 
 		if (isSelected()) {
 			drawWaypointLine(true);
 		}
+	}
+
+	private ShortPoint2D findClosestRechablePosition(WaypointType waypointType, ShortPoint2D targetPosition) {
+		ShortPoint2D waypointBefore = this.pos;
+		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
+			if (waypoints[index] != null) {
+				waypointBefore = waypoints[index];
+				break;
+			}
+		}
+
+		ShortPoint2D closestReachableLocation = grid.getClosestReachablePosition(waypointBefore, targetPosition, false, (byte) 0,
+				WAYPOINT_SEARCH_RADIUS);
+		return closestReachableLocation;
 	}
 
 	protected boolean isTargetSet() {
