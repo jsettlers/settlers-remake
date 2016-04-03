@@ -176,14 +176,19 @@ public class SelectSettlersFolderDialog extends JFrame {
 			}
 		});
 
-		initHeader();
-		initTree();
+		SwingUtilities.invokeLater(new Runnable() { // this invoke later prevents an out of bounds exception in the tree
+			@Override
+			public void run() {
+				initHeader();
+				initTree();
 
-		add(new JScrollPane(tree), BorderLayout.CENTER);
-		add(foundPanel, BorderLayout.SOUTH);
+				add(new JScrollPane(tree), BorderLayout.CENTER);
+				add(foundPanel, BorderLayout.SOUTH);
 
-		setSize(750, 640);
-		setLocationRelativeTo(null);
+				setSize(750, 640);
+				setLocationRelativeTo(null);
+			}
+		});
 	}
 
 	/**
@@ -263,13 +268,7 @@ public class SelectSettlersFolderDialog extends JFrame {
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.expandRow(0);
 		tree.setRootVisible(false);
-
-		SwingUtilities.invokeLater(new Runnable() { // this invoke later prevents an out of bounds exception in the tree
-			@Override
-			public void run() {
-				tree.setCellRenderer(new FileTreeCellRenderer());
-			}
-		});
+		tree.setCellRenderer(new FileTreeCellRenderer());
 	}
 
 	/**

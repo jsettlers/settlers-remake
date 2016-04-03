@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.datatypes;
 
-import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.network.common.packets.MatchInfoPacket;
 

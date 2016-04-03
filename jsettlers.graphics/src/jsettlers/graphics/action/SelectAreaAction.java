@@ -15,6 +15,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * This class hold special information for the action type {@link EActionType#SELECT_AREA}.

@@ -29,17 +29,17 @@ import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
-import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.EGameError;
-import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
@@ -264,7 +264,6 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
-
 		}
 
 		public AiExecutor getAiExecutor() {
@@ -325,11 +324,6 @@ public class JSettlersGame {
 			this.startingGameListener = startingGameListener;
 			if (startingGameListener != null)
 				startingGameListener.startProgressChanged(progressState, progress);
-		}
-
-		@Override
-		public void abort() {
-			stop();
 		}
 
 		// METHODS of IStartedGame

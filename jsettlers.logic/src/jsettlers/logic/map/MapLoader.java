@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.original.OriginalMapLoader;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;

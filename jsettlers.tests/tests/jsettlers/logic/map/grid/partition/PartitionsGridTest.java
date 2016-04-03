@@ -29,13 +29,15 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
+import jsettlers.logic.player.PlayerSetting;
 
 public class PartitionsGridTest {
 
 	private static final short WIDTH = 200;
 	private static final short HEIGHT = 200;
 
-	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
+	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, PlayerSetting.createDefaultSettings((byte) 0, (byte) 10),
+			IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
 
 	@Test
 	public void testMergeNoArea() {

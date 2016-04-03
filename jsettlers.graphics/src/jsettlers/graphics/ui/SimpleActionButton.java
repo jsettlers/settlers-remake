@@ -15,8 +15,8 @@
 package jsettlers.graphics.ui;
 
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 
 public class SimpleActionButton extends Button {

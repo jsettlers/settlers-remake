@@ -144,7 +144,7 @@ public final class MainGrid implements Serializable {
 	transient IGuiInputGrid guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
-	public MainGrid(String mapId, String mapName, short width, short height, byte numberOfPlayers) {
+	public MainGrid(String mapId, String mapName, short width, short height, PlayerSetting[] playerSettings) {
 		this.mapId = mapId;
 		this.mapName = mapName;
 
@@ -152,7 +152,7 @@ public final class MainGrid implements Serializable {
 		this.height = height;
 
 		this.flagsGrid = new FlagsGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers, flagsGrid);
+		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, flagsGrid);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
@@ -220,7 +220,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	public MainGrid(String mapId, String mapName, IMapData mapGrid, PlayerSetting[] playerSettings) {
-		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) playerSettings.length);
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), playerSettings);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {

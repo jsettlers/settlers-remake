@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
+
 /**
  * This is a action the user has requested.
  * <p>
@@ -25,7 +28,7 @@ package jsettlers.graphics.action;
  * 
  * @author michael
  */
-public class Action {
+public class Action implements IAction {
 	private final EActionType actionType;
 	private boolean active = false;
 
@@ -54,6 +57,7 @@ public class Action {
 	 * 
 	 * @return The type.
 	 */
+	@Override
 	public EActionType getActionType() {
 		return this.actionType;
 	}

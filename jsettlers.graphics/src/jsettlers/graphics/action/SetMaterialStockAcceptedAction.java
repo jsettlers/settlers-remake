@@ -1,6 +1,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
