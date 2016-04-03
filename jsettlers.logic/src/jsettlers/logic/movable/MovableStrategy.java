@@ -23,7 +23,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
@@ -45,10 +45,12 @@ import jsettlers.logic.player.Player;
 public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
 
-	private final Movable movable;
+	protected final Movable movable;
+	protected final AbstractMovableGrid grid;
 
 	protected MovableStrategy(Movable movable) {
 		this.movable = movable;
+		this.grid = movable.getGrid();
 	}
 
 	public static MovableStrategy getStrategy(Movable movable, EMovableType movableType) {
@@ -108,9 +110,6 @@ public abstract class MovableStrategy implements Serializable {
 		}
 	}
 
-	protected void action() {
-	}
-
 	protected final void convertTo(EMovableType movableType) {
 		movable.convertTo(movableType);
 	}
@@ -131,10 +130,6 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.goToPos(targetPos);
 	}
 
-	protected final AbstractStrategyGrid getStrategyGrid() {
-		return movable.getStrategyGrid();
-	}
-
 	/**
 	 * Tries to go a step in the given direction.
 	 *
@@ -147,16 +142,6 @@ public abstract class MovableStrategy implements Serializable {
 	 */
 	protected final boolean goInDirection(EDirection direction, boolean force) {
 		return movable.goInDirection(direction, force);
-	}
-
-	/**
-	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 *
-	 * @param direction
-	 *            direction to go
-	 */
-	protected final void forceGoInDirection(EDirection direction) {
-		movable.forceGoInDirection(direction);
 	}
 
 	public final void setPosition(ShortPoint2D pos) {
@@ -190,20 +175,16 @@ public abstract class MovableStrategy implements Serializable {
 		movable.enableNothingToDoAction(enable);
 	}
 
-	protected void setSelected(boolean selected) {
-		movable.setSelected(selected);
-	}
-
 	protected final boolean fitsSearchType(ShortPoint2D pos, ESearchType searchType) {
-		return movable.getStrategyGrid().fitsSearchType(movable, pos, searchType);
-	}
-
-	protected final boolean isValidPosition(ShortPoint2D position) {
-		return movable.isValidPosition(position);
+		return grid.fitsSearchType(movable, pos, searchType);
 	}
 
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
+	}
+
+	public final void setSelected(boolean selected) {
+		movable.setSelected(selected);
 	}
 
 	protected final EMaterialType getMaterial() {
@@ -214,12 +195,19 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.getPlayer();
 	}
 
-	protected Movable getMovable() {
-		return movable;
-	}
-
 	protected final void abortPath() {
 		movable.abortPath();
+	}
+
+	protected final void sleep(short waitTime) {
+		movable.sleep(waitTime);
+	}
+
+	protected boolean isOnOwnGround() {
+		return movable.isOnOwnGround();
+	}
+
+	protected void action() {
 	}
 
 	/**
@@ -268,16 +256,18 @@ public abstract class MovableStrategy implements Serializable {
 	protected void informAboutAttackable(IAttackable other) {
 	}
 
-	protected boolean isMoveToAble() {
+	protected boolean isUserControlled() {
 		return false;
+	}
+
+	protected boolean isValidPosition(ShortPoint2D position) {
+		return grid.isValidPosition(movable, position);
 	}
 
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
 		if (!path.hasOverNextStep()) { // if path has no position left
 			return path;
 		}
-
-		AbstractStrategyGrid grid = movable.getStrategyGrid();
 
 		EDirection leftDir = direction.getNeighbor(-1);
 		EDirection rightDir = direction.getNeighbor(1);
@@ -317,10 +307,6 @@ public abstract class MovableStrategy implements Serializable {
 	protected void stopOrStartWorking(boolean stop) {
 	}
 
-	protected void sleep(short waitTime) {
-		movable.wait(waitTime);
-	}
-
 	protected void pathAborted(ShortPoint2D pathTarget) {
 	}
 
@@ -329,7 +315,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * 
 	 * @return If true is returned, the dropped material is offered, if false, it isn't.
 	 */
-	public boolean beforeDroppingMaterial() {
+	public boolean droppingMaterial() {
 		return true;
 	}
 
@@ -339,9 +325,5 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected void drop(EMaterialType materialToDrop) {
 		movable.drop(materialToDrop);
-	}
-
-	protected boolean isOnOwnGround() {
-		return movable.isOnOwnGround();
 	}
 }

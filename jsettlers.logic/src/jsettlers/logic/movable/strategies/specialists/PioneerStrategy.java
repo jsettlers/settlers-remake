@@ -16,8 +16,8 @@ package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
@@ -105,7 +105,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	private void executeAction(ShortPoint2D pos) {
-		super.getStrategyGrid().changePlayerAt(pos, super.getPlayer());
+		grid.changePlayerAt(pos, super.getPlayer());
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
@@ -119,7 +119,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean isUserControlled() {
 		return true;
 	}
 

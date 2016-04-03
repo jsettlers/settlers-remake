@@ -52,9 +52,9 @@ public final class GeologistStrategy extends MovableStrategy {
 				this.centerPos = pos;
 			}
 
-			super.getStrategyGrid().setMarked(pos, false); // unmark the pos for the following check
+			grid.setMarked(pos, false); // unmark the pos for the following check
 			if (canWorkOnPos(pos)) {
-				super.getStrategyGrid().setMarked(pos, true);
+				grid.setMarked(pos, true);
 				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EGeologistState.PLAYING_ACTION_1;
 			} else {
@@ -70,7 +70,7 @@ public final class GeologistStrategy extends MovableStrategy {
 
 		case PLAYING_ACTION_2: {
 			ShortPoint2D pos = super.getPos();
-			super.getStrategyGrid().setMarked(pos, false);
+			grid.setMarked(pos, false);
 			if (canWorkOnPos(pos)) {
 				executeAction(pos);
 			}
@@ -85,7 +85,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		ShortPoint2D closeWorkablePos = getCloseWorkablePos();
 
 		if (closeWorkablePos != null && super.goToPos(closeWorkablePos)) {
-			super.getStrategyGrid().setMarked(closeWorkablePos, true);
+			grid.setMarked(closeWorkablePos, true);
 			this.state = EGeologistState.GOING_TO_POS;
 			return;
 		}
@@ -118,7 +118,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	private void executeAction(ShortPoint2D pos) {
-		super.getStrategyGrid().executeSearchType(super.getMovable(), pos, ESearchType.RESOURCE_SIGNABLE);
+		grid.executeSearchType(movable, pos, ESearchType.RESOURCE_SIGNABLE);
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
@@ -126,7 +126,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean isUserControlled() {
 		return true;
 	}
 
@@ -135,10 +135,10 @@ public final class GeologistStrategy extends MovableStrategy {
 		this.state = EGeologistState.GOING_TO_POS;
 		centerPos = null;
 
-		super.getStrategyGrid().setMarked(oldPosition, false);
+		grid.setMarked(oldPosition, false);
 
 		if (oldTargetPos != null) {
-			super.getStrategyGrid().setMarked(oldTargetPos, false);
+			grid.setMarked(oldTargetPos, false);
 		}
 	}
 
@@ -154,9 +154,9 @@ public final class GeologistStrategy extends MovableStrategy {
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (pathTarget != null) {
-			super.getStrategyGrid().setMarked(pathTarget, false);
+			grid.setMarked(pathTarget, false);
 		} else {
-			super.getStrategyGrid().setMarked(super.getPos(), false);
+			grid.setMarked(super.getPos(), false);
 		}
 	}
 
