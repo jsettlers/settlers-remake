@@ -31,6 +31,7 @@ import jsettlers.graphics.androidui.actions.SelectWorkareaAction;
 import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.selection.MaterialAdapter.DistributionListener;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.localization.Labels;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -121,8 +122,8 @@ public class BuildingMenu extends AndroidMenu {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		ImageView image = (ImageView) view.findViewById(R.id.building_image);
-		image.setImageResource(Graphics.BUILDING_IMAGE_MAP[building
-				.getBuildingType().ordinal()]);
+		OriginalImageProvider.get(building
+				.getBuildingType()).setAsImage(image);
 
 		TextView title = (TextView) view.findViewById(R.id.building_name);
 		String name = Labels.getName(building.getBuildingType());

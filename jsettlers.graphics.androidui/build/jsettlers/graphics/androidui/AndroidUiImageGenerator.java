@@ -94,33 +94,10 @@ public class AndroidUiImageGenerator {
 
 		listOutput.println("public class "
 				+ listOutputClass.replaceAll("(.*\\.)*", "") + " {");
-		exportBuildingImages(listOutput);
 		exportMaterialImages(listOutput);
 		listOutput.println("}");
 
 		listOutput.close();
-	}
-
-	private void exportBuildingImages(PrintWriter listOutput) {
-		listOutput
-				.println("\tpublic static final int[] BUILDING_IMAGE_MAP = new int[] {");
-
-		ImageProvider i = ImageProvider.getInstance();
-
-		for (EBuildingType t : EBuildingType.values) {
-			String name = "bui_" + t.toString().toLowerCase();
-			File file = new File(destinationDirectory, name + ".png");
-
-			Image guiImage = i.getImage(t.getGuiImage());
-			if (guiImage instanceof SingleImage) {
-				export((SingleImage) guiImage, file);
-				listOutput.println("\t\tR.drawable." + name + ",");
-			} else {
-				listOutput.println("\t\t-1,");
-			}
-		}
-
-		listOutput.println("\t};");
 	}
 
 	private void exportMaterialImages(PrintWriter listOutput) {
