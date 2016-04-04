@@ -99,12 +99,32 @@ public final class Color {
 				| ((int) (blue * 255) & 0xff) << 16;
 	}
 
+	/**
+	 * Convert a 16 bit color to a 32 bit color
+	 * 
+	 * @param The
+	 *            16 bit color in
+	 * @return The 32 bit color;
+	 */
+	public static final int convertTo32Bit(int color16bit) {
+		// TODO: Make faster
+		float red = (float) ((color16bit >> 11) & 0x1f) / 0x1f;
+		float green = (float) ((color16bit >> 6) & 0x1f) / 0x1f;
+		float blue = (float) ((color16bit >> 1) & 0x1f) / 0x1f;
+		float alpha = color16bit & 0x1;
+		return Color.getARGB(red, green, blue, alpha);
+	}
+
 	private static final int[] table6to5 = new int[64];
+	private static final int[] table5to8 = new int[2 << 5];
 
 	static {
 		// Generate table6to5
 		for (int i = 0; i < 64; i++) {
 			table6to5[i] = Math.round(i / 63.0f * 31.0f);
+		}
+		for (int i = 0; i < table5to8.length; i++) {
+			table5to8[i] = Math.round(i / (table5to8.length - 1f) * 255.0f);
 		}
 	}
 
