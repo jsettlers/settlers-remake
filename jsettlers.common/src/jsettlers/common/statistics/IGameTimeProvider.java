@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,16 +14,25 @@
  *******************************************************************************/
 package jsettlers.common.statistics;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-
 /**
- * This interface supplies statistical information about the game to the UI.
+ * This interface supplies game time information to the UI.
  * 
  * @author Andreas Eberle
  * 
  */
-public interface IStatisticable {
+public interface IGameTimeProvider {
+	public static final IGameTimeProvider DUMMY_IMPLEMENTATION = new IGameTimeProvider() {
+		@Override
+		public int getGameTime() {
+			return 0;
+		}
+
+		@Override
+		public boolean isGamePausing() {
+			return false;
+		}
+	};
+
 	/**
 	 * Gets the game time.
 	 * 
@@ -31,9 +40,10 @@ public interface IStatisticable {
 	 */
 	int getGameTime();
 
-	int getNumberOf(EMaterialType materialType);
-
-	int getNumberOf(EMovableType movableType);
-
-	int getJoblessBearers();
+	/**
+	 * Gets if the game is pausing.
+	 * 
+	 * @return true if the game is pausing, false if not.
+	 */
+	boolean isGamePausing();
 }

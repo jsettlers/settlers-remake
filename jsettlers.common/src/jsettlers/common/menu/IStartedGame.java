@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,7 +16,7 @@ package jsettlers.common.menu;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
  * This interface represents a started game offering the methods the UI needs.
@@ -33,11 +33,11 @@ public interface IStartedGame {
 	IGraphicsGrid getMap();
 
 	/**
-	 * Gets the statistics of the current player for which the UI is.
+	 * Gets an {@link IGameTimeProvider} implementation used to supply the UI with game time information.
 	 * 
 	 * @return
 	 */
-	IStatisticable getPlayerStatistics();
+	IGameTimeProvider getGameTimeProvider();
 
 	IInGamePlayer getInGamePlayer();
 

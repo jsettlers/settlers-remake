@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.menu.messages.IMessage;
+import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
  * This is a messenger, that lets you display messages on the users screen.
@@ -26,7 +27,12 @@ import jsettlers.common.menu.messages.IMessage;
  */
 public class Messenger {
 
-	LinkedList<IMessage> messages = new LinkedList<IMessage>();
+	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
+	private final IGameTimeProvider gameTimeProvider;
+
+	public Messenger(IGameTimeProvider gameTimeProvider) {
+		this.gameTimeProvider = gameTimeProvider;
+	}
 
 	/**
 	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
@@ -52,7 +58,8 @@ public class Messenger {
 	public void removeOld() {
 		for (IMessage m : messages)
 			if (m.getAge() > IMessage.MESSAGE_TTL)
-				while (!messages.pollLast().equals(m));
+				while (!messages.pollLast().equals(m))
+					;
 	}
 
 	boolean isNews(IMessage msg) {
