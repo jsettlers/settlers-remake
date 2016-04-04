@@ -97,4 +97,19 @@ public class SetBuildingPriorityGuiTask extends SimpleGuiTask {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SetBuildingPriorityGuiTask [buildingPosition=");
+		builder.append(buildingPosition);
+		builder.append(", newPriority=");
+		builder.append(newPriority);
+		builder.append(", guiAction=");
+		builder.append(getGuiAction());
+		builder.append(", playerId=");
+		builder.append(getPlayerId());
+		builder.append("]");
+		return builder.toString();
+	}
 }
