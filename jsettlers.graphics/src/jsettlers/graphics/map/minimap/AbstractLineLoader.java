@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import java.util.Arrays;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
@@ -56,6 +54,7 @@ public abstract class AbstractLineLoader implements Runnable {
 	public AbstractLineLoader(IMinimapData minimapData, MinimapMode modeSettings) {
 		this.minimapData = minimapData;
 		this.modeSettings = modeSettings;
+		landscape[0][0] = TRANSPARENT;
 	}
 
 	@Override
@@ -80,11 +79,8 @@ public abstract class AbstractLineLoader implements Runnable {
 			if (workingMinimapWidth != width || workingMinimapHeight != height) {
 				workingMinimapWidth = width;
 				workingMinimapHeight = height;
-				resizeBuffer(workingMinimapWidth, workingMinimapHeight);
-				landscape = new short[height][width];
-				for (short[] line : landscape) {
-					Arrays.fill(line, TRANSPARENT);
-				}
+				resizeBuffer(width, height);
+				resizeBackground(width, height);
 				currentline = 0;
 				currXOffset = 0;
 				currYOffset = 0;
@@ -103,6 +99,18 @@ public abstract class AbstractLineLoader implements Runnable {
 				}
 
 				currentline = currYOffset;
+			}
+		}
+	}
+
+	private void resizeBackground(int width, int height) {
+		short[][] oldLandscape = landscape;
+		landscape = new short[height][width];
+		float oldHeight = oldLandscape.length;
+		float oldWidth = oldLandscape[0].length;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				landscape[y][x] = oldLandscape[Math.round(y * oldHeight / height)][Math.round(x * oldWidth / width)];
 			}
 		}
 	}
