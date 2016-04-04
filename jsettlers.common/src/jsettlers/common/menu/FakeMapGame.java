@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,10 +15,8 @@
 package jsettlers.common.menu;
 
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
  * This is a simple implementation of {@link IStartedGame} that allows you to supply a map as a game.
@@ -26,28 +24,6 @@ import jsettlers.common.statistics.IStatisticable;
  * @author michael
  */
 public class FakeMapGame implements IStartedGame {
-
-	public final class NullStatistics implements IStatisticable {
-		@Override
-		public int getGameTime() {
-			return 0;
-		}
-
-		@Override
-		public int getNumberOf(EMovableType movableType) {
-			return 0;
-		}
-
-		@Override
-		public int getNumberOf(EMaterialType materialType) {
-			return 0;
-		}
-
-		@Override
-		public int getJoblessBearers() {
-			return 0;
-		}
-	}
 
 	private final IGraphicsGrid map;
 
@@ -61,8 +37,8 @@ public class FakeMapGame implements IStartedGame {
 	}
 
 	@Override
-	public IStatisticable getPlayerStatistics() {
-		return new NullStatistics();
+	public IGameTimeProvider getGameTimeProvider() {
+		return IGameTimeProvider.DUMMY_IMPLEMENTATION;
 	}
 
 	@Override

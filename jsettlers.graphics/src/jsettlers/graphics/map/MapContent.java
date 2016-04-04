@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -50,7 +50,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
@@ -131,7 +131,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private int windowWidth = 1;
 	private int windowHeight = 1;
 
-	private final Messenger messenger = new Messenger();
+	private final Messenger messenger;
 	private final SoundManager soundmanager;
 	private final BackgroundSound backgroundSound;
 
@@ -142,7 +142,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private long moveToMarkerTime;
 
 	private final ReplaceableTextDrawer textDrawer;
-	private final IStatisticable playerStatistics;
+	private final IGameTimeProvider gameTimeProvider;
 
 	private String tooltipString = "";
 
@@ -163,8 +163,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
 		this.map = game.getMap();
-		this.playerStatistics = game.getPlayerStatistics();
-		textDrawer = new ReplaceableTextDrawer();
+		this.gameTimeProvider = game.getGameTimeProvider();
+		this.messenger = new Messenger(this.gameTimeProvider);
+		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
 
@@ -363,7 +364,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawFramerate(GLDrawContext gl) {
 		framerate.nextFrame();
 		String fps = Labels.getString("map-fps", framerate.getRate());
-		long gametime = playerStatistics.getGameTime() / 1000;
+		long gametime = gameTimeProvider.getGameTime() / 1000;
 		String timeString = Labels.getString("map-time", gametime / 60 / 60,
 				(gametime / 60) % 60, (gametime) % 60);
 
