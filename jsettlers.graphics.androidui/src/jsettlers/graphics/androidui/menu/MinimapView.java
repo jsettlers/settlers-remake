@@ -57,13 +57,13 @@ public class MinimapView extends View {
 
 			MapRectangle area = mapContext.getConverter().getMapForScreen(mapContext.getScreen().getPosition());
 			float[] corners = new float[] {
-					(float) area.getLineStartX(0) / mapContext.getMap().getWidth() * bitmap.getWidth(),
-					(float) area.getLineY(0) / mapContext.getMap().getHeight() * bitmap.getHeight(),
-					(float) area.getLineEndX(area.getLines() - 1) / mapContext.getMap().getWidth() * bitmap.getWidth(),
-					(float) area.getLineY(area.getLines() - 1) / mapContext.getMap().getHeight() * bitmap.getHeight()
+					(float) area.getLineStartX(area.getLines() - 1) / mapContext.getMap().getWidth() * bitmap.getWidth(),
+					(float) area.getLineY(area.getLines() - 1) / mapContext.getMap().getHeight() * bitmap.getHeight(),
+					(float) area.getLineEndX(0) / mapContext.getMap().getWidth() * bitmap.getWidth(),
+					(float) area.getLineY(0) / mapContext.getMap().getHeight() * bitmap.getHeight()
 			};
 			matrix.mapPoints(corners);
-			canvas.drawRect(corners[0], corners[1], corners[2], corners[3], highlightPaint);
+			canvas.drawRect(corners[0], corners[3], corners[2], corners[1], highlightPaint);
 		}
 	}
 
