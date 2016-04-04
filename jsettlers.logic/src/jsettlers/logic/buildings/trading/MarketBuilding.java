@@ -119,7 +119,7 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 
 		@Override
 		public ShortPoint2D next() {
-			return waypoints[i++];
+			return hasNext() ? waypoints[i++] : null;
 		}
 
 		@Override
