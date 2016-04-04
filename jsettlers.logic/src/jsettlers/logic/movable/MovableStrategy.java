@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -35,6 +35,7 @@ import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
 import jsettlers.logic.player.Player;
 
 /**
@@ -100,8 +101,10 @@ public abstract class MovableStrategy implements Serializable {
 			return new GeologistStrategy(movable);
 		case THIEF:
 		case MAGE:
-		case DONKEY:
 			return new DummySpecialistStrategy(movable);
+
+		case DONKEY:
+			return new DonkeyStrategy(movable);
 
 		default:
 			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
@@ -177,7 +180,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @param centerY
 	 * @param radius
 	 * @param searchType
-	 * @return
+	 * @return true if a path has been found.
 	 */
 	protected final boolean preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
@@ -271,6 +274,10 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected boolean isMoveToAble() {
 		return false;
+	}
+
+	protected boolean isAttackable() {
+		return movable.getMovableType().isMoveToAble();
 	}
 
 	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
@@ -368,5 +375,13 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected boolean isOnOwnGround() {
 		return movable.isOnOwnGround();
+	}
+
+	/**
+	 * 
+	 * @return If true, the hit is received, if false, the hit is ignored.
+	 */
+	protected boolean receiveHit() {
+		return true;
 	}
 }

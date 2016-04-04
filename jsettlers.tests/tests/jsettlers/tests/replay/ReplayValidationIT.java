@@ -29,7 +29,6 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.FileUtils;
-import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.MapLoader;
@@ -37,8 +36,8 @@ import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
+import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.replay.ReplayUtils.ReplayAndSavegames;
 import jsettlers.network.synchronic.timer.NetworkTimer;
@@ -113,8 +112,7 @@ public class ReplayValidationIT {
 			assertNotNull(savegameOfSavegame);
 		} finally {
 			mainGrid.getMainGrid().stopThreads();
-			Movable.resetState();
-			Building.dropAllBuildings();
+			JSettlersGame.clearState();
 		}
 
 		// compare direct savegame with replayed savegame.

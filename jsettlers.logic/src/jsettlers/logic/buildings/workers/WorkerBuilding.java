@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,12 +22,13 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  * This class is a building with a worker that can fulfill it's job.
@@ -45,8 +46,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	 */
 	private List<Tuple<ShortPoint2D, EMapObjectType>> cleanupPositions = null;
 
-	public WorkerBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	public WorkerBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	private void requestWorker() {
-		super.getGrid().requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
+		super.grid.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	protected final boolean popMaterialFromStack(EMaterialType material) {
-		for (RequestStack stack : super.getStacks()) {
+		for (IRequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == material) {
 				return stack.pop();
 			}
@@ -84,13 +85,13 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		if (super.isNotDestroyed()) {
 			this.worker = worker;
 			super.placeFlag(true);
-			super.createWorkStacks();
+			super.initWorkStacks();
 		}
 	}
 
 	@Override
 	public MaterialProductionSettings getMaterialProduction() {
-		return getGrid().getMaterialProductionAt(getPos().x, getPos().y);
+		return grid.getMaterialProductionAt(pos.x, pos.y);
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 
 		if (cleanupPositions != null) {
 			for (Tuple<ShortPoint2D, EMapObjectType> cleanup : cleanupPositions) {
-				getGrid().getMapObjectsManager().removeMapObjectType(cleanup.e1.x, cleanup.e1.y, cleanup.e2);
+				grid.getMapObjectsManager().removeMapObjectType(cleanup.e1.x, cleanup.e1.y, cleanup.e2);
 			}
 		}
 		super.killedEvent();
