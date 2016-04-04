@@ -45,7 +45,7 @@ public abstract class AbstractLineLoader implements Runnable {
 	private int currXOffset = 0;
 
 	private final MinimapMode modeSettings;
-	private final IMinimapData minimapData;
+	protected final IMinimapData minimapData;
 	/**
 	 * The explored landscape.
 	 */
@@ -106,11 +106,13 @@ public abstract class AbstractLineLoader implements Runnable {
 	private void resizeBackground(int width, int height) {
 		short[][] oldLandscape = landscape;
 		landscape = new short[height][width];
-		float oldHeight = oldLandscape.length;
-		float oldWidth = oldLandscape[0].length;
+		int oldHeight = oldLandscape.length;
+		int oldWidth = oldLandscape[0].length;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				landscape[y][x] = oldLandscape[Math.round(y * oldHeight / height)][Math.round(x * oldWidth / width)];
+				int oldY = Math.round((float) y * oldHeight / height);
+				int oldX = Math.round((float) x * oldWidth / width);
+				landscape[y][x] = oldLandscape[Math.max(oldY, oldHeight - 1)][Math.max(oldX, oldWidth - 1)];
 			}
 		}
 	}
