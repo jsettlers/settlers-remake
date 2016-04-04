@@ -5,6 +5,7 @@ import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.BuildMenu;
 import jsettlers.graphics.androidui.menu.GameMenu;
+import jsettlers.graphics.androidui.menu.MinimapMenu;
 import jsettlers.graphics.map.ScreenPosition;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,14 +15,39 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 public class HudFragment extends AndroidMenu {
+	private final class ShowMenuClickListener implements OnClickListener {
+		private AndroidMenu menu;
+
+		public ShowMenuClickListener(AndroidMenu menu) {
+			super();
+			this.menu = menu;
+		}
+
+		@Override
+		public void onClick(View v) {
+			getPutable().showMenuFragment(menu);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("ShowMenuClickListener [menu=");
+			builder.append(menu);
+			builder.append("]");
+			return builder.toString();
+		}
+	}
+
 	private final AndroidMenu buildMenu;
 	private final AndroidMenu gameMenu;
+	private final MinimapMenu minimapMenu;
 	private ButtonForSelectionManager selectionSetter;
 
 	public HudFragment(AndroidMenuPutable putable) {
 		super(putable);
 		buildMenu = new BuildMenu(putable);
 		gameMenu = new GameMenu(putable);
+		minimapMenu = new MinimapMenu(putable);
 	}
 
 	@Override
@@ -31,19 +57,11 @@ public class HudFragment extends AndroidMenu {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		view.findViewById(R.id.button_build).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getPutable().showMenuFragment(buildMenu);
-			}
-		});
+		view.findViewById(R.id.button_build).setOnClickListener(new ShowMenuClickListener(buildMenu));
 
-		view.findViewById(R.id.button_menu).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getPutable().showMenuFragment(gameMenu);
-			}
-		});
+		view.findViewById(R.id.button_menu).setOnClickListener(new ShowMenuClickListener(gameMenu));
+
+		view.findViewById(R.id.button_minimap).setOnClickListener(new ShowMenuClickListener(minimapMenu));
 
 		View buttonSelection = view.findViewById(R.id.button_selection);
 		selectionSetter = new ButtonForSelectionManager(getPutable(), (ImageButton) buttonSelection);
@@ -58,6 +76,7 @@ public class HudFragment extends AndroidMenu {
 	@Override
 	public void onStop() {
 		getPutable().getChangeObserveable().removeMapSelectionListener(selectionSetter);
+		minimapMenu.stop();
 		super.onStop();
 	}
 }

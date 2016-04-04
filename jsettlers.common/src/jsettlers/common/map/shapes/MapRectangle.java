@@ -85,7 +85,7 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	/**
-	 * Gets the first x coordinate contained by a line.
+	 * Gets the last x coordinate contained by a line.
 	 * 
 	 * @param line
 	 *            The line relative to the first line of this rectangle.
