@@ -23,6 +23,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
@@ -72,12 +73,12 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 
 	@Override
 	public boolean needsDonkey() {
-		return isTargetSet() && super.getStackWithMaterial() != null;
+		return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
 	}
 
 	@Override
 	public EMaterialType tryToTakeDonkeyMaterial() {
-		if (!isTargetSet()) { // if no target is set, don't give materials
+		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
 			return null;
 		}
 
