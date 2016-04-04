@@ -170,7 +170,7 @@ public class BuildingState {
 	private int[] computeTradingCounts(IBuilding building) {
 		if (building instanceof IBuilding.ITrading) {
 			IBuilding.ITrading trading = (IBuilding.ITrading) building;
-			int[] counts = new int[EMaterialType.NUMBER_OF_MATERIALS];
+			int[] counts = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
 				counts[m.ordinal] = trading.getRequestedTradingFor(m);
 			}

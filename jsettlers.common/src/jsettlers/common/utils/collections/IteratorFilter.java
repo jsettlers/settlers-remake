@@ -26,7 +26,7 @@ import java.util.Iterator;
  */
 public class IteratorFilter<T> implements Iterable<T> {
 
-	protected final Iterable<T> iterable;
+	protected final Iterable<? extends T> iterable;
 	protected final IPredicate<T> predicate;
 
 	/**
@@ -37,7 +37,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 	 * @param predicate
 	 *            {@link IPredicate} used to determine if an element should be kept (predicate evaluates to true) or dropped.
 	 */
-	public IteratorFilter(Iterable<T> iterable, IPredicate<T> predicate) {
+	public IteratorFilter(Iterable<? extends T> iterable, IPredicate<T> predicate) {
 		this.iterable = iterable;
 		this.predicate = predicate;
 	}
@@ -60,11 +60,11 @@ public class IteratorFilter<T> implements Iterable<T> {
 	}
 
 	public static class FilteredIterator<T> implements Iterator<T> {
+		private final Iterator<? extends T> iter;
 		private final IPredicate<T> predicate;
-		private final Iterator<T> iter;
 		private T next;
 
-		public FilteredIterator(Iterator<T> iter, IPredicate<T> predicate) {
+		public FilteredIterator(Iterator<? extends T> iter, IPredicate<T> predicate) {
 			this.iter = iter;
 			this.predicate = predicate;
 

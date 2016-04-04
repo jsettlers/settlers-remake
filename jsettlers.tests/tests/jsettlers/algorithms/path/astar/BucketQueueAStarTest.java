@@ -15,11 +15,12 @@
 package jsettlers.algorithms.path.astar;
 
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.position.ShortPoint2D;
-
-import org.junit.Test;
 
 public class BucketQueueAStarTest {
 
@@ -63,6 +64,8 @@ public class BucketQueueAStarTest {
 
 	private IPathCalculatable getPathable(final short x, final short y) {
 		return new IPathCalculatable() {
+			private static final long serialVersionUID = -7744309931981354171L;
+
 			@Override
 			public ShortPoint2D getPos() {
 				return new ShortPoint2D(x, y);

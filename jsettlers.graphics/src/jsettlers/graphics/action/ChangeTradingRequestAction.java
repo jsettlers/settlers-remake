@@ -15,6 +15,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * This {@link Action} changes the trading request of a market place.

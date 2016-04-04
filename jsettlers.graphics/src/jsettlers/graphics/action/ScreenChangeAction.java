@@ -15,6 +15,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.EActionType;
 
 /**
  * This action is fired whenever the visible map area has been changed by the user.

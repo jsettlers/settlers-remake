@@ -23,6 +23,11 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.UIState;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
@@ -30,11 +35,9 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
@@ -46,9 +49,6 @@ import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.action.SoldierAction;
-import jsettlers.graphics.map.IMapInterfaceConnector;
-import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
@@ -112,7 +112,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	@Override
-	public void action(Action action) {
+	public void action(IAction action) {
 		if (action.getActionType() != EActionType.SCREEN_CHANGE) {
 			System.out.println("action(Action): " + action.getActionType() + "   at game time: " + MatchConstants.clock().getTime());
 		}

@@ -14,15 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import go.graphics.GLDrawContext;
-import go.graphics.IllegalBufferException;
-import go.graphics.TextureHandle;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 
+import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -89,9 +88,8 @@ public final class Minimap {
 						texture.delete();
 						texture = null;
 					}
-					ShortBuffer data =
-							ByteBuffer.allocateDirect(width * height * 2)
-									.order(ByteOrder.nativeOrder()).asShortBuffer();
+					ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2)
+							.order(ByteOrder.nativeOrder()).asShortBuffer();
 					for (int i = 0; i < width * height; i++) {
 						data.put(LineLoader.BLACK);
 					}
@@ -102,9 +100,8 @@ public final class Minimap {
 				}
 
 				if (!updatedLines.isEmpty()) {
-					ShortBuffer currData =
-							ByteBuffer.allocateDirect(width * 2)
-									.order(ByteOrder.nativeOrder()).asShortBuffer();
+					ShortBuffer currData = ByteBuffer.allocateDirect(width * 2)
+							.order(ByteOrder.nativeOrder()).asShortBuffer();
 					for (Integer currLine : updatedLines) {
 						currData.position(0);
 						currData.put(buffer[currLine]);
@@ -164,14 +161,11 @@ public final class Minimap {
 		int lineStartX = mapViewport.getLineStartX(0);
 		int firstY = mapViewport.getLineY(0);
 		float minviewx = converter.getViewX(lineStartX, firstY, 0) * width;
-		float maxviewy =
-				Math.min(converter.getViewY(lineStartX, firstY, 0), 1) * height;
-		float maxviewx =
-				converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
-						* width;
+		float maxviewy = Math.min(converter.getViewY(lineStartX, firstY, 0), 1) * height;
+		float maxviewx = converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
+				* width;
 		int lastY = mapViewport.getLineY(mapViewport.getLines());
-		float minviewy =
-				Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
+		float minviewy = Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
 
 		context.drawLine(
 				new float[] {
@@ -189,8 +183,10 @@ public final class Minimap {
 						Math.max(
 								(Math.min(maxviewx,
 										(maxviewy / height * stride + 1)
-												* width) - width)
-										/ width / stride * height, minviewy),
+												* width)
+										- width)
+										/ width / stride * height,
+								minviewy),
 						0,
 						// top right
 						Math.min(maxviewx, (maxviewy / height * stride + 1)
@@ -205,7 +201,8 @@ public final class Minimap {
 						Math.min(
 								Math.max(minviewx, minviewy / height * stride
 										* width)
-										/ width / stride * height, maxviewy),
+										/ width / stride * height,
+								maxviewy),
 						0,
 				}, true);
 	}
@@ -243,22 +240,6 @@ public final class Minimap {
 		} else {
 			return null;
 		}
-	}
-
-	public ShortPoint2D getClickPosition(float relativex, float relativey) {
-		int x = converter.getMapX(relativex, relativey);
-		int y = converter.getMapY(relativex, relativey);
-		if (x < 0) {
-			x = 0;
-		} else if (x >= context.getMap().getWidth()) {
-			x = context.getMap().getWidth() - 1;
-		}
-		if (y < 0) {
-			y = 0;
-		} else if (y >= context.getMap().getHeight()) {
-			y = context.getMap().getHeight() - 1;
-		}
-		return new ShortPoint2D(x, y);
 	}
 
 	public void setMapViewport(MapRectangle rect) {

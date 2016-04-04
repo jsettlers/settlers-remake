@@ -14,12 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import go.graphics.GLDrawContext;
-import go.graphics.text.EFontSize;
-
 import java.util.Collection;
 import java.util.List;
 
+import go.graphics.GLDrawContext;
+import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
@@ -27,6 +26,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
@@ -34,7 +34,6 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ChangeTradingRequestAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
@@ -234,7 +233,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class TradingMaterialCount extends Label implements StateDependendElement {
 
-		private EMaterialType material;
+		private final EMaterialType material;
 
 		/**
 		 * Creates a new trading material count display.
@@ -475,7 +474,6 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		// hardcoded...
 		float buttonWidth = 18f / (127 - 9);
 		float buttonSpace = 12f / (127 - 9);
-		float requestOfferSpace = 18f / (127 - 9);
 
 		float requestX = buttonSpace;
 		float offerX = 1 - buttonSpace - buttonWidth;
@@ -561,9 +559,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 *
 	 */
 	public static class PriorityButton extends Button {
-		private ImageLink stopped;
-		private ImageLink low;
-		private ImageLink high;
+		private final ImageLink stopped;
+		private final ImageLink low;
+		private final ImageLink high;
 		private EPriority next = EPriority.DEFAULT;
 		private EPriority current = EPriority.DEFAULT;
 
@@ -688,6 +686,12 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		layout.nameText.setType(building.getBuildingType(), false);
 		Collection<TradingMaterialButton> buttons = layout.getAll(TradingMaterialButton.class);
 		selectionManager.setButtons(buttons);
+		EPriority[] supported = state.getSupportedPriorities();
+		if (supported.length < 2) {
+			layout.background.removeChild(layout.priority);
+		} else {
+			layout.priority.setPriority(supported, building.getPriority());
+		}
 		for (TradingMaterialButton b : buttons) {
 			b.setSelectionManager(selectionManager);
 		}

@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
-import go.graphics.GLDrawContext;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +21,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
@@ -54,7 +53,7 @@ public final class ImageProvider {
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
 
-	private Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
+	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
 	private ImageIndexFile indexFile = null;
 
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
@@ -86,13 +85,12 @@ public final class ImageProvider {
 
 	private static ImageProvider instance;
 
-	private Hashtable<Integer, AdvancedDatFileReader> readers =
-			new Hashtable<Integer, AdvancedDatFileReader>();
+	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<Integer, AdvancedDatFileReader>();
 
 	/**
 	 * The lookup paths for the dat files.
 	 */
-	private List<File> lookupPaths = new ArrayList<File>();
+	private final List<File> lookupPaths = new ArrayList<File>();
 
 	private ImageProvider() {
 	}
@@ -345,13 +343,5 @@ public final class ImageProvider {
 	 */
 	public void addPreloadTask(GLPreloadTask task) {
 		tasks.add(task);
-	}
-
-	public void runPreloadTasks(GLDrawContext context) {
-		GLPreloadTask task;
-		while ((task = tasks.poll()) != null) {
-			System.out.println("running opengl preload task");
-			task.run(context);
-		}
 	}
 }

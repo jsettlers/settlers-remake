@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IBuildingCounts;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
@@ -78,8 +78,8 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 	};
 
 	public static class BuildingCountState {
-		private IGraphicsGrid grid;
-		private ShortPoint2D pos;
+		private final IGraphicsGrid grid;
+		private final ShortPoint2D pos;
 
 		public BuildingCountState(ShortPoint2D pos, IGraphicsGrid grid) {
 			this.pos = pos;
@@ -106,8 +106,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	private final UIPanel panel;
 
-	private final ArrayList<BuildingButton> buttons =
-			new ArrayList<BuildingButton>();
+	private final ArrayList<BuildingButton> buttons = new ArrayList<BuildingButton>();
 	private EBuildingType activeBuilding;
 
 	private final UIUpdater<BuildingCountState> updater;
@@ -186,7 +185,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 	}
 
 	@Override
-	public Action catchAction(Action action) {
+	public IAction catchAction(IAction action) {
 		if ((action.getActionType() == EActionType.MOVE_TO || action.getActionType() == EActionType.ABORT) && activeBuilding != null) {
 			action = new ShowConstructionMarksAction(null);
 		}

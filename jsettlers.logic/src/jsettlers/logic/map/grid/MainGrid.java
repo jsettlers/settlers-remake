@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -81,6 +81,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -111,7 +112,6 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -144,7 +144,7 @@ public final class MainGrid implements Serializable {
 	transient IGuiInputGrid guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
-	public MainGrid(String mapId, String mapName, short width, short height, byte numberOfPlayers) {
+	public MainGrid(String mapId, String mapName, short width, short height, PlayerSetting[] playerSettings) {
 		this.mapId = mapId;
 		this.mapName = mapName;
 
@@ -152,7 +152,7 @@ public final class MainGrid implements Serializable {
 		this.height = height;
 
 		this.flagsGrid = new FlagsGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers, flagsGrid);
+		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, flagsGrid);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
@@ -220,7 +220,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	public MainGrid(String mapId, String mapName, IMapData mapGrid, PlayerSetting[] playerSettings) {
-		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) playerSettings.length);
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), playerSettings);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -327,7 +327,7 @@ public final class MainGrid implements Serializable {
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
 		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.dropMaterial(pos, materialType, true);
+			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
 		}
 	}
 
@@ -391,8 +391,8 @@ public final class MainGrid implements Serializable {
 	 * @return The newly created building.
 	 */
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
-		Building building = Building.getBuilding(type, player);
-		building.constructAt(buildingsGrid, position, fullyConstructed);
+		Building building = Building.createBuilding(type, player, position, buildingsGrid);
+		building.construct(fullyConstructed);
 
 		if (fullyConstructed) {
 			byte buildingHeight = landscapeGrid.getHeightAt(position.x, position.y);
@@ -781,8 +781,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public final boolean isBlocked(int x, int y) {
+			return flagsGrid.isBlocked(x, y);
+		}
+
+		@Override
 		public final void setBlocked(int x, int y, boolean blocked) {
 			flagsGrid.setBlockedAndProtected(x, y, blocked);
+		}
+
+		@Override
+		public final boolean isProtected(int x, int y) {
+			return flagsGrid.isProtected(x, y);
+		}
+
+		@Override
+		public final void setProtected(int x, int y, boolean protect) {
+			flagsGrid.setProtected(x, y, protect);
 		}
 
 		@Override
@@ -793,11 +808,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 			return objectsGrid.removeMapObject(x, y, mapObject);
-		}
-
-		@Override
-		public final boolean isBlocked(int x, int y) {
-			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -823,11 +833,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
-		}
-
-		@Override
-		public final void setProtected(int x, int y, boolean protect) {
-			flagsGrid.setProtected(x, y, protect);
 		}
 
 		@Override
@@ -1145,14 +1150,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
-			if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
-				if (offer) {
-					partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
-				}
-				return true;
-			} else
-				return false;
+		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer, boolean forced) {
+			boolean successful;
+
+			if (forced) {
+				position = mapObjectsManager.pushMaterialForced(position.x, position.y, materialType);
+				successful = position != null;
+			} else if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
+				successful = true;
+			} else {
+				successful = false;
+			}
+
+			if (successful && offer) {
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
+			}
+
+			return successful;
 		}
 
 		@Override
@@ -1432,7 +1446,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf) {
 			for (int i = 0; i < numberOf; i++) {
-				movablePathfinderGrid.dropMaterial(position, type, true);
+				movablePathfinderGrid.dropMaterial(position, type, true, true);
 			}
 		}
 
@@ -1692,6 +1706,31 @@ public final class MainGrid implements Serializable {
 		@Override
 		public MaterialProductionSettings getMaterialProductionAt(int x, int y) {
 			return partitionsGrid.getMaterialProductionAt(x, y);
+		}
+
+		@Override
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround,
+				final byte playerId, short targetRadius) {
+			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public ShortPoint2D getPos() {
+					return start;
+				}
+
+				@Override
+				public byte getPlayerId() {
+					return playerId;
+				}
+
+				@Override
+				public boolean needsPlayersGround() {
+					return needsPlayersGround;
+				}
+			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
+
+			return path != null ? path.getTargetPos() : null;
 		}
 	}
 

@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.common;
 
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
 
 public abstract class CommonConstants {
 	/**
@@ -85,7 +85,7 @@ public abstract class CommonConstants {
 	/**
 	 * If set, only this AI type is used.
 	 */
-	public static EWhatToDoAiType FIXED_AI_TYPE = null;
+	public static EPlayerType FIXED_AI_TYPE = null; // TODO remove
 
 	/**
 	 * Option to disable the loading of original maps.

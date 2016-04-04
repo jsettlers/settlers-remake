@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments.progress;
 
+import jsettlers.common.menu.EProgressState;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.progress.EProgressState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import android.app.Activity;

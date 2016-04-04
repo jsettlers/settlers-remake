@@ -18,12 +18,13 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
@@ -126,7 +127,7 @@ public class MainPanel extends UIPanel {
 	/**
 	 * Somewhere to fire actions to.
 	 */
-	private ActionFireable actionFireable;
+	private final ActionFireable actionFireable;
 
 	public MainPanel(ActionFireable actionFireable, IInGamePlayer player) {
 		this.actionFireable = actionFireable;
@@ -282,7 +283,7 @@ public class MainPanel extends UIPanel {
 		}
 	}
 
-	public Action catchAction(Action action) {
+	public IAction catchAction(IAction action) {
 		action = activeContent.catchAction(action);
 		// TODO: Abort on MOVE_TO-action.
 		EActionType type = action.getActionType();

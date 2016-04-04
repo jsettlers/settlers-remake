@@ -76,5 +76,4 @@ public class LandscapeImage extends SingleImage {
 	public boolean isContinuous() {
 		return this.width > CONTINUOUS_MIN_SIZE && this.height > CONTINUOUS_MIN_SIZE;
 	}
-
 }

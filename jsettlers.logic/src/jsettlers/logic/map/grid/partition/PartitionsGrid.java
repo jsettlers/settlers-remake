@@ -18,12 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
@@ -51,6 +46,7 @@ import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
 
 /**
@@ -86,21 +82,27 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
-	public PartitionsGrid(short width, short height, byte numberOfPlayers, IPartitionsGridBlockingProvider blockingProvider) {
+	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IPartitionsGridBlockingProvider blockingProvider) {
 		this.width = width;
 		this.height = height;
 		this.blockingProvider = blockingProvider;
 		blockingProvider.registerBlockingChangedListener(this);
 
-		this.players = new Player[numberOfPlayers]; // create the players.
-		this.blockedPartitionsForPlayers = new short[numberOfPlayers];
-		this.teams = new Team[numberOfPlayers];
-		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
-			Team team = new Team(playerId);
-			this.players[playerId] = new Player(playerId, team, numberOfPlayers);
-			this.teams[playerId] = team;
+		this.players = new Player[playerSettings.length]; // create the players.
+		this.blockedPartitionsForPlayers = new short[playerSettings.length];
+		Map<Byte,Team> teams = new HashMap<Byte,Team>();
+		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
+			PlayerSetting playerSetting = playerSettings[(int) playerId];
+			if (teams.get(playerSetting.getTeamId()) == null) {
+				teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+			}
+			Team team = teams.get(playerSetting.getTeamId());
+			this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length);
+			team.registerPlayer(this.players[playerId]);
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
+		Team[] teamsArray = new Team[teams.size()];
+		this.teams = teams.values().toArray(teamsArray);
 
 		this.partitions = new short[width * height];
 		this.towers = new byte[width * height];

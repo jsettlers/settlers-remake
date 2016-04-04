@@ -27,6 +27,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.player.Player;
 
@@ -70,8 +71,11 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 * 
 	 * @param pos
 	 * @param materialType
+	 * @param offer
+	 * @param forced
+	 *            If true, the material will be put on the grid on the closest free location.
 	 */
-	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
+	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced);
 
 	/**
 	 * 
@@ -234,4 +238,5 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
+	public abstract Movable getMovableAt(short x, short y);
 }

@@ -24,8 +24,6 @@ import jsettlers.common.images.OriginalImageLink;
  * @author Andreas Eberle
  */
 public enum EMaterialType {
-	NO_MATERIAL((short) 0, 0, 0, false, -1, false),
-
 	AXE((short) 46, 3, 153, true, 18, false),
 	BOW((short) 63, 14, 114, true, 14, false),
 	BLADE((short) 55, 3, 138, true, 16, false),
@@ -55,12 +53,15 @@ public enum EMaterialType {
 	WATER((short) 77, 3, 156, true, 12, false),
 	WINE((short) 69, 14, 123, true, 25, false),
 
-	GEMS((short) 79, (short) 24, (short) 120, true, -1, false),
-	SULFUR((short) 80, (short) 34, (short) 126, true, -1, false),
-	RICE((short) 78, (short) 34, (short) 129, true, -1, false),
-	KEG((short) 70, (short) 34, (short) 132, true, -1, false),
+	// No the non-droppable materials
 
-	BOX((short) 82, (short) 0, (short) 0, true, -1, false),
+	NO_MATERIAL((short) 0, 0, 0, false, -1, false),
+
+	GEMS((short) 79, (short) 24, (short) 120, false, -1, false),
+	SULFUR((short) 80, (short) 34, (short) 126, false, -1, false),
+	RICE((short) 78, (short) 34, (short) 129, false, -1, false),
+	KEG((short) 70, (short) 34, (short) 132, false, -1, false),
+	BOX((short) 82, (short) 0, (short) 0, false, -1, false),
 
 	// ammo for cannon (6 frames instead of 8)
 	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),

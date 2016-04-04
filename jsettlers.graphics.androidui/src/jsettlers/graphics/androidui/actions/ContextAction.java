@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.androidui.actions;
 
-import jsettlers.graphics.action.Action;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.ActionFireable;
 
 /**
@@ -25,7 +25,7 @@ import jsettlers.graphics.action.ActionFireable;
 public abstract class ContextAction {
 	public abstract String getDesciption();
 
-	public Action replaceAction(Action action) {
+	public IAction replaceAction(IAction action) {
 		return action;
 	}
 

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -45,14 +46,5 @@ public class PointAction extends Action {
 	 */
 	public ShortPoint2D getPosition() {
 		return this.position;
-	}
-
-	/**
-	 * Defines it the units should start working when reaching their destination.
-	 *
-	 * @return a boolean value.
-	 */
-	public boolean startWorking() {
-		return false;
 	}
 }

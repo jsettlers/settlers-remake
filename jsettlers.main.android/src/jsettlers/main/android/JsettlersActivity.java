@@ -22,15 +22,15 @@ import go.graphics.region.Region;
 
 import java.io.File;
 
+import jsettlers.common.menu.FakeMapGame;
+import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.Player;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;

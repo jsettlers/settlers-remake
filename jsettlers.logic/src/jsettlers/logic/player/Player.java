@@ -19,10 +19,10 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.messages.IMessage;
+import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.graphics.map.IMessenger;
-import jsettlers.graphics.messages.Message;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
 /**
@@ -69,7 +69,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	}
 
 	@Override
-	public void showMessage(Message message) {
+	public void showMessage(IMessage message) {
 		if (messenger != null) {
 			messenger.showMessage(message);
 		}

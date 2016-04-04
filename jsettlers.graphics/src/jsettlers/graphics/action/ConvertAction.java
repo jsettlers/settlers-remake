@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 
 /**

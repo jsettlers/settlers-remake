@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,6 +19,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
@@ -34,8 +35,8 @@ public abstract class SpawnBuilding extends Building {
 	private static final int PRODUCE_PERIOD = 2000;
 	private byte produced = 0;
 
-	protected SpawnBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	protected SpawnBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -51,10 +52,10 @@ public abstract class SpawnBuilding extends Building {
 	@Override
 	protected int subTimerEvent() {
 		int rescheduleDelay;
-		Movable movableAtDoor = super.getGrid().getMovable(super.getDoor());
+		Movable movableAtDoor = super.grid.getMovable(super.getDoor());
 
 		if (movableAtDoor == null) {
-			movableAtDoor = new Movable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
+			movableAtDoor = new Movable(super.grid.getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
 			produced++;
 
 			if (produced < getProduceLimit()) {

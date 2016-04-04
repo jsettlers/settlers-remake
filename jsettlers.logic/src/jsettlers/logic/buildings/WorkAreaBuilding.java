@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -36,8 +36,8 @@ public abstract class WorkAreaBuilding extends Building {
 
 	private boolean cannotWork = false;
 
-	protected WorkAreaBuilding(EBuildingType type, Player player) {
-		super(type, player);
+	protected WorkAreaBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	public final void setWorkAreaCenter(ShortPoint2D newWorkAreaCenter) {
-		int distance = super.getPos().getOnGridDistTo(newWorkAreaCenter);
+		int distance = super.pos.getOnGridDistTo(newWorkAreaCenter);
 
 		if (distance < Constants.BUILDINGS_MAX_WORKRADIUS_FACTOR * super.getBuildingType().getWorkradius()) {
 			if (isSelected()) {
@@ -84,22 +84,20 @@ public abstract class WorkAreaBuilding extends Building {
 	}
 
 	private void drawWorkAreaCircle(boolean draw) {
-		super.getGrid().drawWorkAreaCircle(super.getPos(), workAreaCenter, super.getBuildingType().getWorkradius(), draw);
+		super.grid.drawWorkAreaCircle(super.pos, workAreaCenter, super.getBuildingType().getWorkradius(), draw);
 	}
 
 	@Override
 	public EPriority[] getSupportedPriorities() {
-		EPriority[] priorities = super.getSupportedPriorities();
-
-		if (priorities.length == 0) {
-			if (super.getStacks().isEmpty()) { // has no request stacks
-				priorities = SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS;
+		if (isConstructionFinished()) {
+			if (getBuildingType().getRequestStacks().length == 0) { // has no request stacks
+				return SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS;
 			} else {
-				priorities = SUPPORTED_PRIORITIES_FOR_REQUESTERS;
+				return SUPPORTED_PRIORITIES_FOR_REQUESTERS;
 			}
+		} else {
+			return super.getSupportedPriorities();
 		}
-
-		return priorities;
 	}
 
 	@Override

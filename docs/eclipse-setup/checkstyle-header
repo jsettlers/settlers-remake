@@ -12,3 +12,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
+package jsettlers.graphics.action;
+
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.movable.ESoldierType;
+
+/**
+ * @author codingberlin
+ * @author Andreas Eberle
+ */
+public class UpgradeSoldiersAction extends SoldierAction {
+
+	public UpgradeSoldiersAction(ESoldierType soldierType) {
+		super(EActionType.UPGRADE_SOLDIERS, soldierType);
+	}
+}

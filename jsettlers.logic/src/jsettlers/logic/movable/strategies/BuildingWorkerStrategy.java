@@ -24,8 +24,8 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -432,7 +432,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropCurrentMaterial() {
 		EMaterialType material = super.getMaterial();
 		if (material.isDroppable()) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), material, true);
+			super.getStrategyGrid().dropMaterial(super.getPos(), material, true, false);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
 	}

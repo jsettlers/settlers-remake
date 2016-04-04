@@ -11,7 +11,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/findCommit.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/createTextures.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
@@ -21,7 +21,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/createTextures.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/findCommit.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

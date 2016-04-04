@@ -14,14 +14,6 @@
  *******************************************************************************/
 package go.graphics.android;
 
-import go.graphics.GLDrawContext;
-import go.graphics.GeometryHandle;
-import go.graphics.TextureHandle;
-import go.graphics.android.AndroidGLHandle.AndroidGeometryHandle;
-import go.graphics.android.AndroidGLHandle.AndroidTextureHandle;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -30,6 +22,13 @@ import java.nio.ShortBuffer;
 import android.content.Context;
 import android.opengl.GLES10;
 import android.opengl.GLES11;
+import go.graphics.GLDrawContext;
+import go.graphics.GeometryHandle;
+import go.graphics.TextureHandle;
+import go.graphics.android.AndroidGLHandle.AndroidGeometryHandle;
+import go.graphics.android.AndroidGLHandle.AndroidTextureHandle;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
 public class AndroidContext implements GLDrawContext {
 	private final Context context;
@@ -523,6 +522,6 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	public void invalidateContext() {
-		throw new UnsupportedOperationException();
+		// TODO invalidate context
 	}
 }

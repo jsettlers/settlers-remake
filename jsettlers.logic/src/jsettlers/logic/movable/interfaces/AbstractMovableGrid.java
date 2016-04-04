@@ -65,8 +65,6 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 
 	public abstract Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	public abstract Movable getMovableAt(short x, short y);
-
 	public abstract boolean isBlocked(short x, short y);
 
 	public abstract boolean isProtected(short x, short y);

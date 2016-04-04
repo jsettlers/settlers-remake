@@ -21,7 +21,8 @@ import jsettlers.ai.economy.AdaptableEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.ai.economy.MiddleEconomyMinister;
 import jsettlers.ai.economy.WinnerEconomyMinister;
-import jsettlers.common.ai.EWhatToDoAiType;
+import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
@@ -32,25 +33,28 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	public IWhatToDoAi buildWhatToDoAi(EWhatToDoAiType type, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid,
+	public IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid,
+			MovableGrid movableGrid,
 			ITaskScheduler
-			taskScheduler) {
-		ArmyGeneral general = determineArmyGeneral(type, aiStatistics, player, movableGrid, taskScheduler);
-		EconomyMinister minister = determineMinister(type, aiStatistics, player);
+					taskScheduler) {
+		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
+		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(EWhatToDoAiType type, AiStatistics aiStatistics, Player player) {
-		if (type == EWhatToDoAiType.ROMAN_VERY_EASY) {
+	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
+		if (type == EPlayerType.AI_VERY_EASY) {
 			return new AdaptableEconomyMinister(aiStatistics, player);
-		} else if (type == EWhatToDoAiType.ROMAN_VERY_HARD) {
+		} else if (type == EPlayerType.AI_VERY_HARD) {
 			return new WinnerEconomyMinister();
 		}
 		return new MiddleEconomyMinister();
 	}
 
-	private ArmyGeneral determineArmyGeneral(EWhatToDoAiType type, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
-		if (type == EWhatToDoAiType.ROMAN_HARD || type == EWhatToDoAiType.ROMAN_VERY_HARD) {
+	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
+			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+		//TODO: use civilisation to determine different general when there is more than ROMAN
+		if (type == EPlayerType.AI_HARD || type == EPlayerType.AI_VERY_HARD) {
 			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
 		}
 		return new LooserGeneral(aiStatistics, player, movableGrid, taskScheduler);

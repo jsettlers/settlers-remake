@@ -1,10 +1,10 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.ui.UIPanel;
@@ -60,7 +60,7 @@ public abstract class AbstractContentProvider {
 	 *            The action to catch.
 	 * @return The action to override with. May be <code>null</code> to cancel.
 	 */
-	public Action catchAction(Action action) {
+	public IAction catchAction(IAction action) {
 		PointAction overrideAction;
 		if (action.getActionType() == EActionType.SELECT_POINT
 				&& (overrideAction = getSelectAction(((PointAction) action).getPosition())) != null) {

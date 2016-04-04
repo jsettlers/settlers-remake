@@ -14,12 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.event.swingInterpreter;
 
-import go.graphics.UIPoint;
-import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandler;
-import go.graphics.event.GOEventHandlerProvider;
-import go.graphics.event.interpreter.AbstractEventConverter;
-
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -37,12 +31,17 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.lang.reflect.Field;
 
+import go.graphics.UIPoint;
+import go.graphics.event.GOEventHandlerProvider;
+import go.graphics.event.interpreter.AbstractEventConverter;
+
 /**
  * This class listens to swing events, converts them to a go events and sends them to handlers.
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener, HierarchyListener {
+public class GOSwingEventConverter extends AbstractEventConverter
+		implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener, HierarchyListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -71,7 +70,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		component.addMouseMotionListener(this);
 		component.addMouseWheelListener(this);
 		component.addHierarchyListener(this);
-		
+
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
@@ -86,7 +85,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		if (config == null) {
 			return;
 		}
-		
+
 		GraphicsDevice myScreen = config.getDevice();
 
 		try {
@@ -260,23 +259,6 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		return text;
 	}
 
-	private GOEventHandler getCancelHandler() {
-		return new GOEventHandler() {
-			@Override
-			public void phaseChanged(GOEvent event) {
-			}
-
-			@Override
-			public void finished(GOEvent event) {
-				tryCancelCurrentEvent();
-			}
-
-			@Override
-			public void aborted(GOEvent event) {
-			}
-		};
-	}
-
 	@Override
 	public void keyReleased(KeyEvent e) {
 		endKeyEvent(getKeyName(e));
@@ -294,7 +276,8 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	}
 
 	@Override
-	public void componentResized(ComponentEvent e) {}
+	public void componentResized(ComponentEvent e) {
+	}
 
 	@Override
 	public void componentMoved(ComponentEvent componentEvent) {
@@ -307,14 +290,15 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {}
+	public void componentHidden(ComponentEvent e) {
+	}
 
 	@Override
 	public void hierarchyChanged(HierarchyEvent hierarchyEvent) {
 		Component component = hierarchyEvent.getComponent();
 		privateRegisterComponentListenerToParentWindowOf(component, component);
 	}
-	
+
 	void privateRegisterComponentListenerToParentWindowOf(Component component, Component childComponent) {
 		if (component == null) {
 			return;

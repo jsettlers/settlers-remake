@@ -29,28 +29,29 @@ import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
-import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.EGameError;
-import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGame;
-import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
@@ -250,7 +251,7 @@ public class JSettlersGame {
 
 				System.setErr(systemErrorStream);
 				System.setOut(systemOutStream);
-				
+
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
@@ -263,14 +264,6 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
-			
-		}
-
-		private void clearState() {
-			RescheduleTimer.stopAndClear();
-			Movable.resetState();
-			Building.dropAllBuildings();
-			MatchConstants.clearState();
 		}
 
 		public AiExecutor getAiExecutor() {
@@ -331,11 +324,6 @@ public class JSettlersGame {
 			this.startingGameListener = startingGameListener;
 			if (startingGameListener != null)
 				startingGameListener.startProgressChanged(progressState, progress);
-		}
-
-		@Override
-		public void abort() {
-			stop();
 		}
 
 		// METHODS of IStartedGame
@@ -405,5 +393,13 @@ public class JSettlersGame {
 
 	private static DateFormat getLogDateFormatter() {
 		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+	}
+
+	public static void clearState() {
+		RescheduleTimer.stopAndClear();
+		Movable.resetState();
+		Building.clearState();
+		MarketBuilding.clearState();
+		MatchConstants.clearState();
 	}
 }

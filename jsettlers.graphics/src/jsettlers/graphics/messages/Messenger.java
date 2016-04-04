@@ -17,6 +17,8 @@ package jsettlers.graphics.messages;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.menu.messages.IMessage;
+
 /**
  * This is a messenger, that lets you display messages on the users screen.
  * 
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class Messenger {
 	private static final int MAX_MESSAGES = 50;
-	private final LinkedList<Message> messages = new LinkedList<Message>();
+	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
 
 	/**
 	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
@@ -33,7 +35,7 @@ public class Messenger {
 	 * 
 	 * @return The messages to display.
 	 */
-	public List<Message> getMessages() {
+	public List<IMessage> getMessages() {
 		return messages;
 	}
 
@@ -43,7 +45,7 @@ public class Messenger {
 	 * @param message
 	 *            The message that should be displayed to the user.
 	 */
-	public void addMessage(Message message) {
+	public void addMessage(IMessage message) {
 		messages.addFirst(message);
 		if (messages.size() > MAX_MESSAGES) {
 			messages.removeLast();
