@@ -253,7 +253,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 				text = "BACK_SPACE";
 				break;
 			default:
-				text = "";
+				text = "" + e.getKeyChar();
 			}
 		}
 		return text;
