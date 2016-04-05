@@ -14,8 +14,11 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
+import go.graphics.swing.sound.SwingSoundPlayer;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -64,6 +67,7 @@ import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
  * @author michael
  */
 public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
+	private static final File DEFAULT_CONFIG_DIRECTORY = new File("../jsettlers.main.swing/");
 	private BuildingDefinition definition;
 	private BuildingtestMap map;
 
@@ -72,7 +76,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private JFrame window;
 
 	private BuildingCreatorApp(OptionableProperties options) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(options, "../jsettlers.main.swing/config.prp");
+		SwingManagedJSettlers.setupResourceManagers(options, DEFAULT_CONFIG_DIRECTORY);
 	}
 
 	@Override

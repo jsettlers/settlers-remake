@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
@@ -103,7 +105,7 @@ public class MapCreatorApp {
 			ExceptionHandler.setupDefaultExceptionHandler();
 
 			OptionableProperties options = MainUtils.loadOptions(args);
-			SwingManagedJSettlers.setupResourceManagers(options, "config.prp");
+			SwingManagedJSettlers.setupResourceManagers(options, new File("."));
 			loadLookAndFeel();
 
 			startWithSelectionDialog();

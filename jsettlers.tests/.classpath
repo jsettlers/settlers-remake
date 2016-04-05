@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="libs/junit-4.11.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
