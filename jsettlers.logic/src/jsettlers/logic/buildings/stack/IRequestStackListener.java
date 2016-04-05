@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,20 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.algorithms.path;
+package jsettlers.logic.buildings.stack;
 
-import java.io.Serializable;
-
-import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ILocatable;
-
-public interface IPathCalculatable extends IPlayerable, ILocatable, Serializable {
-
-	/**
-	 * 
-	 * @return true if this path requester can only walk on it's own players ground.<br>
-	 *         false if the requester can use everybody's ground.
-	 */
-	boolean needsPlayersGround();
-
+/**
+ * This interface defines a listener for a {@link RequestStack}. The listener can be registered on a {@link RequestStack} to receive events when a
+ * material is delivered.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public interface IRequestStackListener {
+	void materialDelivered(RequestStack stack);
 }

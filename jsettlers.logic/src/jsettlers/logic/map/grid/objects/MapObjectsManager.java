@@ -20,12 +20,15 @@ import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.stack.IStackSizeSupplier;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IInformable;
@@ -47,7 +50,6 @@ import jsettlers.logic.objects.growing.tree.Tree;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.IStackSizeSupplier;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
@@ -391,6 +393,52 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 				stackObject.increment();
 				return true;
 			}
+		}
+	}
+
+	public ShortPoint2D pushMaterialForced(short x, short y, EMaterialType materialType) {
+		IMapArea mapArea = new HexGridArea(x, y, 0, 200);
+
+		for (ShortPoint2D position : mapArea) {
+			short currX = position.x;
+			short currY = position.y;
+			if (grid.isInBounds(currX, currY) && canForcePushMaterial(currX, currY, materialType)) {
+				pushMaterial(currX, currY, materialType);
+				return position;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if there is no stack of another material at the given location and there is space on a stack of this material type.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param materialType
+	 * @return
+	 */
+	private boolean canForcePushMaterial(short x, short y, EMaterialType materialType) {
+		if (grid.isBlocked(x, y)) {
+			return false;
+		}
+
+		byte size = 0;
+
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+		while (stackObject != null) {
+			if (stackObject.getMaterialType() != materialType) {
+				return false;
+			} else {
+				size += stackObject.getSize();
+			}
+			stackObject = getNextStackObject(stackObject);
+		}
+
+		if (size == 0) {
+			return !grid.isProtected(x, y); // if there is no stack yet, don't create a stack on protected locations
+		} else {
+			return size < Constants.STACK_SIZE; // if there is a stack of this material already, check if it is not full
 		}
 	}
 

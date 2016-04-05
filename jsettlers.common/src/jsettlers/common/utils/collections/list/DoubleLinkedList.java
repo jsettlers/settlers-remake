@@ -169,7 +169,11 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((head == null) ? 0 : head.hashCode());
+		T curr = head.next;
+		while (curr != head) {
+			result = prime * result + curr.hashCode();
+			curr = curr.next;
+		}
 		result = prime * result + size;
 		return result;
 	}
@@ -182,12 +186,26 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		DoubleLinkedList<?> other = (DoubleLinkedList<?>) obj;
 		if (head == null) {
 			if (other.head != null)
 				return false;
-		} else if (!head.equals(other.head))
-			return false;
+		} else {
+			DoubleLinkedListItem<?> currThis = head.next;
+			DoubleLinkedListItem<?> currOther = other.head.next;
+			while (currThis != head && currOther != other.head) {
+				if (!currThis.equals(currOther)) {
+					return false;
+				}
+				currThis = currThis.next;
+				currOther = currOther.next;
+			}
+
+			if (currThis != this.head || currOther != other.head) {
+				return false;
+			}
+		}
 		if (size != other.size)
 			return false;
 		return true;

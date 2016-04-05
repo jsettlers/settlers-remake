@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.stack;
+package jsettlers.logic.buildings.stack;
 
 import java.io.Serializable;
 
@@ -29,7 +29,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialReq
  * @author Andreas Eberle
  * 
  */
-public class RequestStack extends MaterialRequestObject implements Serializable, IStackSizeSupplier {
+public class RequestStack extends MaterialRequestObject implements Serializable, IRequestStack {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;
@@ -38,7 +38,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	private final IRequestsStackGrid grid;
 
-	private short stillNeeded;
+	private short stillRequired;
 	private short popped;
 
 	private IRequestStackListener listener = null;
@@ -77,11 +77,12 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		this.materialType = materialType;
 		this.buildingType = buildingType;
 
-		this.stillNeeded = requestedAmount;
+		this.stillRequired = requestedAmount;
 		grid.request(materialType, this);
 		super.updatePriority(priority);
 	}
 
+	@Override
 	public boolean hasMaterial() {
 		return grid.hasMaterial(position, materialType);
 	}
@@ -91,6 +92,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * 
 	 * @return <code>true</code> if there was a material to be popped from this stack. False otherwise.
 	 */
+	@Override
 	public boolean pop() {
 		if (grid.popMaterial(position, materialType)) {
 			popped++;
@@ -108,6 +110,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * 
 	 * @return Returns the number of materials popped from this stack.
 	 */
+	@Override
 	public short getNumberOfPopped() {
 		return popped;
 	}
@@ -118,24 +121,28 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
 	 *         false otherwise.
 	 */
+	@Override
 	public boolean isFullfilled() {
-		return stillNeeded <= 0;
+		return stillRequired <= 0;
 	}
 
 	public ShortPoint2D getPosition() {
 		return position;
 	}
 
+	@Override
 	public EMaterialType getMaterialType() {
 		return materialType;
 	}
 
+	@Override
 	public void setPriority(EPriority priority) {
 		super.updatePriority(priority);
 	}
 
+	@Override
 	public void releaseRequests() {
-		stillNeeded = 0;
+		stillRequired = 0;
 		grid.createOffersForAvailableMaterials(position, materialType);
 	}
 
@@ -150,8 +157,13 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public short getStillNeeded() {
-		return stillNeeded;
+	protected short getStillNeeded() {
+		return (short) (stillRequired - getInDelivery());
+	}
+
+	@Override
+	public short getStillRequired() {
+		return stillRequired;
 	}
 
 	@Override
@@ -161,8 +173,8 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	@Override
 	protected void materialDelivered() {
-		if (stillNeeded < Short.MAX_VALUE) {
-			stillNeeded--;
+		if (stillRequired < Short.MAX_VALUE) {
+			stillRequired--;
 		}
 
 		if (listener != null) {
@@ -179,13 +191,14 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @param listener
 	 *            The new listener or null if the old listener should just be removed.
 	 */
+	@Override
 	public void setListener(IRequestStackListener listener) {
 		this.listener = listener;
 	}
 
 	@Override
 	protected boolean isRoundRobinRequest() {
-		return stillNeeded == Short.MAX_VALUE;
+		return stillRequired == Short.MAX_VALUE;
 	}
 
 	@Override

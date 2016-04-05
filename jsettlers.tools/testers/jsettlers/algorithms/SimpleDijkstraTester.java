@@ -51,6 +51,7 @@ public class SimpleDijkstraTester {
 		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new BucketQueueAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
 
 		IPathCalculatable requester = new IPathCalculatable() {
+			private static final long serialVersionUID = 8994674255605105284L;
 
 			@Override
 			public ShortPoint2D getPos() {
