@@ -17,6 +17,11 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
@@ -32,15 +37,7 @@ public class MultiImageImage extends Image {
 	private final float[] settlerGeometry;
 	private final float[] torsoGeometry;
 
-	private final class Data {
-		private int width;
-
-		private int height;
-
-		private int offsetX;
-
-		private int offsetY;
-
+	private static class Data extends ImageMetadata {
 		private float umin;
 
 		private float umax;
@@ -48,34 +45,115 @@ public class MultiImageImage extends Image {
 		private float vmin;
 
 		private float vmax;
+
+		@Override
+		public void readFrom(DataInputStream in) throws IOException {
+			super.readFrom(in);
+			umin = in.readFloat();
+			umax = in.readFloat();
+			vmin = in.readFloat();
+			vmax = in.readFloat();
+		}
+
+		@Override
+		public void writeTo(DataOutputStream out) throws IOException {
+			super.writeTo(out);
+			out.writeFloat(umin);
+			out.writeFloat(umax);
+			out.writeFloat(vmin);
+			out.writeFloat(vmax);
+		}
+
+		private float[] createGeometry() {
+			return new float[] {
+					// top left
+					this.offsetX + IMAGE_DRAW_OFFSET,
+					-this.offsetY - this.height + IMAGE_DRAW_OFFSET,
+					0,
+					this.umin,
+					this.vmin,
+
+					// bottom left
+					this.offsetX + IMAGE_DRAW_OFFSET,
+					-this.offsetY + IMAGE_DRAW_OFFSET,
+					0,
+					this.umin,
+					this.vmax,
+
+					// bottom right
+					this.offsetX + this.width + IMAGE_DRAW_OFFSET,
+					-this.offsetY + IMAGE_DRAW_OFFSET,
+					0,
+					this.umax,
+					this.vmax,
+
+					// top right
+					this.offsetX + this.width + IMAGE_DRAW_OFFSET,
+					-this.offsetY - this.height + IMAGE_DRAW_OFFSET,
+					0,
+					this.umax,
+					this.vmin,
+			};
+		}
+
+		public boolean valid() {
+			return width > 0 && height > 0;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Data [umin=");
+			builder.append(umin);
+			builder.append(", umax=");
+			builder.append(umax);
+			builder.append(", vmin=");
+			builder.append(vmin);
+			builder.append(", vmax=");
+			builder.append(vmax);
+			builder.append(", width=");
+			builder.append(width);
+			builder.append(", height=");
+			builder.append(height);
+			builder.append(", offsetX=");
+			builder.append(offsetX);
+			builder.append(", offsetY=");
+			builder.append(offsetY);
+			builder.append("]");
+			return builder.toString();
+		}
+
 	}
 
 	private final Data settler;
 
 	private final Data torso;
 
-	public MultiImageImage(MultiImageMap map, ImageMetadata settlerMeta,
-			int settlerx, int settlery, ImageMetadata torsoMeta, int torsox,
-			int torsoy) {
-		this.map = map;
+	public MultiImageImage(MultiImageMap map, ImageMetadata settlerMeta, int settlerx, int settlery, ImageMetadata torsoMeta, int torsox, int torsoy) {
+		this(map, createData(map, settlerMeta, settlerx, settlery), torsoMeta == null ? null : createData(map, torsoMeta, torsox, torsoy));
+	}
 
-		settler = new Data();
-		settlerGeometry =
-				createGeometry(map, settlerMeta, settlerx, settlery, settler);
-		if (torsoMeta != null) {
-			torso = new Data();
-			torsoGeometry =
-					createGeometry(map, torsoMeta, torsox, torsoy, torso);
+	public MultiImageImage(MultiImageMap map, Data settler, Data torso) {
+		if (!settler.valid() || (torso != null && !torso.valid())) {
+			throw new IllegalArgumentException("Invalid settler/torso pair: " + settler + "," + torso);
+		}
+		this.map = map;
+		this.settler = settler;
+		this.torso = torso;
+
+		settlerGeometry = settler.createGeometry();
+		if (torso != null) {
+			torsoGeometry = torso.createGeometry();
 		} else {
-			torso = null;
 			torsoGeometry = null;
 		}
 	}
 
 	private static final float IMAGE_DRAW_OFFSET = 0.5f;
 
-	private static float[] createGeometry(MultiImageMap map,
-			ImageMetadata settlerMeta, int settlerx, int settlery, Data data) {
+	private static Data createData(MultiImageMap map,
+			ImageMetadata settlerMeta, int settlerx, int settlery) {
+		Data data = new Data();
 		data.width = settlerMeta.width;
 		data.height = settlerMeta.height;
 		data.offsetX = settlerMeta.offsetX;
@@ -86,35 +164,7 @@ public class MultiImageImage extends Image {
 
 		data.vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
 		data.vmax = (float) (settlery) / map.getHeight();
-		return new float[] {
-				// top left
-				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-				0,
-				data.umin,
-				data.vmin,
-
-				// bottom left
-				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				data.umin,
-				data.vmax,
-
-				// bottom right
-				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-				0,
-				data.umax,
-				data.vmax,
-
-				// top right
-				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-				0,
-				data.umax,
-				data.vmin,
-		};
+		return data;
 	}
 
 	@Override
@@ -223,5 +273,32 @@ public class MultiImageImage extends Image {
 		drawAt(gl, buffer, viewX, viewY,
 				Color.getABGR(multiply, multiply, multiply, 1),
 				dimColor(color, multiply));
+	}
+
+	/**
+	 * Writes the meta data to the given output stream
+	 * 
+	 * @param out
+	 *            The stream to write to.
+	 * @throws IOException
+	 */
+	public void writeTo(DataOutputStream out) throws IOException {
+		settler.writeTo(out);
+		out.writeBoolean(torso != null);
+		if (torso != null) {
+			torso.writeTo(out);
+		}
+	}
+
+	public static MultiImageImage readFrom(MultiImageMap map, DataInputStream in) throws IOException {
+		Data settler = new Data();
+		settler.readFrom(in);
+		boolean hasTorso = in.readBoolean();
+		Data torso = null;
+		if (hasTorso) {
+			torso = new Data();
+			torso.readFrom(in);
+		}
+		return new MultiImageImage(map, settler, torso);
 	}
 }

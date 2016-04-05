@@ -21,12 +21,12 @@ import java.io.RandomAccessFile;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Torso;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.reader.translator.GuiTranslator;
@@ -441,8 +441,6 @@ public class AdvancedDatFileReader implements DatFileSet {
 			if (settlersequences[index] == null) {
 				settlersequences[index] = NULL_SETTLER_SEQUENCE;
 				try {
-					System.out.println("Loading Sequence number " + index);
-
 					loadSettlers(index);
 				} catch (Exception e) {
 				}
@@ -458,7 +456,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private synchronized void loadSettlers(int index) throws IOException {
-
+		ImageProvider.traceImageLoad("Loading sequence: " + file + " -> settlers -> " + index + " as single images");
 		int position = settlerstarts[index];
 		long[] framePositions = readSequenceHeader(position);
 
@@ -552,6 +550,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 	private void loadLandscapeImage(int index) {
 		try {
+			ImageProvider.traceImageLoad("Loading sequence: " + file + " -> landscape -> " + index + " as single image");
 			reader.skipTo(landscapestarts[index]);
 			LandscapeImage image =
 					DatBitmapReader.getImage(landscapeTranslator, reader);
@@ -601,6 +600,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 	private void loadGuiImage(int index) {
 		try {
+			ImageProvider.traceImageLoad("Loading sequence: " + file + " -> gui -> " + index + " as single image");
 			reader.skipTo(guistarts[index]);
 			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
 			guiimages[index] = image;
@@ -637,15 +637,17 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return reader;
 	}
 
-	public void generateImageMap(int width, int height, int[] sequences,
-			String id) throws IOException {
+	/**
+	 * Override a sequence. This can be used if a cache knows the sequence and wants to inform this reader about it.
+	 * 
+	 * @param sequenceIndex
+	 *            The sequence to override.
+	 * @param sequence
+	 *            The sequence data.
+	 */
+	public void pushSettlerSequence(int sequenceIndex, Sequence<Image> sequence) {
 		initializeIfNeeded();
-
-		MultiImageMap map = new MultiImageMap(width, height, id);
-		if (!map.hasCache()) {
-			map.addSequences(this, sequences, settlersequences);
-			map.writeCache();
-		}
+		settlersequences[sequenceIndex] = sequence;
 	}
 
 	public DatBitmapTranslator<SettlerImage> getSettlerTranslator() {
@@ -659,4 +661,16 @@ public class AdvancedDatFileReader implements DatFileSet {
 	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AdvancedDatFileReader [file=");
+		builder.append(file);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

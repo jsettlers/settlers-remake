@@ -40,6 +40,7 @@ import jsettlers.main.android.fragments.StartScreenFragment;
 import jsettlers.main.android.resources.scanner.FileChoserFragment;
 import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -47,6 +48,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 public class JsettlersActivity extends Activity implements IGameExitListener {
 
@@ -90,8 +92,16 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		showStartScreen();
 
 		showBgMap();
+
 		if (goViewResumeMissing) {
 			goViewResume();
+		}
+
+		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		if (manager.getLargeMemoryClass() < 128) {
+			Toast.makeText(this, "Low memory!", Toast.LENGTH_LONG).show();
+		} else {
+			ImageProvider.getInstance().startPreloading();
 		}
 	}
 
