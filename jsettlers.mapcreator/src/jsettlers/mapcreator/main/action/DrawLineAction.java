@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main.action;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 
 public class DrawLineAction extends Action {
 

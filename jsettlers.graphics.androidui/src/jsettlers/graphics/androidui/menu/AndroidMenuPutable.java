@@ -16,15 +16,16 @@ package jsettlers.graphics.androidui.menu;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.androidui.MapViewChangeObserveable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
 import jsettlers.graphics.map.MapDrawContext;
-import android.content.Context;
-import android.view.LayoutInflater;
 
 /**
  * This class holds the data needed to display custom Android menus on the UI.
@@ -42,12 +43,12 @@ public class AndroidMenuPutable implements ActionFireable {
 
 	private final Context context;
 
-	private ArrayList<AndroidMenu> activeMenu = new ArrayList<AndroidMenu>();
+	private final ArrayList<AndroidMenu> activeMenu = new ArrayList<AndroidMenu>();
 	private final Object activeMenuMutex = new Object();
 
 	private MapDrawContext mapContext;
 
-	private MapViewChangeObserveable changeObserveable;
+	private final MapViewChangeObserveable changeObserveable;
 
 	/**
 	 * Creates a new {@link AndroidMenuPutable}.
@@ -56,9 +57,8 @@ public class AndroidMenuPutable implements ActionFireable {
 		super();
 		this.context = context;
 		this.fragmentHandler = fragmentHandler;
-		this.layoutInflater =
-				(LayoutInflater) context
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.layoutInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		changeObserveable = new MapViewChangeObserveable(context);
 	}
 
@@ -72,7 +72,7 @@ public class AndroidMenuPutable implements ActionFireable {
 	}
 
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 		if (actionFireable != null) {
 			actionFireable.fireAction(action);
 		}

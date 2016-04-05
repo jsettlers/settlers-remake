@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.ui;
 
-import go.graphics.GLDrawContext;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import go.graphics.GLDrawContext;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
@@ -75,20 +74,6 @@ public class UIPanel implements UIElement {
 		if (attached) {
 			child.onAttach();
 		}
-	}
-
-	/**
-	 * Adds a child to the center of the panel.
-	 *
-	 * @param child
-	 *            The child to add.
-	 * @param width
-	 *            The relative width of the child (0..1).
-	 * @param height
-	 *            The relative height of the child (0..1).
-	 */
-	public void addChildCentered(UIElement child, float width, float height) {
-		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2, 0.5f + height / 2);
 	}
 
 	public void removeChild(UIElement child) {
@@ -262,9 +247,5 @@ public class UIPanel implements UIElement {
 			}
 		}
 		attached = false;
-	}
-
-	protected boolean isAttached() {
-		return attached;
 	}
 }

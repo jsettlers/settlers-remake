@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments.progress;
 
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.main.android.fragments.JoinPhaseFragment;
 import android.annotation.SuppressLint;
 

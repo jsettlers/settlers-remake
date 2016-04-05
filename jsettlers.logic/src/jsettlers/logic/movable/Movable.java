@@ -67,7 +67,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private EMovableType movableType;
 	private MovableStrategy strategy;
-	private Player player;
+	private final Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
@@ -314,7 +314,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			movableAction = EMovableAction.NO_ACTION;
 			boolean pushedSuccessfully = blockingMovable.push(this);
 			if (!pushedSuccessfully) {
-				path = strategy.findWayAroundObstacle(direction, position, path);
+				path = strategy.findWayAroundObstacle(position, path);
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} else if (movableAction == EMovableAction.NO_ACTION) {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
@@ -466,6 +466,17 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		default:
 			assert false : "got pushed in unhandled state: " + state;
+			return false;
+		}
+	}
+
+	boolean isProbablyPushable(Movable pushingMovable) {
+		switch (state) {
+		case DOING_NOTHING:
+			return true;
+		case PATHING:
+			return pushingMovable.path != null && pushingMovable.path.hasNextStep();
+		default:
 			return false;
 		}
 	}

@@ -17,11 +17,11 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.main.datatypes.JoinableGame;
 import jsettlers.network.client.interfaces.INetworkClient;
 import jsettlers.network.client.receiver.IPacketReceiver;

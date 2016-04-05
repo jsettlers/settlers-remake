@@ -16,9 +16,9 @@ package jsettlers.main.android;
 
 import java.util.List;
 
+import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;

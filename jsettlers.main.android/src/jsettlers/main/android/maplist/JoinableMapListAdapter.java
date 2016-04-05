@@ -16,9 +16,9 @@ package jsettlers.main.android.maplist;
 
 import java.util.Comparator;
 
-import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
-import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import android.view.LayoutInflater;
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IMultiplayerConnector;
 
 public class JoinableMapListAdapter extends MapListAdapter<IJoinableGame> {
 

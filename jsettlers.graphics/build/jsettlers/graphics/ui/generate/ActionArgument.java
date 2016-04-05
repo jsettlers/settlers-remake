@@ -26,7 +26,7 @@ public class ActionArgument extends AbstractArgument {
 
 	@Override
 	public String getArgumentSource() {
-		return "jsettlers.graphics.action.EActionType." + type;
+		return "jsettlers.common.menu.action.EActionType." + type;
 	}
 
 }

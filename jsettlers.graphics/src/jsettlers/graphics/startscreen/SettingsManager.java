@@ -23,8 +23,8 @@ import java.util.Properties;
 import java.util.UUID;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.menu.Player;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.startscreen.interfaces.Player;
 
 public class SettingsManager {
 	private static final String FILE = ".jsettlers";

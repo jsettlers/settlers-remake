@@ -16,12 +16,15 @@ package jsettlers.graphics.map;
 
 import java.util.LinkedList;
 
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMapInterfaceListener;
+import jsettlers.common.menu.UIState;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionFirerer;
-import jsettlers.graphics.messages.Message;
 
 /**
  * This is the main interface connector.
@@ -32,16 +35,14 @@ import jsettlers.graphics.messages.Message;
  * 
  * @author michael
  */
-public class MapInterfaceConnector implements ActionFireable,
-		IMapInterfaceConnector {
+public class MapInterfaceConnector implements ActionFireable, IMapInterfaceConnector {
 
-	private final LinkedList<IMapInterfaceListener> listeners =
-			new LinkedList<IMapInterfaceListener>();
+	private final LinkedList<IMapInterfaceListener> listeners = new LinkedList<IMapInterfaceListener>();
 
 	private final ActionFirerer actionFirerer = new ActionFirerer(
 			new ActionFireable() {
 				@Override
-				public void fireAction(Action action) {
+				public void fireAction(IAction action) {
 					synchronized (listeners) {
 						for (IMapInterfaceListener listener : listeners) {
 							listener.action(action);
@@ -118,12 +119,12 @@ public class MapInterfaceConnector implements ActionFireable,
 	}
 
 	@Override
-	public void fireAction(Action action) {
+	public void fireAction(IAction action) {
 		this.actionFirerer.fireAction(action);
 	}
 
 	@Override
-	public void showMessage(Message message) {
+	public void showMessage(IMessage message) {
 		content.addMessage(message);
 	}
 

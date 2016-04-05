@@ -22,8 +22,8 @@ import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.map.UIState;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
