@@ -110,7 +110,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new IncreaseDecreaseHeightAdder(true),
 					new IncreaseDecreaseHeightAdder(false),
 					new FlatLandscapeTool(),
-					new FixHeightsTool(), }),
+					new FixHeightsTool()
+					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.land-resources"), new ToolNode[] {
 					new PlaceResource(EResourceType.FISH),
 					new PlaceResource(EResourceType.IRONORE),
@@ -153,13 +154,13 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceMovableTool(EMovableType.SLAUGHTERER, this),
 							new PlaceMovableTool(EMovableType.SMITH, this),
 							new PlaceMovableTool(EMovableType.STONECUTTER, this),
-							new PlaceMovableTool(EMovableType.WATERWORKER, this),
+							new PlaceMovableTool(EMovableType.WATERWORKER, this)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.specialist"), new ToolNode[] {
 							new PlaceMovableTool(EMovableType.GEOLOGIST, this),
 							new PlaceMovableTool(EMovableType.PIONEER, this),
 							new PlaceMovableTool(EMovableType.THIEF, this),
-							new PlaceMovableTool(EMovableType.DONKEY, this),
+							new PlaceMovableTool(EMovableType.DONKEY, this)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.soldier"), new ToolNode[] {
 							new PlaceMovableTool(EMovableType.SWORDSMAN_L1, this),
@@ -170,14 +171,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceMovableTool(EMovableType.BOWMAN_L3, this),
 							new PlaceMovableTool(EMovableType.PIKEMAN_L1, this),
 							new PlaceMovableTool(EMovableType.PIKEMAN_L2, this),
-							new PlaceMovableTool(EMovableType.PIKEMAN_L3, this),
+							new PlaceMovableTool(EMovableType.PIKEMAN_L3, this)
 							}),
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.materials"), new ToolNode[] {
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-build"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.PLANK, 8),
 							new PlaceStackToolbox(EMaterialType.STONE, 8),
-							new PlaceStackToolbox(EMaterialType.TRUNK, 8),
+							new PlaceStackToolbox(EMaterialType.TRUNK, 8)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-food"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.BREAD, 8),
@@ -188,14 +189,14 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceStackToolbox(EMaterialType.WATER, 8),
 							new PlaceStackToolbox(EMaterialType.WINE, 8),
 							new PlaceStackToolbox(EMaterialType.HONEY, 8),
-							new PlaceStackToolbox(EMaterialType.MEAD, 8),
+							new PlaceStackToolbox(EMaterialType.MEAD, 8)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-resources"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.COAL, 8),
 							new PlaceStackToolbox(EMaterialType.IRON, 8),
 							new PlaceStackToolbox(EMaterialType.IRONORE, 8),
 							new PlaceStackToolbox(EMaterialType.GOLD, 8),
-							new PlaceStackToolbox(EMaterialType.GOLDORE, 8),
+							new PlaceStackToolbox(EMaterialType.GOLDORE, 8)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-tools"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.HAMMER, 8),
@@ -204,12 +205,12 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceStackToolbox(EMaterialType.SAW, 8),
 							new PlaceStackToolbox(EMaterialType.PICK, 8),
 							new PlaceStackToolbox(EMaterialType.SCYTHE, 8),
-							new PlaceStackToolbox(EMaterialType.FISHINGROD, 8),
+							new PlaceStackToolbox(EMaterialType.FISHINGROD, 8)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.mat-weapons"), new ToolNode[] {
 							new PlaceStackToolbox(EMaterialType.SWORD, 8),
 							new PlaceStackToolbox(EMaterialType.BOW, 8),
-							new PlaceStackToolbox(EMaterialType.SPEAR, 8),
+							new PlaceStackToolbox(EMaterialType.SPEAR, 8)
 							}),
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.buildings"), new ToolNode[] {
@@ -224,7 +225,7 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceBuildingTool(EBuildingType.GOLDMINE, this),
 							new PlaceBuildingTool(EBuildingType.COALMINE, this),
 							new PlaceBuildingTool(EBuildingType.CHARCOAL_BURNER, this),
-							new PlaceBuildingTool(EBuildingType.TOOLSMITH, this),
+							new PlaceBuildingTool(EBuildingType.TOOLSMITH, this)
 							}),
 					new ToolBox(EditorLabels.getLabel("tools.category.food"), new ToolNode[] {
 							new PlaceBuildingTool(EBuildingType.FARM, this),
@@ -251,6 +252,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 							new PlaceBuildingTool(EBuildingType.TEMPLE, this),
 							new PlaceBuildingTool(EBuildingType.BIG_TEMPLE, this),
 							new PlaceBuildingTool(EBuildingType.STOCK, this),
+							new PlaceBuildingTool(EBuildingType.MARKET_PLACE, this),
+							new PlaceBuildingTool(EBuildingType.HARBOR, this)
 							}),
 					}),
 					PRESETS,

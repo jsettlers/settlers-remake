@@ -846,7 +846,7 @@ public class MapObjectDrawer {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
 					Image image = imageProvider.getImage(images[0]);
-					draw(image, x, y, color);
+					draw(image, x, y, color, building.getBuildingType() == EBuildingType.MARKET_PLACE);
 				}
 
 				if (building instanceof IBuilding.IOccupyed
@@ -1028,6 +1028,18 @@ public class MapObjectDrawer {
 
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
 				color, basecolor);
+	}
+
+	private void draw(Image image, int x, int y, float color, boolean background) {
+		float z = 0;
+		if (background) {
+			z = context.getDrawBuffer().getZ();
+			context.getDrawBuffer().setZ(z - .1f);
+		}
+		draw(image, x, y, color);
+		if (background) {
+			context.getDrawBuffer().setZ(z);
+		}
 	}
 
 	private void draw(Image image, int x, int y, float color) {

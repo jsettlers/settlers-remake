@@ -71,8 +71,11 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 * 
 	 * @param pos
 	 * @param materialType
+	 * @param offer
+	 * @param forced
+	 *            If true, the material will be put on the grid on the closest free location.
 	 */
-	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
+	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced);
 
 	/**
 	 * 

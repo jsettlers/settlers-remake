@@ -41,7 +41,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
-import jsettlers.logic.buildings.others.TestTradingBuilding;
+import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
@@ -147,8 +147,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			ChangeTradingRequestGuiTask task = (ChangeTradingRequestGuiTask) guiTask;
 			ShortPoint2D buildingPos = task.getBuildingPos();
 			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
-			if (building instanceof TestTradingBuilding) {
-				((TestTradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
+			if (building instanceof TradingBuilding) {
+				((TradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
 			}
 		}
 			break;
@@ -157,8 +157,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
 			ShortPoint2D buildingPos = task.getBuildingPos();
 			IBuilding building = grid.getBuildingAt(buildingPos.x, buildingPos.y);
-			if (building instanceof TestTradingBuilding) {
-				((TestTradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
+			if (building instanceof TradingBuilding) {
+				((TradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
 			}
 		}
 			break;
