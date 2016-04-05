@@ -72,8 +72,8 @@ public class MovableTestWindow {
 			}
 		});
 
-		grid.getMovableGrid().dropMaterial(new ShortPoint2D(40, 40), EMaterialType.PLANK, true);
-		grid.getMovableGrid().dropMaterial(new ShortPoint2D(60, 60), EMaterialType.STONE, true);
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(40, 40), EMaterialType.PLANK, true, false);
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(60, 60), EMaterialType.STONE, true, false);
 
 		new Movable(grid.getMovableGrid(), EMovableType.BEARER, new ShortPoint2D(30, 30), PLAYER_0);
 		new Movable(grid.getMovableGrid(), EMovableType.BEARER, new ShortPoint2D(31, 31), PLAYER_0);

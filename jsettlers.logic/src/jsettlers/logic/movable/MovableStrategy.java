@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.logic.movable;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
@@ -34,6 +35,7 @@ import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
 import jsettlers.logic.player.Player;
 
 /**
@@ -99,8 +101,10 @@ public abstract class MovableStrategy implements Serializable {
 			return new GeologistStrategy(movable);
 		case THIEF:
 		case MAGE:
-		case DONKEY:
 			return new DummySpecialistStrategy(movable);
+
+		case DONKEY:
+			return new DonkeyStrategy(movable);
 
 		default:
 			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
@@ -176,7 +180,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @param centerY
 	 * @param radius
 	 * @param searchType
-	 * @return
+	 * @return true if a path has been found.
 	 */
 	protected final boolean preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
@@ -272,43 +276,71 @@ public abstract class MovableStrategy implements Serializable {
 		return false;
 	}
 
-	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
+	protected boolean isAttackable() {
+		return movable.getMovableType().isMoveToAble();
+	}
+
+	protected Path findWayAroundObstacle(ShortPoint2D position, Path path) {
 		if (!path.hasOverNextStep()) { // if path has no position left
 			return path;
 		}
+
+		EDirection direction = EDirection.getApproxDirection(position, path.getOverNextPos());
 
 		AbstractStrategyGrid grid = movable.getStrategyGrid();
 
 		EDirection leftDir = direction.getNeighbor(-1);
 		EDirection rightDir = direction.getNeighbor(1);
 
+		ShortPoint2D straightPos = direction.getNextHexPoint(position);
+		ShortPoint2D twoStraightPos = direction.getNextHexPoint(position, 2);
+
 		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
+		ShortPoint2D straightLeftPos = leftDir.getNextHexPoint(straightPos);
 
 		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
 		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
-		ShortPoint2D twoStraight = direction.getNextHexPoint(position, 2);
+		ShortPoint2D straightRightPos = rightDir.getNextHexPoint(straightPos);
 
 		ShortPoint2D overNextPos = path.getOverNextPos();
 
-		if (twoStraight.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y) && isValidPosition(leftStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, leftPos, leftStraightPos);
-			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y) && isValidPosition(rightStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, rightPos, rightStraightPos);
+		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<ShortPoint2D[]>();
+
+		if (twoStraightPos.equals(overNextPos)) {
+			if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
+				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
+			} else if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
+				possiblePaths.add(new ShortPoint2D[] { rightPos, rightStraightPos });
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
-		} else if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y)) {
-			path.goToNextStep();
-			path = new Path(path, leftPos);
-		} else if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y)) {
-			path.goToNextStep();
-			path = new Path(path, rightPos);
+
+		}
+
+		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
+			possiblePaths.add(new ShortPoint2D[] { leftPos });
+		}
+		if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos)) {
+			possiblePaths.add(new ShortPoint2D[] { rightPos });
+		}
+
+		if ((straightLeftPos.equals(overNextPos) || straightRightPos.equals(overNextPos))
+				&& isValidPosition(straightPos) && grid.hasNoMovableAt(straightPos.x, straightPos.y)) {
+			possiblePaths.add(new ShortPoint2D[] { straightPos });
+
 		} else {
 			// TODO @Andreas Eberle maybe calculate a new path
+		}
+
+		// try to find a way without a movable or with a pushable movable.
+		for (ShortPoint2D[] pathPrefix : possiblePaths) { // check if any of the paths is free of movables
+			ShortPoint2D firstPosition = pathPrefix[0];
+			Movable movable = grid.getMovableAt(firstPosition.x, firstPosition.y);
+			if (movable == null || movable.isProbablyPushable(this.movable)) {
+				path.goToNextStep();
+				return new Path(path, pathPrefix);
+			}
 		}
 
 		return path;
@@ -343,5 +375,13 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected boolean isOnOwnGround() {
 		return movable.isOnOwnGround();
+	}
+
+	/**
+	 * 
+	 * @return If true, the hit is received, if false, the hit is ignored.
+	 */
+	protected boolean receiveHit() {
+		return true;
 	}
 }

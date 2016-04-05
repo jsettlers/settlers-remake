@@ -488,6 +488,12 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		layout.nameText.setType(building.getBuildingType(), false);
 		Collection<TradingMaterialButton> buttons = layout.getAll(TradingMaterialButton.class);
 		selectionManager.setButtons(buttons);
+		EPriority[] supported = state.getSupportedPriorities();
+		if (supported.length < 2) {
+			layout.background.removeChild(layout.priority);
+		} else {
+			layout.priority.setPriority(supported, building.getPriority());
+		}
 		for (TradingMaterialButton b : buttons) {
 			b.setSelectionManager(selectionManager);
 		}

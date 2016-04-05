@@ -67,7 +67,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private EMovableType movableType;
 	private MovableStrategy strategy;
-	private Player player;
+	private final Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EMovableAction movableAction = EMovableAction.NO_ACTION;
@@ -251,9 +251,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 		case DROP:
-			if (takeDropMaterial != null && takeDropMaterial != EMaterialType.NO_MATERIAL) {
+			if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {
 				boolean offerMaterial = strategy.beforeDroppingMaterial();
-				grid.dropMaterial(position, takeDropMaterial, offerMaterial);
+				grid.dropMaterial(position, takeDropMaterial, offerMaterial, false);
 			}
 			setMaterial(EMaterialType.NO_MATERIAL);
 			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
@@ -314,7 +314,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			movableAction = EMovableAction.NO_ACTION;
 			boolean pushedSuccessfully = blockingMovable.push(this);
 			if (!pushedSuccessfully) {
-				path = strategy.findWayAroundObstacle(direction, position, path);
+				path = strategy.findWayAroundObstacle(position, path);
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} else if (movableAction == EMovableAction.NO_ACTION) {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
@@ -466,6 +466,17 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		default:
 			assert false : "got pushed in unhandled state: " + state;
+			return false;
+		}
+	}
+
+	boolean isProbablyPushable(Movable pushingMovable) {
+		switch (state) {
+		case DOING_NOTHING:
+			return true;
+		case PATHING:
+			return pushingMovable.path != null && pushingMovable.path.hasNextStep();
+		default:
 			return false;
 		}
 	}
@@ -655,7 +666,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param centerY
 	 * @param radius
 	 * @param searchType
-	 * @return
+	 * @return true if a path has been found.
 	 */
 	final boolean preSearchPath(boolean dikjstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		assert state == EMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";
@@ -890,7 +901,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public final boolean isAttackable() {
-		return movableType.isMoveToAble();
+		return strategy.isAttackable();
 	}
 
 	/**
@@ -906,9 +917,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	@Override
 	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos, byte attackingPlayer) {
-		this.health -= hitStrength;
-		if (health <= 0) {
-			this.kill();
+		if (strategy.receiveHit()) {
+			this.health -= hitStrength;
+			if (health <= 0) {
+				this.kill();
+			}
 		}
 
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));

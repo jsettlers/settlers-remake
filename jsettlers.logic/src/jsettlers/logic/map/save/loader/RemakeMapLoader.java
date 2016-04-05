@@ -47,7 +47,7 @@ import jsettlers.logic.player.PlayerSetting;
  */
 public abstract class RemakeMapLoader extends MapLoader {
 
-	private IListedMap file;
+	private final IListedMap file;
 
 	public RemakeMapLoader(IListedMap file, MapFileHeader header) {
 		this.file = file;
@@ -80,15 +80,21 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	public static InputStream getMapInputStream(IListedMap file) throws IOException {
 		InputStream inputStream = new BufferedInputStream(file.getInputStream());
-		if (file.isCompressed()) {
-			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-			ZipEntry zipEntry = zipInputStream.getNextEntry();
-			if (!zipEntry.getName().endsWith(MapLoader.MAP_EXTENSION)) {
-				throw new IOException("Invalid compressed map format!");
+		try {
+			if (file.isCompressed()) {
+				ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+				ZipEntry zipEntry = zipInputStream.getNextEntry();
+				if (!zipEntry.getName().endsWith(MapLoader.MAP_EXTENSION)) {
+					zipInputStream.close();
+					throw new IOException("Invalid compressed map format!");
+				}
+				inputStream = zipInputStream;
 			}
-			inputStream = zipInputStream;
+			return inputStream;
+		} catch (Exception ex) {
+			inputStream.close();
+			throw ex;
 		}
-		return inputStream;
 	}
 
 	@Override
