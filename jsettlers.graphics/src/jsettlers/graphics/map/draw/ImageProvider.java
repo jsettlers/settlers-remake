@@ -82,6 +82,11 @@ public final class ImageProvider {
 		}
 	};
 
+	/**
+	 * Enable image loading trace.
+	 */
+	private static final boolean TRACE_IMAGE_LOADING = true;
+
 	private static ImageProvider instance;
 
 	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<Integer, AdvancedDatFileReader>();
@@ -309,10 +314,16 @@ public final class ImageProvider {
 		String numberString = String.format("%02d", fileIndex);
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
+			if (TRACE_IMAGE_LOADING) {
+				traceImageLoad("Searching file " + fileName);
+			}
 
 			File file = findFileInPaths(fileName);
 
 			if (file != null) {
+				if (TRACE_IMAGE_LOADING) {
+					traceImageLoad("Opening file " + fileName);
+				}
 				return new AdvancedDatFileReader(file, type);
 			}
 		}
@@ -329,8 +340,10 @@ public final class ImageProvider {
 		if (!lookupPaths.isEmpty()) {
 			Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
 			thread.start();
+			traceImageLoad("Started image preload thread with id=" + thread.getId());
 			return thread;
 		} else {
+			traceImageLoad("No lookup path set. Image preloading failed.");
 			return null;
 		}
 	}
@@ -341,6 +354,13 @@ public final class ImageProvider {
 	 * The task may never be executed.
 	 */
 	public void addPreloadTask(GLPreloadTask task) {
+		traceImageLoad("Scheduling preload task " + task);
 		tasks.add(task);
+	}
+
+	public static void traceImageLoad(String message) {
+		if (TRACE_IMAGE_LOADING) {
+			System.out.println("[IMAGES] " + message);
+		}
 	}
 }

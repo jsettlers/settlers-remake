@@ -19,11 +19,34 @@ import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 public class ImagePreloadTask implements Runnable {
 	@Override
 	public void run() {
+		ImageProvider.traceImageLoad("Image preload task starting");
 		SettlerImageMap.getInstance();
 
-		Background.preloadTexture();
+		loadBackground();
 
 		ImageProvider ip = ImageProvider.getInstance();
+		loadLandscapeObjects(ip);
+
+		loadRomanSettlers(ip);
+
+		loadRomanWorkers(ip);
+
+		loadRomanSoldiers(ip);
+
+		loadRomanBuildings(ip);
+		ImageProvider.traceImageLoad("Image preload task done");
+	}
+
+	private void loadBackground() {
+		try {
+			Background.preloadTexture();
+		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private void loadLandscapeObjects(ImageProvider ip) {
 		try {
 			ip.getFileReader(1).generateImageMap(1024, 2048, new int[] {
 					// trees
@@ -54,6 +77,19 @@ public class ImagePreloadTask implements Runnable {
 					41,
 					42,
 					43,
+					44,
+					45,
+					46,
+					47,
+					48,
+					49,
+					50,
+					51,
+					52,
+					53,
+					54,
+					55,
+					56,
 					// signs
 					93,
 					94,
@@ -71,8 +107,12 @@ public class ImagePreloadTask implements Runnable {
 					105,
 			}, "1");
 		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
+			e.printStackTrace();
 		}
+	}
 
+	private void loadRomanSettlers(ImageProvider ip) {
 		try {
 			ip.getFileReader(10).generateImageMap(2048, 2048, new int[] {
 					// settlers
@@ -114,9 +154,12 @@ public class ImagePreloadTask implements Runnable {
 					45
 			}, "10");
 		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
 		}
+	}
 
+	private void loadRomanWorkers(ImageProvider ip) {
 		try {
 			ip.getFileReader(11).generateImageMap(2048, 2048, new int[] {
 					// workers
@@ -150,6 +193,11 @@ public class ImagePreloadTask implements Runnable {
 					38,
 					39,
 
+					// default workers
+					40,
+					55,
+					65,
+
 					// priest
 					188,
 
@@ -182,9 +230,12 @@ public class ImagePreloadTask implements Runnable {
 					232,
 			}, "11");
 		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
 		}
+	}
 
+	private void loadRomanSoldiers(ImageProvider ip) {
 		try {
 			ip.getFileReader(12).generateImageMap(2048, 2048, new int[] {
 					// soldiers
@@ -220,6 +271,18 @@ public class ImagePreloadTask implements Runnable {
 					28
 			}, "12");
 		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private void loadRomanBuildings(ImageProvider ip) {
+		try {
+			ip.getFileReader(13).generateImageMap(2048, 2048, new int[] {
+					0, 1, 3, 17, 63, 64, 65
+			}, "13");
+		} catch (Throwable e) {
+			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

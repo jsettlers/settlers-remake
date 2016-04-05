@@ -14,9 +14,27 @@
  *******************************************************************************/
 package jsettlers.graphics.reader;
 
-public final class ImageMetadata {
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+public class ImageMetadata {
 	public int width;
 	public int height;
 	public int offsetX;
 	public int offsetY;
+
+	public void writeTo(DataOutputStream out) throws IOException {
+		out.writeInt(width);
+		out.writeInt(height);
+		out.writeInt(offsetX);
+		out.writeInt(offsetY);
+	}
+
+	public void readFrom(DataInputStream in) throws IOException {
+		width = in.readInt();
+		height = in.readInt();
+		offsetX = in.readInt();
+		offsetY = in.readInt();
+	}
 }
