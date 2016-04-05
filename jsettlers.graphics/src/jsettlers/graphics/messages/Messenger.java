@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.menu.messages.IMessage;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
@@ -87,5 +88,12 @@ public class Messenger {
 			}
 		}
 		return true;
+	}
+
+	public ShortPoint2D getPosition() {
+		if (!messages.isEmpty()) {
+			return messages.getFirst().getPosition();
+		}
+		return null;
 	}
 }

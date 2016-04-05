@@ -639,7 +639,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 *            The key
 	 * @return The action that corresponds to the key
 	 */
-	private static Action getActionForKeyboard(String keyCode) {
+	private Action getActionForKeyboard(String keyCode) {
 		System.out.println(keyCode);
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
@@ -667,6 +667,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
+		} else if ("m".equalsIgnoreCase(keyCode)) {
+			return new PointAction(EActionType.GOTO_MSG, messenger.getPosition());
 		} else if ("n".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.NEXT_OF_TYPE);
 		} else if ("F5".equalsIgnoreCase(keyCode)) {
@@ -890,6 +892,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			break;
 		case MOVE_TO:
 			moveToMarker = ((PointAction) action).getPosition();
+			moveToMarkerTime = System.currentTimeMillis();
+			break;
+		case GOTO_MSG:
+			System.out.println("Go to MSG!!!");
+			moveToMarker = messenger.getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
 			break;
 		case SHOW_CONSTRUCTION_MARK:

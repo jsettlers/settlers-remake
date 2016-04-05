@@ -218,6 +218,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
+		case GOTO_MSG: {
+			System.out.println("Connector: "+connector);
+			PointAction gotoAction = (PointAction) action;
+			ShortPoint2D gotoPosition = gotoAction.getPosition();
+			connector.scrollTo(gotoPosition, true);
+			break;
+		}
+
 		case SET_WORK_AREA:
 			setBuildingWorkArea(((PointAction) action).getPosition());
 			break;
