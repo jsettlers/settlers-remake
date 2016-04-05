@@ -260,7 +260,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
-		BuidlingBackgroundPanel root;
+		BuildingBackgroundPanel root;
 		if (state.isOccupied()) {
 			root = createOccupiedBuildingContent(state);
 		} else if (state.isStock()) {
@@ -275,7 +275,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		rootPanel.addChild(root, 0, 0, 1, 1);
 	}
 
-	private BuidlingBackgroundPanel createNormalBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createNormalBuildingContent(BuildingState state) {
 		BuildingSelectionLayout layout = new BuildingSelectionLayout();
 
 		EPriority[] supported = state.getSupportedPriorities();
@@ -302,7 +302,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		addRequestAndOfferStacks(layout.materialArea, state);
 
-		BuidlingBackgroundPanel root = layout._root;
+		BuildingBackgroundPanel root = layout._root;
 		return root;
 	}
 
@@ -417,7 +417,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	}
 
-	private BuidlingBackgroundPanel createOccupiedBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createOccupiedBuildingContent(BuildingState state) {
 		OccupiableSelectionLayout layout = new OccupiableSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		addOccupyerPlaces(layout.infantry_places, layout.infantry_missing, state.getOccupiers(ESoldierClass.INFANTRY));
@@ -474,7 +474,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
-	private BuidlingBackgroundPanel createStockBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createStockBuildingContent(BuildingState state) {
 		StockSelectionLayout layout = new StockSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
@@ -483,7 +483,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		return layout._root;
 	}
 
-	private BuidlingBackgroundPanel createTradingBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createTradingBuildingContent(BuildingState state) {
 		TradingSelectionLayout layout = new TradingSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		Collection<TradingMaterialButton> buttons = layout.getAll(TradingMaterialButton.class);
@@ -516,7 +516,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		return layout._root;
 	}
 
-	public static class BuidlingBackgroundPanel extends UIPanel {
+	public static class BuildingBackgroundPanel extends UIPanel {
 		private ImageLink[] links = new ImageLink[0];
 
 		public void setImages(ImageLink[] links) {
