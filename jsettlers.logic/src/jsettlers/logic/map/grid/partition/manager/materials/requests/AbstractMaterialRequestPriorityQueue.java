@@ -73,6 +73,36 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 		return null;
 	}
 
+	protected final MaterialRequestObject findRequestInQueue(DoubleLinkedList<MaterialRequestObject> queue) {
+		int numberOfElements = queue.size();
+
+		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
+			MaterialRequestObject request = queue.getFront();
+
+			// if the request is done
+			if (request.isFinished()) {
+				request.requestQueue = null;
+				queue.popFront(); // remove the request
+				numberOfElements--;
+			}
+
+			// if all needed are in delivery, or there can not be any more in delivery
+			else if (!request.canTakeMoreOffers()) {
+				queue.pushEnd(queue.popFront()); // move the request to the end.
+			}
+
+			// everything fine, take this request
+			else {
+				if (request.isRoundRobinRequest()) {
+					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
+				}
+
+				return request;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Gets the queue for the given priority and buildingType.
 	 * 

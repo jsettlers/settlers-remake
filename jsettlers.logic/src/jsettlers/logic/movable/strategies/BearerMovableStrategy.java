@@ -140,12 +140,16 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	@Override
 	public boolean beforeDroppingMaterial() {
-		if (request != null && request.isActive() && request.getPos().equals(super.getPos())) {
-			request.deliveryFulfilled();
-			return false;
-		} else {
-			return true;
+		if (request != null) {
+			if (request.isActive() && request.getPos().equals(super.getPos())) {
+				request.deliveryFulfilled();
+				return false;
+			} else {
+				request.deliveryAborted();
+				request = null;
+			}
 		}
+		return true; // offer the material
 	}
 
 	private void handleJobFailed(boolean reportAsJobless) {
@@ -187,7 +191,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
+			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true, false);
 		}
 
 		offer = null;
@@ -204,7 +208,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	private void reoffer() {
 		if (super.getStrategyGrid().takeMaterial(offer, materialType)) {
-			super.getStrategyGrid().dropMaterial(offer, materialType, true);
+			super.getStrategyGrid().dropMaterial(offer, materialType, true, false);
 		}
 	}
 

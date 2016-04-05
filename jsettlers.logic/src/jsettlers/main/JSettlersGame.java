@@ -44,6 +44,7 @@ import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
@@ -263,14 +264,6 @@ public class JSettlersGame {
 					exitListener.gameExited(this);
 				}
 			}
-
-		}
-
-		private void clearState() {
-			RescheduleTimer.stopAndClear();
-			Movable.resetState();
-			Building.dropAllBuildings();
-			MatchConstants.clearState();
 		}
 
 		public AiExecutor getAiExecutor() {
@@ -400,5 +393,13 @@ public class JSettlersGame {
 
 	private static DateFormat getLogDateFormatter() {
 		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+	}
+
+	public static void clearState() {
+		RescheduleTimer.stopAndClear();
+		Movable.resetState();
+		Building.clearState();
+		MarketBuilding.clearState();
+		MatchConstants.clearState();
 	}
 }

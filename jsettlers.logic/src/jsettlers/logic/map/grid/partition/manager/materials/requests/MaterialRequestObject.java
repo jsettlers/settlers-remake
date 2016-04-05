@@ -32,7 +32,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 
 	private EPriority priority = EPriority.DEFAULT;
 	AbstractMaterialRequestPriorityQueue requestQueue;
-	int inDelivery;
+	byte inDelivery;
 
 	/**
 	 * Updates the priority of this {@link MaterialRequestObject} to the given {@link EPriority}.
@@ -91,7 +91,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	}
 
 	@Override
-	public final void deliveryFulfilled() {
+	public void deliveryFulfilled() {
 		materialDelivered();
 		inDelivery--;
 	}
@@ -102,16 +102,28 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	protected abstract void materialDelivered();
 
 	@Override
-	public final void deliveryAborted() {
+	public void deliveryAborted() {
 		inDelivery--;
 	}
 
 	@Override
 	public boolean isActive() {
-		return priority != EPriority.STOPPED && inDelivery <= getStillNeeded() && inDelivery <= getInDeliveryable();
+		return priority != EPriority.STOPPED && getStillNeeded() >= 0 && inDelivery <= getInDeliveryable();
 	}
 
 	protected abstract boolean isRoundRobinRequest();
 
 	protected abstract EBuildingType getBuildingType();
+
+	public byte getInDelivery() {
+		return inDelivery;
+	}
+
+	public boolean isFinished() {
+		return inDelivery <= 0 && getStillNeeded() <= 0;
+	}
+
+	public boolean canTakeMoreOffers() {
+		return getStillNeeded() > 0 && inDelivery < getInDeliveryable();
+	}
 }
