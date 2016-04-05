@@ -47,7 +47,7 @@ public interface IMessage {
 	 * 
 	 * @return The time it was sent in milliseconds.
 	 */
-	long getAge();
+	int getAge();
 
 	/**
 	 * Gets the message content. Only used for chat messages.
@@ -78,4 +78,12 @@ public interface IMessage {
 	 * @return true, if redundant.
 	 */
 	boolean duplicates(IMessage m);
+
+	/**
+	 * Grow older by the specified number of milliseconds.
+	 *
+	 * @param milliseconds Number of milliseconds this message is to get older by.
+	 * @return resulting age in milliseconds.
+	 */
+	int ageBy(int milliseconds);
 }

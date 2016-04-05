@@ -29,9 +29,11 @@ public class Messenger {
 
 	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
 	private final IGameTimeProvider gameTimeProvider;
+	private int latestTickTime;
 
 	public Messenger(IGameTimeProvider gameTimeProvider) {
 		this.gameTimeProvider = gameTimeProvider;
+		this.latestTickTime = gameTimeProvider.getGameTime();
 	}
 
 	/**
@@ -55,13 +57,29 @@ public class Messenger {
 		return false;
 	}
 
-	public void removeOld() {
-		for (IMessage m : messages)
-			if (m.getAge() > IMessage.MESSAGE_TTL)
-				while (!messages.pollLast().equals(m))
-					;
+	/**
+	 * 
+	 */
+	public void doTick() {
+		if (!gameTimeProvider.isGamePausing()) {
+			// update message ages
+			int interval = gameTimeProvider.getGameTime() - latestTickTime;
+			for (IMessage m : messages) {
+				if (m.ageBy(interval) > IMessage.MESSAGE_TTL)
+					// remove all remaining messages, assuming they in order
+					while (!messages.pollLast().equals(m))
+						;
+			}
+		}
+		latestTickTime = gameTimeProvider.getGameTime();
 	}
 
+	/**
+	 * Determines whether a given message is worth its display, considering nature and 
+	 * content of the messages already shown. 
+	 * @param msg {@link IMessage} to be inspected.
+	 * @return true, if message should be displayed.
+	 */
 	boolean isNews(IMessage msg) {
 		for (IMessage m : messages) {
 			if (msg.duplicates(m)) {

@@ -293,7 +293,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		// TODO: don't let logic wait until we rendered.
 		synchronized (messenger) {
 			int messageIndex = 0;
-			messenger.removeOld();
+			messenger.doTick();
 			for (IMessage m : messenger.getMessages()) {
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
