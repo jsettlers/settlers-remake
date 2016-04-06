@@ -31,7 +31,7 @@ public class SimpleMessage implements IMessage {
 	private final ShortPoint2D pos;
 	private final String message;
 	private final EMessageType type;
-	private int interval;
+	private int age;
 
 	public SimpleMessage(EMessageType type, String message, byte sender,
 			ShortPoint2D pos) {
@@ -39,7 +39,7 @@ public class SimpleMessage implements IMessage {
 		this.message = message;
 		this.sender = sender;
 		this.pos = pos;
-		this.interval = 0;
+		this.age = 0;
 	}
 
 	@Override
@@ -49,13 +49,13 @@ public class SimpleMessage implements IMessage {
 
 	@Override
 	public int getAge() {
-		return this.interval;
+		return this.age;
 	}
 
 	@Override
-	public int ageBy(int time) {
-		this.interval += time;
-		return this.interval;
+	public int ageBy(int interval) {
+		this.age += interval;
+		return this.age;
 	}
 
 	@Override
