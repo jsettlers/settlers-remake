@@ -23,13 +23,16 @@ android {
             java.srcDirs = ['src']
             resources.srcDirs = ['src']
             res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
+            assets.srcDirs = ['../jsettlers.common/resources']
         }
     }
     lintOptions {
         abortOnError false
     }
 
+    aaptOptions {
+        ignoreAssetsPattern "!cache:!logs:!textures_raw:!save:!last-used.properties:!maps/testmaps"
+    }
 }
 
 dependencies {
