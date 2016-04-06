@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['src']
+    }
+}
+
+dependencies {
+    compile project(':jsettlers.common')
+    compile project(':go.graphics')
+}

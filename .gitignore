@@ -3,6 +3,11 @@ gen
 target
 logs
 
+local.properties
+/*/build
+/jsettlers.graphics/layoutbuilder/build/
+/jsettlers.common/texturebuilder/build/
+
 /.metadata
 /.recommenders
 .settings

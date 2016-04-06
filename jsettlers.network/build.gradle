@@ -1,0 +1,18 @@
+apply plugin: 'application'
+
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['src']
+    }
+}
+
+mainClassName = 'jsettlers.network.server.DedicatedServerApp'
+
+jar {
+    baseName = 'DedicatedJSettlersServer'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+

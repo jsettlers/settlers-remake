@@ -1,0 +1,43 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        output.dir('gen', buildBy: 'generateLayouts')
+
+        java.srcDirs = ['src', 'gen']
+        resources.srcDirs = ['src']
+    }
+
+    build {
+        java.srcDirs = ['build']
+    }
+}
+
+//task generateLayouts(type: JavaExec) {
+//    classpath = project.sourceSets.build.compileClasspath
+//    classpath.plus(configurations.compile.dependencies)
+//    println "classpath"
+//    classpath.each { println it }
+//    main = 'jsettlers.common.CommonConstants.java'
+//}
+
+compileJava {
+	dependsOn 'generateLayouts'
+}
+
+clean {
+    delete 'gen'
+}
+
+dependencies {
+    compile project(':jsettlers.common')
+    compile project(':go.graphics')
+    compile project(':jsettlers.graphics:layoutbuilder')
+}
+
+task generateLayouts(dependsOn:tasks.getByPath(':jsettlers.graphics:layoutbuilder:jar'), type: JavaExec) {
+    main = "jsettlers.graphics.ui.generate.LayoutConverter"
+    args = [ './res/layout', './gen']
+    classpath = configurations.compile
+}
+
