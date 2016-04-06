@@ -283,7 +283,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		int age = (int) m.getAge();
 		return (age < 5000) ?
 			(age < 1500
-				? (age / 250) % 2 : 1)
+				? Math.min(1,  age/1000f) : 1)
 				: Math.max(0,
 					1f - (float)age / IMessage.MESSAGE_TTL);
 	}
