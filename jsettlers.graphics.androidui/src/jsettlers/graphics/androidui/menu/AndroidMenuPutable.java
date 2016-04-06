@@ -16,8 +16,6 @@ package jsettlers.graphics.androidui.menu;
 
 import java.util.ArrayList;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.Action;
@@ -26,6 +24,8 @@ import jsettlers.graphics.androidui.MapViewChangeObserveable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
 import jsettlers.graphics.map.MapDrawContext;
+import android.content.Context;
+import android.view.LayoutInflater;
 
 /**
  * This class holds the data needed to display custom Android menus on the UI.

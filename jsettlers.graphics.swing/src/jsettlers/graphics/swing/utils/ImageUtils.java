@@ -28,11 +28,7 @@ public class ImageUtils {
 		int[] rgbArray = new int[data.remaining()];
 		for (int i = 0; i < rgbArray.length; i++) {
 			short myColor = data.get();
-			float red = (float) ((myColor >> 11) & 0x1f) / 0x1f;
-			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
-			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
-			float alpha = myColor & 0x1;
-			rgbArray[i] = Color.getARGB(red, green, blue, alpha);
+			rgbArray[i] = Color.convertTo32Bit(myColor);
 		}
 
 		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);

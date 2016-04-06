@@ -14,17 +14,22 @@
  *******************************************************************************/
 package jsettlers.graphics.androidui.menu;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
+import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.ScreenPosition;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -33,6 +38,8 @@ import android.widget.TextView;
 public class BuildMenu extends AndroidMenu {
 
 	private static final int ITEMS_PER_ROW = 5;
+
+	private HashMap<EBuildingType, TextView> buildingCounts = new HashMap<EBuildingType, TextView>();
 
 	public BuildMenu(AndroidMenuPutable androidMenuPutable) {
 		super(androidMenuPutable);
@@ -63,6 +70,25 @@ public class BuildMenu extends AndroidMenu {
 		outer.addView(table);
 	}
 
+	private void updateCounts() {
+		BuildingCountState state = getBuildingCounts();
+		for (Entry<EBuildingType, TextView> e : buildingCounts.entrySet()) {
+			int construct = state.getCount(e.getKey(), true);
+			String str = state.getCount(e.getKey(), false) + "\n";
+			if (construct > 0) {
+				str += "+" + construct;
+			}
+			e.getValue().setText(str);
+		}
+	}
+
+	private BuildingCountState getBuildingCounts() {
+		MapDrawContext context = getPutable().getMapContext();
+		ScreenPosition screen = context.getScreen();
+		return new BuildingCountState(context.getPositionUnder(screen.getScreenCenterX(),
+				screen.getScreenCenterY()), context.getMap());
+	}
+
 	private void fillTableLayout(TableLayout table, EBuildingType[] types) {
 		TableRow currentRow = null;
 		for (EBuildingType type : types) {
@@ -77,23 +103,23 @@ public class BuildMenu extends AndroidMenu {
 
 	}
 
-	private View createButton(TableRow currentRow, EBuildingType type) {
-		int resourceId = Graphics.BUILDING_IMAGE_MAP[type.ordinal()];
-		if (resourceId == -1) {
-			return null;
-		}
+	private void createButton(TableRow currentRow, EBuildingType type) {
 		LayoutInflater layoutInflater = LayoutInflater.from(currentRow.getContext());
 		View buttonRoot = layoutInflater.inflate(R.layout.buildingbutton, currentRow, false);
 		TextView count = (TextView) buttonRoot.findViewById(R.id.buildingbutton_count);
-		ImageView image = (ImageView) buttonRoot.findViewById(R.id.buildingbutton_image);
-		Button button = (Button) buttonRoot.findViewById(R.id.buildingbutton_button);
+		buildingCounts.put(type, count);
+		count.setText(" \n ");
+		ImageButton button = (ImageButton) buttonRoot.findViewById(R.id.buildingbutton_button);
 
-		image.setImageResource(resourceId);
 		button.setOnClickListener(generateActionListener(new ShowConstructionMarksAction(
 				type), true));
-		count.setText("?\n+?");
-
+		OriginalImageProvider.get(type).setAsImage(button);
 		currentRow.addView(buttonRoot);
-		return buttonRoot;
+	}
+
+	@Override
+	public void poll() {
+		updateCounts();
+		super.poll();
 	}
 }
