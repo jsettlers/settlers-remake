@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.swing.resources;
 
-import java.io.File;
 import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
@@ -31,6 +30,12 @@ import jsettlers.graphics.swing.resources.SettlersFolderChecker.SettlersFoldersR
  */
 public class SwingResourceLoader {
 
+	/**
+	 * This is the main method that should be used to set up resources.
+	 * 
+	 * @param configFile
+	 * @throws IOException
+	 */
 	public static void setupResourcesByConfigFile(ConfigurationPropertiesFile configFile) throws IOException {
 		setupGraphicsAndSoundResources(configFile);
 		setupResourcesManager(configFile);
@@ -47,15 +52,14 @@ public class SwingResourceLoader {
 		imageProvider.startPreloading();
 	}
 
-	public static void setupResourcesManager(ConfigurationPropertiesFile configFile) {
-		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesDirectory(), configFile.getOriginalMapsDirectory()));
+	public static void setupResourcesManager(ConfigurationPropertiesFile configFile) throws IOException {
+		SwingResourceProvider provider = JarSwingResourceProvider.getBestAvailable(configFile.getOriginalMapsDirectory(),
+				configFile.getResourcesDirectory());
+		ResourceManager.setProvider(provider);
 	}
 
 	private static SettlersFoldersResult testSettlersFolderConfig(ConfigurationPropertiesFile configFile)
 			throws IOException {
-		if (!isResourceDir(configFile.getResourcesDirectory())) {
-			throw new IOException("Not a resources folder: " + configFile.getResourcesDirectory() + " in " + new File("").getAbsolutePath());
-		}
 
 		SettlersFoldersResult settlersFoldersResult = SettlersFolderChecker.checkSettlersFolder(configFile.getSettlersFolderValue());
 		if (!settlersFoldersResult.isValidSettlersFolder()) {
@@ -76,9 +80,5 @@ public class SwingResourceLoader {
 		}
 
 		return settlersFoldersResult;
-	}
-
-	private static boolean isResourceDir(File dir) {
-		return new File(new File(dir, "images"), "movables.txt").exists();
 	}
 }

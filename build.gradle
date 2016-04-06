@@ -29,6 +29,7 @@ subprojects {
             main {
                 java.srcDirs = ['src']
                 resources.srcDirs = ['src']
+                resources.exclude "**/*.java"
             }
         }
     }

@@ -13,12 +13,30 @@ jar {
     }
 }
 
+processResources {
+    doLast {
+        copy {
+            description 'Prepares the resources for packing.'
+            from project(':jsettlers.common').file('resources')
+            into 'build/resources/main/jsettlers/resources'
+            include 'buildings/**'
+            include 'images/**'
+            include 'localization/**'
+            include 'maps/*.rmap'
+        }
+        file('build/resources/main/jsettlers/resources/use').text = 'true'
+    }
+}
+
+
 task distJar(type: Jar) {
     baseName = 'SwingManagedJSettlers'
     manifest {
         attributes 'Main-Class': mainClassName
     }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     with jar
 }
 

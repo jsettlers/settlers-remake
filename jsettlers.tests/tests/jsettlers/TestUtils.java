@@ -177,16 +177,7 @@ public class TestUtils {
 
 	public static synchronized void setupSwingResources() {
 		try {
-			setupResourcesManager();
-			SwingResourceLoader.setupGraphicsAndSoundResources(getDefaultConfigFile());
-		} catch (IOException e) {
-			throw new RuntimeException("Config file not found!", e);
-		}
-	}
-
-	public static synchronized void setupResourcesManager() {
-		try {
-			SwingResourceLoader.setupResourcesManager(getDefaultConfigFile());
+			SwingResourceLoader.setupResourcesByConfigFile(getDefaultConfigFile());
 		} catch (IOException e) {
 			throw new RuntimeException("Config file not found!", e);
 		}
