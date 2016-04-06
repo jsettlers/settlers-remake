@@ -26,7 +26,7 @@ import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.images.TextureMap;
+//import jsettlers.common.images.TextureMap;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageIndexFile;
@@ -225,7 +225,7 @@ public final class ImageProvider {
 			indexFile = new ImageIndexFile();
 		}
 
-		int index = TextureMap.getIndex(link.getName());
+		int index = 0; //TextureMap.getIndex(link.getName());
 		return indexFile.getImage(index);
 	}
 
