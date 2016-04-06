@@ -1,8 +1,34 @@
 apply plugin: 'java'
 
+    import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+    import org.eclipse.jgit.lib.Repository
+task findGitRevision << {
+    FileRepositoryBuilder builder = new FileRepositoryBuilder();
+    Repository repository = builder.readEnvironment().findGitDir().build();
+    def headRef = repository.getRef("HEAD")
+    def rev = headRef.objectId.name
+    repository.close()
+
+    new File('gen/jsettlers/common/').mkdirs()
+    def file = new File('gen/jsettlers/common/CommitInfo.java')
+    file.text = sprintf("""package jsettlers.common;
+public final class CommitInfo {
+	/**
+	 * The current commit this was build with, as extracted from git.
+	 */
+	public static final String COMMIT_HASH_SHORT = "%s";
+	public static final String COMMIT_HASH = "%s";
+	public static final String BUILD_TIME = "%s";
+	private CommitInfo() {
+	}
+}""", rev.substring(0, 8), rev, (new Date()).format('yyyy-MM-dd-HH-mm-ss'))
+}
+
+compileJava.dependsOn findGitRevision
+
 sourceSets {
     main {
-        java.srcDirs = ['src']
+        java.srcDirs = ['src', 'gen']
         resources.srcDirs = ['src']
     }
 }
