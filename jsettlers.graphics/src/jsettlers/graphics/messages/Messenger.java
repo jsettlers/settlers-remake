@@ -31,6 +31,7 @@ public class Messenger {
 	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
 	private final IGameTimeProvider gameTimeProvider;
 	private int latestTickTime;
+	private int focusPos = 0;
 
 	public Messenger(IGameTimeProvider gameTimeProvider) {
 		this.gameTimeProvider = gameTimeProvider;
@@ -53,6 +54,7 @@ public class Messenger {
 			messages.addFirst(message);
 			if (messages.size() > IMessage.MAX_MESSAGES)
 				messages.removeLast();
+			focusPos = 0;
 			return true;
 		}
 		return false;
@@ -92,7 +94,9 @@ public class Messenger {
 
 	public ShortPoint2D getPosition() {
 		if (!messages.isEmpty()) {
-			return messages.getFirst().getPosition();
+			int index = focusPos % messages.size();
+			focusPos++;
+			return messages.get(index).getPosition();
 		}
 		return null;
 	}
