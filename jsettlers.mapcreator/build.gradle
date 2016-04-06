@@ -1,9 +1,15 @@
-apply plugin: 'java'
+apply plugin: 'application'
 
-sourceSets {
-    main {
-        java.srcDirs = ['src']
-        resources.srcDirs = ['src']
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+mainClassName = 'jsettlers.mapcreator.main.MapCreatorApp'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
     }
 }
 

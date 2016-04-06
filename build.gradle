@@ -46,6 +46,7 @@ distributions {
 }
 
 task run(dependsOn: ':jsettlers.main.swing:run') {}
+task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 task runAndroid(dependsOn: ':jsettlers.main.android:build') << {
     Properties local = new Properties()
