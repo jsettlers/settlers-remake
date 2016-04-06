@@ -27,3 +27,17 @@ distributions {
         }
     }
 }
+
+task runAndroid(dependsOn: ':build') {
+    Properties local = new Properties()
+    local.load(new FileInputStream("local.properties"))
+    def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
+    println 'Copy files to your device...'
+    exec {
+        commandLine adb, 'install', '-r', './jsettlers.main.android/bin/jsettlers.main.android.apk'
+    }
+    exec {
+        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+    }
+    println 'The application should have started now.'
+}
