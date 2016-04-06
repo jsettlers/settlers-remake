@@ -98,4 +98,11 @@ public class LayoutConverter {
 		}
 		System.out.println("Converted " + xmlFile + " -> " + genFile);
 	}
+
+	public static void main(String[] args) throws IOException {
+		LayoutConverter c = new LayoutConverter();
+		c.setSourceXMLDirectory(new File(args[0]));
+		c.setGenDirectory(new File(args[1]));
+		c.execute();
+	}
 }
