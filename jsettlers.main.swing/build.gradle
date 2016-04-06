@@ -5,8 +5,21 @@ compileJava {
     targetCompatibility = 1.8
 }
 
-run {
-    main 'jsettlers.main.swing.SwingManagedJSettlers'
+mainClassName = 'jsettlers.main.swing.SwingManagedJSettlers'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task distJar(type: Jar) {
+    baseName = 'SwingManagedJSettlers'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 dependencies {
