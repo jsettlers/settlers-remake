@@ -183,6 +183,14 @@ public class TestUtils {
 		}
 	}
 
+	public static synchronized void setupResourcesManager() {
+		try {
+			SwingResourceLoader.setupResourcesManager(getDefaultConfigFile());
+		} catch (IOException e) {
+			throw new RuntimeException("Config file not found!", e);
+		}
+	}
+
 	private static ConfigurationPropertiesFile getDefaultConfigFile() throws IOException {
 		File directory = new File("../jsettlers.main.swing");
 		ConfigurationPropertiesFile configFile = SwingManagedJSettlers.createDefaultConfigFile(directory);
