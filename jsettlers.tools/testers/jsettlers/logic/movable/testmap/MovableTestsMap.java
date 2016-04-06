@@ -198,7 +198,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			}
 		}
 
-		private LinkedList<ShortPoint2D> materials = new LinkedList<ShortPoint2D>();
+		private final LinkedList<ShortPoint2D> materials = new LinkedList<ShortPoint2D>();
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
@@ -211,7 +211,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer) {
+		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced) {
 			materialTypeMap[pos.x][pos.y] = materialType;
 			materialAmmountMap[pos.x][pos.y]++;
 

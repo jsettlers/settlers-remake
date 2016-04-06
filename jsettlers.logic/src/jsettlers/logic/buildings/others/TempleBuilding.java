@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,8 +21,9 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  *
@@ -36,8 +37,8 @@ public final class TempleBuilding extends Building {
 	private static final int CHECK_DELAY = 1500;
 	private static final int CONSUME_DELAY = 30000;
 
-	public TempleBuilding(Player player) {
-		super(EBuildingType.TEMPLE, player);
+	public TempleBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.TEMPLE, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public final class TempleBuilding extends Building {
 
 	@Override
 	protected int subTimerEvent() {
-		RequestStack wineStack = getWineStack();
+		IRequestStack wineStack = getWineStack();
 
 		if (wineStack.pop()) {
 			getPlayer().getManaInformation().increaseMana();
@@ -61,18 +62,18 @@ public final class TempleBuilding extends Building {
 		}
 	}
 
-	private RequestStack getWineStack() {
-		List<RequestStack> stacks = super.getStacks();
+	private IRequestStack getWineStack() {
+		List<IRequestStack> stacks = super.getStacks();
 		assert stacks.size() == 1;
 
-		RequestStack wineStack = stacks.get(0);
+		IRequestStack wineStack = stacks.get(0);
 		assert wineStack.getMaterialType() == EMaterialType.WINE;
 		return wineStack;
 	}
 
 	@Override
 	protected int constructionFinishedEvent() {
-		super.getGrid().getMapObjectsManager().addWineBowl(super.getDoor(), getWineStack());
+		super.grid.getMapObjectsManager().addWineBowl(super.getDoor(), getWineStack());
 		return CHECK_DELAY;
 	}
 
@@ -84,6 +85,6 @@ public final class TempleBuilding extends Building {
 	@Override
 	protected void killedEvent() {
 		ShortPoint2D door = super.getDoor();
-		super.getGrid().getMapObjectsManager().removeMapObjectType(door.x, door.y, EMapObjectType.WINE_BOWL);
+		super.grid.getMapObjectsManager().removeMapObjectType(door.x, door.y, EMapObjectType.WINE_BOWL);
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,6 +24,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
@@ -31,7 +32,6 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
  * This interface defines the methods needed by buildings to exist on a grid.
@@ -167,5 +167,8 @@ public interface IBuildingsGrid {
 	int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions);
 
 	MaterialProductionSettings getMaterialProductionAt(int x, int y);
+
+	ShortPoint2D getClosestReachablePosition(ShortPoint2D start, ShortPoint2D target, boolean needsPlayersGround, byte playerId,
+			short targetRadius);
 
 }

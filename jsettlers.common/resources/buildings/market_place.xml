@@ -58,7 +58,7 @@
 	<blocked dx="0" dy="4" block="false" />
 	<blocked dx="-1" dy="3" block="false" />
 
-	<door dx="0" dy="0" />
+	<door dx="2" dy="3" />
 
 	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="1" />
 	<constructionStack dx="2" dy="3" material="STONE" buildrequired="3" />

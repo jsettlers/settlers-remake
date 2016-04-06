@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,19 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.military;
 
-import java.util.List;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.WorkAreaBuilding;
+import jsettlers.logic.buildings.stack.IRequestStack;
+import jsettlers.logic.buildings.stack.IRequestStackListener;
+import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.IRequestStackListener;
-import jsettlers.logic.stack.RequestStack;
 
 /**
  * This is the barrack building. It requests weapons and bearers to make them to soldiers.
@@ -36,8 +36,8 @@ import jsettlers.logic.stack.RequestStack;
 public final class Barrack extends WorkAreaBuilding implements IBarrack, IRequestStackListener {
 	private static final long serialVersionUID = -6541972855836598068L;
 
-	public Barrack(Player player) {
-		super(EBuildingType.BARRACK, player);
+	public Barrack(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(EBuildingType.BARRACK, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -47,12 +47,11 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public EMovableType popWeaponForBearer() {
-		List<RequestStack> stacks = super.getStacks();
-		for (RequestStack stack : stacks) {
-			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
-					|| stack.getMaterialType() == EMaterialType.SPEAR) {
+		for (IRequestStack stack : super.getStacks()) {
+			EMaterialType materialType = stack.getMaterialType();
+			if (materialType == EMaterialType.BOW || materialType == EMaterialType.SWORD || materialType == EMaterialType.SPEAR) {
 				if (stack.pop()) {
-					return getSoldierType(stack.getMaterialType());
+					return getSoldierType(materialType);
 				}
 			}
 		}
@@ -80,12 +79,12 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public void bearerRequestFailed() {
-		super.getGrid().requestSoilderable(this);
+		super.grid.requestSoilderable(this);
 	}
 
 	@Override
 	protected int constructionFinishedEvent() {
-		for (RequestStack curr : super.getStacks()) {
+		for (IRequestStack curr : super.getStacks()) {
 			curr.setListener(this);
 		}
 		return -1;
@@ -104,6 +103,6 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public void materialDelivered(RequestStack stack) {
-		getGrid().requestSoilderable(Barrack.this);
+		super.grid.requestSoilderable(Barrack.this);
 	}
 }

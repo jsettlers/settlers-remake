@@ -25,12 +25,13 @@ import jsettlers.common.material.EPriority;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
-import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.androidui.actions.SelectWorkareaAction;
 import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.selection.MaterialAdapter.DistributionListener;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider.ImageReference;
 import jsettlers.graphics.localization.Labels;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -121,8 +122,8 @@ public class BuildingMenu extends AndroidMenu {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		ImageView image = (ImageView) view.findViewById(R.id.building_image);
-		image.setImageResource(Graphics.BUILDING_IMAGE_MAP[building
-				.getBuildingType().ordinal()]);
+		OriginalImageProvider.get(building
+				.getBuildingType()).setAsImage(image);
 
 		TextView title = (TextView) view.findViewById(R.id.building_name);
 		String name = Labels.getName(building.getBuildingType());
@@ -196,10 +197,21 @@ public class BuildingMenu extends AndroidMenu {
 		tabs.addView(space);
 	}
 
+	private ImageButton generateImageButtonTab(TableLayout tabs, ImageReference imageReference) {
+		ImageButton button = generateImageButtonTab(tabs);
+		imageReference.setAsImage(button);
+		return button;
+	}
+
 	private ImageButton generateImageButtonTab(TableLayout tabs, int resource) {
+		ImageButton button = generateImageButtonTab(tabs);
+		button.setImageResource(resource);
+		return button;
+	}
+
+	private ImageButton generateImageButtonTab(TableLayout tabs) {
 		TableRow row = new TableRow(getContext());
 		ImageButton button = new ImageButton(getContext());
-		button.setImageResource(resource);
 		row.addView(button);
 		tabs.addView(row);
 		return button;
@@ -220,8 +232,7 @@ public class BuildingMenu extends AndroidMenu {
 
 	private void addMaterialTab(TableLayout tabs, IBuildingMaterial mat) {
 		ImageButton button =
-				generateImageButtonTab(tabs, Graphics.MATERIAL_IMAGE_MAP[mat
-						.getMaterialType().ordinal()]);
+				generateImageButtonTab(tabs, OriginalImageProvider.get(mat.getMaterialType()));
 
 		TextView count = new TextView(getContext());
 		count.setText(mat.getMaterialCount() + "");

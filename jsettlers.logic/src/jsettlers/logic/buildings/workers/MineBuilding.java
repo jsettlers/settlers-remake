@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -39,8 +39,8 @@ public final class MineBuilding extends ResourceBuilding {
 
 	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
-	public MineBuilding(EBuildingType type, Player player) {
-		super(type, player, 12);
+	public MineBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
 	}
 
 	@Override
@@ -66,9 +66,9 @@ public final class MineBuilding extends ResourceBuilding {
 	public boolean tryTakingResource() {
 		RelativePoint[] blockedPositions = super.getBuildingType().getBlockedTiles();
 		int randomPositionIndex = MatchConstants.random().nextInt(blockedPositions.length);
-		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
+		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.pos);
 
-		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());
+		boolean resourceTaken = super.grid.tryTakingResource(randomPosition, getProducedResource());
 		super.productivityActionExecuted(resourceTaken);
 		return resourceTaken;
 	}
@@ -108,7 +108,7 @@ public final class MineBuilding extends ResourceBuilding {
 
 	@Override
 	public int getRemainingResourceAmount() {
-		return super.getGrid().getAmountOfResource(getProducedResource(),
-				new RelativeToRealPointIterable(super.getBuildingType().getBlockedTiles(), super.getPos()));
+		return super.grid.getAmountOfResource(getProducedResource(),
+				new RelativeToRealPointIterable(super.getBuildingType().getBlockedTiles(), super.pos));
 	}
 }

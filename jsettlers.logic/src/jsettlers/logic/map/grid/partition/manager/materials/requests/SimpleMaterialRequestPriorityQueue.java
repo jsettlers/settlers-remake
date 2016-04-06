@@ -40,39 +40,7 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 
 	@Override
 	protected MaterialRequestObject getRequestForPrio(int prio) {
-		DoubleLinkedList<MaterialRequestObject> queue = queues[prio];
-
-		int numberOfElements = queue.size();
-
-		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
-			MaterialRequestObject request = queue.getFront();
-
-			int inDelivery = request.inDelivery;
-			int stillNeeded = request.getStillNeeded();
-
-			// if the request is done
-			if (stillNeeded <= 0) {
-				request.requestQueue = null;
-				queue.popFront(); // remove the request
-				numberOfElements--;
-			}
-
-			// if all needed are in delivery, or there can not be any more in delivery
-			else if (stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable()) {
-				queue.pushEnd(queue.popFront()); // move the request to the end.
-			}
-
-			// everything fine, take this request
-			else {
-				if (request.isRoundRobinRequest()) {
-					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
-				}
-
-				return request;
-			}
-		}
-
-		return null;
+		return super.findRequestInQueue(queues[prio]);
 	}
 
 	@Override

@@ -14,10 +14,13 @@
  *******************************************************************************/
 package jsettlers.algorithms.path;
 
+import java.io.Serializable;
+
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 
-public interface IPathCalculatable extends IPlayerable, ILocatable {
+public interface IPathCalculatable extends IPlayerable, ILocatable, Serializable {
+
 	/**
 	 * 
 	 * @return true if this path requester can only walk on it's own players ground.<br>

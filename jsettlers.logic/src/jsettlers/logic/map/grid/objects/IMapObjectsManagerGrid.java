@@ -33,6 +33,10 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	void setBlocked(int x, int y, boolean blocked);
 
+	boolean isProtected(int x, int y);
+
+	void setProtected(int x, int y, boolean protect);
+
 	AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType);
 
 	boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject);
@@ -43,8 +47,6 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	boolean isInBounds(int x, int y);
 
-	void setProtected(int x, int y, boolean protect);
-
 	EResourceType getRessourceTypeAt(int x, int y);
 
 	byte getRessourceAmountAt(int x, int y);
@@ -54,4 +56,5 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 	boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes);
 
 	void spawnDonkey(ShortPoint2D position, byte playerId);
+
 }
