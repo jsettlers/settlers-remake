@@ -28,13 +28,16 @@ distributions {
     }
 }
 
-task runAndroid(dependsOn: ':build') {
+task runAndroid(dependsOn: ':jsettlers.main.android:build') << {
     Properties local = new Properties()
     local.load(new FileInputStream("local.properties"))
     def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
     println 'Copy files to your device...'
     exec {
-        commandLine adb, 'install', '-r', './jsettlers.main.android/bin/jsettlers.main.android.apk'
+        commandLine adb, 'uninstall', 'jsettlers.main.android'
+    }
+    exec {
+        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
     }
     exec {
         commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
