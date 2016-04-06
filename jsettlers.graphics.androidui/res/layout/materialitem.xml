@@ -12,8 +12,7 @@
         android:layout_marginBottom="5sp"
         android:layout_marginLeft="10sp"
         android:layout_marginRight="10sp"
-        android:layout_marginTop="5sp"
-        android:src="@drawable/mat_axe" />
+        android:layout_marginTop="5sp"/>
 
     <SeekBar
         android:id="@+id/materialitem_priority"
