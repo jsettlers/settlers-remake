@@ -1,8 +1,12 @@
-apply plugin: 'java'
+apply plugin: 'application'
 
 compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+}
+
+run {
+    main 'jsettlers.main.swing.SwingManagedJSettlers'
 }
 
 dependencies {

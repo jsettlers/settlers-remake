@@ -44,6 +44,8 @@ distributions {
     }
 }
 
+task run(dependsOn: ':jsettlers.main.swing:run') {}
+
 task runAndroid(dependsOn: ':jsettlers.main.android:build') << {
     Properties local = new Properties()
     local.load(new FileInputStream("local.properties"))
