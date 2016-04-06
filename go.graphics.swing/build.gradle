@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+dependencies {
+    compile 'org.jogamp.gluegen:gluegen-rt:2.3.2'
+    compile 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-linux-amd64'
+    compile 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-macosx-universal'
+    compile 'org.jogamp.gluegen:gluegen-rt:2.3.2:natives-windows-amd64'
+    compile 'org.jogamp.jogl:jogl-all:2.3.1'
+    compile 'org.jogamp.jogl:jogl-all:2.3.2:natives-linux-amd64'
+    compile 'org.jogamp.jogl:jogl-all:2.3.2:natives-macosx-universal'
+    compile 'org.jogamp.jogl:jogl-all:2.3.2:natives-windows-amd64'
+    compile project(':go.graphics')
+}
