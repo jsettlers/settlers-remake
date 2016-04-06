@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -24,6 +25,10 @@ public class OriginalImageProvider {
 
 	public static ImageReference get(EBuildingType building) {
 		return INSTANCE.get(building.getGuiImage());
+	}
+
+	public static ImageReference get(EMaterialType material) {
+		return INSTANCE.get(material.getIcon());
 	}
 
 	/**
