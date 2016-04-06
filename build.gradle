@@ -18,6 +18,22 @@ allprojects {
     }
 }
 
+subprojects {
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        compileJava {
+            sourceCompatibility = 1.7
+            targetCompatibility = 1.7
+        }
+
+        sourceSets {
+            main {
+                java.srcDirs = ['src']
+                resources.srcDirs = ['src']
+            }
+        }
+    }
+}
+
 distributions {
     main {
         contents {

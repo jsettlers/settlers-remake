@@ -5,21 +5,8 @@ sourceSets {
         output.dir('gen', buildBy: 'generateLayouts')
 
         java.srcDirs = ['src', 'gen']
-        resources.srcDirs = ['src']
-    }
-
-    build {
-        java.srcDirs = ['build']
     }
 }
-
-//task generateLayouts(type: JavaExec) {
-//    classpath = project.sourceSets.build.compileClasspath
-//    classpath.plus(configurations.compile.dependencies)
-//    println "classpath"
-//    classpath.each { println it }
-//    main = 'jsettlers.common.CommonConstants.java'
-//}
 
 compileJava {
 	dependsOn 'generateLayouts'

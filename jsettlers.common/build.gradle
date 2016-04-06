@@ -1,7 +1,8 @@
 apply plugin: 'java'
 
-    import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-    import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.lib.Repository
+
 task findGitRevision << {
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
     Repository repository = builder.readEnvironment().findGitDir().build();
@@ -29,6 +30,5 @@ compileJava.dependsOn findGitRevision
 sourceSets {
     main {
         java.srcDirs = ['src', 'gen']
-        resources.srcDirs = ['src']
     }
 }
