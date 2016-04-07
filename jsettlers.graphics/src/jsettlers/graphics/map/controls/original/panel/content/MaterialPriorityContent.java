@@ -14,10 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import go.graphics.GLDrawContext;
+
 import java.util.Arrays;
 import java.util.BitSet;
 
-import go.graphics.GLDrawContext;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
@@ -101,7 +102,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 */
 		public MaterialPriorityPanel() {
 			for (int i = 0; i < ROWS; i++) {
-				addRowPositions(0, (i % 1) == 0);
+				addRowPositions(i, (i % 2) == 0);
 			}
 
 			for (EMaterialType material : EMaterialType.DROPPABLE_MATERIALS) {
