@@ -14,8 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5sp"
-            android:src="@drawable/bui_baker" />
+            android:layout_margin="5sp"/>
 
         <TextView
             android:id="@+id/building_name"

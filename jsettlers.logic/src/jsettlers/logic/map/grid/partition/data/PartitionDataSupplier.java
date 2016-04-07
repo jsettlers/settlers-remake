@@ -46,7 +46,7 @@ public final class PartitionDataSupplier implements IPartitionData {
 
 	@Override
 	public IBuildingCounts getBuildingCounts() {
-		if (buildingCounts == null) {
+		if (buildingCounts == null || true) { // Disabled caching since BuildingCounts is not updating yet.
 			buildingCounts = new BuildingCounts(playerId, partitionId);
 		}
 		return buildingCounts;

@@ -17,8 +17,8 @@ package jsettlers.graphics.androidui.menu.selection;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -113,7 +113,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 		}
 		ImageView image =
 				((ImageView) view.findViewById(R.id.materialitem_image));
-		image.setImageResource(Graphics.BUILDING_IMAGE_MAP[type.ordinal()]);
+		OriginalImageProvider.get(type).setAsImage(image);
 
 		SeekBar bar = (SeekBar) view.findViewById(R.id.materialitem_priority);
 		bar.setEnabled(getCount() > 1);
