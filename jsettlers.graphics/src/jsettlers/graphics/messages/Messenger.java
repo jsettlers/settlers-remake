@@ -33,7 +33,7 @@ public class Messenger {
 
 	public Messenger(IGameTimeProvider gameTimeProvider) {
 		this.gameTimeProvider = gameTimeProvider;
-		this.latestTickTime = gameTimeProvider.getGameTime();
+		this.latestTickTime = (int)System.currentTimeMillis();
 	}
 
 	/**
@@ -61,9 +61,10 @@ public class Messenger {
 	 * 
 	 */
 	public void doTick() {
+		int millis = (int)System.currentTimeMillis(); 
 		if (!gameTimeProvider.isGamePausing()) {
 			// update message ages
-			int interval = gameTimeProvider.getGameTime() - latestTickTime;
+			int interval = millis - latestTickTime;
 			for (IMessage m : messages) {
 				if (m.ageBy(interval) > IMessage.MESSAGE_TTL)
 					// remove all remaining messages, assuming they in order
@@ -71,7 +72,7 @@ public class Messenger {
 						;
 			}
 		}
-		latestTickTime = gameTimeProvider.getGameTime();
+		latestTickTime = millis;
 	}
 
 	/**
