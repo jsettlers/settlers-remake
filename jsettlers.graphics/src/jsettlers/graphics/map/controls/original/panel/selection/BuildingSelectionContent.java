@@ -59,11 +59,9 @@ import jsettlers.graphics.ui.layout.TradingSelectionLayout;
  * @author Michael Zangl
  */
 public class BuildingSelectionContent extends AbstractSelectionContent {
-	private static final int INCREASE_MULTIPLE_STEP = 5;
-	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 45, 0);
-	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 48, 0);
+	private static final int TRADING_MULTY_STEP_INCREASE = 8;
+	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
+	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
 
 	/**
 	 * This defines an element that depends on the state of the building.
@@ -280,18 +278,18 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		protected Action getActionForStep(int step) {
-			EWaypointType wp;
+			EWaypointType waypoint;
 			if (step <= 0) {
-				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_1;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_1;
 			} else if (step <= 1) {
-				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_2;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_2;
 			} else if (step <= 2) {
-				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_3;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_3;
 			} else {
-				wp = SetTradingWaypointAction.EWaypointType.DESTINATION;
+				waypoint = SetTradingWaypointAction.EWaypointType.DESTINATION;
 			}
 
-			return new AskSetTradingWaypointAction(wp);
+			return new AskSetTradingWaypointAction(waypoint);
 		}
 	}
 
@@ -303,7 +301,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class LandTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length;
+		private static final int NUMBER_OF_BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length;
 
 		/**
 		 * Create a new {@link LandTradingPath}.
@@ -317,7 +315,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		@Override
 		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * BUTTONS);
+			int step = (int) (relativex * NUMBER_OF_BUTTONS);
 			return getActionForStep(step);
 		}
 	}
@@ -330,7 +328,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class SeaTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length + 1;
+		private static final int NUMBER_OF_BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length + 1;
 
 		/**
 		 * Create a new {@link SeaTradingPath}.
@@ -344,7 +342,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		@Override
 		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * BUTTONS) - 1;
+			int step = (int) (relativex * NUMBER_OF_BUTTONS) - 1;
 			if (step >= 0) {
 				return getActionForStep(step);
 			} else {
@@ -709,13 +707,13 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 		layout.tradeAll.amount = Integer.MAX_VALUE;
 		layout.tradeMore5.relative = true;
-		layout.tradeMore5.amount = INCREASE_MULTIPLE_STEP;
+		layout.tradeMore5.amount = TRADING_MULTY_STEP_INCREASE;
 		layout.tradeMore.relative = true;
 		layout.tradeMore.amount = 1;
 		layout.tradeLess.relative = true;
 		layout.tradeLess.amount = -1;
 		layout.tradeLess5.relative = true;
-		layout.tradeLess5.amount = -INCREASE_MULTIPLE_STEP;
+		layout.tradeLess5.amount = -TRADING_MULTY_STEP_INCREASE;
 
 		return layout._root;
 	}

@@ -32,15 +32,16 @@ public class BackgroundSound implements Runnable {
 	private static final int WATER_PLAY_TIME = 200;
 	private static final int BIRDS_PLAY_TIME = 800;
 	private static final float VOLUME = .4f;
-	private final MapDrawContext map;
-	private final SoundManager sound;
-	private final Object waitMutex = new Object();
-	private boolean stopped = false;
 
 	private static final int INDEX_BIRDS1 = 69;
 	private static final int INDEX_BIRDS2 = 70;
 	private static final int INDEX_WATER = 68;
 	private static final int INDEX_DESERT = 73;
+
+	private final MapDrawContext map;
+	private final SoundManager sound;
+	private final Object waitMutex = new Object();
+	private boolean stopped = false;
 
 	/**
 	 * Creates a new background sound player.
@@ -53,7 +54,6 @@ public class BackgroundSound implements Runnable {
 	public BackgroundSound(MapDrawContext map, SoundManager sound) {
 		this.map = map;
 		this.sound = sound;
-
 	}
 
 	@Override
@@ -70,9 +70,7 @@ public class BackgroundSound implements Runnable {
 				}
 				int line = (int) (Math.random() * screen.getLines());
 
-				int x =
-						screen.getLineStartX(line)
-								+ (int) (Math.random() * screen.getLineLength());
+				int x = screen.getLineStartX(line) + (int) (Math.random() * screen.getLineLength());
 				int y = screen.getLineY(line);
 
 				if (hasTree(x, y)) {
@@ -159,5 +157,4 @@ public class BackgroundSound implements Runnable {
 			waitMutex.notifyAll();
 		}
 	}
-
 }

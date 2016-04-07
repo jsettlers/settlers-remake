@@ -14,10 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
-import go.graphics.GLDrawContext;
-
 import java.util.ConcurrentModificationException;
 
+import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -61,22 +60,16 @@ public class MapObjectDrawer {
 	private static final int SOUND_BUILDING_DESTROYED = 36;
 	private static final int SOUND_SETTLER_KILLED = 35;
 	private static final int SOUND_FALLING_TREE = 4;
-	private static final OriginalImageLink INSIDE_BUILDING_RIGHT =
-			new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
-	private static final OriginalImageLink INSIDE_BUILDING_LEFT =
-			new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
+	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
+	private static final OriginalImageLink INSIDE_BUILDING_LEFT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int OBJECTS_FILE = 1;
 	private static final int BUILDINGS_FILE = 13;
 
 	private static final int TREE_TYPES = 7;
 
-	private static final int[] TREE_SEQUENCES = new int[] {
-			1, 2, 4, 7, 8, 16, 17,
-	};
-	private static final int[] TREE_CHANGING_SEQUENCES = new int[] {
-			3, 3, 6, 9, 9, 18, 18,
-	};
+	private static final int[] TREE_SEQUENCES = new int[] { 1, 2, 4, 7, 8, 16, 17 };
+	private static final int[] TREE_CHANGING_SEQUENCES = new int[] { 3, 3, 6, 9, 9, 18, 18 };
 
 	/**
 	 * First images in tree cutting sequence.
@@ -398,8 +391,7 @@ public class MapObjectDrawer {
 	private void drawPlantDecoration(int x, int y, float color) {
 		int step = (x * 13 + y * 233) % 8;
 
-		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(1, 27);
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
 
 		draw(seq.getImageSafe(step), x, y, color);
 	}
@@ -407,16 +399,14 @@ public class MapObjectDrawer {
 	private void drawDesertDecoration(int x, int y, float color) {
 		int step = (x * 13 + y * 233) % 5 + 10;
 
-		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(1, 27);
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(1, 27);
 
 		draw(seq.getImageSafe(step), x, y, color);
 	}
 
 	private void drawPig(int x, int y, float color) {
-		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(ANIMALS_FILE,
-						PIG_SEQ);
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+				PIG_SEQ);
 
 		if (seq.length() > 0) {
 			int i = getAnimationStep(x, y) / 2;
@@ -433,9 +423,8 @@ public class MapObjectDrawer {
 
 	private void drawDecorativeFish(int x, int y, float color) {
 		int step = getAnimationStep(x, y);
-		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(ANIMALS_FILE,
-						FISH_SEQ);
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+				FISH_SEQ);
 		int substep = step % 1024;
 		if (substep < 15) {
 			int subseq = (step / 1024) % 4;
@@ -445,8 +434,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawAttackableTower(int x, int y, IMapObject object) {
-		IMovable movable =
-				((IAttackableTowerMapObject) object).getMovable();
+		IMovable movable = ((IAttackableTowerMapObject) object).getMovable();
 		if (movable != null) {
 			drawMovableAt(movable, x, y);
 			playMovableSound(movable);
@@ -565,13 +553,13 @@ public class MapObjectDrawer {
 		float x = (1 - progress)
 				* converter.getViewX(startx, starty, theight)
 				+ progress
-				* converter.getViewX(destinationx, destinationy,
-						dheight);
+						* converter.getViewX(destinationx, destinationy,
+								dheight);
 		betweenTilesY = (1 - progress)
 				* converter.getViewY(startx, starty, theight)
 				+ progress
-				* converter.getViewY(destinationx, destinationy,
-						dheight);
+						* converter.getViewY(destinationx, destinationy,
+								dheight);
 		return x;
 	}
 
