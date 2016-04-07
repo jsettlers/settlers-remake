@@ -16,6 +16,7 @@ package jsettlers.main.swing.menu.mainmenu;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -131,6 +132,12 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private List<MapLoader> transformRemakeMapLoadersToMapLoaders(List<RemakeMapLoader> remakeMapLoaders) {
 		List<MapLoader> mapLoaders = new Vector<MapLoader>();
 		mapLoaders.addAll(remakeMapLoaders);
+		mapLoaders.sort(new Comparator<MapLoader>() {
+			@Override
+			public int compare(MapLoader o1, MapLoader o2) {
+				return o2.getCreationDate().compareTo(o1.getCreationDate());
+			}
+		});
 		return mapLoaders;
 	}
 
