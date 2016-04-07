@@ -92,12 +92,18 @@ public class Messenger {
 		return true;
 	}
 
+	/**
+	 * Returns a position this messenger currently considers noteworthy.
+	 * I.e. location of latest incoming message, then that of respectively next,
+	 * when repeatedly called.
+	 * @return A {@link ShortPoint2D} retrieved from a message.
+	 */
 	public ShortPoint2D getPosition() {
 		if (!messages.isEmpty()) {
-			int index = focusPos % messages.size();
-			focusPos++;
-			return messages.get(index).getPosition();
+			// retrieve nth message's position and increment n
+			return messages.get(focusPos++ % messages.size()).getPosition();
 		}
 		return null;
 	}
+
 }

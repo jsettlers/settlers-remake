@@ -854,10 +854,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	public void scrollTo(ShortPoint2D point, boolean mark) {
-		this.context.scrollTo(point);
-		if (mark) {
-			scrollMarker = point;
-			scrollMarkerTime = System.currentTimeMillis();
+		if (point != null) {
+			this.context.scrollTo(point);
+			if (mark) {
+				scrollMarker = point;
+				scrollMarkerTime = System.currentTimeMillis();
+			}
 		}
 	}
 
