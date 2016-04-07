@@ -43,8 +43,8 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
-import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
+import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -85,7 +85,7 @@ public class SwingManagedJSettlers {
 			String localeString = options.getProperty("locale");
 			String[] localeParts = localeString.split("_");
 			if (localeParts.length == 2) {
-				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
+				AbstractLabels.setPreferredLocale(new Locale(localeParts[0], localeParts[1]));
 			} else {
 				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
 			}

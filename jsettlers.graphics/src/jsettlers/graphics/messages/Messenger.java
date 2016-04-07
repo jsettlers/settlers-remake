@@ -22,11 +22,11 @@ import jsettlers.common.menu.messages.IMessage;
 /**
  * This is a messenger, that lets you display messages on the users screen.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class Messenger {
 	private static final int MAX_MESSAGES = 50;
-	LinkedList<IMessage> messages = new LinkedList<IMessage>();
+	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
 
 	/**
 	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
@@ -39,6 +39,12 @@ public class Messenger {
 		return messages;
 	}
 
+	/**
+	 * Adds a new message.
+	 * 
+	 * @param message
+	 *            The message that should be displayed to the user.
+	 */
 	public void addMessage(IMessage message) {
 		messages.addFirst(message);
 		if (messages.size() > MAX_MESSAGES) {

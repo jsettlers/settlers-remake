@@ -14,6 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.menu.messages;
 
+/**
+ * Denotes the type of the message. Used for context actions and e.g. playing the right sound.
+ * 
+ * @author Michael Zangl
+ */
 public enum EMessageType {
 	/**
 	 * A chat message.

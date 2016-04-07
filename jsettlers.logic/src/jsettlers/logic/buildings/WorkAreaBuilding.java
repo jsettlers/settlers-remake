@@ -42,7 +42,7 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	protected void positionedEvent(ShortPoint2D pos) {
-		this.workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
+		this.workAreaCenter = getBuildingType().getDefaultWorkcenter().calculatePoint(pos);
 	}
 
 	public final ShortPoint2D getWorkAreaCenter() {

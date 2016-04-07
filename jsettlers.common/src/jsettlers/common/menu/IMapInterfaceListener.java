@@ -17,12 +17,11 @@ package jsettlers.common.menu;
 import jsettlers.common.menu.action.IAction;
 
 /**
- * This is a map interface listener.
- * <h2>Registering listeners</h2> At first you have to get the connector when adding the map va
+ * This is a map interface listener. <h2>Registering listeners</h2> At first you have to get the connector when adding the map va
  * {@link JOGLPanel#showHexMap(jsettlers.graphics.map.IHexMap)} Then you should add a listener to the connector with
  * {@link MapInterfaceConnector#addListener(MapInterfaceListener)}.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public interface IMapInterfaceListener {
 	/**

@@ -143,7 +143,7 @@ public enum EMapObjectType {
 	 */
 	INFORMABLE_MAP_OBJECT;
 
-	public static final EMapObjectType[] values = EMapObjectType.values();
+	public static final EMapObjectType[] VALUES = EMapObjectType.values();
 	public final byte ordinal;
 
 	private EMapObjectType() {

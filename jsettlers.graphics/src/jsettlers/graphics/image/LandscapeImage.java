@@ -27,20 +27,53 @@ import jsettlers.graphics.reader.ImageMetadata;
  * <p>
  * bind() activates drawing the texture.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class LandscapeImage extends SingleImage {
+	private static final int CONTINUOUS_MIN_SIZE = 50;
+	/**
+	 * States that you request the image in the top right border of the texture.
+	 */
+	public static final int TRI_TOPRIGHT = 0;
+	/**
+	 * States that you request the image in the bottom right border of the texture.
+	 */
+	public static final int TRI_BOTTOMRIGHT = 1;
+	/**
+	 * States that you request the image in the bottom border of the texture.
+	 */
+	public static final int TRI_BOTTOM = 2;
+	/**
+	 * States that you request the image in the bottom left border of the texture.
+	 */
+	public static final int TRI_BOTTOMLEFT = 3;
+	/**
+	 * States that you request the image in the top border of the texture.
+	 */
+	public static final int TRI_TOP = 4;
+	/**
+	 * States that you request the image in the top left border of the texture.
+	 */
+	public static final int TRI_TOPLEFT = 5;
 
+	/**
+	 * Creates a new {@link LandscapeImage}.
+	 * 
+	 * @param metadata
+	 *            The image meta data.
+	 * @param data
+	 *            The data for the image.
+	 */
 	public LandscapeImage(ImageMetadata metadata, short[] data) {
 		super(metadata, data);
 	}
 
 	/**
-	 * Checks whether the given image is a continous image, that means it can be repeated when drawing.
+	 * Checks whether the given image is a continuous image, that means it can be repeated when drawing.
 	 * 
 	 * @return If the image is continuous.
 	 */
 	public boolean isContinuous() {
-		return this.width > 50 && this.height > 50;
+		return this.width > CONTINUOUS_MIN_SIZE && this.height > CONTINUOUS_MIN_SIZE;
 	}
 }

@@ -17,25 +17,50 @@ package jsettlers.graphics.action;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
+/**
+ * Sets a traiding waypoint position for the selected building.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class SetTradingWaypointAction extends PointAction {
 
-	public enum WaypointType {
+	/**
+	 * The waypoint types, ordered in the order they are visited by the donkeys/ships.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
+	public enum EWaypointType {
 		WAYPOINT_1,
 		WAYPOINT_2,
 		WAYPOINT_3,
 		DESTINATION;
 
-		public static WaypointType[] values = values();
+		public static final EWaypointType[] VALUES = values();
 	}
 
-	private final WaypointType waypoint;
+	private final EWaypointType waypoint;
 
-	public SetTradingWaypointAction(WaypointType waypoint, ShortPoint2D position) {
+	/**
+	 * Creates a new {@link SetTradingWaypointAction}.
+	 * 
+	 * @param waypoint
+	 *            The waypoint to set.
+	 * @param position
+	 *            The position to set it at.
+	 */
+	public SetTradingWaypointAction(EWaypointType waypoint, ShortPoint2D position) {
 		super(EActionType.SET_TRADING_WAYPOINT, position);
 		this.waypoint = waypoint;
 	}
 
-	public WaypointType getWaypoint() {
+	/**
+	 * Gets the waypoint to set.
+	 * 
+	 * @return The waypoint.
+	 */
+	public EWaypointType getWaypointType() {
 		return waypoint;
 	}
 }

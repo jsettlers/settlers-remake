@@ -60,8 +60,8 @@ public enum ELandscapeType {
 	MUDINNER(4, new Color(0xff0e87cc), false, true), // TODO: color
 	MUDBORDER(6, new Color(0xff0e87cc), false, false); // TODO: color
 
-	public static final ELandscapeType[] values = ELandscapeType.values();
-	private static final Set<ELandscapeType> rivers = EnumSet.of(RIVER1, RIVER2, RIVER3, RIVER4);
+	public static final ELandscapeType[] VALUES = ELandscapeType.values();
+	private static final Set<ELandscapeType> RIVERS = EnumSet.of(RIVER1, RIVER2, RIVER3, RIVER4);
 
 	public final int image;
 	public final Color color;
@@ -106,6 +106,6 @@ public enum ELandscapeType {
 	}
 
 	public final boolean isRiver() {
-		return rivers.contains(this);
+		return RIVERS.contains(this);
 	}
 }

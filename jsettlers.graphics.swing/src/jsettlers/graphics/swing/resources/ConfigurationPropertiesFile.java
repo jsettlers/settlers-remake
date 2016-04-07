@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -36,7 +37,11 @@ public class ConfigurationPropertiesFile {
 		this.configFile = file;
 
 		Properties defaultProperties = new Properties();
-		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
+		InputStream defaultConfigFile = ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp");
+		if (defaultConfigFile != null) {
+			defaultProperties.load(defaultConfigFile);
+			defaultConfigFile.close();
+		}
 		this.properties = new Properties(defaultProperties);
 
 		if (file.exists()) {

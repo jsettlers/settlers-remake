@@ -56,8 +56,8 @@ public class MapInterfaceConnector implements ActionFireable, IMapInterfaceConne
 	/**
 	 * Creates a new connector for the given interface.
 	 * 
-	 * @param mapInterface
-	 *            The interface.
+	 * @param content
+	 *            The map.
 	 */
 	public MapInterfaceConnector(MapContent content) {
 		this.content = content;

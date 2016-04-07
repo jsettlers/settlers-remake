@@ -36,7 +36,7 @@ public class BestFarmConstructionPositionFinder implements IBestConstructionPosi
 
 	static {
 		workAreaPoints = new Vector<RelativePoint>();
-		RelativePoint center = EBuildingType.FARM.getWorkcenter();
+		RelativePoint center = EBuildingType.FARM.getDefaultWorkcenter();
 		short workRadius = EBuildingType.FARM.getWorkradius();
 		for (short x = (short) -workRadius; x < workRadius; x++) {
 			for (short y = (short) -workRadius; y < workRadius; y++) {

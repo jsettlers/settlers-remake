@@ -171,7 +171,7 @@ public class PartitionsGridTestingWnd {
 			@Override
 			public boolean isBorder(int x, int y) {
 				byte playerAtPos = getPlayerIdAt(x, y);
-				for (EDirection dir : EDirection.values) {
+				for (EDirection dir : EDirection.VALUES) {
 					int currX = x + dir.gridDeltaX;
 					int currY = y + dir.gridDeltaY;
 					if (currX >= 0 && currY >= 0 && currX < WIDTH && currY < HEIGHT && playerAtPos != getPlayerIdAt(currX, currY)) {

@@ -70,7 +70,7 @@ public class BordersThread implements Runnable {
 		boolean isBorder = false;
 
 		if (grid.getBlockedPartition(x, y) > 0) { // the position is not a blocked landscape
-			for (EDirection currDir : EDirection.values) {
+			for (EDirection currDir : EDirection.VALUES) {
 				short currNeighborX = currDir.getNextTileX(x);
 				short currNeighborY = currDir.getNextTileY(y);
 
@@ -89,7 +89,7 @@ public class BordersThread implements Runnable {
 				}
 
 				if (neighborPlayer >= 0) { // this position is occupied by a player
-					for (EDirection currNeighborDir : EDirection.values) {
+					for (EDirection currNeighborDir : EDirection.VALUES) {
 						short nextX = currNeighborDir.getNextTileX(currNeighborX);
 						short nextY = currNeighborDir.getNextTileY(currNeighborY);
 
