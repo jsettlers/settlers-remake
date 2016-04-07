@@ -16,6 +16,7 @@ package jsettlers.logic.map.save;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -56,12 +57,7 @@ public class MapList implements IMapListerCallable {
 		return CommonConstants.USE_SAVEGAME_COMPRESSION ? MapLoader.MAP_EXTENSION_COMPRESSED : MapLoader.MAP_EXTENSION;
 	}
 
-	private static IMapListFactory mapListFactory = new IMapListFactory() {
-		@Override
-		public MapList getMapList() {
-			return new MapList(ResourceManager.getResourcesDirectory(), ResourceManager.getOriginalMapDirectory());
-		}
-	};
+	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
 
 	private static MapList defaultList;
 
@@ -73,12 +69,6 @@ public class MapList implements IMapListerCallable {
 	private final ChangingList<RemakeMapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
-
-	public MapList(File resourcesDirectory, File originalMapsDirectory) {
-		this(new DirectoryMapLister(new File(resourcesDirectory, "maps"), false),
-				new DirectoryMapLister(new File(resourcesDirectory, "save"), true),
-				new DirectoryMapLister(originalMapsDirectory, false));
-	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
 		this(mapsDir, saveDir, null);
@@ -103,9 +93,9 @@ public class MapList implements IMapListerCallable {
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
-		
+
 		MapLoader loader;
-		
+
 		try {
 			loader = MapLoader.getLoaderForListedMap(map);
 		} catch (Exception e) {
@@ -113,10 +103,10 @@ public class MapList implements IMapListerCallable {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		MapFileHeader mapHead = loader.getFileHeader();
-		
-		//- if the map can't be load (e.g. caused by wrong format) the mapHead gets NULL! -> hide/ignore this map from user
+
+		// - if the map can't be load (e.g. caused by wrong format) the mapHead gets NULL! -> hide/ignore this map from user
 		if (mapHead != null) {
 			MapType type = loader.getFileHeader().getType();
 
@@ -254,6 +244,64 @@ public class MapList implements IMapListerCallable {
 	public static void setDefaultListFactory(IMapListFactory factory) {
 		mapListFactory = factory;
 		defaultList = null;
+	}
+
+	public static class DefaultMapListFactory implements IMapListFactory {
+		@Override
+		public MapList getMapList() {
+			File resourcesDirectory = getWriteableDirectory();
+			File originalMapsDirectory = ResourceManager.getOriginalMapDirectory();
+			IMapLister maps = new DirectoryMapLister(new File(resourcesDirectory, "maps"), false);
+			IMapLister additionalMaps = getAdditionalMaps();
+			if (additionalMaps != null) {
+				maps = new CombiningMapLister(maps, additionalMaps);
+			}
+			return new MapList(maps,
+					new DirectoryMapLister(new File(resourcesDirectory, "save"), true),
+					new DirectoryMapLister(originalMapsDirectory, false));
+		}
+
+		protected File getWriteableDirectory() {
+			return ResourceManager.getResourcesDirectory();
+		}
+
+		protected IMapLister getAdditionalMaps() {
+			return null;
+		}
+	}
+
+	public static class ListedResourceMap implements IListedMap {
+		private String path;
+
+		public ListedResourceMap(String path) {
+			super();
+			this.path = path;
+		}
+
+		@Override
+		public boolean isCompressed() {
+			return path.endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return getClass().getResourceAsStream(path);
+		}
+
+		@Override
+		public String getFileName() {
+			return path.replaceFirst(".*/", "");
+		}
+
+		@Override
+		public File getFile() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void delete() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 }

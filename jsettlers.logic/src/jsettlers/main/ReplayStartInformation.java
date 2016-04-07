@@ -96,4 +96,5 @@ public class ReplayStartInformation {
 			availablePlayers[i] = ois.readBoolean();
 		}
 	}
+
 }

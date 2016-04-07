@@ -21,9 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import jsettlers.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
@@ -36,6 +33,7 @@ import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayUtils;
@@ -43,6 +41,9 @@ import jsettlers.main.replay.ReplayUtils.ReplayAndSavegames;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 import jsettlers.tests.utils.DebugMapLister;
 import jsettlers.tests.utils.MapUtils;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * 
@@ -73,14 +74,14 @@ public class ReplayValidationIT {
 	@Test
 	public void testIfReplayIsEqualToOriginalPlay() throws IOException, MapLoadException, ClassNotFoundException {
 		final float targetTimeMinutes = 60f;
-		final String mapName = "mountain lake";
+		RemakeMapLoader map = TestUtils.getMap("mountainlake");
 
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(mapName, targetTimeMinutes);
+		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
 		MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(directSavegameReplay.getReplayFile(), targetTimeMinutes,
-				REMAINING_REPLAY_FILENAME);
+				REMAINING_REPLAY_FILENAME, TestUtils.getMapProvider());
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(savegame, replayedSavegame);
@@ -94,9 +95,9 @@ public class ReplayValidationIT {
 	@Test
 	public void testIfSavegameOfSavegameEqualsSavegame() throws IOException, MapLoadException, ClassNotFoundException, InterruptedException {
 		final float targetTimeMinutes = 30f;
-		final String mapName = "mountain lake";
+		RemakeMapLoader map = TestUtils.getMap("mountainlake");
 
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(mapName, targetTimeMinutes);
+		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
@@ -128,10 +129,9 @@ public class ReplayValidationIT {
 	@Test
 	public void testReplayForSavegame() throws IOException, MapLoadException, ClassNotFoundException {
 		final float[] targetTimeMinutes = new float[] { 30f, 60f };
+		RemakeMapLoader map = TestUtils.getMap("mountainlake");
 
-		final String mapName = "mountain lake";
-
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(mapName, targetTimeMinutes);
+		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(targetTimeMinutes.length, directSavegameReplay);
 
 		MapLoader[] savegames = directSavegameReplay.getSavegames();
@@ -140,7 +140,8 @@ public class ReplayValidationIT {
 			float targetTime = targetTimeMinutes[i];
 			MapLoader savegame = savegames[i];
 
-			MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(replayFile, targetTime, REMAINING_REPLAY_FILENAME);
+			MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(replayFile, targetTime, REMAINING_REPLAY_FILENAME,
+					TestUtils.getMapProvider());
 
 			// compare direct savegame with replayed savegame.
 			System.out.println("Comparing replay for savegame at targetTime: " + targetTime);

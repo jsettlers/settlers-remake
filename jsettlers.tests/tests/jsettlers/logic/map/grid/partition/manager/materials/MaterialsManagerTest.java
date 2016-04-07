@@ -16,14 +16,14 @@ package jsettlers.logic.map.grid.partition.manager.materials;
 
 import java.io.IOException;
 
-import org.junit.Test;
-
 import jsettlers.TestUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.manager.materials.JoblessSupplierMock;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * This is a test for the {@link MaterialsManager} class.
@@ -35,6 +35,11 @@ public class MaterialsManagerTest {
 	private final OffersList offersList = new OffersList(null);
 	private final JoblessSupplierMock joblessSupplier = new JoblessSupplierMock();
 	private final MaterialsManager manager = new MaterialsManager(joblessSupplier, offersList, new PartitionManagerSettings());
+
+	@BeforeClass
+	public static void setupSwing() {
+		TestUtils.setupResourcesManager();
+	}
 
 	@Test
 	public void testSerialization() throws IOException, ClassNotFoundException {

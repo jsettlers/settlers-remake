@@ -23,11 +23,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
 import jsettlers.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
@@ -42,6 +37,11 @@ import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.tests.utils.DebugMapLister;
 import jsettlers.tests.utils.MapUtils;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -92,7 +92,8 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME,
+					TestUtils.getMapProvider());
 			MapLoader expectedSavegame = getReferenceSavegamePath();
 
 			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
@@ -121,7 +122,8 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
+			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME,
+					TestUtils.getMapProvider());
 			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
 
 			try {

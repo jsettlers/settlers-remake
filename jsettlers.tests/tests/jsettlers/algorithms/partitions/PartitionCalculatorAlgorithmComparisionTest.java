@@ -18,16 +18,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
-import org.junit.Test;
-
 import jsettlers.TestUtils;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.network.synchronic.timer.NetworkTimer;
+
+import org.junit.Test;
 
 /**
  * 
@@ -41,7 +40,7 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 		TestUtils.setupResourcesManager();
 		MatchConstants.init(new NetworkTimer(true), 0);
 
-		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid(null).getMainGrid();
+		MainGrid grid = TestUtils.getMap("bigmap").loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();

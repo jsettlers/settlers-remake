@@ -39,12 +39,14 @@ import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.DirectoryMapLister;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.ResourceMapLister;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -150,6 +152,7 @@ public class SwingManagedJSettlers {
 	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
 		try {
 			SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
+			MapList.setDefaultListFactory(new ResourceMapLister());
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();

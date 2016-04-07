@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,32 +12,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.android.resources;
+package jsettlers.logic.map.save;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import jsettlers.logic.map.save.IMapLister;
-import jsettlers.logic.map.save.MapList.DefaultMapListFactory;
-import android.content.res.AssetManager;
+/**
+ * This class combines two {@link IMapLister}s. Maps are always written to the first list.
+ * 
+ * @author Michael Zangl
+ */
+public class CombiningMapLister implements IMapLister {
+	private final IMapLister l1;
+	private final IMapLister l2;
 
-public class AndroidMapListFactory extends DefaultMapListFactory {
-
-	private final AssetManager manager;
-	private final File writeableDir;
-
-	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
+	public CombiningMapLister(IMapLister l1, IMapLister l2) {
 		super();
-		this.manager = manager;
-		this.writeableDir = writeableDir;
+		this.l1 = l1;
+		this.l2 = l2;
 	}
 
 	@Override
-	protected IMapLister getAdditionalMaps() {
-		return new AndroidAssetsMapLister(manager, "maps");
+	public void listMaps(IMapListerCallable callable) {
+		l1.listMaps(callable);
+		l2.listMaps(callable);
 	}
 
 	@Override
-	protected File getWriteableDirectory() {
-		return writeableDir;
+	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
+		return l1.getOutputStream(header);
 	}
 }

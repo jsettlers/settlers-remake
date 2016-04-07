@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.swing.resources;
 
+import java.io.File;
 import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
@@ -53,8 +54,14 @@ public class SwingResourceLoader {
 	}
 
 	public static void setupResourcesManager(ConfigurationPropertiesFile configFile) throws IOException {
+		String res = System.getenv("JSETTLERS_RESOURCES");
+		File resourcesDirectory = configFile.getResourcesDirectory();
+		if (res != null && !res.isEmpty()) {
+			// We might find a better place for this...
+			resourcesDirectory = new File(res);
+		}
 		SwingResourceProvider provider = JarSwingResourceProvider.getBestAvailable(configFile.getOriginalMapsDirectory(),
-				configFile.getResourcesDirectory());
+				resourcesDirectory);
 		ResourceManager.setProvider(provider);
 	}
 

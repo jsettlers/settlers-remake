@@ -56,6 +56,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
+import jsettlers.main.replay.ReplayUtils.ReplayMapFileProvider;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
@@ -93,6 +94,10 @@ public class JSettlersGame {
 		System.out.println("Java version: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(playerSettings) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
+
+		if (mapCreator == null) {
+			throw new NullPointerException("mapCreator");
+		}
 
 		this.mapCreator = mapCreator;
 		this.randomSeed = randomSeed;
@@ -134,10 +139,23 @@ public class JSettlersGame {
 
 	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
 			ReplayStartInformation replayStartInformation) throws IOException {
+		return loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation, null);
+	}
+
+	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
+			ReplayStartInformation replayStartInformation, ReplayMapFileProvider fileProvider) throws IOException {
+		if (fileProvider == null) {
+			fileProvider = new ReplayMapFileProvider() {
+				@Override
+				public MapLoader getMap(String id) {
+					return MapList.getDefaultList().getMapById(id);
+				}
+			};
+		}
 		DataInputStream replayFileInputStream = new DataInputStream(new FileInputStream(loadableReplayFile));
 		replayStartInformation.deserialize(replayFileInputStream);
 
-		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
+		MapLoader mapCreator = fileProvider.getMap(replayStartInformation.getMapId());
 		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
 				replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
 	}
