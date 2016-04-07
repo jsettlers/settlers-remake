@@ -34,7 +34,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 
 	static {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.values[i]);
+			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.VALUES[i]);
 		}
 	}
 
@@ -48,7 +48,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 
 		settingsOfMaterials = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			EMaterialType materialType = EMaterialType.values[i];
+			EMaterialType materialType = EMaterialType.VALUES[i];
 
 			if (materialType.isDistributionConfigurable()) {
 				settingsOfMaterials[i] = new DistributionSettingsForMaterial(materialType);

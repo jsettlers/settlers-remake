@@ -60,7 +60,7 @@ public final class MaterialsManager implements Serializable {
 
 		requestQueues = new AbstractMaterialRequestPriorityQueue[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			EMaterialType materialType = EMaterialType.values[i];
+			EMaterialType materialType = EMaterialType.VALUES[i];
 			if (materialType.isDistributionConfigurable()) {
 				requestQueues[i] = new MaterialsForBuildingsRequestPrioQueue(settings.getDistributionSettings(materialType));
 			} else {

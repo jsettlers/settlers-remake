@@ -37,6 +37,9 @@ public final class DrawConstants {
 	 * Y height of a single texture piece.
 	 */
 	public static final int TEXTUREUNIT_Y = 16;
+	/**
+	 * Offset each texture should have, in pixels. This is half a pixel to align them with the screen.
+	 */
 	public static final float TEXTURE_BORDER_OFFSET = 0.5f;
 
 	private DrawConstants() {

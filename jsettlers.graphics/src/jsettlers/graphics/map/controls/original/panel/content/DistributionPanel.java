@@ -16,7 +16,9 @@ package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
 import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
@@ -80,67 +82,80 @@ public class DistributionPanel extends AbstractContentProvider {
 	}
 
 	private static class Tab {
-		private final Button icon;
+		private final TabButton icon;
 		private final ConfigurationPanel configurationPanel;
 
-		private Tab(Button icon, ConfigurationPanel configurationPanel) {
+		private Tab(TabButton icon, ConfigurationPanel configurationPanel) {
 			this.icon = icon;
 			this.configurationPanel = configurationPanel;
 		}
 	}
 
+	private static class TabButton extends Button {
+		Action action;
+
+		public TabButton(ImageLink image) {
+			super(image);
+		}
+
+		@Override
+		public Action getAction() {
+			return action;
+		}
+	}
+
 	private final Tab[] tabs = {
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 144, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 144, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Ironsmith"),
 							new ConfigurationPanelRow("Goldsmith"),
 							new ConfigurationPanelRow("Weaponsmith"),
 							new ConfigurationPanelRow("Toolsmith"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 132, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 132, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Weaponsmith"),
 							new ConfigurationPanelRow("Toolsmith"),
 							new ConfigurationPanelRow("Shipyard"),
 							new ConfigurationPanelRow("Catapult Workshop"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 168, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 168, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Building"),
 							new ConfigurationPanelRow("Shipyard"),
 							new ConfigurationPanelRow("Charcoal"),
 							new ConfigurationPanelRow("Catapult Workshop"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 174, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 174, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Building"),
 							new ConfigurationPanelRow("Catapult Workshop"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 180, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 180, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Windmill"),
 							new ConfigurationPanelRow("Pig Farm"),
 							new ConfigurationPanelRow("Donkey Farm"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 156, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 156, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Bakery"),
 							new ConfigurationPanelRow("Pig Farm"),
 							new ConfigurationPanelRow("Donkey Farm"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 186, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 186, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Coal Mine"),
 							new ConfigurationPanelRow("Iron Mine"),
 							new ConfigurationPanelRow("Gold Mine"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Iron Mine"),
 							new ConfigurationPanelRow("Coal Mine"),
 							new ConfigurationPanelRow("Gold Mine"),
 					})),
-			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
+			new Tab(new TabButton(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Gold Mine"),
 							new ConfigurationPanelRow("Coal Mine"),
@@ -190,7 +205,7 @@ public class DistributionPanel extends AbstractContentProvider {
 		float top = marginTop;
 		for (int r = 0; r < ROWS; r++, top -= (rowHeight + marginV)) {
 			final Tab item = tabs[tabIdx];
-			Button icon = item.icon;
+			TabButton icon = item.icon;
 			panel.addChild(
 					tabs[tabIdx].icon,
 					marginH,
@@ -198,12 +213,12 @@ public class DistributionPanel extends AbstractContentProvider {
 					marginH + tileWidth,
 					top
 					);
-			// icon.setAction(new ExecutableAction() {
-			// @Override
-			// public void execute() {
-			// setConfigurationPanel(item);
-			// }
-			// });
+			icon.action = new ExecutableAction() {
+				@Override
+				public void execute() {
+					setConfigurationPanel(item);
+				}
+			};
 			tabIdx++;
 		}
 		tab = tabs[0];

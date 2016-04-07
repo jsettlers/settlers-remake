@@ -54,7 +54,7 @@ public class SimpleGuiTask extends TaskPacket {
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
-		guiAction = EGuiAction.values[dis.readInt()];
+		guiAction = EGuiAction.VALUES[dis.readInt()];
 		playerId = dis.readByte();
 	}
 

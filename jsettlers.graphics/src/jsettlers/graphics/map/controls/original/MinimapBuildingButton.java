@@ -28,6 +28,11 @@ import jsettlers.graphics.ui.Button;
  * @author Michael Zangl
  */
 public class MinimapBuildingButton extends Button {
+	/**
+	 * This action switches to the next display mode.
+	 * 
+	 * @author Michael Zangl
+	 */
 	private static final class NextDisplayMode extends ExecutableAction {
 		private final MinimapMode minimapSettings;
 
@@ -41,10 +46,24 @@ public class MinimapBuildingButton extends Button {
 		}
 	}
 
-	private static final OriginalImageLink INACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 363, 0); //TODO this should be referencing MiniMapLayoutProperties
+	/**
+	 * The inactive icon.
+	 * <p>
+	 * TODO this should be referencing MiniMapLayoutProperties
+	 */
+	private static final OriginalImageLink INACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 363, 0);
+	/**
+	 * The active icon.
+	 */
 	private static final OriginalImageLink ACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 360, 0);
 	private MinimapMode minimapSettings;
 
+	/**
+	 * Creates a new {@link MinimapBuildingButton}.
+	 * 
+	 * @param minimapSettings
+	 *            The settings to influence.
+	 */
 	public MinimapBuildingButton(final MinimapMode minimapSettings) {
 		super(new NextDisplayMode(minimapSettings), null, null, Labels.getString("minimap-buildings"));
 		this.minimapSettings = minimapSettings;
@@ -52,6 +71,10 @@ public class MinimapBuildingButton extends Button {
 
 	@Override
 	protected OriginalImageLink getBackgroundImage() {
-		return minimapSettings.getDisplayBuildings() ? ACTIVE : INACTIVE;
+		if (minimapSettings.getDisplayBuildings()) {
+			return ACTIVE;
+		} else {
+			return INACTIVE;
+		}
 	}
 }

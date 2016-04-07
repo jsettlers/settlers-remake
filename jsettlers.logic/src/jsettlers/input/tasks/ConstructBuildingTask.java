@@ -59,7 +59,7 @@ public class ConstructBuildingTask extends SimpleGuiTask {
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		position = SimpleGuiTask.deserializePosition(dis);
-		type = EBuildingType.values[dis.readInt()];
+		type = EBuildingType.VALUES[dis.readInt()];
 	}
 
 	@Override

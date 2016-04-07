@@ -226,17 +226,17 @@ public class WinnerGeneral implements ArmyGeneral {
 		return situation;
 	}
 
-	private class Situation {
-		private List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
-		private List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
-		private List<ShortPoint2D> spearmenPositions = new Vector<ShortPoint2D>();
+	private static class Situation {
+		private final List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
+		private final List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
+		private final List<ShortPoint2D> spearmenPositions = new Vector<ShortPoint2D>();
 		private int amountOfMyAttackingTroops = 0;
 	}
 
-	private class AttackInformation {
+	private static class AttackInformation {
 		// private byte targetPlayerId;
-		private int amountOfAttackers;
-		private Building militaryBuildingToAttack;
+		private final int amountOfAttackers;
+		private final Building militaryBuildingToAttack;
 
 		public AttackInformation(byte targetPlayerId, int amountOfAttackers, Building militaryBuildingToAttack) {
 			// this.targetPlayerId = targetPlayerId;

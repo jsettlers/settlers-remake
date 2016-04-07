@@ -38,13 +38,13 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * <li>The map space. It is the map coordinate system (x, y)
  * <li>The draw space (used by all draw stuff).
  * <li>The screen space (visible space on which is drawn).
- * <ul>
+ * </ul>
  * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is initialized for drawing the map. The draw coordinates can then be
  * given in draw space.
  * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw context can use. The buffer should be flushed when drawing one
  * component finished. When the draw buffer is used after a call to end(), the buffer is invalid.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public final class MapDrawContext implements IGLProvider {
 
@@ -57,6 +57,9 @@ public final class MapDrawContext implements IGLProvider {
 	private final MapCoordinateConverter converter;
 
 	/**
+	 * Those are the colors used for the players. The first color is used for the first player. If there are more players than colors, colors are
+	 * re-used.
+	 * <p>
 	 * Color for settler player, the first 20 colors are copied from an original settler 3 editor screenshot, the other 12 colors are choosen so they
 	 * are unique
 	 */
@@ -105,13 +108,13 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	private final DrawBuffer buffer;
 
-	// private long beginTime;
-
 	/**
 	 * Creates a new map context for a given map.
 	 * 
 	 * @param map
 	 *            The map.
+	 * @param textDrawer
+	 *            The text drawer to use.
 	 */
 	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
@@ -130,9 +133,9 @@ public final class MapDrawContext implements IGLProvider {
 	/**
 	 * Sets the size of the context to width/height.
 	 * 
-	 * @param newWidth
+	 * @param windowWidth
 	 *            The width.
-	 * @param newHeight
+	 * @param windowHeight
 	 *            The height.
 	 */
 	public void setSize(float windowWidth, float windowHeight) {
@@ -176,6 +179,12 @@ public final class MapDrawContext implements IGLProvider {
 		return this.gl;
 	}
 
+	/**
+	 * Gets the current draw buffer used for this context. You can add draws to this buffer instead of directly calling OpenGL since this object
+	 * buffers the calls.
+	 * 
+	 * @return The buffer.
+	 */
 	public DrawBuffer getDrawBuffer() {
 		return buffer;
 	}
@@ -266,7 +275,7 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Gets the converter for the map coordinate system
+	 * Gets the converter for the map coordinate system to screen coordinates.
 	 * 
 	 * @return The map coordinate converter.
 	 */
@@ -277,7 +286,9 @@ public final class MapDrawContext implements IGLProvider {
 	/**
 	 * sets up the gl drawing context to draw a given tile.
 	 * 
-	 * @param pos
+	 * @param x
+	 *            The tile to draw.
+	 * @param y
 	 *            The tile to draw.
 	 */
 	public void beginTileContext(int x, int y) {
@@ -296,7 +307,39 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * gets a rect on the screen.
+	 * Sets up drawing between two tiles. This is e.g. used to draw walking settlers.
+	 * 
+	 * @param startx
+	 *            The start tile
+	 * @param starty
+	 *            The start tile
+	 * @param destinationx
+	 *            The second tile
+	 * @param destinationy
+	 *            The second tile
+	 * @param progress
+	 *            The progress between those two bytes.
+	 */
+	public void beginBetweenTileContext(int startx, int starty,
+			int destinationx, int destinationy, float progress) {
+		this.gl.glPushMatrix();
+		float theight = getHeight(startx, starty);
+		float dheight = getHeight(destinationx, destinationy);
+		float x = (1 - progress)
+				* this.converter.getViewX(startx, starty, theight)
+				+ progress
+						* this.converter.getViewX(destinationx, destinationy,
+								dheight);
+		float y = (1 - progress)
+				* this.converter.getViewY(startx, starty, theight)
+				+ progress
+						* this.converter.getViewY(destinationx, destinationy,
+								dheight);
+		this.gl.glTranslatef(x, y, 0);
+	}
+
+	/**
+	 * Converts a screen rectangle to an area on the map. Map heights are respected.
 	 * 
 	 * @param x1
 	 *            one x (not ordered)
@@ -317,16 +360,22 @@ public final class MapDrawContext implements IGLProvider {
 				drawx2, drawy2));
 	}
 
+	/**
+	 * This class represents an area of the map that looks rectangular on the screen. Due to height differences, this is not a rectangle on the map.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	private class HeightedMapRectangle implements IMapArea {
 		/**
-		 * FIXME: This class is nor serializeable
+		 * Note: This class is nor serializeable.
 		 */
 		private static final long serialVersionUID = 5868822981883722458L;
 
 		/**
 		 * Helper rectangle.
 		 */
-		MapRectangle base;
+		private final MapRectangle base;
 		private final FloatRectangle drawRect;
 
 		/**
@@ -335,7 +384,7 @@ public final class MapDrawContext implements IGLProvider {
 		 * @param drawRect
 		 *            The rectangle in draw space
 		 */
-		public HeightedMapRectangle(FloatRectangle drawRect) {
+		HeightedMapRectangle(FloatRectangle drawRect) {
 			this.drawRect = drawRect;
 			base = converter.getMapForScreen(drawRect);
 		}
@@ -353,7 +402,13 @@ public final class MapDrawContext implements IGLProvider {
 			return new ScreenIterator();
 		}
 
-		private class ScreenIterator implements Iterator<ShortPoint2D> {
+		/**
+		 * This class iterates over a {@link HeightedMapRectangle}.
+		 * 
+		 * @author Michael Zangl
+		 *
+		 */
+		private final class ScreenIterator implements Iterator<ShortPoint2D> {
 			/**
 			 * How many lines to search at least.
 			 */
@@ -408,10 +463,21 @@ public final class MapDrawContext implements IGLProvider {
 
 	}
 
+	/**
+	 * Gets the area of the screen.
+	 * 
+	 * @return An rectangle of the map in which the screen lies completely. The rectangle can be bigger than the screen.
+	 */
 	public MapRectangle getScreenArea() {
 		return this.converter.getMapForScreen(this.screen.getPosition());
 	}
 
+	/**
+	 * Move the view center to a given point.
+	 * 
+	 * @param point
+	 *            The point to move the view to.
+	 */
 	public void scrollTo(ShortPoint2D point) {
 		int height = getHeight(point.x, point.y);
 		float x = converter.getViewX(point.x, point.y, height);
@@ -419,6 +485,15 @@ public final class MapDrawContext implements IGLProvider {
 		screen.setScreenCenter(x, y);
 	}
 
+	/**
+	 * Gets the landscape at a given position.
+	 * 
+	 * @param x
+	 *            x
+	 * @param y
+	 *            y
+	 * @return The landscape type.
+	 */
 	public ELandscapeType getLandscape(int x, int y) {
 		return map.getLandscapeTypeAt(x, y);
 	}

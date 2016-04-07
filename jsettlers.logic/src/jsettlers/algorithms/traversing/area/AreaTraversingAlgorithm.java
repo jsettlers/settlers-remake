@@ -67,7 +67,7 @@ public final class AreaTraversingAlgorithm {
 				return false;
 			}
 
-			for (EDirection dir : EDirection.values) {
+			for (EDirection dir : EDirection.VALUES) {
 				int nextX = dir.gridDeltaX + currPos.x;
 				int nextY = dir.gridDeltaY + currPos.y;
 

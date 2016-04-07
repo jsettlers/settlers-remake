@@ -14,11 +14,12 @@
  *******************************************************************************/
 package jsettlers.common.images;
 
+
 /**
  * This is a virtual link to a image in a settler image file.
  * 
+ * @author Michael Zangl
  * @see EImageLinkType
- * @author michael
  */
 public final class OriginalImageLink extends ImageLink {
 	private static final long serialVersionUID = -9042004381156308651L;
@@ -30,7 +31,7 @@ public final class OriginalImageLink extends ImageLink {
 	private final int length;
 
 	/**
-	 * Creates a new image link description
+	 * Creates a new image link description.
 	 * 
 	 * @param type
 	 *            The type
@@ -52,7 +53,7 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
-	 * Creates a new image link description
+	 * Creates a new image link description.
 	 * 
 	 * @param type
 	 *            The type
@@ -91,7 +92,7 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
-	 * Gets the file
+	 * Gets the file.
 	 * 
 	 * @return The files number.
 	 */
@@ -111,7 +112,7 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
-	 * Gets the image index inside the sequence
+	 * Gets the image index inside the sequence.
 	 * 
 	 * @return The image index
 	 */
@@ -125,7 +126,7 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
-	 * Gets the length of this strip
+	 * Gets the length of this strip.
 	 * 
 	 * @return The length as int
 	 */
@@ -135,7 +136,7 @@ public final class OriginalImageLink extends ImageLink {
 
 	@Override
 	public String getName() {
-		return "original_" + file + "_" + type + "_" + sequence;
+		return String.format("original_%d_%s_%d", file, type.toString(), sequence);
 	}
 
 	@Override

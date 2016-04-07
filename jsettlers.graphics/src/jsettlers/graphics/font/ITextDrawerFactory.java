@@ -21,11 +21,20 @@ import go.graphics.text.TextDrawer;
 /**
  * Classes of this interface let you create a text drawer.
  * 
- * @author michael
+ * @author Michael Zangl
  *
  */
 public interface ITextDrawerFactory {
 
+	/**
+	 * Generates a text drawer.
+	 * 
+	 * @param gl
+	 *            The gl context to use.
+	 * @param size
+	 *            The font size.
+	 * @return A text drawer.
+	 */
 	TextDrawer getTextDrawer(GLDrawContext gl, EFontSize size);
 
 }

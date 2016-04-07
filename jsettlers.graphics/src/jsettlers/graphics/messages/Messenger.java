@@ -23,7 +23,7 @@ import jsettlers.common.statistics.IGameTimeProvider;
 /**
  * This is a messenger, that lets you display messages on the users screen.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class Messenger {
 

@@ -32,14 +32,14 @@ public interface ImageDataPrivider {
 	ShortBuffer getData();
 
 	/**
-	 * Gets the width for the image
+	 * Gets the width for the image.
 	 * 
 	 * @return The width as int.
 	 */
 	int getWidth();
 
 	/**
-	 * Gets the height for the image
+	 * Gets the height for the image.
 	 * 
 	 * @return The height as int.
 	 */

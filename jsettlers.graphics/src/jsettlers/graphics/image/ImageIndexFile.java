@@ -25,11 +25,20 @@ import jsettlers.common.resources.ResourceManager;
 /**
  * This class loads the image index from a file.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class ImageIndexFile {
+	private static final int SHORTS_PER_IMAGE = 9;
+	private static final int COLOR_MASK = 0x7fff;
 	private ImageIndexImage[] images = null;
 
+	/**
+	 * Gets the image reference with the given index.
+	 * 
+	 * @param index
+	 *            The index of the image in the file.
+	 * @return The image.
+	 */
 	public Image getImage(int index) {
 		if (images == null) {
 			try {
@@ -57,7 +66,7 @@ public class ImageIndexFile {
 			throw new IOException("Texture file has wrong version.");
 		}
 
-		int length = in.available() / 2 / 9;
+		int length = in.available() / 2 / SHORTS_PER_IMAGE;
 
 		images = new ImageIndexImage[length];
 		for (int i = 0; i < length; i++) {
@@ -65,12 +74,12 @@ public class ImageIndexFile {
 			int offsetY = in.readShort();
 			short width = in.readShort();
 			short height = in.readShort();
-			int textureFileNumber = in.readShort() & 0x7fff; // < TODO: torso
+			int textureFileNumber = in.readShort() & COLOR_MASK; // < TODO: torso
 
-			float umin = (float) in.readShort() / 0x7fff;
-			float vmin = (float) in.readShort() / 0x7fff;
-			float umax = (float) in.readShort() / 0x7fff;
-			float vmax = (float) in.readShort() / 0x7fff;
+			float umin = (float) in.readShort() / COLOR_MASK;
+			float vmin = (float) in.readShort() / COLOR_MASK;
+			float umax = (float) in.readShort() / COLOR_MASK;
+			float vmax = (float) in.readShort() / COLOR_MASK;
 
 			while (textureFileNumber >= textures.size()) {
 				InputStream inputStream = ResourceManager.getResourcesFileStream("images/" + textures.size());
