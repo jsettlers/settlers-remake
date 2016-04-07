@@ -152,7 +152,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return this.texture;
 	}
 
-	private static float[] TMP_BUFFER = new float[] {
+	private static float[] tempBuffer = new float[] {
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
@@ -162,23 +162,23 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		try {
 			TextureHandle textureHandle = getTextureIndex(gl);
 
-			TMP_BUFFER[0] = left;
-			TMP_BUFFER[1] = top;
+			tempBuffer[0] = left;
+			tempBuffer[1] = top;
 
-			TMP_BUFFER[5] = left;
-			TMP_BUFFER[6] = bottom;
-			TMP_BUFFER[9] = (float) height / textureHeight;
+			tempBuffer[5] = left;
+			tempBuffer[6] = bottom;
+			tempBuffer[9] = (float) height / textureHeight;
 
-			TMP_BUFFER[10] = right;
-			TMP_BUFFER[11] = bottom;
-			TMP_BUFFER[13] = (float) width / textureWidth;
-			TMP_BUFFER[14] = (float) height / textureHeight;
+			tempBuffer[10] = right;
+			tempBuffer[11] = bottom;
+			tempBuffer[13] = (float) width / textureWidth;
+			tempBuffer[14] = (float) height / textureHeight;
 
-			TMP_BUFFER[15] = right;
-			TMP_BUFFER[16] = top;
-			TMP_BUFFER[18] = (float) width / textureWidth;
+			tempBuffer[15] = right;
+			tempBuffer[16] = top;
+			tempBuffer[18] = (float) width / textureWidth;
 
-			gl.drawQuadWithTexture(textureHandle, TMP_BUFFER);
+			gl.drawQuadWithTexture(textureHandle, tempBuffer);
 		} catch (IllegalBufferException e) {
 			handleIllegalBufferException(e);
 		}

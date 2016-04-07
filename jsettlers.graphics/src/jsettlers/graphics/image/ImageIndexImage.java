@@ -38,7 +38,7 @@ public class ImageIndexImage extends Image {
 	private final float umax;
 	private final float vmax;
 
-	private static final float[] TEMP_BUFFER = new float[5 * 6];
+	private static final float[] tempBuffer = new float[5 * 6];
 
 	/**
 	 * Constructs a new image in an image index.
@@ -195,21 +195,21 @@ public class ImageIndexImage extends Image {
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
 			float maxX, float maxY) {
-		System.arraycopy(geometry, 0, TEMP_BUFFER, 0, 4 * 5);
-		TEMP_BUFFER[0] = minX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[1] = maxY + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[5] = minX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[6] = minY + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[10] = maxX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[11] = minY + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[15] = maxX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[16] = maxY + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[20] = minX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[21] = maxY + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[25] = maxX + IMAGE_DRAW_OFFSET;
-		TEMP_BUFFER[26] = minY + IMAGE_DRAW_OFFSET;
+		System.arraycopy(geometry, 0, tempBuffer, 0, 4 * 5);
+		tempBuffer[0] = minX + IMAGE_DRAW_OFFSET;
+		tempBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
+		tempBuffer[5] = minX + IMAGE_DRAW_OFFSET;
+		tempBuffer[6] = minY + IMAGE_DRAW_OFFSET;
+		tempBuffer[10] = maxX + IMAGE_DRAW_OFFSET;
+		tempBuffer[11] = minY + IMAGE_DRAW_OFFSET;
+		tempBuffer[15] = maxX + IMAGE_DRAW_OFFSET;
+		tempBuffer[16] = maxY + IMAGE_DRAW_OFFSET;
+		tempBuffer[20] = minX + IMAGE_DRAW_OFFSET;
+		tempBuffer[21] = maxY + IMAGE_DRAW_OFFSET;
+		tempBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
+		tempBuffer[26] = minY + IMAGE_DRAW_OFFSET;
 
-		draw(gl, TEMP_BUFFER);
+		draw(gl, tempBuffer);
 	}
 
 }
