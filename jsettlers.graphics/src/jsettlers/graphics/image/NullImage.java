@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
-import go.graphics.GLDrawContext;
-
 import java.nio.ShortBuffer;
 
+import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.graphics.reader.ImageMetadata;
 
@@ -30,20 +29,19 @@ import jsettlers.graphics.reader.ImageMetadata;
  */
 public final class NullImage extends SingleImage {
 	private static final float NULL_IMAGE_ALPHA = 0.5f;
-	private static final short[] NULL_DATA = new short[] {
-			0
-	};
+	private static final short[] NULL_DATA = new short[] { 0 };
 	private static final int HALFSIZE = 3;
-	private static NullImage instance;
-	private static LandscapeImage landscapeinstance = null;
-	private static final ImageMetadata NULL_IMAGE_META = new ImageMetadata();
+	private static final ImageMetadata NULL_IMAGE_METADATA = new ImageMetadata();
 
 	static {
-		NULL_IMAGE_META.width = 1;
-		NULL_IMAGE_META.height = 1;
-		NULL_IMAGE_META.offsetX = 0;
-		NULL_IMAGE_META.offsetY = 0;
+		NULL_IMAGE_METADATA.width = 1;
+		NULL_IMAGE_METADATA.height = 1;
+		NULL_IMAGE_METADATA.offsetX = 0;
+		NULL_IMAGE_METADATA.offsetY = 0;
 	}
+
+	private static NullImage instance;
+	private static LandscapeImage landscapeinstance = null;
 
 	/**
 	 * Gets an instance of the null image.
@@ -92,7 +90,7 @@ public final class NullImage extends SingleImage {
 	 */
 	public static LandscapeImage getForLandscape() {
 		if (landscapeinstance == null) {
-			landscapeinstance = new LandscapeImage(NULL_IMAGE_META, NULL_DATA);
+			landscapeinstance = new LandscapeImage(NULL_IMAGE_METADATA, NULL_DATA);
 		}
 		return landscapeinstance;
 	}
@@ -104,7 +102,7 @@ public final class NullImage extends SingleImage {
 	 */
 	public static GuiImage getForGui() {
 		if (guiinstance == null) {
-			guiinstance = new GuiImage(NULL_IMAGE_META, NULL_DATA);
+			guiinstance = new GuiImage(NULL_IMAGE_METADATA, NULL_DATA);
 		}
 		return guiinstance;
 	}

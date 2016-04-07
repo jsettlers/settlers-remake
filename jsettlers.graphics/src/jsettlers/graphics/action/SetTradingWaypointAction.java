@@ -31,16 +31,16 @@ public class SetTradingWaypointAction extends PointAction {
 	 * @author Michael Zangl
 	 *
 	 */
-	public enum WaypointType {
+	public enum EWaypointType {
 		WAYPOINT_1,
 		WAYPOINT_2,
 		WAYPOINT_3,
 		DESTINATION;
 
-		public static WaypointType[] VALUES = values();
+		public static final EWaypointType[] VALUES = values();
 	}
 
-	private final WaypointType waypoint;
+	private final EWaypointType waypoint;
 
 	/**
 	 * Creates a new {@link SetTradingWaypointAction}.
@@ -50,7 +50,7 @@ public class SetTradingWaypointAction extends PointAction {
 	 * @param position
 	 *            The position to set it at.
 	 */
-	public SetTradingWaypointAction(WaypointType waypoint, ShortPoint2D position) {
+	public SetTradingWaypointAction(EWaypointType waypoint, ShortPoint2D position) {
 		super(EActionType.SET_TRADING_WAYPOINT, position);
 		this.waypoint = waypoint;
 	}
@@ -60,7 +60,7 @@ public class SetTradingWaypointAction extends PointAction {
 	 * 
 	 * @return The waypoint.
 	 */
-	public WaypointType getWaypoint() {
+	public EWaypointType getWaypointType() {
 		return waypoint;
 	}
 }

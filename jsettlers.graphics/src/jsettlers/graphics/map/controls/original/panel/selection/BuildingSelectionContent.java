@@ -37,7 +37,7 @@ import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
@@ -280,15 +280,15 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		protected Action getActionForStep(int step) {
-			WaypointType wp;
+			EWaypointType wp;
 			if (step <= 0) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_1;
+				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_1;
 			} else if (step <= 1) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_2;
+				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_2;
 			} else if (step <= 2) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_3;
+				wp = SetTradingWaypointAction.EWaypointType.WAYPOINT_3;
 			} else {
-				wp = SetTradingWaypointAction.WaypointType.DESTINATION;
+				wp = SetTradingWaypointAction.EWaypointType.DESTINATION;
 			}
 
 			return new AskSetTradingWaypointAction(wp);
@@ -303,7 +303,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class LandTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.VALUES.length;
+		private static final int BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length;
 
 		/**
 		 * Create a new {@link LandTradingPath}.
@@ -330,7 +330,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 */
 	public static class SeaTradingPath extends TradingPath {
 
-		private static final int BUTTONS = SetTradingWaypointAction.WaypointType.VALUES.length + 1;
+		private static final int BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length + 1;
 
 		/**
 		 * Create a new {@link SeaTradingPath}.

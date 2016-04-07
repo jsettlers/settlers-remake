@@ -315,7 +315,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			if (selected instanceof Building) {
 				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
 				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
-						a.getWaypoint(), a.getPosition()));
+						a.getWaypointType(), a.getPosition()));
 			}
 		}
 

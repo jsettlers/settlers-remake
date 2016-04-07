@@ -28,7 +28,7 @@ import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -318,7 +318,7 @@ public class MainPanel extends UIPanel {
 			return null;
 		case ASK_SET_TRADING_WAYPOINT:
 			goBackContent = activeContent;
-			final WaypointType wp = ((AskSetTradingWaypointAction) action).getWaypoint();
+			final EWaypointType wp = ((AskSetTradingWaypointAction) action).getWaypoint();
 			setContent(new SelectPointMessage(
 					Labels.getString("click_set_trading_waypoint_" + wp)) {
 				@Override

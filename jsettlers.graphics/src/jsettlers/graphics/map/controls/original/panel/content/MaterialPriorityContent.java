@@ -255,13 +255,12 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * @return The position of that material.
 		 */
 		public int indexOf(EMaterialType type) {
-			int position = -1;
-			for (int i = 0; i < order.length && position == -1; i++) {
+			for (int i = 0; i < order.length; i++) {
 				if (order[i] == type) {
-					position = i;
+					return i;
 				}
 			}
-			return position;
+			return -1;
 		}
 
 		/**

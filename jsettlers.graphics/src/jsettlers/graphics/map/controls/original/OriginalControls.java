@@ -53,19 +53,15 @@ import jsettlers.graphics.ui.UIPanel;
  */
 public class OriginalControls implements IControls {
 	private static final int DEFAULT_LAYOUT_SIZE = 480;
-	private ControlPanelLayoutProperties layoutProperties;
-	private UIPanel uiBase;
-
-	private Minimap minimap;
 
 	private final MinimapMode minimapSettings = new MinimapMode();
-
 	private final MainPanel mainPanel;
-
 	private final Button chatButton;
 
+	private ControlPanelLayoutProperties layoutProperties;
+	private UIPanel uiBase;
+	private Minimap minimap;
 	private boolean lastSelectionWasNull = true;
-
 	private MapDrawContext context;
 
 	/**
@@ -110,38 +106,38 @@ public class OriginalControls implements IControls {
 
 	private void addMiniMap(UIPanel panel) {
 		MiniMapLayoutProperties miniMap = layoutProperties.miniMap;
-		UIPanel minimapbgLeft = new UIPanel();
-		minimapbgLeft.setBackground(miniMap.LEFT_DECORATION);
-		minimapbgLeft.addChild(
+		UIPanel minimapBackgroundLeft = new UIPanel();
+		minimapBackgroundLeft.setBackground(miniMap.LEFT_DECORATION);
+		minimapBackgroundLeft.addChild(
 				chatButton,
 				miniMap.BUTTON_CHAT_LEFT,
 				miniMap.BUTTON_CHAT_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_CHAT_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_CHAT_TOP);
-		minimapbgLeft.addChild(
+		minimapBackgroundLeft.addChild(
 				new MinimapOccupiedButton(minimapSettings),
 				miniMap.BUTTON_FEATURES_LEFT,
 				miniMap.BUTTON_FEATURES_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_FEATURES_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_FEATURES_TOP);
-		minimapbgLeft.addChild(
+		minimapBackgroundLeft.addChild(
 				new MinimapSettlersButton(minimapSettings),
 				miniMap.BUTTON_SETTLERS_LEFT,
 				miniMap.BUTTON_SETTLERS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_SETTLERS_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_SETTLERS_TOP);
-		minimapbgLeft.addChild(
+		minimapBackgroundLeft.addChild(
 				new MinimapBuildingButton(minimapSettings),
 				miniMap.BUTTON_BUILDINGS_LEFT,
 				miniMap.BUTTON_BUILDINGS_TOP - miniMap.BUTTON_HEIGHT,
 				miniMap.BUTTON_BUILDINGS_LEFT + miniMap.BUTTON_WIDTH,
 				miniMap.BUTTON_BUILDINGS_TOP);
 
-		UIPanel minimapbgRight = new UIPanel();
-		minimapbgRight.setBackground(miniMap.RIGHT_DECORATION);
+		UIPanel minimapBackgroundRight = new UIPanel();
+		minimapBackgroundRight.setBackground(miniMap.RIGHT_DECORATION);
 
-		panel.addChild(minimapbgLeft, 0, layoutProperties.MAIN_PANEL_TOP, miniMap.RIGHT_DECORATION_LEFT, 1);
-		panel.addChild(minimapbgRight, miniMap.RIGHT_DECORATION_LEFT, layoutProperties.MAIN_PANEL_TOP, 1, 1);
+		panel.addChild(minimapBackgroundLeft, 0, layoutProperties.MAIN_PANEL_TOP, miniMap.RIGHT_DECORATION_LEFT, 1);
+		panel.addChild(minimapBackgroundRight, miniMap.RIGHT_DECORATION_LEFT, layoutProperties.MAIN_PANEL_TOP, 1, 1);
 	}
 
 	@Override

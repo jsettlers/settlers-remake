@@ -102,17 +102,10 @@ public class ScreenPosition {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Set the new zoom factor.
 	 * 
 	 * @param newzoom
 	 *            The new zoom factor. It is automatically clamped.
-=======
-	 * Sets the zoom factor
-	 * 
-	 * @param newzoom
-	 *            from <code>MINIMUM_ZOOM</code> to <code>MAXIMUM_ZOOM</code>
->>>>>>> master
 	 */
 	public void setZoom(float newzoom) {
 		this.zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);

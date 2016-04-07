@@ -17,22 +17,21 @@ package jsettlers.graphics.image;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
- * This is an torso: An image that is colored afterwards.
+ * This is a torso: An image that is colored afterwards.
  * 
  * @author Michael Zangl
  */
-public class Torso extends SingleImage {
+public class TorsoImage extends SingleImage {
 
 	/**
-	 * Creates a new torso.
+	 * Creates a new {@link TorsoImage}.
 	 * 
 	 * @param metadata
-	 *            The mata data to use.
+	 *            The meta data to use.
 	 * @param data
 	 *            The data to use.
 	 */
-	public Torso(ImageMetadata metadata, short[] data) {
+	public TorsoImage(ImageMetadata metadata, short[] data) {
 		super(metadata, data);
 	}
-
 }

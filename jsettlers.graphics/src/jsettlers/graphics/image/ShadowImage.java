@@ -27,7 +27,7 @@ public class ShadowImage extends SingleImage {
 	 * Generates a shadow image.
 	 * 
 	 * @param metadata
-	 *            The mata data to use.
+	 *            The meta data to use.
 	 * @param data
 	 *            The data to use.
 	 */

@@ -15,16 +15,16 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.menu.action.EActionType;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 
 /**
- * This is an action combined with a {@link WaypointType} that asks the user to set the trading waypoint.
+ * This is an action combined with a {@link EWaypointType} that asks the user to set the trading waypoint.
  * 
  * @author Michael Zangl
  */
 public class AskSetTradingWaypointAction extends Action {
 
-	private final WaypointType waypoint;
+	private final EWaypointType waypoint;
 
 	/**
 	 * Create a new {@link AskSetTradingWaypointAction}.
@@ -32,7 +32,7 @@ public class AskSetTradingWaypointAction extends Action {
 	 * @param waypoint
 	 *            The waypoint
 	 */
-	public AskSetTradingWaypointAction(WaypointType waypoint) {
+	public AskSetTradingWaypointAction(EWaypointType waypoint) {
 		super(EActionType.ASK_SET_TRADING_WAYPOINT);
 		this.waypoint = waypoint;
 	}
@@ -42,7 +42,7 @@ public class AskSetTradingWaypointAction extends Action {
 	 * 
 	 * @return The waypoint
 	 */
-	public WaypointType getWaypoint() {
+	public EWaypointType getWaypoint() {
 		return waypoint;
 	}
 

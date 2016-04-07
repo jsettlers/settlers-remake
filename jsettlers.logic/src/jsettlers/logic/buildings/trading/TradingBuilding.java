@@ -25,7 +25,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
@@ -46,7 +46,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
 	private final short[] requestedMaterials = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-	private final ShortPoint2D[] waypoints = new ShortPoint2D[WaypointType.VALUES.length];
+	private final ShortPoint2D[] waypoints = new ShortPoint2D[EWaypointType.VALUES.length];
 
 	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
 		super(type, player, position, buildingsGrid);
@@ -101,15 +101,15 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		requestedMaterials[material.ordinal] = (short) Math.max(0, Math.min(Short.MAX_VALUE, newValue));
 	}
 
-	public void setWaypoint(WaypointType waypointType, ShortPoint2D position) {
+	public void setWaypoint(EWaypointType waypointType, ShortPoint2D position) {
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
 
-		if (waypointType != WaypointType.DESTINATION && !isTargetSet()) {
-			waypointType = WaypointType.DESTINATION;
+		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
+			waypointType = EWaypointType.DESTINATION;
 		}
-		if (waypointType == WaypointType.DESTINATION) {
+		if (waypointType == EWaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
 
@@ -122,7 +122,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 	}
 
-	private ShortPoint2D findClosestRechablePosition(WaypointType waypointType, ShortPoint2D targetPosition) {
+	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
 		ShortPoint2D waypointBefore = this.pos;
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {

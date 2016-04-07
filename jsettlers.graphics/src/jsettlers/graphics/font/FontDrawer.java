@@ -34,8 +34,7 @@ public class FontDrawer implements TextDrawer {
 	private final DrawBuffer drawBuffer;
 
 	private static final DirectImageLink TEXTURE = new DirectImageLink("font.0");
-	private static final String CHARACTERS =
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
+	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
 	private static final int CHARS_PER_ROW = 16;
 	private static final int CHARS_PER_COLUMN = 16;
 	private final GLDrawContext gl;
@@ -58,8 +57,7 @@ public class FontDrawer implements TextDrawer {
 
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
-		drawString(cx - (float) getWidth(text) / 2, cy
-				- (float) getHeight(text) / 2, text);
+		drawString(cx - (float) getWidth(text) / 2, cy - (float) getHeight(text) / 2, text);
 	}
 
 	private int getCharIndex(char c) {

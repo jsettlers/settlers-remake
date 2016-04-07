@@ -19,24 +19,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 
 public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 
-	private WaypointType waypointType;
+	private EWaypointType waypointType;
 	private ShortPoint2D position;
 
 	public SetTradingWaypointGuiTask() {
 	}
 
-	public SetTradingWaypointGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D buildingPos, WaypointType waypointType,
+	public SetTradingWaypointGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D buildingPos, EWaypointType waypointType,
 			ShortPoint2D position) {
 		super(guiAction, playerId, buildingPos);
 		this.waypointType = waypointType;
 		this.position = position;
 	}
 
-	public WaypointType getWaypointType() {
+	public EWaypointType getWaypointType() {
 		return waypointType;
 	}
 
@@ -54,7 +54,7 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		waypointType = WaypointType.VALUES[dis.readByte()];
+		waypointType = EWaypointType.VALUES[dis.readByte()];
 		position = deserializePosition(dis);
 	}
 
