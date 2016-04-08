@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,32 +12,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.main.android.bg;
+package jsettlers.common.statistics;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.statistics.IStatisticable;
+/**
+ * This interface supplies game time information to the UI.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public interface IGameTimeProvider {
+	public static final IGameTimeProvider DUMMY_IMPLEMENTATION = new IGameTimeProvider() {
+		@Override
+		public int getGameTime() {
+			return 0;
+		}
 
-public class BgStats implements IStatisticable {
+		@Override
+		public boolean isGamePausing() {
+			return false;
+		}
+	};
 
-	@Override
-	public int getGameTime() {
-		return 0;
-	}
+	/**
+	 * Gets the game time.
+	 * 
+	 * @return The current game time in milliseconds.
+	 */
+	int getGameTime();
 
-	@Override
-	public int getNumberOf(EMaterialType materialType) {
-		return 0;
-	}
-
-	@Override
-	public int getNumberOf(EMovableType movableType) {
-		return 0;
-	}
-
-	@Override
-	public int getJoblessBearers() {
-		return 0;
-	}
-
+	/**
+	 * Gets if the game is pausing.
+	 * 
+	 * @return true if the game is pausing, false if not.
+	 */
+	boolean isGamePausing();
 }

@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.menu.messages.IMessage;
+import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
  * This is a messenger, that lets you display messages on the users screen.
@@ -25,8 +26,15 @@ import jsettlers.common.menu.messages.IMessage;
  * @author Michael Zangl
  */
 public class Messenger {
-	private static final int MAX_MESSAGES = 50;
+
 	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
+	private final IGameTimeProvider gameTimeProvider;
+	private int latestTickTime;
+
+	public Messenger(IGameTimeProvider gameTimeProvider) {
+		this.gameTimeProvider = gameTimeProvider;
+		this.latestTickTime = (int)System.currentTimeMillis();
+	}
 
 	/**
 	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
@@ -40,15 +48,56 @@ public class Messenger {
 	}
 
 	/**
-	 * Adds a new message.
-	 * 
+	 * Adds a given {@link IMessage} to this messenger's FIFO list, but
+	 * only if given message doesn't seem to be a duplicate of any of the
+	 * messages that are already contained. Whether its a duplicate or not
+	 * is determined by {@link IMessage#duplicates(IMessage)}.
 	 * @param message
-	 *            The message that should be displayed to the user.
+	 * @return
 	 */
-	public void addMessage(IMessage message) {
-		messages.addFirst(message);
-		if (messages.size() > MAX_MESSAGES) {
-			messages.removeLast();
+	public boolean addMessage(IMessage message) {
+		if (isNews(message)) {
+			messages.addFirst(message);
+			if (messages.size() > IMessage.MAX_MESSAGES)
+				messages.removeLast();
+			return true;
 		}
+		return false;
+	}
+
+	/**
+	 * Perform perpetual update step, i.e. determine amount of time that has
+	 * passed since last call, let all currently active messages age by that
+	 * interval, then remove all messages whose age exceed the allowed
+	 * time-to-live ({@link IMessage#MESSAGE_TTL}).
+	 */
+	public void doTick() {
+		int millis = (int)System.currentTimeMillis(); 
+		if (!gameTimeProvider.isGamePausing()) {
+			// update message ages
+			int interval = millis - latestTickTime;
+			for (IMessage m : messages) {
+				if (m.ageBy(interval) > IMessage.MESSAGE_TTL)
+					// remove all remaining messages, assuming they in order
+					while (!messages.pollLast().equals(m))
+						;
+			}
+		}
+		latestTickTime = millis;
+	}
+
+	/**
+	 * Determines whether a given message is worth its display, considering nature and 
+	 * content of the messages already shown. 
+	 * @param msg {@link IMessage} to be inspected.
+	 * @return true, if message should be displayed.
+	 */
+	boolean isNews(IMessage msg) {
+		for (IMessage m : messages) {
+			if (msg.duplicates(m)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

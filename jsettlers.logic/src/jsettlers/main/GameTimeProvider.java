@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,24 +12,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.statistics;
+package jsettlers.main;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.network.client.interfaces.IGameClock;
 
 /**
- * This class supplies the UI with statistics of the game.
+ * This class provides game time information to the UI.
  * 
  * @author Andreas Eberle
  * 
  */
-public class GameStatistics implements IStatisticable {
+public class GameTimeProvider implements IGameTimeProvider {
 
 	private IGameClock gameClock;
 
-	public GameStatistics(IGameClock gameTimer) {
+	public GameTimeProvider(IGameClock gameTimer) {
 		this.gameClock = gameTimer;
 	}
 
@@ -39,21 +37,7 @@ public class GameStatistics implements IStatisticable {
 	}
 
 	@Override
-	public int getNumberOf(EMaterialType materialType) {
-		// TODO Auto-generated method stub
-		return 0;
+	public boolean isGamePausing() {
+		return gameClock.isPausing();
 	}
-
-	@Override
-	public int getNumberOf(EMovableType movableType) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getJoblessBearers() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

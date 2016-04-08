@@ -31,6 +31,7 @@ public class SimpleMessage implements IMessage {
 	private final ShortPoint2D pos;
 	private final String message;
 	private final EMessageType type;
+	private int age;
 
 	/**
 	 * Creates a new simple chat message.
@@ -49,6 +50,7 @@ public class SimpleMessage implements IMessage {
 		this.message = message;
 		this.sender = sender;
 		this.pos = pos;
+		this.age = 0;
 	}
 
 	@Override
@@ -57,9 +59,14 @@ public class SimpleMessage implements IMessage {
 	}
 
 	@Override
-	public long getAge() {
-		// TODO: implement a message aging process.
-		return 0;
+	public int getAge() {
+		return this.age;
+	}
+
+	@Override
+	public int ageBy(int interval) {
+		this.age += interval;
+		return this.age;
 	}
 
 	@Override
@@ -75,6 +82,25 @@ public class SimpleMessage implements IMessage {
 	@Override
 	public ShortPoint2D getPosition() {
 		return pos;
+	}
+
+	@Override
+	public boolean duplicates(IMessage m) {
+		if ((m.getSender() == this.sender)
+				&& m.getMessage().equals(this.message)
+				&& m.getType() == this.type) {
+			if (m.getAge() < MESSAGE_TTL / 6) {
+				if ((this.type == EMessageType.ATTACKED)
+						|| (this.type == EMessageType.MINERALS)) {
+					if (this.pos.getOnGridDistTo(m.getPosition())
+							< MESSAGE_DIST_THRESHOLD) {
+						return true;
+					}
+				} else if (this.pos.equals(m.getPosition()))
+					return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -117,4 +143,5 @@ public class SimpleMessage implements IMessage {
 		String message = Labels.getString("cannot_find_work_" + building.getBuildingType());
 		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPos());
 	}
+
 }

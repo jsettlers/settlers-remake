@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -54,7 +54,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
@@ -136,8 +136,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
-	private static final int MAX_MESSAGES = 10;
-	private static final float MESSAGE_OFFSET_X = 200;
+	private static final float MESSAGE_OFFSET_X = 300;
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final int MESSAGE_LINEHIEGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
@@ -167,7 +166,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private int windowWidth = 1;
 	private int windowHeight = 1;
 
-	private final Messenger messenger = new Messenger();
+	private final Messenger messenger;
 	private final SoundManager soundmanager;
 	private final BackgroundSound backgroundSound;
 
@@ -178,7 +177,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private long moveToMarkerTime;
 
 	private final ReplaceableTextDrawer textDrawer;
-	private final IStatisticable playerStatistics;
+	private final IGameTimeProvider gameTimeProvider;
 
 	private String tooltipString = "";
 
@@ -216,8 +215,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
 		this.map = game.getMap();
-		this.playerStatistics = game.getPlayerStatistics();
-		textDrawer = new ReplaceableTextDrawer();
+		this.gameTimeProvider = game.getGameTimeProvider();
+		this.messenger = new Messenger(this.gameTimeProvider);
+		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
 
@@ -332,14 +332,25 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
+	private float messageAlpha(IMessage m) {
+		int age = (int) m.getAge();
+		return (age < 5000) ?
+			(age < 1500
+				? Math.min(1,  age/1000f) : 1)
+				: Math.max(0,
+					1f - (float)age / IMessage.MESSAGE_TTL);
+	}
+
 	private void drawMessages(GLDrawContext gl) {
-		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 		// TODO: don't let logic wait until we rendered.
 		synchronized (messenger) {
 			int messageIndex = 0;
+			messenger.doTick();
 			for (IMessage m : messenger.getMessages()) {
 				float x = MESSAGE_OFFSET_X;
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+				float a = messageAlpha(m);
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
 					Color color = context.getPlayerColor(m.getSender());
@@ -347,24 +358,24 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					float bright = color.getRed() + color.getGreen() + color.getBlue();
 					if (bright < .9f) {
 						// black
-						gl.color(1, 1, 1, .5f);
-						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+						drawer.setColor(1, 1, 1, a/2);
 					} else if (bright < 2f) {
 						// bad visibility
-						gl.color(0, 0, 0, .5f);
-						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+						drawer.setColor(0, 0, 0, a/2);
 					}
+					for (int i=-1; i<3; i++)
+						drawer.drawString(x+i, y-1, name);
 					drawer.setColor(color.getRed(), color.getGreen(),
-							color.getBlue(), 1);
+							color.getBlue(), a);
 					drawer.drawString(x, y, name);
 					x += width + 10;
 				}
 
-				drawer.setColor(1, 1, 1, 1);
+				drawer.setColor(1, 1, 1, a);
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;
-				if (messageIndex >= MAX_MESSAGES) {
+				if (messageIndex >= IMessage.MAX_MESSAGES) {
 					break;
 				}
 			}
@@ -406,7 +417,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawFramerate(GLDrawContext gl) {
 		framerate.nextFrame();
 		String fps = Labels.getString("map-fps", framerate.getRate());
-		long gametime = playerStatistics.getGameTime() / 1000;
+		long gametime = gameTimeProvider.getGameTime() / 1000;
 		String timeString = Labels.getString("map-time", gametime / 60 / 60,
 				(gametime / 60) % 60, (gametime) % 60);
 
@@ -924,17 +935,19 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	public void addMessage(IMessage message) {
+		boolean printMsg;
 		synchronized (messenger) {
-			messenger.addMessage(message);
+			printMsg = messenger.addMessage(message);
 		}
-		switch (message.getType()) {
-		case ATTACKED:
-			soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
-			break;
+		if (printMsg)
+			switch (message.getType()) {
+			case ATTACKED:
+				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+				break;
 
-		default:
-			break;
-		}
+			default:
+				break;
+			}
 	}
 
 	@Override
