@@ -26,31 +26,41 @@ import jsettlers.graphics.map.MapDrawContext;
  * @author michael
  */
 public class BackgroundSound implements Runnable {
+	private static final double BIRDS1_FRACTION = .5;
+	private static final int BACKGROUND_SLEEP_TIME = 300;
+	private static final int DESERT_PLAY_TIME = 500;
+	private static final int WATER_PLAY_TIME = 200;
+	private static final int BIRDS_PLAY_TIME = 800;
 	private static final float VOLUME = .4f;
+
+	private static final int INDEX_BIRDS1 = 69;
+	private static final int INDEX_BIRDS2 = 70;
+	private static final int INDEX_WATER = 68;
+	private static final int INDEX_DESERT = 73;
+
 	private final MapDrawContext map;
 	private final SoundManager sound;
-	private final Thread thread;
 	private final Object waitMutex = new Object();
 	private boolean stopped = false;
 
-	private final int INDEX_BIRDS1 = 69;
-	private final int INDEX_BIRDS2 = 70;
-	private final int INDEX_WATER = 68;
-	private final int INDEX_DESERT = 73;
-
+	/**
+	 * Creates a new background sound player.
+	 * 
+	 * @param map
+	 *            The map draw context to generate sounds for.
+	 * @param sound
+	 *            The sound manager to use.
+	 */
 	public BackgroundSound(MapDrawContext map, SoundManager sound) {
 		this.map = map;
 		this.sound = sound;
-
-		this.thread = new Thread(this, "background-sound");
-		this.thread.start();
 	}
 
 	@Override
 	public void run() {
 		try {
 			while (!stopped) {
-				waitTime(300);
+				waitTime(BACKGROUND_SLEEP_TIME);
 				if (stopped) {
 					break;
 				}
@@ -60,24 +70,22 @@ public class BackgroundSound implements Runnable {
 				}
 				int line = (int) (Math.random() * screen.getLines());
 
-				int x =
-						screen.getLineStartX(line)
-								+ (int) (Math.random() * screen.getLineLength());
+				int x = screen.getLineStartX(line) + (int) (Math.random() * screen.getLineLength());
 				int y = screen.getLineY(line);
 
 				if (hasTree(x, y)) {
-					if (Math.random() < .5) {
+					if (Math.random() < BIRDS1_FRACTION) {
 						sound.playSound(INDEX_BIRDS1, VOLUME, VOLUME);
 					} else {
 						sound.playSound(INDEX_BIRDS2, VOLUME, VOLUME);
 					}
-					waitTime(800); // < Do not play it to often
+					waitTime(BIRDS_PLAY_TIME); // < Do not play it to often
 				} else if (hasWater(x, y)) {
 					sound.playSound(INDEX_WATER, VOLUME, VOLUME);
-					waitTime(200);
+					waitTime(WATER_PLAY_TIME);
 				} else if (hasDesert(x, y)) {
 					sound.playSound(INDEX_DESERT, VOLUME, VOLUME);
-					waitTime(500);
+					waitTime(DESERT_PLAY_TIME);
 				}
 			}
 		} catch (Throwable e) {
@@ -132,11 +140,21 @@ public class BackgroundSound implements Runnable {
 		return false;
 	}
 
+	/**
+	 * Starts the sound player.
+	 */
+	public void start() {
+		Thread thread = new Thread(this, "background-sound");
+		thread.start();
+	}
+
+	/**
+	 * Stops the sound player.
+	 */
 	public void stop() {
 		synchronized (waitMutex) {
 			stopped = true;
 			waitMutex.notifyAll();
 		}
 	}
-
 }

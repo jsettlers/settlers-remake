@@ -573,7 +573,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean hasProtectedNeighbor(int x, int y) {
-			for (EDirection currDir : EDirection.values) {
+			for (EDirection currDir : EDirection.VALUES) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
 			}
@@ -603,7 +603,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean hasBlockedNeighbor(short x, short y) {
-			for (EDirection currDir : EDirection.values) {
+			for (EDirection currDir : EDirection.VALUES) {
 				short currX = currDir.getNextTileX(x);
 				short currY = currDir.getNextTileY(y);
 				if (!isInBounds(currX, currY) || flagsGrid.isBlocked(currX, currY)) {
@@ -976,7 +976,7 @@ public final class MainGrid implements Serializable {
 		private boolean canUsePositionForConstructionSafe(int x, int y, EBuildingType buildingType, short partition) {
 			// FIXME @Andreas: this can be merged with canUsePositionForConstruction
 			return !flagsGrid.isProtected(x, y)
-					&& buildingType.allowsLandscapeId(landscapeGrid.getLandscapeIdAt(x, y))
+					&& buildingType.allowsGroundTypeId(landscapeGrid.getLandscapeIdAt(x, y))
 					&& partitionsGrid.getPartitionIdAt(x, y) == partition;
 		}
 
@@ -1172,7 +1172,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType) {
 			if (searchType == ESearchType.FISHABLE) {
-				for (EDirection direction : EDirection.values) {
+				for (EDirection direction : EDirection.VALUES) {
 					ShortPoint2D currPos = direction.getNextHexPoint(position);
 					short x = currPos.x, y = currPos.y;
 
@@ -1182,7 +1182,7 @@ public final class MainGrid implements Serializable {
 				}
 				return null;
 			} else if (searchType == ESearchType.RIVER) {
-				for (EDirection direction : EDirection.values) {
+				for (EDirection direction : EDirection.VALUES) {
 					ShortPoint2D currPos = direction.getNextHexPoint(position);
 					short x = currPos.x, y = currPos.y;
 					ELandscapeType landscapeTypeAt = landscapeGrid.getLandscapeTypeAt(x, y);

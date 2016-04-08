@@ -23,6 +23,12 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
+/**
+ * This is the selection content displayed when bearers are selected.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class BearerSelectionContent extends AbstractSelectionContent {
 	private final UIPanel panel;
 	private final int count;

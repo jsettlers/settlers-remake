@@ -33,6 +33,10 @@ import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.images.AnimationSequence;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
@@ -99,6 +103,37 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
+	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0, 2);
+	private static final float UI_OVERLAY_Z = .95f;
+
+	private final class ZoomEventHandler implements GOModalEventHandler {
+		float startzoom = context.getScreen().getZoom();
+
+		@Override
+		public void phaseChanged(GOEvent event) {
+		}
+
+		@Override
+		public void finished(GOEvent event) {
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+		}
+
+		@Override
+		public void aborted(GOEvent event) {
+			eventDataChanged(1);
+		}
+
+		@Override
+		public void eventDataChanged(GOEvent event) {
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+		}
+
+		private void eventDataChanged(float zoomFactor) {
+			float newZoom = startzoom * zoomFactor;
+			setZoom(newZoom);
+		}
+	}
+
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final float MESSAGE_OFFSET_X = 300;
@@ -150,17 +185,34 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private PlacementBuilding placementBuilding;
 
+	private UIPoint currentSelectionAreaEnd;
+	private boolean actionThreadIsSlow;
+	private long lastSelectPointTime = 0;
+	private ShortPoint2D lastSelectPointPos = null;
+
 	/**
 	 * Creates a new map content for the given map.
 	 *
-	 * @param map
+	 * @param game
 	 *            The map.
-	 * @param playerStatistics
+	 * @param player
+	 *            The player
 	 */
 	public MapContent(IStartedGame game, SoundPlayer player) {
 		this(game, player, null);
 	}
 
+	/**
+	 * 
+	 * Creates a new map content for the given map.
+	 *
+	 * @param game
+	 *            The map.
+	 * @param player
+	 *            The player
+	 * @param controls
+	 *            The controls object to use as user interface. If it is <code>null</code> the original controls are overlayed.
+	 */
 	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
@@ -171,6 +223,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
+		backgroundSound.start();
 
 		if (controls == null) {
 			this.controls = new OriginalControls(this, game.getInGamePlayer());
@@ -224,7 +277,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			drawMain(screen);
 
 			if (scrollMarker != null) {
-				drawScrollMarker();
+				drawGotoMarker();
 			}
 			if (moveToMarker != null) {
 				drawMoveToMarker();
@@ -234,7 +287,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			long foregroundtime = System.currentTimeMillis() - start;
 
 			start = System.currentTimeMillis();
-			gl.glTranslatef(0, 0, .95f);
+			gl.glTranslatef(0, 0, UI_OVERLAY_Z);
 			drawSelectionHint(gl);
 			controls.drawAt(gl);
 			drawMessages(gl);
@@ -256,15 +309,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void drawScrollMarker() {
+	private void drawGotoMarker() {
 		long timediff = System.currentTimeMillis() - scrollMarkerTime;
 		if (timediff > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
 			context.beginTileContext(scrollMarker.x, scrollMarker.y);
-			ImageProvider.getInstance().getSettlerSequence(3, 1)
-					.getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
-					.draw(context.getGl(), null, 1);
+			ImageLink image = GOTO_ANIMATION.getImage(timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
+			ImageProvider.getInstance().getImage(image)
+					.draw(context.getGl(), Color.WHITE, 1);
 			context.endTileContext();
 		}
 	}
@@ -283,7 +336,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		int age = (int) m.getAge();
 		return (age < 5000) ?
 			(age < 1500
-				? (age / 250) % 2 : 1)
+				? Math.min(1,  age/1000f) : 1)
 				: Math.max(0,
 					1f - (float)age / IMessage.MESSAGE_TTL);
 	}
@@ -431,7 +484,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
 
 			if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
-				this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
+				this.objectDrawer.drawMapObject(underMouse.x, underMouse.y, placementBuilding);
 			}
 		}
 
@@ -445,7 +498,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
-			this.objectDrawer.drawMapObject(this.map, x, y, object);
+			this.objectDrawer.drawMapObject(x, y, object);
 		}
 
 		IMovable movable = map.getMovableAt(x, y);
@@ -570,33 +623,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void handleZoom(GOZoomEvent zoomEvent) {
-		zoomEvent.setHandler(new GOModalEventHandler() {
-			float startzoom = context.getScreen().getZoom();
-
-			@Override
-			public void phaseChanged(GOEvent event) {
-			}
-
-			@Override
-			public void finished(GOEvent event) {
-				eventDataChanged(((GOZoomEvent) event).getZoomFactor());
-			}
-
-			private void eventDataChanged(float zoomFactor) {
-				float newZoom = startzoom * zoomFactor;
-				setZoom(newZoom);
-			}
-
-			@Override
-			public void aborted(GOEvent event) {
-				eventDataChanged(1);
-			}
-
-			@Override
-			public void eventDataChanged(GOEvent event) {
-				eventDataChanged(((GOZoomEvent) event).getZoomFactor());
-			}
-		});
+		zoomEvent.setHandler(new ZoomEventHandler());
 	}
 
 	/**
@@ -633,10 +660,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	/**
-	 * Gets a action for a keyboard key
+	 * Gets a action for a keyboard key.
 	 *
 	 * @param keyCode
-	 *            The key
+	 *            The key name as String.
 	 * @return The action that corresponds to the key
 	 */
 	private static Action getActionForKeyboard(String keyCode) {
@@ -710,6 +737,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		hoverEvent.setHandler(hoverHandler);
 	}
 
+	/**
+	 * This is called whenever the mouse pointer position changed. Used for tooltips.
+	 * 
+	 * @param position
+	 *            The new mouse position.
+	 */
 	protected void changeMousePosition(UIPoint position) {
 		mousePosition = position;
 
@@ -769,11 +802,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 
 	};
-
-	private UIPoint currentSelectionAreaEnd;
-	private boolean actionThreadIsSlow;
-	private long lastSelectPointTime = 0;
-	private ShortPoint2D lastSelectPointPos = null;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 			UIPoint position) {

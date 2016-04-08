@@ -45,5 +45,5 @@ public enum EGuiAction {
 	CHANGE_TRADING,
 	SET_TRADING_WAYPOINT;
 
-	public static final EGuiAction[] values = values();
+	public static final EGuiAction[] VALUES = values();
 }

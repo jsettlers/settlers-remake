@@ -26,6 +26,12 @@ public class SetBuildingPriorityAction extends Action {
 
 	private final EPriority newPriority;
 
+	/**
+	 * Creates a new {@link SetBuildingPriorityAction}.
+	 * 
+	 * @param newPriority
+	 *            The new priority.
+	 */
 	public SetBuildingPriorityAction(EPriority newPriority) {
 		super(EActionType.SET_BUILDING_PRIORITY);
 		this.newPriority = newPriority;

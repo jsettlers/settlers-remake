@@ -23,7 +23,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
 /**
  * This class translates shadows.
  * 
- * @author michael
+ * @author Michael Zangl
  *
  */
 public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {

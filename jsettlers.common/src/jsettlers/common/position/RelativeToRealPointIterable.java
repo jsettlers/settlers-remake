@@ -17,6 +17,7 @@ package jsettlers.common.position;
 import java.util.Iterator;
 
 /**
+ * Iterates over an array of relative positions using a reference point.
  * 
  * @author Andreas Eberle
  *
@@ -26,6 +27,14 @@ public class RelativeToRealPointIterable implements Iterable<ShortPoint2D> {
 	private final RelativePoint[] relativePositions;
 	private final ShortPoint2D relationPosition;
 
+	/**
+	 * Create a new {@link RelativeToRealPointIterable}.
+	 * 
+	 * @param relativePositions
+	 *            The positions to iterate over
+	 * @param relationPosition
+	 *            The reference point to use.
+	 */
 	public RelativeToRealPointIterable(RelativePoint[] relativePositions, ShortPoint2D relationPosition) {
 		this.relativePositions = relativePositions;
 		this.relationPosition = relationPosition;
@@ -34,7 +43,7 @@ public class RelativeToRealPointIterable implements Iterable<ShortPoint2D> {
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return new Iterator<ShortPoint2D>() {
-			int index = 0;
+			private int index = 0;
 
 			@Override
 			public boolean hasNext() {

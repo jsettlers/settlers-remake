@@ -24,7 +24,7 @@ import jsettlers.common.statistics.IGameTimeProvider;
 /**
  * This is a messenger, that lets you display messages on the users screen.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class Messenger {
 
@@ -35,7 +35,7 @@ public class Messenger {
 
 	public Messenger(IGameTimeProvider gameTimeProvider) {
 		this.gameTimeProvider = gameTimeProvider;
-		this.latestTickTime = gameTimeProvider.getGameTime();
+		this.latestTickTime = (int)System.currentTimeMillis();
 	}
 
 	/**
@@ -49,6 +49,14 @@ public class Messenger {
 		return messages;
 	}
 
+	/**
+	 * Adds a given {@link IMessage} to this messenger's FIFO list, but
+	 * only if given message doesn't seem to be a duplicate of any of the
+	 * messages that are already contained. Whether its a duplicate or not
+	 * is determined by {@link IMessage#duplicates(IMessage)}.
+	 * @param message
+	 * @return
+	 */
 	public boolean addMessage(IMessage message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
@@ -61,12 +69,16 @@ public class Messenger {
 	}
 
 	/**
-	 * 
+	 * Perform perpetual update step, i.e. determine amount of time that has
+	 * passed since last call, let all currently active messages age by that
+	 * interval, then remove all messages whose age exceed the allowed
+	 * time-to-live ({@link IMessage#MESSAGE_TTL}).
 	 */
 	public void doTick() {
+		int millis = (int)System.currentTimeMillis(); 
 		if (!gameTimeProvider.isGamePausing()) {
 			// update message ages
-			int interval = gameTimeProvider.getGameTime() - latestTickTime;
+			int interval = millis - latestTickTime;
 			for (IMessage m : messages) {
 				if (m.ageBy(interval) > IMessage.MESSAGE_TTL)
 					// remove all remaining messages, assuming they in order
@@ -74,7 +86,7 @@ public class Messenger {
 						;
 			}
 		}
-		latestTickTime = gameTimeProvider.getGameTime();
+		latestTickTime = millis;
 	}
 
 	/**

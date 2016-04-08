@@ -27,8 +27,8 @@ public enum EPriority {
 	LOW(1),
 	HIGH(2), ;
 
-	public static final EPriority[] values = EPriority.values();
-	public static final int NUMBER_OF_PRIORITIES = values.length;
+	public static final EPriority[] VALUES = EPriority.values();
+	public static final int NUMBER_OF_PRIORITIES = VALUES.length;
 	public static final EPriority DEFAULT = EPriority.LOW;
 
 	public final byte ordinal;

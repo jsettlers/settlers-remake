@@ -17,15 +17,19 @@ package jsettlers.graphics.map;
 /**
  * This class keeps track of the frames.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class FramerateComputer {
+	private static final int FRAMES_TO_AVERAGE = 30;
 	private static final long RECOMPUTE_INTERVALL = 500;
-	private long[] lastFrames = new long[30];
+	private final long[] lastFrames = new long[FRAMES_TO_AVERAGE];
 	private long lastRecompute = 0;
 	private int capturedFrames = 0;
 	private double rate;
 
+	/**
+	 * Called whenever a new frame is displayed.
+	 */
 	public void nextFrame() {
 		long time = System.currentTimeMillis();
 		lastFrames[capturedFrames] = time;
@@ -44,6 +48,11 @@ public class FramerateComputer {
 		capturedFrames = 1;
 	}
 
+	/**
+	 * Gets the current frame rate.
+	 * 
+	 * @return The rate.
+	 */
 	public double getRate() {
 		return rate;
 	}

@@ -28,7 +28,7 @@ import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
@@ -41,7 +41,7 @@ import jsettlers.graphics.ui.UIPanel;
 /**
  * This class handles the contents of the main panel.
  *
- * @author michael
+ * @author Michael Zangl
  */
 public class MainPanel extends UIPanel {
 	public static final int BUTTONS_FILE = 3;
@@ -136,22 +136,28 @@ public class MainPanel extends UIPanel {
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}
 
-	public void setContent(AbstractContentProvider type) {
-		activeContent.contentHiding(actionFireable, type);
+	/**
+	 * Sets the content of the main panel.
+	 * 
+	 * @param content
+	 *            The content to change to.
+	 */
+	public void setContent(AbstractContentProvider content) {
+		activeContent.contentHiding(actionFireable, content);
 
-		ESecondaryTabType tabs = type.getTabs();
+		ESecondaryTabType tabs = content.getTabs();
 		showSecondaryTabs(tabs);
 
 		if (tabs != null) {
 			switch (tabs) {
 			case BUILD:
-				setButtonsActive(buildButtons, type);
+				setButtonsActive(buildButtons, content);
 				break;
 			case GOODS:
-				setButtonsActive(goodsButtons, type);
+				setButtonsActive(goodsButtons, content);
 				break;
 			case SETTLERS:
-				setButtonsActive(settlerButtons, type);
+				setButtonsActive(settlerButtons, content);
 				break;
 			case NONE:
 			default:
@@ -160,8 +166,8 @@ public class MainPanel extends UIPanel {
 		}
 
 		contentContainer.removeAll();
-		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
-		activeContent = type;
+		contentContainer.addChild(content.getPanel(), 0, 0, 1, 1);
+		activeContent = content;
 
 		sendMapPositionChange();
 
@@ -312,7 +318,7 @@ public class MainPanel extends UIPanel {
 			return null;
 		case ASK_SET_TRADING_WAYPOINT:
 			goBackContent = activeContent;
-			final WaypointType wp = ((AskSetTradingWaypointAction) action).getWaypoint();
+			final EWaypointType wp = ((AskSetTradingWaypointAction) action).getWaypoint();
 			setContent(new SelectPointMessage(
 					Labels.getString("click_set_trading_waypoint_" + wp)) {
 				@Override
@@ -359,7 +365,7 @@ public class MainPanel extends UIPanel {
 		this.grid = grid;
 		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
 				+ screenArea.getLineLength() / 2, screenArea
-						.getLineY(screenArea.getLines() / 2));
+				.getLineY(screenArea.getLines() / 2));
 		sendMapPositionChange();
 	}
 

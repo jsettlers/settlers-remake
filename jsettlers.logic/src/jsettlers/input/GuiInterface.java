@@ -48,7 +48,7 @@ import jsettlers.graphics.action.SetMaterialProductionAction;
 import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.action.UpgradeSoldiersAction;
+import jsettlers.graphics.action.SoldierAction;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
@@ -120,10 +120,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		switch (action.getActionType()) {
 		case BUILD:
 			this.setSelection(new SelectionSet());
-			BuildAction buildAction = (BuildAction) action;
+			final BuildAction buildAction = (BuildAction) action;
 			EBuildingType buildingType = buildAction.getBuildingType();
 
-			ShortPoint2D pos2 = grid.getConstructablePosition(buildAction.getPosition(), buildingType, playerId,
+			final ShortPoint2D pos2 = grid.getConstructablePosition(buildAction.getPosition(), buildingType, playerId,
 					InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
 			if (pos2 != null) {
 				scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos2, buildingType));
@@ -139,7 +139,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		case DEBUG_ACTION:
-			for (ISelectable curr : currentSelection) {
+			for (final ISelectable curr : currentSelection) {
 				if (curr instanceof IDebugable) {
 					((IDebugable) curr).debug();
 				}
@@ -207,7 +207,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case MOVE_TO: {
-			PointAction moveToAction = (PointAction) action;
+			final PointAction moveToAction = (PointAction) action;
 
 			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
 				setBuildingWorkArea(moveToAction.getPosition());
@@ -268,27 +268,27 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
-			SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
+			final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
 			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a
 					.getProbabilities()));
 			break;
 		}
 
 		case SET_MATERIAL_PRIORITIES: {
-			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
+			final SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
 			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getPosition(), a.getMaterialTypeForPriority()));
 			break;
 		}
 
 		case SET_MATERIAL_STOCK_ACCEPTED: {
-			SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
+			final SetMaterialStockAcceptedAction a = (SetMaterialStockAcceptedAction) action;
 			// TODO @Andreas: implement this.
 			System.err.println("Not implemented: " + a);
 			break;
 		}
 
 		case SET_MATERIAL_PRODUCTION: {
-			SetMaterialProductionAction a = (SetMaterialProductionAction) action;
+			final SetMaterialProductionAction a = (SetMaterialProductionAction) action;
 			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, a.getPosition(), a.getMaterialType(), a.getProductionType(), a
 					.getRatio()));
 			break;
@@ -299,15 +299,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case UPGRADE_SOLDIERS: {
-			UpgradeSoldiersAction a = (UpgradeSoldiersAction) action;
+			final SoldierAction a = (SoldierAction) action;
 			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
 			break;
 		}
 
 		case CHANGE_TRADING_REQUEST: {
-			ISelectable selected = currentSelection.getSingle();
+			final ISelectable selected = currentSelection.getSingle();
 			if (selected instanceof Building) {
-				ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
+				final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
 				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPos(), a.getMaterial(),
 						a.getAmount(), a.isRelative()));
 			}
@@ -315,11 +315,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		case SET_TRADING_WAYPOINT: {
-			ISelectable selected = currentSelection.getSingle();
+			final ISelectable selected = currentSelection.getSingle();
 			if (selected instanceof Building) {
-				SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
 				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
-						a.getWaypoint(), a.getPosition()));
+						a.getWaypointType(), a.getPosition()));
 			}
 		}
 
@@ -341,13 +341,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
-			Building building = (Building) currentSelection.get(0);
-			EBuildingType buildingType = building.getBuildingType();
+			final Building building = (Building) currentSelection.get(0);
+			final EBuildingType buildingType = building.getBuildingType();
 			Building first = null;
 			Building next = null;
 			boolean buildingFound = false;
 
-			for (Building currBuilding : Building.getAllBuildings()) {
+			for (final Building currBuilding : Building.getAllBuildings()) {
 				if (currBuilding == building) {
 					buildingFound = true;
 				} else {
@@ -372,19 +372,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
-		ISelectable selected = currentSelection.getSingle();
+		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
 			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
 		}
 	}
 
 	private void sendConvertAction(ConvertAction action) {
-		List<ISelectable> convertables = new LinkedList<ISelectable>();
+		final List<ISelectable> convertables = new LinkedList<ISelectable>();
 		switch (action.getTargetType()) {
 		case BEARER:
-			for (ISelectable curr : currentSelection) {
+			for (final ISelectable curr : currentSelection) {
 				if (curr instanceof IMovable) {
-					EMovableType currType = ((IMovable) curr).getMovableType();
+					final EMovableType currType = ((IMovable) curr).getMovableType();
 					if (currType == EMovableType.THIEF || currType == EMovableType.PIONEER || currType == EMovableType.GEOLOGIST) {
 						convertables.add(curr);
 						if (convertables.size() >= action.getAmount()) {
@@ -397,9 +397,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case PIONEER:
 		case GEOLOGIST:
 		case THIEF:
-			for (ISelectable curr : currentSelection) {
+			for (final ISelectable curr : currentSelection) {
 				if (curr instanceof IMovable) {
-					EMovableType currType = ((IMovable) curr).getMovableType();
+					final EMovableType currType = ((IMovable) curr).getMovableType();
 					if (currType == EMovableType.BEARER) {
 						convertables.add(curr);
 						if (convertables.size() >= action.getAmount()) {
@@ -441,7 +441,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		int x = 0;
 		int y = 0;
 		int count = 0;
-		for (ISelectable member : currentSelection) {
+		for (final ISelectable member : currentSelection) {
 			if (member instanceof ILocatable) {
 				x += ((ILocatable) member).getPos().x;
 				y += ((ILocatable) member).getPos().y;
@@ -450,7 +450,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 		System.out.println("locatable: " + count);
 		if (count > 0) {
-			ShortPoint2D point = new ShortPoint2D(x / count, y / count);
+			final ShortPoint2D point = new ShortPoint2D(x / count, y / count);
 			connector.scrollTo(point, false);
 		}
 	}
@@ -465,7 +465,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void moveTo(ShortPoint2D pos) {
-		List<Integer> selectedIds = getIDsOfSelected();
+		final List<Integer> selectedIds = getIDsOfSelected();
 		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
 	}
 
@@ -474,9 +474,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private final static List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
-		List<Integer> selectedIds = new LinkedList<Integer>();
+		final List<Integer> selectedIds = new LinkedList<Integer>();
 
-		for (ISelectable curr : iterable) {
+		for (final ISelectable curr : iterable) {
 			if (curr instanceof IIDable) {
 				selectedIds.add(((IIDable) curr).getID());
 			}
@@ -485,14 +485,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void selectArea(SelectAreaAction action) {
-		SelectionSet selectionSet = new SelectionSet();
+		final SelectionSet selectionSet = new SelectionSet();
 
-		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			IGuiMovable movable = grid.getMovable(curr.x, curr.y);
+		for (final ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
+			final IGuiMovable movable = grid.getMovable(curr.x, curr.y);
 			if (movable != null && canSelectPlayer(movable.getPlayerId())) {
 				selectionSet.add(movable);
 			}
-			IBuilding building = grid.getBuildingAt(curr.x, curr.y);
+			final IBuilding building = grid.getBuildingAt(curr.x, curr.y);
 			if (building != null && canSelectPlayer(building.getPlayerId())) {
 				selectionSet.add(building);
 			}
@@ -510,13 +510,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void handleSelectPointAction(PointAction action) {
-		ShortPoint2D pos = action.getPosition();
+		final ShortPoint2D pos = action.getPosition();
 
 		// only for debugging
 		grid.positionClicked(pos.x, pos.y);
 
 		// check what's to do
-		ISelectable selected = getSelectableAt(pos);
+		final ISelectable selected = getSelectableAt(pos);
 		if (selected != null) {
 			setSelection(new SelectionSet(selected));
 		} else {
@@ -531,15 +531,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private ISelectable getSelectableAt(ShortPoint2D pos) {
 		if (grid.isInBounds(pos)) {
-			short x = pos.x;
-			short y = pos.y;
+			final short x = pos.x;
+			final short y = pos.y;
 
-			IGuiMovable selectableMovable = getSelectableMovable(x, y);
+			final IGuiMovable selectableMovable = getSelectableMovable(x, y);
 			if (selectableMovable != null) {
 				return selectableMovable;
 			} else {
 				// search buildings
-				IBuilding building = grid.getBuildingAt(pos.x, pos.y);
+				final IBuilding building = grid.getBuildingAt(pos.x, pos.y);
 				if (building != null && canSelectPlayer(building.getPlayerId())) {
 					return building;
 				} else {
@@ -552,10 +552,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private IGuiMovable getSelectableMovable(short x, short y) {
-		IGuiMovable m1 = grid.getMovable(x, y);
-		IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
-		IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
-		IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
+		final IGuiMovable m1 = grid.getMovable(x, y);
+		final IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
+		final IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
+		final IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
 		if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
 			return m1;
@@ -571,19 +571,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void selectPointType(PointAction action) {
-		ShortPoint2D actionPosition = action.getPosition();
-		IGuiMovable centerSelectable = getSelectableMovable(actionPosition.x, actionPosition.y);
+		final ShortPoint2D actionPosition = action.getPosition();
+		final IGuiMovable centerSelectable = getSelectableMovable(actionPosition.x, actionPosition.y);
 
 		if (centerSelectable == null) { // nothing found at the location
 			setSelection(new SelectionSet());
 			return;
 		}
 
-		List<ISelectable> selected = new LinkedList<ISelectable>();
+		final List<ISelectable> selected = new LinkedList<ISelectable>();
 		selected.add(centerSelectable);
 
-		for (ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
-			IGuiMovable movable = grid.getMovable(pos.x, pos.y);
+		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
+			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
 			if (movable != null && movable.getMovableType() == centerSelectable.getMovableType() && canSelectPlayer(movable.getPlayerId())) {
 				selected.add(movable);
 			}

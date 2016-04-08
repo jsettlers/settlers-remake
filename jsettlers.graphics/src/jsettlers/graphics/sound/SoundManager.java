@@ -28,6 +28,8 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.startscreen.SettingsManager;
 
 /**
+ * This class manages reading and playing of the sound file.
+ * <p>
  * Some known sounds:
  * <p>
  * 1 (6 times): knock a tree <br>
@@ -74,7 +76,32 @@ import jsettlers.graphics.startscreen.SettingsManager;
  * @author michael
  */
 public class SoundManager {
+	private static final int SOUND_META_LENGTH = 16;
+
+	private static final int SOUND_FILE_START = 0x24;
+
+	private static final byte[] SOUND_FILE_MAGIC = new byte[] {
+			0x44,
+			0x15,
+			0x01,
+			0x00,
+			0x02,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x1C,
+			0x00,
+			0x00,
+			0x00
+	};
 	private static final int SEQUENCE_N = 118;
+	/**
+	 * Sound ID when we are attacked.
+	 */
 	public static final int NOTIFY_ATTACKED = 80;
 
 	/**
@@ -93,6 +120,12 @@ public class SoundManager {
 	private int[][] soundStarts;
 	private boolean initializing = false;
 
+	/**
+	 * Creates a new sound manager.
+	 * 
+	 * @param player
+	 *            The player to play sounds at.
+	 */
 	public SoundManager(SoundPlayer player) {
 		this.player = player;
 		initialize();
@@ -105,6 +138,15 @@ public class SoundManager {
 		player.setSoundDataRetriever(new SoundDataRetriever(reader));
 	}
 
+	/**
+	 * Reads the start indexes of the sounds.
+	 * 
+	 * @param reader
+	 *            The reader to read from.
+	 * @return An array of start indexes for each sound and it's variants.
+	 * @throws IOException
+	 *             If the file could not be read.
+	 */
 	protected static int[][] getSoundStarts(ByteReader reader)
 			throws IOException {
 		int[] seqheaderstarts = new int[SEQUENCE_N];
@@ -126,6 +168,15 @@ public class SoundManager {
 		return playerids;
 	}
 
+	/**
+	 * Opens the sound file.
+	 * 
+	 * @return The file reader.
+	 * @throws IOException
+	 *             If the file could not be opened,
+	 * @throws FileNotFoundException
+	 *             If the file was not found.
+	 */
 	protected static ByteReader openSoundFile() throws IOException,
 			FileNotFoundException {
 		File sndfile = getSoundFile();
@@ -137,26 +188,9 @@ public class SoundManager {
 		RandomAccessFile randomAccessFile = new RandomAccessFile(sndfile, "r");
 		ByteReader reader = new ByteReader(randomAccessFile);
 
-		reader.assumeToRead(new byte[] {
-				0x44,
-				0x15,
-				0x01,
-				0x00,
-				0x02,
-				0x00,
-				0x00,
-				0x00,
-				0x00,
-				0x00,
-				0x00,
-				0x00,
-				0x1C,
-				0x00,
-				0x00,
-				0x00
-		});
+		reader.assumeToRead(SOUND_FILE_MAGIC);
 
-		reader.skipTo(0x24);
+		reader.skipTo(SOUND_FILE_START);
 		return reader;
 	}
 
@@ -174,6 +208,16 @@ public class SoundManager {
 		return sndfile;
 	}
 
+	/**
+	 * Plays a given sound.
+	 * 
+	 * @param soundid
+	 *            The sound id to play.
+	 * @param volume1
+	 *            The volume for the left speaker.
+	 * @param volume2
+	 *            The volume for the right speaker.
+	 */
 	public void playSound(int soundid, float volume1, float volume2) {
 		initialize();
 
@@ -208,16 +252,34 @@ public class SoundManager {
 		}, "sound loader").start();
 	}
 
+	/**
+	 * Adds a sound file lookup path.
+	 * 
+	 * @param file
+	 *            The file path.
+	 */
 	public static void addLookupPath(File file) {
 		synchronized (lookupPaths) {
 			lookupPaths.add(file);
 		}
 	}
 
+	/**
+	 * This class wraps an open {@link ByteReader} to a {@link ISoundDataRetriever}.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	protected static class SoundDataRetriever implements ISoundDataRetriever {
 
 		private final ByteReader reader;
 
+		/**
+		 * Create a new {@link SoundDataRetriever}.
+		 * 
+		 * @param reader
+		 *            The byte reader.
+		 */
 		public SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
 		}
@@ -229,11 +291,22 @@ public class SoundManager {
 		}
 	}
 
+	/**
+	 * Reads the sound data from a byte reader.
+	 * 
+	 * @param reader
+	 *            The reader to read.
+	 * @param start
+	 *            The sound start position.
+	 * @return The read sound data.
+	 * @throws IOException
+	 *             If that sound could not be read.
+	 */
 	protected static short[] getSoundData(ByteReader reader, int start)
 			throws IOException {
 		reader.skipTo(start);
 
-		int length = reader.read32() / 2 - 16;
+		int length = reader.read32() / 2 - SOUND_META_LENGTH;
 		reader.read32();
 		reader.read32(); // mostly 22050
 		reader.read32(); // mostly 44100

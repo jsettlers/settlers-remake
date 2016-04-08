@@ -17,13 +17,24 @@ package jsettlers.common.images;
 /**
  * This is a definition for a sequence of images.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public final class AnimationSequence {
 	private final String name;
 	private final int first;
 	private final int length;
 
+	/**
+	 * Creates a new animation sequence link.
+	 * 
+	 * @param name
+	 *            The name of the sequence.
+	 * @param first
+	 *            The first index of the sequence.
+	 * @param length
+	 *            The number of frames this sequence has.
+	 * @see ImageLink#fromName(String, int)
+	 */
 	public AnimationSequence(String name, int first, int length) {
 		super();
 		this.name = name;
@@ -57,9 +68,11 @@ public final class AnimationSequence {
 	 * undefined.
 	 * 
 	 * @param index
-	 * @return
+	 *            The relative index in this sequence.
+	 * @return The image link to that image.
 	 */
 	public ImageLink getImage(int index) {
+		assert index < length;
 		return ImageLink.fromName(name, first + index);
 	}
 }

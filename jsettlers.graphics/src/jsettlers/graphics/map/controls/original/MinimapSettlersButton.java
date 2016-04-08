@@ -29,6 +29,11 @@ import jsettlers.graphics.ui.Button;
  * @author Michael Zangl
  */
 public class MinimapSettlersButton extends Button {
+	/**
+	 * This action switches to the next display mode.
+	 * 
+	 * @author Michael Zangl
+	 */
 	private static final class NextDisplayMode extends ExecutableAction {
 		private final MinimapMode minimapSettings;
 
@@ -51,6 +56,12 @@ public class MinimapSettlersButton extends Button {
 
 	private MinimapMode minimapSettings;
 
+	/**
+	 * Creates a new {@link MinimapSettlersButton}.
+	 * 
+	 * @param minimapSettings
+	 *            The settings to influence.
+	 */
 	public MinimapSettlersButton(final MinimapMode minimapSettings) {
 		super(new NextDisplayMode(minimapSettings), null, null, Labels.getString("minimap-settlers"));
 		this.minimapSettings = minimapSettings;

@@ -21,10 +21,21 @@ import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
+/**
+ * This class translates GUI Images. This handles most - but not all - images used for the GUI.
+ * 
+ * @author Michael Zangl
+ */
 public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 
 	private final DatFileType type;
 
+	/**
+	 * Create a new {@link GuiTranslator}.
+	 * 
+	 * @param type
+	 *            The {@link DatFileType} to convert colors.
+	 */
 	public GuiTranslator(DatFileType type) {
 		this.type = type;
 	}

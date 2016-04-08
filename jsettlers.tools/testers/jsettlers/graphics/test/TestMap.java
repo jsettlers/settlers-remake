@@ -355,7 +355,7 @@ public class TestMap implements IGraphicsGrid {
 			while (current != null && !current.getLandscapeType().isWater()) {
 				current.setRiver(true);
 
-				List<EDirection> directions = Arrays.asList(EDirection.values);
+				List<EDirection> directions = Arrays.asList(EDirection.VALUES);
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
@@ -375,7 +375,7 @@ public class TestMap implements IGraphicsGrid {
 
 	private int getNeighbourRiverCount(TestTile tile) {
 		int rivers = 0;
-		for (EDirection dir : EDirection.values) {
+		for (EDirection dir : EDirection.VALUES) {
 			TestTile toTest = this.getTile(dir.getNextHexPoint(tile.getPos()));
 			if (toTest != null
 					&& (toTest.getLandscapeType() == ELandscapeType.RIVER1 || toTest.getLandscapeType() == ELandscapeType.RIVER2

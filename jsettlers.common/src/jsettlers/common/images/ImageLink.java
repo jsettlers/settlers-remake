@@ -18,23 +18,57 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This defines a link to an image.
+ * 
+ * @author Michael Zangl
+ * @see DirectImageLink For linking to a file
+ * @see OriginalImageLink For linking to a Settlers 3 graphic.
+ */
 public abstract class ImageLink implements Serializable {
 	private static final long serialVersionUID = 1572028978425777114L;
 
 	private static final Pattern ORIGINAL_LINK = Pattern
 			.compile("original_(\\d+)_(SETTLER|GUI|LANDSCAPE)_(\\d+)");
+	private static final int ORIGINAL_LINK_FILE = 1;
+	private static final int ORIGINAL_LINK_TYPE = 2;
+	private static final int ORIGINAL_LINK_SEQUENCE = 3;
 
+	/**
+	 * Converts a given name to an image link.
+	 * <p>
+	 * Names can either be direct names of the png files or they can have the for "original_&lt;file>_&lt;type>_&lt;sequence
+	 * 
+	 * @param name
+	 *            The name.
+	 * @param imageIndex
+	 *            The index in the sequence.
+	 * @return The image link for that image, no matter if it exists or not.
+	 */
 	public static ImageLink fromName(String name, int imageIndex) {
 		Matcher matcher = ORIGINAL_LINK.matcher(name);
 		if (matcher.matches()) {
-			return new OriginalImageLink(EImageLinkType.valueOf(matcher.group(2)), Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher
-					.group(3)), imageIndex);
+			EImageLinkType type = EImageLinkType.valueOf(matcher.group(ORIGINAL_LINK_TYPE));
+			int file = Integer.parseInt(matcher.group(ORIGINAL_LINK_FILE));
+			int sequence = Integer.parseInt(matcher.group(ORIGINAL_LINK_SEQUENCE));
+			return new OriginalImageLink(type, file, sequence, imageIndex);
 		} else {
 			return new DirectImageLink(name + "." + imageIndex);
 		}
 	}
 
+	/**
+	 * Gets the name of this link.
+	 * 
+	 * @return A name that can be converted back to the link.
+	 * @see #fromName(String, int)
+	 */
 	public abstract String getName();
 
+	/**
+	 * Gets the image index in the sequence.
+	 * 
+	 * @return The image index.
+	 */
 	public abstract int getImageIndex();
 }

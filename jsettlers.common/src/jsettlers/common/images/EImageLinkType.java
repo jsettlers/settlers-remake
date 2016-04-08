@@ -21,7 +21,7 @@ package jsettlers.common.images;
  */
 public enum EImageLinkType {
 	/**
-	 * A normal settler sequence
+	 * A normal settler sequence. Those are images that can be displayed on the map.
 	 */
 	SETTLER,
 	/**

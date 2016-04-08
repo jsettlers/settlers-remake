@@ -28,7 +28,7 @@ public class BuildingConfigurationsTest {
 	@Parameters(name = "{index}: {0}")
 	public static Collection<Object[]> buildingTypes() {
 		List<Object[]> result = new ArrayList<Object[]>();
-		for (EBuildingType buildingType : EBuildingType.values) {
+		for (EBuildingType buildingType : EBuildingType.VALUES) {
 			result.add(new Object[] { buildingType });
 		}
 		return result;

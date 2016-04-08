@@ -26,7 +26,7 @@ import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
 import jsettlers.graphics.image.SingleImage;
-import jsettlers.graphics.image.Torso;
+import jsettlers.graphics.image.TorsoImage;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.reader.translator.GuiTranslator;
@@ -188,7 +188,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 	private final DatBitmapTranslator<SettlerImage> settlerTranslator;
 
-	private final DatBitmapTranslator<Torso> torsoTranslator;
+	private final DatBitmapTranslator<TorsoImage> torsoTranslator;
 
 	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
 
@@ -474,7 +474,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 			for (int i = 0; i < torsoPositions.length
 					&& i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
-				Torso torso =
+				TorsoImage torso =
 						DatBitmapReader.getImage(torsoTranslator, reader);
 				images[i].setTorso(torso);
 			}
@@ -652,7 +652,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return settlerTranslator;
 	}
 
-	public DatBitmapTranslator<Torso> getTorsoTranslator() {
+	public DatBitmapTranslator<TorsoImage> getTorsoTranslator() {
 		return torsoTranslator;
 	}
 

@@ -22,8 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.resources.ResourceManager;
@@ -39,16 +39,15 @@ import jsettlers.graphics.map.draw.ImageProvider;
  */
 public final class SettlerImageMap {
 
-	private static final SettlerImageMapItem DEFAULT_ITEM =
-			new SettlerImageMapItem(10, 0, 0, 1);
+	private static final SettlerImageMapItem DEFAULT_ITEM = new SettlerImageMapItem(10, 0, 0, 1);
 
 	private static SettlerImageMap instance;
 
-	private ImageProvider imageProvider = ImageProvider.getInstance();
+	private final ImageProvider imageProvider = ImageProvider.getInstance();
 
 	private final SettlerImageMapItem[][][][] map;
 
-	private Pattern linePattern = Pattern.compile("\\s*([\\w\\*]+)\\s*,"
+	private final Pattern linePattern = Pattern.compile("\\s*([\\w\\*]+)\\s*,"
 			+ "\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*,"
 			+ "\\s*([\\w\\*]+)\\s*" + "=\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*,"
 			+ "\\s*(\\d+)\\s*," + "\\s*(-?\\d+)\\s*");
@@ -68,9 +67,8 @@ public final class SettlerImageMap {
 		this.types = EMovableType.NUMBER_OF_MOVABLETYPES;
 		this.actions = EMovableAction.values().length;
 		this.materials = EMaterialType.NUMBER_OF_MATERIALS;
-		this.directions = EDirection.values.length;
-		this.map =
-				new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
+		this.directions = EDirection.VALUES.length;
+		this.map = new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
 
 		try {
 			InputStream file = ResourceManager.getResourcesFileStream("images/movables.txt");
@@ -88,8 +86,7 @@ public final class SettlerImageMap {
 	 *            The file to read from.
 	 */
 	private void readFromFile(InputStream file) {
-		int[][][][] priorities =
-				new int[this.types][this.actions][this.materials][this.directions];
+		int[][][][] priorities = new int[this.types][this.actions][this.materials][this.directions];
 
 		// add pseudo entry.
 		addEntryToMap(priorities, null, null, null, null, DEFAULT_ITEM, -1);
@@ -284,10 +281,8 @@ public final class SettlerImageMap {
 				for (int materialIndex = minMaterial; materialIndex < maxMaterial; materialIndex++) {
 					for (int direcitonIndex = minDirection; direcitonIndex < maxDirection; direcitonIndex++) {
 						if (priorities[typeIndex][actionIndex][materialIndex][direcitonIndex] < priority) {
-							this.map[typeIndex][actionIndex][materialIndex][direcitonIndex] =
-									item;
-							priorities[typeIndex][actionIndex][materialIndex][direcitonIndex] =
-									priority;
+							this.map[typeIndex][actionIndex][materialIndex][direcitonIndex] = item;
+							priorities[typeIndex][actionIndex][materialIndex][direcitonIndex] = priority;
 						}
 					}
 				}
@@ -332,8 +327,7 @@ public final class SettlerImageMap {
 	 */
 	public Image getImageForSettler(EMovableType movableType, EMovableAction action,
 			EMaterialType material, EDirection direction, float progress) {
-		SettlerImageMapItem item =
-				getMapItem(movableType, action, material, direction);
+		SettlerImageMapItem item = getMapItem(movableType, action, material, direction);
 
 		int duration = item.getDuration();
 		int imageIndex;
@@ -357,9 +351,8 @@ public final class SettlerImageMap {
 	 */
 	private SettlerImageMapItem getMapItem(EMovableType movableType,
 			EMovableAction action, EMaterialType material, EDirection direction) {
-		SettlerImageMapItem item =
-				this.map[movableType.ordinal()][action.ordinal()][material
-						.ordinal()][direction.ordinal()];
+		SettlerImageMapItem item = this.map[movableType.ordinal()][action.ordinal()][material
+				.ordinal()][direction.ordinal()];
 		if (item == null) {
 			return DEFAULT_ITEM;
 		} else {
