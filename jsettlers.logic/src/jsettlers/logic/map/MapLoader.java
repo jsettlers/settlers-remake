@@ -84,7 +84,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	// - Interface: Comparable<MapLoader>
 	@Override
 	public int compareTo(MapLoader other) {
-		MapFileHeader myHeader = getFileHeader();
+		MapFileHeader myHeader = this.getFileHeader();
 		MapFileHeader otherHeader = other.getFileHeader();
 		if (myHeader.getType() == otherHeader.getType() && myHeader.getType() == MapType.SAVED_SINGLE) {
 			return -this.getCreationDate().compareTo(other.getCreationDate()); // order by date descending

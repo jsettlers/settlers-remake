@@ -85,7 +85,7 @@ public class OpenPanel extends JPanel {
 	public OpenPanel(final ChangingList<? extends MapLoader> maps, IMapSelectedListener mapSelectedListener) {
 		this(maps.getItems(), mapSelectedListener);
 		maps.setListener(changedLister -> {
-			this.setMapLoaders(changedLister.getItems());
+			setMapLoaders(changedLister.getItems());
 		});
 	}
 
@@ -118,16 +118,16 @@ public class OpenPanel extends JPanel {
 
 		initFilter();
 
-		this.searchTextField = new SearchTextField();
-		this.searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
+		searchTextField = new SearchTextField();
+		searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 
 		Box box = Box.createVerticalBox();
-		box.add(this.filterPanel);
-		box.add(this.searchTextField);
+		box.add(filterPanel);
+		box.add(searchTextField);
 
 		add(box, BorderLayout.NORTH);
 
-		this.searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				searchChanged();
@@ -144,9 +144,9 @@ public class OpenPanel extends JPanel {
 			}
 		});
 
-		this.mapList = new JList<MapLoader>(listModelFiltered);
-		this.mapList.setCellRenderer(cellRenderer);
-		this.mapList.addMouseListener(new MouseAdapter() {
+		mapList = new JList<MapLoader>(listModelFiltered);
+		mapList.setCellRenderer(cellRenderer);
+		mapList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -156,13 +156,13 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
-		this.mapList.setOpaque(false);
-		add(new JScrollPane(this.mapList), BorderLayout.CENTER);
+		mapList.setOpaque(false);
+		add(new JScrollPane(mapList), BorderLayout.CENTER);
 
 		searchChanged();
 
 		if (maps.size() > 0) {
-			this.mapList.setSelectedIndex(0);
+			mapList.setSelectedIndex(0);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class OpenPanel extends JPanel {
 	}
 
 	private void setMapLoadersWithoutSearchChanged(final List<? extends MapLoader> maps) {
-		this.availableMaps = maps.toArray(new MapLoader[maps.size()]);
+		availableMaps = maps.toArray(new MapLoader[maps.size()]);
 		Arrays.sort(availableMaps);
 	}
 
