@@ -17,8 +17,7 @@ package jsettlers.main.swing.menu.openpanel;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
@@ -67,14 +66,9 @@ public class OpenPanel extends JPanel {
 	private final SearchTextField searchTextField;
 
 	/**
-	 * List with all maps
-	 */
-	protected List<MapLoader> maps;
-
-	/**
 	 * Unfiltered map list
 	 */
-	private MapLoader[] mapsAvailable;
+	private MapLoader[] availableMaps;
 
 	/**
 	 * Currently active filter
@@ -110,15 +104,15 @@ public class OpenPanel extends JPanel {
 		initFilter();
 
 		this.searchTextField = new SearchTextField();
-		searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
+		this.searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 
 		Box box = Box.createVerticalBox();
-		box.add(filterPanel);
-		box.add(searchTextField);
+		box.add(this.filterPanel);
+		box.add(this.searchTextField);
 
 		add(box, BorderLayout.NORTH);
 
-		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+		this.searchTextField.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				searchChanged();
@@ -136,8 +130,8 @@ public class OpenPanel extends JPanel {
 		});
 
 		this.mapList = new JList<MapLoader>(listModelFiltered);
-		mapList.setCellRenderer(cellRenderer);
-		mapList.addMouseListener(new MouseAdapter() {
+		this.mapList.setCellRenderer(cellRenderer);
+		this.mapList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -147,13 +141,13 @@ public class OpenPanel extends JPanel {
 				}
 			}
 		});
-		mapList.setOpaque(false);
-		add(new JScrollPane(mapList), BorderLayout.CENTER);
+		this.mapList.setOpaque(false);
+		add(new JScrollPane(this.mapList), BorderLayout.CENTER);
 
 		searchChanged();
 
 		if (maps.size() > 0) {
-			mapList.setSelectedIndex(0);
+			this.mapList.setSelectedIndex(0);
 		}
 	}
 
@@ -163,9 +157,8 @@ public class OpenPanel extends JPanel {
 	}
 
 	private void setMapLoadersWithoutSearchChanged(final List<MapLoader> maps) {
-		this.maps = maps;
-		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
-		sortMaps();
+		this.availableMaps = maps.toArray(new MapLoader[maps.size()]);
+		Arrays.sort(availableMaps);
 	}
 
 	/**
@@ -203,9 +196,9 @@ public class OpenPanel extends JPanel {
 		String search = searchTextField.getText().toLowerCase();
 
 		listModelFiltered.clear();
-		for (MapLoader m : mapsAvailable) {
-			if (matchesSearch(m, search) && currentFilter.filter(m)) {
-				listModelFiltered.addElement(m);
+		for (MapLoader mapLoader : availableMaps) {
+			if (matchesSearch(mapLoader, search) && currentFilter.filter(mapLoader)) {
+				listModelFiltered.addElement(mapLoader);
 			}
 		}
 	}
@@ -238,23 +231,6 @@ public class OpenPanel extends JPanel {
 	}
 
 	/**
-	 * Order the maps
-	 */
-	protected void sortMaps() {
-		Collections.sort(maps, new Comparator<MapLoader>() {
-			@Override
-			public int compare(MapLoader mapLoader1, MapLoader mapLoader2) {
-				int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
-				if (nameComp != 0) {
-					return nameComp;
-				} else {
-					return mapLoader1.toString().compareTo(mapLoader2.toString());
-				}
-			}
-		});
-	}
-
-	/**
 	 * @return The selected map
 	 */
 	public MapLoader getSelectedMap() {
@@ -265,6 +241,6 @@ public class OpenPanel extends JPanel {
 	 * @return true if there are no maps in the list
 	 */
 	public boolean isEmpty() {
-		return maps.isEmpty();
+		return availableMaps.length == 0;
 	}
 }
