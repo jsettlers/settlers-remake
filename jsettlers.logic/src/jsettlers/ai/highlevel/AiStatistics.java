@@ -23,6 +23,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,10 +76,10 @@ public class AiStatistics {
 	private static final short TOWER_RADIUS_OVERLAP = 1;
 
 	private final Queue<Building> buildings;
-	private PlayerStatistic[] playerStatistics;
-	private Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
-	private AiPositions[] sortedResourceTypes;
-	private AiPositions sortedRiversInDefaultPartition;
+	private final PlayerStatistic[] playerStatistics;
+	private final Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
+	private final AiPositions[] sortedResourceTypes;
+	private final AiPositions sortedRiversInDefaultPartition;
 	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
@@ -102,7 +103,7 @@ public class AiStatistics {
 		}
 		sortedRiversInDefaultPartition = new AiPositions();
 		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, AiPositions>();
-		sortedResourceTypes = new AiPositions[EResourceType.values.length];
+		sortedResourceTypes = new AiPositions[EResourceType.VALUES.length];
 		for (int i = 0; i < sortedResourceTypes.length; i++) {
 			sortedResourceTypes[i] = new AiPositions();
 		}
@@ -307,7 +308,7 @@ public class AiStatistics {
 	}
 
 	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, short x, short y) {
-		for (EDirection dir : EDirection.values) {
+		for (EDirection dir : EDirection.VALUES) {
 			int lx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
 			int ly = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
 			if (mainGrid.isInBounds(lx, ly)) {
@@ -419,7 +420,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].buildingPositions.get(type);
 	}
 
-	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EBuildingType[] buildingTypes, byte playerId) {
+	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EnumSet<EBuildingType> buildingTypes, byte playerId) {
 		List<ShortPoint2D> buildingPositions = new Vector<ShortPoint2D>();
 		for (EBuildingType buildingType : buildingTypes) {
 			buildingPositions.addAll(getBuildingPositionsOfTypeForPlayer(buildingType, playerId));

@@ -14,11 +14,22 @@
  *******************************************************************************/
 package jsettlers.common.images;
 
+/**
+ * This is an image link to a image file in the resource directory.
+ * 
+ * @author Michael Zangl
+ */
 public class DirectImageLink extends ImageLink {
 	private static final long serialVersionUID = -7746487283146780673L;
 
 	private final String name;
 
+	/**
+	 * Create a new image link object.
+	 * 
+	 * @param name
+	 *            The name.
+	 */
 	public DirectImageLink(String name) {
 		this.name = name;
 	}

@@ -30,9 +30,9 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 
 /**
- * This class saves the state parts of the building that is displayed by the gui, to detect changes
+ * This class saves the state parts of the building that is displayed by the gui, to detect changes.
  * 
- * @author michael
+ * @author Michael Zangl
  */
 public class BuildingState {
 
@@ -49,23 +49,69 @@ public class BuildingState {
 	private final int[] tradingCounts;
 	private final boolean isSeaTrading;
 
+	/**
+	 * This is the state for a building stack.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class StackState {
-		public final EMaterialType type;
-		public final int count;
-		public final boolean offering;
+		private final EMaterialType type;
+		private final int count;
+		private final boolean offering;
 
+		/**
+		 * Create a new stack state
+		 * 
+		 * @param mat
+		 *            The material stack to create the state for.
+		 */
 		public StackState(IBuildingMaterial mat) {
 			type = mat.getMaterialType();
 			count = mat.getMaterialCount();
 			offering = mat.isOffering();
 		}
 
+		/**
+		 * Check if the stack state is still the same.
+		 * 
+		 * @param mat
+		 *            The material stack to check against.
+		 * @return <code>true</code> if the state is the same.
+		 */
 		public boolean isStillInState(IBuildingMaterial mat) {
 			return mat.getMaterialType() == type && mat.getMaterialCount() == count && mat.isOffering() == offering;
 		}
 
+		/**
+		 * @return the type
+		 */
+		public EMaterialType getType() {
+			return type;
+		}
+
+		/**
+		 * @return the count
+		 */
+		public int getCount() {
+			return count;
+		}
+
+		/**
+		 * @return true if this is an offer stack.
+		 */
+		public boolean isOffering() {
+			return offering;
+		}
+
 	}
 
+	/**
+	 * Creates a new occupyer state.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class OccupierState {
 		private final IMovable movable;
 		private final boolean comming;
@@ -80,21 +126,30 @@ public class BuildingState {
 			movable = null;
 		}
 
+		/**
+		 * @return <code>true</code> if the comming image should be displayed.
+		 */
 		public boolean isComming() {
 			return comming;
 		}
 
+		/**
+		 * @return <code>true</code> if the missing image should be displayed.
+		 */
 		public boolean isMissing() {
 			return movable == null && !isComming();
 		}
 
+		/**
+		 * @return The movable that is in this stack or <code>null</code> for none.
+		 */
 		public IMovable getMovable() {
 			return movable;
 		}
 	}
 
 	/**
-	 * Saves the current state of the building
+	 * Stores the current state of the building.
 	 * 
 	 * @param building
 	 *            the building
@@ -140,22 +195,22 @@ public class BuildingState {
 	}
 
 	private Hashtable<ESoldierClass, ArrayList<OccupierState>> computeOccupierStates(IBuilding building) {
-		Hashtable<ESoldierClass, ArrayList<OccupierState>> occupierStates = null;
+		Hashtable<ESoldierClass, ArrayList<OccupierState>> newStates = null;
 		if (building instanceof IBuilding.IOccupyed && !construction) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
-			occupierStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
-			for (ESoldierClass soldierClass : ESoldierClass.values) {
-				occupierStates.put(soldierClass, new ArrayList<OccupierState>());
+			newStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
+			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
+				newStates.put(soldierClass, new ArrayList<OccupierState>());
 			}
 
 			for (IBuildingOccupyer o : occupyed.getOccupyers()) {
 				ESoldierClass soldierClass = o.getPlace().getSoldierClass();
 				OccupierState state = new OccupierState(o.getMovable());
-				occupierStates.get(soldierClass).add(state);
+				newStates.get(soldierClass).add(state);
 			}
 
-			for (ESoldierClass soldierClass : ESoldierClass.values) {
-				ArrayList<OccupierState> list = occupierStates.get(soldierClass);
+			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
+				ArrayList<OccupierState> list = newStates.get(soldierClass);
 				int comming = occupyed.getCurrentlyCommingSoldiers(soldierClass);
 				while (list.size() < comming) {
 					list.add(new OccupierState(true));
@@ -166,9 +221,14 @@ public class BuildingState {
 				}
 			}
 		}
-		return occupierStates;
+		return newStates;
 	}
 
+	/**
+	 * Gets a list of priorities supported by this state.
+	 * 
+	 * @return The priorities.
+	 */
 	public EPriority[] getSupportedPriorities() {
 		return supportedPriorities;
 	}
@@ -185,6 +245,13 @@ public class BuildingState {
 		return stockStates != null && stockStates.get(material.ordinal);
 	}
 
+	/**
+	 * Checks if we are still in the state.
+	 * 
+	 * @param building
+	 *            The building to check.
+	 * @return <code>true</code> if that building is in this state.
+	 */
 	public boolean isStillInState(IBuilding building) {
 		return building.getPriority() == priority
 				&& Arrays.equals(supportedPriorities,
@@ -231,21 +298,37 @@ public class BuildingState {
 	}
 
 	public int getTradingCount(EMaterialType material) {
-		return tradingCounts == null ? 0 : tradingCounts[material.ordinal];
+		if (tradingCounts == null) {
+			return 0;
+		} else {
+			return tradingCounts[material.ordinal];
+		}
 	}
 
+	/**
+	 * @return <code>true</code> if we are a constructed occupied building.
+	 */
 	public boolean isOccupied() {
 		return occupierStates != null && !construction;
 	}
 
+	/**
+	 * @return <code>true</code> if we are a constructed stock building.
+	 */
 	public boolean isStock() {
 		return stockStates != null && !construction;
 	}
 
+	/**
+	 * @return <code>true</code> if we are a constructed trading building.
+	 */
 	public boolean isTrading() {
 		return tradingCounts != null && !construction;
 	}
 
+	/**
+	 * @return <code>true</code> if we are sea trading building, <code>false</code> for land trading.
+	 */
 	public boolean isSeaTrading() {
 		return isSeaTrading;
 	}

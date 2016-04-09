@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,25 +12,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.image;
+package jsettlers.main;
 
-import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.common.statistics.IGameTimeProvider;
+import jsettlers.network.client.interfaces.IGameClock;
 
 /**
- * This is an torso: An image that is colored afterwards.
+ * This class provides game time information to the UI.
  * 
- * @author michael
+ * @author Andreas Eberle
+ * 
  */
-public class Torso extends SingleImage {
+public class GameTimeProvider implements IGameTimeProvider {
 
-	/**
-	 * Creates a new torso.
-	 * 
-	 * @param data
-	 *            The data to use.
-	 */
-	public Torso(ImageMetadata metadata, short[] data) {
-		super(metadata, data);
+	private IGameClock gameClock;
+
+	public GameTimeProvider(IGameClock gameTimer) {
+		this.gameClock = gameTimer;
 	}
 
+	@Override
+	public int getGameTime() {
+		return gameClock.getTime();
+	}
+
+	@Override
+	public boolean isGamePausing() {
+		return gameClock.isPausing();
+	}
 }

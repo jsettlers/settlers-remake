@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -38,7 +38,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.statistics.IStatisticable;
+import jsettlers.common.statistics.IGameTimeProvider;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
@@ -54,7 +54,6 @@ import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
-import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.main.replay.ReplayUtils.ReplayMapFileProvider;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -193,7 +192,7 @@ public class JSettlersGame {
 	public class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
-		private GameStatistics statistics;
+		private GameTimeProvider gameTimeProvider;
 		private EProgressState progressState;
 		private float progress;
 		private IGameExitListener exitListener;
@@ -219,7 +218,7 @@ public class JSettlersGame {
 				RescheduleTimer.schedule(MatchConstants.clock()); // schedule timer
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
-				statistics = new GameStatistics(MatchConstants.clock());
+				gameTimeProvider = new GameTimeProvider(MatchConstants.clock());
 
 				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
@@ -352,8 +351,8 @@ public class JSettlersGame {
 		}
 
 		@Override
-		public IStatisticable getPlayerStatistics() {
-			return statistics;
+		public IGameTimeProvider getGameTimeProvider() {
+			return gameTimeProvider;
 		}
 
 		@Override

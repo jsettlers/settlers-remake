@@ -23,8 +23,8 @@ public enum ESoldierType {
 	SWORDSMAN,
 	PIKEMAN;
 
-	public static final ESoldierType[] values = ESoldierType.values();
-	public static final int NUMBER_OF_VALUES = values.length;
+	public static final ESoldierType[] VALUES = ESoldierType.values();
+	public static final int NUMBER_OF_VALUES = VALUES.length;
 
 	public final int ordinal;
 

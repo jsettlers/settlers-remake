@@ -23,6 +23,19 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public interface IMessage {
 	/**
+	 * Number of messages that queue can hold at largest.
+	 */
+	public static final int MAX_MESSAGES = 16;
+	/**
+	 * Longest duration for which messages should remain in queue, in milliseconds.
+	 */
+	public static final long MESSAGE_TTL = 90000;
+	/**
+	 * Map grid distance beyond which two messages should be considered sufficiently different to be prompted separately.
+	 */
+	public static final int MESSAGE_DIST_THRESHOLD = 24;
+
+	/**
 	 * Gets the type of this message.
 	 * 
 	 * @return The type the message has.
@@ -34,7 +47,7 @@ public interface IMessage {
 	 * 
 	 * @return The time it was sent in milliseconds.
 	 */
-	long getAge();
+	int getAge();
 
 	/**
 	 * Gets the message content. Only used for chat messages.
@@ -57,4 +70,20 @@ public interface IMessage {
 	 * @return A point describing the message position on the map. May be outside the map.
 	 */
 	ShortPoint2D getPosition();
+
+	/**
+	 * Compares this message to another one and decides whether they are redundant.
+	 *
+	 * @param m The message to compare to.
+	 * @return true, if redundant.
+	 */
+	boolean duplicates(IMessage m);
+
+	/**
+	 * Grow older by the specified number of milliseconds.
+	 *
+	 * @param milliseconds Number of milliseconds this message is to get older by.
+	 * @return resulting age in milliseconds.
+	 */
+	int ageBy(int milliseconds);
 }

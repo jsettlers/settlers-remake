@@ -37,7 +37,7 @@ import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.SetTradingWaypointAction.WaypointType;
+import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
@@ -53,47 +53,107 @@ import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
 import jsettlers.graphics.ui.layout.StockSelectionLayout;
 import jsettlers.graphics.ui.layout.TradingSelectionLayout;
 
+/**
+ * This is the selection content that is used for displaying a selected building.
+ * 
+ * @author Michael Zangl
+ */
 public class BuildingSelectionContent extends AbstractSelectionContent {
-	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 45, 0);
-	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 48, 0);
+	private static final int TRADING_MULTY_STEP_INCREASE = 8;
+	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
+	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
 
+	/**
+	 * This defines an element that depends on the state of the building.
+	 * 
+	 * @author Michael Zangl.
+	 *
+	 */
 	private interface StateDependendElement {
 		void setState(BuildingState state);
 	}
 
+	/**
+	 * A button for a given action for a given soldier type.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class SoldierButton extends Button {
 
+		/**
+		 * Create a new soldier button.
+		 * 
+		 * @param actionType
+		 *            The action to perform on click.
+		 * @param type
+		 *            The soldier type.
+		 * @param image
+		 *            The image to use.
+		 */
 		public SoldierButton(EActionType actionType, ESoldierType type, ImageLink image) {
 			super(new SoldierAction(actionType, type), image, image, Labels.getString("action_" + actionType + "_" + type));
 		}
 	}
 
+	/**
+	 * This field displays the soldier count.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class SoldierCount extends Label {
 
+		/**
+		 * Creates a new soldier count field.
+		 * 
+		 * @param type
+		 *            The type of soldiers to count.
+		 */
 		public SoldierCount(ESoldierType type) {
 			super("?", EFontSize.NORMAL);
 		}
 	}
 
+	/**
+	 * This is a material that is displayed on the stock screen.
+	 * 
+	 * @author Michael Zangl
+	 */
 	public static class StockControlItem extends MaterialButton implements StateDependendElement {
+		/**
+		 * Creates a new stock control button.
+		 * 
+		 * @param material
+		 *            The material.
+		 */
 		public StockControlItem(EMaterialType material) {
 			super(null, material);
 		}
 
 		@Override
 		public void setState(BuildingState state) {
-			setDotColor(state.stockAcceptsMaterial(getMaterial()) ? DotColor.GREEN : DotColor.RED);
+			setDotColor(computeColor(state));
+		}
+
+		private DotColor computeColor(BuildingState state) {
+			if (state.stockAcceptsMaterial(getMaterial())) {
+				return DotColor.GREEN;
+			} else {
+				return DotColor.RED;
+			}
 		}
 	}
 
+	/**
+	 * This class manages the selection of the {@link TradingMaterialButton}s.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	private static class TradingSelectionManager {
 		private Collection<TradingMaterialButton> buttons;
 		private EMaterialType selected;
-
-		public TradingSelectionManager() {
-		}
 
 		public void setButtons(Collection<TradingMaterialButton> buttons) {
 			this.buttons = buttons;
@@ -125,9 +185,21 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
+	/**
+	 * This is a material button for the trading GUI.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class TradingMaterialButton extends MaterialButton {
 		private TradingSelectionManager selectionManager;
 
+		/**
+		 * Creates a new {@link TradingMaterialButton}.
+		 * 
+		 * @param material
+		 *            The material this button is for.
+		 */
 		public TradingMaterialButton(EMaterialType material) {
 			super(null, material);
 		}
@@ -141,15 +213,32 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			}
 		}
 
+		/**
+		 * Binds this button to a selection manager.
+		 * 
+		 * @param selectionManager
+		 *            The manager to use.
+		 */
 		public void setSelectionManager(TradingSelectionManager selectionManager) {
 			this.selectionManager = selectionManager;
 		}
 	}
 
+	/**
+	 * This displays the number of materials traded.
+	 * 
+	 * @author Michael Zangl
+	 */
 	public static class TradingMaterialCount extends Label implements StateDependendElement {
 
 		private final EMaterialType material;
 
+		/**
+		 * Creates a new trading material count display.
+		 * 
+		 * @param material
+		 *            The material.
+		 */
 		public TradingMaterialCount(EMaterialType material) {
 			super("", EFontSize.NORMAL);
 			this.material = material;
@@ -158,55 +247,102 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		@Override
 		public void setState(BuildingState state) {
 			int count = state.getTradingCount(material);
-			setText(count == Integer.MAX_VALUE ? "\u221E" : count + "");
+			setText(formatCount(count));
+		}
+
+		private String formatCount(int count) {
+			if (count == Integer.MAX_VALUE) {
+				return "\u221E";
+			} else {
+				return count + "";
+			}
 		}
 
 	}
 
+	/**
+	 * This is the trading path selection display. It shows buttons to select the trading path.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	private static class TradingPath extends UIPanel {
-
+		/**
+		 * Creates new trading path buttons.
+		 * 
+		 * @param image
+		 *            The image to use.
+		 */
 		public TradingPath(ImageLink image) {
 			setBackground(image);
 		}
 
 		protected Action getActionForStep(int step) {
-			WaypointType wp;
+			EWaypointType waypoint;
 			if (step <= 0) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_1;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_1;
 			} else if (step <= 1) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_2;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_2;
 			} else if (step <= 2) {
-				wp = SetTradingWaypointAction.WaypointType.WAYPOINT_3;
+				waypoint = SetTradingWaypointAction.EWaypointType.WAYPOINT_3;
 			} else {
-				wp = SetTradingWaypointAction.WaypointType.DESTINATION;
+				waypoint = SetTradingWaypointAction.EWaypointType.DESTINATION;
 			}
 
-			return new AskSetTradingWaypointAction(wp);
+			return new AskSetTradingWaypointAction(waypoint);
 		}
 	}
 
+	/**
+	 * This displays the land trading path buttons.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class LandTradingPath extends TradingPath {
 
+		private static final int NUMBER_OF_BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length;
+
+		/**
+		 * Create a new {@link LandTradingPath}.
+		 * 
+		 * @param image
+		 *            The image to use.
+		 */
 		public LandTradingPath(ImageLink image) {
 			super(image);
 		}
 
 		@Override
 		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * 4);
+			int step = (int) (relativex * NUMBER_OF_BUTTONS);
 			return getActionForStep(step);
 		}
 	}
 
+	/**
+	 * This displays the sea trading path buttons and the button to build a dock.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class SeaTradingPath extends TradingPath {
 
+		private static final int NUMBER_OF_BUTTONS = SetTradingWaypointAction.EWaypointType.VALUES.length + 1;
+
+		/**
+		 * Create a new {@link SeaTradingPath}.
+		 * 
+		 * @param image
+		 *            The image to use.
+		 */
 		public SeaTradingPath(ImageLink image) {
 			super(image);
 		}
 
 		@Override
 		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * 5) - 1;
+			int step = (int) (relativex * NUMBER_OF_BUTTONS) - 1;
 			if (step >= 0) {
 				return getActionForStep(step);
 			} else {
@@ -215,27 +351,46 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
+	/**
+	 * This is a trading button that allows to increment or decrement the amount of traded material.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class TradingButton extends Button {
 		private TradingSelectionManager selectionManager;
 		private int amount;
 		private boolean relative;
 
+		/**
+		 * Create a new {@link TradingButton}.
+		 * 
+		 * @param image
+		 *            The image to use.
+		 * @param description
+		 *            The description to display to the user.
+		 */
 		public TradingButton(ImageLink image, String description) {
 			super(null, image, image, description);
 		}
 
 		@Override
 		public Action getAction() {
-			if (selectionManager == null) {
-				return null;
+			if (selectionManager != null) {
+				EMaterialType selected = selectionManager.getSelected();
+				if (selected != null) {
+					return new ChangeTradingRequestAction(selected, amount, relative);
+				}
 			}
-			EMaterialType selected = selectionManager.getSelected();
-			if (selected == null) {
-				return null;
-			}
-			return new ChangeTradingRequestAction(selected, amount, relative);
+			return null;
 		}
 
+		/**
+		 * Sets the selection manager that decides which material to increment.
+		 * 
+		 * @param selectionManager
+		 *            The selection manager to use.
+		 */
 		public void setSelectionManager(TradingSelectionManager selectionManager) {
 			this.selectionManager = selectionManager;
 		}
@@ -247,7 +402,14 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	private BuildingState lastState = null;
 	private final TradingSelectionManager selectionManager = new TradingSelectionManager();
 
+	/**
+	 * Create a new {@link BuildingSelectionContent}.
+	 * 
+	 * @param selection
+	 *            The selection this content is for.
+	 */
 	public BuildingSelectionContent(ISelectionSet selection) {
+		assert selection.getSize() == 1;
 		building = (IBuilding) selection.get(0);
 
 		updatePanelContent();
@@ -315,8 +477,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		float offerX = 1 - buttonSpace - buttonWidth;
 
 		for (StackState mat : state.getStackStates()) {
-			MaterialDisplay display = new MaterialDisplay(mat.type, mat.count, -1);
-			if (mat.offering) {
+			MaterialDisplay display = new MaterialDisplay(mat.getType(), mat.getCount(), -1);
+			if (mat.isOffering()) {
 				materialArea.addChild(display, offerX, 0, offerX + buttonWidth, 1);
 				offerX -= buttonSpace + buttonWidth;
 			} else {
@@ -334,8 +496,23 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	public static class MaterialDisplay extends UIPanel {
 		private static final float BUTTON_BOTTOM = 1 - 18f / 29;
 
+		/**
+		 * Create a new {@link MaterialDisplay}
+		 * 
+		 * @param type
+		 *            The type of material.
+		 * @param amount
+		 *            The number of materials to show.
+		 * @param required
+		 *            <code>true</code> if those are required materials for build.
+		 */
 		public MaterialDisplay(EMaterialType type, int amount, int required) {
-			String label = required < 0 ? "building-material-count" : "building-material-required";
+			String label;
+			if (required < 0) {
+				label = "building-material-count";
+			} else {
+				label = "building-material-required";
+			}
 			String text = Labels.getString(label, amount, required);
 			// TODO: use Labels.getName(type) ?
 			addChild(new Button(null, type.getIcon(), type.getIcon(), ""), 0, BUTTON_BOTTOM, 1, 1);
@@ -349,10 +526,21 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 * @author Michael Zangl
 	 */
 	public static class NamePanel extends Label {
+		/**
+		 * Create a new building name panel.
+		 */
 		public NamePanel() {
 			super("", EFontSize.HEADLINE);
 		}
 
+		/**
+		 * Sets the type of the building to display.
+		 * 
+		 * @param type
+		 *            The type.
+		 * @param workplace
+		 *            <code>true</code> if it is currently under construction.
+		 */
 		public void setType(EBuildingType type, boolean workplace) {
 			String text = Labels.getName(type);
 			if (workplace) {
@@ -382,6 +570,14 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			this.high = high;
 		}
 
+		/**
+		 * Sets the current building priority.
+		 * 
+		 * @param supported
+		 *            The supported priorities.
+		 * @param current
+		 *            The current priority.
+		 */
 		public void setPriority(EPriority[] supported, EPriority current) {
 			this.current = current;
 			next = supported[0];
@@ -511,20 +707,32 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 		layout.tradeAll.amount = Integer.MAX_VALUE;
 		layout.tradeMore5.relative = true;
-		layout.tradeMore5.amount = 5;
+		layout.tradeMore5.amount = TRADING_MULTY_STEP_INCREASE;
 		layout.tradeMore.relative = true;
 		layout.tradeMore.amount = 1;
 		layout.tradeLess.relative = true;
 		layout.tradeLess.amount = -1;
 		layout.tradeLess5.relative = true;
-		layout.tradeLess5.amount = -5;
+		layout.tradeLess5.amount = -TRADING_MULTY_STEP_INCREASE;
 
 		return layout._root;
 	}
 
+	/**
+	 * This is the panel displayed in the background during building selection.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
 	public static class BuidlingBackgroundPanel extends UIPanel {
 		private ImageLink[] links = new ImageLink[0];
 
+		/**
+		 * Sets the images to display.
+		 * 
+		 * @param links
+		 *            The images.
+		 */
 		public void setImages(ImageLink[] links) {
 			this.links = links;
 		}
@@ -546,6 +754,12 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	}
 
+	/**
+	 * This is a panel that refreshes the content when it is drawn.
+	 * 
+	 * @author Michael Zangl.
+	 *
+	 */
 	private class ContentRefreshingPanel extends UIPanel {
 		@Override
 		public void drawAt(GLDrawContext gl) {
@@ -560,6 +774,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		return rootPanel;
 	}
 
+	/**
+	 * Checks if this content needs to be refreshed and rebuilds it if the building state has changed.
+	 */
 	public void refreshContentIfNeeded() {
 		if (!lastState.isStillInState(building)) {
 			rootPanel.removeAll();

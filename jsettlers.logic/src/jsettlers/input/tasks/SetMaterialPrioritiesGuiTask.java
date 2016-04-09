@@ -86,7 +86,7 @@ public class SetMaterialPrioritiesGuiTask extends SimpleGuiTask {
 		int length = dis.readInt();
 		materialTypeForPriority = new EMaterialType[length];
 		for (int i = 0; i < length; i++) {
-			materialTypeForPriority[i] = EMaterialType.values[dis.readByte()];
+			materialTypeForPriority[i] = EMaterialType.VALUES[dis.readByte()];
 		}
 	}
 

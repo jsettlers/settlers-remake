@@ -20,7 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * This action states that the user wants something to move to the given position.
  *
- * @author michael
+ * @author Michael Zangl
  */
 public class PointAction extends Action {
 
@@ -29,6 +29,8 @@ public class PointAction extends Action {
 	/**
 	 * Creates a new moveto aciton.
 	 *
+	 * @param type
+	 *            The type of this action.
 	 * @param position
 	 *            The position the user clicked at.
 	 */

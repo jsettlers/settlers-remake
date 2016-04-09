@@ -12,48 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.statistics;
+package jsettlers.graphics.image;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.statistics.IStatisticable;
-import jsettlers.network.client.interfaces.IGameClock;
+import jsettlers.graphics.reader.ImageMetadata;
 
 /**
- * This class supplies the UI with statistics of the game.
+ * This is a torso: An image that is colored afterwards.
  * 
- * @author Andreas Eberle
- * 
+ * @author Michael Zangl
  */
-public class GameStatistics implements IStatisticable {
+public class TorsoImage extends SingleImage {
 
-	private IGameClock gameClock;
-
-	public GameStatistics(IGameClock gameTimer) {
-		this.gameClock = gameTimer;
+	/**
+	 * Creates a new {@link TorsoImage}.
+	 * 
+	 * @param metadata
+	 *            The meta data to use.
+	 * @param data
+	 *            The data to use.
+	 */
+	public TorsoImage(ImageMetadata metadata, short[] data) {
+		super(metadata, data);
 	}
-
-	@Override
-	public int getGameTime() {
-		return gameClock.getTime();
-	}
-
-	@Override
-	public int getNumberOf(EMaterialType materialType) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getNumberOf(EMovableType movableType) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getJoblessBearers() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

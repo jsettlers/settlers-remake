@@ -27,11 +27,24 @@ public class SoldierAction extends Action {
 
 	private final ESoldierType soldierType;
 
+	/**
+	 * Create a new {@link SoldierAction}.
+	 * 
+	 * @param actionType
+	 *            The type of action
+	 * @param soldierType
+	 *            The soldiers.
+	 */
 	public SoldierAction(EActionType actionType, ESoldierType soldierType) {
 		super(actionType);
 		this.soldierType = soldierType;
 	}
 
+	/**
+	 * Gets the type of soldiers.
+	 * 
+	 * @return The type.
+	 */
 	public ESoldierType getSoldierType() {
 		return soldierType;
 	}

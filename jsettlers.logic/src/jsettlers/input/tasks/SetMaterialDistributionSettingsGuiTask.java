@@ -102,7 +102,7 @@ public class SetMaterialDistributionSettingsGuiTask extends SimpleGuiTask {
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
 		managerPosition = SimpleGuiTask.deserializePosition(dis);
-		materialType = EMaterialType.values[dis.readByte()];
+		materialType = EMaterialType.VALUES[dis.readByte()];
 
 		int length = dis.readInt();
 		probabilities = new float[length];

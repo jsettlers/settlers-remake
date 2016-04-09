@@ -149,6 +149,7 @@ public class Label extends UIPanel {
 		super.drawAt(gl);
 
 		TextDrawer drawer = gl.getTextDrawer(size);
+		drawer.setColor(1, 1, 1, 1);
 
 		if (Double.isNaN(spaceWidth)) {
 			spaceWidth = drawer.getWidth(" ");

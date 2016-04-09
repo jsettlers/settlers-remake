@@ -102,7 +102,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		this.movableType = movableType;
 		this.health = movableType.getHealth();
 
-		this.direction = EDirection.values[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+		this.direction = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
 
 		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
@@ -146,7 +146,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
 			if (goInDirection(currDir, false)) {
 				break;
 			} else {
@@ -486,7 +486,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
 			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
 				return true;
 			}

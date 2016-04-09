@@ -42,7 +42,11 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
@@ -104,7 +108,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void initializeBuildingLists() {
-		for (EBuildingType buildingType : EBuildingType.values()) {
+		for (EBuildingType buildingType : EBuildingType.VALUES) {
 			buildingNeeds.put(buildingType, new ArrayList<BuildingCount>());
 			buildingIsNeededBy.put(buildingType, new ArrayList<EBuildingType>());
 		}
@@ -251,7 +255,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
 					if (buildToolsEconomy()) {
 						return;
-					} 
+					}
 					toolsEconomyNeedsToBeChecked = false;
 				}
 				if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingType)

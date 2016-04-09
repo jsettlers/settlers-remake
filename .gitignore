@@ -10,7 +10,7 @@ local.properties
 
 /.metadata
 /.recommenders
-.settings
+!/go.graphics/.settings/org.eclipse.jdt.ui.prefs
 .buildScripts
 /jsettlers.main.android/assets/*
 
@@ -28,3 +28,4 @@ local.properties
 /jsettlers.mapcreator/config.prp
 /jsettlers.common/resources/last-used.properties
 /jsettlers.graphics.androidui/gen/jsettlers/graphics/androidui/BuildConfig.java
+

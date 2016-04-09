@@ -104,7 +104,7 @@ public class TestBuilding implements IBuilding {
 
 	@Override
 	public EPriority[] getSupportedPriorities() {
-		return EPriority.values;
+		return EPriority.VALUES;
 	}
 
 	@Override

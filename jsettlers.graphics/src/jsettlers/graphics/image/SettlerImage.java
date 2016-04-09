@@ -32,8 +32,10 @@ public class SettlerImage extends SingleImage {
 	private SingleImage torso = null;
 
 	/**
-	 * {@inheritDoc:Image#Image(ImageDataPrivider)}
+	 * Creates a new settler image.
 	 * 
+	 * @param metadata
+	 *            The mata data to use.
 	 * @param data
 	 *            The data to use.
 	 */

@@ -65,7 +65,7 @@ public class ChangeTradingRequestGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		material = EMaterialType.values[dis.readByte()];
+		material = EMaterialType.VALUES[dis.readByte()];
 		amount = dis.readInt();
 		relative = dis.readBoolean();
 	}

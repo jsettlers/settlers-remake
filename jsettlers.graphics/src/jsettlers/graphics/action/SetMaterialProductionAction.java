@@ -29,7 +29,7 @@ public class SetMaterialProductionAction extends Action {
 		SET_PRODUCTION,
 		SET_RATIO;
 
-		public static final EMaterialProductionType[] values = EMaterialProductionType.values();
+		public static final EMaterialProductionType[] VALUES = EMaterialProductionType.values();
 	}
 
 	private final EMaterialType materialType;
