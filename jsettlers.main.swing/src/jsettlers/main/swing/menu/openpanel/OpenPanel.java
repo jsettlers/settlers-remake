@@ -32,6 +32,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
@@ -78,12 +79,25 @@ public class OpenPanel extends JPanel {
 	/**
 	 * Constructor
 	 *
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 */
+	public OpenPanel(final ChangingList<? extends MapLoader> maps, IMapSelectedListener mapSelectedListener) {
+		this(maps.getItems(), mapSelectedListener);
+		maps.setListener(changedLister -> {
+			this.setMapLoaders(changedLister.getItems());
+		});
+	}
+
+	/**
+	 * Constructor
+	 *
 	 * @param maps
 	 *            Maps to display
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final List<MapLoader> maps, IMapSelectedListener mapSelectedListener) {
+	public OpenPanel(final List<? extends MapLoader> maps, IMapSelectedListener mapSelectedListener) {
 		this(maps, mapSelectedListener, new MapListCellRenderer());
 	}
 
@@ -97,7 +111,8 @@ public class OpenPanel extends JPanel {
 	 * @param cellRenderer
 	 *            Cell renderer to use
 	 */
-	public OpenPanel(final List<MapLoader> maps, final IMapSelectedListener mapSelectedListener, final ListCellRenderer<MapLoader> cellRenderer) {
+	public OpenPanel(final List<? extends MapLoader> maps, final IMapSelectedListener mapSelectedListener,
+			final ListCellRenderer<MapLoader> cellRenderer) {
 		setMapLoadersWithoutSearchChanged(maps);
 		setLayout(new BorderLayout());
 
@@ -151,12 +166,12 @@ public class OpenPanel extends JPanel {
 		}
 	}
 
-	public void setMapLoaders(final List<MapLoader> maps) {
+	public void setMapLoaders(final List<? extends MapLoader> maps) {
 		setMapLoadersWithoutSearchChanged(maps);
 		searchChanged();
 	}
 
-	private void setMapLoadersWithoutSearchChanged(final List<MapLoader> maps) {
+	private void setMapLoadersWithoutSearchChanged(final List<? extends MapLoader> maps) {
 		this.availableMaps = maps.toArray(new MapLoader[maps.size()]);
 		Arrays.sort(availableMaps);
 	}
