@@ -118,6 +118,9 @@ public abstract class AbstractLabels {
 			try {
 				Properties currentLocaleLabels = new Properties(loadedLabels);
 				InputStream inputStream = getLocaleStream(locale);
+				if (inputStream == null) {
+					throw new IOException();
+				}
 				currentLocaleLabels.load(new InputStreamReader(inputStream, "UTF-8"));
 				loadedLabels = currentLocaleLabels;
 				// Store the most dominant locale found.
