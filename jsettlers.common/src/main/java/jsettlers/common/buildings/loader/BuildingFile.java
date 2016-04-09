@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.jobs.IBuildingJob;
@@ -121,7 +122,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 				}
 			});
 
-			InputStream stream = ResourceManager.getResourcesFileStream(DATA_DIR + buildingName.toLowerCase() + ".xml");
+			InputStream stream = EBuildingType.class.getResourceAsStream(String.format("%s.xml", buildingName.toLowerCase()));
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
 			System.err.println("Error loading building file for " + buildingName + ":" + e.getMessage());
