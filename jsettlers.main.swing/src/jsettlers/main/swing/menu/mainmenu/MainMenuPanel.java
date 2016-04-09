@@ -37,7 +37,6 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
 import jsettlers.logic.map.save.loader.SavegameLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -75,8 +74,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		this.settlersFrame = settlersFrame;
 
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showdNewSingleplayerGamePanel);
-		openSaveGamePanel = new OpenPanel(transformRemakeMapLoadersToMapLoaders(MapList.getDefaultList().getSavedMaps().getItems()),
-				this::loadSavegame);
+		openSaveGamePanel = new OpenPanel(MapList.getDefaultList().getSavedMaps(), this::loadSavegame);
 		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
 		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), this::showJoinMultiplayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
@@ -126,12 +124,6 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 						() -> settlersFrame.showJoinMultiplayerMenu(connector, MapList.getDefaultList().getMapById(networkGameMapLoader.getMapId())));
 			}
 		});
-	}
-
-	private List<MapLoader> transformRemakeMapLoadersToMapLoaders(List<RemakeMapLoader> remakeMapLoaders) {
-		List<MapLoader> mapLoaders = new Vector<MapLoader>();
-		mapLoaders.addAll(remakeMapLoaders);
-		return mapLoaders;
 	}
 
 	private void setStyle() {
