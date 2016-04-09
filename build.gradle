@@ -2,47 +2,43 @@
 apply plugin: 'distribution'
 
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
-        classpath 'com.android.tools.build:gradle:2.0.0-rc3'
-    }
+	repositories {
+		jcenter()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
+		classpath 'com.android.tools.build:gradle:2.0.0-rc3'
+	}
 }
 
 allprojects {
-    repositories {
-        jcenter()
-    }
+	repositories {
+		jcenter()
+	}
 }
 
 subprojects {
-    plugins.withType(JavaPlugin).whenPluginAdded {
-        compileJava {
-            sourceCompatibility = 1.7
-            targetCompatibility = 1.7
-        }
-
-        sourceSets {
-            main {
-                java.srcDirs = ['src']
-                resources.srcDirs = ['src']
-                resources.exclude "**/*.java"
-            }
-        }
-    }
+	plugins.withType(JavaPlugin).whenPluginAdded {
+		compileJava {
+			sourceCompatibility = 1.7
+			targetCompatibility = 1.7
+		}
+	}
 }
 
 distributions {
-    main {
-        contents {
-            into('bin') {
-                from { project(':jsettlers.network').startScripts.outputs.files }
-            }
-        }
-    }
+	main {
+		contents {
+			into('bin') {
+				from { project(':jsettlers.network').startScripts.outputs.files }
+			}
+			into('lib') {
+				from { project(':jsettlers.network').configurations.runtime }
+				from { project(':jsettlers.network').jar }
+			}
+		}
+	}
 }
 
 task run(dependsOn: ':jsettlers.main.swing:run') {
@@ -51,18 +47,18 @@ task run(dependsOn: ':jsettlers.main.swing:run') {
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 task runAndroid(dependsOn: ':jsettlers.main.android:build') << {
-    Properties local = new Properties()
-    local.load(new FileInputStream("local.properties"))
-    def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
-    println 'Copy files to your device...'
-    exec {
-        commandLine adb, 'uninstall', 'jsettlers.main.android'
-    }
-    exec {
-        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
-    }
-    exec {
-        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
-    }
-    println 'The application should have started now.'
+	Properties local = new Properties()
+	local.load(new FileInputStream("local.properties"))
+	def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
+	println 'Copy files to your device...'
+	exec {
+		commandLine adb, 'uninstall', 'jsettlers.main.android'
+	}
+	exec {
+		commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
+	}
+	exec {
+		commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+	}
+	println 'The application should have started now.'
 }

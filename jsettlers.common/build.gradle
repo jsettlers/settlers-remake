@@ -3,6 +3,20 @@ apply plugin: 'java'
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
 
+configurations {
+    generated
+}
+
+sourceSets {
+    generated {
+        output.dir('src/generated/java', builtBy: 'findGitRevision')
+
+        java {
+            srcDirs = ['src/generated/java'] // To be sure
+        }
+    }
+}
+
 task findGitRevision << {
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
     Repository repository = builder.readEnvironment().findGitDir().build();
@@ -10,8 +24,9 @@ task findGitRevision << {
     def rev = headRef.objectId.name
     repository.close()
 
-    new File('gen/jsettlers/common/').mkdirs()
-    def file = new File('gen/jsettlers/common/CommitInfo.java')
+    def dir = new File(new File(sourceSets.generated.java.srcDirs[0],'jsettlers'),'common')
+    dir.mkdirs()
+    def file = new File(dir, 'CommitInfo.java')
     file.text = sprintf("""package jsettlers.common;
 public final class CommitInfo {
 	/**
@@ -25,10 +40,24 @@ public final class CommitInfo {
 }""", rev.substring(0, 8), rev, (new Date()).format('yyyy-MM-dd-HH-mm-ss'))
 }
 
-compileJava.dependsOn findGitRevision
-
 sourceSets {
     main {
-        java.srcDirs = ['src', 'gen']
+        compileClasspath += sourceSets.generated.output
+        runtimeClasspath += sourceSets.generated.output
     }
+}
+
+jar {
+    from sourceSets.generated.output
+    dependsOn generatedClasses
+}
+
+compileJava {
+    dependsOn compileGeneratedJava
+}
+
+compileGeneratedJava {
+    dependsOn findGitRevision
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 }

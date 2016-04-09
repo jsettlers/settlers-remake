@@ -2,9 +2,9 @@ apply plugin: 'java'
 
 sourceSets {
     main {
-        output.dir('gen', buildBy: 'generateLayouts')
+        output.dir('src/gen/java', buildBy: 'generateLayouts')
 
-        java.srcDirs = ['src', 'gen']
+        java.srcDirs = ['src/main/java', 'src/gen/java']
     }
 }
 
@@ -24,7 +24,7 @@ dependencies {
 
 task generateLayouts(dependsOn:tasks.getByPath(':jsettlers.graphics:layoutbuilder:jar'), type: JavaExec) {
     main = "jsettlers.graphics.ui.generate.LayoutConverter"
-    args = [ './res/layout', './gen']
+    args = [ './src/main/res/layout', './src/gen/java']
     classpath = configurations.compile
 }
 
