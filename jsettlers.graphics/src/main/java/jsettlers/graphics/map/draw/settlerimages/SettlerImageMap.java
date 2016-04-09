@@ -71,7 +71,7 @@ public final class SettlerImageMap {
 		this.map = new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
 
 		try {
-			InputStream file = ResourceManager.getResourcesFileStream("images/movables.txt");
+			InputStream file = getClass().getResourceAsStream("movables.txt");
 			readFromFile(file);
 		} catch (IOException e) {
 			System.err.println("Error reading image file. "
@@ -85,16 +85,13 @@ public final class SettlerImageMap {
 	 * @param file
 	 *            The file to read from.
 	 */
-	private void readFromFile(InputStream file) {
+	private void readFromFile(InputStream file) throws IOException {
 		int[][][][] priorities = new int[this.types][this.actions][this.materials][this.directions];
 
 		// add pseudo entry.
 		addEntryToMap(priorities, null, null, null, null, DEFAULT_ITEM, -1);
 
-		try {
-			readFromFile(file, priorities);
-		} catch (IOException e) {
-		}
+		readFromFile(file, priorities);
 	}
 
 	private void readFromFile(InputStream file, int[][][][] priorities)
