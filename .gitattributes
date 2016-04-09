@@ -3,3 +3,15 @@
 
 # Declare files that will always have CRLF line endings on checkout.
 *.prp text eol=crlf
+
+# We have some binary files
+*.zmap binary
+*.rmap binary
+*.map binary
+*.png binary
+*.jpg binary
+*.xcf binary
+*.7z binary
+*.bz2 binary
+*.jar binary
+*.zip binary

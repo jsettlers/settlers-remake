@@ -17,8 +17,7 @@ package jsettlers.main.swing.menu.openpanel;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Box;
@@ -33,6 +32,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.MapLoader;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
@@ -67,14 +67,9 @@ public class OpenPanel extends JPanel {
 	private final SearchTextField searchTextField;
 
 	/**
-	 * List with all maps
-	 */
-	protected List<MapLoader> maps;
-
-	/**
 	 * Unfiltered map list
 	 */
-	private MapLoader[] mapsAvailable;
+	private MapLoader[] availableMaps;
 
 	/**
 	 * Currently active filter
@@ -84,12 +79,25 @@ public class OpenPanel extends JPanel {
 	/**
 	 * Constructor
 	 *
+	 * @param doubleclickListener
+	 *            Gets called when an entry is double clicked, can be <code>null</code>
+	 */
+	public OpenPanel(final ChangingList<? extends MapLoader> maps, IMapSelectedListener mapSelectedListener) {
+		this(maps.getItems(), mapSelectedListener);
+		maps.setListener(changedLister -> {
+			setMapLoaders(changedLister.getItems());
+		});
+	}
+
+	/**
+	 * Constructor
+	 *
 	 * @param maps
 	 *            Maps to display
 	 * @param doubleclickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final List<MapLoader> maps, IMapSelectedListener mapSelectedListener) {
+	public OpenPanel(final List<? extends MapLoader> maps, IMapSelectedListener mapSelectedListener) {
 		this(maps, mapSelectedListener, new MapListCellRenderer());
 	}
 
@@ -103,13 +111,14 @@ public class OpenPanel extends JPanel {
 	 * @param cellRenderer
 	 *            Cell renderer to use
 	 */
-	public OpenPanel(final List<MapLoader> maps, final IMapSelectedListener mapSelectedListener, final ListCellRenderer<MapLoader> cellRenderer) {
+	public OpenPanel(final List<? extends MapLoader> maps, final IMapSelectedListener mapSelectedListener,
+			final ListCellRenderer<MapLoader> cellRenderer) {
 		setMapLoadersWithoutSearchChanged(maps);
 		setLayout(new BorderLayout());
 
 		initFilter();
 
-		this.searchTextField = new SearchTextField();
+		searchTextField = new SearchTextField();
 		searchTextField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 
 		Box box = Box.createVerticalBox();
@@ -135,7 +144,7 @@ public class OpenPanel extends JPanel {
 			}
 		});
 
-		this.mapList = new JList<MapLoader>(listModelFiltered);
+		mapList = new JList<MapLoader>(listModelFiltered);
 		mapList.setCellRenderer(cellRenderer);
 		mapList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -157,15 +166,14 @@ public class OpenPanel extends JPanel {
 		}
 	}
 
-	public void setMapLoaders(final List<MapLoader> maps) {
+	public void setMapLoaders(final List<? extends MapLoader> maps) {
 		setMapLoadersWithoutSearchChanged(maps);
 		searchChanged();
 	}
 
-	private void setMapLoadersWithoutSearchChanged(final List<MapLoader> maps) {
-		this.maps = maps;
-		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
-		sortMaps();
+	private void setMapLoadersWithoutSearchChanged(final List<? extends MapLoader> maps) {
+		availableMaps = maps.toArray(new MapLoader[maps.size()]);
+		Arrays.sort(availableMaps);
 	}
 
 	/**
@@ -203,11 +211,11 @@ public class OpenPanel extends JPanel {
 		String search = searchTextField.getText().toLowerCase();
 
 		listModelFiltered.clear();
-		for (MapLoader m : mapsAvailable) {
-			if (matchesSearch(m, search) && currentFilter.filter(m)) {
-				listModelFiltered.addElement(m);
-			}
-		}
+
+		Arrays.stream(availableMaps)
+				.filter(currentFilter::filter)
+				.filter(mapLoader -> matchesSearch(mapLoader, search))
+				.forEach(listModelFiltered::addElement);
 	}
 
 	/**
@@ -238,23 +246,6 @@ public class OpenPanel extends JPanel {
 	}
 
 	/**
-	 * Order the maps
-	 */
-	protected void sortMaps() {
-		Collections.sort(maps, new Comparator<MapLoader>() {
-			@Override
-			public int compare(MapLoader mapLoader1, MapLoader mapLoader2) {
-				int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
-				if (nameComp != 0) {
-					return nameComp;
-				} else {
-					return mapLoader1.toString().compareTo(mapLoader2.toString());
-				}
-			}
-		});
-	}
-
-	/**
 	 * @return The selected map
 	 */
 	public MapLoader getSelectedMap() {
@@ -265,6 +256,6 @@ public class OpenPanel extends JPanel {
 	 * @return true if there are no maps in the list
 	 */
 	public boolean isEmpty() {
-		return maps.isEmpty();
+		return availableMaps.length == 0;
 	}
 }
