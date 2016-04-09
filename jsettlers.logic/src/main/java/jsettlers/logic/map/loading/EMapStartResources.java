@@ -1,4 +1,4 @@
-package jsettlers.logic.map;
+package jsettlers.logic.map.loading;
 
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;

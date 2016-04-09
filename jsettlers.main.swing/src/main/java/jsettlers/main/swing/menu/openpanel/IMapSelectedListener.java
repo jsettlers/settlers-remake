@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.openpanel;
 
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 
 /**
  * 

@@ -24,11 +24,11 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.ExtendedRandom;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 

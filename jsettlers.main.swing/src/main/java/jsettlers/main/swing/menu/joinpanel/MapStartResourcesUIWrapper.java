@@ -15,7 +15,7 @@
 package jsettlers.main.swing.menu.joinpanel;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.EMapStartResources;
+import jsettlers.logic.map.loading.EMapStartResources;
 
 /**
  * @author codingberlin

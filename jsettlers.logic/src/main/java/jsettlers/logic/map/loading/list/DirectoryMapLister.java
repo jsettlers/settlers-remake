@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.logic.map.loading.list;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 
 /**
  * Lists all maps in a directory.
@@ -38,11 +38,11 @@ import jsettlers.logic.map.MapLoader;
  * @author michael
  *
  */
-public class DirectoryMapLister implements IMapLister {
+public class DirectoryMapLister implements jsettlers.logic.map.loading.list.IMapLister {
 
 	private final File directory;
 
-	public static class ListedMapFile implements IListedMap {
+	public static class ListedMapFile implements jsettlers.logic.map.loading.list.IListedMap {
 		private final File file;
 
 		public ListedMapFile(File file) {
@@ -105,7 +105,7 @@ public class DirectoryMapLister implements IMapLister {
 	}
 
 	@Override
-	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
+	public OutputStream getOutputStream(jsettlers.logic.map.loading.newmap.MapFileHeader header) throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";

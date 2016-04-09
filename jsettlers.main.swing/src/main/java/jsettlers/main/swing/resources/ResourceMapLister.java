@@ -23,12 +23,12 @@ import java.security.CodeSource;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.IMapLister;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapList.DefaultMapListFactory;
-import jsettlers.logic.map.save.MapList.ListedResourceMap;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.DirectoryMapLister;
+import jsettlers.logic.map.loading.list.IMapLister;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
 
 public class ResourceMapLister extends DefaultMapListFactory {
 	@Override

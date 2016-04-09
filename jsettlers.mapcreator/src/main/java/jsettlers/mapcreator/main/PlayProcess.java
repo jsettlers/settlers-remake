@@ -17,8 +17,8 @@ package jsettlers.mapcreator.main;
 import java.io.File;
 
 import jsettlers.exceptionhandler.ExceptionHandler;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.DirectoryMapLister;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.DirectoryMapLister;
 import jsettlers.main.JSettlersGame;
 
 /**

@@ -20,7 +20,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**

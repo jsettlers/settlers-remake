@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 
 /**
  * Panel to open one of the last used maps

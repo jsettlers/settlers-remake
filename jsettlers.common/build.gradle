@@ -10,10 +10,6 @@ configurations {
 sourceSets {
     generated {
         output.dir('src/generated/java', builtBy: 'findGitRevision')
-
-        java {
-            srcDirs = ['src/generated/java'] // To be sure
-        }
     }
 }
 

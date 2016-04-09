@@ -26,8 +26,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.window.sidebar.RectIcon;
 

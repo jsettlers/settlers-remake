@@ -19,7 +19,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**

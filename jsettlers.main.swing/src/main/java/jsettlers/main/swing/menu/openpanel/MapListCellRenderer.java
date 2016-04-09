@@ -37,8 +37,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 

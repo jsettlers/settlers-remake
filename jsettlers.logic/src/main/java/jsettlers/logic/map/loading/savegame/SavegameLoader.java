@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save.loader;
+package jsettlers.logic.map.loading.savegame;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,11 +21,12 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.EMapStartResources;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
+import jsettlers.logic.map.loading.list.IListedMap;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
 

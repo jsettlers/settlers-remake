@@ -15,9 +15,9 @@
 package jsettlers.main.swing.menu.openpanel;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.original.OriginalMapLoader;
-import jsettlers.logic.map.save.loader.FreshMapLoader;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.original.OriginalMapLoader;
+import jsettlers.logic.map.loading.newmap.FreshMapLoader;
 
 /**
  * Map filter for OpenPanel

@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.list.DirectoryMapLister;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 /**
  * 

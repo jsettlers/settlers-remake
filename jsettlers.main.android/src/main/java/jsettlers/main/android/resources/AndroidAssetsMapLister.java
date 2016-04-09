@@ -20,10 +20,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.content.res.AssetManager;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.IMapLister;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.IListedMap;
+import jsettlers.logic.map.loading.list.IMapLister;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 public class AndroidAssetsMapLister implements IMapLister {
 	public static final class AndroidAssetMap implements IListedMap {

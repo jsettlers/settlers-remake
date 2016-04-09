@@ -12,7 +12,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.resources.AndroidMapListFactory;
 import jsettlers.main.android.resources.ResourceProvider;
 

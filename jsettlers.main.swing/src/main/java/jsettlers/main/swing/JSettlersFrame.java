@@ -38,7 +38,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.swing.menu.joinpanel.JoinGamePanel;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;

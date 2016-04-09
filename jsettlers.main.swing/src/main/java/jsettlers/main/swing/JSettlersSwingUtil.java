@@ -17,8 +17,8 @@ package jsettlers.main.swing;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 /**
  * @author Andreas Butti

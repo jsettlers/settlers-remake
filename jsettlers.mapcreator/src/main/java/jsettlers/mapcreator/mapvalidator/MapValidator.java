@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 

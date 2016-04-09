@@ -12,49 +12,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.logic.map.loading.list;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.input.PlayerState;
-import jsettlers.logic.map.EMapStartResources;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
-
-/**
- * Classes of this interface are capable of creating a game.
- * 
- * @author michael
- * @author Andreas Eberle
- */
-public interface IGameCreator {
-
-	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
-
-	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException;
-
-	String getMapName();
-
-	String getMapId();
-
-	class MainGridWithUiSettings {
-		private final MainGrid mainGrid;
-		private final PlayerState[] playerStates;
-
-		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
-			this.mainGrid = mainGrid;
-			this.playerStates = playerStates;
-		}
-
-		public MainGrid getMainGrid() {
-			return mainGrid;
-		}
-
-		public PlayerState[] getPlayerStates() {
-			return playerStates;
-		}
-
-		public PlayerState getPlayerState(byte playerId) {
-			return playerStates[playerId];
-		}
-	}
+public interface IMapListFactory {
+	MapList getMapList();
 }

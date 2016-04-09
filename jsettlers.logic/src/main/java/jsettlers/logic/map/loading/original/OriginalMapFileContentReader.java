@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.original;
+package jsettlers.logic.map.loading.original;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,8 +27,7 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.EMapStartResources;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapFileVersion;
+import jsettlers.logic.map.loading.EMapStartResources;
 
 /**
  * @author Thomas Zeugner
@@ -205,7 +204,7 @@ public class OriginalMapFileContentReader {
 		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
-		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value))
+		if ((fileVersion != OriginalMapFileDataStructs.EMapFileVersion.DEFAULT.value) && (fileVersion != OriginalMapFileDataStructs.EMapFileVersion.AMAZONS.value))
 			return false;
 
 		// - Data length

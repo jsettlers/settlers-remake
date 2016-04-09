@@ -12,24 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map;
+package jsettlers.logic.map.loading;
 
 import java.io.IOException;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IMapDefinition;
-import jsettlers.logic.map.original.OriginalMapLoader;
-import jsettlers.logic.map.save.IGameCreator;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.loader.FreshMapLoader;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
-import jsettlers.logic.map.save.loader.SavegameLoader;
+import jsettlers.logic.map.loading.original.OriginalMapLoader;
+import jsettlers.logic.map.loading.list.IListedMap;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
+import jsettlers.logic.map.loading.newmap.FreshMapLoader;
+import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
+import jsettlers.logic.map.loading.savegame.SavegameLoader;
 
 /**
- * Classes of this interface are to load a game file
+ * This is the base class that prvides support for loading maps and starting a new game from them.
  * 
  */
 public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition {

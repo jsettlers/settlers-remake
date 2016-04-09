@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.logic.map.loading.list;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
@@ -28,12 +29,12 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.logic.map.save.loader.RemakeMapLoader;
+import jsettlers.logic.map.loading.list.IMapLister.IMapListerCallable;
+import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
+import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -57,43 +58,34 @@ public class MapList implements IMapListerCallable {
 		return CommonConstants.USE_SAVEGAME_COMPRESSION ? MapLoader.MAP_EXTENSION_COMPRESSED : MapLoader.MAP_EXTENSION;
 	}
 
-	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
+	private static jsettlers.logic.map.loading.list.IMapListFactory mapListFactory = new DefaultMapListFactory();
 
 	private static MapList defaultList;
 
-	private final IMapLister mapsDir;
-	private final IMapLister saveDir;
-	private final IMapLister originalMapsDirectory;
+	private final ArrayList<IMapLister> mapDirectories;
+	private final IMapLister saveDirectory;
 
 	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
 	private final ChangingList<RemakeMapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
-	public MapList(IMapLister mapsDir, IMapLister saveDir) {
-		this(mapsDir, saveDir, null);
-	}
-
-	public MapList(IMapLister mapsDir, IMapLister saveDir, IMapLister originalMapsDirectory) {
-		this.mapsDir = mapsDir;
-		this.saveDir = saveDir;
-		this.originalMapsDirectory = originalMapsDirectory;
+	public MapList(Collection<IMapLister> mapDirectories, IMapLister saveDirectory) {
+		this.mapDirectories = new ArrayList<>(mapDirectories);
+		this.saveDirectory = saveDirectory;
 	}
 
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
 
-		if (originalMapsDirectory != null && !CommonConstants.DISABLE_ORIGINAL_MAPS) {
-			originalMapsDirectory.listMaps(this);
+		for (IMapLister dir : mapDirectories) {
+			dir.listMaps(this);
 		}
-		mapsDir.listMaps(this);
-		saveDir.listMaps(this);
 	}
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
-
 		MapLoader loader;
 
 		try {
@@ -104,7 +96,7 @@ public class MapList implements IMapListerCallable {
 			return;
 		}
 
-		MapFileHeader mapHead = loader.getFileHeader();
+		jsettlers.logic.map.loading.newmap.MapFileHeader mapHead = loader.getFileHeader();
 
 		// - if the map can't be load (e.g. caused by wrong format) the mapHead gets NULL! -> hide/ignore this map from user
 		if (mapHead != null) {
@@ -182,13 +174,13 @@ public class MapList implements IMapListerCallable {
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
-	public synchronized void saveNewMap(MapFileHeader header, IMapData data, OutputStream out) throws IOException {
+	public synchronized void saveNewMap(jsettlers.logic.map.loading.newmap.MapFileHeader header, IMapData data, OutputStream out) throws IOException {
 		try {
 			if (out == null) {
-				out = mapsDir.getOutputStream(header);
+				out = mapDirectories.iterator().next().getOutputStream(header);
 			}
 			header.writeTo(out);
-			FreshMapSerializer.serialize(data, out);
+			jsettlers.logic.map.loading.newmap.FreshMapSerializer.serialize(data, out);
 		} finally {
 			if (out != null) {
 				out.close();
@@ -200,14 +192,14 @@ public class MapList implements IMapListerCallable {
 	/**
 	 * Saves a map to disk. The map logic should be paused while calling this method.
 	 * 
-	 * @param state
+	 * @param playerStates
 	 * @param grid
 	 * @throws IOException
 	 */
 	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
 		MilliStopWatch watch = new MilliStopWatch();
-		MapFileHeader header = grid.generateSaveHeader();
-		OutputStream outStream = saveDir.getOutputStream(header);
+		jsettlers.logic.map.loading.newmap.MapFileHeader header = grid.generateSaveHeader();
+		OutputStream outStream = saveDirectory.getOutputStream(header);
 
 		header.writeTo(outStream);
 
@@ -241,36 +233,39 @@ public class MapList implements IMapListerCallable {
 		return defaultList;
 	}
 
-	public static void setDefaultListFactory(IMapListFactory factory) {
+	public static void setDefaultListFactory(jsettlers.logic.map.loading.list.IMapListFactory factory) {
 		mapListFactory = factory;
 		defaultList = null;
 	}
 
-	public static class DefaultMapListFactory implements IMapListFactory {
+	public static class DefaultMapListFactory implements jsettlers.logic.map.loading.list.IMapListFactory {
 		@Override
 		public MapList getMapList() {
 			File resourcesDirectory = getWriteableDirectory();
 			File originalMapsDirectory = ResourceManager.getOriginalMapDirectory();
-			IMapLister maps = new DirectoryMapLister(new File(resourcesDirectory, "maps"), false);
+			IMapLister remakeMaps = new DirectoryMapLister(new File(resourcesDirectory, "maps"), false);
+			IMapLister originalMaps = new DirectoryMapLister(originalMapsDirectory, false);
 			IMapLister additionalMaps = getAdditionalMaps();
+			IMapLister save = new DirectoryMapLister(new File(resourcesDirectory, "save"), true);
+			ArrayList<IMapLister> list = new ArrayList<>();
+			list.add(remakeMaps);
+			list.add(originalMaps);
 			if (additionalMaps != null) {
-				maps = new CombiningMapLister(maps, additionalMaps);
+				list.add(additionalMaps);
 			}
-			return new MapList(maps,
-					new DirectoryMapLister(new File(resourcesDirectory, "save"), true),
-					new DirectoryMapLister(originalMapsDirectory, false));
+			return new MapList(list, save);
 		}
 
 		protected File getWriteableDirectory() {
 			return ResourceManager.getResourcesDirectory();
 		}
 
-		protected IMapLister getAdditionalMaps() {
+		protected jsettlers.logic.map.loading.list.IMapLister getAdditionalMaps() {
 			return null;
 		}
 	}
 
-	public static class ListedResourceMap implements IListedMap {
+	public static class ListedResourceMap implements jsettlers.logic.map.loading.list.IListedMap {
 		private String path;
 
 		public ListedResourceMap(String path) {

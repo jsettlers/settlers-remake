@@ -22,7 +22,7 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 

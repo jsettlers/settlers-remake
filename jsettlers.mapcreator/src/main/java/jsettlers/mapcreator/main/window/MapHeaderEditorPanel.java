@@ -25,8 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**

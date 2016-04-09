@@ -12,8 +12,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.logic.map.loading.list;
 
-public interface IMapListFactory {
-	MapList getMapList();
+import java.io.IOException;
+import java.io.OutputStream;
+
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+
+public interface IMapLister {
+	public interface IMapListerCallable {
+		void foundMap(IListedMap map);
+	}
+
+	void listMaps(IMapListerCallable callable);
+
+	/**
+	 * Gets an output stream that can be used to store the map. The stream is to a file with a nice name and does not override any other file.
+	 * 
+	 * @param header
+	 *            The header to create the file name from. It is not written to the stream.
+	 * @return A output stream to a fresh generated file.
+	 * @throws IOException
+	 */
+	OutputStream getOutputStream(MapFileHeader header) throws IOException;
 }

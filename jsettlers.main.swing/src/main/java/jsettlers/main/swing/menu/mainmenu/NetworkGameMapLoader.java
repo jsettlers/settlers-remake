@@ -21,11 +21,11 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.ILoadableMapPlayer;
-import jsettlers.logic.map.EMapStartResources;
-import jsettlers.logic.map.MapLoader;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapFileHeader;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.IListedMap;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 
 /**

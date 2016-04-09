@@ -20,8 +20,8 @@ import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 
 /**

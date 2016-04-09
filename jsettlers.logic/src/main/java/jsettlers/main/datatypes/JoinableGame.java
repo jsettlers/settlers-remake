@@ -16,7 +16,7 @@ package jsettlers.main.datatypes;
 
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMapDefinition;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.network.common.packets.MatchInfoPacket;
 
 /**

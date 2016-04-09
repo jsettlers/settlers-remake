@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2015
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,34 +12,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save;
+package jsettlers.logic.map.loading.newmap;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.list.IListedMap;
 
 /**
- * This class combines two {@link IMapLister}s. Maps are always written to the first list.
  * 
- * @author Michael Zangl
+ * @author Andreas Eberle
+ * 
  */
-public class CombiningMapLister implements IMapLister {
-	private final IMapLister l1;
-	private final IMapLister l2;
+public class FreshMapLoader extends RemakeMapLoader {
 
-	public CombiningMapLister(IMapLister l1, IMapLister l2) {
-		super();
-		this.l1 = l1;
-		this.l2 = l2;
+	private FreshMapData data = null;
+
+	public FreshMapLoader(IListedMap file, MapFileHeader header) {
+		super(file, header);
 	}
 
 	@Override
-	public void listMaps(IMapListerCallable callable) {
-		l1.listMaps(callable);
-		l2.listMaps(callable);
+	public IMapData getMapData() throws MapLoadException {
+		if (data != null) {
+			return data;
+		}
+
+		try (InputStream stream = super.getMapDataStream()) {
+			data = new FreshMapData();
+			FreshMapSerializer.deserialize(data, stream);
+			return data;
+		} catch (IOException ex) {
+			throw new MapLoadException(ex);
+		}
 	}
 
-	@Override
-	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-		return l1.getOutputStream(header);
-	}
 }

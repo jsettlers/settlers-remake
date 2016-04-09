@@ -16,8 +16,8 @@ package jsettlers.main.android.resources;
 
 import java.io.File;
 
-import jsettlers.logic.map.save.IMapLister;
-import jsettlers.logic.map.save.MapList.DefaultMapListFactory;
+import jsettlers.logic.map.loading.list.IMapLister;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import android.content.res.AssetManager;
 
 public class AndroidMapListFactory extends DefaultMapListFactory {

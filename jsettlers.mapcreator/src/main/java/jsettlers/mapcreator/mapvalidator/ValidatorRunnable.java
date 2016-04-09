@@ -17,7 +17,7 @@ package jsettlers.mapcreator.mapvalidator;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.ValidationList;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;

@@ -12,43 +12,49 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save.loader;
+package jsettlers.logic.map.loading;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.logic.map.save.FreshMapSerializer;
-import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.input.PlayerState;
+import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.player.PlayerSetting;
 
 /**
+ * Classes of this interface are capable of creating a game.
  * 
+ * @author michael
  * @author Andreas Eberle
- * 
  */
-public class FreshMapLoader extends RemakeMapLoader {
+public interface IGameCreator {
 
-	private FreshMapData data = null;
+	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
 
-	public FreshMapLoader(IListedMap file, MapFileHeader header) {
-		super(file, header);
-	}
+	MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException;
 
-	@Override
-	public IMapData getMapData() throws MapLoadException {
-		if (data != null) {
-			return data;
+	String getMapName();
+
+	String getMapId();
+
+	class MainGridWithUiSettings {
+		private final MainGrid mainGrid;
+		private final PlayerState[] playerStates;
+
+		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
+			this.mainGrid = mainGrid;
+			this.playerStates = playerStates;
 		}
 
-		try (InputStream stream = super.getMapDataStream()) {
-			data = new FreshMapData();
-			FreshMapSerializer.deserialize(data, stream);
-			return data;
-		} catch (IOException ex) {
-			throw new MapLoadException(ex);
+		public MainGrid getMainGrid() {
+			return mainGrid;
+		}
+
+		public PlayerState[] getPlayerStates() {
+			return playerStates;
+		}
+
+		public PlayerState getPlayerState(byte playerId) {
+			return playerStates[playerId];
 		}
 	}
-
 }

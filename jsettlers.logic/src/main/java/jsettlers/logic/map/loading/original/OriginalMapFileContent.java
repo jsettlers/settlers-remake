@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.original;
+package jsettlers.logic.map.loading.original;
 
 import java.util.BitSet;
 
@@ -27,10 +27,10 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapBuildingType;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapResources;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapSettlersType;
-import jsettlers.logic.map.original.OriginalMapFileDataStructs.EMapStackType;
+import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapBuildingType;
+import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapResources;
+import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapSettlersType;
+import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapStackType;
 
 /**
  * @author Thomas Zeugner

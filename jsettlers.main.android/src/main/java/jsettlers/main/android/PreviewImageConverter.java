@@ -15,7 +15,7 @@
 package jsettlers.main.android;
 
 import jsettlers.common.Color;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import android.graphics.Bitmap;
 
 public class PreviewImageConverter {

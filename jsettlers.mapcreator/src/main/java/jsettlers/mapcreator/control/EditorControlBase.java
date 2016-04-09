@@ -3,7 +3,7 @@ package jsettlers.mapcreator.control;
 import java.util.Date;
 
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
-import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.MapValidator;
 

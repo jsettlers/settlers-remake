@@ -16,7 +16,7 @@ package jsettlers.main.swing.menu.joinpanel.slots.factories;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.swing.menu.joinpanel.slots.PlayerSlot;
 
 /**

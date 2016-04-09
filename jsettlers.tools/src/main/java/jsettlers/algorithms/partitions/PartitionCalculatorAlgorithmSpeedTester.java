@@ -23,7 +23,7 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 /**

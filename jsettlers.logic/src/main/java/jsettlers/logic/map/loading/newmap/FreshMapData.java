@@ -12,21 +12,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.save.loader;
+package jsettlers.logic.map.loading.newmap;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.save.FreshMapSerializer.IMapDataReceiver;
 
 /**
  * This is a map data receiver that stores the given data and provides access to it via the {@link IMapData} interface.
  * 
  * @author michael
  */
-public class FreshMapData implements IMapDataReceiver, IMapData {
+public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapData {
 
 	private int width;
 	private int height;

@@ -34,7 +34,7 @@ import javax.swing.event.DocumentListener;
 
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.logic.map.MapLoader;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 
 /**
