@@ -196,11 +196,11 @@ public class OpenPanel extends JPanel {
 		String search = searchTextField.getText().toLowerCase();
 
 		listModelFiltered.clear();
-		for (MapLoader mapLoader : availableMaps) {
-			if (matchesSearch(mapLoader, search) && currentFilter.filter(mapLoader)) {
-				listModelFiltered.addElement(mapLoader);
-			}
-		}
+
+		Arrays.stream(availableMaps)
+				.filter(currentFilter::filter)
+				.filter(mapLoader -> matchesSearch(mapLoader, search))
+				.forEach(listModelFiltered::addElement);
 	}
 
 	/**
