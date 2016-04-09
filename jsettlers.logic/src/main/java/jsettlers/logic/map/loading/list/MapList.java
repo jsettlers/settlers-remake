@@ -33,6 +33,7 @@ import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.loading.list.IMapLister.IMapListerCallable;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
@@ -58,7 +59,7 @@ public class MapList implements IMapListerCallable {
 		return CommonConstants.USE_SAVEGAME_COMPRESSION ? MapLoader.MAP_EXTENSION_COMPRESSED : MapLoader.MAP_EXTENSION;
 	}
 
-	private static jsettlers.logic.map.loading.list.IMapListFactory mapListFactory = new DefaultMapListFactory();
+	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
 
 	private static MapList defaultList;
 
@@ -198,7 +199,7 @@ public class MapList implements IMapListerCallable {
 	 */
 	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
 		MilliStopWatch watch = new MilliStopWatch();
-		jsettlers.logic.map.loading.newmap.MapFileHeader header = grid.generateSaveHeader();
+		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = saveDirectory.getOutputStream(header);
 
 		header.writeTo(outStream);
@@ -233,12 +234,12 @@ public class MapList implements IMapListerCallable {
 		return defaultList;
 	}
 
-	public static void setDefaultListFactory(jsettlers.logic.map.loading.list.IMapListFactory factory) {
+	public static void setDefaultListFactory(IMapListFactory factory) {
 		mapListFactory = factory;
 		defaultList = null;
 	}
 
-	public static class DefaultMapListFactory implements jsettlers.logic.map.loading.list.IMapListFactory {
+	public static class DefaultMapListFactory implements IMapListFactory {
 		@Override
 		public MapList getMapList() {
 			File resourcesDirectory = getWriteableDirectory();
@@ -260,12 +261,12 @@ public class MapList implements IMapListerCallable {
 			return ResourceManager.getResourcesDirectory();
 		}
 
-		protected jsettlers.logic.map.loading.list.IMapLister getAdditionalMaps() {
+		protected IMapLister getAdditionalMaps() {
 			return null;
 		}
 	}
 
-	public static class ListedResourceMap implements jsettlers.logic.map.loading.list.IListedMap {
+	public static class ListedResourceMap implements IListedMap {
 		private String path;
 
 		public ListedResourceMap(String path) {
