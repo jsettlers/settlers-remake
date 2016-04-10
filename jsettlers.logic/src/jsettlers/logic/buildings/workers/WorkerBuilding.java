@@ -84,7 +84,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final void occupyBuilding(IManageableWorker worker) {
 		if (super.isNotDestroyed()) {
 			this.worker = worker;
-			super.placeFlag(true);
+			super.showFlag(true);
 			super.initWorkStacks();
 		}
 	}
@@ -98,7 +98,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final void leaveBuilding(IManageableWorker worker) {
 		if (worker == this.worker) {
 			this.worker = null;
-			super.placeFlag(false);
+			super.showFlag(false);
 			super.releaseRequestStacks();
 			requestWorker();
 		} else {

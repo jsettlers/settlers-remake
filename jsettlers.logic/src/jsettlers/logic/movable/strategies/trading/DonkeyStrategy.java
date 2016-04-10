@@ -117,13 +117,13 @@ public class DonkeyStrategy extends MovableStrategy {
 	}
 
 	private void dropMaterialIfPossible() {
-		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
+		if (movable.getMaterial() != EMaterialType.NO_MATERIAL) {
 			if (materialType1 != null) {
-				super.getStrategyGrid().dropMaterial(super.getPos(), materialType1, true, true);
+				super.getGrid().dropMaterial(movable.getPos(), materialType1, true, true);
 				materialType1 = null;
 			}
 			if (materialType2 != null) {
-				super.getStrategyGrid().dropMaterial(super.getPos(), materialType2, true, true);
+				super.getGrid().dropMaterial(movable.getPos(), materialType2, true, true);
 				materialType2 = null;
 			}
 			super.setMaterial(EMaterialType.NO_MATERIAL);
@@ -135,7 +135,7 @@ public class DonkeyStrategy extends MovableStrategy {
 			return this.market;
 		}
 
-		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(super.getPlayer());
+		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(movable.getPlayer());
 		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<IDonkeyMarket>();
 
 		for (IDonkeyMarket currMarket : markets) {

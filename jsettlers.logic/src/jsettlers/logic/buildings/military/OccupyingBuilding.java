@@ -118,7 +118,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		Player newPlayer = enemy.getPlayer();
 
 		setAttackableTowerObject(false);
-		super.placeFlag(false);
+		super.showFlag(false);
 
 		resetSoldierSearch();
 
@@ -138,7 +138,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		doorHealth = 0.1f;
 		inFight = false;
 
-		super.placeFlag(true);
+		super.showFlag(true);
 		setAttackableTowerObject(true);
 	}
 
@@ -201,10 +201,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		default:
 			throw new IllegalArgumentException(searchedSoldier + " is no soldier search type!");
 		}
-	}
-
-	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
 	}
 
 	@Override

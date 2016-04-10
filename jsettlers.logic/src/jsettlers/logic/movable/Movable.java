@@ -37,7 +37,6 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -60,7 +59,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	private final AbstractMovableGrid grid;
+	protected final AbstractMovableGrid grid;
 	private final int id;
 
 	private EMovableState state = EMovableState.DOING_NOTHING;
@@ -78,7 +77,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private ShortPoint2D position;
 
-	private ShortPoint2D moveToRequest = null;
+	private ShortPoint2D requestedTargetPosition = null;
 	private Path path;
 
 	private float health;
@@ -133,8 +132,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && strategy.isMoveToAble()) {
-			this.moveToRequest = targetPosition;
+		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer()) {
+			this.requestedTargetPosition = targetPosition;
 		}
 	}
 
@@ -204,8 +203,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			break;
 		}
 
-		if (moveToRequest != null) {
-			if (strategy.isMoveToAble()) {
+		if (requestedTargetPosition != null) {
+			if (strategy.canBeControlledByPlayer()) {
 				switch (state) {
 				case PATHING:
 					// if we're currently pathing, stop former pathing and calculate a new path
@@ -216,8 +215,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				case DOING_NOTHING:
 					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
 					ShortPoint2D oldPos = position;
-					boolean foundPath = goToPos(moveToRequest); // progress is reset in here
-					moveToRequest = null;
+					boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
+					requestedTargetPosition = null;
 
 					if (foundPath) {
 						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
@@ -230,7 +229,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 					break;
 				}
 			} else {
-				moveToRequest = null;
+				requestedTargetPosition = null;
 			}
 		}
 
@@ -252,7 +251,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			break;
 		case DROP:
 			if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {
-				boolean offerMaterial = strategy.beforeDroppingMaterial();
+				boolean offerMaterial = strategy.droppingMaterial();
 				grid.dropMaterial(position, takeDropMaterial, offerMaterial, false);
 			}
 			setMaterial(EMaterialType.NO_MATERIAL);
@@ -411,7 +410,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
-				} else if (pushingMovable.getMovableType().isMoveToAble() || isValidPosition(pushingMovable.getPos())) { // exchange positions
+				} else if (pushingMovable.getMovableType().isPlayerControllable()
+						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, true);
@@ -559,7 +559,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param sleepTime
 	 *            time to sleep in milliseconds
 	 */
-	final void wait(short sleepTime) {
+	final void sleep(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
 		playAnimation(EMovableAction.NO_ACTION, sleepTime);
@@ -606,38 +606,25 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
 	final boolean goInDirection(EDirection direction, boolean force) {
-		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
-			initGoingSingleStep(pos);
+		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
+
+		if (force) {
+			this.direction = direction;
+			setState(EMovableState.PATHING);
+			this.followPath(new Path(targetPosition));
+			return true;
+
+		} else if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+			initGoingSingleStep(targetPosition);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
+
 		} else {
 			return false;
 		}
 	}
 
-	/**
-	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 * 
-	 * @param direction
-	 *            direction to go
-	 */
-	final void forceGoInDirection(EDirection direction) {
-		ShortPoint2D targetPos = direction.getNextHexPoint(position);
-		this.direction = direction;
-		setState(EMovableState.PATHING);
-		this.followPath(new Path(targetPos));
-	}
-
-	/**
-	 * 
-	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
-	 */
-	public final AbstractStrategyGrid getStrategyGrid() {
-		return grid;
-	}
-
-	final void setPos(ShortPoint2D position) {
+	final void setPosition(ShortPoint2D position) {
 		if (visible) {
 			grid.leavePosition(this.position, this);
 			grid.enterPosition(position, this, true);
