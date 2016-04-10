@@ -34,9 +34,9 @@ env:
   # This includes all tests
   #- TARGET=build
   # Run single test targets
-  - TARGET=:jsettlers.logic:test
-  - TARGET=:jsettlers.common:test
-  - TARGET=:jsettlers.network:test
+  - TARGET=:jsettlers.logic:test --info
+  - TARGET=:jsettlers.common:test --info
+  - TARGET=:jsettlers.network:test --info
 
 script: ./gradlew $TARGET
 
