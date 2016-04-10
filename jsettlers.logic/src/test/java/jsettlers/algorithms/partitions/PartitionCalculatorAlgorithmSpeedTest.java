@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import java.util.BitSet;
 
-import jsettlers.jsettlers.logic.map.grid.MainGridDataAccessor;
+import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;

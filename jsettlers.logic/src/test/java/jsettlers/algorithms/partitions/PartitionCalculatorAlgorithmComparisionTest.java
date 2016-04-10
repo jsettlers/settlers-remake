@@ -21,7 +21,7 @@ import java.util.BitSet;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.jsettlers.logic.map.grid.MainGridDataAccessor;
+import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 import jsettlers.testutils.map.MapUtils;
