@@ -37,7 +37,6 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -60,7 +59,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	private final AbstractMovableGrid grid;
+	protected final AbstractMovableGrid grid;
 	private final int id;
 
 	private EMovableState state = EMovableState.DOING_NOTHING;
@@ -252,7 +251,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			break;
 		case DROP:
 			if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {
-				boolean offerMaterial = strategy.beforeDroppingMaterial();
+				boolean offerMaterial = strategy.droppingMaterial();
 				grid.dropMaterial(position, takeDropMaterial, offerMaterial, false);
 			}
 			setMaterial(EMaterialType.NO_MATERIAL);
@@ -560,7 +559,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param sleepTime
 	 *            time to sleep in milliseconds
 	 */
-	final void wait(short sleepTime) {
+	final void sleep(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
 		playAnimation(EMovableAction.NO_ACTION, sleepTime);
@@ -607,9 +606,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
 	final boolean goInDirection(EDirection direction, boolean force) {
-		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
-			initGoingSingleStep(pos);
+		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
+		if (force || (grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+			initGoingSingleStep(targetPosition);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
 		} else {
@@ -630,15 +629,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		this.followPath(new Path(targetPos));
 	}
 
-	/**
-	 * 
-	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
-	 */
-	public final AbstractStrategyGrid getStrategyGrid() {
-		return grid;
-	}
-
-	final void setPos(ShortPoint2D position) {
+	final void setPosition(ShortPoint2D position) {
 		if (visible) {
 			grid.leavePosition(this.position, this);
 			grid.enterPosition(position, this, true);

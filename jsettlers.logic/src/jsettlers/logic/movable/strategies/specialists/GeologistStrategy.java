@@ -46,15 +46,15 @@ public final class GeologistStrategy extends MovableStrategy {
 			return;
 
 		case GOING_TO_POS: {
-			ShortPoint2D pos = super.getPos();
+			ShortPoint2D pos = movable.getPos();
 
 			if (centerPos == null) {
 				this.centerPos = pos;
 			}
 
-			super.getStrategyGrid().setMarked(pos, false); // unmark the pos for the following check
+			super.getGrid().setMarked(pos, false); // unmark the pos for the following check
 			if (canWorkOnPos(pos)) {
-				super.getStrategyGrid().setMarked(pos, true);
+				super.getGrid().setMarked(pos, true);
 				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EGeologistState.PLAYING_ACTION_1;
 			} else {
@@ -69,8 +69,8 @@ public final class GeologistStrategy extends MovableStrategy {
 			break;
 
 		case PLAYING_ACTION_2: {
-			ShortPoint2D pos = super.getPos();
-			super.getStrategyGrid().setMarked(pos, false);
+			ShortPoint2D pos = movable.getPos();
+			super.getGrid().setMarked(pos, false);
 			if (canWorkOnPos(pos)) {
 				executeAction(pos);
 			}
@@ -85,13 +85,13 @@ public final class GeologistStrategy extends MovableStrategy {
 		ShortPoint2D closeWorkablePos = getCloseWorkablePos();
 
 		if (closeWorkablePos != null && super.goToPos(closeWorkablePos)) {
-			super.getStrategyGrid().setMarked(closeWorkablePos, true);
+			super.getGrid().setMarked(closeWorkablePos, true);
 			this.state = EGeologistState.GOING_TO_POS;
 			return;
 		}
 		centerPos = null;
 
-		ShortPoint2D pos = super.getPos();
+		ShortPoint2D pos = movable.getPos();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE)) {
 			super.followPresearchedPath();
 			this.state = EGeologistState.GOING_TO_POS;
@@ -105,7 +105,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		ShortPoint2D bestNeighbourPos = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
 
-		for (ShortPoint2D satelitePos : new HexBorderArea(super.getPos(), (short) 2)) {
+		for (ShortPoint2D satelitePos : new HexBorderArea(movable.getPos(), (short) 2)) {
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
 				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
 				if (distance < bestNeighbourDistance) {
@@ -118,7 +118,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	private void executeAction(ShortPoint2D pos) {
-		super.getStrategyGrid().executeSearchType(super.getMovable(), pos, ESearchType.RESOURCE_SIGNABLE);
+		super.getGrid().executeSearchType(movable, pos, ESearchType.RESOURCE_SIGNABLE);
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
@@ -135,10 +135,10 @@ public final class GeologistStrategy extends MovableStrategy {
 		this.state = EGeologistState.GOING_TO_POS;
 		centerPos = null;
 
-		super.getStrategyGrid().setMarked(oldPosition, false);
+		super.getGrid().setMarked(oldPosition, false);
 
 		if (oldTargetPos != null) {
-			super.getStrategyGrid().setMarked(oldTargetPos, false);
+			super.getGrid().setMarked(oldTargetPos, false);
 		}
 	}
 
@@ -154,9 +154,9 @@ public final class GeologistStrategy extends MovableStrategy {
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (pathTarget != null) {
-			super.getStrategyGrid().setMarked(pathTarget, false);
+			super.getGrid().setMarked(pathTarget, false);
 		} else {
-			super.getStrategyGrid().setMarked(super.getPos(), false);
+			super.getGrid().setMarked(movable.getPos(), false);
 		}
 	}
 

@@ -24,7 +24,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
@@ -36,7 +36,6 @@ import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
-import jsettlers.logic.player.Player;
 
 /**
  * Abstract super class of all movable strategies.
@@ -47,7 +46,7 @@ import jsettlers.logic.player.Player;
 public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
 
-	private final Movable movable;
+	protected final Movable movable;
 
 	protected MovableStrategy(Movable movable) {
 		this.movable = movable;
@@ -115,10 +114,6 @@ public abstract class MovableStrategy implements Serializable {
 	protected void action() {
 	}
 
-	protected final void convertTo(EMovableType movableType) {
-		movable.convertTo(movableType);
-	}
-
 	protected final EMaterialType setMaterial(EMaterialType materialType) {
 		return movable.setMaterial(materialType);
 	}
@@ -135,8 +130,8 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.goToPos(targetPos);
 	}
 
-	protected final AbstractStrategyGrid getStrategyGrid() {
-		return movable.getStrategyGrid();
+	protected final AbstractMovableGrid getGrid() {
+		return movable.grid;
 	}
 
 	/**
@@ -164,7 +159,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	public final void setPosition(ShortPoint2D pos) {
-		movable.setPos(pos);
+		movable.setPosition(pos);
 	}
 
 	protected final void setVisible(boolean visible) {
@@ -194,32 +189,16 @@ public abstract class MovableStrategy implements Serializable {
 		movable.enableNothingToDoAction(enable);
 	}
 
-	protected void setSelected(boolean selected) {
-		movable.setSelected(selected);
-	}
-
 	protected final boolean fitsSearchType(ShortPoint2D pos, ESearchType searchType) {
-		return movable.getStrategyGrid().fitsSearchType(movable, pos, searchType);
+		return movable.grid.fitsSearchType(movable, pos, searchType);
 	}
 
 	protected final boolean isValidPosition(ShortPoint2D position) {
-		return movable.isValidPosition(position);
+		return movable.grid.isValidPosition(movable, position);
 	}
 
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
-	}
-
-	protected final EMaterialType getMaterial() {
-		return movable.getMaterial();
-	}
-
-	protected final Player getPlayer() {
-		return movable.getPlayer();
-	}
-
-	protected Movable getMovable() {
-		return movable;
 	}
 
 	protected final void abortPath() {
@@ -287,7 +266,7 @@ public abstract class MovableStrategy implements Serializable {
 
 		EDirection direction = EDirection.getApproxDirection(position, path.getOverNextPos());
 
-		AbstractStrategyGrid grid = movable.getStrategyGrid();
+		AbstractMovableGrid grid = movable.grid;
 
 		EDirection leftDir = direction.getNeighbor(-1);
 		EDirection rightDir = direction.getNeighbor(1);
@@ -315,7 +294,6 @@ public abstract class MovableStrategy implements Serializable {
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
-
 		}
 
 		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
@@ -349,8 +327,8 @@ public abstract class MovableStrategy implements Serializable {
 	protected void stopOrStartWorking(boolean stop) {
 	}
 
-	protected void sleep(short waitTime) {
-		movable.wait(waitTime);
+	protected void sleep(short sleepTime) {
+		movable.sleep(sleepTime);
 	}
 
 	protected void pathAborted(ShortPoint2D pathTarget) {
@@ -361,7 +339,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * 
 	 * @return If true is returned, the dropped material is offered, if false, it isn't.
 	 */
-	public boolean beforeDroppingMaterial() {
+	protected boolean droppingMaterial() {
 		return true;
 	}
 

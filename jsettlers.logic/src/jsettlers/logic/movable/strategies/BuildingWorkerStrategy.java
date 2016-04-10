@@ -196,7 +196,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case AVAILABLE:
-			if (super.getStrategyGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (super.getGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -204,7 +204,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case NOT_FULL:
-			if (super.getStrategyGrid().canPushMaterial(getCurrentJobPos())) {
+			if (super.getGrid().canPushMaterial(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -213,7 +213,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case SMOKE_ON:
 		case SMOKE_OFF: {
-			super.getStrategyGrid().placeSmoke(getCurrentJobPos(), currentJob.getType() == EBuildingJobType.SMOKE_ON);
+			super.getGrid().placeSmoke(getCurrentJobPos(), currentJob.getType() == EBuildingJobType.SMOKE_ON);
 			building.addMapObjectCleanupPosition(getCurrentJobPos(), EMapObjectType.SMOKE);
 			jobFinished();
 			break;
@@ -228,7 +228,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case PIG_IS_ADULT:
-			if (super.getStrategyGrid().isPigAdult(getCurrentJobPos())) {
+			if (super.getGrid().isPigAdult(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -236,7 +236,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case PIG_IS_THERE:
-			if (super.getStrategyGrid().hasPigAt(getCurrentJobPos())) {
+			if (super.getGrid().hasPigAt(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -273,14 +273,14 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
-		super.getStrategyGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
+		super.getGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
 		building.addMapObjectCleanupPosition(pos, EMapObjectType.PIG);
 		jobFinished();
 	}
 
 	private void growDonkeyAction() {
 		ShortPoint2D pos = getCurrentJobPos();
-		if (super.getStrategyGrid().feedDonkeyAt(pos)) {
+		if (super.getGrid().feedDonkeyAt(pos)) {
 			building.addMapObjectCleanupPosition(pos, EMapObjectType.DONKEY);
 			jobFinished();
 		} else {
@@ -295,7 +295,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void popToolRequestAction() {
 		ShortPoint2D pos = building.getDoor();
-		poppedMaterial = super.getStrategyGrid().popToolProductionRequest(pos);
+		poppedMaterial = super.getGrid().popToolProductionRequest(pos);
 		if (poppedMaterial != null) {
 			jobFinished();
 		} else {
@@ -304,7 +304,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
-		if (super.getStrategyGrid().executeSearchType(super.getMovable(), super.getPos(), currentJob.getSearchType())) {
+		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -322,7 +322,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropAction(EMaterialType materialType) {
 		super.drop(materialType);
 		if (materialType == EMaterialType.GOLD) {
-			getPlayer().getEndgameStatistic().incrementAmountOfProducedGold();
+			movable.getPlayer().getEndgameStatistic().incrementAmountOfProducedGold();
 		}
 		jobFinished();
 	}
@@ -351,7 +351,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 			if (searchFailedCtr > 10) {
 				this.building.setCannotWork(true);
-				super.getPlayer().showMessage(SimpleMessage.cannotFindWork(building));
+				movable.getPlayer().showMessage(SimpleMessage.cannotFindWork(building));
 			}
 		}
 	}
@@ -359,8 +359,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private boolean tryTakingResource() {
 		switch (building.getBuildingType()) {
 		case FISHER:
-			EDirection fishDirection = super.getMovable().getDirection();
-			return super.getStrategyGrid().tryTakingRecource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
+			EDirection fishDirection = movable.getDirection();
+			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPos()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
@@ -397,7 +397,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void lookAtSearched() {
-		EDirection direction = super.getStrategyGrid().getDirectionOfSearched(super.getPos(), currentJob.getSearchType());
+		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPos(), currentJob.getSearchType());
 		if (direction != null) {
 			super.lookInDirection(direction);
 			jobFinished();
@@ -430,15 +430,15 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void dropCurrentMaterial() {
-		EMaterialType material = super.getMaterial();
+		EMaterialType material = movable.getMaterial();
 		if (material.isDroppable()) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), material, true, false);
+			super.getGrid().dropMaterial(movable.getPos(), material, true, false);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
 	}
 
 	private void reportAsJobless() {
-		super.getStrategyGrid().addJobless(this);
+		super.getGrid().addJobless(this);
 		super.enableNothingToDoAction(true);
 		this.currentJob = null;
 		this.building = null;
@@ -450,7 +450,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		dropCurrentMaterial();
 
 		if (isJobless()) {
-			super.getStrategyGrid().removeJobless(this);
+			super.getGrid().removeJobless(this);
 		} else {
 			super.enableNothingToDoAction(true);
 			currentJob = null;
