@@ -26,6 +26,7 @@ import java.util.Enumeration;
 
 import jsettlers.network.server.GameServerThread;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -34,6 +35,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
+@Ignore
 public class GameServerThreadIT {
 
 	@Test
