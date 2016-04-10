@@ -42,10 +42,10 @@ public class FleeStrategy extends MovableStrategy {
 
 	@Override
 	protected void action() {
-		ShortPoint2D position = super.getPos();
+		ShortPoint2D position = movable.getPos();
 		if (!super.isValidPosition(position)) {
 			if (searchesCounter > 120) {
-				super.getMovable().kill();
+				movable.kill();
 				return;
 			}
 
@@ -54,7 +54,7 @@ public class FleeStrategy extends MovableStrategy {
 				lastCheckedPathStep = Integer.MIN_VALUE;
 				super.followPresearchedPath();
 			} else {
-				EDirection currentDirection = super.getMovable().getDirection();
+				EDirection currentDirection = movable.getDirection();
 				EDirection newDirection;
 				if (turnNextTime || MatchConstants.random().nextFloat() < 0.10) {
 					turnNextTime = false;
@@ -65,7 +65,7 @@ public class FleeStrategy extends MovableStrategy {
 
 				ShortPoint2D newPos = newDirection.getNextHexPoint(position);
 
-				if (super.getStrategyGrid().isFreePosition(newPos)) {
+				if (super.getGrid().isFreePosition(newPos)) {
 					super.goInDirection(newDirection, true);
 					turnNextTime = MatchConstants.random().nextInt(7) == 0;
 				} else {
@@ -76,7 +76,7 @@ public class FleeStrategy extends MovableStrategy {
 
 			searchesCounter++;
 		} else {
-			super.convertTo(super.getMovable().getMovableType());
+			movable.convertTo(movable.getMovableType());
 		}
 	}
 
@@ -90,6 +90,6 @@ public class FleeStrategy extends MovableStrategy {
 			lastCheckedPathStep = (short) step;
 		}
 
-		return !super.isValidPosition(super.getPos()) && pathStepCheckedCounter < 5;
+		return !super.isValidPosition(movable.getPos()) && pathStepCheckedCounter < 5;
 	}
 }

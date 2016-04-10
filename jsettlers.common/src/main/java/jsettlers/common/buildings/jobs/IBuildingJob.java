@@ -14,9 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.buildings.jobs;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a building job, a job that can be done by a worker.
@@ -56,18 +58,12 @@ public interface IBuildingJob {
 	float getTime();
 
 	/**
-	 * Gets the x distance associate for this job in map units. See {@link EBuildingJobType} for the interpretation of this value.
+	 * Calculates the point on the grid from the given building.
 	 * 
-	 * @return The x distance.
+	 * @param building
+	 * @return
 	 */
-	short getDx();
-
-	/**
-	 * Gets the y distance associate for this job in map units. See {@link EBuildingJobType} for the interpretation of this value.
-	 * 
-	 * @return The y distance.
-	 */
-	short getDy();
+	public ShortPoint2D calculatePoint(IBuilding building);
 
 	/**
 	 * Gets the direction associated with this job.

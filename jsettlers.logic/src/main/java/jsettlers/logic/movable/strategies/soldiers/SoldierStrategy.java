@@ -24,7 +24,7 @@ import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
@@ -91,7 +91,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		case SEARCH_FOR_ENEMIES:
 			final short minSearchDistance = getMinSearchDistance();
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), minSearchDistance,
+			enemy = super.getGrid().getEnemyInSearchArea(getAttackPosition(), movable, minSearchDistance,
 					getMaxSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsafe mode again.
@@ -102,13 +102,13 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
 				if (minSearchDistance > 0) {
-					IAttackable toCloseEnemy = super.getStrategyGrid().getEnemyInSearchArea(
-							getAttackPosition(), super.getMovable(), (short) 0, minSearchDistance, !defending);
+					IAttackable toCloseEnemy = super.getGrid().getEnemyInSearchArea(
+							getAttackPosition(), movable, (short) 0, minSearchDistance, !defending);
 					if (toCloseEnemy != null) {
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
-							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), getMovable().getPos());
+							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), movable.getPos());
 							super.goInDirection(escapeDirection, false);
-							super.getMovable().moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
 
@@ -122,7 +122,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 				changeStateTo(ESoldierState.AGGRESSIVE);
 
 			} else if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
-				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
+				super.lookInDirection(EDirection.getApproxDirection(movable.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
 				changeStateTo(ESoldierState.HITTING);
 
@@ -139,13 +139,13 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 		case INIT_GOTO_TOWER:
 			changeStateTo(ESoldierState.GOING_TO_TOWER); // change state before requesting path because of checkPathStepPreconditions()
-			if (!super.getPos().equals(building.getDoor()) && !super.goToPos(building.getDoor())) {
+			if (!movable.getPos().equals(building.getDoor()) && !super.goToPos(building.getDoor())) {
 				notifyTowerThatRequestFailed();
 			}
 			break;
 
 		case GOING_TO_TOWER:
-			if (building.isNotDestroyed() && building.getPlayer() == super.getPlayer()) {
+			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
 				OccupyerPlace place = building.addSoldier(this);
 				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
 				super.enableNothingToDoAction(false);
@@ -166,7 +166,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	private void notifyTowerThatRequestFailed() {
-		if (building.getPlayer() == super.getPlayer()) { // only notify, if the tower still belongs to this player
+		if (building.getPlayer() == movable.getPlayer()) { // only notify, if the tower still belongs to this player
 			building.requestFailed(this.movableType);
 			building = null;
 			state = ESoldierState.AGGRESSIVE;
@@ -178,7 +178,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected abstract short getMinSearchDistance();
 
 	protected ShortPoint2D getAttackPosition() {
-		return isInTower && isBowman() ? inTowerAttackPosition : super.getPos();
+		return isInTower && isBowman() ? inTowerAttackPosition : movable.getPos();
 	}
 
 	private boolean isBowman() {
@@ -189,7 +189,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		if (inSaveGotoMode) {
 			goToSavely(enemy);
 		} else {
-			ShortPoint2D pos = super.getPos();
+			ShortPoint2D pos = movable.getPos();
 			EDirection dir = EDirection.getApproxDirection(pos, enemy.getPos());
 
 			if (super.goInDirection(dir, false)) {
@@ -246,7 +246,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public Movable getMovable() {
-		return super.getMovable();
+		return movable;
 	}
 
 	@Override
@@ -263,7 +263,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public void setSelected(boolean selected) {
-		super.setSelected(selected);
+		movable.setSelected(selected);
 	}
 
 	@Override
@@ -291,7 +291,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			oldPathTarget = pathTarget;
 		}
 
-		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != super.getPlayer())) {
+		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
 			result = false;
 		}
 
@@ -312,7 +312,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean canBeControlledByPlayer() {
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
 
@@ -321,7 +321,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
 
-			AbstractStrategyGrid grid = super.getStrategyGrid();
+			AbstractMovableGrid grid = super.getGrid();
 			EDirection leftDir = direction.getNeighbor(-1);
 			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 			EDirection rightDir = direction.getNeighbor(1);
@@ -375,6 +375,6 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	protected float getCombatStrength() {
-		return super.getPlayer().getCombatStrengthInformation().getCombatStrength(isOnOwnGround());
+		return movable.getPlayer().getCombatStrengthInformation().getCombatStrength(isOnOwnGround());
 	}
 }
