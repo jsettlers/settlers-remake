@@ -115,7 +115,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 				@Override
 				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(ResourceManager.getResourcesFileStream(DATA_DIR + BUILDING_DTD));
+						return new InputSource(EBuildingType.class.getResourceAsStream(BUILDING_DTD));
 					} else {
 						return null;
 					}
