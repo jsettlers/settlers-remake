@@ -49,9 +49,13 @@ distributions {
 	}
 }
 
-task run(dependsOn: ':jsettlers.main.swing:run') {
-	actions = []
+// This is a hack to make ./gradlew run only run the swing version.
+task run(dependsOn: ':jsettlers.main.swing:run') << {
+    // We do not need any more tasks.
+    tasks.getAsMap().values().each {Task task -> if (!task.state.executed && task != tasks.getByPath(":run")) task.onlyIf {false}}
 }
+tasks.getByPath(":jsettlers.mapcreator:run").onlyIf { !gradle.taskGraph.hasTask(":run") }
+tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":run") }
 
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
