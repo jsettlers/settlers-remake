@@ -138,9 +138,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		if (itWorked) {
 			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
-				placeFlag(true);
+				showFlag(true);
 			}
-			positionedEvent(pos);
+			placedAtEvent(pos);
 
 			if (fullyConstructed) {
 				appearFullyConstructed();
@@ -152,6 +152,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
+	protected void placedAtEvent(ShortPoint2D pos) {
+	}
+
 	private void appearFullyConstructed() {
 		this.state = STATE_CONSTRUCTED;
 
@@ -159,7 +162,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		finishConstruction();
 
 		appearedEvent();
+	}
 
+	protected void appearedEvent() {
 	}
 
 	private void initConstruction() {
@@ -221,7 +226,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	 * @param place
 	 *            specifies whether the flag should appear or not.
 	 */
-	protected void placeFlag(boolean place) {
+	protected void showFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
 
 		if (place) {
@@ -229,11 +234,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		} else {
 			grid.getMapObjectsManager().removeMapObjectType(flagPosition.x, flagPosition.y, getFlagType());
 		}
-	}
-
-	protected abstract void positionedEvent(ShortPoint2D pos);
-
-	protected void appearedEvent() {
 	}
 
 	private void requestDiggers() {
@@ -327,11 +327,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		return false;
-	}
-
-	@Override
-	public ShortPoint2D calculateRealPoint(short dx, short dy) {
-		return new RelativePoint(dx, dy).calculatePoint(pos);
 	}
 
 	@Override
@@ -457,7 +452,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
 					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
 			placeAdditionalMapObjects(grid, pos, false);
-			placeFlag(false);
+			showFlag(false);
 			placeReusableMaterials();
 
 			killedEvent();

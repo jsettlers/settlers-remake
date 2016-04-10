@@ -42,8 +42,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	void occupyBuilding(IManageableWorker worker);
 
-	ShortPoint2D calculateRealPoint(short dx, short dy);
-
 	@Override
 	EBuildingType getBuildingType();
 

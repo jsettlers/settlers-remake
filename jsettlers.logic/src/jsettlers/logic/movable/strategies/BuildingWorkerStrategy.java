@@ -393,7 +393,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private ShortPoint2D getCurrentJobPos() {
-		return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+		return currentJob.calculatePoint(building);
 	}
 
 	private void lookAtSearched() {

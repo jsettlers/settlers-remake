@@ -40,10 +40,6 @@ public final class DefaultBuilding extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
-	}
-
-	@Override
 	protected int subTimerEvent() {
 		return -1;
 	}
