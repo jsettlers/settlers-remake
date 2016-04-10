@@ -24,6 +24,14 @@ subprojects {
 			sourceCompatibility = 1.7
 			targetCompatibility = 1.7
 		}
+		compileTestJava {
+			sourceCompatibility = 1.8
+			targetCompatibility = 1.8
+		}
+		dependencies {
+			testCompile 'junit:junit:4.12'
+			testCompile project(':jsettlers.testutils')
+		}
 	}
 }
 

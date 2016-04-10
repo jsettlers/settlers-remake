@@ -43,6 +43,7 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
@@ -179,7 +180,7 @@ public class SwingManagedJSettlers {
 	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {
 		String mapfile = null;
 		long randomSeed = 0;
-		File loadableReplayFile = null;
+		ReplayUtils.ReplayFile loadableReplayFile = null;
 		int targetGameTime = 0;
 
 		mapfile = options.getProperty("mapfile");
@@ -190,7 +191,7 @@ public class SwingManagedJSettlers {
 			String loadableReplayFileString = options.getProperty("replayFile");
 			File replayFile = new File(loadableReplayFileString);
 			if (replayFile.exists()) {
-				loadableReplayFile = replayFile;
+				loadableReplayFile = new ReplayUtils.ReplayFile(replayFile);
 				System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
 			} else {
 				System.err.println("Found replayFile parameter, but file can not be found!");

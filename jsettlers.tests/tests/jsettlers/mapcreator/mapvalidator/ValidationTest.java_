@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import jsettlers.TestUtils;
+import jsettlers.testutils.TestUtils;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.loading.list.IMapListFactory;
 import jsettlers.logic.map.loading.list.MapList;

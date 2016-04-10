@@ -44,11 +44,15 @@ public class OriginalMapLoader extends MapLoader {
 	private final String fileName;
 	private Boolean isMapOK = false;
 
-	public OriginalMapLoader(IListedMap listedMap) throws IOException {
+	public OriginalMapLoader(IListedMap listedMap) throws MapLoadException {
 		this.listedMap = listedMap;
 		fileName = listedMap.getFileName();
 		creationDate = new Date(listedMap.getFile().lastModified());
-		mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
+		try {
+			mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
+		} catch (IOException e) {
+			throw new MapLoadException(e);
+		}
 
 		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM) {
 			if (!mapContent.isChecksumValid()) {

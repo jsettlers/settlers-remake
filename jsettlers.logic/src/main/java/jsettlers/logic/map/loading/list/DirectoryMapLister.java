@@ -31,6 +31,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 /**
  * Lists all maps in a directory.
@@ -38,11 +39,11 @@ import jsettlers.logic.map.loading.MapLoader;
  * @author michael
  *
  */
-public class DirectoryMapLister implements jsettlers.logic.map.loading.list.IMapLister {
+public class DirectoryMapLister implements IMapLister {
 
 	private final File directory;
 
-	public static class ListedMapFile implements jsettlers.logic.map.loading.list.IListedMap {
+	public static class ListedMapFile implements IListedMap {
 		private final File file;
 
 		public ListedMapFile(File file) {
@@ -105,7 +106,7 @@ public class DirectoryMapLister implements jsettlers.logic.map.loading.list.IMap
 	}
 
 	@Override
-	public OutputStream getOutputStream(jsettlers.logic.map.loading.newmap.MapFileHeader header) throws IOException {
+	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";

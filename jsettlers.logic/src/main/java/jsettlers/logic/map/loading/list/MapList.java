@@ -33,6 +33,7 @@ import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.loading.list.IMapLister.IMapListerCallable;
+import jsettlers.logic.map.loading.newmap.FreshMapSerializer;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
@@ -181,7 +182,7 @@ public class MapList implements IMapListerCallable {
 				out = mapDirectories.iterator().next().getOutputStream(header);
 			}
 			header.writeTo(out);
-			jsettlers.logic.map.loading.newmap.FreshMapSerializer.serialize(data, out);
+			FreshMapSerializer.serialize(data, out);
 		} finally {
 			if (out != null) {
 				out.close();
@@ -247,7 +248,7 @@ public class MapList implements IMapListerCallable {
 			IMapLister remakeMaps = new DirectoryMapLister(new File(resourcesDirectory, "maps"), false);
 			IMapLister originalMaps = new DirectoryMapLister(originalMapsDirectory, false);
 			IMapLister additionalMaps = getAdditionalMaps();
-			IMapLister save = new DirectoryMapLister(new File(resourcesDirectory, "save"), true);
+			IMapLister save = getSave();
 			ArrayList<IMapLister> list = new ArrayList<>();
 			list.add(remakeMaps);
 			list.add(originalMaps);
@@ -255,6 +256,10 @@ public class MapList implements IMapListerCallable {
 				list.add(additionalMaps);
 			}
 			return new MapList(list, save);
+		}
+
+		protected IMapLister getSave() {
+			return new DirectoryMapLister(new File(getWriteableDirectory(), "save"), true);
 		}
 
 		protected File getWriteableDirectory() {

@@ -42,7 +42,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 
 	public abstract MapFileHeader getFileHeader();
 
-	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException, IOException {
+	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException {
 		if ((checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL))
 				|| (checkExtention(listedMap.getFileName(), MapLoader.MAP_EXTENSION_ORIGINAL_MAP_EDITOR))) {
 			// - original Siedler 3 Map

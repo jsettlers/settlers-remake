@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
@@ -31,7 +32,7 @@ import jsettlers.main.swing.SwingManagedJSettlers;
  */
 public class ReplayToolApp {
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException, MapLoadException {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 
 		OptionableProperties options = MainUtils.loadOptions(args);
@@ -46,7 +47,7 @@ public class ReplayToolApp {
 		if (!replayFile.exists())
 			throw new FileNotFoundException("Found replayFile parameter, but file can not be found: " + replayFile);
 
-		ReplayUtils.replayAndCreateSavegame(replayFile, targetGameTimeMinutes, "replayForSavegame.log", null);
+		ReplayUtils.replayAndCreateSavegame(new ReplayUtils.ReplayFile(replayFile), targetGameTimeMinutes, "replayForSavegame.log");
 
 		Thread.sleep(2000);
 		System.exit(0);

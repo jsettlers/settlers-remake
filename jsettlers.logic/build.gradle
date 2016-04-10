@@ -4,4 +4,5 @@ dependencies {
     compile project(':jsettlers.graphics')
     compile project(':jsettlers.common')
     compile project(':jsettlers.network')
+    testCompile project(':jsettlers.common').sourceSets.test.output
 }

@@ -16,8 +16,6 @@ package jsettlers.main;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DateFormat;
@@ -51,11 +49,10 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
-import jsettlers.main.replay.ReplayUtils.ReplayMapFileProvider;
+import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
@@ -136,27 +133,18 @@ public class JSettlersGame {
 		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, true, false, null);
 	}
 
-	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation) throws IOException {
-		return loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation, null);
-	}
+	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
+												   ReplayStartInformation replayStartInformation) throws MapLoadException {
+		try {
+			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
+			replayStartInformation.deserialize(replayFileInputStream);
 
-	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation, ReplayMapFileProvider fileProvider) throws IOException {
-		if (fileProvider == null) {
-			fileProvider = new ReplayMapFileProvider() {
-				@Override
-				public MapLoader getMap(String id) {
-					return MapList.getDefaultList().getMapById(id);
-				}
-			};
+			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
+					replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
+		} catch (IOException e) {
+			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
 		}
-		DataInputStream replayFileInputStream = new DataInputStream(new FileInputStream(loadableReplayFile));
-		replayStartInformation.deserialize(replayFileInputStream);
-
-		MapLoader mapCreator = fileProvider.getMap(replayStartInformation.getMapId());
-		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
-				replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
 	}
 
 	/**
@@ -206,7 +194,12 @@ public class JSettlersGame {
 
 				clearState();
 				MatchConstants.init(networkConnector.getGameClock(), randomSeed);
-				MatchConstants.clock().setReplayLogStream(createReplayFileStream());
+				try {
+					MatchConstants.clock().setReplayLogStream(createReplayFileStream());
+				} catch (IOException e) {
+					//TODO: log that we do not have write access to resources.
+					System.out.println("Cannot write replay file.");
+				}
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
