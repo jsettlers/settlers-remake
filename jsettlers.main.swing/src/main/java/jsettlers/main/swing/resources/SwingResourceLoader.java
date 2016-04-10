@@ -17,6 +17,10 @@ package jsettlers.main.swing.resources;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.security.CodeSource;
 import java.util.Arrays;
 
 import jsettlers.common.resources.ResourceManager;
@@ -85,7 +89,48 @@ public class SwingResourceLoader {
 		if (additionalMaps != null) {
 			mapList.addDirectory(additionalMaps, false);
 		}
+		loadDefaultMaps(mapList);
 		MapList.setDefaultListFactory(mapList);
+	}
+
+	private static void loadDefaultMaps(MapList.DefaultMapListFactory mapList) {
+		// Maps contained in jar file?
+		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
+		if (resourceLister != null) {
+			mapList.addDirectory(resourceLister);
+		} else {
+			// We might be a dev. Scan for a dev directory.
+			CodeSource source = SwingResourceLoader.class.getProtectionDomain().getCodeSource();
+			File dir = searchRootForSource(source);
+			if (dir != null) {
+				String path = dir.getAbsolutePath();
+				mapList.addDirectory(path + File.separator + "maps", false);
+				mapList.addDirectory(
+						path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources",
+						false);
+				mapList.addDirectory(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator
+						+ "resources", false);
+			}
+		}
+	}
+
+	private static File searchRootForSource(CodeSource source) {
+		try {
+			if (source != null) {
+				URL loc = source.getLocation();
+				if (loc.getProtocol().equalsIgnoreCase("file")) {
+					File dir = new File(URLDecoder.decode(loc.getFile(), "UTF-8"));
+					while (dir != null) {
+						if ("jsettlers.main.swing".equals(dir.getName())) {
+							return dir.getParentFile();
+						}
+						dir = dir.getParentFile();
+					}
+				}
+			}
+		} catch (UnsupportedEncodingException e) {
+		}
+		return null;
 	}
 
 	private static String loadGamePathFromConfig(OptionableProperties options) throws ResourceSetupException {

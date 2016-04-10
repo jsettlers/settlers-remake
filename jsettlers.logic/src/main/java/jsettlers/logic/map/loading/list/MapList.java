@@ -97,7 +97,7 @@ public class MapList implements IMapListerCallable {
 			return;
 		}
 
-		jsettlers.logic.map.loading.newmap.MapFileHeader mapHead = loader.getFileHeader();
+		MapFileHeader mapHead = loader.getFileHeader();
 
 		// - if the map can't be load (e.g. caused by wrong format) the mapHead gets NULL! -> hide/ignore this map from user
 		if (mapHead != null) {
@@ -257,9 +257,9 @@ public class MapList implements IMapListerCallable {
 		}
 
 		public void addResources(File resources) {
-			directories.add(new DirectoryMapLister(new File(resources, "maps"), true));
+			addDirectory(new DirectoryMapLister(new File(resources, "maps"), true));
 			saveDirectory = new DirectoryMapLister(new File(resources, "save"), true);
-			directories.add(saveDirectory);
+			addDirectory(saveDirectory);
 		}
 
 		protected IMapLister getSave() {
@@ -272,6 +272,11 @@ public class MapList implements IMapListerCallable {
 
 		public void addSaveDirectory(IMapLister saveDirectory) {
 			this.saveDirectory = saveDirectory;
+			addDirectory(saveDirectory);
+		}
+
+		public void addDirectory(IMapLister dir) {
+			this.directories.add(dir);
 		}
 	}
 

@@ -30,59 +30,51 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
 
-public class ResourceMapLister extends DefaultMapListFactory {
+public class ResourceMapLister implements IMapLister {
 
-	public ResourceMapLister() {
-		CodeSource source = getClass().getProtectionDomain().getCodeSource();
+	public static ResourceMapLister getDefaultLister() {
+		CodeSource source = ResourceMapLister.class.getProtectionDomain().getCodeSource();
 		System.out.println("Source: " + source);
 		if (source != null) {
 			URL jar = source.getLocation();
 			boolean hasJarExt = jar.getFile().endsWith(".jar");
 			if (hasJarExt || "jar".equalsIgnoreCase(jar.getProtocol())) {
-				directories.add(createJarList(jar));
-			} else if ("file".equalsIgnoreCase(jar.getProtocol())) {
-				directories.add(createDevList(jar));
+				return new ResourceMapLister(jar);
 			}
 		}
+		return null;
 	}
 
-	private IMapLister createJarList(URL jar) {
-		return new IMapLister() {
-			@Override
-			public void listMaps(IMapListerCallable callable) {
-				try {
-					ZipInputStream zip = new ZipInputStream(jar.openStream());
-					while (true) {
-						ZipEntry e = zip.getNextEntry();
-						if (e == null) {
-							break;
-						}
-						String path = "/" + e.getName();
-						System.out.println("Entry: " + path);
-						if (path.startsWith("/jsettlers/resources/maps") && path.endsWith(MapLoader.MAP_EXTENSION)) {
-							callable.foundMap(new ListedResourceMap(path));
-						}
-					}
-				} catch (IOException e) {
-					// currently silently ignored. TODO: Error management.
-					System.out.println("Ignore map list error: " + e.getMessage());
+	private final URL jar;
+
+	private ResourceMapLister(URL jar) {
+		this.jar = jar;
+	}
+
+	@Override
+	public void listMaps(IMapListerCallable callable) {
+		try {
+			ZipInputStream zip = new ZipInputStream(jar.openStream());
+			while (true) {
+				ZipEntry e = zip.getNextEntry();
+				if (e == null) {
+					break;
+				}
+				String path = "/" + e.getName();
+				System.out.println("Entry: " + path);
+				if (path.startsWith("/jsettlers/resources/maps") && path.endsWith(MapLoader.MAP_EXTENSION)) {
+					callable.foundMap(new ListedResourceMap(path));
 				}
 			}
-
-			@Override
-			public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-				throw new UnsupportedOperationException();
-			}
-		};
-	}
-
-	private IMapLister createDevList(URL jar) {
-		try {
-			String dir = new File(jar.toURI()).getAbsolutePath() + "/../../resources/main/jsettlers/resources/maps";
-			System.out.println("Attempt to use default maps: " + dir);
-			return new DirectoryMapLister(new File(dir), false);
-		} catch (URISyntaxException e) {
-			return null;
+		} catch (IOException e) {
+			// currently silently ignored. TODO: Error management.
+			System.out.println("Ignore map list error: " + e.getMessage());
 		}
 	}
+
+	@Override
+	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
+		throw new UnsupportedOperationException();
+	}
+
 }
