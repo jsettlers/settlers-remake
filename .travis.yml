@@ -2,8 +2,9 @@ language: android
 
 jdk:
   - oraclejdk8
-  - oraclejdk7
-  - openjdk7
+#  - oraclejdk7
+#  - openjdk7
+  - openjdk8
 
 android:
   components:
