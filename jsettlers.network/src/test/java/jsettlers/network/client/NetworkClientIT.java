@@ -46,6 +46,7 @@ import jsettlers.network.server.match.Player;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -54,6 +55,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
+@Ignore
 public class NetworkClientIT {
 	private static final String TEST_PLAYER_ID = "id-testPlayer";
 
