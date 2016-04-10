@@ -41,7 +41,8 @@ env:
   # This includes all tests
   #- TARGET=build
   # Run single test targets
-  - TARGET=:jsettlers.logic:test --info
+  - TARGET=:jsettlers.logic:unitTest --info
+  - TARGET=:jsettlers.logic:integrationTest --info
   - TARGET=:jsettlers.common:test --info
   - TARGET=:jsettlers.network:test --info
 

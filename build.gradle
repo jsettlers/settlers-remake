@@ -52,6 +52,7 @@ distributions {
 task run(dependsOn: ':jsettlers.main.swing:run') {
 	actions = []
 }
+
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 task runAndroid(dependsOn: ':jsettlers.main.android:build') << {

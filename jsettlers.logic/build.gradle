@@ -1,5 +1,13 @@
 apply plugin: 'java'
 
+task integrationTest(type: Test) {
+    include '**IT.class'
+}
+
+task unitTest(type: Test) {
+    exclude '**IT.class'
+}
+
 dependencies {
     compile project(':jsettlers.graphics')
     compile project(':jsettlers.common')
