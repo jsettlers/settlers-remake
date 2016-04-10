@@ -13,8 +13,10 @@ android:
 
 
 env:
+  # Only compile and build basic jars
+  - TARGET=assemble
+  # This includes all tests
   - TARGET=build
-  - TARGET=test
 
 script: ./gradlew $TARGET
 
