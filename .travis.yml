@@ -1,9 +1,14 @@
 language: java
+language: android
 
 jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
+
+android:
+  - build-tools-19.1.0
+  - android-15
 
 
 env:
