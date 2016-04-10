@@ -78,7 +78,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	private ShortPoint2D position;
 
-	private ShortPoint2D moveToRequest = null;
+	private ShortPoint2D requestedTargetPosition = null;
 	private Path path;
 
 	private float health;
@@ -134,7 +134,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer()) {
-			this.moveToRequest = targetPosition;
+			this.requestedTargetPosition = targetPosition;
 		}
 	}
 
@@ -204,7 +204,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			break;
 		}
 
-		if (moveToRequest != null) {
+		if (requestedTargetPosition != null) {
 			if (strategy.canBeControlledByPlayer()) {
 				switch (state) {
 				case PATHING:
@@ -216,8 +216,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				case DOING_NOTHING:
 					ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
 					ShortPoint2D oldPos = position;
-					boolean foundPath = goToPos(moveToRequest); // progress is reset in here
-					moveToRequest = null;
+					boolean foundPath = goToPos(requestedTargetPosition); // progress is reset in here
+					requestedTargetPosition = null;
 
 					if (foundPath) {
 						this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
@@ -230,7 +230,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 					break;
 				}
 			} else {
-				moveToRequest = null;
+				requestedTargetPosition = null;
 			}
 		}
 
