@@ -13,6 +13,8 @@ android:
     - android-15
 
 
+script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
+
 env:
   # Only compile and build basic jars
   - TARGET=assemble
