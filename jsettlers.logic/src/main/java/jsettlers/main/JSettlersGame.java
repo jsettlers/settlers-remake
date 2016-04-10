@@ -17,6 +17,7 @@ package jsettlers.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -177,6 +178,11 @@ public class JSettlersGame {
 		}
 	}
 
+	protected OutputStream createReplayWriteStream() throws IOException {
+		final String replayFilename = getLogFile(mapCreator, "_replay.log");
+		return ResourceManager.writeFile(replayFilename);
+	}
+
 	public class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
@@ -281,8 +287,7 @@ public class JSettlersGame {
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
-			final String replayFilename = getLogFile(mapCreator, "_replay.log");
-			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
+			DataOutputStream replayFileStream = new DataOutputStream(createReplayWriteStream());
 
 			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapId(), playerId,
 					playerSettings);

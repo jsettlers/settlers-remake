@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -185,18 +186,20 @@ public class ReplayUtils {
 		System.out.println("New replay file successfully created!");
 	}
 
-	public static ReplayAndSavegames playMapToTargetTimes(MapLoader map, final float... targetTimeMinutes) throws IOException {
+	public static PlayMapResult playMapToTargetTimes(MapLoader map, final float... targetTimeMinutes) throws IOException {
 		OfflineNetworkConnector networkConnector = ReplayUtils.createPausingOfflineNetworkConnector();
 		byte playerId = (byte) 0;
 		JSettlersGame game = new JSettlersGame(map, 0L, networkConnector, playerId,
-				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers()));
+				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers())) {
+			@Override
+			protected OutputStream createReplayWriteStream() throws IOException {
+				return ResourceManager.writeFile("replay");
+			}
+		};
 
-		MapLoader[] savegames = ReplayUtils.playGameToTargetTimeAndGetSavegames(game, networkConnector, targetTimeMinutes);
-		File replay = findNewestReplayFile().getCanonicalFile();
-		System.out.println("Found replay file for savegame: " + replay);
+		final MapLoader[] savegames = ReplayUtils.playGameToTargetTimeAndGetSavegames(game, networkConnector, targetTimeMinutes);
 
-		ReplayAndSavegames directSavegameReplay = new ReplayAndSavegames(replay, savegames);
-		return directSavegameReplay;
+		return new PlayMapResult(savegames);
 	}
 
 	private static File findNewestReplayFile() throws IOException {
@@ -278,6 +281,32 @@ public class ReplayUtils {
 				}
 			}
 			throw new MapLoadException("No file found for " + replayStartInformation);
+		}
+	}
+
+	public static class PlayMapResult implements IReplayStreamProvider {
+		private final MapLoader[] savegames;
+
+		public PlayMapResult(MapLoader[] savegames) {
+			this.savegames = savegames;
+		}
+
+		@Override
+		public InputStream openStream() throws IOException {
+			return ResourceManager.getResourcesFileStream("replay");
+		}
+
+		@Override
+		public MapLoader getMap(ReplayStartInformation replayStartInformation) throws MapLoadException {
+			for (MapLoader m : savegames) {
+				if (m.getMapId().equals(replayStartInformation.getMapId())) {
+					return m;
+				}
+			}
+			throw new MapLoadException("No file found for " + replayStartInformation);
+		}
+		public MapLoader[] getSavegames() {
+			return savegames;
 		}
 	}
 }

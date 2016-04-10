@@ -41,6 +41,7 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.replay.ReplayUtils;
+import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
 
 import org.junit.Before;
@@ -89,21 +90,7 @@ public class AutoReplayIT {
 
 	@Before
 	public void fakeSaveDirectory() {
-		// The replay files contain a save action.
-		final MemoryResourceProvider resourceProvider = new MemoryResourceProvider();
-		ResourceManager.setProvider(resourceProvider);
-
-		MapList.setDefaultListFactory(new MapList.DefaultMapListFactory() {
-			@Override
-			protected IMapLister getAdditionalMaps() {
-				return resourceProvider;
-			}
-
-			@Override
-			protected IMapLister getSave() {
-				return resourceProvider;
-			}
-		});
+		TestUtils.setupMemoryResourceManager();
 	}
 
 	@Test
@@ -158,82 +145,4 @@ public class AutoReplayIT {
 		}
 	}
 
-	private static class MemoryResourceProvider implements IResourceProvider, IMapLister {
-		private Map<String, ByteArrayOutputStream> files = new HashMap<>();
-		private int savegame = 0;
-
-		@Override
-		public InputStream getResourcesFileStream(String name) throws IOException {
-			ByteArrayOutputStream out = files.get(name);
-			if (out != null) {
-				return new ByteArrayInputStream(out.toByteArray());
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		public OutputStream writeFile(String name) throws IOException {
-			System.out.println("Writing file " + name);
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			files.put(name, out);
-			return out;
-		}
-
-		@Override
-		public File getResourcesDirectory() {
-			return null;
-		}
-
-		@Override
-		public File getOriginalMapsDirectory() {
-			return null;
-		}
-
-		@Override
-		public void listMaps(IMapListerCallable callable) {
-			System.out.println("Scanning maps... ");
-			for (Map.Entry<String, ByteArrayOutputStream> e : files.entrySet()) {
-				System.out.println("Scanning map " + e.getKey());
-				findMap(callable, e.getKey());
-			}
-		}
-
-		private void findMap(IMapListerCallable callable, final String key) {
-			if (MapLoader.isExtensionKnown(key)) {
-				callable.foundMap(new IListedMap() {
-					@Override
-					public String getFileName() {
-						return key;
-					}
-
-					@Override
-					public InputStream getInputStream() throws IOException {
-						return getResourcesFileStream(getFileName());
-					}
-
-					@Override
-					public void delete() {
-						files.remove(key);
-					}
-
-					@Override
-					public boolean isCompressed() {
-						return getFileName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
-					}
-
-					@Override
-					public File getFile() {
-						throw new UnsupportedOperationException();
-					}
-				});
-			}
-		}
-
-		@Override
-		public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-			savegame++;
-			return writeFile("savegame-" + savegame + MapLoader.MAP_EXTENSION);
-		}
-	}
 }

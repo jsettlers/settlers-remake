@@ -36,6 +36,7 @@ import jsettlers.main.replay.ReplayUtils.ReplayAndSavegames;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 import jsettlers.testutils.map.MapUtils;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -57,12 +58,17 @@ public class ReplayValidationIT {
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 	}
 
+	@Before
+	public void fakeSaveDirectory() {
+		TestUtils.setupMemoryResourceManager();
+	}
+
 	@Test
 	public void testIfReplayIsEqualToOriginalPlay() throws IOException, MapLoadException, ClassNotFoundException {
 		final float targetTimeMinutes = 60f;
 		MapLoader map = MapUtils.getMountainlake();
 
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
+		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
@@ -71,11 +77,6 @@ public class ReplayValidationIT {
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(savegame, replayedSavegame);
-
-		// delete created files
-		FileUtils.deleteRecursively(directSavegameReplay.getReplayFile().getParentFile());
-		savegame.getListedMap().delete();
-		replayedSavegame.getListedMap().delete();
 	}
 
 	@Test
@@ -83,7 +84,7 @@ public class ReplayValidationIT {
 		final float targetTimeMinutes = 30f;
 		MapLoader map = MapUtils.getMountainlake();
 
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
+		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
@@ -104,11 +105,6 @@ public class ReplayValidationIT {
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(savegame, savegameOfSavegame);
-
-		// delete created files
-		FileUtils.deleteRecursively(directSavegameReplay.getReplayFile().getParentFile());
-		savegame.getListedMap().delete();
-		savegameOfSavegame.getListedMap().delete();
 	}
 
 	@Ignore
@@ -117,11 +113,10 @@ public class ReplayValidationIT {
 		final float[] targetTimeMinutes = new float[] { 30f, 60f };
 		MapLoader map = MapUtils.getMountainlake();
 
-		ReplayAndSavegames directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
+		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
 		assertDirectSavegameReplay(targetTimeMinutes.length, directSavegameReplay);
 
 		MapLoader[] savegames = directSavegameReplay.getSavegames();
-		File replayFile = directSavegameReplay.getReplayFile();
 		for (int i = 0; i < targetTimeMinutes.length; i++) {
 			float targetTime = targetTimeMinutes[i];
 			MapLoader savegame = savegames[i];
@@ -133,17 +128,10 @@ public class ReplayValidationIT {
 			System.out.println("Comparing replay for savegame at targetTime: " + targetTime);
 			MapUtils.compareMapFiles(savegame, replayedSavegame);
 		}
-
-		// // delete created files
-		// FileUtils.deleteRecursively(directSavegameReplay.getReplayFile().getParentFile());
-		// savegame.getFile().delete();
-		// replayedSavegame.getFile().delete();
 	}
 
-	private void assertDirectSavegameReplay(int expectedNumberOfSavegames, ReplayAndSavegames directSavegameReplay) {
+	private void assertDirectSavegameReplay(int expectedNumberOfSavegames, ReplayUtils.PlayMapResult directSavegameReplay) {
 		assertNotNull(directSavegameReplay);
-		assertNotNull(directSavegameReplay.getReplayFile());
-		assertTrue(directSavegameReplay.getReplayFile().exists());
 		assertEquals(expectedNumberOfSavegames, directSavegameReplay.getSavegames().length);
 	}
 }

@@ -18,16 +18,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.resources.IResourceProvider;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.IListedMap;
+import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.ResourceMapLister;
@@ -66,18 +75,102 @@ public class TestUtils {
 		}
 	}
 
-	public static RemakeMapLoader getMap(String idWithoutExtensio) throws MapLoadException {
-		String name = "/jsettlers/tests/maps/" + idWithoutExtensio + MapLoader.MAP_EXTENSION_COMPRESSED;
-		Object compressed = TestUtils.class.getResource(name);
-		if (compressed == null) {
-			name = "/jsettlers/tests/maps/" + idWithoutExtensio + MapLoader.MAP_EXTENSION;
-			Object uncompressed = TestUtils.class.getResource(name);
-			if (uncompressed == null) {
-				throw new MapLoadException("Could not find the map " + idWithoutExtensio);
+	/**
+	 * Sets up a resource manager that only uses memory stored files.
+	 */
+	public static void setupMemoryResourceManager() {
+		final MemoryResourceProvider resourceProvider = new MemoryResourceProvider();
+		ResourceManager.setProvider(resourceProvider);
+
+		MapList.setDefaultListFactory(new MapList.DefaultMapListFactory() {
+			@Override
+			protected IMapLister getAdditionalMaps() {
+				return resourceProvider;
+			}
+
+			@Override
+			protected IMapLister getSave() {
+				return resourceProvider;
+			}
+		});
+	}
+
+	private static class MemoryResourceProvider implements IResourceProvider, IMapLister {
+		private Map<String, ByteArrayOutputStream> files = new HashMap<>();
+		private int savegame = 0;
+
+		@Override
+		public InputStream getResourcesFileStream(String name) throws IOException {
+			ByteArrayOutputStream out = files.get(name);
+			if (out != null) {
+				return new ByteArrayInputStream(out.toByteArray());
+			} else {
+				return null;
 			}
 		}
 
-		ListedResourceMap file = new ListedResourceMap(name);
-		return (RemakeMapLoader) MapLoader.getLoaderForListedMap(file);
+		@Override
+		public OutputStream writeFile(String name) throws IOException {
+			System.out.println("Writing file " + name);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			files.put(name, out);
+			return out;
+		}
+
+		@Override
+		public File getResourcesDirectory() {
+			return null;
+		}
+
+		@Override
+		public File getOriginalMapsDirectory() {
+			return null;
+		}
+
+		@Override
+		public void listMaps(IMapListerCallable callable) {
+			System.out.println("Scanning maps... ");
+			for (Map.Entry<String, ByteArrayOutputStream> e : files.entrySet()) {
+				System.out.println("Scanning map " + e.getKey());
+				findMap(callable, e.getKey());
+			}
+		}
+
+		private void findMap(IMapListerCallable callable, final String key) {
+			if (MapLoader.isExtensionKnown(key)) {
+				callable.foundMap(new IListedMap() {
+					@Override
+					public String getFileName() {
+						return key;
+					}
+
+					@Override
+					public InputStream getInputStream() throws IOException {
+						return getResourcesFileStream(getFileName());
+					}
+
+					@Override
+					public void delete() {
+						files.remove(key);
+					}
+
+					@Override
+					public boolean isCompressed() {
+						return getFileName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
+					}
+
+					@Override
+					public File getFile() {
+						throw new UnsupportedOperationException();
+					}
+				});
+			}
+		}
+
+		@Override
+		public OutputStream getOutputStream(MapFileHeader header) throws IOException {
+			savegame++;
+			return writeFile("savegame-" + savegame + MapLoader.MAP_EXTENSION);
+		}
 	}
 }
