@@ -29,13 +29,7 @@ public class ResourceProvider implements IResourceProvider {
 	private final File resourcesDirectory;
 	private final AssetManager manager;
 
-	/**
-	 * Resource directories that the user cannot change files in.
-	 */
-	private static final String[] fixedResources = new String[] { "images",
-			"localization", "buildings" };
-
-	public ResourceProvider(Context context, File resourcesDirectory, File jsettlersDirectory) {
+	public ResourceProvider(Context context, File resourcesDirectory) {
 		this.resourcesDirectory = resourcesDirectory;
 		manager = context.getAssets();
 	}
@@ -43,19 +37,9 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public InputStream getResourcesFileStream(String name) throws IOException {
 		String[] parts = name.split("/");
-		boolean searchUserFile = true;
-		for (int i = 0; i < fixedResources.length; i++) {
-			if (fixedResources[i].equals(parts[0])) {
-				searchUserFile = false;
-			}
-		}
-		File file = searchUserFile ? searchFileIn(resourcesDirectory, parts) : null;
-
-		if (searchUserFile) {
-			file = searchFileIn(resourcesDirectory, parts);
-			if (file != null) {
-				return new FileInputStream(file);
-			}
+		File file = searchFileIn(resourcesDirectory, parts);
+		if (file != null) {
+			return new FileInputStream(file);
 		}
 		return manager.open(name);
 	}
@@ -77,8 +61,7 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
 		File outFile = new File(resourcesDirectory.getAbsolutePath() + "/" + name);
-		System.err.println("--------------------------------"
-				+ outFile.getAbsolutePath());
+		System.err.println("Writing to: " + outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
 	}
@@ -86,11 +69,5 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public File getResourcesDirectory() {
 		return resourcesDirectory;
-	}
-
-	@Override
-	public File getOriginalMapsDirectory() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

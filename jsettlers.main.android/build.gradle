@@ -23,7 +23,7 @@ android {
             java.srcDirs = ['src/main/java']
             resources.srcDirs = ['src/main/resources']
             res.srcDirs = ['src/main/res']
-            assets.srcDirs = [project(':jsettlers.common').file('resources')]
+            assets.srcDirs = [project.getRootProject().file('maps/release')]
         }
     }
     lintOptions {

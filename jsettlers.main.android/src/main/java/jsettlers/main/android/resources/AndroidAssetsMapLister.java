@@ -75,7 +75,7 @@ public class AndroidAssetsMapLister implements IMapLister {
 		try {
 			for (String s : manager.list(prefix)) {
 				if (s.endsWith(MapLoader.MAP_EXTENSION)) {
-					callable.foundMap(new AndroidAssetMap(manager, prefix + "/" + s));
+					callable.foundMap(new AndroidAssetMap(manager, prefix + s));
 				}
 			}
 		} catch (IOException e) {

@@ -47,7 +47,7 @@ public class ResourceLocationScanner {
 		}
 		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), files.get(0)));
 
-		ResourceProvider provider = new ResourceProvider(context, outputDirectory, jsettlersDirectory);
+		ResourceProvider provider = new ResourceProvider(context, outputDirectory);
 		ResourceManager.setProvider(provider);
 		return true;
 	}
