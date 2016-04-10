@@ -2,8 +2,8 @@ language: android
 
 jdk:
   - oraclejdk8
-#  - oraclejdk7
-#  - openjdk7
+  - oraclejdk7
+  - openjdk7
   - openjdk8
 
 android:
@@ -15,15 +15,21 @@ android:
 env:
   # Only compile and build basic jars
   - TARGET=assemble
+  - TARGET=:jsettlers.main.android:build
   # This includes all tests
-  - TARGET=build
+  #- TARGET=build
+  # Run single test targets
+  - TARGET=:jsettlers.logic:test
+  - TARGET=:jsettlers.common:test
+  - TARGET=:jsettlers.network:test
 
 script: ./gradlew $TARGET
 
 
 matrix:
   exclude:
+    # assemble builds the swing projects. They cannot be built using JDK 1.7
     - jdk: oraclejdk7
-      env: TARGET=buildSwing
+      env: TARGET=assemble
     - jdk: openjdk7
-      env: TARGET=buildSwing
+      env: TARGET=assemble
