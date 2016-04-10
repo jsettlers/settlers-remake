@@ -129,6 +129,14 @@ public class DirectoryMapLister implements IMapLister {
 			i++;
 		}
 
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+
+		if (!directory.isDirectory()) {
+			throw new IOException("maps directory does not exist.");
+		}
+
 		try {
 			OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
 
