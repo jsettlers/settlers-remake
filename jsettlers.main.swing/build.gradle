@@ -17,12 +17,8 @@ processResources {
     doLast {
         copy {
             description 'Prepares the resources for packing.'
-            from project(':jsettlers.common').file('resources')
-            into 'build/resources/main/jsettlers/resources'
-            include 'buildings/**'
-            include 'images/**'
-            include 'localization/**'
-            include 'maps/*.rmap'
+            from project.getRootProject().file('maps/release')
+            into 'build/resources/main/jsettlers/resources/maps'
         }
         file('build/resources/main/jsettlers/resources/use').text = 'true'
     }

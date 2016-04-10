@@ -28,11 +28,12 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
 
-	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption, IOException {
+	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args));
 		MatchConstants.init(new NetworkTimer(true), 0);
 

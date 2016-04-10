@@ -36,13 +36,14 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 
 public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;
 	protected static final int HEIGHT = 20;
 	private static Map map;
 
-	public static void main(String args[]) throws JSettlersLookAndFeelExecption, IOException {
+	public static void main(String args[]) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		map = new Map();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);

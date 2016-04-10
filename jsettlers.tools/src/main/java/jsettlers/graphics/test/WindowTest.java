@@ -20,10 +20,11 @@ import jsettlers.TestToolUtils;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.input.SelectionSet;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 
 public class WindowTest {
 
-	private WindowTest() throws JSettlersLookAndFeelExecption, IOException {
+	private WindowTest() throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		TestMap map = new TestMap();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
@@ -31,7 +32,7 @@ public class WindowTest {
 		connector.setSelection(new SelectionSet(map.getAllSettlers()));
 	}
 
-	public static void main(String[] args) throws JSettlersLookAndFeelExecption, IOException {
+	public static void main(String[] args) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		new WindowTest();
 	}
 }

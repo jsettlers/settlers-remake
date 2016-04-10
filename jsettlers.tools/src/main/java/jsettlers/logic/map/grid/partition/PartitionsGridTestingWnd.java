@@ -40,6 +40,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 
 public class PartitionsGridTestingWnd {
 
@@ -48,7 +49,7 @@ public class PartitionsGridTestingWnd {
 
 	private final BitSet blockedGrid = new BitSet(WIDTH * HEIGHT);
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
 
 		// open the window

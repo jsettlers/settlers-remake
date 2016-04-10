@@ -14,15 +14,16 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.testutils.TestUtils;
 
 public class TestToolUtils extends TestUtils {
-	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption, IOException {
+	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		IStartedGame game = new FakeMapGame(map);
 		return openTestWindow(game);
 	}
 
-	public static IMapInterfaceConnector openTestWindow(IStartedGame startedGame) throws JSettlersLookAndFeelExecption, IOException {
+	public static IMapInterfaceConnector openTestWindow(IStartedGame startedGame) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		SwingManagedJSettlers.setupResourceManagers(new OptionableProperties());
 		ImageProvider.getInstance().startPreloading();
 
