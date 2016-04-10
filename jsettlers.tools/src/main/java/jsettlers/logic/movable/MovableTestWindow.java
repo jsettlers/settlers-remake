@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+
 import jsettlers.TestToolUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -34,11 +36,11 @@ public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1);
 	private final Movable movable;
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException {
 		new MovableTestWindow();
 	}
 
-	private MovableTestWindow() throws InterruptedException, JSettlersLookAndFeelExecption {
+	private MovableTestWindow() throws InterruptedException, JSettlersLookAndFeelExecption, IOException {
 		MatchConstants.init(new NetworkTimer(true), 1000);
 		MatchConstants.clock().startExecution();
 

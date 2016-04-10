@@ -14,22 +14,26 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
+import java.io.IOException;
+
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestToolUtils;
-import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.utils.MainUtils;
+import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
 
-	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption {
-		TestUtils.setupResourcesManager();
+	public static void main(String args[]) throws MapLoadException, InterruptedException, JSettlersLookAndFeelExecption, IOException {
+		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args));
 		MatchConstants.init(new NetworkTimer(true), 0);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").loadMainGrid(null).getMainGrid();

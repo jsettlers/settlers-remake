@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.test;
 
+import java.io.IOException;
+
 import jsettlers.TestToolUtils;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.input.SelectionSet;
@@ -21,7 +23,7 @@ import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 
 public class WindowTest {
 
-	private WindowTest() throws JSettlersLookAndFeelExecption {
+	private WindowTest() throws JSettlersLookAndFeelExecption, IOException {
 		TestMap map = new TestMap();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
@@ -29,7 +31,7 @@ public class WindowTest {
 		connector.setSelection(new SelectionSet(map.getAllSettlers()));
 	}
 
-	public static void main(String[] args) throws JSettlersLookAndFeelExecption {
+	public static void main(String[] args) throws JSettlersLookAndFeelExecption, IOException {
 		new WindowTest();
 	}
 }

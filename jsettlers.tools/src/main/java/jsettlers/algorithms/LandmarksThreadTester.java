@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.algorithms;
 
+import java.io.IOException;
+
 import jsettlers.TestToolUtils;
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
@@ -40,7 +42,7 @@ public class LandmarksThreadTester {
 	protected static final int HEIGHT = 20;
 	private static Map map;
 
-	public static void main(String args[]) throws JSettlersLookAndFeelExecption {
+	public static void main(String args[]) throws JSettlersLookAndFeelExecption, IOException {
 		map = new Map();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);

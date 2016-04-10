@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
+import java.io.IOException;
 import java.util.BitSet;
 
 import jsettlers.TestToolUtils;
@@ -47,7 +48,7 @@ public class PartitionsGridTestingWnd {
 
 	private final BitSet blockedGrid = new BitSet(WIDTH * HEIGHT);
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
 
 		// open the window

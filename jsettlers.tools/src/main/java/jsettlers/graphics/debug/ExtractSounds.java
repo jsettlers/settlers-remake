@@ -20,7 +20,10 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
-import jsettlers.TestUtils;
+import jsettlers.common.utils.MainUtils;
+import jsettlers.common.utils.OptionableProperties;
+import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.testutils.TestUtils;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.sound.SoundManager;
 
@@ -36,7 +39,7 @@ public class ExtractSounds extends SoundManager {
 	}
 
 	public static void main(String[] args) throws IOException {
-		TestUtils.setupSwingResources();
+		SwingManagedJSettlers.setupResourceManagers(MainUtils.loadOptions(args));
 
 		ByteReader file = openSoundFile();
 		int[][] starts = getSoundStarts(file);

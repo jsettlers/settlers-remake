@@ -14,30 +14,31 @@
  *******************************************************************************/
 package jsettlers.algorithms.partitions;
 
+import org.junit.Test;
+
 import java.util.BitSet;
 
-import jsettlers.TestUtils;
+import jsettlers.jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.grid.MainGridDataAccessor;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.network.synchronic.timer.NetworkTimer;
+import jsettlers.testutils.map.MapUtils;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public class PartitionCalculatorAlgorithmSpeedTester {
+public class PartitionCalculatorAlgorithmSpeedTest {
 
-	public static void main(String[] args) throws MapLoadException, InterruptedException {
-		TestUtils.setupSwingResources();
+	@Test
+	public void testSpeed() throws MapLoadException, InterruptedException {
 		MatchConstants.init(new NetworkTimer(true), 0);
 
-		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid(null).getMainGrid();
+		MainGrid grid = MapUtils.getBigMap().loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();
@@ -61,7 +62,5 @@ public class PartitionCalculatorAlgorithmSpeedTester {
 		System.out.println("\n\n\n\nnumber of partitions: " + partitioner.getNumberOfPartitions());
 
 		watch.stop("partitioning test needed:");
-
-		System.exit(0);
 	}
 }

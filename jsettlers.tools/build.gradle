@@ -14,5 +14,6 @@ dependencies {
     compile project(':jsettlers.logic')
     compile project(':jsettlers.main.swing')
     compile project(':jsettlers.network')
+    compile project(':jsettlers.testutils')
     compile project(':jsettlers.tests')
 }
