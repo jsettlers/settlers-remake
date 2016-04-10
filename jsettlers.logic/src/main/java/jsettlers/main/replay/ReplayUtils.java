@@ -54,7 +54,8 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  */
 public class ReplayUtils {
 
-	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, float targetGameTimeMinutes, String newReplayFile) throws MapLoadException, IOException {
+	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, float targetGameTimeMinutes, String newReplayFile)
+			throws MapLoadException, IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
@@ -165,7 +166,7 @@ public class ReplayUtils {
 	}
 
 	private static JSettlersGame loadGameFromReplay(IReplayStreamProvider replayFile, INetworkConnector networkConnector,
-													ReplayStartInformation replayStartInformation) throws MapLoadException {
+			ReplayStartInformation replayStartInformation) throws MapLoadException {
 		System.out.println("Found loadable replay file. Started loading it: " + replayFile);
 		return JSettlersGame.loadFromReplayFile(replayFile, networkConnector, replayStartInformation);
 	}
@@ -199,7 +200,7 @@ public class ReplayUtils {
 
 		final MapLoader[] savegames = ReplayUtils.playGameToTargetTimeAndGetSavegames(game, networkConnector, targetTimeMinutes);
 
-		return new PlayMapResult(savegames);
+		return new PlayMapResult(map, savegames);
 	}
 
 	private static File findNewestReplayFile() throws IOException {
@@ -225,13 +226,14 @@ public class ReplayUtils {
 	}
 
 	public interface IReplayStreamProvider {
-		InputStream openStream() throws IOException ;
+		InputStream openStream() throws IOException;
 
 		MapLoader getMap(ReplayStartInformation replayStartInformation) throws MapLoadException;
 	}
 
 	/**
 	 * A replay file using the default list.
+	 * 
 	 * @see MapList#defaultList
 	 */
 	public static class ReplayFile implements IReplayStreamProvider {
@@ -240,7 +242,6 @@ public class ReplayUtils {
 		public ReplayFile(File file) {
 			this.file = file;
 		}
-
 
 		@Override
 		public InputStream openStream() throws IOException {
@@ -285,9 +286,11 @@ public class ReplayUtils {
 	}
 
 	public static class PlayMapResult implements IReplayStreamProvider {
+		private final MapLoader map;
 		private final MapLoader[] savegames;
 
-		public PlayMapResult(MapLoader[] savegames) {
+		public PlayMapResult(MapLoader map, MapLoader[] savegames) {
+			this.map = map;
 			this.savegames = savegames;
 		}
 
@@ -298,13 +301,12 @@ public class ReplayUtils {
 
 		@Override
 		public MapLoader getMap(ReplayStartInformation replayStartInformation) throws MapLoadException {
-			for (MapLoader m : savegames) {
-				if (m.getMapId().equals(replayStartInformation.getMapId())) {
-					return m;
-				}
+			if (map.getMapId().equals(replayStartInformation.getMapId())) {
+				return map;
 			}
 			throw new MapLoadException("No file found for " + replayStartInformation);
 		}
+
 		public MapLoader[] getSavegames() {
 			return savegames;
 		}
