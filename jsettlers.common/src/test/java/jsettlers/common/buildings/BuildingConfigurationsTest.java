@@ -40,7 +40,7 @@ public class BuildingConfigurationsTest {
 		assumeTrue(EBuildingType.TEMPLE != buildingType); // temple uses door location for the wine bowl
 		assumeTrue(EBuildingType.MARKET_PLACE != buildingType); // market place does not use the door
 
-		assertTrue(isBlocked(buildingType.getDoorTile()));
+		assertFalse(isBlocked(buildingType.getDoorTile()));
 		assertTrue(isProtected(buildingType.getDoorTile()));
 	}
 

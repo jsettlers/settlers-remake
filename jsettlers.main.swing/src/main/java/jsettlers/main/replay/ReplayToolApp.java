@@ -37,7 +37,7 @@ public class ReplayToolApp {
 
 		OptionableProperties options = MainUtils.loadOptions(args);
 		SwingManagedJSettlers.loadOptionalSettings(options);
-		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(options, new File(".")));
+		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(options));
 
 		int targetGameTimeMinutes = Integer.valueOf(options.getProperty("targetTime"));
 		String replayFileString = options.getProperty("replayFile");

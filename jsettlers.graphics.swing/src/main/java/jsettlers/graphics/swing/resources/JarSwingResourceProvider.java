@@ -51,14 +51,8 @@ public class JarSwingResourceProvider extends SwingResourceProvider {
 			return new JarSwingResourceProvider(originalMapsDirectory);
 		} else {
 			System.out.println("Falling back to resource directory " + fallbackResources.getAbsolutePath());
-			if (!isResourceDir(fallbackResources)) {
-				throw new IOException("Not a resources folder: " + fallbackResources.getAbsolutePath() + " in " + new File("").getAbsolutePath());
-			}
+			fallbackResources.mkdirs();
 			return new SwingResourceProvider(fallbackResources, originalMapsDirectory);
 		}
-	}
-
-	private static boolean isResourceDir(File dir) {
-		return new File(new File(dir, "images"), "movables.txt").exists();
 	}
 }

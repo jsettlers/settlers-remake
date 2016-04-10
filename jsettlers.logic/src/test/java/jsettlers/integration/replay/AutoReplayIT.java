@@ -43,6 +43,7 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.testutils.map.MapUtils;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +52,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
-	static {
+	@BeforeClass
+	public static void setConstantes() {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
@@ -85,8 +87,8 @@ public class AutoReplayIT {
 		this.targetTimeMinutes = targetTimeMinutes;
 	}
 
-	@BeforeClass
-	public static void fakeSaveDirectory() {
+	@Before
+	public void fakeSaveDirectory() {
 		// The replay files contain a save action.
 		final MemoryResourceProvider resourceProvider = new MemoryResourceProvider();
 		ResourceManager.setProvider(resourceProvider);
@@ -125,7 +127,7 @@ public class AutoReplayIT {
 	}
 
 	private ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
-		return MapUtils.createReplayForResource(getClass(), getReplayName(), MapUtils.getMap(getClass(), "base.rmap"));
+		return MapUtils.createReplayForResource(getClass(), getReplayName(), MapUtils.getMap(getClass(), folderName + "/base.rmap"));
 	}
 
 	private String getReplayName() {
@@ -212,7 +214,7 @@ public class AutoReplayIT {
 
 					@Override
 					public void delete() {
-						throw new UnsupportedOperationException();
+						files.remove(key);
 					}
 
 					@Override

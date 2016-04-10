@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.utils;
 
+import java.io.File;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 /**
  * Extension of the standard {@link Properties} class.
@@ -58,6 +62,24 @@ public class OptionableProperties extends Properties {
 					this.setProperty(option, "true");
 				}
 			}
+		}
+	}
+
+	public File getAppHome() {
+		String home = getProperty("home");
+		if (home != null) {
+			return new File(home);
+		} else {
+			home = System.getProperty("user.home");
+			String os = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH);
+			String dir = home + File.separator + ".jsettlers";
+
+			if (os.startsWith("windows")) {
+				dir = System.getenv("APPDATA") + File.separator + ".jsettlers";
+			}
+			File dirFile = new File(dir);
+			dirFile.mkdirs();
+			return dirFile;
 		}
 	}
 }

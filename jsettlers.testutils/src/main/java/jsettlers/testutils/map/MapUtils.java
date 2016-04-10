@@ -64,12 +64,11 @@ public final class MapUtils {
 			ExtendedRandom actualRandom = MatchConstants.random();
 			MatchConstants.clearState();
 
-			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
-			assertEquals(expectedTime, actualTime);
+			assertEquals("Map ID", expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
+			assertEquals("Map time", expectedTime, actualTime);
 			// Test the random behavior a bit to have a high probability of equality. An equals method does not exist for Random.
-			assertEquals(expectedRandom.nextInt(), actualRandom.nextInt());
-			assertEquals(expectedRandom.nextInt(), actualRandom.nextInt());
-			assertEquals(expectedRandom.nextInt(), actualRandom.nextInt());
+			assertEquals("Random number state", expectedRandom.nextLong(), actualRandom.nextLong());
+			assertEquals("Random number state", expectedRandom.nextLong(), actualRandom.nextLong());
 
 			int e, a;
 			while (((e = expectedStream.read()) != -1) & ((a = actualStream.read()) != -1)) {
@@ -109,7 +108,7 @@ public final class MapUtils {
 	public static ReplayUtils.IReplayStreamProvider createReplayForResource(final Class<?> relativeTo, final String file, final MapLoader map) {
 		assertNotNull(relativeTo.getResource(file));
 
-		return new ReplayUtils.IReplayStreamProvider(){
+		return new ReplayUtils.IReplayStreamProvider() {
 
 			@Override
 			public InputStream openStream() {

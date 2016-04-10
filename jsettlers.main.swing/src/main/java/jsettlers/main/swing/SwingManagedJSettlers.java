@@ -62,7 +62,7 @@ public class SwingManagedJSettlers {
 	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
-		SwingManagedJSettlers.setupResourceManagers(optionableProperties, new File("."));
+		SwingManagedJSettlers.setupResourceManagers(optionableProperties);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
 		handleStartOptions(optionableProperties, settlersFrame);
@@ -101,13 +101,12 @@ public class SwingManagedJSettlers {
 	 * file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 * 
-	 * @param argsMap
-	 * @param defaultConfigFileName
+	 * @param options
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(OptionableProperties options, File defaultConfigDirectory) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(options, defaultConfigDirectory);
+	public static void setupResourceManagers(OptionableProperties options) throws FileNotFoundException, IOException {
+		ConfigurationPropertiesFile configFile = getConfigFile(options);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		boolean firstRun = true;
@@ -161,20 +160,15 @@ public class SwingManagedJSettlers {
 		}
 	}
 
-	public static ConfigurationPropertiesFile getConfigFile(Properties options, File defaultConfigDirectory) throws IOException {
-		ConfigurationPropertiesFile file;
+	public static ConfigurationPropertiesFile getConfigFile(OptionableProperties options) throws IOException {
+		File file;
 		if (options.containsKey("config")) {
 			String configFileName = options.getProperty("config");
-			file = new ConfigurationPropertiesFile(new File(configFileName));
+			file = new File(configFileName);
 		} else {
-			file = createDefaultConfigFile(defaultConfigDirectory);
+			file = new File(options.getAppHome(), "congid.prp");
 		}
-		return file;
-	}
-
-	public static ConfigurationPropertiesFile createDefaultConfigFile(File defaultConfigDirectory) throws FileNotFoundException, IOException {
-		return new ConfigurationPropertiesFile(new File(defaultConfigDirectory, "config.prp"), new File(defaultConfigDirectory,
-				"configTemplate.prp"));
+		return new ConfigurationPropertiesFile(file);
 	}
 
 	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {

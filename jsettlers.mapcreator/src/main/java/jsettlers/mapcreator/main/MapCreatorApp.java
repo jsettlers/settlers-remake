@@ -105,7 +105,7 @@ public class MapCreatorApp {
 			ExceptionHandler.setupDefaultExceptionHandler();
 
 			OptionableProperties options = MainUtils.loadOptions(args);
-			SwingManagedJSettlers.setupResourceManagers(options, new File("."));
+			SwingManagedJSettlers.setupResourceManagers(options);
 			loadLookAndFeel();
 
 			startWithSelectionDialog();
