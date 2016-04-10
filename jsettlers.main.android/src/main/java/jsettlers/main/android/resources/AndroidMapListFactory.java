@@ -22,22 +22,9 @@ import android.content.res.AssetManager;
 
 public class AndroidMapListFactory extends DefaultMapListFactory {
 
-	private final AssetManager manager;
-	private final File writeableDir;
-
 	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
 		super();
-		this.manager = manager;
-		this.writeableDir = writeableDir;
-	}
-
-	@Override
-	protected IMapLister getAdditionalMaps() {
-		return new AndroidAssetsMapLister(manager, "maps");
-	}
-
-	@Override
-	protected File getWriteableDirectory() {
-		return writeableDir;
+		directories.add(new AndroidAssetsMapLister(manager, "maps"));
+		addResources(writeableDir);
 	}
 }

@@ -16,6 +16,7 @@ package jsettlers.common.utils;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,19 +26,34 @@ import jdk.nashorn.internal.runtime.regexp.joni.Config;
 /**
  * Extension of the standard {@link Properties} class.
  * <p />
- * Features: allows to check if an option has been set to true and load the startup arguments as properties file.
- * 
+ * Features: allows to check if an option has been set to true.
+ * <p />
+ * Options are scanned in this order:
+ * <ul>
+ * <li>command line options passed to #loadArguments</li>
+ * <li>Environment variables in the form of SETTLERS_{NAME}, used as {name}</li>
+ * <li>The defaults given to the constructor.</li>
+ * </ul>
+ *
  * @author Andreas Eberle
  *
  */
 public class OptionableProperties extends Properties {
 	private static final long serialVersionUID = 6425219415673331880L;
+	public static final String ENV_PREFIX = "SETTLERS_";
 
 	public OptionableProperties() {
 	}
 
 	public OptionableProperties(Properties defaults) {
 		super(defaults);
+
+		for (Map.Entry<String, String> e : System.getenv().entrySet()) {
+			if (e.getKey().startsWith(ENV_PREFIX)) {
+				String key = e.getKey().substring(ENV_PREFIX.length()).toLowerCase();
+				setProperty(key, e.getValue());
+			}
+		}
 	}
 
 	public boolean isOptionSet(String key) {
@@ -80,6 +96,15 @@ public class OptionableProperties extends Properties {
 			File dirFile = new File(dir);
 			dirFile.mkdirs();
 			return dirFile;
+		}
+	}
+
+	public File getConfigFile() {
+		if (containsKey("config")) {
+			String configFileName = getProperty("config");
+			return new File(configFileName);
+		} else {
+			return new File(getAppHome(), "config.prp");
 		}
 	}
 }

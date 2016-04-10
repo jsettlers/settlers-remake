@@ -22,7 +22,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.swing.resources.SwingResourceLoader;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 /**
@@ -32,12 +32,12 @@ import jsettlers.main.swing.SwingManagedJSettlers;
  */
 public class ReplayToolApp {
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException, MapLoadException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException, MapLoadException, SwingResourceLoader.ResourceSetupException {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 
 		OptionableProperties options = MainUtils.loadOptions(args);
 		SwingManagedJSettlers.loadOptionalSettings(options);
-		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(options));
+		SwingResourceLoader.setup(options);
 
 		int targetGameTimeMinutes = Integer.valueOf(options.getProperty("targetTime"));
 		String replayFileString = options.getProperty("replayFile");

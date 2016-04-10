@@ -25,7 +25,6 @@ import java.util.Collection;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
@@ -241,33 +240,38 @@ public class MapList implements IMapListerCallable {
 	}
 
 	public static class DefaultMapListFactory implements IMapListFactory {
+		protected ArrayList<IMapLister> directories = new ArrayList<>();
+		protected IMapLister saveDirectory = null;
+
+		public void addDirectory(String directory, boolean create) {
+			directories.add(new DirectoryMapLister(new File(directory), create));
+		}
+
 		@Override
 		public MapList getMapList() {
-			File resourcesDirectory = getWriteableDirectory();
-			File originalMapsDirectory = ResourceManager.getOriginalMapDirectory();
-			IMapLister remakeMaps = new DirectoryMapLister(new File(resourcesDirectory, "maps"), false);
-			IMapLister originalMaps = new DirectoryMapLister(originalMapsDirectory, false);
-			IMapLister additionalMaps = getAdditionalMaps();
 			IMapLister save = getSave();
-			ArrayList<IMapLister> list = new ArrayList<>();
-			list.add(remakeMaps);
-			list.add(originalMaps);
-			if (additionalMaps != null) {
-				list.add(additionalMaps);
+			if (saveDirectory == null) {
+				throw new RuntimeException("Savegame directory not set.");
 			}
-			return new MapList(list, save);
+			return new MapList(getDirectories(), saveDirectory);
+		}
+
+		public void addResources(File resources) {
+			directories.add(new DirectoryMapLister(new File(resources, "maps"), true));
+			saveDirectory = new DirectoryMapLister(new File(resources, "save"), true);
+			directories.add(saveDirectory);
 		}
 
 		protected IMapLister getSave() {
-			return new DirectoryMapLister(new File(getWriteableDirectory(), "save"), true);
+			return saveDirectory;
 		}
 
-		protected File getWriteableDirectory() {
-			return ResourceManager.getResourcesDirectory();
+		public Collection<IMapLister> getDirectories() {
+			return directories;
 		}
 
-		protected IMapLister getAdditionalMaps() {
-			return null;
+		public void addSaveDirectory(IMapLister saveDirectory) {
+			this.saveDirectory = saveDirectory;
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,47 +12,47 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.swing.resources;
+package jsettlers.main.swing.resources;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import jsettlers.common.resources.IResourceProvider;
-
-public class SwingResourceProvider implements IResourceProvider {
-	private final String resourcesDirectory;
-	private final File originalMapsDirectory;
-
-	public SwingResourceProvider(File resourcesDirectory, File originalMapsDirectory) {
-		this.resourcesDirectory = resourcesDirectory.getPath() + File.separator;
-		this.originalMapsDirectory = originalMapsDirectory;
+/**
+ * A special resource loader that looks in the jar file as well.
+ * 
+ * @author Michael Zangl
+ */
+public class JarSwingResourceProvider extends SwingResourceProvider {
+	public JarSwingResourceProvider() {
+		super(getDefaultResourceDirectory());
 	}
 
 	@Override
 	public InputStream getResourcesFileStream(String name) throws IOException {
-		File file = new File(resourcesDirectory + name);
-
-		return new FileInputStream(file);
+		String packedName = "/jsettlers/resources/" + name;
+		InputStream res = getClass().getResourceAsStream(packedName);
+		if (res != null) {
+			return res;
+		}
+		return super.getResourcesFileStream(name);
 	}
 
-	@Override
-	public OutputStream writeFile(String name) throws IOException {
-		File file = new File(resourcesDirectory + name);
-		file.getParentFile().mkdirs();
-		return new FileOutputStream(file);
+	private static File getDefaultResourceDirectory() {
+		File dir = new File(System.getProperty("user.home"), ".jsettlers");
+		dir.mkdirs();
+		return dir;
 	}
 
-	@Override
-	public File getResourcesDirectory() {
-		return new File(resourcesDirectory);
-	}
-
-	@Override
-	public File getOriginalMapsDirectory() {
-		return originalMapsDirectory;
+	public static SwingResourceProvider getBestAvailable(File fallbackResources) throws IOException {
+		boolean available = JarSwingResourceProvider.class
+				.getResource("/jsettlers/resources/use") != null;
+		if (available) {
+			return new JarSwingResourceProvider();
+		} else {
+			System.out.println("Falling back to resource directory " + fallbackResources.getAbsolutePath());
+			fallbackResources.mkdirs();
+			return new SwingResourceProvider(fallbackResources);
+		}
 	}
 }

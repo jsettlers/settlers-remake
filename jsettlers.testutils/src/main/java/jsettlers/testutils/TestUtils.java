@@ -25,21 +25,15 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
-import jsettlers.graphics.swing.resources.SwingResourceLoader;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.IListedMap;
 import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
-import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
-import jsettlers.main.swing.SwingManagedJSettlers;
-import jsettlers.main.swing.resources.ResourceMapLister;
 
 /**
  * Utility class holding methods needed by serveral test classes.
@@ -68,9 +62,8 @@ public class TestUtils {
 
 	public static synchronized void setupResourcesManager() {
 		try {
-			SwingManagedJSettlers.setupResourceManagers(new OptionableProperties());
-			MapList.setDefaultListFactory(new ResourceMapLister());
-		} catch (IOException e) {
+			SwingResourceLoader.setup(new OptionableProperties());
+		} catch (SwingResourceLoader.ResourceSetupException e) {
 			throw new RuntimeException("Config file not found!", e);
 		}
 	}
@@ -82,17 +75,9 @@ public class TestUtils {
 		final MemoryResourceProvider resourceProvider = new MemoryResourceProvider();
 		ResourceManager.setProvider(resourceProvider);
 
-		MapList.setDefaultListFactory(new MapList.DefaultMapListFactory() {
-			@Override
-			protected IMapLister getAdditionalMaps() {
-				return resourceProvider;
-			}
-
-			@Override
-			protected IMapLister getSave() {
-				return resourceProvider;
-			}
-		});
+		MapList.DefaultMapListFactory d = new MapList.DefaultMapListFactory();
+		d.addSaveDirectory(resourceProvider);
+		MapList.setDefaultListFactory(d);
 	}
 
 	private static class MemoryResourceProvider implements IResourceProvider, IMapLister {
@@ -119,11 +104,6 @@ public class TestUtils {
 
 		@Override
 		public File getResourcesDirectory() {
-			return null;
-		}
-
-		@Override
-		public File getOriginalMapsDirectory() {
 			return null;
 		}
 

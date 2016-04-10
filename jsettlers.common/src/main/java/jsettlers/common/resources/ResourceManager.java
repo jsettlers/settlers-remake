@@ -66,12 +66,4 @@ public class ResourceManager {
 			return new File("");
 		}
 	}
-
-	public static File getOriginalMapDirectory() {
-		if (provider != null) {
-			return provider.getOriginalMapsDirectory();
-		} else {
-			return null;
-		}
-	}
 }

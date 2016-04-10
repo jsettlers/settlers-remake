@@ -47,7 +47,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.swing.resources.SettlersFolderChecker;
+import jsettlers.main.swing.resources.SettlersFolderChecker;
 
 /**
  * Select settler root folder dialog

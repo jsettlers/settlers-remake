@@ -56,11 +56,4 @@ public interface IResourceProvider {
 	 */
 	File getResourcesDirectory();
 
-	/**
-	 * Gets the folder containing the original maps.
-	 * 
-	 * @return The folder containing the original maps.
-	 */
-	File getOriginalMapsDirectory();
-
 }

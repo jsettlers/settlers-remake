@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Properties;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -34,12 +33,11 @@ import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
-import jsettlers.graphics.swing.resources.SwingResourceLoader;
+import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.DirectoryMapLister;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -47,7 +45,6 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
-import jsettlers.main.swing.resources.ResourceMapLister;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -59,10 +56,10 @@ public class SwingManagedJSettlers {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
 
-	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption {
+	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption, SwingResourceLoader.ResourceSetupException {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
-		SwingManagedJSettlers.setupResourceManagers(optionableProperties);
+		setupResourceManagers(optionableProperties);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
 		handleStartOptions(optionableProperties, settlersFrame);
@@ -100,75 +97,59 @@ public class SwingManagedJSettlers {
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
 	 * file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
-	 * 
+	 *
 	 * @param options
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(OptionableProperties options) throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = getConfigFile(options);
-		SwingResourceLoader.setupResourcesManager(configFile);
-
+	public static void setupResourceManagers(OptionableProperties options) throws SwingResourceLoader.ResourceSetupException {
+		boolean wasSuccessful = false;
 		boolean firstRun = true;
-
-		while (!configFile.isValidSettlersFolderSet() || !SwingManagedJSettlers.trySettingUpResources(configFile)) {
-			if (!firstRun) {
-				JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
+		while (!wasSuccessful) {
+			try {
+				SwingResourceLoader.setup(options);
+				wasSuccessful = true;
+			} catch (SwingResourceLoader.ResourceDirectoryInvalidException e) {
+				// ask the user if we should continue...
+				askUserToSetResources(firstRun, options);
 			}
 			firstRun = false;
-
-			final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					folderChooser.setVisible(true);
-				}
-			});
-
-			File selectedFolder = folderChooser.waitForUserInput();
-			if (selectedFolder == null) {
-				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
-				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
-				System.err.println(noFolderSelctedMessage);
-				System.exit(1);
-			}
-
-			System.out.println(selectedFolder);
-			try {
-				configFile.setSettlersFolder(selectedFolder);
-			} catch (IOException ex) {
-				String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");
-				System.err.println(errorSavingSettingsMessage);
-				JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
-				ex.printStackTrace();
-			}
-		}
-
-		if (!firstRun) { // the dialog was shown => settlers folder might have changed
-			SwingResourceLoader.setupResourcesManager(configFile);
 		}
 	}
 
-	private static boolean trySettingUpResources(ConfigurationPropertiesFile configFile) {
+	private static void askUserToSetResources(boolean firstRun, OptionableProperties options) throws SwingResourceLoader.ResourceSetupException {
+		if (!firstRun) {
+			JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
+		}
+		firstRun = false;
+
+		final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				folderChooser.setVisible(true);
+			}
+		});
+
+		File selectedFolder = folderChooser.waitForUserInput();
+		if (selectedFolder == null) {
+			String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
+			JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
+			System.err.println(noFolderSelctedMessage);
+			System.exit(1);
+		}
+
+		System.out.println(selectedFolder);
 		try {
-			SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
-			MapList.setDefaultListFactory(new ResourceMapLister());
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			ConfigurationPropertiesFile config = new ConfigurationPropertiesFile(options);
+			config.setSettlersFolder(selectedFolder);
+		} catch (IOException ex) {
+			String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");
+			System.err.println(errorSavingSettingsMessage);
+			JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
+			ex.printStackTrace();
 		}
-	}
-
-	public static ConfigurationPropertiesFile getConfigFile(OptionableProperties options) throws IOException {
-		File file;
-		if (options.containsKey("config")) {
-			String configFileName = options.getProperty("config");
-			file = new File(configFileName);
-		} else {
-			file = new File(options.getAppHome(), "congid.prp");
-		}
-		return new ConfigurationPropertiesFile(file);
+		options.put("original", selectedFolder.getAbsolutePath());
 	}
 
 	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {

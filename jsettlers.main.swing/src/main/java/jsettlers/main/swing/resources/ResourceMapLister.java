@@ -31,20 +31,19 @@ import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
 
 public class ResourceMapLister extends DefaultMapListFactory {
-	@Override
-	protected IMapLister getAdditionalMaps() {
+
+	public ResourceMapLister() {
 		CodeSource source = getClass().getProtectionDomain().getCodeSource();
 		System.out.println("Source: " + source);
 		if (source != null) {
 			URL jar = source.getLocation();
 			boolean hasJarExt = jar.getFile().endsWith(".jar");
 			if (hasJarExt || "jar".equalsIgnoreCase(jar.getProtocol())) {
-				return createJarList(jar);
+				directories.add(createJarList(jar));
 			} else if ("file".equalsIgnoreCase(jar.getProtocol())) {
-				return createDevList(jar);
+				directories.add(createDevList(jar));
 			}
 		}
-		return null;
 	}
 
 	private IMapLister createJarList(URL jar) {
@@ -80,7 +79,7 @@ public class ResourceMapLister extends DefaultMapListFactory {
 	private IMapLister createDevList(URL jar) {
 		try {
 			String dir = new File(jar.toURI()).getAbsolutePath() + "/../../resources/main/jsettlers/resources/maps";
-			System.out.println("Here: " + dir);
+			System.out.println("Attempt to use default maps: " + dir);
 			return new DirectoryMapLister(new File(dir), false);
 		} catch (URISyntaxException e) {
 			return null;

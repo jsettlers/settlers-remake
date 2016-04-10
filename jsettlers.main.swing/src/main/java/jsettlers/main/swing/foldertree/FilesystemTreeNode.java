@@ -24,7 +24,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 
-import jsettlers.graphics.swing.resources.SettlersFolderChecker;
+import jsettlers.main.swing.resources.SettlersFolderChecker;
 
 /**
  * Node to display file / folders
