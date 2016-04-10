@@ -113,7 +113,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 		}
 		ImageView image =
 				((ImageView) view.findViewById(R.id.materialitem_image));
-		OriginalImageProvider.get(type).setAsImage(image);
+		OriginalImageProvider.get(type).setAsButton(image);
 
 		SeekBar bar = (SeekBar) view.findViewById(R.id.materialitem_priority);
 		bar.setEnabled(getCount() > 1);

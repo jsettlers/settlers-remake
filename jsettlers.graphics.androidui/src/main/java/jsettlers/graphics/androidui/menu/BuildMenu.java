@@ -113,7 +113,7 @@ public class BuildMenu extends AndroidMenu {
 
 		button.setOnClickListener(generateActionListener(new ShowConstructionMarksAction(
 				type), true));
-		OriginalImageProvider.get(type).setAsImage(button);
+		OriginalImageProvider.get(type).setAsButton(button);
 		currentRow.addView(buttonRoot);
 	}
 

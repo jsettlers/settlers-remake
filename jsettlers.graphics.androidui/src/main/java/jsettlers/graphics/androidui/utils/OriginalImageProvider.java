@@ -109,6 +109,15 @@ public class OriginalImageProvider {
 			}
 		}
 
+		public void setAsButton(ImageView button) {
+			float density = button.getContext().getResources().getDisplayMetrics().density;
+			int w = (int) (180 / density);
+			button.getLayoutParams().width = w;
+			button.getLayoutParams().height = w * 3 / 4;
+			button.setScaleType(ImageView.ScaleType.FIT_CENTER);
+			setAsImage(button);
+		}
+
 		private void realSetAsImage(ImageView view) {
 			view.setImageBitmap(bm);
 		}

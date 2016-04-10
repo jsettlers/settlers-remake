@@ -122,8 +122,7 @@ public class BuildingMenu extends AndroidMenu {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		ImageView image = (ImageView) view.findViewById(R.id.building_image);
-		OriginalImageProvider.get(building
-				.getBuildingType()).setAsImage(image);
+		OriginalImageProvider.get(building.getBuildingType()).setAsButton(image);
 
 		TextView title = (TextView) view.findViewById(R.id.building_name);
 		String name = Labels.getName(building.getBuildingType());
@@ -199,7 +198,7 @@ public class BuildingMenu extends AndroidMenu {
 
 	private ImageButton generateImageButtonTab(TableLayout tabs, ImageReference imageReference) {
 		ImageButton button = generateImageButtonTab(tabs);
-		imageReference.setAsImage(button);
+		imageReference.setAsButton(button);
 		return button;
 	}
 
