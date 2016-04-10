@@ -45,10 +45,10 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	public BearerMovableStrategy(Movable movable) {
 		super(movable);
-		reportAsJobless();
+		reportJobless();
 	}
 
-	private void reportAsJobless() {
+	public final void reportJobless() {
 		super.getGrid().addJobless(this);
 	}
 
@@ -106,7 +106,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			request = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
-			reportAsJobless();
+			reportJobless();
 			break;
 
 		case INIT_CONVERT_JOB:
@@ -124,7 +124,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			if (movableType == null) { // weapon got missing, make this bearer jobless again
 				this.barrack = null;
 				this.state = EBearerState.JOBLESS;
-				reportAsJobless();
+				reportJobless();
 			} else {
 				this.state = EBearerState.DEAD_OBJECT;
 				movable.convertTo(movableType);
@@ -202,7 +202,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		state = EBearerState.JOBLESS;
 
 		if (reportAsJobless) {
-			reportAsJobless();
+			reportJobless();
 		}
 	}
 

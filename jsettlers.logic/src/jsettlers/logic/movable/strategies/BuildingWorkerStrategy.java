@@ -120,7 +120,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case WALK:
 			IBuildingJob job = currentJob;
-			super.forceGoInDirection(currentJob.getDirection());
+			super.goInDirection(currentJob.getDirection(), true);
 			if (currentJob == job) { // the path could fail and call abortPath().
 				jobFinished();
 			}

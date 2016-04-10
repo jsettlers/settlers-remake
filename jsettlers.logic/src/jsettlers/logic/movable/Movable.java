@@ -607,26 +607,21 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 */
 	final boolean goInDirection(EDirection direction, boolean force) {
 		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
-		if (force || (grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+
+		if (force) {
+			this.direction = direction;
+			setState(EMovableState.PATHING);
+			this.followPath(new Path(targetPosition));
+			return true;
+
+		} else if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
 			initGoingSingleStep(targetPosition);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
+
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 * 
-	 * @param direction
-	 *            direction to go
-	 */
-	final void forceGoInDirection(EDirection direction) {
-		ShortPoint2D targetPos = direction.getNextHexPoint(position);
-		this.direction = direction;
-		setState(EMovableState.PATHING);
-		this.followPath(new Path(targetPos));
 	}
 
 	final void setPosition(ShortPoint2D position) {
