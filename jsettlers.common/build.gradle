@@ -14,6 +14,7 @@ sourceSets {
 }
 
 
+def commitFile = new File(new File(new File(sourceSets.generated.java.srcDirs[0], 'jsettlers'), 'common'), 'CommitInfo.java');
 task findGitRevision {
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
     Repository repository = builder.readEnvironment().findGitDir().build();
@@ -23,10 +24,9 @@ task findGitRevision {
 
     ext {
         rev = localRev;
-        commitFile = new File(new File(new File(sourceSets.generated.java.srcDirs[0], 'jsettlers'), 'common'), 'CommitInfo.java');
     }
     onlyIf {
-        !commitFile.text.contains(rev)
+        !commitFile.isFile() || !commitFile.text.contains(rev)
     }
     doLast {
         commitFile.parentFile.mkdirs()
@@ -64,4 +64,8 @@ compileGeneratedJava {
     dependsOn findGitRevision
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
+}
+
+clean << {
+    delete commitFile
 }
