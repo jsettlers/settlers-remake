@@ -314,11 +314,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (timediff > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			context.beginTileContext(scrollMarker.x, scrollMarker.y);
-			ImageLink image = GOTO_ANIMATION.getImage(timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
-			ImageProvider.getInstance().getImage(image)
-					.draw(context.getGl(), Color.WHITE, 1);
-			context.endTileContext();
+			ImageLink image = GOTO_ANIMATION.getImage(
+					timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
+			objectDrawer.drawGotoMarker(scrollMarker,
+					ImageProvider.getInstance().getImage(image));
 		}
 	}
 

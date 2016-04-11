@@ -1104,4 +1104,11 @@ public class MapObjectDrawer {
 		drawByProgress(moveToMarker.x, moveToMarker.y, MARKER_FILE,
 				MOVE_TO_MARKER_SEQUENCE, progress, 1);
 	}
+
+	public void drawGotoMarker(ShortPoint2D gotoMarker, Image image) {
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(FLAG_ROOF_Z);
+		draw(image, gotoMarker.x, gotoMarker.y, 1f);
+		context.getDrawBuffer().setZ(z);
+	}
 }
