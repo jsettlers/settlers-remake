@@ -13,17 +13,24 @@ sourceSets {
     }
 }
 
-task findGitRevision << {
+
+task findGitRevision {
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
     Repository repository = builder.readEnvironment().findGitDir().build();
     def headRef = repository.getRef("HEAD")
-    def rev = headRef.objectId.name
-    repository.close()
+    def localRev = headRef.objectId.name
+    repository.close();
 
-    def dir = new File(new File(sourceSets.generated.java.srcDirs[0],'jsettlers'),'common')
-    dir.mkdirs()
-    def file = new File(dir, 'CommitInfo.java')
-    file.text = sprintf("""package jsettlers.common;
+    ext {
+        rev = localRev;
+        commitFile = new File(new File(new File(sourceSets.generated.java.srcDirs[0], 'jsettlers'), 'common'), 'CommitInfo.java');
+    }
+    onlyIf {
+        !commitFile.text.contains(rev)
+    }
+    doLast {
+        commitFile.parentFile.mkdirs()
+        commitFile.text = sprintf("""package jsettlers.common;
 public final class CommitInfo {
 	/**
 	 * The current commit this was build with, as extracted from git.
@@ -34,6 +41,7 @@ public final class CommitInfo {
 	private CommitInfo() {
 	}
 }""", rev.substring(0, 8), rev, (new Date()).format('yyyy-MM-dd-HH-mm-ss'))
+    }
 }
 
 sourceSets {

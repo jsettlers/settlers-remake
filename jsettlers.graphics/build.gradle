@@ -19,12 +19,14 @@ clean {
 dependencies {
     compile project(':jsettlers.common')
     compile project(':go.graphics')
-    compile project(':jsettlers.graphics:layoutbuilder')
 }
 
+
 task generateLayouts(dependsOn:tasks.getByPath(':jsettlers.graphics:layoutbuilder:jar'), type: JavaExec) {
+    classpath project(":jsettlers.graphics:layoutbuilder").sourceSets.main.runtimeClasspath
     main = "jsettlers.graphics.ui.generate.LayoutConverter"
-    args = [ './src/main/res/layout', './src/gen/java']
-    classpath = configurations.compile
+    args = [ file('./src/main/res/layout').absolutePath, file('./src/gen/java').absolutePath]
+    inputs.dir file('./src/main/res/layout')
+    outputs.dir file('./src/gen/java/jsettlers/graphics/ui/layout')
 }
 
