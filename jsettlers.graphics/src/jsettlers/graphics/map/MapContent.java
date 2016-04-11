@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.List;
+
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
@@ -342,42 +344,38 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private void drawMessages(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
-		// TODO: don't let logic wait until we rendered.
-		synchronized (messenger) {
-			int messageIndex = 0;
-			messenger.doTick();
-			for (IMessage m : messenger.getMessages()) {
-				float x = MESSAGE_OFFSET_X;
-				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
-				float a = messageAlpha(m);
-				if (m.getSender() >= 0) {
-					String name = getPlayername(m.getSender()) + ":";
-					Color color = context.getPlayerColor(m.getSender());
-					float width = (float) drawer.getWidth(name);
-					float bright = color.getRed() + color.getGreen() + color.getBlue();
-					if (bright < .9f) {
-						// black
-						drawer.setColor(1, 1, 1, a/2);
-					} else if (bright < 2f) {
-						// bad visibility
-						drawer.setColor(0, 0, 0, a/2);
-					}
-					for (int i=-1; i<3; i++)
-						drawer.drawString(x+i, y-1, name);
-					drawer.setColor(color.getRed(), color.getGreen(),
-							color.getBlue(), a);
-					drawer.drawString(x, y, name);
-					x += width + 10;
+		int messageIndex = 0;
+		messenger.doTick();
+		List<IMessage> messages = messenger.getMessages();
+		for (IMessage m : messages.toArray(
+				new IMessage[messages.size()])) {
+			float x = MESSAGE_OFFSET_X;
+			int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+			float a = messageAlpha(m);
+			if (m.getSender() >= 0) {
+				String name = getPlayername(m.getSender()) + ":";
+				Color color = context.getPlayerColor(m.getSender());
+				float width = (float) drawer.getWidth(name);
+				float bright = color.getRed() + color.getGreen() + color.getBlue();
+				if (bright < .9f) {
+					// black
+					drawer.setColor(1, 1, 1, a/2);
+				} else if (bright < 2f) {
+					// bad visibility
+					drawer.setColor(0, 0, 0, a/2);
 				}
-
-				drawer.setColor(1, 1, 1, a);
-				drawer.drawString(x, y, m.getMessage());
-
-				messageIndex++;
-				if (messageIndex >= IMessage.MAX_MESSAGES) {
-					break;
-				}
+				for (int i=-1; i<3; i++)
+					drawer.drawString(x+i, y-1, name);
+				drawer.setColor(color.getRed(), color.getGreen(),
+						color.getBlue(), a);
+				drawer.drawString(x, y, name);
+				x += width + 10;
 			}
+
+			drawer.setColor(1, 1, 1, a);
+			drawer.drawString(x, y, m.getMessage());
+
+			messageIndex++;
 		}
 	}
 

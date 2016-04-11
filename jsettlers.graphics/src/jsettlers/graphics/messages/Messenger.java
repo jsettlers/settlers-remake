@@ -57,7 +57,7 @@ public class Messenger {
 	 * @param message
 	 * @return
 	 */
-	public boolean addMessage(IMessage message) {
+	public synchronized boolean addMessage(IMessage message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
 			if (messages.size() > IMessage.MAX_MESSAGES)
@@ -74,7 +74,7 @@ public class Messenger {
 	 * interval, then remove all messages whose age exceed the allowed
 	 * time-to-live ({@link IMessage#MESSAGE_TTL}).
 	 */
-	public void doTick() {
+	public synchronized void doTick() {
 		int millis = (int)System.currentTimeMillis(); 
 		if (!gameTimeProvider.isGamePausing()) {
 			// update message ages
@@ -110,7 +110,7 @@ public class Messenger {
 	 * when repeatedly called.
 	 * @return A {@link ShortPoint2D} retrieved from a message.
 	 */
-	public ShortPoint2D getPosition() {
+	public synchronized ShortPoint2D getPosition() {
 		if (!messages.isEmpty()) {
 			// retrieve nth message's position and increment n
 			return messages.get(focusPos++ % messages.size()).getPosition();
