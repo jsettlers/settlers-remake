@@ -41,18 +41,32 @@ import jdk.nashorn.internal.runtime.regexp.joni.Config;
 public class OptionableProperties extends Properties {
 	private static final long serialVersionUID = 6425219415673331880L;
 	public static final String ENV_PREFIX = "SETTLERS_";
+	public static final String PROPERTIES_PREFIX = "settlers.";
 
 	public OptionableProperties() {
+		loadFromEnv();
 	}
 
 	public OptionableProperties(Properties defaults) {
 		super(defaults);
+		loadFromEnv();
+	}
 
+	private void loadFromEnv() {
 		for (Map.Entry<String, String> e : System.getenv().entrySet()) {
-			if (e.getKey().startsWith(ENV_PREFIX)) {
-				String key = e.getKey().substring(ENV_PREFIX.length()).toLowerCase();
-				setProperty(key, e.getValue());
-			}
+			loadEntry(e, ENV_PREFIX);
+		}
+
+		for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+			loadEntry(e, PROPERTIES_PREFIX);
+		}
+	}
+
+	private void loadEntry(Map.Entry<?, ?> e, String envPrefix) {
+		if (e.getKey().toString().startsWith(envPrefix)) {
+			String key = e.getKey().toString().substring(envPrefix.length()).toLowerCase();
+			setProperty(key, e.getValue().toString());
+			System.out.println("Argument: " + key + " -> " + e.getValue().toString());
 		}
 	}
 

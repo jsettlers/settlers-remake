@@ -5,6 +5,10 @@ compileJava {
     targetCompatibility = 1.8
 }
 
+startScripts {
+    applicationName = "mapcreator"
+}
+
 mainClassName = 'jsettlers.mapcreator.main.MapCreatorApp'
 
 jar {

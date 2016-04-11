@@ -33,6 +33,17 @@ subprojects {
 			testCompile project(':jsettlers.testutils')
 		}
 	}
+	plugins.withType(ApplicationPlugin).whenPluginAdded {
+		startScripts {
+			defaultJvmOpts = ['-Xmx2G']
+			optsEnvironmentVar = "XXXREPLACEXXX"
+			def args = '"-Dsettlers.maps=$APP_HOME/maps"'
+			doLast {
+				unixScript.text = unixScript.text.replace('$XXXREPLACEXXX', args)
+				windowsScript.text = windowsScript.text.replace('%XXXREPLACEXXX%', args.replace('$APP_HOME', '%APP_HOME%'))
+			}
+		}
+	}
 }
 
 distributions {
@@ -40,14 +51,37 @@ distributions {
 		contents {
 			into('bin') {
 				from { project(':jsettlers.network').startScripts.outputs.files }
-			}
+                from { project(':jsettlers.main.swing').startScripts.outputs.files }
+                from { project(':jsettlers.mapcreator').startScripts.outputs.files }
+            }
 			into('lib') {
+                from { project(':jsettlers.network').jar }
 				from { project(':jsettlers.network').configurations.runtime }
-				from { project(':jsettlers.network').jar }
+                from { project(':jsettlers.main.swing').jar }
+                from { project(':jsettlers.main.swing').configurations.runtime }
+                from { project(':jsettlers.mapcreator').jar }
+                from { project(':jsettlers.mapcreator').configurations.runtime }
 			}
+            into('maps') {
+                from { project.getRootProject().file('maps/release') }
+            }
+            from { project.getRootProject().file('LICENSE.txt')}
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 		}
 	}
+
+    android {
+        contents {
+            into('apk') {
+                from { file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-release-unsigned.apk') }
+            }
+            from { project.getRootProject().file('LICENSE.txt')}
+        }
+    }
 }
+
+tasks.getByPath(":androidDistTar").dependsOn tasks.getByPath(":jsettlers.main.android:assemble")
+tasks.getByPath(":androidDistZip").dependsOn tasks.getByPath(":jsettlers.main.android:assemble")
 
 // This is a hack to make ./gradlew run only run the swing version.
 task run(dependsOn: ':jsettlers.main.swing:run') << {
@@ -59,7 +93,7 @@ tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":r
 
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
-task runAndroid(dependsOn: ':jsettlers.main.android:build') << {
+task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
 	Properties local = new Properties()
 	local.load(new FileInputStream("local.properties"))
 	def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'

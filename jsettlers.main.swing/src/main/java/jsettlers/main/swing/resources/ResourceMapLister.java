@@ -61,7 +61,7 @@ public class ResourceMapLister implements IMapLister {
 					break;
 				}
 				String path = "/" + e.getName();
-				System.out.println("Entry: " + path);
+				// System.out.println("Entry: " + path);
 				if (path.startsWith("/jsettlers/resources/maps") && path.endsWith(MapLoader.MAP_EXTENSION)) {
 					callable.foundMap(new ListedResourceMap(path));
 				}
