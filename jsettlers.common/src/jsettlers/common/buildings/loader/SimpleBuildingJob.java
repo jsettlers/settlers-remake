@@ -19,15 +19,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
 
-public class SimpleBuildingJob implements IBuildingJob {
-	private final short dx;
-	private final short dy;
+public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
+	private static final long serialVersionUID = 3817438298769294483L;
 
 	private final float time;
 
@@ -50,9 +52,8 @@ public class SimpleBuildingJob implements IBuildingJob {
 	 *            The data
 	 */
 	private SimpleBuildingJob(BuildingJobData data) {
+		super(data.getDx(), data.getDy());
 		type = data.getType();
-		dx = data.getDx();
-		dy = data.getDy();
 		time = data.getTime();
 		material = data.getMaterial();
 		direction = data.getDirection();
@@ -63,9 +64,8 @@ public class SimpleBuildingJob implements IBuildingJob {
 	}
 
 	private SimpleBuildingJob(EBuildingJobType type, int time) {
+		super(0, 0);
 		this.type = type;
-		this.dx = 0;
-		this.dy = 0;
 		this.time = time;
 		this.material = null;
 		this.direction = null;
@@ -76,18 +76,13 @@ public class SimpleBuildingJob implements IBuildingJob {
 	}
 
 	@Override
+	public ShortPoint2D calculatePoint(IBuilding building) {
+		return super.calculatePoint(building.getPos());
+	}
+
+	@Override
 	public EDirection getDirection() {
 		return direction;
-	}
-
-	@Override
-	public short getDx() {
-		return dx;
-	}
-
-	@Override
-	public short getDy() {
-		return dy;
 	}
 
 	@Override
@@ -215,4 +210,5 @@ public class SimpleBuildingJob implements IBuildingJob {
 	public EMaterialType[] getFoodOrder() {
 		return foodOrder;
 	}
+
 }

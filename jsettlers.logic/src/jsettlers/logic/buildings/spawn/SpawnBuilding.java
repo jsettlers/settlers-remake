@@ -81,10 +81,6 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract byte getProduceLimit();
 
 	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
-	}
-
-	@Override
 	public final boolean isOccupied() {
 		return true;
 	}

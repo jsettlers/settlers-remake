@@ -45,11 +45,11 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	public BearerMovableStrategy(Movable movable) {
 		super(movable);
-		reportAsJobless();
+		reportJobless();
 	}
 
-	private void reportAsJobless() {
-		super.getStrategyGrid().addJobless(this);
+	public final void reportJobless() {
+		super.getGrid().addJobless(this);
 	}
 
 	@Override
@@ -62,14 +62,14 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
 
-			if (!super.getPos().equals(offer)) { // if we are not at the offers position, go to it.
+			if (!movable.getPos().equals(offer)) { // if we are not at the offers position, go to it.
 				if (!super.goToPos(offer)) {
 					handleJobFailed(true);
 				}
 				break;
 			}
 		case GOING_TO_OFFER:
-			if (super.getPos().equals(offer)) {
+			if (movable.getPos().equals(offer)) {
 				state = EBearerState.TAKING;
 				if (!super.take(materialType, true)) {
 					handleJobFailed(true);
@@ -83,18 +83,18 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			if (workerCreationRequest != null) { // we handle a convert with tool job
 				state = EBearerState.DEAD_OBJECT;
 				super.setMaterial(EMaterialType.NO_MATERIAL);
-				super.convertTo(workerCreationRequest.requestedMovableType());
+				movable.convertTo(workerCreationRequest.requestedMovableType());
 			} else {
 				offer = null;
 				state = EBearerState.GOING_TO_REQUEST;
-				if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
+				if (!movable.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
 					handleJobFailed(true);
 				}
 			}
 			break;
 
 		case GOING_TO_REQUEST:
-			if (super.getPos().equals(request.getPos())) {
+			if (movable.getPos().equals(request.getPos())) {
 				state = EBearerState.DROPPING;
 				super.drop(materialType);
 			} else {
@@ -106,12 +106,12 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			request = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
-			reportAsJobless();
+			reportJobless();
 			break;
 
 		case INIT_CONVERT_JOB:
 			state = EBearerState.DEAD_OBJECT;
-			super.convertTo(workerCreationRequest.requestedMovableType());
+			movable.convertTo(workerCreationRequest.requestedMovableType());
 			break;
 
 		case INIT_BECOME_SOLDIER_JOB:
@@ -124,12 +124,12 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			if (movableType == null) { // weapon got missing, make this bearer jobless again
 				this.barrack = null;
 				this.state = EBearerState.JOBLESS;
-				reportAsJobless();
+				reportJobless();
 			} else {
 				this.state = EBearerState.DEAD_OBJECT;
-				super.convertTo(movableType);
+				movable.convertTo(movableType);
 				super.goToPos(barrack.getSoldierTargetPosition());
-				getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
+				movable.getPlayer().getEndgameStatistic().incrementAmountOfProducedSoldiers();
 			}
 			break;
 
@@ -139,9 +139,9 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public boolean beforeDroppingMaterial() {
+	public boolean droppingMaterial() {
 		if (request != null) {
-			if (request.isActive() && request.getPos().equals(super.getPos())) {
+			if (request.isActive() && request.getPos().equals(movable.getPos())) {
 				request.deliveryFulfilled();
 				return false;
 			} else {
@@ -191,7 +191,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true, false);
+			super.getGrid().dropMaterial(movable.getPos(), materialType, true, false);
 		}
 
 		offer = null;
@@ -202,13 +202,13 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		state = EBearerState.JOBLESS;
 
 		if (reportAsJobless) {
-			reportAsJobless();
+			reportJobless();
 		}
 	}
 
 	private void reoffer() {
-		if (super.getStrategyGrid().takeMaterial(offer, materialType)) {
-			super.getStrategyGrid().dropMaterial(offer, materialType, true, false);
+		if (super.getGrid().takeMaterial(offer, materialType)) {
+			super.getGrid().dropMaterial(offer, materialType, true, false);
 		}
 	}
 
@@ -260,7 +260,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (state == EBearerState.JOBLESS) {
-			super.getStrategyGrid().removeJobless(this);
+			super.getGrid().removeJobless(this);
 		} else {
 			handleJobFailed(false);
 		}

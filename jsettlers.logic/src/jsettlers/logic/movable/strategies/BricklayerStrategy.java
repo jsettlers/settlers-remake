@@ -58,7 +58,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	}
 
 	private void reportJobless() {
-		super.getStrategyGrid().addJobless(this);
+		super.getGrid().addJobless(this);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (state == EBricklayerState.JOBLESS) {
-			super.getStrategyGrid().removeJobless(this);
+			super.getGrid().removeJobless(this);
 		} else {
 			abortJob();
 		}

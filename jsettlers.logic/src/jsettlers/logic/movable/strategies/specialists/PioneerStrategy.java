@@ -47,10 +47,10 @@ public final class PioneerStrategy extends MovableStrategy {
 
 		case GOING_TO_POS:
 			if (centerPos == null) {
-				this.centerPos = super.getPos();
+				this.centerPos = movable.getPos();
 			}
 
-			if (canWorkOnPos(super.getPos())) {
+			if (canWorkOnPos(movable.getPos())) {
 				super.playAction(EMovableAction.ACTION1, ACTION1_DURATION);
 				state = EPioneerState.WORKING_ON_POS;
 			} else {
@@ -59,8 +59,8 @@ public final class PioneerStrategy extends MovableStrategy {
 			break;
 
 		case WORKING_ON_POS:
-			if (canWorkOnPos(super.getPos())) {
-				executeAction(super.getPos());
+			if (canWorkOnPos(movable.getPos())) {
+				executeAction(movable.getPos());
 			}
 
 			findWorkablePosition();
@@ -77,7 +77,7 @@ public final class PioneerStrategy extends MovableStrategy {
 		}
 		centerPos = null;
 
-		ShortPoint2D pos = super.getPos();
+		ShortPoint2D pos = movable.getPos();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.UNENFORCED_FOREIGN_GROUND)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
@@ -90,7 +90,7 @@ public final class PioneerStrategy extends MovableStrategy {
 		EDirection bestNeighbourDir = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
 
-		ShortPoint2D position = super.getPos();
+		ShortPoint2D position = movable.getPos();
 		for (ShortPoint2D satelitePos : new HexGridArea(position.x, position.y, 1, 6)) {
 
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
@@ -105,7 +105,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	private void executeAction(ShortPoint2D pos) {
-		super.getStrategyGrid().changePlayerAt(pos, super.getPlayer());
+		super.getGrid().changePlayerAt(pos, movable.getPlayer());
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
@@ -119,7 +119,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected boolean isMoveToAble() {
+	protected boolean canBeControlledByPlayer() {
 		return true;
 	}
 
