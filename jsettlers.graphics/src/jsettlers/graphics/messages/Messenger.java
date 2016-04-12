@@ -45,8 +45,7 @@ public class Messenger {
 	 * @return The messages to display.
 	 */
 	public IMessage[] getMessages() {
-		return messages.toArray(
-				new IMessage[messages.size()]);
+		return messages.toArray(new IMessage[messages.size()]);
 	}
 
 	/**

@@ -89,16 +89,16 @@ public class SimpleMessage implements IMessage {
 		if ((m.getSender() == this.sender)
 				&& m.getMessage().equals(this.message)
 				&& m.getType() == this.type) {
-			if ((this.type == EMessageType.ATTACKED)
-					|| (this.type == EMessageType.MINERALS)) {
+			if ((this.type == EMessageType.ATTACKED) || (this.type == EMessageType.MINERALS)) {
 				if (m.getAge() < MESSAGE_TTL / 6) {
 					if (this.pos.getOnGridDistTo(m.getPosition())
 							< MESSAGE_DIST_THRESHOLD) {
 						return true;
 					}
 				}
-			} else if (this.pos.equals(m.getPosition()))
+			} else if (this.pos.equals(m.getPosition())) {
 				return true;
+			}
 		}
 		return false;
 	}

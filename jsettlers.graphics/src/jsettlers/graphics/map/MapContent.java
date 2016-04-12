@@ -314,10 +314,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (timediff > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			ImageLink image = GOTO_ANIMATION.getImage(
-					timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
-			objectDrawer.drawGotoMarker(scrollMarker,
-					ImageProvider.getInstance().getImage(image));
+			ImageLink image = GOTO_ANIMATION.getImage(timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
+			objectDrawer.drawGotoMarker(scrollMarker, ImageProvider.getInstance().getImage(image));
 		}
 	}
 
@@ -359,10 +357,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					// bad visibility
 					drawer.setColor(0, 0, 0, a/2);
 				}
-				for (int i=-1; i<3; i++)
+				for (int i=-1; i<3; i++) {
 					drawer.drawString(x+i, y-1, name);
-				drawer.setColor(color.getRed(), color.getGreen(),
-						color.getBlue(), a);
+				}
+				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
 				drawer.drawString(x, y, name);
 				x += width + 10;
 			}
