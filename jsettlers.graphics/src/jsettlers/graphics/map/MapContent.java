@@ -314,11 +314,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (timediff > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			context.beginTileContext(scrollMarker.x, scrollMarker.y);
 			ImageLink image = GOTO_ANIMATION.getImage(timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
-			ImageProvider.getInstance().getImage(image)
-					.draw(context.getGl(), Color.WHITE, 1);
-			context.endTileContext();
+			objectDrawer.drawGotoMarker(scrollMarker, ImageProvider.getInstance().getImage(image));
 		}
 	}
 
@@ -334,51 +331,44 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	private float messageAlpha(IMessage m) {
 		int age = (int) m.getAge();
-		return (age < 5000) ?
-			(age < 1500
-				? Math.min(1,  age/1000f) : 1)
+		return age < 1500
+				? Math.min(1,  age/1000f)
 				: Math.max(0,
 					1f - (float)age / IMessage.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
-		// TODO: don't let logic wait until we rendered.
-		synchronized (messenger) {
-			int messageIndex = 0;
-			messenger.doTick();
-			for (IMessage m : messenger.getMessages()) {
-				float x = MESSAGE_OFFSET_X;
-				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
-				float a = messageAlpha(m);
-				if (m.getSender() >= 0) {
-					String name = getPlayername(m.getSender()) + ":";
-					Color color = context.getPlayerColor(m.getSender());
-					float width = (float) drawer.getWidth(name);
-					float bright = color.getRed() + color.getGreen() + color.getBlue();
-					if (bright < .9f) {
-						// black
-						drawer.setColor(1, 1, 1, a/2);
-					} else if (bright < 2f) {
-						// bad visibility
-						drawer.setColor(0, 0, 0, a/2);
-					}
-					for (int i=-1; i<3; i++)
-						drawer.drawString(x+i, y-1, name);
-					drawer.setColor(color.getRed(), color.getGreen(),
-							color.getBlue(), a);
-					drawer.drawString(x, y, name);
-					x += width + 10;
+		int messageIndex = 0;
+		messenger.doTick();
+		for (IMessage m : messenger.getMessages()) {
+			float x = MESSAGE_OFFSET_X;
+			int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+			float a = messageAlpha(m);
+			if (m.getSender() >= 0) {
+				String name = getPlayername(m.getSender()) + ":";
+				Color color = context.getPlayerColor(m.getSender());
+				float width = (float) drawer.getWidth(name);
+				float bright = color.getRed() + color.getGreen() + color.getBlue();
+				if (bright < .9f) {
+					// black
+					drawer.setColor(1, 1, 1, a/2);
+				} else if (bright < 2f) {
+					// bad visibility
+					drawer.setColor(0, 0, 0, a/2);
 				}
-
-				drawer.setColor(1, 1, 1, a);
-				drawer.drawString(x, y, m.getMessage());
-
-				messageIndex++;
-				if (messageIndex >= IMessage.MAX_MESSAGES) {
-					break;
+				for (int i=-1; i<3; i++) {
+					drawer.drawString(x+i, y-1, name);
 				}
+				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
+				drawer.drawString(x, y, name);
+				x += width + 10;
 			}
+
+			drawer.setColor(1, 1, 1, a);
+			drawer.drawString(x, y, m.getMessage());
+
+			messageIndex++;
 		}
 	}
 
@@ -680,7 +670,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		} else if ("-".equals(keyCode) || "/".equals(keyCode)) {
 			return new Action(EActionType.SPEED_SLOWER);
 		} else if (" ".equals(keyCode) || "space".equalsIgnoreCase(keyCode)) {
-			return new Action(EActionType.SHOW_SELECTION);
+			return new Action(EActionType.SHOW_MESSAGE);
 		} else if ("d".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DEBUG_ACTION);
 		} else if ("s".equalsIgnoreCase(keyCode)) {
@@ -694,6 +684,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
+		} else if ("z".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.SHOW_SELECTION);
 		} else if ("n".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.NEXT_OF_TYPE);
 		} else if ("F5".equalsIgnoreCase(keyCode)) {
@@ -880,10 +872,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	public void scrollTo(ShortPoint2D point, boolean mark) {
-		this.context.scrollTo(point);
-		if (mark) {
-			scrollMarker = point;
-			scrollMarkerTime = System.currentTimeMillis();
+		if (point != null) {
+			this.context.scrollTo(point);
+			if (mark) {
+				scrollMarker = point;
+				scrollMarkerTime = System.currentTimeMillis();
+			}
 		}
 	}
 
@@ -919,6 +913,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		case MOVE_TO:
 			moveToMarker = ((PointAction) action).getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
+			break;
+		case SHOW_MESSAGE:
+			scrollTo(messenger.getPosition(), true);
 			break;
 		case SHOW_CONSTRUCTION_MARK:
 			EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
