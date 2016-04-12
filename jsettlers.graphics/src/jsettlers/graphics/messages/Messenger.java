@@ -15,7 +15,6 @@
 package jsettlers.graphics.messages;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.position.ShortPoint2D;

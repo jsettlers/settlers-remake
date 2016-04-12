@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import java.util.List;
-
 import go.graphics.GLDrawContext;
 import go.graphics.IllegalBufferException;
 import go.graphics.UIPoint;
