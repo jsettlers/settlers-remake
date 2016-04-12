@@ -670,7 +670,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		} else if ("-".equals(keyCode) || "/".equals(keyCode)) {
 			return new Action(EActionType.SPEED_SLOWER);
 		} else if (" ".equals(keyCode) || "space".equalsIgnoreCase(keyCode)) {
-			return new Action(EActionType.SHOW_SELECTION);
+			return new Action(EActionType.SHOW_MESSAGE);
 		} else if ("d".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DEBUG_ACTION);
 		} else if ("s".equalsIgnoreCase(keyCode)) {
@@ -684,8 +684,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
-		} else if ("m".equalsIgnoreCase(keyCode)) {
-			return new Action(EActionType.SHOW_MESSAGE);
+		} else if ("z".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.SHOW_SELECTION);
 		} else if ("n".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.NEXT_OF_TYPE);
 		} else if ("F5".equalsIgnoreCase(keyCode)) {
