@@ -345,9 +345,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.HEADLINE);
 		int messageIndex = 0;
 		messenger.doTick();
-		List<IMessage> messages = messenger.getMessages();
-		for (IMessage m : messages.toArray(
-				new IMessage[messages.size()])) {
+		for (IMessage m : messenger.getMessages()) {
 			float x = MESSAGE_OFFSET_X;
 			int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
 			float a = messageAlpha(m);

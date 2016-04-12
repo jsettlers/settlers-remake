@@ -39,14 +39,15 @@ public class Messenger {
 	}
 
 	/**
-	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
+	 * Gets an array of messages that should be displayed to the user at the moment.
 	 * <p>
 	 * The messages have to be sorted by age, the one with the lowest age first.
 	 * 
 	 * @return The messages to display.
 	 */
-	public List<IMessage> getMessages() {
-		return messages;
+	public IMessage[] getMessages() {
+		return messages.toArray(
+				new IMessage[messages.size()]);
 	}
 
 	/**
