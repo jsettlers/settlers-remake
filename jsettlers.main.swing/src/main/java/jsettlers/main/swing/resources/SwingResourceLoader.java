@@ -98,19 +98,19 @@ public class SwingResourceLoader {
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
 		if (resourceLister != null) {
 			mapList.addDirectory(resourceLister);
-		} else {
-			// We might be a dev. Scan for a dev directory.
-			CodeSource source = SwingResourceLoader.class.getProtectionDomain().getCodeSource();
-			File dir = searchRootForSource(source);
-			if (dir != null) {
-				String path = dir.getAbsolutePath();
-				mapList.addDirectory(path + File.separator + "maps", false);
-				mapList.addDirectory(
-						path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources",
-						false);
-				mapList.addDirectory(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator
-						+ "resources", false);
-			}
+		}
+
+		// We might be a dev. Scan for a dev directory.
+		CodeSource source = SwingResourceLoader.class.getProtectionDomain().getCodeSource();
+		File dir = searchRootForSource(source);
+		if (dir != null) {
+			String path = dir.getAbsolutePath();
+			mapList.addDirectory(path + File.separator + "maps", false);
+			mapList.addDirectory(
+					path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources",
+					false);
+			mapList.addDirectory(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator
+					+ "resources", false);
 		}
 	}
 
@@ -121,8 +121,8 @@ public class SwingResourceLoader {
 				if (loc.getProtocol().equalsIgnoreCase("file")) {
 					File dir = new File(URLDecoder.decode(loc.getFile(), "UTF-8"));
 					while (dir != null) {
-						if ("jsettlers.main.swing".equals(dir.getName())) {
-							return dir.getParentFile();
+						if (new File(dir, "jsettlers.main.swing").isDirectory()) {
+							return dir;
 						}
 						dir = dir.getParentFile();
 					}
