@@ -21,8 +21,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
-
 /**
  * Extension of the standard {@link Properties} class.
  * <p />
