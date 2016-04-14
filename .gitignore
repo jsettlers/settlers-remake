@@ -9,6 +9,9 @@ local.properties
 # Generated sources
 /jsettlers.common/src/generated/
 
+# Fake test project roots
+/*/testRoot
+
 # IDE files
 /.idea
 /.metadata
@@ -16,3 +19,8 @@ local.properties
 *.iml
 /settlers.ipr
 /settlers.iws
+
+.project
+.classpath
+.settings
+bin

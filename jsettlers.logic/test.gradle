@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+task integrationTest(type: Test) {
+    include '**IT.class'
+}
+
+task unitTest(type: Test) {
+    exclude '**IT.class'
+}
+
+dependencies {
+    // to make eclipse happy
+    compile project(':jsettlers.common:test')
+    testCompile project(':jsettlers.common:test').sourceSets.test.output
+}
