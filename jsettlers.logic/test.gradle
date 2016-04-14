@@ -1,11 +1,11 @@
 apply plugin: 'java'
 
 task integrationTest(type: Test) {
-    include '**IT.class'
+	include 'jsettlers/integration/**'
 }
 
 task unitTest(type: Test) {
-    exclude '**IT.class'
+	exclude 'jsettlers/integration/**'
 }
 
 dependencies {
