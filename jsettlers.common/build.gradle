@@ -17,7 +17,7 @@ sourceSets {
 def commitFile = new File(new File(new File(sourceSets.generated.java.srcDirs[0], 'jsettlers'), 'common'), 'CommitInfo.java');
 task findGitRevision {
     FileRepositoryBuilder builder = new FileRepositoryBuilder();
-    Repository repository = builder.readEnvironment().findGitDir().build();
+    Repository repository = builder.readEnvironment().findGitDir(file('.')).build();
     def headRef = repository.getRef("HEAD")
     def localRev = headRef.objectId.name
     repository.close();
