@@ -1,7 +1,16 @@
 apply plugin: 'java'
 
-task integrationTest(type: Test) {
-	include 'jsettlers/integration/**'
+
+task aiDifficultiesIT(type: Test, dependsOn: testClasses) {
+    include '**/AiDifficultiesIT*'
+}
+
+task autoReplayIT(type: Test, dependsOn: testClasses) {
+    include '**/AutoReplayIT*'
+}
+
+task replayValidationIT(type: Test, dependsOn: testClasses) {
+    include '**/ReplayValidationIT*'
 }
 
 task unitTest(type: Test) {
@@ -12,4 +21,11 @@ dependencies {
     // to make eclipse happy
     compile project(':jsettlers.common:test')
     testCompile project(':jsettlers.common:test').sourceSets.test.output
+}
+
+
+tasks.withType(Test) {
+    testLogging {
+        events 'started', 'passed'
+    }
 }

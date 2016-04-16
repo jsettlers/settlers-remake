@@ -2,10 +2,6 @@ language: android
 
 jdk:
   - oraclejdk8
-# Most of our build tasks except Android depend on 1.8
-#  - oraclejdk7
-#  - openjdk7
-#  - openjdk8
 
 android:
   components:
@@ -38,21 +34,13 @@ env:
   # Only compile and build basic jars
   - TARGET=assemble
   - TARGET=:jsettlers.main.android:build
-  # This includes all tests
-  #- TARGET=build
+
   # Run single test targets
   - TARGET=:jsettlers.logic:test:unitTest --info
-  - TARGET=:jsettlers.logic:test:integrationTest --info
   - TARGET=:jsettlers.common:test --info
   - TARGET=:jsettlers.network:test --info
+  - TARGET=:jsettlers.logic:test:aiDifficultiesIT --info
+  - TARGET=:jsettlers.logic:test:autoReplayIT --info
+  - TARGET=:jsettlers.logic:test:replayValidationIT --info
 
 script: ./gradlew $TARGET
-
-
-matrix:
-  exclude:
-    # assemble builds the swing projects. They cannot be built using JDK 1.7
-    - jdk: oraclejdk7
-      env: TARGET=assemble
-    - jdk: openjdk7
-      env: TARGET=assemble
