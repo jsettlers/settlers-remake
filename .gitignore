@@ -24,3 +24,4 @@ local.properties
 .classpath
 .settings
 bin
+gen
