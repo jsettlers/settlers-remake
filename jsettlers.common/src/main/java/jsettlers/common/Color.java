@@ -25,7 +25,7 @@ public final class Color {
 	 */
 	public static final Color BLACK = new Color(0, 0, 0, 1);
 	/**
-	 * Constant to quickly access black.
+	 * Constant to quickly access white.
 	 */
 	public static final Color WHITE = new Color(1, 1, 1, 1);
 	/**

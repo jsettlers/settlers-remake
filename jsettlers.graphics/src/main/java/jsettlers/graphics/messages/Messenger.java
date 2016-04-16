@@ -15,9 +15,9 @@
 package jsettlers.graphics.messages;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import jsettlers.common.menu.messages.IMessage;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.statistics.IGameTimeProvider;
 
 /**
@@ -30,6 +30,7 @@ public class Messenger {
 	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
 	private final IGameTimeProvider gameTimeProvider;
 	private int latestTickTime;
+	private int focusedMessageIndex = 0;
 
 	public Messenger(IGameTimeProvider gameTimeProvider) {
 		this.gameTimeProvider = gameTimeProvider;
@@ -37,14 +38,14 @@ public class Messenger {
 	}
 
 	/**
-	 * Gets a list of messages that should be displayed to the user at the moment. It may be long, because only the first messages are displayed.
+	 * Gets an array of messages that should be displayed to the user at the moment.
 	 * <p>
 	 * The messages have to be sorted by age, the one with the lowest age first.
 	 * 
 	 * @return The messages to display.
 	 */
-	public List<IMessage> getMessages() {
-		return messages;
+	public IMessage[] getMessages() {
+		return messages.toArray(new IMessage[messages.size()]);
 	}
 
 	/**
@@ -55,11 +56,12 @@ public class Messenger {
 	 * @param message
 	 * @return
 	 */
-	public boolean addMessage(IMessage message) {
+	public synchronized boolean addMessage(IMessage message) {
 		if (isNews(message)) {
 			messages.addFirst(message);
 			if (messages.size() > IMessage.MAX_MESSAGES)
 				messages.removeLast();
+			focusedMessageIndex = 0;
 			return true;
 		}
 		return false;
@@ -71,7 +73,7 @@ public class Messenger {
 	 * interval, then remove all messages whose age exceed the allowed
 	 * time-to-live ({@link IMessage#MESSAGE_TTL}).
 	 */
-	public void doTick() {
+	public synchronized void doTick() {
 		int millis = (int)System.currentTimeMillis(); 
 		if (!gameTimeProvider.isGamePausing()) {
 			// update message ages
@@ -100,4 +102,19 @@ public class Messenger {
 		}
 		return true;
 	}
+
+	/**
+	 * Returns a position this messenger currently considers noteworthy.
+	 * I.e. location of latest incoming message, then that of respectively next,
+	 * when repeatedly called.
+	 * @return A {@link ShortPoint2D} retrieved from a message.
+	 */
+	public synchronized ShortPoint2D getPosition() {
+		if (!messages.isEmpty()) {
+			// retrieve nth message's position and increment n
+			return messages.get(focusedMessageIndex++ % messages.size()).getPosition();
+		}
+		return null;
+	}
+
 }

@@ -116,6 +116,11 @@ public enum EActionType {
 	SHOW_SELECTION,
 
 	/**
+	 * Sets the screen to display current message.
+	 */
+	SHOW_MESSAGE,
+
+	/**
 	 * Selects an area of the screen.
 	 * 
 	 * @see SelectAreaAction

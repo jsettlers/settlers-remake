@@ -218,6 +218,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
+		case SHOW_MESSAGE: {
+			break;
+		}
+
 		case SET_WORK_AREA:
 			setBuildingWorkArea(((PointAction) action).getPosition());
 			break;
