@@ -20,21 +20,11 @@ include ':jsettlers.testutils'
 include ':jsettlers.tools'
 
 rootProject.name = 'settlers-remake'
-// This will loop through the object descriptors: rootProject.children.each
+// This will loop through the object descriptors
 rootProject.children.each { p ->
-	println p;
 	if (new File(p.dir, 'test.gradle').isFile()) {
-		println "Adding tests for $p"
 		gradle.ext.projectsWithExtraTest += [ p.path ];
 		def tp = createProjectDescriptor(p, 'test', new File(p.dir, 'testRoot'))
 		tp.buildFileName = '../test.gradle'
 	}
 }
-
-println gradle.ext.projectsWithExtraTest
-
-//subprojects {
-//project(':' + project.name + ':test') {
-//	apply plugin: 'java'
-//}
-//}
