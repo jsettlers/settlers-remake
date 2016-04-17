@@ -9,13 +9,20 @@ android:
     - build-tools-19.1.0
     - android-15
 
+before_install:
+  - mkdir -p $HOME/.gradle/caches/
+  - mkdir -p $HOME/.gradle/wrapper/
+  - mkdir -p $HOME/dist
+
 before_cache:
+  - find $HOME/.gradle/
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/dist
 
 before_script:
   - sudo service postgresql stop || true
@@ -34,15 +41,15 @@ script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
 
 env:
   # Only compile and build basic jars
-  - TARGET=assemble
-  - TARGET=:jsettlers.main.android:build
+  - TARGET="assemble" CACHE="1"
+  - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
-  - TARGET=:jsettlers.logic:test:unitTest --info
-  - TARGET=:jsettlers.common:test --info
-  - TARGET=:jsettlers.network:test --info
-  - TARGET=:jsettlers.logic:test:aiDifficultiesIT --info
-  - TARGET=:jsettlers.logic:test:autoReplayIT --info
-  - TARGET=:jsettlers.logic:test:replayValidationIT --info
+  - TARGET=":jsettlers.logic:test:unitTest --info"
+  - TARGET=":jsettlers.common:test --info"
+  - TARGET=":jsettlers.network:test --info"
+  - TARGET=":jsettlers.logic:test:aiDifficultiesIT --info"
+  - TARGET=":jsettlers.logic:test:autoReplayIT --info"
+  - TARGET=":jsettlers.logic:test:replayValidationIT --info"
 
-script: ./gradlew $TARGET
+script: ./gradlew $TARGET; if [ "$CACHE" ]; then cp build/distributions/*.zip $HOME/dist; fi
