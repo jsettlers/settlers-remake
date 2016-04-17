@@ -15,7 +15,6 @@ before_install:
   - mkdir -p $HOME/dist
 
 before_cache:
-  - find $HOME/.gradle/
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
 cache:
