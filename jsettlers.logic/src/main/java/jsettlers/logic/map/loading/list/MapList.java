@@ -243,7 +243,7 @@ public class MapList implements IMapListerCallable {
 		protected ArrayList<IMapLister> directories = new ArrayList<>();
 		protected IMapLister saveDirectory = null;
 
-		public void addDirectory(String directory, boolean create) {
+		public void addMapLister(String directory, boolean create) {
 			directories.add(new DirectoryMapLister(new File(directory), create));
 		}
 
@@ -253,29 +253,29 @@ public class MapList implements IMapListerCallable {
 			if (saveDirectory == null) {
 				throw new RuntimeException("Savegame directory not set.");
 			}
-			return new MapList(getDirectories(), saveDirectory);
+			return new MapList(getMapListers(), saveDirectory);
 		}
 
 		public void addResources(File resources) {
-			addDirectory(new DirectoryMapLister(new File(resources, "maps"), true));
+			addMapLister(new DirectoryMapLister(new File(resources, "maps"), true));
 			saveDirectory = new DirectoryMapLister(new File(resources, "save"), true);
-			addDirectory(saveDirectory);
+			addMapLister(saveDirectory);
 		}
 
 		protected IMapLister getSave() {
 			return saveDirectory;
 		}
 
-		public Collection<IMapLister> getDirectories() {
+		public Collection<IMapLister> getMapListers() {
 			return directories;
 		}
 
 		public void addSaveDirectory(IMapLister saveDirectory) {
 			this.saveDirectory = saveDirectory;
-			addDirectory(saveDirectory);
+			addMapLister(saveDirectory);
 		}
 
-		public void addDirectory(IMapLister dir) {
+		public void addMapLister(IMapLister dir) {
 			this.directories.add(dir);
 		}
 	}

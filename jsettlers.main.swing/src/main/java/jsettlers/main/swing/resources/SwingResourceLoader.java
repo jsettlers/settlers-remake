@@ -82,12 +82,12 @@ public class SwingResourceLoader {
 		mapList.addResources(resources);
 		// now add original maps
 		try {
-			mapList.addDirectory(dir.getDirectory("map").getAbsolutePath(), false);
+			mapList.addMapLister(dir.getDirectory("map").getAbsolutePath(), false);
 		} catch (FileNotFoundException e) {
 		}
 		String additionalMaps = options.getProperty("maps");
 		if (additionalMaps != null) {
-			mapList.addDirectory(additionalMaps, false);
+			mapList.addMapLister(additionalMaps, false);
 		}
 		loadDefaultMaps(mapList);
 		MapList.setDefaultListFactory(mapList);
@@ -97,7 +97,7 @@ public class SwingResourceLoader {
 		// Maps contained in jar file?
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
 		if (resourceLister != null) {
-			mapList.addDirectory(resourceLister);
+			mapList.addMapLister(resourceLister);
 		}
 
 		// We might be a dev. Scan for a dev directory.
@@ -105,12 +105,9 @@ public class SwingResourceLoader {
 		File dir = searchRootForSource(source);
 		if (dir != null) {
 			String path = dir.getAbsolutePath();
-			mapList.addDirectory(path + File.separator + "maps", false);
-			mapList.addDirectory(
-					path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources",
-					false);
-			mapList.addDirectory(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator
-					+ "resources", false);
+			mapList.addMapLister(path + File.separator + "maps", false);
+			mapList.addMapLister(path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources", false);
+			mapList.addMapLister(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator + "resources", false);
 		}
 	}
 

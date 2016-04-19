@@ -94,8 +94,7 @@ public final class SettlerImageMap {
 		readFromFile(file, priorities);
 	}
 
-	private void readFromFile(InputStream file, int[][][][] priorities)
-			throws IOException {
+	private void readFromFile(InputStream file, int[][][][] priorities) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(file));
 
 		String line = reader.readLine();

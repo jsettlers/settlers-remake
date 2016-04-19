@@ -1,9 +1,0 @@
-# This is the development settings template file. It defines the directories where the resources are.
-# The game will prompt the required values from you upon first startup and write them to config.prp.
-# You can rename (copy) this file to config.prp and adjust the values to your system.
-
-# Specifies the folder where the resources can be found. NOTE: The path needs to end with a slash ( / )
-resources-folder=../jsettlers.common/resources/
-
-# Folder containing the folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
-settlers-folder=

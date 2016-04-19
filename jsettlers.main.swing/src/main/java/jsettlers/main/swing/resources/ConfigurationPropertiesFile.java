@@ -34,49 +34,21 @@ public class ConfigurationPropertiesFile {
 	private final File configFile;
 	private final Properties properties;
 
-	private final boolean loadedFromFile;
-
 	public ConfigurationPropertiesFile(OptionableProperties options) throws IOException {
 		this(options.getConfigFile());
 	}
 
 	public ConfigurationPropertiesFile(File file) throws IOException {
 		this.configFile = file;
+		this.properties = new Properties();
 
-		Properties defaultProperties = new Properties();
-		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
-		this.properties = new Properties(defaultProperties);
-
-		boolean loaded = false;
 		if (file.exists()) {
 			this.properties.load(new FileInputStream(file));
-			loaded = true;
 		}
-		this.loadedFromFile = loaded;
-	}
-
-	public File getResourcesDirectory() {
-		String property = properties.getProperty("resources-folder");
-		File dir = new File(property);
-		if (!dir.isAbsolute()) {
-			String parent = configFile.getParent();
-			dir = new File((parent == null ? "" : parent + File.separator)
-					+ property);
-		}
-		return dir.getAbsoluteFile();
 	}
 
 	public String getSettlersFolderValue() {
 		return properties.getProperty(SETTLERS_FOLDER);
-	}
-
-	public File getOriginalSettlersDirectory() {
-		return new File(getSettlersFolderValue());
-	}
-
-	public boolean isValidSettlersFolderSet() {
-		String settlersFolder = getSettlersFolderValue();
-		return SettlersFolderChecker.checkSettlersFolder(settlersFolder).isValidSettlersFolder();
 	}
 
 	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {
@@ -86,16 +58,5 @@ public class ConfigurationPropertiesFile {
 
 	private void saveConfigFile(String updateMessage) throws IOException, FileNotFoundException {
 		properties.store(new FileOutputStream(configFile), updateMessage);
-	}
-
-	public File getOriginalMapsDirectory() {
-		return new File(getOriginalSettlersDirectory(), "Map");
-	}
-
-	/**
-	 * @return <code>true</code> if one of the settings or the template files has been used.
-	 */
-	public boolean isLoadedFromFile() {
-		return loadedFromFile;
 	}
 }
