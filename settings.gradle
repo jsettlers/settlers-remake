@@ -18,6 +18,7 @@ include ':jsettlers.network'
 include ':jsettlers.tests'
 include ':jsettlers.testutils'
 include ':jsettlers.tools'
+include ':jsettlers.buildingcreator'
 
 rootProject.name = 'settlers-remake'
 // This will loop through the object descriptors

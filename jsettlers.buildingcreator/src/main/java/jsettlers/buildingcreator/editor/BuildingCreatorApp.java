@@ -18,7 +18,6 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +59,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException;
 
 /**
  * This is the main building creator class.
@@ -67,7 +67,6 @@ import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
  * @author michael
  */
 public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
-	private static final File DEFAULT_CONFIG_DIRECTORY = new File("../jsettlers.main.swing/");
 	private BuildingDefinition definition;
 	private BuildingtestMap map;
 
@@ -75,8 +74,8 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private JLabel positionDisplayer;
 	private JFrame window;
 
-	private BuildingCreatorApp(OptionableProperties options) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(options, DEFAULT_CONFIG_DIRECTORY);
+	private BuildingCreatorApp(OptionableProperties options) throws ResourceSetupException {
+		SwingManagedJSettlers.setupResourceManagers(options);
 	}
 
 	@Override
@@ -180,7 +179,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 				buildingTypes, null);
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, InvocationTargetException, InterruptedException {
+	public static void main(String[] args) throws ResourceSetupException, InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(new BuildingCreatorApp(MainUtils.loadOptions(args)));
 	}
 
