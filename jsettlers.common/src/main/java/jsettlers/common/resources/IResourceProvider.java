@@ -38,7 +38,8 @@ public interface IResourceProvider {
 
 	/**
 	 * Gets a output steam to write a file with the name.<br>
-	 * It also creates parent folders as needed.
+	 * It also creates parent folders as needed.<br>
+	 * The file will be located in a settings folder not directly visible to the user
 	 * 
 	 * @param name
 	 *            The name of the file. With directory, separated by "/"
@@ -46,7 +47,21 @@ public interface IResourceProvider {
 	 * @throws IOException
 	 *             If no stream could be generated
 	 */
-	OutputStream writeFile(String name) throws IOException;
+	OutputStream writeConfigurationFile(String name) throws IOException;
+
+	/**
+	 * Gets a output steam to write a file with the name.<br>
+	 * It also creates parent folders as needed.<br>
+	 * The file will be located in the installation folder or another directly visible folder.
+	 *
+	 * @param name
+	 *            The name of the file. With directory, separated by "/"
+	 * @return The InputStream
+	 * @throws IOException
+	 *             If no stream could be generated
+	 */
+	OutputStream writeUserFile(String name) throws IOException;
+
 
 	/**
 	 * Gets a directory to store settings and other stuff.

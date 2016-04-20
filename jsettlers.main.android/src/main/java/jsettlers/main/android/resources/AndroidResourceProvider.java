@@ -25,11 +25,11 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import jsettlers.common.resources.IResourceProvider;
 
-public class ResourceProvider implements IResourceProvider {
+public class AndroidResourceProvider implements IResourceProvider {
 	private final File resourcesDirectory;
 	private final AssetManager manager;
 
-	public ResourceProvider(Context context, File resourcesDirectory) {
+	public AndroidResourceProvider(Context context, File resourcesDirectory) {
 		this.resourcesDirectory = resourcesDirectory;
 		manager = context.getAssets();
 	}
@@ -59,11 +59,16 @@ public class ResourceProvider implements IResourceProvider {
 	}
 
 	@Override
-	public OutputStream writeFile(String name) throws IOException {
+	public OutputStream writeConfigurationFile(String name) throws IOException {
 		File outFile = new File(resourcesDirectory.getAbsolutePath() + "/" + name);
 		System.err.println("Writing to: " + outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
+	}
+
+	@Override
+	public OutputStream writeUserFile(String name) throws IOException {
+		return writeConfigurationFile(name); // TODO write to a file the user can access for sending us logs
 	}
 
 	@Override

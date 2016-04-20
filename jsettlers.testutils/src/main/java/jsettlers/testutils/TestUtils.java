@@ -37,9 +37,9 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 /**
  * Utility class holding methods needed by serveral test classes.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public class TestUtils {
 
@@ -95,11 +95,16 @@ public class TestUtils {
 		}
 
 		@Override
-		public OutputStream writeFile(String name) throws IOException {
+		public OutputStream writeConfigurationFile(String name) throws IOException {
 			System.out.println("Writing file " + name);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			files.put(name, out);
 			return out;
+		}
+
+		@Override
+		public OutputStream writeUserFile(String name) throws IOException {
+			return writeConfigurationFile(name);
 		}
 
 		@Override
@@ -150,7 +155,7 @@ public class TestUtils {
 		@Override
 		public OutputStream getOutputStream(MapFileHeader header) throws IOException {
 			savegame++;
-			return writeFile("savegame-" + savegame + MapLoader.MAP_EXTENSION);
+			return writeConfigurationFile("savegame-" + savegame + MapLoader.MAP_EXTENSION);
 		}
 	}
 }

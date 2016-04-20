@@ -14,7 +14,7 @@ import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.resources.AndroidMapListFactory;
-import jsettlers.main.android.resources.ResourceProvider;
+import jsettlers.main.android.resources.AndroidResourceProvider;
 
 public class ResourceLocationScanner {
 	private static final String PREFERENCE = "external-files-path";
@@ -47,7 +47,7 @@ public class ResourceLocationScanner {
 		}
 		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), files.get(0)));
 
-		ResourceProvider provider = new ResourceProvider(context, outputDirectory);
+		AndroidResourceProvider provider = new AndroidResourceProvider(context, outputDirectory);
 		ResourceManager.setProvider(provider);
 		return true;
 	}

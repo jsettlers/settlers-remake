@@ -247,8 +247,7 @@ public class MapList implements IMapListerCallable {
 			directories.add(new DirectoryMapLister(new File(directory), create));
 		}
 
-		public void addSaveDirectory(String directory, boolean create) {
-			IMapLister mapLister = new DirectoryMapLister(new File(directory), create);
+		public void addSaveDirectory(IMapLister mapLister) {
 			saveDirectory = mapLister;
 			addMapDirectory(mapLister);
 		}

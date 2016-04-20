@@ -179,7 +179,7 @@ public class JSettlersGame {
 
 	protected OutputStream createReplayWriteStream() throws IOException {
 		final String replayFilename = getLogFile(mapCreator, "_replay.log");
-		return ResourceManager.writeFile(replayFilename);
+		return ResourceManager.writeUserFile(replayFilename);
 	}
 
 	public class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
@@ -388,7 +388,7 @@ public class JSettlersGame {
 			systemOutStream = System.out;
 
 			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
-				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(getLogFile(mapcreator, "_out.log")));
+				PrintStream outLogStream = new PrintStream(ResourceManager.writeUserFile(getLogFile(mapcreator, "_out.log")));
 				System.setOut(outLogStream);
 				System.setErr(outLogStream);
 			}
@@ -401,8 +401,7 @@ public class JSettlersGame {
 		final String dateAndMap = getLogDateFormatter().format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
 		final String logFolder = "logs/" + dateAndMap + "/";
 
-		final String replayFilename = logFolder + dateAndMap + suffix;
-		return replayFilename;
+		return logFolder + dateAndMap + suffix;
 	}
 
 	private static DateFormat getLogDateFormatter() {

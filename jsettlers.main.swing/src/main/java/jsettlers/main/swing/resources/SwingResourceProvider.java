@@ -33,13 +33,19 @@ public class SwingResourceProvider implements IResourceProvider {
 	@Override
 	public InputStream getResourcesFileStream(String name) throws IOException {
 		File file = new File(resourcesDirectory + name);
-
 		return new FileInputStream(file);
 	}
 
 	@Override
-	public OutputStream writeFile(String name) throws IOException {
+	public OutputStream writeConfigurationFile(String name) throws IOException {
 		File file = new File(resourcesDirectory + name);
+		file.getParentFile().mkdirs();
+		return new FileOutputStream(file);
+	}
+
+	@Override
+	public OutputStream writeUserFile(String name) throws IOException {
+		File file = new File("."+File.separator+ name);
 		file.getParentFile().mkdirs();
 		return new FileOutputStream(file);
 	}
