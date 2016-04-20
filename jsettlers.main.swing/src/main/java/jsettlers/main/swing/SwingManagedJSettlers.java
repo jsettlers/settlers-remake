@@ -45,6 +45,7 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.swing.foldertree.SelectSettlersFolderDialog;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeel;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
+import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
@@ -56,7 +57,7 @@ public class SwingManagedJSettlers {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 	}
 
-	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption, SwingResourceLoader.ResourceSetupException {
+	public static void main(String[] args) throws IOException, MapLoadException, JSettlersLookAndFeelExecption, ResourceSetupException {
 		OptionableProperties optionableProperties = MainUtils.loadOptions(args);
 		loadOptionalSettings(optionableProperties);
 		setupResourceManagers(optionableProperties);
@@ -102,14 +103,14 @@ public class SwingManagedJSettlers {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(OptionableProperties options) throws SwingResourceLoader.ResourceSetupException {
+	public static void setupResourceManagers(OptionableProperties options) throws ResourceSetupException {
 		boolean wasSuccessful = false;
 		boolean firstRun = true;
 		while (!wasSuccessful) {
 			try {
 				SwingResourceLoader.setup(options);
 				wasSuccessful = true;
-			} catch (SwingResourceLoader.ResourceDirectoryInvalidException e) {
+			} catch (ResourceSetupException e) {
 				// ask the user if we should continue...
 				askUserToSetResources(firstRun, options);
 			}
@@ -117,11 +118,10 @@ public class SwingManagedJSettlers {
 		}
 	}
 
-	private static void askUserToSetResources(boolean firstRun, OptionableProperties options) throws SwingResourceLoader.ResourceSetupException {
+	private static void askUserToSetResources(boolean firstRun, OptionableProperties options) throws ResourceSetupException {
 		if (!firstRun) {
 			JOptionPane.showMessageDialog(null, Labels.getString("settlers-folder-still-invalid"));
 		}
-		firstRun = false;
 
 		final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
 		SwingUtilities.invokeLater(new Runnable() {

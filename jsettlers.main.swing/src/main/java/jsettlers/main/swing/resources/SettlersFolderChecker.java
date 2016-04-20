@@ -37,59 +37,64 @@ public final class SettlersFolderChecker {
 	 * 
 	 * @param settlersBaseFolder
 	 *            Folder of Settlers III installation
-	 * @return Instance of {@link SettlersFoldersResult}.
+	 * @return Instance of {@link SettlersFolderInfo}.
 	 */
-	public static SettlersFoldersResult checkSettlersFolder(String settlersBaseFolder) {
+	public static SettlersFolderInfo checkSettlersFolder(String settlersBaseFolder) {
 		if (settlersBaseFolder == null) {
-			return new SettlersFoldersResult();
+			return new SettlersFolderInfo();
 		}
 
 		if (settlersBaseFolder.isEmpty()) {
-			return new SettlersFoldersResult();
+			return new SettlersFolderInfo();
 		}
 
 		File settlersBaseFolderFile = new File(settlersBaseFolder);
 		if (!settlersBaseFolderFile.exists() || !settlersBaseFolderFile.isDirectory()) {
-			return new SettlersFoldersResult();
+			return new SettlersFolderInfo();
 		}
 
 		File[] files = settlersBaseFolderFile.listFiles();
 		if (files == null) {
-			return new SettlersFoldersResult();
+			return new SettlersFolderInfo();
 		}
 
 		File sndFolder = null;
 		File gfxFolder = null;
+		File mapsFolder = null;
 
 		for (File f : files) {
-			if (f.getName().toLowerCase().equals("snd")) {
+			if (f.getName().equalsIgnoreCase("snd")) {
 				File testSndFile = new File(f, "Siedler3_00.dat");
 				if (testSndFile.exists()) {
 					sndFolder = f;
 				}
-			} else if (f.getName().toLowerCase().equals("gfx")) {
+			} else if (f.getName().equalsIgnoreCase("gfx")) {
 				for (DatFileType t : DatFileType.values()) {
 					if (new File(f, "siedler3_00" + t.getFileSuffix()).exists()) {
 						gfxFolder = f;
 					}
 				}
+			} else if(f.getName().equalsIgnoreCase("maps")) {
+				mapsFolder = f;
 			}
 		}
 
-		return new SettlersFoldersResult(sndFolder, gfxFolder);
+		return new SettlersFolderInfo(sndFolder, gfxFolder, mapsFolder);
 	}
 
-	public static class SettlersFoldersResult {
+	public static class SettlersFolderInfo {
 		public final File sndFolder;
 		public final File gfxFolder;
+		public final File mapsFolder;
 
-		SettlersFoldersResult() {
-			this(null, null);
+		SettlersFolderInfo() {
+			this(null, null, null);
 		}
 
-		SettlersFoldersResult(File sndFolder, File gfxFolder) {
+		SettlersFolderInfo(File sndFolder, File gfxFolder, File mapsFolder) {
 			this.sndFolder = sndFolder;
 			this.gfxFolder = gfxFolder;
+			this.mapsFolder = mapsFolder;
 		}
 
 		public boolean isValidSettlersFolder() {

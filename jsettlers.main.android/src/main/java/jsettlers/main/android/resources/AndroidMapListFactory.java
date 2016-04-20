@@ -16,7 +16,6 @@ package jsettlers.main.android.resources;
 
 import java.io.File;
 
-import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import android.content.res.AssetManager;
 
@@ -25,6 +24,6 @@ public class AndroidMapListFactory extends DefaultMapListFactory {
 	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
 		super();
 		directories.add(new AndroidAssetsMapLister(manager, ""));
-		addResources(writeableDir);
+		addResourcesDirectory(writeableDir);
 	}
 }

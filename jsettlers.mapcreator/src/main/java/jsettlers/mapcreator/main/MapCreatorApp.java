@@ -106,6 +106,7 @@ public class MapCreatorApp {
 
 			OptionableProperties options = MainUtils.loadOptions(args);
 			SwingManagedJSettlers.setupResourceManagers(options);
+			SwingManagedJSettlers.loadOptionalSettings(options);
 			loadLookAndFeel();
 
 			startWithSelectionDialog();

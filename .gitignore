@@ -26,3 +26,5 @@ local.properties
 bin
 gen
 /release
+/save
+/logs

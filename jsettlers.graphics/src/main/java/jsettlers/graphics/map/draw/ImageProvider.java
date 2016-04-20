@@ -109,12 +109,14 @@ public final class ImageProvider {
 
 	/**
 	 * Adds a new path to look for dat files.
-	 * 
+	 *
 	 * @param path
 	 *            The directory. It may not exist, but must not be null.
+	 * @return this
 	 */
-	public void addLookupPath(File path) {
+	public ImageProvider addLookupPath(File path) {
 		this.lookupPaths.add(path);
+		return this;
 	}
 
 	/**

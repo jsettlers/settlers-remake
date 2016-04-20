@@ -243,8 +243,14 @@ public class MapList implements IMapListerCallable {
 		protected ArrayList<IMapLister> directories = new ArrayList<>();
 		protected IMapLister saveDirectory = null;
 
-		public void addMapLister(String directory, boolean create) {
+		public void addMapDirectory(String directory, boolean create) {
 			directories.add(new DirectoryMapLister(new File(directory), create));
+		}
+
+		public void addSaveDirectory(String directory, boolean create) {
+			IMapLister mapLister = new DirectoryMapLister(new File(directory), create);
+			saveDirectory = mapLister;
+			addMapDirectory(mapLister);
 		}
 
 		@Override
@@ -256,10 +262,10 @@ public class MapList implements IMapListerCallable {
 			return new MapList(getMapListers(), saveDirectory);
 		}
 
-		public void addResources(File resources) {
-			addMapLister(new DirectoryMapLister(new File(resources, "maps"), true));
+		public void addResourcesDirectory(File resources) {
+			addMapDirectory(new DirectoryMapLister(new File(resources, "maps"), true));
 			saveDirectory = new DirectoryMapLister(new File(resources, "save"), true);
-			addMapLister(saveDirectory);
+			addMapDirectory(saveDirectory);
 		}
 
 		protected IMapLister getSave() {
@@ -270,12 +276,9 @@ public class MapList implements IMapListerCallable {
 			return directories;
 		}
 
-		public void addSaveDirectory(IMapLister saveDirectory) {
-			this.saveDirectory = saveDirectory;
-			addMapLister(saveDirectory);
-		}
 
-		public void addMapLister(IMapLister dir) {
+
+		public void addMapDirectory(IMapLister dir) {
 			this.directories.add(dir);
 		}
 	}

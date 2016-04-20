@@ -17,18 +17,14 @@ package jsettlers.main.swing.resources;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.security.CodeSource;
-import java.util.Arrays;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+import jsettlers.main.swing.resources.SettlersFolderChecker.SettlersFolderInfo;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -47,87 +43,62 @@ public class SwingResourceLoader {
 	 *
 	 * @param options
 	 *            The command line options.
-	 * @throws ResourceDirectoryInvalidException
+	 * @throws ResourceSetupException
 	 */
 	public static void setup(OptionableProperties options) throws ResourceSetupException {
+		SettlersFolderInfo settlersFolderInfo = getPathOfOriginalSettlers(options);
+
+		// setup image and sound provider
+		ImageProvider.getInstance().addLookupPath(settlersFolderInfo.gfxFolder).startPreloading();
+		SoundManager.addLookupPath(settlersFolderInfo.sndFolder);
+
+		// Set the resources directory.
+		File resources = options.getAppHome();
+		ResourceManager.setProvider(new SwingResourceProvider(resources));
+
+		// Setup map load paths
+		setupMapListFactory(options, settlersFolderInfo);
+	}
+
+	private static SettlersFolderInfo getPathOfOriginalSettlers(OptionableProperties options) throws ResourceSetupException {
 		String originalGamePath = options.getProperty("original");
 		if (originalGamePath == null) {
 			originalGamePath = loadGamePathFromConfig(options);
 		}
-		if (originalGamePath == null) {
-			throw new ResourceSetupException("Original game path not set.");
+
+		SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(originalGamePath);
+		if(!settlersFolderInfo.isValidSettlersFolder()){
+			throw new ResourceSetupException("Path to original Settlers III installation not valid.");
 		}
 
-		OriginalSettlersDirectory dir = new OriginalSettlersDirectory(new File(originalGamePath));
-		dir.check();
-
-		try {
-			ImageProvider imageProvider = ImageProvider.getInstance();
-			imageProvider.addLookupPath(dir.getDirectory("gfx"));
-			SoundManager.addLookupPath(dir.getDirectory("snd"));
-
-			imageProvider.startPreloading();
-		} catch (FileNotFoundException e) {
-			throw new ResourceSetupException("Could not find gfx/snd.");
-		}
-
-		// Set the resources directory.
-		File resources = options.getAppHome();
-		SwingResourceProvider provider = new SwingResourceProvider(resources);
-
-		ResourceManager.setProvider(provider);
-
-		// Set map load paths
-		MapList.DefaultMapListFactory mapList = new MapList.DefaultMapListFactory();
-		mapList.addResources(resources);
-		// now add original maps
-		try {
-			mapList.addMapLister(dir.getDirectory("map").getAbsolutePath(), false);
-		} catch (FileNotFoundException e) {
-		}
-		String additionalMaps = options.getProperty("maps");
-		if (additionalMaps != null) {
-			mapList.addMapLister(additionalMaps, false);
-		}
-		loadDefaultMaps(mapList);
-		MapList.setDefaultListFactory(mapList);
+		return settlersFolderInfo;
 	}
 
-	private static void loadDefaultMaps(MapList.DefaultMapListFactory mapList) {
+	private static void setupMapListFactory(OptionableProperties options, SettlersFolderInfo settlersFolderInfo) {
+		DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
+		loadDefaultMapFolders(mapListFactory);
+
+		// now add original maps
+		if(settlersFolderInfo.mapsFolder != null 	){
+			mapListFactory.addMapDirectory(settlersFolderInfo.mapsFolder.getAbsolutePath(), false);
+		}
+
+		String additionalMaps = options.getProperty("maps");
+		if (additionalMaps != null) {
+			mapListFactory.addMapDirectory(additionalMaps, false);
+		}
+
+		MapList.setDefaultListFactory(mapListFactory);
+	}
+
+	private static void loadDefaultMapFolders(DefaultMapListFactory mapList) {
+		mapList.addResourcesDirectory(new File("."));
+
 		// Maps contained in jar file?
 		ResourceMapLister resourceLister = ResourceMapLister.getDefaultLister();
 		if (resourceLister != null) {
-			mapList.addMapLister(resourceLister);
+			mapList.addMapDirectory(resourceLister);
 		}
-
-		// We might be a dev. Scan for a dev directory.
-		CodeSource source = SwingResourceLoader.class.getProtectionDomain().getCodeSource();
-		File dir = searchRootForSource(source);
-		if (dir != null) {
-			String path = dir.getAbsolutePath();
-			mapList.addMapLister(path + File.separator + "maps", false);
-			mapList.addMapLister(path + File.separator + "jsettlers.logic" + File.separator + "src" + File.separator + "test" + File.separator + "resources", false);
-			mapList.addMapLister(path + File.separator + "jsettlers.testutils" + File.separator + "src" + File.separator + "main" + File.separator + "resources", false);
-		}
-	}
-
-	private static File searchRootForSource(CodeSource source) {
-		try {
-			if (source != null) {
-				URL loc = source.getLocation();
-				if (loc.getProtocol().equalsIgnoreCase("file")) {
-					File dir = new File(URLDecoder.decode(loc.getFile(), "UTF-8"));
-					while (dir != null) {
-						if (new File(dir, "jsettlers.main.swing").isDirectory()) {
-							return dir;
-						}
-						dir = dir.getParentFile();
-					}
-				}
-			}
-		} catch (UnsupportedEncodingException e) {
-		}
-		return null;
 	}
 
 	private static String loadGamePathFromConfig(OptionableProperties options) throws ResourceSetupException {
@@ -153,60 +124,6 @@ public class SwingResourceLoader {
 
 		public ResourceSetupException(Throwable cause) {
 			super(cause);
-		}
-	}
-
-	/**
-	 * Original game directory missing.
-	 */
-	public static class ResourceDirectoryInvalidException extends ResourceSetupException {
-		public ResourceDirectoryInvalidException() {
-		}
-
-		public ResourceDirectoryInvalidException(String message) {
-			super(message);
-		}
-
-		public ResourceDirectoryInvalidException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		public ResourceDirectoryInvalidException(Throwable cause) {
-			super(cause);
-		}
-	}
-
-	private static class OriginalSettlersDirectory {
-		private final File dir;
-
-		OriginalSettlersDirectory(File dir) {
-			this.dir = dir;
-		}
-
-		void check() throws ResourceDirectoryInvalidException {
-			try {
-				File gfx = getDirectory("gfx");
-				if (!Arrays.stream(DatFileType.values()).anyMatch(t -> new File(gfx, "siedler3_00" + t.getFileSuffix()).exists())) {
-					throw new ResourceDirectoryInvalidException("Graphic files are missing.");
-				}
-				if (!new File(getDirectory("snd"), "Siedler3_00.dat").exists()) {
-					throw new ResourceDirectoryInvalidException("Sound files are missing.");
-				}
-			} catch (FileNotFoundException e) {
-				throw new ResourceDirectoryInvalidException(e);
-			}
-		}
-
-		File getDirectory(String name) throws FileNotFoundException {
-			if (!dir.isDirectory()) {
-				throw new FileNotFoundException("Not a directory: " + dir.getAbsolutePath());
-			}
-			for (String found : dir.list()) {
-				if (found.equalsIgnoreCase(name)) {
-					return new File(dir, found);
-				}
-			}
-			throw new FileNotFoundException("Could not find " + name + " in " + dir.getAbsolutePath());
 		}
 	}
 }
