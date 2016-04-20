@@ -6,7 +6,7 @@ compileJava {
 }
 
 startScripts {
-    applicationName = "mapcreator"
+    applicationName = "MapCreator"
 }
 
 mainClassName = 'jsettlers.mapcreator.main.MapCreatorApp'
@@ -15,6 +15,17 @@ jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
+}
+
+task releaseJar(type: Jar) {
+    baseName = 'MapCreator'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
 }
 
 dependencies {

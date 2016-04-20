@@ -50,5 +50,8 @@ env:
   - TARGET=":jsettlers.logic:test:aiDifficultiesIT --info"
   - TARGET=":jsettlers.logic:test:autoReplayIT --info"
   - TARGET=":jsettlers.logic:test:replayValidationIT --info"
+    
+  # Test release generation
+  - TARGET="release"
 
 script: ./gradlew $TARGET; if [ "$CACHE" ]; then cp build/distributions/*.zip $HOME/dist; fi

@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'distribution'
 
+
 buildscript {
 	repositories {
 		jcenter()
@@ -17,6 +18,7 @@ allprojects {
 		jcenter()
 	}
 }
+
 
 subprojects {
 	plugins.withType(JavaPlugin).whenPluginAdded {
@@ -108,6 +110,7 @@ distributions {
 tasks.getByPath(":androidDistTar").dependsOn tasks.getByPath(":jsettlers.main.android:assemble")
 tasks.getByPath(":androidDistZip").dependsOn tasks.getByPath(":jsettlers.main.android:assemble")
 
+
 // This is a hack to make ./gradlew run only run the swing version.
 task run(dependsOn: ':jsettlers.main.swing:run') << {
     // We do not need any more tasks.
@@ -133,4 +136,52 @@ task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
 		commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
 	}
 	println 'The application should have started now.'
+}
+
+
+
+
+def releaseDir = project.file('release')
+
+
+task releaseJSettlers(type:Zip) {
+	into('JSettlers') {
+		from { project.getRootProject().file('LICENSE.txt')}
+		from tasks.getByPath(':jsettlers.main.swing:releaseJar')
+		from tasks.getByPath(':jsettlers.mapcreator:releaseJar')
+
+		into('maps') {
+			from project.getRootProject().file('maps/release')
+		}
+	}
+
+	destinationDir releaseDir
+	baseName "JSettlers"
+}
+
+
+task releaseDedicatedServer(type: Copy) {
+    from tasks.getByPath(':jsettlers.network:jar')
+    into releaseDir
+}
+
+
+task releaseAndroid(type:Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
+	into('JSettlers-Android') {
+		from { project.getRootProject().file('LICENSE.txt') }
+		from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
+		rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
+	}
+
+	destinationDir releaseDir
+	baseName "JSettlers-Android"
+}
+
+
+
+task release(dependsOn: ['releaseJSettlers', 'releaseDedicatedServer', 'releaseAndroid'])
+
+
+clean {
+    delete releaseDir
 }

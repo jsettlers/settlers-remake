@@ -13,23 +13,12 @@ jar {
     }
 }
 
-processResources {
-/*    doLast {
-        copy {
-            description 'Prepares the resources for packing.'
-            from project.getRootProject().file('maps/release')
-            into 'build/resources/main/jsettlers/resources/maps'
-        }
-        file('build/resources/main/jsettlers/resources/use').text = 'true'
-    }*/
-}
-
 startScripts {
-    applicationName = "jsettlers"
+    applicationName = "JSettlers"
 }
 
-task distJar(type: Jar) {
-    baseName = 'SwingManagedJSettlers'
+task releaseJar(type: Jar) {
+    baseName = 'JSettlers'
     manifest {
         attributes 'Main-Class': mainClassName
     }
