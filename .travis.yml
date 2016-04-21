@@ -54,4 +54,4 @@ env:
   # Test release generation
   - TARGET="release"
 
-script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
+script: GRADLE_OPTS="-Xmx1200m" ./gradlew $TARGET
