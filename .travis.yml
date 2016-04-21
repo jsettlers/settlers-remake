@@ -6,6 +6,10 @@ jdk:
 
 android:
   components:
+    # Those two lines allow us to use any build tools version.
+    - tools
+    - platform-tools
+
     - build-tools-23.0.1
     - android-15
 
@@ -34,8 +38,6 @@ before_script:
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
 
-script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
-
 env:
   # Only compile and build basic jars
   - TARGET="assemble"
@@ -52,4 +54,4 @@ env:
   # Test release generation
   - TARGET="release"
 
-script: ./gradlew $TARGET
+script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
