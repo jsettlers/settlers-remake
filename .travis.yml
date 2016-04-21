@@ -12,7 +12,6 @@ android:
 before_install:
   - mkdir -p $HOME/.gradle/caches/
   - mkdir -p $HOME/.gradle/wrapper/
-  - mkdir -p $HOME/dist
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -21,7 +20,6 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-    - $HOME/dist
 
 before_script:
   - sudo service postgresql stop || true
@@ -40,7 +38,7 @@ script: GRADLE_OPTS="-Xmx2048m" ./gradlew $TARGET
 
 env:
   # Only compile and build basic jars
-  - TARGET="assemble" CACHE="1"
+  - TARGET="assemble"
   - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
@@ -54,4 +52,4 @@ env:
   # Test release generation
   - TARGET="release"
 
-script: ./gradlew $TARGET; if [ "$CACHE" ]; then cp build/distributions/*.zip $HOME/dist; fi
+script: ./gradlew $TARGET
