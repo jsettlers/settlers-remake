@@ -5,16 +5,16 @@ compileJava {
     targetCompatibility = 1.8
 }
 
+startScripts {
+    applicationName = "JSettlers"
+}
+
 mainClassName = 'jsettlers.main.swing.SwingManagedJSettlers'
 
 jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-}
-
-startScripts {
-    applicationName = "JSettlers"
 }
 
 task releaseJar(type: Jar) {
