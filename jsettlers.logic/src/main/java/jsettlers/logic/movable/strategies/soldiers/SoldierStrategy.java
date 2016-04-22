@@ -91,8 +91,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		case SEARCH_FOR_ENEMIES:
 			final short minSearchDistance = getMinSearchDistance();
 			IAttackable oldEnemy = enemy;
-			enemy = super.getGrid().getEnemyInSearchArea(getAttackPosition(), movable, minSearchDistance,
-					getMaxSearchDistance(isInTower), !defending);
+			enemy = super.getGrid().getEnemyInSearchArea(getAttackPosition(), movable, minSearchDistance, getMaxSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsafe mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
