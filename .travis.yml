@@ -17,13 +17,16 @@ before_install:
   - mkdir -p $HOME/.gradle/caches/
   - mkdir -p $HOME/.gradle/wrapper/
 
-before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 
-cache:
-  directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+# Currently we need sudo to stop the services (otherwise we run out of memory)
+# With sudo caching doesn't work => disabled it
+#before_cache:
+#  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+#
+#cache:
+#  directories:
+#    - $HOME/.gradle/caches/
+#    - $HOME/.gradle/wrapper/
 
 before_script:
   - sudo service postgresql stop || true
