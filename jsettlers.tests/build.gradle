@@ -1,0 +1,41 @@
+apply plugin: 'java'
+
+// This runs the unit tests and some more validation tests.
+
+test {
+    minHeapSize = "128m"
+    maxHeapSize = "512m"
+    testLogging.showStandardStreams = true
+    filter {
+        includeTestsMatching '*Test'
+        includeTestsMatching '*AutoReplayIT'
+        includeTestsMatching '*ReplayValidationIT'
+        includeTestsMatching '*AiDifficultiesIT'
+    }
+
+    environment.put('JSETTLERS_RESOURCES', project(':jsettlers.common').file('resources').getAbsolutePath())
+}
+
+
+sourceSets {
+    main {
+        java.srcDirs = []
+        resources.srcDirs = []
+    }
+    test {
+        java.srcDirs = ['helpers', 'tests.network', 'tests']
+        resources.srcDirs = ['resources']
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile project(':go.graphics')
+    testCompile project(':go.graphics.swing')
+    testCompile project(':jsettlers.common')
+    testCompile project(':jsettlers.graphics')
+    testCompile project(':jsettlers.graphics.swing')
+    testCompile project(':jsettlers.logic')
+    testCompile project(':jsettlers.main.swing')
+    testCompile project(':jsettlers.network')
+}

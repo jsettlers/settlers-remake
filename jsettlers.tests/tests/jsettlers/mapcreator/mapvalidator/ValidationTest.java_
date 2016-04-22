@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import jsettlers.TestUtils;
+import jsettlers.testutils.TestUtils;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.logic.map.save.IMapListFactory;
-import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.loading.list.IMapListFactory;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.mapvalidator.result.AbstractErrorEntry;
 import jsettlers.mapcreator.mapvalidator.result.ErrorEntry;

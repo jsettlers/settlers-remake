@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+
+task aiDifficultiesIT(type: Test, dependsOn: testClasses) {
+    include '**/AiDifficultiesIT*'
+}
+
+task autoReplayIT(type: Test, dependsOn: testClasses) {
+    include '**/AutoReplayIT*'
+}
+
+task replayValidationIT(type: Test, dependsOn: testClasses) {
+    include '**/ReplayValidationIT*'
+}
+
+task unitTest(type: Test) {
+	exclude 'jsettlers/integration/**'
+}
+
+dependencies {
+    // to make eclipse happy
+    compile project(':jsettlers.common:test')
+    testCompile project(':jsettlers.common:test').sourceSets.test.output
+}
+
+
+tasks.withType(Test) {
+    testLogging {
+        events 'started', 'passed'
+    }
+}
