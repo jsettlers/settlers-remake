@@ -520,7 +520,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					inFight = true;
 
 					OccupyingBuilding.this.grid.getMapObjectsManager()
-							.addSelfDeletingMapObject(pos, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
+							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pullNewDefender(attackerPos);
 				}
@@ -545,7 +545,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				changePlayerTo(attackerPos);
 			} else {
 				currDefender = removeSoldier();
-				currDefender.getSoldier().setDefendingAt(pos);
+				currDefender.getSoldier().setDefendingAt(getPos());
 			}
 		}
 
