@@ -55,4 +55,4 @@ env:
   # Test release generation
   - TARGET="release"
 
-script: GRADLE_OPTS="-Xmx600m" ./gradlew $TARGET
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
