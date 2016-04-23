@@ -12,9 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.algorithms.path.astar.queues.bucket;
-
-import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
+package jsettlers.common.utils.collections.list;
 
 /**
  * This class represents a single item of a {@link DoubleLinkedIntList}.
