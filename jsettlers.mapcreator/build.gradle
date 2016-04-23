@@ -1,0 +1,39 @@
+apply plugin: 'application'
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+startScripts {
+    applicationName = "MapCreator"
+}
+
+mainClassName = 'jsettlers.mapcreator.main.MapCreatorApp'
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task releaseJar(type: Jar) {
+    baseName = 'MapCreator'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
+
+dependencies {
+    compile project(':go.graphics')
+    compile project(':go.graphics.swing')
+    compile project(':jsettlers.common')
+    compile project(':jsettlers.graphics')
+    compile project(':jsettlers.graphics.swing')
+    compile project(':jsettlers.logic')
+    compile project(':jsettlers.main.swing')
+}

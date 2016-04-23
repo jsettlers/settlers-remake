@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+dependencies {
+    compile project(':go.graphics')
+    compile project(':go.graphics.swing')
+    compile project(':jsettlers.graphics')
+    compile project(':jsettlers.common')
+}

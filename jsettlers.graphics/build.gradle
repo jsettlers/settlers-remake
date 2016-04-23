@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        output.dir('src/gen/java', buildBy: 'generateLayouts')
+
+        java.srcDirs = ['src/main/java', 'src/gen/java']
+    }
+}
+
+compileJava {
+	dependsOn 'generateLayouts'
+}
+
+clean {
+    delete 'src/gen'
+}
+
+dependencies {
+    compile project(':jsettlers.common')
+    compile project(':go.graphics')
+}
+
+
+task generateLayouts(dependsOn:tasks.getByPath(':jsettlers.graphics:layoutbuilder:jar'), type: JavaExec) {
+    classpath project(":jsettlers.graphics:layoutbuilder").sourceSets.main.runtimeClasspath
+    main = "jsettlers.graphics.ui.generate.LayoutConverter"
+    args = [ file('./src/main/res/layout').absolutePath, file('./src/gen/java').absolutePath]
+    inputs.dir file('./src/main/res/layout')
+    outputs.dir file('./src/gen/java/jsettlers/graphics/ui/layout')
+}
+

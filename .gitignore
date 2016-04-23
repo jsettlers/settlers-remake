@@ -1,25 +1,30 @@
-bin
-gen
-target
-logs
+# Gradle build files
+local.properties
+/.gradle
+/build
+/*/build
+/jsettlers.graphics/layoutbuilder/build/
+/jsettlers.common/texturebuilder/build/
 
+# Generated sources
+/jsettlers.common/src/generated/
+
+# Fake test project roots
+/*/testRoot
+
+# IDE files
+/.idea
 /.metadata
 /.recommenders
+*.iml
+/settlers.ipr
+/settlers.iws
+
+.project
+.classpath
 .settings
-.buildScripts
-/jsettlers.main.android/assets/*
-
-/jsettlers.common/resources/cache
-/jsettlers.common/resources/images/*
-!/jsettlers.common/resources/images/movables.txt
-/jsettlers.common/resources/save
-
-/jsettlers.main.swing/*.log
-
-/jsettlers.tests/out
-/jsettlers.common/resources/.jsettlers
-
-/jsettlers.main.swing/config.prp
-/jsettlers.mapcreator/config.prp
-/jsettlers.common/resources/last-used.properties
-/jsettlers.graphics.androidui/gen/jsettlers/graphics/androidui/BuildConfig.java
+bin
+gen
+/release
+/save
+/logs

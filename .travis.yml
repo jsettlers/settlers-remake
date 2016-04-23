@@ -1,25 +1,60 @@
-language: java
+language: android
+sudo: true
 
 jdk:
   - oraclejdk8
-  - oraclejdk7
-  - openjdk7
 
+android:
+  components:
+    # Those two lines allow us to use any build tools version.
+    - tools
+    - platform-tools
+
+    - build-tools-23.0.3
+    - android-15
+
+before_install:
+  - mkdir -p $HOME/.gradle/caches/
+  - mkdir -p $HOME/.gradle/wrapper/
+
+
+# Currently we need sudo to stop the services (otherwise we run out of memory)
+# With sudo caching doesn't work => disabled it
+#before_cache:
+#  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+#
+#cache:
+#  directories:
+#    - $HOME/.gradle/caches/
+#    - $HOME/.gradle/wrapper/
+
+before_script:
+  - sudo service postgresql stop || true
+  - sudo service mysql stop || true
+  - sudo service memcached stop || true
+  - sudo service bootlogd stop || true
+  - sudo service elasticsearch stop || true
+  - sudo service mongodb stop || true
+  - sudo service neo4j stop || true
+  - sudo service cassandra stop || true
+  - sudo service riak stop || true
+  - sudo service rsync stop || true
+  - sudo service x11-common stop || true
 
 env:
-  - TARGET=runUnitTests
-  - TARGET=runAutoReplayIT
-  - TARGET=buildDedicatedServer
-  - TARGET=buildSwing
-  - TARGET=runAiDifficultiesIT
-  - TARGET=runReplayValidationIT
+  # Only compile and build basic jars
+  - TARGET="assemble"
+  - TARGET=":jsettlers.main.android:build"
 
-script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
+  # Run single test targets
+  - TARGET=":jsettlers.logic:test:unitTest --info"
+  - TARGET=":jsettlers.common:test --info"
+  - TARGET=":jsettlers.network:test --info"
+  - TARGET=":jsettlers.logic:test:aiDifficultiesIT --info"
+  - TARGET=":jsettlers.logic:test:autoReplayIT --info"
+  - TARGET=":jsettlers.logic:test:replayValidationIT --info"
+    
+  # Test release generation
+  - TARGET="release"
 
-
-matrix:
-  exclude:
-    - jdk: oraclejdk7
-      env: TARGET=buildSwing
-    - jdk: openjdk7
-      env: TARGET=buildSwing
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET

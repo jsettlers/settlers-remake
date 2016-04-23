@@ -1,0 +1,14 @@
+apply plugin: 'application'
+
+mainClassName = 'jsettlers.network.server.DedicatedServerApp'
+
+startScripts {
+    applicationName = "server"
+}
+
+jar {
+    baseName = 'DedicatedJSettlersServer'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
