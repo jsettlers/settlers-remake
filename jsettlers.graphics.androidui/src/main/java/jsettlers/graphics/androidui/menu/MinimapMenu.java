@@ -16,6 +16,7 @@ package jsettlers.graphics.androidui.menu;
 
 import java.util.BitSet;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.minimap.AbstractLineLoader;
@@ -107,6 +108,7 @@ public class MinimapMenu extends AndroidMenu {
 
 	public class AndroidLineLoader extends AbstractLineLoader {
 		private int stride;
+		private int yMax;
 		private int[] buffer;
 		private BitSet updatedLines = new BitSet();
 		private Bitmap bitmap;
@@ -124,12 +126,13 @@ public class MinimapMenu extends AndroidMenu {
 		@Override
 		protected void resizeBuffer(int width, int height) {
 			stride = width;
+			yMax = height - 1;
 			buffer = new int[width * height];
 		}
 
 		@Override
 		protected void setBuffer(int y, int x, short color) {
-			buffer[y * stride + x] = 0xff000000 + (int) (Math.random() * 0xffffff);
+			buffer[y * stride + x] = Color.convertTo32Bit(color);
 		}
 
 		protected Bitmap updateBitmap() {
@@ -142,7 +145,7 @@ public class MinimapMenu extends AndroidMenu {
 					}
 					updatedLines.clear(nextLine);
 				}
-				int bufferOffset = nextLine * minimapData.getWidth();
+				int bufferOffset = (yMax - nextLine) * minimapData.getWidth();
 
 				bitmap.setPixels(buffer, bufferOffset, minimapData.getWidth(), 0, nextLine, minimapData.getWidth(), 1);
 			}
@@ -152,8 +155,8 @@ public class MinimapMenu extends AndroidMenu {
 
 	private class MinimapData implements IMinimapData {
 
-		private static final int MINIMAP_WIDTH = 301;
-		private static final int MINIMAP_HEIGHT = 307;
+		private static final int MINIMAP_WIDTH = 300;
+		private static final int MINIMAP_HEIGHT = 300;
 		private int loop;
 
 		@Override
