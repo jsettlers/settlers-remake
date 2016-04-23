@@ -92,7 +92,7 @@ public abstract class AbstractLineLoader implements Runnable {
 			currentline += Y_STEP_HEIGHT;
 			if (currentline >= workingMinimapHeight) {
 				currYOffset++;
-				if (currYOffset > Y_STEP_HEIGHT) {
+				if (currYOffset >= Y_STEP_HEIGHT) {
 					currYOffset = 0;
 					currXOffset += 3;
 					currXOffset %= X_STEP_WIDTH;
@@ -112,7 +112,7 @@ public abstract class AbstractLineLoader implements Runnable {
 			for (int x = 0; x < width; x++) {
 				int oldY = Math.round((float) y * oldHeight / height);
 				int oldX = Math.round((float) x * oldWidth / width);
-				landscape[y][x] = oldLandscape[Math.max(oldY, oldHeight - 1)][Math.max(oldX, oldWidth - 1)];
+				landscape[y][x] = oldLandscape[Math.min(oldY, oldHeight - 1)][Math.min(oldX, oldWidth - 1)];
 			}
 		}
 	}
