@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.algorithms.path.astar.queues.bucket;
 
+import jsettlers.common.utils.collections.list.DoubleLinkedIntListItem;
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
 
 /**
