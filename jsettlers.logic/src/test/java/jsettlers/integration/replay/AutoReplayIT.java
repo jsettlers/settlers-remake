@@ -14,32 +14,14 @@
  *******************************************************************************/
 package jsettlers.integration.replay;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import jsettlers.common.resources.IResourceProvider;
-import jsettlers.common.resources.ResourceManager;
-import jsettlers.logic.map.loading.list.DirectoryMapLister;
-import jsettlers.logic.map.loading.list.IListedMap;
-import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
@@ -61,7 +43,7 @@ public class AutoReplayIT {
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 	}
 
-	private static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
+	static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
 	private static final Object ONLY_ONE_TEST_AT_A_TIME_LOCK = new Object();
 
 	@Parameters(name = "{index}: {0} : {1}")
@@ -104,7 +86,7 @@ public class AutoReplayIT {
 		}
 	}
 
-	private MapLoader getReferenceSavegamePath() throws MapLoadException, IOException {
+	MapLoader getReferenceSavegamePath() throws MapLoadException, IOException {
 		String replayPath = "/" + getClass().getPackage().getName().replace('.', '/');
 		replayPath += "/" + folderName;
 		replayPath += "/savegame-" + targetTimeMinutes + "m.zmap";
@@ -113,36 +95,11 @@ public class AutoReplayIT {
 		return MapLoader.getLoaderForListedMap(new MapList.ListedResourceMap(replayPath));
 	}
 
-	private ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
+	ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
 		return MapUtils.createReplayForResource(getClass(), getReplayName(), MapUtils.getMap(getClass(), folderName + "/base.rmap"));
 	}
 
 	private String getReplayName() {
 		return folderName + "/replay.log";
 	}
-
-	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException {
-		System.out.println("Creating reference files for replays...");
-
-		for (Object[] replaySet : replaySets()) {
-			String folderName = (String) replaySet[0];
-			int targetTimeMinutes = (Integer) replaySet[1];
-
-			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			MapLoader newSavegame = ReplayUtils.replayAndCreateSavegame(replayIT.getReplayFile(), targetTimeMinutes, REMAINING_REPLAY_FILENAME);
-			MapLoader expectedSavegame = replayIT.getReferenceSavegamePath();
-
-			try {
-				MapUtils.compareMapFiles(expectedSavegame, newSavegame);
-				System.out.println("New savegame is equal to old one => won't replace.");
-				newSavegame.getListedMap().delete();
-			} catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
-				Files.move(Paths.get(newSavegame.getListedMap().getFile().toString()),
-						Paths.get(expectedSavegame.getListedMap().getFile().toString()),
-						StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + newSavegame + "'");
-			}
-		}
-	}
-
 }
