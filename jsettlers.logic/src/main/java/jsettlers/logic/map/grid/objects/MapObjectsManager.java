@@ -156,7 +156,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			stone.cutOff();
 
 			if (!stone.canBeCut()) {
-				addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
+				addSelfDeletingMapObject(new ShortPoint2D(x, y), EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
 				removeMapObjectType(x, y, EMapObjectType.STONE);
 			}
 		}
