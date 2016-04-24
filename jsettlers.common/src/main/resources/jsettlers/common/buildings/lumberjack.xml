@@ -1,197 +1,154 @@
 <?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
 
 <building worker="LUMBERJACK" workradius="30">
-	<ground groundtype="GRASS" />
-	<ground groundtype="EARTH" />
-	<ground groundtype="FLATTENED" />
-	
-	<blocked dx="-3" dy="2" block="true" />
-	<blocked dx="-2" dy="2" block="true" />
-	<blocked dx="-3" dy="1" block="true" />
-	<blocked dx="-3" dy="-1" block="true" />
-	<blocked dx="-3" dy="-2" block="true" />
-	<blocked dx="-3" dy="-3" block="true" />
-	<blocked dx="-2" dy="-3" block="true" />
-	<blocked dx="-1" dy="-2" block="true" />
-	<blocked dx="0" dy="-1" block="true" />
-	<blocked dx="1" dy="0" block="true" />
-	<blocked dx="-1" dy="-3" block="true" />
-	<blocked dx="0" dy="-2" block="true" />
-	<blocked dx="1" dy="-1" block="true" />
-	<blocked dx="3" dy="1" block="true" />
-	<blocked dx="3" dy="2" block="true" />
-	<blocked dx="2" dy="1" block="true" />
-	<blocked dx="-2" dy="-1" block="true" />
-	<blocked dx="-2" dy="-2" block="true" />
-	<blocked dx="-1" dy="-1" block="true" />
-	<blocked dx="0" dy="0" block="true" />
-	<blocked dx="1" dy="1" block="true" />
-	<blocked dx="2" dy="2" block="true" />
-	<blocked dx="3" dy="3" block="true" />
-	<blocked dx="2" dy="3" block="true" />
-	<blocked dx="1" dy="2" block="true" />
-	<blocked dx="0" dy="1" block="true" />
-	<blocked dx="-1" dy="0" block="true" />
-	<blocked dx="-2" dy="0" block="true" />
-	<blocked dx="0" dy="2" block="true" />
-	<blocked dx="1" dy="3" block="true" />
-	<blocked dx="2" dy="0" block="true" />
-	<blocked dx="-3" dy="0" block="true" />
-	<blocked dx="-2" dy="1" block="true" />
-	<blocked dx="-4" dy="2" block="false" />
-	<blocked dx="-3" dy="3" block="false" />
-	<blocked dx="-2" dy="3" block="false" />
-	<blocked dx="-1" dy="3" block="false" />
-	<blocked dx="-1" dy="2" block="false" />
-	<blocked dx="-1" dy="1" block="false" />
-	<blocked dx="0" dy="3" block="false" />
-	<blocked dx="1" dy="5" block="false" />
-	<blocked dx="1" dy="4" block="false" />
-	<blocked dx="2" dy="5" block="false" />
-	<blocked dx="3" dy="5" block="false" />
-	<blocked dx="2" dy="4" block="false" />
-	<blocked dx="3" dy="4" block="false" />
-	<blocked dx="4" dy="4" block="false" />
-	<blocked dx="4" dy="3" block="false" />
-	<blocked dx="4" dy="2" block="false" />
-	<blocked dx="4" dy="1" block="false" />
-	<blocked dx="3" dy="0" block="false" />
-	<blocked dx="2" dy="-1" block="false" />
-	<blocked dx="1" dy="-2" block="false" />
-	<blocked dx="0" dy="-3" block="false" />
-	<blocked dx="-1" dy="-4" block="false" />
-	<blocked dx="-2" dy="-4" block="false" />
-	<blocked dx="-3" dy="-4" block="false" />
-	<blocked dx="-4" dy="-4" block="false" />
-	<blocked dx="-4" dy="-3" block="false" />
-	<blocked dx="-4" dy="-2" block="false" />
-	<blocked dx="0" dy="4" block="false" />
-	<blocked dx="-4" dy="-1" block="false" />
-	<blocked dx="-4" dy="0" block="false" />
-	<blocked dx="-4" dy="1" block="false" />
+    <ground groundtype="GRASS"/>
+    <ground groundtype="EARTH"/>
+    <ground groundtype="FLATTENED"/>
 
-	<door dx="-1" dy="1" />
-	
-	<constructionStack dx="0" dy="4" material="STONE" buildrequired="2" />
-	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="4" />
-	<offerStack dx="0" dy="3" material="TRUNK" />
-	
-	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
-	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
-	<bricklayer dx="4" dy="3" direction="NORTH_WEST" />
-	<bricklayer dx="3" dy="4" direction="NORTH_WEST" />
+    <blocked block="true" dx="-3" dy="2"/>
+    <blocked block="true" dx="-2" dy="2"/>
+    <blocked block="true" dx="-3" dy="1"/>
+    <blocked block="true" dx="-3" dy="-1"/>
+    <blocked block="true" dx="-3" dy="-2"/>
+    <blocked block="true" dx="-3" dy="-3"/>
+    <blocked block="true" dx="-2" dy="-3"/>
+    <blocked block="true" dx="-1" dy="-2"/>
+    <blocked block="true" dx="0" dy="-1"/>
+    <blocked block="true" dx="1" dy="0"/>
+    <blocked block="true" dx="-1" dy="-3"/>
+    <blocked block="true" dx="0" dy="-2"/>
+    <blocked block="true" dx="1" dy="-1"/>
+    <blocked block="true" dx="3" dy="1"/>
+    <blocked block="true" dx="3" dy="2"/>
+    <blocked block="true" dx="2" dy="1"/>
+    <blocked block="true" dx="-2" dy="-1"/>
+    <blocked block="true" dx="-2" dy="-2"/>
+    <blocked block="true" dx="-1" dy="-1"/>
+    <blocked block="true" dx="0" dy="0"/>
+    <blocked block="true" dx="1" dy="1"/>
+    <blocked block="true" dx="2" dy="2"/>
+    <blocked block="true" dx="3" dy="3"/>
+    <blocked block="true" dx="2" dy="3"/>
+    <blocked block="true" dx="1" dy="2"/>
+    <blocked block="true" dx="0" dy="1"/>
+    <blocked block="true" dx="-1" dy="0"/>
+    <blocked block="true" dx="-2" dy="0"/>
+    <blocked block="true" dx="0" dy="2"/>
+    <blocked block="true" dx="1" dy="3"/>
+    <blocked block="true" dx="2" dy="0"/>
+    <blocked block="true" dx="-3" dy="0"/>
+    <blocked block="true" dx="-2" dy="1"/>
+    <blocked block="false" dx="-4" dy="2"/>
+    <blocked block="false" dx="-3" dy="3"/>
+    <blocked block="false" dx="-2" dy="3"/>
+    <blocked block="false" dx="-1" dy="3"/>
+    <blocked block="false" dx="-1" dy="2"/>
+    <blocked block="false" dx="-1" dy="1"/>
+    <blocked block="false" dx="0" dy="3"/>
+    <blocked block="false" dx="1" dy="5"/>
+    <blocked block="false" dx="1" dy="4"/>
+    <blocked block="false" dx="2" dy="5"/>
+    <blocked block="false" dx="3" dy="5"/>
+    <blocked block="false" dx="2" dy="4"/>
+    <blocked block="false" dx="3" dy="4"/>
+    <blocked block="false" dx="4" dy="4"/>
+    <blocked block="false" dx="4" dy="3"/>
+    <blocked block="false" dx="4" dy="2"/>
+    <blocked block="false" dx="4" dy="1"/>
+    <blocked block="false" dx="3" dy="0"/>
+    <blocked block="false" dx="2" dy="-1"/>
+    <blocked block="false" dx="1" dy="-2"/>
+    <blocked block="false" dx="0" dy="-3"/>
+    <blocked block="false" dx="-1" dy="-4"/>
+    <blocked block="false" dx="-2" dy="-4"/>
+    <blocked block="false" dx="-3" dy="-4"/>
+    <blocked block="false" dx="-4" dy="-4"/>
+    <blocked block="false" dx="-4" dy="-3"/>
+    <blocked block="false" dx="-4" dy="-2"/>
+    <blocked block="false" dx="0" dy="4"/>
+    <blocked block="false" dx="-4" dy="-1"/>
+    <blocked block="false" dx="-4" dy="0"/>
+    <blocked block="false" dx="-4" dy="1"/>
 
-	<flag dx="-2" dy="-2" />
+    <door dx="-1" dy="1"/>
 
-	<buildmark dx="-3" dy="-1" />
-	<buildmark dx="1" dy="3" />
-	<buildmark dx="3" dy="3" />
-	<buildmark dx="3" dy="1" />
-	<buildmark dx="-1" dy="-3" />
-	<buildmark dx="-3" dy="1" />
+    <constructionStack buildrequired="2" dx="0" dy="4" material="STONE"/>
+    <constructionStack buildrequired="4" dx="3" dy="5" material="PLANK"/>
+    <offerStack dx="0" dy="3" material="TRUNK"/>
 
-	<image file="14" type="GUI" for="GUI" image="0" sequence="0" />
-    <image file="13" type="SETTLER" for="FINAL" image="0" sequence="0"/>
-    <image file="13" type="SETTLER" for="BUILD" image="1" sequence="0"/>
+    <bricklayer direction="NORTH_EAST" dx="-1" dy="2"/>
+    <bricklayer direction="NORTH_EAST" dx="0" dy="3"/>
+    <bricklayer direction="NORTH_WEST" dx="4" dy="3"/>
+    <bricklayer direction="NORTH_WEST" dx="3" dy="4"/>
 
-	<startjob name="gohome" />
+    <flag dx="-2" dy="-2"/>
 
-	<!-- going home job -->
-	<job name="gohome" type="GO_TO" successjob="hide" failjob="waithome"
-		dx="-1" dy="1" />
-	<job name="waithome" type="WAIT" successjob="gohome" failjob="waithome"
-		time="1" />
-	<job name="hide" type="HIDE" successjob="start" failjob="start" />
+    <buildmark dx="-3" dy="-1"/>
+    <buildmark dx="1" dy="3"/>
+    <buildmark dx="3" dy="3"/>
+    <buildmark dx="3" dy="1"/>
+    <buildmark dx="-1" dy="-3"/>
+    <buildmark dx="-3" dy="1"/>
 
-	<job name="start" type="WAIT" successjob="check" failjob="show"
-		time="3" />
-	<job name="check" type="NOT_FULL" successjob="presearch" failjob="hide"
-		dx="0" dy="3" />
+    <image file="14" for="GUI" image="0" sequence="0" type="GUI"/>
+    <image file="13" for="FINAL" image="0" sequence="0" type="SETTLER"/>
+    <image file="13" for="BUILD" image="1" sequence="0" type="SETTLER"/>
 
-	<job name="presearch" type="PRE_SEARCH" successjob="show" failjob="start"
-		search="CUTTABLE_TREE" dx="-1" dy="2" />
-	<job name="show" type="SHOW" successjob="search" failjob="hide" dx="-1"
-		dy="2" />
-	<job name="search" type="FOLLOW_SEARCHED" successjob="lookA"
-		failjob="hide" />
+    <startjob name="gohome"/>
 
-	<!-- hack 9 times - tree falls - hack trice - hack trice - hack trice -->
-	<job name="lookA" type="LOOK_AT" successjob="hackA1" failjob="gohome"
-		direction="NORTH_WEST" />
-	<job name="hackA1" type="PLAY_ACTION1" successjob="hackA2" failjob="gohome"
-		time="1.0" />
-	<job name="hackA2" type="PLAY_ACTION1" successjob="hackA3" failjob="gohome"
-		time="1.0" />
-	<job name="hackA3" type="PLAY_ACTION1" successjob="hackA4" failjob="gohome"
-		time="1.0" />
-	<job name="hackA4" type="PLAY_ACTION1" successjob="hackA5" failjob="gohome"
-		time="1.0" />
-	<job name="hackA5" type="PLAY_ACTION1" successjob="hackA6" failjob="gohome"
-		time="1.0" />
-	<job name="hackA6" type="PLAY_ACTION1" successjob="hackA7" failjob="gohome"
-		time="1.0" />
-	<job name="hackA7" type="PLAY_ACTION1" successjob="hackA8" failjob="gohome"
-		time="1.0" />
-	<job name="hackA8" type="PLAY_ACTION1" successjob="hackA9" failjob="gohome"
-		time="1.0" />
-	<job name="hackA9" type="PLAY_ACTION1" successjob="execute"
-		failjob="gohome" time="1.0" />
+    <!-- going home job -->
+    <job name="gohome"      successjob="hide"       failjob="hide"      type="GO_TO" dx="-1" dy="1"/>
+    <job name="hide"        successjob="start"      failjob="start"     type="HIDE"/>
 
-	<job name="execute" type="EXECUTE" successjob="walkA" failjob="gohome"
-		search="CUTTABLE_TREE" />
+    <job name="start"       successjob="check"      failjob="show"      type="WAIT" time="3" />
+    <job name="check"       successjob="presearch"  failjob="hide"      type="NOT_FULL" dx="0" dy="3"/>
 
-	<job name="walkA" type="WALK" successjob="lookB" failjob="gohome"
-		direction="NORTH_EAST" />
-	<job name="lookB" type="LOOK_AT" successjob="hackB1" failjob="gohome"
-		direction="NORTH_WEST" />
-	<job name="hackB1" type="PLAY_ACTION1" successjob="hackB2" failjob="gohome"
-		time="1.0" />
-	<job name="hackB2" type="PLAY_ACTION1" successjob="hackB3" failjob="gohome"
-		time="1.0" />
-	<job name="hackB3" type="PLAY_ACTION1" successjob="walkB" failjob="gohome"
-		time="1.0" />
+    <job name="presearch"   successjob="show"       failjob="start"     type="PRE_SEARCH" search="CUTTABLE_TREE" dx="-1" dy="2"/>
+    <job name="show"        successjob="search"     failjob="hide"      type="SHOW" dx="-1" dy="2"/>
+    <job name="search"      successjob="lookA"      failjob="hide"      type="FOLLOW_SEARCHED"/>
 
-	<job name="walkB" type="WALK" successjob="lookC" failjob="gohome"
-		direction="NORTH_EAST" />
-	<job name="lookC" type="LOOK_AT" successjob="hackC1" failjob="gohome"
-		direction="NORTH_WEST" />
-	<job name="hackC1" type="PLAY_ACTION1" successjob="hackC2" failjob="gohome"
-		time="1.0" />
-	<job name="hackC2" type="PLAY_ACTION1" successjob="hackC3" failjob="gohome"
-		time="1.0" />
-	<job name="hackC3" type="PLAY_ACTION1" successjob="walkC" failjob="gohome"
-		time="1.0" />
+    <!-- hack 9 times - tree falls - hack trice - hack trice - hack trice -->
+    <job name="lookA"       successjob="hackA1"     failjob="gohome"    type="LOOK_AT" direction="NORTH_WEST"/>
+    <job name="hackA1"      successjob="hackA2"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA2"      successjob="hackA3"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA3"      successjob="hackA4"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA4"      successjob="hackA5"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA5"      successjob="hackA6"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA6"      successjob="hackA7"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA7"      successjob="hackA8"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA8"      successjob="hackA9"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackA9"      successjob="execute"    failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="walkC" type="WALK" successjob="lookD" failjob="gohome"
-		direction="NORTH_EAST" />
-	<job name="lookD" type="LOOK_AT" successjob="hackD1" failjob="gohome"
-		direction="NORTH_WEST" />
-	<job name="hackD1" type="PLAY_ACTION1" successjob="hackD2" failjob="gohome"
-		time="1.0" />
-	<job name="hackD2" type="PLAY_ACTION1" successjob="hackD3" failjob="gohome"
-		time="1.0" />
-	<job name="hackD3" type="PLAY_ACTION1" successjob="walkD" failjob="gohome"
-		time="1.0" />
+    <job name="execute"     successjob="walkA"      failjob="gohome"    type="EXECUTE" search="CUTTABLE_TREE"/>
 
-	<job name="walkD" type="WALK" successjob="looktake" failjob="gohome"
-		direction="SOUTH_WEST" />
-	<job name="looktake" type="LOOK_AT" successjob="take" failjob="gohome"
-		direction="NORTH_WEST" />
-	<job name="take" type="TAKE" successjob="changeMat2" failjob="gohome"
-		material="TRUNK" takeMaterialFromMap="false"/>
-	<job name="changeMat2" type="SET_MATERIAL" successjob="goback"
-		failjob="gohome" material="TRUNK" />
+    <job name="walkA"       successjob="lookB"      failjob="gohome"    type="WALK" direction="NORTH_EAST"/>
+    <job name="lookB"       successjob="hackB1"     failjob="gohome"    type="LOOK_AT" direction="NORTH_WEST"/>
+    <job name="hackB1"      successjob="hackB2"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackB2"      successjob="hackB3"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackB3"      successjob="walkB"      failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
 
-	<job name="goback" type="GO_TO" successjob="look" failjob="hide"
-		dx="0" dy="3" />
-	<job name="look" type="LOOK_AT" successjob="drop" failjob="hide"
-		direction="NORTH_EAST" />
-	<job name="drop" type="DROP" successjob="walk2" failjob="hide"
-		material="TRUNK" />
-	<job name="walk2" type="WALK" successjob="walk3" failjob="hide"
-		direction="NORTH_WEST" />
-	<job name="walk3" type="WALK" successjob="hide" failjob="hide"
-		direction="NORTH_EAST" />
+    <job name="walkB"       successjob="lookC"      failjob="gohome"    type="WALK" direction="NORTH_EAST"/>
+    <job name="lookC"       successjob="hackC1"     failjob="gohome"    type="LOOK_AT" direction="NORTH_WEST"/>
+    <job name="hackC1"      successjob="hackC2"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackC2"      successjob="hackC3"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackC3"      successjob="walkC"      failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+
+    <job name="walkC"       successjob="lookD"      failjob="gohome"    type="WALK" direction="NORTH_EAST"/>
+    <job name="lookD"       successjob="hackD1"     failjob="gohome"    type="LOOK_AT" direction="NORTH_WEST"/>
+    <job name="hackD1"      successjob="hackD2"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackD2"      successjob="hackD3"     failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+    <job name="hackD3"      successjob="walkD"      failjob="gohome"    type="PLAY_ACTION1" time="1.0"/>
+
+    <job name="walkD"       successjob="looktake"   failjob="gohome"    type="WALK" direction="SOUTH_WEST"/>
+    <job name="looktake"    successjob="take"       failjob="gohome"    type="LOOK_AT" direction="NORTH_WEST"/>
+    <job name="take"        successjob="changeMat2" failjob="gohome"    type="TAKE" material="TRUNK" takeMaterialFromMap="false"/>
+    <job name="changeMat2"  successjob="goback"     failjob="gohome"    type="SET_MATERIAL" material="TRUNK"/>
+
+    <job name="goback"      successjob="look"       failjob="hide"      type="GO_TO" dx="0" dy="3"/>
+    <job name="look"        successjob="drop"       failjob="hide"      type="LOOK_AT" direction="NORTH_EAST"/>
+    <job name="drop"        successjob="walk2"      failjob="hide"      type="DROP" material="TRUNK"/>
+    <job name="walk2"       successjob="walk3"      failjob="hide"      type="WALK" direction="NORTH_WEST"/>
+    <job name="walk3"       successjob="hide"       failjob="hide"      type="WALK" direction="NORTH_EAST"/>
 
 
 </building>
