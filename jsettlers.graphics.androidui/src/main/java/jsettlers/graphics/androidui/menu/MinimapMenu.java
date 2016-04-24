@@ -40,7 +40,7 @@ import android.view.ViewGroup;
 public class MinimapMenu extends AndroidMenu {
 
 	private final AndroidLineLoader loader = new AndroidLineLoader(new MinimapData(), new MinimapMode());
-	private MinimapView map;
+	private MinimapView minimapView;
 	private Handler updateHandler;
 	private boolean updateRunnerWanted;
 
@@ -68,9 +68,9 @@ public class MinimapMenu extends AndroidMenu {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		map = (MinimapView) view.findViewById(R.id.minimap_display);
-		map.setMapContext(getPutable().getMapContext());
-		map.setOnClickListener(new OnClickListener() {
+		minimapView = (MinimapView) view.findViewById(R.id.minimap_display);
+		minimapView.setMapContext(getPutable().getMapContext());
+		minimapView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getPutable().goBackInMenu();
@@ -99,7 +99,7 @@ public class MinimapMenu extends AndroidMenu {
 	}
 
 	protected void updateBitmap() {
-		map.updateBitmap(loader.updateBitmap());
+		minimapView.updateBitmap(loader.updateBitmap());
 	}
 
 	public void gameStop() {
