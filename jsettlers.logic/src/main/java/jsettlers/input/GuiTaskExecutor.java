@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -47,9 +47,9 @@ import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
 /**
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
@@ -235,21 +235,25 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
 		for (Integer currID : selectedMovables) {
-			Movable.getMovableByID(currID).stopOrStartWorking(stop);
+			Movable movable = Movable.getMovableByID(currID);
+			if (movable != null) {
+				movable.stopOrStartWorking(stop);
+			}
 		}
 	}
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
 			Movable curr = Movable.getMovableByID(currID);
-			if (curr != null)
+			if (curr != null) {
 				curr.kill();
+			}
 		}
 	}
 
 	/**
 	 * Move the selected {@link Movable} to the given position.
-	 * 
+	 *
 	 * @param targetPosition
 	 *            position to move to
 	 * @param movableIds
