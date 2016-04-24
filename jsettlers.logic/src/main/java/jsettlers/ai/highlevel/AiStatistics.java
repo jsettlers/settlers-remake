@@ -479,7 +479,10 @@ public class AiStatistics {
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAt(x, y) && !flagsGrid.isProtected(x, y)
+		return mainGrid.isInBounds(x, y)
+				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
+				&& !objectsGrid.isBuildingAt(x, y)
+				&& !flagsGrid.isProtected(x, y)
 				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
