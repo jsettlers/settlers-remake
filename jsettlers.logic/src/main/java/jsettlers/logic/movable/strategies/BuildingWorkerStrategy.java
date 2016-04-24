@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,6 +32,7 @@ import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -120,7 +121,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case WALK:
 			IBuildingJob job = currentJob;
-			super.goInDirection(currentJob.getDirection(), true);
+			super.goInDirection(currentJob.getDirection(), EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 			if (currentJob == job) { // the path could fail and call abortPath().
 				jobFinished();
 			}

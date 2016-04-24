@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,6 +19,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -71,7 +72,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	private void findWorkablePosition() {
 		EDirection closeForeignTileDir = getCloseForeignTile();
 
-		if (closeForeignTileDir != null && super.goInDirection(closeForeignTileDir, false)) {
+		if (closeForeignTileDir != null && super.goInDirection(closeForeignTileDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 			this.state = EPioneerState.GOING_TO_POS;
 			return;
 		}
