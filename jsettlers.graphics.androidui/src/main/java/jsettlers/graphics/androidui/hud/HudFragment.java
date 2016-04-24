@@ -76,7 +76,11 @@ public class HudFragment extends AndroidMenu {
 	@Override
 	public void onStop() {
 		getPutable().getChangeObserveable().removeMapSelectionListener(selectionSetter);
-		minimapMenu.stop();
 		super.onStop();
+	}
+
+	public void gameStop() {
+		//TODO: Call this.
+		minimapMenu.gameStop();
 	}
 }

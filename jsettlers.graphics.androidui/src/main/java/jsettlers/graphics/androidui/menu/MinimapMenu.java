@@ -102,7 +102,7 @@ public class MinimapMenu extends AndroidMenu {
 		map.updateBitmap(loader.updateBitmap());
 	}
 
-	public void stop() {
+	public void gameStop() {
 		loader.stop();
 	}
 
@@ -176,6 +176,7 @@ public class MinimapMenu extends AndroidMenu {
 
 		@Override
 		public void blockUntilUpdateAllowedOrStopped() {
+			System.out.println("Minimap loop.");
 			if (loop > 10) {
 				loop = 0;
 				synchronized (updateRunner) {
