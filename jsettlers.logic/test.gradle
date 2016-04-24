@@ -21,6 +21,9 @@ dependencies {
     // to make eclipse happy
     compile project(':jsettlers.common:test')
     testCompile project(':jsettlers.common:test').sourceSets.test.output
+
+    compile project(':jsettlers.tools')
+    testCompile project(':jsettlers.tools')
 }
 
 
