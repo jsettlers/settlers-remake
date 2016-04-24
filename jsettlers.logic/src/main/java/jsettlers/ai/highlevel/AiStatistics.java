@@ -376,6 +376,10 @@ public class AiStatistics {
 	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
 			int currentNearestPointDistance, byte playerId) {
 		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
+		if (sortedResourcePoints == null) {
+			return null;
+		}
+
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
 	}
 
