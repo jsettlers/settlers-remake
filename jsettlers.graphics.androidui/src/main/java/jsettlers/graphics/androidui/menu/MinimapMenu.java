@@ -176,7 +176,6 @@ public class MinimapMenu extends AndroidMenu {
 
 		@Override
 		public void blockUntilUpdateAllowedOrStopped() {
-			System.out.println("Minimap loop.");
 			if (loop > 10) {
 				loop = 0;
 				synchronized (updateRunner) {

@@ -74,7 +74,6 @@ public class MinimapView extends View {
 		if (bitmap != null) {
 			matrix = new Matrix();
 			float s = Math.min((w - 20f) / bitmap.getWidth() / (1 + SKEW), (h - 20f) / bitmap.getHeight());
-			System.out.println(s);
 			matrix.postScale(s, s);
 			matrix.postTranslate(PADDING, PADDING);
 			matrix.postSkew(-SKEW, 0, PADDING, h - PADDING);
