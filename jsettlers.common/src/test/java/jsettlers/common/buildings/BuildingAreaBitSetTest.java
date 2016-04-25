@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 
 import jsettlers.common.position.RelativePoint;
+import jsettlers.jsettlers.common.buildings.BuildingAreaUtils;
 
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ public class BuildingAreaBitSetTest {
 				{ false, false, false, false, false, false, false },
 				{ true, true, false, false, true, true, true },
 				{ true, false, false, false, false, false, false } };
-		RelativePoint[] relativePoints = createRelativePoints(blockedMap);
+		RelativePoint[] relativePoints = BuildingAreaUtils.createRelativePoints(blockedMap);
 
 		BuildingAreaBitSet buildingArea = new BuildingAreaBitSet(relativePoints);
 
@@ -87,22 +88,5 @@ public class BuildingAreaBitSetTest {
 				assertEquals(blockedMap[y][x], bitSet.get(x + y * width));
 			}
 		}
-	}
-
-	public static RelativePoint[] createRelativePoints(boolean[][] blockedMap) {
-		ArrayList<RelativePoint> positions = new ArrayList<RelativePoint>();
-
-		int xOffset = blockedMap[0].length / 2;
-		int yOffset = blockedMap.length / 2;
-
-		for (int y = 0; y < blockedMap.length; y++) {
-			for (int x = 0; x < blockedMap[y].length; x++) {
-				if (blockedMap[y][x]) {
-					positions.add(new RelativePoint(x - xOffset, y - yOffset));
-				}
-			}
-		}
-
-		return positions.toArray(new RelativePoint[positions.size()]);
 	}
 }

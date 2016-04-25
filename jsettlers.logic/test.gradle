@@ -18,10 +18,6 @@ task unitTest(type: Test) {
 }
 
 dependencies {
-    // to make eclipse happy
-    compile project(':jsettlers.common:test')
-    testCompile project(':jsettlers.common:test').sourceSets.test.output
-
     compile project(':jsettlers.testutils')
     testCompile project(':jsettlers.testutils')
 }
