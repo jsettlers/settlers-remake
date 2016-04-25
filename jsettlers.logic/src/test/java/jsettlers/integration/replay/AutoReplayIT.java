@@ -15,11 +15,9 @@
 package jsettlers.integration.replay;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.Constants;

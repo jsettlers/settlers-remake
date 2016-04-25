@@ -374,13 +374,13 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		} catch (IOException e1) { // something went wrong, or the stream was empty
 			try {
 				if (dataInputStream.read() == -1) {
-					System.out.println("Successfully loaded replay file.");
+					System.out.println("Successfully loaded jsettlers.integration.replay file.");
 				} else {
-					System.out.println("Error loading replay file.");
+					System.out.println("Error loading jsettlers.integration.replay file.");
 					e1.printStackTrace();
 				}
 			} catch (IOException e2) {
-				System.out.println("Error loading replay file.");
+				System.out.println("Error loading jsettlers.integration.replay file.");
 				e1.printStackTrace();
 				e2.printStackTrace();
 			}

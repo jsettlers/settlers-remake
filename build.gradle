@@ -34,12 +34,6 @@ subprojects {
 			testCompile 'junit:junit:4.12'
 		}
 
-		// Use: ./gradlew -PmainClass=<main class> :<procejc>:execute
-		task execute(type: JavaExec) {
-			main = mainClass;
-			classpath = sourceSets.main.runtimeClasspath;
-		}
-
 		//sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 		if (gradle.ext.projectsWithExtraTest.contains(project.path)) {
 			// println "Disable tests for " + project
