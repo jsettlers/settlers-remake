@@ -1,7 +1,1 @@
 apply plugin: 'java'
-
-tasks.withType(Test) {
-    testLogging {
-        events 'passed'
-    }
-}

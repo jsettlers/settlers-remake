@@ -47,12 +47,12 @@ env:
   - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
-  - TARGET=":jsettlers.logic:test:unitTest --info"
-  - TARGET=":jsettlers.common:test:test --info"
+  - TARGET=":jsettlers.logic:test:unitTest"
+  - TARGET=":jsettlers.common:test:test"
   - TARGET=":jsettlers.network:test --info"
-  - TARGET=":jsettlers.logic:test:aiDifficultiesIT --info"
-  - TARGET=":jsettlers.logic:test:autoReplayIT --info"
-  - TARGET=":jsettlers.logic:test:replayValidationIT --info"
+  - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
+  - TARGET=":jsettlers.logic:test:autoReplayIT"
+  - TARGET=":jsettlers.logic:test:replayValidationIT"
     
   # Test release generation
   - TARGET="release"

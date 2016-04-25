@@ -72,6 +72,13 @@ subprojects {
 			}
 		}
 	}
+
+
+	tasks.withType(Test) {
+		testLogging {
+			events 'passed'
+		}
+	}
 }
 
 
@@ -103,6 +110,7 @@ task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
 	}
 	println 'The application should have started now.'
 }
+
 
 
 
