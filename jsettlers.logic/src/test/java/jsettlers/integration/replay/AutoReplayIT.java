@@ -72,5 +72,4 @@ public class AutoReplayIT {
 			actualSavegame.getListedMap().delete();
 		}
 	}
-
 }

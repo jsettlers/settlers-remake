@@ -77,11 +77,14 @@ public class AutoReplaySetting {
 	}
 
 	MapLoader getReferenceSavegame() throws MapLoadException, IOException {
-		String replayPath = "/" + getClass().getPackage().getName().replace('.', '/');
-		replayPath += "/" + getPath();
+		String replayPath = getReplayPath();
 
 		System.out.println("Using reference file: " + replayPath);
 		return MapLoader.getLoaderForListedMap(new MapList.ListedResourceMap(replayPath));
+	}
+
+	public String getReplayPath() {
+		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath();
 	}
 
 	@Override
