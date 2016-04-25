@@ -86,7 +86,7 @@ public abstract class MovableStrategy implements Serializable {
 		case WATERWORKER:
 		case WINEGROWER:
 		case HEALER:
-			return new BuildingWorkerStrategy(movable, movableType);
+			return new BuildingWorkerStrategy(movable);
 
 		case DIGGER:
 			return new DiggerStrategy(movable);
@@ -171,8 +171,8 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
 	}
 
-	protected final void followPresearchedPath() {
-		movable.followPresearchedPath();
+	protected final ShortPoint2D followPresearchedPath() {
+		return movable.followPresearchedPath();
 	}
 
 	protected final void enableNothingToDoAction(boolean enable) {

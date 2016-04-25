@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
@@ -75,6 +76,7 @@ public class TestUtils {
 		try {
 			File tempDirectory = Files.createTempDirectory("saves").toFile();
 			tempDirectory.deleteOnExit();
+			System.out.println("Using temp resource manager with directory: " + tempDirectory);
 			
 			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 

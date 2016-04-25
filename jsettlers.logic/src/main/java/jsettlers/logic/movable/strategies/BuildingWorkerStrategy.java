@@ -37,14 +37,12 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
 /**
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class BuildingWorkerStrategy extends MovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
-
-	private final EMovableType movableType;
 
 	private transient IBuildingJob currentJob = null;
 	protected IWorkerRequestBuilding building;
@@ -55,10 +53,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private EMaterialType poppedMaterial;
 	private int searchFailedCtr = 0;
 
-	public BuildingWorkerStrategy(Movable movable, EMovableType movableType) {
-		super(movable);
-		this.movableType = movableType;
+	private ShortPoint2D markedPosition;
 
+	public BuildingWorkerStrategy(Movable movable) {
+		super(movable);
 		reportAsJobless();
 	}
 
@@ -97,6 +95,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case TRY_TAKING_RESOURCE:
+			clearMark();
 			if (tryTakingResource()) {
 				jobFinished();
 			} else {
@@ -268,9 +267,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void followPreSearchedAction() {
-		super.followPresearchedPath();
+		ShortPoint2D pathTargetPos = super.followPresearchedPath();
+		mark(pathTargetPos);
 		jobFinished();
 	}
+
 
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
@@ -305,6 +306,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
+		clearMark();
 		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
@@ -329,7 +331,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dijkstra
 	 *            if true, dijkstra algorithm is used<br>
 	 *            if false, in area finder is used.
@@ -409,7 +411,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	public EMovableType getMovableType() {
-		return movableType;
+		return movable.getMovableType();
 	}
 
 	@Override
@@ -426,8 +428,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		super.setVisible(true);
 
 		reportAsJobless();
-
 		dropCurrentMaterial();
+		clearMark();
 	}
 
 	private void dropCurrentMaterial() {
@@ -445,6 +447,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		this.building = null;
 	}
 
+	private void mark(ShortPoint2D position) {
+        clearMark();
+		markedPosition = position;
+		super.getGrid().setMarked(position, true);
+	}
+
+	private void clearMark() {
+		if (markedPosition != null) {
+			super.getGrid().setMarked(markedPosition, false);
+			markedPosition = null;
+		}
+	}
+
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 		killed = true;
@@ -460,6 +475,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (building != null) {
 			building.leaveBuilding(this);
 		}
+
+		clearMark();
 	}
 
 	@Override
@@ -467,11 +484,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (currentJob != null) {
 			jobFailed();
 		}
+		clearMark();
+	}
+
+	@Override
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+		return building != null;
 	}
 
 	@Override
 	public boolean isAlive() {
 		return !killed;
-		// return true;
 	}
 }

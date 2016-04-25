@@ -43,10 +43,12 @@ import jsettlers.testutils.map.MapUtils;
  */
 public class AiDifficultiesIT {
 	public static final int MINUTES = 1000 * 60;
-	public static final int JUMP_FORWARD = 10 * MINUTES;
+	public static final int JUMP_FORWARD = 2 * MINUTES;
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+
+		TestUtils.setupTempResourceManager();
 	}
 
 	@Test
@@ -62,7 +64,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void veryHardShouldConquerHard() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 80 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 82 * MINUTES);
 	}
 
 	@Test
@@ -109,13 +111,11 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapUtils.saveMainGrid(startingGame.getMainGrid(),
-						new PlayerState[] { new PlayerState((byte) 0, null), new PlayerState((byte) 1, null) });
+				MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 0, null), new PlayerState((byte) 1, null) });
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
-						+ "the maximumTimeToWin.",
-						startedGame);
+						+ "the maximumTimeToWin.", startedGame);
 			}
 		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 0) > 0);
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
