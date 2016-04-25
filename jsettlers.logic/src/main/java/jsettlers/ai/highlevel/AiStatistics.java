@@ -376,6 +376,10 @@ public class AiStatistics {
 	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
 			int currentNearestPointDistance, byte playerId) {
 		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
+		if (sortedResourcePoints == null) {
+			return null;
+		}
+
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
 	}
 
@@ -479,7 +483,10 @@ public class AiStatistics {
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAt(x, y) && !flagsGrid.isProtected(x, y)
+		return mainGrid.isInBounds(x, y)
+				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
+				&& !objectsGrid.isBuildingAt(x, y)
+				&& !flagsGrid.isProtected(x, y)
 				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 

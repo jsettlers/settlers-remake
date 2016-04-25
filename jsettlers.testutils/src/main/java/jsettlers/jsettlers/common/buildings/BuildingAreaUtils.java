@@ -1,6 +1,5 @@
-/**
- * ****************************************************************************
- * Copyright (c) 2015
+/*******************************************************************************
+ * Copyright (c) 2016
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,40 +11,34 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- * *****************************************************************************
- */
-package jsettlers.ai.construction;
+ *******************************************************************************/
+package jsettlers.jsettlers.common.buildings;
 
-import jsettlers.common.buildings.EBuildingType;
+import java.util.ArrayList;
+
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.MainGrid;
 
 /**
- * This searches for positions where the most wine can grow withing the work area
- *
- * @author codingberlin
+ * Created by Andreas Eberle on 25.04.2016.
  */
-public class BestWinegrowerConstructionPositionFinder extends BestPlantingBuildingConstructionPositionFinder {
+public final class BuildingAreaUtils {
+    private BuildingAreaUtils() { // Utility class.
+    }
 
-	static final RelativePoint[] WINEGROWER_WORK_AREA_POINTS;
+    public static RelativePoint[] createRelativePoints(boolean[][] blockedMap) {
+        ArrayList<RelativePoint> positions = new ArrayList<RelativePoint>();
 
-	static {
-		WINEGROWER_WORK_AREA_POINTS = calculateMyRelativeWorkAreaPoints(EBuildingType.WINEGROWER);
-	}
+        int xOffset = blockedMap[0].length / 2;
+        int yOffset = blockedMap.length / 2;
 
-	@Override
-	protected EBuildingType myBuildingType() {
-		return EBuildingType.WINEGROWER;
-	}
+        for (int y = 0; y < blockedMap.length; y++) {
+            for (int x = 0; x < blockedMap[y].length; x++) {
+                if (blockedMap[y][x]) {
+                    positions.add(new RelativePoint(x - xOffset, y - yOffset));
+                }
+            }
+        }
 
-	@Override
-	protected RelativePoint[] myRelativeWorkAreaPoints() {
-		return WINEGROWER_WORK_AREA_POINTS;
-	}
-
-	@Override
-	protected boolean isMyPlantPlantable(MainGrid mainGrid, ShortPoint2D position) {
-		return mainGrid.isWinePlantable(position);
-	}
+        return positions.toArray(new RelativePoint[positions.size()]);
+    }
 }

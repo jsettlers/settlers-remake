@@ -16,58 +16,35 @@
  */
 package jsettlers.ai.construction;
 
-import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-
-import java.util.List;
-import java.util.Vector;
+import jsettlers.logic.map.grid.MainGrid;
 
 /**
  * This searches for positions where the most corn can grow withing the work area
  *
  * @author codingberlin
  */
-public class BestFarmConstructionPositionFinder implements IBestConstructionPositionFinder {
-
-	static List<RelativePoint> workAreaPoints;
+public class BestFarmConstructionPositionFinder extends BestPlantingBuildingConstructionPositionFinder {
+	static final RelativePoint[] FARM_WORK_AREA_POINTS;
 
 	static {
-		workAreaPoints = new Vector<RelativePoint>();
-		RelativePoint center = EBuildingType.FARM.getDefaultWorkcenter();
-		short workRadius = EBuildingType.FARM.getWorkradius();
-		for (short x = (short) -workRadius; x < workRadius; x++) {
-			for (short y = (short) -workRadius; y < workRadius; y++) {
-				if (Math.sqrt(x*x + y*y) <= workRadius) {
-					workAreaPoints.add(new RelativePoint(center.getDx() + x, center.getDy() + y));
-				}
-			}
-		}
+		FARM_WORK_AREA_POINTS = calculateMyRelativeWorkAreaPoints(EBuildingType.FARM);
 	}
 
 	@Override
-	public ShortPoint2D findBestConstructionPosition(
-			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ScoredConstructionPosition> scoredConstructionPositions = new Vector<ScoredConstructionPosition>();
-		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, EBuildingType.FARM, playerId)
-					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId, EBuildingType.FARM)) {
-				int score = 0;
-				for (RelativePoint relativePoint : workAreaPoints) {
-					ShortPoint2D workAreaPoint = relativePoint.calculatePoint(point);
-					if (aiStatistics.getMainGrid().getPartitionsGrid().getPlayerIdAt(workAreaPoint.x, workAreaPoint.y) == playerId
-							&& aiStatistics.getMainGrid().isCornPlantable(workAreaPoint)) {
-						score++;
-					}
-				}
-				if (score > 0) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, -score));
-				}
-			}
-		}
+	protected EBuildingType myBuildingType() {
+		return EBuildingType.FARM;
+	}
 
-		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
+	@Override
+	protected RelativePoint[] myRelativeWorkAreaPoints() {
+		return FARM_WORK_AREA_POINTS;
+	}
+
+	@Override
+	protected boolean isMyPlantPlantable(MainGrid mainGrid, ShortPoint2D position) {
+		return mainGrid.isCornPlantable(position);
 	}
 }
