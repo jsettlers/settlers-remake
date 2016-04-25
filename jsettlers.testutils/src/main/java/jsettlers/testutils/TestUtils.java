@@ -22,18 +22,22 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+import jsettlers.main.swing.resources.ResourceMapLister;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.IListedMap;
 import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.main.swing.resources.SwingResourceProvider;
 
 /**
  * Utility class holding methods needed by serveral test classes.
@@ -43,8 +47,7 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader;
  */
 public class TestUtils {
 
-	public static <T> T serializeAndDeserialize(T object) throws IOException,
-			ClassNotFoundException {
+	public static <T> T serializeAndDeserialize(T object) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(byteOutStream);
 
@@ -60,7 +63,7 @@ public class TestUtils {
 		return readList;
 	}
 
-	public static synchronized void setupResourcesManager() {
+	public static synchronized void setupResourceManager() {
 		try {
 			SwingResourceLoader.setup(new OptionableProperties());
 		} catch (SwingResourceLoader.ResourceSetupException e) {
@@ -68,94 +71,18 @@ public class TestUtils {
 		}
 	}
 
-	/**
-	 * Sets up a resource manager that only uses memory stored files.
-	 */
-	public static void setupMemoryResourceManager() {
-		final MemoryResourceProvider resourceProvider = new MemoryResourceProvider();
-		ResourceManager.setProvider(resourceProvider);
+	public static void setupTempResourceManager() {
+		try {
+			File tempDirectory = Files.createTempDirectory("saves").toFile();
+			tempDirectory.deleteOnExit();
+			
+			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 
-		MapList.DefaultMapListFactory d = new MapList.DefaultMapListFactory();
-		d.addSaveDirectory(resourceProvider);
-		MapList.setDefaultListFactory(d);
-	}
-
-	private static class MemoryResourceProvider implements IResourceProvider, IMapLister {
-		private Map<String, ByteArrayOutputStream> files = new HashMap<>();
-		private int savegame = 0;
-
-		@Override
-		public InputStream getResourcesFileStream(String name) throws IOException {
-			ByteArrayOutputStream out = files.get(name);
-			if (out != null) {
-				return new ByteArrayInputStream(out.toByteArray());
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		public OutputStream writeConfigurationFile(String name) throws IOException {
-			System.out.println("Writing file " + name);
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			files.put(name, out);
-			return out;
-		}
-
-		@Override
-		public OutputStream writeUserFile(String name) throws IOException {
-			return writeConfigurationFile(name);
-		}
-
-		@Override
-		public File getResourcesDirectory() {
-			return null;
-		}
-
-		@Override
-		public void listMaps(IMapListerCallable callable) {
-			System.out.println("Scanning maps... ");
-			for (Map.Entry<String, ByteArrayOutputStream> e : files.entrySet()) {
-				System.out.println("Scanning map " + e.getKey());
-				findMap(callable, e.getKey());
-			}
-		}
-
-		private void findMap(IMapListerCallable callable, final String key) {
-			if (MapLoader.isExtensionKnown(key)) {
-				callable.foundMap(new IListedMap() {
-					@Override
-					public String getFileName() {
-						return key;
-					}
-
-					@Override
-					public InputStream getInputStream() throws IOException {
-						return getResourcesFileStream(getFileName());
-					}
-
-					@Override
-					public void delete() {
-						files.remove(key);
-					}
-
-					@Override
-					public boolean isCompressed() {
-						return getFileName().endsWith(MapLoader.MAP_EXTENSION_COMPRESSED);
-					}
-
-					@Override
-					public File getFile() {
-						throw new UnsupportedOperationException();
-					}
-				});
-			}
-		}
-
-		@Override
-		public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-			savegame++;
-			return writeConfigurationFile("savegame-" + savegame + MapLoader.MAP_EXTENSION);
+			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
+			mapListFactory.addResourcesDirectory(tempDirectory);
+			MapList.setDefaultListFactory(mapListFactory);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

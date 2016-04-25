@@ -26,7 +26,6 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,11 +36,13 @@ import org.junit.runners.Parameterized.Parameters;
 public class AutoReplayIT {
 
 	@BeforeClass
-	public static void setConstantes() {
+	public static void setupConstants() {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
+
+		TestUtils.setupTempResourceManager();
 	}
 
 	private static final Object ONLY_ONE_TEST_AT_A_TIME_LOCK = new Object();
@@ -55,11 +56,6 @@ public class AutoReplayIT {
 
 	public AutoReplayIT(AutoReplaySetting setting) {
 		this.setting = setting;
-	}
-
-	@Before
-	public void fakeSaveDirectory() {
-		TestUtils.setupMemoryResourceManager();
 	}
 
 	@Test
