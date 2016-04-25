@@ -63,7 +63,7 @@ public class ReplayUtils {
 		IGameClock gameClock = MatchConstants.clock(); // after the game, the clock cannot be accessed any more => save reference before the game
 		MapLoader newSavegame = playGameToTargetTimeAndGetSavegames(startedGame, networkConnector, targetGameTimeMinutes)[0];
 
-		// create a replay basing on the savegame and containing the remaining tasks.
+		// create a jsettlers.integration.replay basing on the savegame and containing the remaining tasks.
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile, gameClock);
 
 		System.out.println("Replayed: " + replayFile + " and created savegame: " + newSavegame);
@@ -166,13 +166,13 @@ public class ReplayUtils {
 
 	private static JSettlersGame loadGameFromReplay(IReplayStreamProvider replayFile, INetworkConnector networkConnector,
 			ReplayStartInformation replayStartInformation) throws MapLoadException {
-		System.out.println("Found loadable replay file. Started loading it: " + replayFile);
+		System.out.println("Found loadable jsettlers.integration.replay file. Started loading it: " + replayFile);
 		return JSettlersGame.loadFromReplayFile(replayFile, networkConnector, replayStartInformation);
 	}
 
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile,
 			IGameClock gameClock) throws IOException {
-		System.out.println("Creating new replay file (" + newReplayFile + ")...");
+		System.out.println("Creating new jsettlers.integration.replay file (" + newReplayFile + ")...");
 
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
 				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings());
@@ -183,7 +183,7 @@ public class ReplayUtils {
 
 		dos.close();
 
-		System.out.println("New replay file successfully created!");
+		System.out.println("New jsettlers.integration.replay file successfully created!");
 	}
 
 	public static PlayMapResult playMapToTargetTimes(MapLoader map, final float... targetTimeMinutes) throws IOException {
@@ -193,7 +193,7 @@ public class ReplayUtils {
 				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers())) {
 			@Override
 			protected OutputStream createReplayWriteStream() throws IOException {
-				return ResourceManager.writeConfigurationFile("replay");
+				return ResourceManager.writeConfigurationFile("jsettlers.integration.replay");
 			}
 		};
 
@@ -210,7 +210,7 @@ public class ReplayUtils {
 
 			@Override
 			public void visitFile(File file) throws IOException {
-				if (file.isDirectory() || !file.getName().endsWith("replay.log")) {
+				if (file.isDirectory() || !file.getName().endsWith("jsettlers.integration.replay.log")) {
 					return;
 				}
 
@@ -231,7 +231,7 @@ public class ReplayUtils {
 	}
 
 	/**
-	 * A replay file using the default list.
+	 * A jsettlers.integration.replay file using the default list.
 	 * 
 	 * @see MapList#defaultList
 	 */
@@ -295,7 +295,7 @@ public class ReplayUtils {
 
 		@Override
 		public InputStream openStream() throws IOException {
-			return ResourceManager.getResourcesFileStream("replay");
+			return ResourceManager.getResourcesFileStream("jsettlers.integration.replay");
 		}
 
 		@Override

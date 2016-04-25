@@ -297,7 +297,11 @@ public class MapList implements IMapListerCallable {
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			return getClass().getResourceAsStream(path);
+			InputStream stream = getClass().getResourceAsStream(path);
+			if (stream == null) {
+				throw new IOException("Map not found in " + path);
+			}
+			return stream;
 		}
 
 		@Override

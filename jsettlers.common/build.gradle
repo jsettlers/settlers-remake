@@ -66,6 +66,6 @@ compileGeneratedJava {
     targetCompatibility = 1.7
 }
 
-clean << {
+clean {
     delete commitFile
 }

@@ -167,7 +167,7 @@ public class SwingManagedJSettlers {
 			File replayFile = new File(loadableReplayFileString);
 			if (replayFile.exists()) {
 				loadableReplayFile = new ReplayUtils.ReplayFile(replayFile);
-				System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
+				System.out.println("Found loadable jsettlers.integration.replay file and loading it: " + loadableReplayFile);
 			} else {
 				System.err.println("Found replayFile parameter, but file can not be found!");
 			}
