@@ -69,7 +69,7 @@ public class AutoReplaySetting {
 	}
 
 	public String getReplayName() {
-		return getTypeName() + "/jsettlers.integration.replay.log";
+		return getTypeName() + "/replay.log";
 	}
 
 	ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
