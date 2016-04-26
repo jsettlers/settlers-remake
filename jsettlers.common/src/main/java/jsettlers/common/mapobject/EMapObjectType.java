@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.mapobject;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public enum EMapObjectType {
 	TREE_GROWING,
@@ -150,7 +147,7 @@ public enum EMapObjectType {
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
 	public final byte ordinal;
 
-	public static final Set<EMapObjectType> TO_BE_REMOVED_WHEN_FLATTENED = new HashSet<>(Arrays.asList(
+	public static final Set<EMapObjectType> TO_BE_REMOVED_WHEN_FLATTENED = EnumSet.of(
 			EMapObjectType.ARROW,
 			EMapObjectType.CORN_GROWING,
 			EMapObjectType.CORN_ADULT,
@@ -162,7 +159,7 @@ public enum EMapObjectType {
 			EMapObjectType.DESERT_DECORATION,
 			EMapObjectType.PLANT_DECORATION,
 			EMapObjectType.TREE_DEAD
-	));
+	);
 
 	EMapObjectType() {
 		this.ordinal = (byte) super.ordinal();
