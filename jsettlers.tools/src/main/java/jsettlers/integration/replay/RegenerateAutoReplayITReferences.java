@@ -21,11 +21,9 @@ import java.nio.file.StandardCopyOption;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.utils.MainUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.replay.ReplayUtils;
-import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
@@ -35,17 +33,19 @@ import jsettlers.testutils.map.MapUtils;
  */
 public class RegenerateAutoReplayITReferences {
 
+    static {
+        CommonConstants.ENABLE_CONSOLE_LOGGING=true;
+        CommonConstants.CONTROL_ALL=true;
+        CommonConstants.USE_SAVEGAME_COMPRESSION=true;
+        Constants.FOG_OF_WAR_DEFAULT_ENABLED=false;
+
+        TestUtils.setupTempResourceManager();
+    }
+
     public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException, SwingResourceLoader.ResourceSetupException {
-        TestUtils.setupMemoryResourceManager();
         System.out.println("Creating reference files for replays...");
 
-        CommonConstants.ENABLE_CONSOLE_LOGGING = true;
-        CommonConstants.CONTROL_ALL = true;
-        CommonConstants.USE_SAVEGAME_COMPRESSION = true;
-        Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-
-		for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {
-
+        for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {
             MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(), AutoReplaySetting.REMAINING_REPLAY_FILENAME);
             MapLoader expectedSavegame = setting.getReferenceSavegame();
 

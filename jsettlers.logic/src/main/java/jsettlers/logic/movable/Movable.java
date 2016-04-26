@@ -674,9 +674,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return path != null;
 	}
 
-	final void followPresearchedPath() {
+	final ShortPoint2D followPresearchedPath() {
 		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
 		followPath(this.path);
+		return path.getTargetPos();
 	}
 
 	final void enableNothingToDoAction(boolean enable) {

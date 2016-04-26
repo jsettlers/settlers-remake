@@ -53,11 +53,8 @@ public class ReplayValidationIT {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 		CommonConstants.ALL_AI = true;
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-	}
 
-	@Before
-	public void fakeSaveDirectory() {
-		TestUtils.setupMemoryResourceManager();
+		TestUtils.setupTempResourceManager();
 	}
 
 	@Test
