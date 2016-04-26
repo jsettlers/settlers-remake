@@ -460,8 +460,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
 				drawTile(x, y);
 				if (!linePartuallyVisible) {
-					double drawspacey = this.context.getConverter().getViewY(x, y,
-							this.context.getHeight(x, y));
+					double drawspacey = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
 					if (drawspacey > bottomdrawy) {
 						linePartuallyVisible = true;
 					}
@@ -471,10 +470,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		if (placementBuilding != null) {
 			ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
-			IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
+			if (0 <= underMouse.x && underMouse.x < width && 0 <= underMouse.y && underMouse.y < height) {
+				IMapObject mapObject = map.getMapObjectsAt(underMouse.x, underMouse.y);
 
-			if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
-				this.objectDrawer.drawMapObject(underMouse.x, underMouse.y, placementBuilding);
+				if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
+					this.objectDrawer.drawMapObject(underMouse.x, underMouse.y, placementBuilding);
+				}
 			}
 		}
 
