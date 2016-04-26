@@ -257,7 +257,11 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	public void addStone(ShortPoint2D pos, int capacity) {
-		addMapObject(pos, new Stone(capacity));
+		if (capacity > 0) {
+			addMapObject(pos, new Stone(capacity));
+		} else {
+			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
+		}
 	}
 
 	public void plantAdultTree(ShortPoint2D pos) {

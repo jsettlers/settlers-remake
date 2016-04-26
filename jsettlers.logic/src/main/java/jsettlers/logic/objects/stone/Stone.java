@@ -28,7 +28,7 @@ public class Stone extends AbstractHexMapObject {
 	private static final long serialVersionUID = 2470787539788090906L;
 
 	private static final int MAX_CAPACITY = 12;
-	public static final float DECOMPOSE_DELAY = 150;
+	public static final float DECOMPOSE_DELAY = 400;
 
 	private byte leftCapacity = 0;
 
