@@ -342,10 +342,6 @@ public class MapObjectDrawer {
 			drawByProgress(x, y, 13, 42, progress, color);
 			break;
 
-		case WINE:
-			drawByProgress(x, y, 1, 25, progress, color);
-			break;
-
 		case PLANT_DECORATION:
 			drawPlantDecoration(x, y, color);
 			break;
