@@ -74,7 +74,7 @@ public final class SettlersFolderChecker {
 						gfxFolder = f;
 					}
 				}
-			} else if(f.getName().equalsIgnoreCase("maps")) {
+			} else if(f.getName().equalsIgnoreCase("map")) {
 				mapsFolder = f;
 			}
 		}
