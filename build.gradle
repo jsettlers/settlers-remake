@@ -33,6 +33,7 @@ subprojects {
 		dependencies {
 			testCompile 'junit:junit:4.12'
 		}
+
 		//sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 		if (gradle.ext.projectsWithExtraTest.contains(project.path)) {
 			// println "Disable tests for " + project
@@ -71,6 +72,13 @@ subprojects {
 			}
 		}
 	}
+
+
+	tasks.withType(Test) {
+		testLogging {
+			events 'passed'
+		}
+	}
 }
 
 
@@ -102,6 +110,7 @@ task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
 	}
 	println 'The application should have started now.'
 }
+
 
 
 
@@ -144,7 +153,6 @@ task releaseAndroid(type:Zip, dependsOn: ':jsettlers.main.android:assembleDebug'
 
 
 task release(dependsOn: ['releaseJSettlers', 'releaseDedicatedServer', 'releaseAndroid'])
-
 
 clean {
     delete releaseDir

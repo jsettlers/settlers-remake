@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexBorderArea;
@@ -112,20 +114,18 @@ public final class ObjectsGrid implements Serializable {
 		return mapObjectHead != null ? mapObjectHead.getMapObject(mapObjectType) : null;
 	}
 
-	public final AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
+	public final void removeMapObjectTypes(int x, int y, Set<EMapObjectType> mapObjectTypes) {
 		final int idx = x + y * width;
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 
-		AbstractHexMapObject removed = null;
-		if (mapObjectHead != null) {
-			if (mapObjectHead.getObjectType() == mapObjectType) {
-				removed = mapObjectHead;
-				objectsGrid[idx] = mapObjectHead.getNextObject();
-			} else {
-				removed = mapObjectHead.removeMapObjectType(mapObjectType);
-			}
+		while (mapObjectHead != null && mapObjectTypes.contains(mapObjectHead.getObjectType())) {
+			mapObjectHead = mapObjectHead.getNextObject();
+			objectsGrid[idx] = mapObjectHead;
 		}
-		return removed;
+
+		if (mapObjectHead != null) {
+			mapObjectHead.removeMapObjectTypes(mapObjectTypes);
+		}
 	}
 
 	public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {

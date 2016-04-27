@@ -801,11 +801,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
-			return objectsGrid.removeMapObjectType(x, y, mapObjectType);
-		}
-
-		@Override
 		public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 			return objectsGrid.removeMapObject(x, y, mapObject);
 		}
@@ -1233,9 +1228,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void changeHeightTowards(short x, short y, byte targetHeight) {
 			landscapeGrid.flattenAndChangeHeightTowards(x, y, targetHeight);
-			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_ADULT);
-			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_DEAD);
-			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_GROWING);
+			objectsGrid.removeMapObjectTypes(x, y, EMapObjectType.TO_BE_REMOVED_WHEN_FLATTENED);
 		}
 
 		@Override

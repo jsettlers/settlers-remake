@@ -6,6 +6,7 @@ compileJava {
 }
 
 dependencies {
+    compile 'junit:junit:4.12'
     compile project(':go.graphics')
     compile project(':go.graphics.swing')
     compile project(':jsettlers.common')

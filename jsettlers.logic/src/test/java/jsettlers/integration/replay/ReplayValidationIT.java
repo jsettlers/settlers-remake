@@ -18,13 +18,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 
 import jsettlers.testutils.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.utils.FileUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoader;
@@ -32,7 +30,6 @@ import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayUtils;
-import jsettlers.main.replay.ReplayUtils.ReplayAndSavegames;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 import jsettlers.testutils.map.MapUtils;
 
@@ -56,11 +53,8 @@ public class ReplayValidationIT {
 		CommonConstants.USE_SAVEGAME_COMPRESSION = false;
 		CommonConstants.ALL_AI = true;
 		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
-	}
 
-	@Before
-	public void fakeSaveDirectory() {
-		TestUtils.setupMemoryResourceManager();
+		TestUtils.setupTempResourceManager();
 	}
 
 	@Test
@@ -125,7 +119,7 @@ public class ReplayValidationIT {
 					REMAINING_REPLAY_FILENAME);
 
 			// compare direct savegame with replayed savegame.
-			System.out.println("Comparing replay for savegame at targetTime: " + targetTime);
+			System.out.println("Comparing jsettlers.integration.replay for savegame at targetTime: " + targetTime);
 			MapUtils.compareMapFiles(savegame, replayedSavegame);
 		}
 	}

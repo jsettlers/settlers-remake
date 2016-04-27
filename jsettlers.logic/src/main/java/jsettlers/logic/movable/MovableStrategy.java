@@ -86,7 +86,7 @@ public abstract class MovableStrategy implements Serializable {
 		case WATERWORKER:
 		case WINEGROWER:
 		case HEALER:
-			return new BuildingWorkerStrategy(movable, movableType);
+			return new BuildingWorkerStrategy(movable);
 
 		case DIGGER:
 			return new DiggerStrategy(movable);
@@ -139,13 +139,13 @@ public abstract class MovableStrategy implements Serializable {
 	 *
 	 * @param direction
 	 *            direction to go
-	 * @param force
-	 *            If true, the step will be forced and the method will always return true.
+	 * @param mode
+	 *            The mode used for this operation
 	 * @return true if the step can and will immediately be executed. <br>
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
-	protected final boolean goInDirection(EDirection direction, boolean force) {
-		return movable.goInDirection(direction, force);
+	protected final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
+		return movable.goInDirection(direction, mode);
 	}
 
 	public final void setPosition(ShortPoint2D pos) {
@@ -171,8 +171,8 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
 	}
 
-	protected final void followPresearchedPath() {
-		movable.followPresearchedPath();
+	protected final ShortPoint2D followPresearchedPath() {
+		return movable.followPresearchedPath();
 	}
 
 	protected final void enableNothingToDoAction(boolean enable) {

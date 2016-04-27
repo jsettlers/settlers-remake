@@ -37,8 +37,6 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	void setProtected(int x, int y, boolean protect);
 
-	AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType);
-
 	boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject);
 
 	short getWidth();

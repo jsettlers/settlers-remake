@@ -19,11 +19,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 
 import jsettlers.common.buildings.BuildingAreaBitSet;
-import jsettlers.common.buildings.BuildingAreaBitSetTest;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.jsettlers.common.buildings.BuildingAreaUtils;
 
 import org.junit.Test;
 
@@ -57,7 +57,7 @@ public class ConstructionMarksAlgorithmTest {
 
 		MapRectangle mapArea = new MapRectangle(-15, -15, 30, 30);
 
-		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(BuildingAreaBitSetTest.createRelativePoints(buildingMask));
+		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(BuildingAreaUtils.createRelativePoints(buildingMask));
 
 		TestMap map = new TestMap(blocked);
 		NewConstructionMarksAlgorithm algorithm = new NewConstructionMarksAlgorithm(map, (byte) 0);

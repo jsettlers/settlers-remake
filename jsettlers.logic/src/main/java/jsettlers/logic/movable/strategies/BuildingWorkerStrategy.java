@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,18 +32,17 @@ import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
 /**
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class BuildingWorkerStrategy extends MovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
-
-	private final EMovableType movableType;
 
 	private transient IBuildingJob currentJob = null;
 	protected IWorkerRequestBuilding building;
@@ -54,10 +53,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private EMaterialType poppedMaterial;
 	private int searchFailedCtr = 0;
 
-	public BuildingWorkerStrategy(Movable movable, EMovableType movableType) {
-		super(movable);
-		this.movableType = movableType;
+	private ShortPoint2D markedPosition;
 
+	public BuildingWorkerStrategy(Movable movable) {
+		super(movable);
 		reportAsJobless();
 	}
 
@@ -96,6 +95,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case TRY_TAKING_RESOURCE:
+			clearMark();
 			if (tryTakingResource()) {
 				jobFinished();
 			} else {
@@ -120,7 +120,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case WALK:
 			IBuildingJob job = currentJob;
-			super.goInDirection(currentJob.getDirection(), true);
+			super.goInDirection(currentJob.getDirection(), EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 			if (currentJob == job) { // the path could fail and call abortPath().
 				jobFinished();
 			}
@@ -267,9 +267,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void followPreSearchedAction() {
-		super.followPresearchedPath();
+		ShortPoint2D pathTargetPos = super.followPresearchedPath();
+		mark(pathTargetPos);
 		jobFinished();
 	}
+
 
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
@@ -304,6 +306,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
+		clearMark();
 		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
@@ -328,7 +331,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dijkstra
 	 *            if true, dijkstra algorithm is used<br>
 	 *            if false, in area finder is used.
@@ -408,7 +411,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	public EMovableType getMovableType() {
-		return movableType;
+		return movable.getMovableType();
 	}
 
 	@Override
@@ -425,8 +428,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		super.setVisible(true);
 
 		reportAsJobless();
-
 		dropCurrentMaterial();
+		clearMark();
 	}
 
 	private void dropCurrentMaterial() {
@@ -444,6 +447,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		this.building = null;
 	}
 
+	private void mark(ShortPoint2D position) {
+        clearMark();
+		markedPosition = position;
+		super.getGrid().setMarked(position, true);
+	}
+
+	private void clearMark() {
+		if (markedPosition != null) {
+			super.getGrid().setMarked(markedPosition, false);
+			markedPosition = null;
+		}
+	}
+
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 		killed = true;
@@ -459,6 +475,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (building != null) {
 			building.leaveBuilding(this);
 		}
+
+		clearMark();
 	}
 
 	@Override
@@ -466,11 +484,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (currentJob != null) {
 			jobFailed();
 		}
+		clearMark();
+	}
+
+	@Override
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
+		return building != null;
 	}
 
 	@Override
 	public boolean isAlive() {
 		return !killed;
-		// return true;
 	}
 }

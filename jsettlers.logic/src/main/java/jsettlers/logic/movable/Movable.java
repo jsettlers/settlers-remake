@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -48,9 +48,9 @@ import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * Central Movable class of JSettlers.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class Movable implements IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
@@ -114,7 +114,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
-	 * 
+	 *
 	 * @param ois
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -128,7 +128,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
-	 * 
+	 *
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
@@ -146,7 +146,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (goInDirection(currDir, false)) {
+			if (goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				break;
 			} else {
 				Movable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
@@ -361,7 +361,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Tries to walk the movable into a position where it has a minimum distance to others.
-	 * 
+	 *
 	 * @return true if the movable moves to flock, false if no flocking is required.
 	 */
 	private boolean flockToDecentralize() {
@@ -373,11 +373,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			flockDelay = Math.max(flockDelay - 100, 500);
-			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), false)) {
-				return true;
-			} else {
-				return false;
-			}
+			return this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
 		} else {
 			flockDelay = Math.min(flockDelay + 100, 1000);
 			return false;
@@ -386,7 +382,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * A call to this method indicates this movable that it shall leave it's position to free the position for another movable.
-	 * 
+	 *
 	 * @param pushingMovable
 	 *            The movable pushing at this movable. This should be the movable that want's to get the position!
 	 * @return true if this movable will move out of it's way in the near future <br>
@@ -414,7 +410,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
-					goInDirection(directionToPushing, true);
+					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 					return true;
 
 				} else { // exchange not possible, as the location is not valid.
@@ -487,7 +483,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
+			if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				return true;
 			}
 		}
@@ -497,7 +493,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Sets the material this movable is carrying to the given one.
-	 * 
+	 *
 	 * @param materialType
 	 * @return {@link EMaterialType} that has been set before.
 	 */
@@ -510,7 +506,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Lets this movable execute the given action with given duration.
-	 * 
+	 *
 	 * @param movableAction
 	 *            action to be animated.
 	 * @param duration
@@ -531,7 +527,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	/**
-	 * 
+	 *
 	 * @param materialToTake
 	 * @return true if the animation will be executed.
 	 */
@@ -555,7 +551,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sleepTime
 	 *            time to sleep in milliseconds
 	 */
@@ -568,7 +564,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Lets this movable look in the given direction.
-	 * 
+	 *
 	 * @param direction
 	 */
 	final void lookInDirection(EDirection direction) {
@@ -577,7 +573,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Lets this movable go to the given position.
-	 * 
+	 *
 	 * @param targetPos
 	 *            position to move to.
 	 * @return true if it was possible to calculate a path to the given position<br>
@@ -597,31 +593,42 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Tries to go a step in the given direction.
-	 * 
+	 *
 	 * @param direction
 	 *            direction to go
-	 * @param force
-	 *            If true, the step will be forced and the method will always return true.
+	 * @param mode
+	 *            Use the given mode to go.<br>
 	 * @return true if the step can and will immediately be executed. <br>
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
-	final boolean goInDirection(EDirection direction, boolean force) {
+	final boolean goInDirection(EDirection direction, EGoInDirectionMode mode) {
 		ShortPoint2D targetPosition = direction.getNextHexPoint(position);
 
-		if (force) {
+		switch (mode) {
+		case GO_IF_ALLOWED_WAIT_TILL_FREE: {
 			this.direction = direction;
 			setState(EMovableState.PATHING);
 			this.followPath(new Path(targetPosition));
 			return true;
-
-		} else if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
-			initGoingSingleStep(targetPosition);
-			setState(EMovableState.GOING_SINGLE_STEP);
-			return true;
-
-		} else {
-			return false;
 		}
+		case GO_IF_ALLOWED_AND_FREE:
+			if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+				initGoingSingleStep(targetPosition);
+				setState(EMovableState.GOING_SINGLE_STEP);
+				return true;
+			} else {
+				break;
+			}
+		case GO_IF_FREE:
+			if (grid.isFreePosition(targetPosition)) {
+				initGoingSingleStep(targetPosition);
+				setState(EMovableState.GOING_SINGLE_STEP);
+				return true;
+			} else {
+				break;
+			}
+		}
+		return false;
 	}
 
 	final void setPosition(ShortPoint2D position) {
@@ -645,7 +652,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dijkstra
 	 *            if true, dijkstra algorithm is used<br>
 	 *            if false, in area finder is used.
@@ -655,10 +662,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param searchType
 	 * @return true if a path has been found.
 	 */
-	final boolean preSearchPath(boolean dikjstra, short centerX, short centerY, short radius, ESearchType searchType) {
+	final boolean preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
 		assert state == EMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";
 
-		if (dikjstra) {
+		if (dijkstra) {
 			this.path = grid.searchDijkstra(this, centerX, centerY, radius, searchType);
 		} else {
 			this.path = grid.searchInArea(this, centerX, centerY, radius, searchType);
@@ -667,9 +674,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		return path != null;
 	}
 
-	final void followPresearchedPath() {
+	final ShortPoint2D followPresearchedPath() {
 		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
 		followPath(this.path);
+		return path.getTargetPos();
 	}
 
 	final void enableNothingToDoAction(boolean enable) {
@@ -699,7 +707,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Sets the state to the given one and resets the movable to a clean start of this state.
-	 * 
+	 *
 	 * @param newState
 	 */
 	private void setState(EMovableState newState) {
@@ -708,7 +716,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Used for networking to identify movables over the network.
-	 * 
+	 *
 	 * @param id
 	 *            id to be looked for
 	 * @return returns the movable with the given ID<br>
@@ -755,7 +763,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Gets the player object of this movable.
-	 * 
+	 *
 	 * @return The player object of this movable.
 	 */
 	public final Player getPlayer() {
@@ -854,7 +862,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * Converts this movable to a movable of the given {@link EMovableType}.
-	 * 
+	 *
 	 * @param newMovableType
 	 */
 	public final void convertTo(EMovableType newMovableType) {
@@ -893,7 +901,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	/**
 	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
-	 * 
+	 *
 	 * @param other
 	 *            The other movable.
 	 */

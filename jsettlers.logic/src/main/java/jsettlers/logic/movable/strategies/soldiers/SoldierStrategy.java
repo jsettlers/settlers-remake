@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,7 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
@@ -106,7 +107,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 					if (toCloseEnemy != null) {
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
 							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), movable.getPos());
-							super.goInDirection(escapeDirection, false);
+							super.goInDirection(escapeDirection, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
 							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
@@ -191,7 +192,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			ShortPoint2D pos = movable.getPos();
 			EDirection dir = EDirection.getApproxDirection(pos, enemy.getPos());
 
-			if (super.goInDirection(dir, false)) {
+			if (super.goInDirection(dir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				return;
 			} else {
 				inSaveGotoMode = true;
