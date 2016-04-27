@@ -49,7 +49,7 @@ public class AiExecutor implements INetworkTimerable {
 						mainGrid.getPartitionsGrid().getPlayer(playerId),
 						mainGrid,
 						mainGrid.getMovableGrid(),
-						taskScheduler));
+						taskScheduler, new AiMapInformation(mainGrid)));
 			}
 		}
 	}

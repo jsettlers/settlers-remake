@@ -14,17 +14,19 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
+import jsettlers.ai.construction.BuildingCount;
+import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.common.buildings.EBuildingType;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static jsettlers.common.buildings.EBuildingType.*;
 
 /**
- * This economy minister is not well optimized. It is slowed down at all by just building 5 lumberjacks and 3 stonecutters. It one late and one
- * very late wine grower so that it gets late level upgrades. It builds 10 construction sides in parallel which makes it hard to react flexible to
- * lack of settlers which will slow down the computer player as well.
+ * This economy minister is not well optimized. It is slowed down at all by just building 5 lumberjacks and 3 stonecutters. It one late and one very
+ * late wine grower so that it gets late level upgrades. It builds 10 construction sides in parallel which makes it hard to react flexible to lack of
+ * settlers which will slow down the computer player as well.
  *
  * @author codingberlin
  */
@@ -32,130 +34,116 @@ public class MiddleEconomyMinister implements EconomyMinister {
 
 	private final List<EBuildingType> buildingsToBuild;
 
-	public MiddleEconomyMinister() {
-		buildingsToBuild = new Vector<EBuildingType>();
-		initializeBuildingsToBuild();
+	public MiddleEconomyMinister(AiMapInformation mapInformation) {
+		buildingsToBuild = new ArrayList<EBuildingType>();
+		initializeBuildingsToBuild(mapInformation.getBuildingCounts());
 	}
 
-	private void initializeBuildingsToBuild() {
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(SLAUGHTERHOUSE);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WINEGROWER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BIG_TEMPLE);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(FISHER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(GOLDMINE);
-		buildingsToBuild.add(GOLDMELT);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(SLAUGHTERHOUSE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
+	private int plannedCountOf(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
+		for (BuildingCount count : buildingCounts) {
+			if (count.buildingType == buildingType) {
+				return (int) count.count;
+			}
+		}
+		return 0;
+	}
+
+	private int currentCountOf(EBuildingType targetBuildingType) {
+		int result = 0;
+		for (EBuildingType buildingType : buildingsToBuild) {
+			if (buildingType == targetBuildingType) {
+				result++;
+			}
+		}
+		return result;
+	}
+
+	private void initializeBuildingsToBuild(List<BuildingCount> buildingCounts) {
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(SAWMILL, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(SAWMILL, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(FISHER, buildingCounts);
+		addIfPossible(IRONMINE, buildingCounts);
+		addIfPossible(COALMINE, buildingCounts);
+		addIfPossible(IRONMELT, buildingCounts);
+		addIfPossible(WEAPONSMITH, buildingCounts);
+		addIfPossible(BARRACK, buildingCounts);
+		addIfPossible(WINEGROWER, buildingCounts);
+		addIfPossible(TEMPLE, buildingCounts);
+		addBuildingMaterialIndustry(buildingCounts);
+		addFoodIndustry(buildingCounts);
+		addManaIndustry(buildingCounts);
+		addWeaponsIndustry(buildingCounts);
+	}
+
+	private void addBuildingMaterialIndustry(List<BuildingCount> buildingCounts) {
+		while (currentCountOf(LUMBERJACK) < plannedCountOf(LUMBERJACK, buildingCounts)) {
+			addIfPossible(FORESTER, buildingCounts);
+			addIfPossible(LUMBERJACK, buildingCounts);
+			addIfPossible(LUMBERJACK, buildingCounts);
+			addIfPossible(LUMBERJACK, buildingCounts);
+			addIfPossible(SAWMILL, buildingCounts);
+			addIfPossible(STONECUTTER, buildingCounts);
+			addIfPossible(STONECUTTER, buildingCounts);
+		}
+	}
+
+	private void addFoodIndustry(List<BuildingCount> buildingCounts) {
+		while (currentCountOf(FISHER) < plannedCountOf(FISHER, buildingCounts)) {
+			addIfPossible(FISHER, buildingCounts);
+		}
+		while (currentCountOf(FARM) < plannedCountOf(FARM, buildingCounts)) {
+			addIfPossible(FARM, buildingCounts);
+			addIfPossible(WATERWORKS, buildingCounts);
+			addIfPossible(MILL, buildingCounts);
+			addIfPossible(BAKER, buildingCounts);
+			addIfPossible(FARM, buildingCounts);
+			addIfPossible(PIG_FARM, buildingCounts);
+			addIfPossible(SLAUGHTERHOUSE, buildingCounts);
+			addIfPossible(FARM, buildingCounts);
+			addIfPossible(BAKER, buildingCounts);
+			addIfPossible(WATERWORKS, buildingCounts);
+			addIfPossible(BAKER, buildingCounts);
+		}
+
+	}
+	private void addManaIndustry(List<BuildingCount> buildingCounts) {
+		while (currentCountOf(WINEGROWER) < plannedCountOf(WINEGROWER, buildingCounts)) {
+			addIfPossible(WINEGROWER, buildingCounts);
+			addIfPossible(TEMPLE, buildingCounts);
+		}
+		addIfPossible(BIG_TEMPLE, buildingCounts);
+	}
+	private void addWeaponsIndustry(List<BuildingCount> buildingCounts) {
+		while (currentCountOf(WEAPONSMITH) < plannedCountOf(WEAPONSMITH, buildingCounts)) {
+			addIfPossible(COALMINE, buildingCounts);
+			addIfPossible(IRONMINE, buildingCounts);
+			addIfPossible(IRONMELT, buildingCounts);
+			addIfPossible(WEAPONSMITH, buildingCounts);
+			addIfPossible(COALMINE, buildingCounts);
+			addIfPossible(IRONMELT, buildingCounts);
+			addIfPossible(WEAPONSMITH, buildingCounts);
+			addIfPossible(BARRACK, buildingCounts);
+			addIfPossible(GOLDMINE, buildingCounts);
+			addIfPossible(GOLDMELT, buildingCounts);
+		}
+		addIfPossible(BIG_TEMPLE, buildingCounts);
+	}
+
+	private void addIfPossible(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
+		if (currentCountOf(buildingType) < plannedCountOf(buildingType, buildingCounts)) {
+			buildingsToBuild.add(buildingType);
+		}
 	}
 
 	@Override

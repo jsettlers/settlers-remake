@@ -36,19 +36,20 @@ public class WhatToDoAiFactory {
 	public IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid,
 			MovableGrid movableGrid,
 			ITaskScheduler
-					taskScheduler) {
+					taskScheduler, AiMapInformation aiMapInformation) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
-		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
+		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player, aiMapInformation);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
+	private EconomyMinister determineMinister(
+			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, AiMapInformation aiMapInformation) {
 		if (type == EPlayerType.AI_VERY_EASY) {
 			return new AdaptableEconomyMinister(aiStatistics, player);
 		} else if (type == EPlayerType.AI_VERY_HARD) {
 			return new WinnerEconomyMinister();
 		}
-		return new MiddleEconomyMinister();
+		return new MiddleEconomyMinister(aiMapInformation);
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
