@@ -498,7 +498,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void debug() {
-		System.out.println("debug");
+		System.out.println("debug: building at " + pos);
 	}
 
 	@Override
