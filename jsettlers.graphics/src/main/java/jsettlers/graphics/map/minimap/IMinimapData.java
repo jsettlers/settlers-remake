@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,54 +14,21 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import java.util.Arrays;
+import jsettlers.graphics.map.MapDrawContext;
 
 /**
- * This class runs as background thread and updates the lines in the original ui.
+ * Data required by the {@link AbstractLineLoader}.
  * 
  * @author Michael Zangl
  */
-class LineLoader extends AbstractLineLoader {
+public interface IMinimapData {
 
-	/**
-	 * The minimap we work for.
-	 */
-	private final Minimap minimap;
+	int getWidth();
 
-	/**
-	 * The minimap image, including settlers.
-	 */
-	private short[][] buffer = new short[1][1];
+	int getHeight();
 
-	/**
-	 * Create a new LineLoader for the original ui mini map.
-	 * 
-	 * @param minimap
-	 *            The minimap to create the loader for.
-	 * @param modeSettings
-	 *            The settings (people shown, ...) to use.
-	 */
-	public LineLoader(Minimap minimap, MinimapMode modeSettings) {
-		super(minimap, modeSettings);
-		this.minimap = minimap;
-	}
+	MapDrawContext getContext();
 
-	@Override
-	protected void resizeBuffer(int width, int height) {
-		buffer = new short[height][width];
-		for (short[] line : buffer) {
-			Arrays.fill(line, BLACK);
-		}
-		minimap.setBufferArray(buffer);
-	}
+	void blockUntilUpdateAllowedOrStopped();
 
-	@Override
-	protected void markLineUpdate(int line) {
-		minimap.setUpdatedLine(line);
-	}
-
-	@Override
-	protected void setBuffer(int currentline, int x, short color) {
-		buffer[currentline][x] = color;
-	}
 }

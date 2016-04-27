@@ -14,14 +14,15 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
+import go.graphics.GLDrawContext;
+import go.graphics.IllegalBufferException;
+import go.graphics.TextureHandle;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 
-import go.graphics.GLDrawContext;
-import go.graphics.IllegalBufferException;
-import go.graphics.TextureHandle;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -41,7 +42,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  *
  * @author michael
  */
-public final class Minimap {
+public final class Minimap implements IMinimapData {
 	private final MapCoordinateConverter converter;
 	private int width;
 	private int height;
@@ -49,7 +50,7 @@ public final class Minimap {
 	private final float stride;
 
 	private boolean imageIsValid = false;
-	private final Object update_syncobj = new Object();
+	private final Object updateMutex = new Object();
 	private final MapDrawContext context;
 
 	private MapRectangle mapViewport;
@@ -70,18 +71,18 @@ public final class Minimap {
 	}
 
 	public void setSize(int width, int height) {
-		synchronized (update_syncobj) {
+		synchronized (updateMutex) {
 			this.width = width;
 			this.height = height;
 			imageIsValid = false;
-			update_syncobj.notifyAll();
+			updateMutex.notifyAll();
 		}
 	}
 
 	public void draw(GLDrawContext context) {
 		boolean imageWasCreatedJustNow = false;
 		try {
-			synchronized (update_syncobj) {
+			synchronized (updateMutex) {
 				if (!imageIsValid) {
 					imageWasCreatedJustNow = true;
 					if (texture != null) {
@@ -112,7 +113,7 @@ public final class Minimap {
 					}
 					updatedLines.clear();
 				}
-				update_syncobj.notifyAll();
+				updateMutex.notifyAll();
 			}
 
 			context.color(1, 1, 1, 1);
@@ -146,7 +147,7 @@ public final class Minimap {
 				e.printStackTrace();
 			} else {
 				// Retry with a new image.
-				synchronized (update_syncobj) {
+				synchronized (updateMutex) {
 					imageIsValid = false;
 				}
 				draw(context);
@@ -184,7 +185,7 @@ public final class Minimap {
 								(Math.min(maxviewx,
 										(maxviewy / height * stride + 1)
 												* width)
-										- width)
+												- width)
 										/ width / stride * height,
 								minviewy),
 						0,
@@ -222,7 +223,7 @@ public final class Minimap {
 	 * @param data
 	 */
 	public void setUpdatedLine(int line) {
-		synchronized (update_syncobj) {
+		synchronized (updateMutex) {
 			updatedLines.add(line);
 		}
 	}
@@ -250,11 +251,11 @@ public final class Minimap {
 	 * a call to this method blocks until it's ok to update a line.
 	 */
 	public void blockUntilUpdateAllowedOrStopped() {
-		synchronized (update_syncobj) {
+		synchronized (updateMutex) {
 			while (!stopped
 					&& (!updatedLines.isEmpty() || width < 1 || height < 1)) {
 				try {
-					update_syncobj.wait();
+					updateMutex.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -269,7 +270,7 @@ public final class Minimap {
 	public void stop() {
 		lineLoader.stop();
 		stopped = true;
-		synchronized (update_syncobj) {
+		synchronized (updateMutex) {
 
 		}
 	}
