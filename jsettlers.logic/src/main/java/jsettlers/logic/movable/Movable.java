@@ -138,7 +138,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	public void leavePosition() {
-		if (!enableNothingToDo) {
+		if (state != EMovableState.DOING_NOTHING || !enableNothingToDo) {
 			return;
 		}
 

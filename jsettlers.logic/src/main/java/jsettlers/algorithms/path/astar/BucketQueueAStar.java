@@ -111,7 +111,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 				final int neighborX = x + xDeltaArray[i];
 				final int neighborY = y + yDeltaArray[i];
 
-				if (isValidPosition(requester, neighborX, neighborY, blockedAtStartPartition)) {
+				if (isValidPosition(requester, x, y, neighborX, neighborY, blockedAtStartPartition)) {
 					final int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedBitSet.get(flatNeighborIdx)) {
@@ -185,9 +185,16 @@ public final class BucketQueueAStar extends AbstractAStar {
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, short blockedAtStartPartition) {
-		return isInBounds(x, y)
-				&& (blockedAtStartPartition >= 0 && map.getBlockedPartition(x, y) == blockedAtStartPartition || !isBlocked(requester, x, y));
+	private final boolean isValidPosition(IPathCalculatable requester, int fromX, int fromY, int toX, int toY, short blockedAtStartPartition) {
+		return 	isInBounds(toX, toY)
+				&& (
+					!isBlocked(requester, toX, toY)
+					|| (
+							blockedAtStartPartition >= 0 // if the start position was blocked, we can use blocked positions on the same island until
+									&& map.getBlockedPartition(toX, toY) == blockedAtStartPartition // we leave the blocked area
+									&& isBlocked(requester, fromX, fromY) // prevent reentering blocked positions when we left them already
+						)
+					);
 	}
 
 	private final boolean isInBounds(int x, int y) {
