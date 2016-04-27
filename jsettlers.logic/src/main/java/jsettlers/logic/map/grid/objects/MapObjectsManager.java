@@ -156,7 +156,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			stone.cutOff();
 
 			if (!stone.canBeCut()) {
-				addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
+				addSelfDeletingMapObject(new ShortPoint2D(x, y), EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
 				removeMapObjectType(x, y, EMapObjectType.STONE);
 			}
 		}
@@ -257,7 +257,11 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	public void addStone(ShortPoint2D pos, int capacity) {
-		addMapObject(pos, new Stone(capacity));
+		if (capacity > 0) {
+			addMapObject(pos, new Stone(capacity));
+		} else {
+			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
+		}
 	}
 
 	public void plantAdultTree(ShortPoint2D pos) {
