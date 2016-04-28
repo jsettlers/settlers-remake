@@ -71,6 +71,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
 
+	private static final int IS_UNSTOPPED_RECHECK_PERIOD = 1000;
 	private static final int IS_FLATTENED_RECHECK_PERIOD = 1000;
 	private static final int WAITING_FOR_MATERIAL_PERIOD = 1000;
 
@@ -165,10 +166,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		placeAdditionalMapObjects(grid, pos, true);
 
-		this.state = EBuildingState.IN_FLATTERNING;
-		RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
-
-		requestDiggers();
+		this.state = EBuildingState.CREATED;
+		RescheduleTimer.add(this, IS_UNSTOPPED_RECHECK_PERIOD);
 	}
 
 	private List<IRequestStack> createConstructionStacks() {
@@ -269,8 +268,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public int timerEvent() {
 		switch (state) {
 		case CREATED:
-			assert false : "this should never happen!";
-			return -1;
+			if (priority == EPriority.STOPPED) {
+				return IS_UNSTOPPED_RECHECK_PERIOD;
+			} else {
+				state = EBuildingState.IN_FLATTERNING;
+				requestDiggers();
+			}
 
 		case IN_FLATTERNING:
 			if (!isFlatened()) {
@@ -283,7 +286,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			}
 
 		case WAITING_FOR_MATERIAL:
-			if (priority != EPriority.STOPPED && isMaterialAvailable()) {
+			if (priority != EPriority.STOPPED && (isMaterialAvailable() || remainingMaterialActions > 0)) {
 				state = EBuildingState.BRICKLAYERS_REQUESTED;
 				requestBricklayers();
 				return -1; // no new scheduling
@@ -353,7 +356,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return true;
 		} else {
 			IRequestStack stack = getStackWithMaterial();
-			if (priority != EPriority.STOPPED && stack != null) {
+			if (stack != null) {
 				stack.pop();
 				remainingMaterialActions = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
 				return true;
@@ -680,6 +683,19 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (stacks != null) {
 			for (IRequestStack curr : stacks) {
 				curr.setPriority(newPriority);
+			}
+		}
+
+		if (newPriority == EPriority.STOPPED) {
+			switch (state) {
+				case IN_FLATTERNING:
+					state = EBuildingState.CREATED; // we're still scheduled in this state => no rescheduling!
+					break;
+
+				case BRICKLAYERS_REQUESTED:
+					state = EBuildingState.WAITING_FOR_MATERIAL;
+					RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD); // we're not scheduled atm => reschedule!
+					break;
 			}
 		}
 	}
