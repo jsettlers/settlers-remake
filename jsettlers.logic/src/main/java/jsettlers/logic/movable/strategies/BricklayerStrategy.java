@@ -88,7 +88,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	}
 
 	private void tryToBuild() {
-		if (constructionSite.tryToTakeMaterial()) {
+		if (constructionSite.isBricklayerRequestActive() && constructionSite.tryToTakeMaterial()) {
 			super.playAction(EMovableAction.ACTION1, BRICKLAYER_ACTION_DURATION);
 		} else {
 			jobFinished();
