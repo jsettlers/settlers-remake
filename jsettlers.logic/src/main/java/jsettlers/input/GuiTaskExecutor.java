@@ -24,21 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MovableGuiTask;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
-import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.tasks.SetMaterialProductionGuiTask;
-import jsettlers.input.tasks.SetTradingWaypointGuiTask;
-import jsettlers.input.tasks.SimpleGuiTask;
-import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.input.tasks.*;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
@@ -182,9 +168,32 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 		}
 
+		case CHANGE_TOWER_SOLDIERS:
+			changeTowerSoldiers((ChangeTowerSoldiersGuiTask) guiTask);
+
 		default:
 			break;
 
+		}
+	}
+
+	private void changeTowerSoldiers(ChangeTowerSoldiersGuiTask soldierTask) {
+		ShortPoint2D buildingPosition = soldierTask.getBuildingPos();
+		OccupyingBuilding occupyingBuilding = (OccupyingBuilding) grid.getBuildingAt(buildingPosition.x, buildingPosition.y);
+
+		switch(soldierTask.getTaskType()) {
+			case FULL:
+				occupyingBuilding.fillWithSoldiers();
+				break;
+			case MORE:
+				occupyingBuilding.fillWithSoldier(soldierTask.getSoldierType());
+				break;
+			case ONE:
+				occupyingBuilding.releaseSoldiers();
+				break;
+			case LESS:
+				occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
+				break;
 		}
 	}
 

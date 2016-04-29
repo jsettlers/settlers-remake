@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
@@ -35,6 +36,7 @@ import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -457,6 +459,22 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public int getCurrentlyCommingSoldiers(ESoldierClass soldierClass) {
 		return currentlyCommingSoldiers[soldierClass.ordinal];
+	}
+
+	public void fillWithSoldiers() {
+		System.out.println("fill with soldiers");
+	}
+
+	public void fillWithSoldier(ESoldierType soldierType) {
+		System.out.println("fill with soldier " + soldierType);
+	}
+
+	public void releaseSoldiers() {
+		System.out.println("release soldiers");
+	}
+
+	public void releaseSoldier(ESoldierType soldierType) {
+		System.out.println("release soldier " + soldierType);
 	}
 
 	private final static class TowerOccupier implements IBuildingOccupyer, Serializable {

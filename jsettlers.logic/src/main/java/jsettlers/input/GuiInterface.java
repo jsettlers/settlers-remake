@@ -29,6 +29,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
@@ -49,22 +50,10 @@ import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.action.SoldierAction;
-import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MovableGuiTask;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
-import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.tasks.SetMaterialProductionGuiTask;
-import jsettlers.input.tasks.SetTradingWaypointGuiTask;
-import jsettlers.input.tasks.SimpleGuiTask;
-import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.input.tasks.*;
+import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.network.client.interfaces.IGameClock;
@@ -323,6 +312,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 		}
 
+		case SOLDIERS_ALL:
+			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
+			break;
+		case SOLDIERS_ONE:
+			requestSoldiers(EChangeTowerSoldierTaskType.ONE, null);
+			break;
+		case SOLDIERS_LESS:
+			requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction)action).getSoldierType());
+			break;
+		case SOLDIERS_MORE:
+			requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction)action).getSoldierType());
+			break;
+
 		case ABORT:
 			break;
 
@@ -332,6 +334,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		default:
 			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+
+
+	private void requestSoldiers(EChangeTowerSoldierTaskType taskType, ESoldierType soldierType) {
+		ISelectable selectable = currentSelection.getSingle();
+		if(selectable instanceof OccupyingBuilding) {
+			OccupyingBuilding building = ((OccupyingBuilding) selectable);
+			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPos(), taskType, soldierType));
 		}
 	}
 
