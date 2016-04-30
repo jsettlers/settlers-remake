@@ -32,14 +32,7 @@ public final class Constants {
 	private Constants() {
 	}
 
-	public static final float TILE_PATHFINDER_COST = 1.0f;
-
 	public static final byte STACK_SIZE = 8;
-
-	public static final short WIDTH = 400;
-	public static final short HEIGHT = 700;
-
-	public static final int MAX_STONE_SIZE = 14;
 
 	public static final byte MOVABLE_INTERRUPTS_PER_SECOND = 17;
 
@@ -57,17 +50,9 @@ public final class Constants {
 	public static final int BOWMAN_IN_TOWER_ATTACK_RADIUS = 25;
 	public static final int BOWMAN_MIN_ATTACK_DISTANCE = 7;
 
-	/**
-	 * interrupts until arrows are removed from the map again.<br>
-	 * 50 seconds
-	 */
-	public static final short ARROW_DECOMPOSE_INTERRUPTS = 50 * MOVABLE_INTERRUPTS_PER_SECOND;
-
 	public static final byte BRICKLAYER_ACTIONS_PER_MATERIAL = 12;
 
 	public static final int TILES_PER_DIGGER = 15;
-
-	public static final int PARTITION_MANANGER_RUNS_PER_TICK = 5;
 
 	public static final float GHOST_PLAY_DURATION = 1;
 
