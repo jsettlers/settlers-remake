@@ -30,32 +30,12 @@ import static jsettlers.common.buildings.EBuildingType.*;
  *
  * @author codingberlin
  */
-public class MiddleEconomyMinister implements EconomyMinister {
+public class MiddleEconomyMinister extends BuildingListEconomyMinister implements EconomyMinister {
 
-	private final List<EBuildingType> buildingsToBuild;
 
 	public MiddleEconomyMinister(AiMapInformation mapInformation) {
-		buildingsToBuild = new ArrayList<EBuildingType>();
+		super();
 		initializeBuildingsToBuild(mapInformation.getBuildingCounts());
-	}
-
-	private int plannedCountOf(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
-		for (BuildingCount count : buildingCounts) {
-			if (count.buildingType == buildingType) {
-				return (int) count.count;
-			}
-		}
-		return 0;
-	}
-
-	private int currentCountOf(EBuildingType targetBuildingType) {
-		int result = 0;
-		for (EBuildingType buildingType : buildingsToBuild) {
-			if (buildingType == targetBuildingType) {
-				result++;
-			}
-		}
-		return result;
 	}
 
 	private void initializeBuildingsToBuild(List<BuildingCount> buildingCounts) {
@@ -141,9 +121,7 @@ public class MiddleEconomyMinister implements EconomyMinister {
 	}
 
 	private void addIfPossible(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
-		if (currentCountOf(buildingType) < plannedCountOf(buildingType, buildingCounts)) {
-			buildingsToBuild.add(buildingType);
-		}
+		addIfPossible(buildingType, buildingCounts, buildingsToBuild);
 	}
 
 	@Override

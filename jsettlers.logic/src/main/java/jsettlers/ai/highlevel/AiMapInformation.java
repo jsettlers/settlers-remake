@@ -50,6 +50,37 @@ public class AiMapInformation {
 	private static final double LUMBERJACK_FORESTER_RATIO = 1F / 2F;
 	private static final double LUMBERJACK_STONE_CUTTER_RATIO = 5F / 8F;
 	private List<BuildingCount> buildingCounts;
+	private int numberOfFisher;
+	private int numberOfWeaponSmiths;
+	private int numberOfGoldMelts;
+	private int numberOfFarms;
+	private int numberOfWineGrower;
+	private int numberOfBigTemples;
+	private int numberOfLumberJacks;
+
+	public int getNumberOfFisher() {
+		return numberOfFisher;
+	}
+
+	public int getNumberOfWeaponSmiths() {
+		return numberOfWeaponSmiths;
+	}
+
+	public int getNumberOfGoldMelts() {
+		return numberOfGoldMelts;
+	}
+
+	public int getNumberOfFarms() {
+		return numberOfFarms;
+	}
+
+	public int getNumberOfWineGrower() {
+		return numberOfWineGrower;
+	}
+
+	public int getNumberOfBigTemples() {
+		return numberOfBigTemples;
+	}
 
 	public AiMapInformation(MainGrid mainGrid) {
 		LandscapeGrid landscapeGrid = mainGrid.getLandscapeGrid();
@@ -82,14 +113,14 @@ public class AiMapInformation {
 		if (maxCoalMines > maxIronMines * COAL_TO_IRON_FACTOR + 1)
 			maxCoalMines = maxIronMines * COAL_TO_IRON_FACTOR + 1;
 		int maxSmiths = maxCoalMines;
-		buildingCounts = calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 4, 1, grasTiles);
+		calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 4, 1, grasTiles);
 	}
 
 	public List<BuildingCount> getBuildingCounts() {
 		return buildingCounts;
 	}
 
-	private List<BuildingCount> calculateBuildingCounts(
+	private void calculateBuildingCounts(
 			int numberOfWeaponSmiths, int maxFishermen, int maxGoldMelts, int maxWineGrower, int maxBigTemples, long grasTiles) {
 		List<BuildingCount> buildingCounts = new ArrayList<BuildingCount>();
 		buildingCounts.add(new BuildingCount(EBuildingType.COALMINE, numberOfWeaponSmiths));
@@ -103,7 +134,8 @@ public class AiMapInformation {
 		buildingCounts.add(new BuildingCount(EBuildingType.FISHER, numberOfFisher));
 		int numberOfRemainingWeaponSmithsRest = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_FISHER_RATIO));
 
-		buildingCounts.add(new BuildingCount(EBuildingType.FARM, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_FARM_RATIO)));
+		int numberOfFarms = (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_FARM_RATIO);
+		buildingCounts.add(new BuildingCount(EBuildingType.FARM, numberOfFarms));
 		buildingCounts.add(new BuildingCount(EBuildingType.BAKER, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_BAKER_RATIO)));
 		buildingCounts.add(new BuildingCount(EBuildingType.MILL, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_MILL_RATIO)));
 		buildingCounts.add(new BuildingCount(EBuildingType.WATERWORKS, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_WATERWORKS_RATIO)));
@@ -131,19 +163,26 @@ public class AiMapInformation {
 		}
 
 		if (isEnoughSpace(buildingCounts, grasTiles)) {
-			return buildingCounts;
+			this.buildingCounts = buildingCounts;
+			this.numberOfFisher = numberOfFisher;
+			this.numberOfGoldMelts = maxGoldMelts;
+			this.numberOfWeaponSmiths = numberOfWeaponSmiths;
+			this.numberOfFarms = numberOfFarms;
+			this.numberOfWineGrower = maxWineGrower;
+			this.numberOfBigTemples = maxBigTemples;
+			this.numberOfLumberJacks = numberOfLumberJacks;
 		} else if (numberOfWeaponSmiths > MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION) {
-			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, maxBigTemples, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, maxBigTemples, grasTiles);
 		} else if (maxWineGrower > MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
 		} else if (maxGoldMelts > 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrower, maxBigTemples, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrower, maxBigTemples, grasTiles);
 		} else if (maxWineGrower > 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
 		} else if (maxBigTemples == 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
 		} else {
-			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
+			 calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
 		}
 	}
 
@@ -157,5 +196,9 @@ public class AiMapInformation {
 		}
 
 		return true;
+	}
+
+	public int getNumberOfLumberJacks() {
+		return numberOfLumberJacks;
 	}
 }

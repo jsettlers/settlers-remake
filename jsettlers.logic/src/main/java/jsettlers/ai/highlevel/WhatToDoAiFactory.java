@@ -47,7 +47,7 @@ public class WhatToDoAiFactory {
 		if (type == EPlayerType.AI_VERY_EASY) {
 			return new AdaptableEconomyMinister(aiStatistics, player);
 		} else if (type == EPlayerType.AI_VERY_HARD) {
-			return new WinnerEconomyMinister();
+			return new WinnerEconomyMinister(aiMapInformation);
 		}
 		return new MiddleEconomyMinister(aiMapInformation);
 	}
