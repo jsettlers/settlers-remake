@@ -15,6 +15,7 @@
 package jsettlers.logic.map.grid.objects;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -95,17 +96,14 @@ public abstract class AbstractHexMapObject implements IMapObject, Serializable {
 		}
 	}
 
-	public final AbstractHexMapObject removeMapObjectType(EMapObjectType mapObjectType) {
-		AbstractHexMapObject removed = null;
-		if (this.next != null) {
-			if (this.next.getObjectType() == mapObjectType) {
-				removed = this.next;
-				this.next = this.next.next;
-			} else {
-				removed = this.next.removeMapObjectType(mapObjectType);
-			}
+	public void removeMapObjectTypes(Set<EMapObjectType> mapObjectTypes) {
+		while (this.next != null && mapObjectTypes.contains(this.next.getObjectType())) {
+			this.next = this.next.next;
 		}
-		return removed;
+
+		if (this.next != null) {
+			this.next.removeMapObjectTypes(mapObjectTypes);
+		}
 	}
 
 	/**

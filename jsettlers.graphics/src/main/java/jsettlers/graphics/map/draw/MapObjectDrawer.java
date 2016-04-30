@@ -251,7 +251,11 @@ public class MapObjectDrawer {
 			break;
 
 		case STONE:
-			drawStones(x, y, object, color);
+			drawStones(x, y, (int) object.getStateProgress(), color);
+			break;
+
+		case CUT_OFF_STONE:
+			drawStones(x, y, 0, color);
 			break;
 
 		case GHOST:
@@ -336,10 +340,6 @@ public class MapObjectDrawer {
 
 		case SMOKE:
 			drawByProgress(x, y, 13, 42, progress, color);
-			break;
-
-		case WINE:
-			drawByProgress(x, y, 1, 25, progress, color);
 			break;
 
 		case PLANT_DECORATION:
@@ -649,9 +649,9 @@ public class MapObjectDrawer {
 		}
 	}
 
-	private void drawStones(int x, int y, IMapObject object, float color) {
+	private void drawStones(int x, int y, int availableStones, float color) {
 		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, STONE);
-		int stones = (int) (seq.length() - object.getStateProgress() - 1);
+		int stones = seq.length() - availableStones - 1;
 		draw(seq.getImageSafe(stones), x, y, color);
 	}
 

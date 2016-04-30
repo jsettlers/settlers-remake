@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015, 2016
- *
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -71,13 +71,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
 
+	private static final int IS_UNSTOPPED_RECHECK_PERIOD = 1000;
 	private static final int IS_FLATTENED_RECHECK_PERIOD = 1000;
 	private static final int WAITING_FOR_MATERIAL_PERIOD = 1000;
 
-	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
+	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[]{EPriority.LOW, EPriority.HIGH, EPriority.STOPPED};
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
 
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
+
 
 	protected final EBuildingType type;
 	protected final ShortPoint2D pos;
@@ -165,10 +167,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		placeAdditionalMapObjects(grid, pos, true);
 
-		this.state = EBuildingState.IN_FLATTERNING;
-		RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
-
-		requestDiggers();
+		this.state = EBuildingState.CREATED;
+		RescheduleTimer.add(this, IS_UNSTOPPED_RECHECK_PERIOD);
 	}
 
 	private List<IRequestStack> createConstructionStacks() {
@@ -215,9 +215,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	/**
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
-	 * 
-	 * @param place
-	 *            specifies whether the flag should appear or not.
+	 *
+	 * @param place specifies whether the flag should appear or not.
 	 */
 	protected void showFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
@@ -268,45 +267,49 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public int timerEvent() {
 		switch (state) {
-		case CREATED:
-			assert false : "this should never happen!";
-			return -1;
+			case CREATED:
+				if (priority == EPriority.STOPPED) {
+					return IS_UNSTOPPED_RECHECK_PERIOD;
+				} else {
+					state = EBuildingState.IN_FLATTERNING;
+					requestDiggers();
+				}
 
-		case IN_FLATTERNING:
-			if (!isFlatened()) {
-				return IS_FLATTENED_RECHECK_PERIOD;
-			} else {
-				placeAdditionalMapObjects(grid, pos, false);
-				grid.setBlocked(getBuildingArea(), true);
-				this.state = EBuildingState.WAITING_FOR_MATERIAL;
-				// directly go into the next case!
-			}
+			case IN_FLATTERNING:
+				if (!isFlatened()) {
+					return IS_FLATTENED_RECHECK_PERIOD;
+				} else {
+					placeAdditionalMapObjects(grid, pos, false);
+					grid.setBlocked(getBuildingArea(), true);
+					this.state = EBuildingState.WAITING_FOR_MATERIAL;
+					// directly go into the next case!
+				}
 
-		case WAITING_FOR_MATERIAL:
-			if (priority != EPriority.STOPPED && isMaterialAvailable()) {
-				state = EBuildingState.BRICKLAYERS_REQUESTED;
-				requestBricklayers();
-				return -1; // no new scheduling
-			} else {
-				return WAITING_FOR_MATERIAL_PERIOD;
-			}
+			case WAITING_FOR_MATERIAL:
+				if (priority != EPriority.STOPPED && (isMaterialAvailable() || remainingMaterialActions > 0)) {
+					state = EBuildingState.BRICKLAYERS_REQUESTED;
+					requestBricklayers();
+					return -1; // no new scheduling
+				} else {
+					return WAITING_FOR_MATERIAL_PERIOD;
+				}
 
-		case BRICKLAYERS_REQUESTED: // the state changes are handled by tryToTakeMaterial()
-			assert false : "Building.timerEvent() should not be called in state: " + state;
-			return -1;
+			case BRICKLAYERS_REQUESTED: // the state changes are handled by tryToTakeMaterial()
+				assert false : "Building.timerEvent() should not be called in state: " + state;
+				return -1;
 
-		case CONSTRUCTED:
-			return subTimerEvent();
+			case CONSTRUCTED:
+				return subTimerEvent();
 
-		case DESTROYED:
-		default:
-			return -1;
+			case DESTROYED:
+			default:
+				return -1;
 		}
 	}
 
 	/**
 	 * This method will be called when the building has finished construction and is not destroyed yet.
-	 * 
+	 *
 	 * @return Gives the number of milliseconds when this method should be called again. Return -1 to unschedule the building.
 	 */
 	protected abstract int subTimerEvent();
@@ -353,7 +356,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return true;
 		} else {
 			IRequestStack stack = getStackWithMaterial();
-			if (priority != EPriority.STOPPED && stack != null) {
+			if (stack != null) {
 				stack.pop();
 				remainingMaterialActions = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
 				return true;
@@ -498,7 +501,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void debug() {
-		System.out.println("debug");
+		System.out.println("debug: building at " + pos);
 	}
 
 	@Override
@@ -550,77 +553,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public final boolean isNotDestroyed() {
 		return state != EBuildingState.DESTROYED;
-	}
-
-	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
-		switch (type) {
-		case BIG_LIVINGHOUSE:
-			return new BigLivinghouse(player, position, buildingsGrid);
-		case MEDIUM_LIVINGHOUSE:
-			return new MediumLivinghouse(player, position, buildingsGrid);
-		case SMALL_LIVINGHOUSE:
-			return new SmallLivinghouse(player, position, buildingsGrid);
-
-		case CHARCOAL_BURNER:
-		case BAKER:
-		case DONKEY_FARM:
-		case FARM:
-		case FORESTER:
-		case GOLDMELT:
-		case IRONMELT:
-		case LUMBERJACK:
-		case PIG_FARM:
-		case SAWMILL:
-		case SLAUGHTERHOUSE:
-		case STONECUTTER:
-		case TOOLSMITH:
-		case WEAPONSMITH:
-		case WATERWORKS:
-		case WINEGROWER:
-			return new WorkerBuilding(type, player, position, buildingsGrid);
-
-		case MILL:
-			return new MillBuilding(type, player, position, buildingsGrid);
-
-		case TOWER:
-		case BIG_TOWER:
-		case CASTLE:
-			return new OccupyingBuilding(type, player, position, buildingsGrid);
-
-		case BARRACK:
-			return new Barrack(player, position, buildingsGrid);
-
-		case IRONMINE:
-		case GOLDMINE:
-		case COALMINE:
-			return new MineBuilding(type, player, position, buildingsGrid);
-
-		case FISHER:
-			return new ResourceBuilding(EBuildingType.FISHER, player, position, buildingsGrid);
-
-		case STOCK:
-			return new StockBuilding(player, position, buildingsGrid);
-
-		case TEMPLE:
-			return new TempleBuilding(player, position, buildingsGrid);
-
-		case MARKET_PLACE:
-			return new MarketBuilding(type, player, position, buildingsGrid);
-		case HARBOR:
-			return new TradingBuilding(type, player, position, buildingsGrid, true);
-
-		case BIG_TEMPLE:
-			return new BigTemple(player, position, buildingsGrid);
-
-		case HOSPITAL:
-		case LOOKOUT_TOWER:
-		case DOCKYARD:
-			return new DefaultBuilding(type, player, position, buildingsGrid);
-
-		default:
-			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
-			return null;
-		}
 	}
 
 	protected List<IRequestStack> getStacks() {
@@ -682,6 +614,19 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				curr.setPriority(newPriority);
 			}
 		}
+
+		if (newPriority == EPriority.STOPPED) {
+			switch (state) {
+				case IN_FLATTERNING:
+					state = EBuildingState.CREATED; // we're still scheduled in this state => no rescheduling!
+					break;
+
+				case BRICKLAYERS_REQUESTED:
+					state = EBuildingState.WAITING_FOR_MATERIAL;
+					RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD); // we're not scheduled atm => reschedule!
+					break;
+			}
+		}
 	}
 
 	public final RelativePoint[] getFlattenTiles() {
@@ -701,7 +646,78 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	private static enum EBuildingState {
+	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		switch (type) {
+			case BIG_LIVINGHOUSE:
+				return new BigLivinghouse(player, position, buildingsGrid);
+			case MEDIUM_LIVINGHOUSE:
+				return new MediumLivinghouse(player, position, buildingsGrid);
+			case SMALL_LIVINGHOUSE:
+				return new SmallLivinghouse(player, position, buildingsGrid);
+
+			case CHARCOAL_BURNER:
+			case BAKER:
+			case DONKEY_FARM:
+			case FARM:
+			case FORESTER:
+			case GOLDMELT:
+			case IRONMELT:
+			case LUMBERJACK:
+			case PIG_FARM:
+			case SAWMILL:
+			case SLAUGHTERHOUSE:
+			case STONECUTTER:
+			case TOOLSMITH:
+			case WEAPONSMITH:
+			case WATERWORKS:
+			case WINEGROWER:
+				return new WorkerBuilding(type, player, position, buildingsGrid);
+
+			case MILL:
+				return new MillBuilding(type, player, position, buildingsGrid);
+
+			case TOWER:
+			case BIG_TOWER:
+			case CASTLE:
+				return new OccupyingBuilding(type, player, position, buildingsGrid);
+
+			case BARRACK:
+				return new Barrack(player, position, buildingsGrid);
+
+			case IRONMINE:
+			case GOLDMINE:
+			case COALMINE:
+				return new MineBuilding(type, player, position, buildingsGrid);
+
+			case FISHER:
+				return new ResourceBuilding(EBuildingType.FISHER, player, position, buildingsGrid);
+
+			case STOCK:
+				return new StockBuilding(player, position, buildingsGrid);
+
+			case TEMPLE:
+				return new TempleBuilding(player, position, buildingsGrid);
+
+			case MARKET_PLACE:
+				return new MarketBuilding(type, player, position, buildingsGrid);
+			case HARBOR:
+				return new TradingBuilding(type, player, position, buildingsGrid, true);
+
+			case BIG_TEMPLE:
+				return new BigTemple(player, position, buildingsGrid);
+
+			case HOSPITAL:
+			case LOOKOUT_TOWER:
+			case DOCKYARD:
+				return new DefaultBuilding(type, player, position, buildingsGrid);
+
+			default:
+				System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
+				return null;
+		}
+	}
+
+	private enum EBuildingState {
 		CREATED,
 		IN_FLATTERNING,
 		WAITING_FOR_MATERIAL,
