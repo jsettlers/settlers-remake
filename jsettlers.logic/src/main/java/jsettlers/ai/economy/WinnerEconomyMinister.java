@@ -50,14 +50,6 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
 			addIfPossible(WINEGROWER, buildingCounts);
 		}
-		addIfPossible(IRONMELT, buildingCounts);
-		addIfPossible(WEAPONSMITH, buildingCounts);
-		addIfPossible(BARRACK, buildingCounts);
-		addIfPossible(COALMINE, buildingCounts);
-		addIfPossible(IRONMELT, buildingCounts);
-		addIfPossible(COALMINE, buildingCounts);
-		addIfPossible(IRONMELT, buildingCounts);
-		addIfPossible(WEAPONSMITH, buildingCounts);
 		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
 			addIfPossible(TEMPLE, buildingCounts);
 		}
