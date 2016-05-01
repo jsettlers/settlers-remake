@@ -19,7 +19,6 @@ import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
@@ -118,11 +117,6 @@ public class MiddleEconomyMinister extends BuildingListEconomyMinister implement
 			addIfPossible(GOLDMINE, buildingCounts);
 			addIfPossible(GOLDMELT, buildingCounts);
 		}
-		addIfPossible(BIG_TEMPLE, buildingCounts);
-	}
-
-	private void addIfPossible(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
-		addIfPossible(buildingType, buildingCounts, buildingsToBuild);
 	}
 
 	@Override

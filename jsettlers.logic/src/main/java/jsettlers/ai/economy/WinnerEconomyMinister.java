@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
+import jsettlers.ai.construction.BuildingCount;
 import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
@@ -39,42 +40,43 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 	}
 
 	private void initializeBuildingsToBuild(AiMapInformation aiMapInformation) {
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(STONECUTTER);
+		List<BuildingCount> buildingCounts = aiMapInformation.getBuildingCounts();
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(SAWMILL, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(SAWMILL, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(LUMBERJACK, buildingCounts);
+		addIfPossible(SAWMILL, buildingCounts);
+		addIfPossible(FORESTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
+		addIfPossible(STONECUTTER, buildingCounts);
 		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
-			buildingsToBuild.add(WINEGROWER);
+			addIfPossible(WINEGROWER, buildingCounts);
 		}
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BARRACK);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(WEAPONSMITH);
+		addIfPossible(IRONMELT, buildingCounts);
+		addIfPossible(WEAPONSMITH, buildingCounts);
+		addIfPossible(BARRACK, buildingCounts);
+		addIfPossible(COALMINE, buildingCounts);
+		addIfPossible(IRONMELT, buildingCounts);
+		addIfPossible(COALMINE, buildingCounts);
+		addIfPossible(IRONMELT, buildingCounts);
+		addIfPossible(WEAPONSMITH, buildingCounts);
 		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
-			buildingsToBuild.add(TEMPLE);
+			addIfPossible(TEMPLE, buildingCounts);
 		}
 		if (aiMapInformation.getNumberOfBigTemples() > 0) {
-			buildingsToBuild.add(BIG_TEMPLE);
+			addIfPossible(BIG_TEMPLE, buildingCounts);
 		}
 
 		int remainingNumberOfWeaponSmiths = aiMapInformation.getNumberOfWeaponSmiths() - 2;
@@ -140,13 +142,13 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 
 		for (int i = 0; i < Math.max(foodBuildings.size(), Math.max(buildingMaterialBuidlings.size(), weaponsBuildings.size())); i++) {
 			if (i < foodBuildings.size()) {
-				buildingsToBuild.add(foodBuildings.get(i));
+				addIfPossible(foodBuildings.get(i), buildingCounts);
 			}
 			if (i < buildingMaterialBuidlings.size()) {
-				buildingsToBuild.add(buildingMaterialBuidlings.get(i));
+				addIfPossible(buildingMaterialBuidlings.get(i), buildingCounts);
 			}
 			if (i < weaponsBuildings.size()) {
-				buildingsToBuild.add(weaponsBuildings.get(i));
+				addIfPossible(weaponsBuildings.get(i), buildingCounts);
 			}
 		}
 	}
@@ -162,7 +164,6 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 	}
 
 	@Override
-
 	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
 		return 5;
 	}

@@ -37,9 +37,9 @@ public class BuildingListEconomyMinister {
 		return result;
 	}
 
-	protected void addIfPossible(EBuildingType buildingType, List<BuildingCount> buildingCounts, List<EBuildingType> buildingList) {
+	protected void addIfPossible(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
 		if (currentCountOf(buildingType) < plannedCountOf(buildingType, buildingCounts)) {
-			buildingList.add(buildingType);
+			buildingsToBuild.add(buildingType);
 		}
 	}
 }
