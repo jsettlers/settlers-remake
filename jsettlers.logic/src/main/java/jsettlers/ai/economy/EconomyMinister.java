@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
+import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 
@@ -29,4 +30,8 @@ public interface EconomyMinister {
 	List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId);
 
 	byte getMidGameNumberOfStoneCutters();
+
+	boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId);
+
+	boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId);
 }

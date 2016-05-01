@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
+import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.logic.player.Player;
@@ -23,17 +24,18 @@ import java.util.*;
 import static jsettlers.common.buildings.EBuildingType.*;
 
 /**
-  * This economy minister checks how many buildings of each type its enemies did build and build one building less than the player with the fewest
- * number of that building. But it builds minimal 1 building for each building type.
- * This leads to an adaptive AI which can be beaten by the weakest player in the game.
+ * This economy minister checks how many buildings of each type its enemies did build and build one building less than the player with the fewest
+ * number of that building. But it builds minimal 1 building for each building type. This leads to an adaptive AI which can be beaten by the weakest
+ * player in the game.
+ * 
  * @author codingberlin
  */
 public class AdaptableEconomyMinister implements EconomyMinister {
 
 	private final AiStatistics aiStatistics;
 	private final Player player;
-	private static final List<EBuildingType> MINIMAL_BUILDING_TYPES =
-			Arrays.asList(LUMBERJACK, STONECUTTER, SAWMILL, SMALL_LIVINGHOUSE, FORESTER, LUMBERJACK, LUMBERJACK, STONECUTTER);
+	private static final List<EBuildingType> MINIMAL_BUILDING_TYPES = Arrays.asList(LUMBERJACK, STONECUTTER, SAWMILL, SMALL_LIVINGHOUSE, FORESTER,
+			LUMBERJACK, LUMBERJACK, STONECUTTER);
 
 	public AdaptableEconomyMinister(AiStatistics aiStatistics, Player player) {
 		this.aiStatistics = aiStatistics;
@@ -80,18 +82,28 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 		Collection<EBuildingType> numberOfBuildingsAsList = new Vector<EBuildingType>();
 		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
 		byte sumOfBuildings = 0;
-		for(byte playerId : enemies) {
+		for (byte playerId : enemies) {
 			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
 		}
 		for (int i = 0; i < Math.max(1, sumOfBuildings / enemies.size()) - Collections.frequency(MINIMAL_BUILDING_TYPES, buildingType); i++) {
 			numberOfBuildingsAsList.add(buildingType);
-		};
+		}
+		;
 		return numberOfBuildingsAsList;
 	}
 
 	@Override
 	public byte getMidGameNumberOfStoneCutters() {
 		return 2;
+	}
+
+	@Override
+	public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
+		return true;
+	}
+
+	@Override public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
+		return true;
 	}
 
 	@Override

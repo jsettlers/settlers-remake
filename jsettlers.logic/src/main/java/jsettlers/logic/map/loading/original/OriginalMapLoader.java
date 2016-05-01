@@ -158,7 +158,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
-		return loadMainGrid(playerSettings, EMapStartResources.HIGH_GOODS);
+		return loadMainGrid(playerSettings, EMapStartResources.LOW_GOODS);
 	}
 
 	@Override

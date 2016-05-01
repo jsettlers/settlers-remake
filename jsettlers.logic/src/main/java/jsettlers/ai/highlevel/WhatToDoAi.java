@@ -38,8 +38,6 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
-import static jsettlers.common.material.EMaterialType.HAMMER;
-import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
 import java.util.ArrayList;
@@ -188,23 +186,25 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 
 		// destroy livinghouses
-		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
-				* NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
-				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
-				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
-				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
-		if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1
-				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
-		} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1
-				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) > 0) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
-		} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1
-				&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) > 0) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
+		if (economyMinister.automaticLivingHousesEnabled(aiStatistics, playerId)) {
+			int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
+					* NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
+					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
+					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
+					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
+			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1
+					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
+			} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1
+					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) > 0) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
+			} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1
+					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) > 0) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
+			}
 		}
 
 		// destroy mines
@@ -222,9 +222,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private void buildBuildings() {
 		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSides(aiStatistics,
 				playerId)) {
-			if (buildLivingHouse())
+			if (economyMinister.automaticLivingHousesEnabled(aiStatistics, playerId) && buildLivingHouse())
 				return;
-			if (buildTower())
+			if (economyMinister.automaticTowersEnabled(aiStatistics, playerId) && buildTower())
 				return;
 			if (buildStock())
 				return;
@@ -245,22 +245,13 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildEconomy() {
-		boolean toolsEconomyNeedsToBeChecked = true;
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
-
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
 				int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingType);
-				if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
-					if (buildToolsEconomy()) {
-						return;
-					}
-					toolsEconomyNeedsToBeChecked = false;
-				}
-				if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingType)
-						&& construct(currentBuildingType)) {
+				if (numberOfAvailableTools >= 0 && construct(currentBuildingType)) {
 					return;
 				}
 			}
@@ -376,47 +367,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 				}
 			}
 			return true;
-		}
-		return false;
-	}
-
-	private boolean newBuildingWouldUseReservedTool(EBuildingType buildingType) {
-		EMovableType movableType = buildingType.getWorkerType();
-		if (movableType == null) {
-			return false;
-		}
-		EMaterialType materialType = movableType.getTool();
-		if (materialType == PICK) {
-			int numberOfCoalMines = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId);
-			int numberOfIronMines = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId);
-			if (numberOfCoalMines >= 1 && numberOfIronMines >= 1) {
-				return false;
-			}
-			if (buildingType == COALMINE && numberOfCoalMines == 0) {
-				return false;
-			}
-			if (buildingType == IRONMINE && numberOfIronMines == 0) {
-				return false;
-			}
-			int requiredPicks = 1;
-			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(COALMINE, playerId);
-			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(IRONMINE, playerId);
-			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(STONECUTTER, playerId);
-			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(GOLDMINE, playerId);
-			if (numberOfCoalMines == 0) {
-				requiredPicks++;
-			}
-			if (numberOfIronMines == 0) {
-				requiredPicks++;
-			}
-			return aiStatistics.getNumberOfMaterialTypeForPlayer(PICK, playerId) < requiredPicks;
-		}
-		if (materialType == HAMMER) {
-			if (buildingType == TOOLSMITH || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) >= 1) {
-				return false;
-			}
-			int requiredPicks = 2 + aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(WEAPONSMITH, playerId);
-			return aiStatistics.getNumberOfMaterialTypeForPlayer(HAMMER, playerId) < requiredPicks;
 		}
 		return false;
 	}

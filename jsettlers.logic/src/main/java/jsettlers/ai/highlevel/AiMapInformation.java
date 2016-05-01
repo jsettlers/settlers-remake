@@ -38,11 +38,11 @@ public class AiMapInformation {
 	private static final double WEAPON_SMITH_BARRACKS_RATIO = 4;
 	private static final double WEAPON_SMITH_FISHER_RATIO = 3F / 2F;
 	private static final double WEAPON_SMITH_FARM_RATIO = 1F / 2F;
-	private static final double WEAPON_SMITH_BAKER_RATIO = 1F / 3F;
-	private static final double WEAPON_SMITH_MILL_RATIO = 1F / 6F;
-	private static final double WEAPON_SMITH_WATERWORKS_RATIO = 1F / 3F;
-	private static final double WEAPON_SMITH_PIG_FARM_RATIO = 1F / 3F;
-	private static final double WEAPON_SMITH_SLAUGHTER_RATIO = 1F / 6F;
+	private static final double FARM_BAKER_RATIO = 1F / 3F;
+	private static final double FARM_MILL_RATIO = 1F / 6F;
+	private static final double FARM_WATERWORKS_RATIO = 1F / 3F;
+	private static final double FARM_PIG_FARM_RATIO = 1F / 3F;
+	private static final double FARM_SLAUGHTER_RATIO = 1F / 6F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
 	private static final double WEAPON_SMITH_LUMBERJACK_RATIO = 6F / 8F;
@@ -128,6 +128,7 @@ public class AiMapInformation {
 		buildingCounts.add(new BuildingCount(EBuildingType.IRONMELT, numberOfWeaponSmiths));
 		buildingCounts.add(new BuildingCount(EBuildingType.WEAPONSMITH, numberOfWeaponSmiths));
 		buildingCounts.add(new BuildingCount(EBuildingType.BARRACK, (int) Math.ceil((double) numberOfWeaponSmiths / WEAPON_SMITH_BARRACKS_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.TOOLSMITH, 1));
 
 		int numberOfFisher = Math.min((int) (numberOfWeaponSmiths * WEAPON_SMITH_FISHER_RATIO), maxFishermen);
 
@@ -135,12 +136,17 @@ public class AiMapInformation {
 		int numberOfRemainingWeaponSmithsRest = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_FISHER_RATIO));
 
 		int numberOfFarms = (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_FARM_RATIO);
+		int minimumFood = 0;
+		if (numberOfFarms == 0 && numberOfWeaponSmiths >= 1) {
+			numberOfFarms++;
+			minimumFood = 1;
+		}
 		buildingCounts.add(new BuildingCount(EBuildingType.FARM, numberOfFarms));
-		buildingCounts.add(new BuildingCount(EBuildingType.BAKER, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_BAKER_RATIO)));
-		buildingCounts.add(new BuildingCount(EBuildingType.MILL, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_MILL_RATIO)));
-		buildingCounts.add(new BuildingCount(EBuildingType.WATERWORKS, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_WATERWORKS_RATIO)));
-		buildingCounts.add(new BuildingCount(EBuildingType.SLAUGHTERHOUSE, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_SLAUGHTER_RATIO)));
-		buildingCounts.add(new BuildingCount(EBuildingType.PIG_FARM, (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_PIG_FARM_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.BAKER, Math.max(minimumFood, (int) (numberOfFarms * FARM_BAKER_RATIO))));
+		buildingCounts.add(new BuildingCount(EBuildingType.MILL, Math.max(minimumFood, (int) (numberOfFarms * FARM_MILL_RATIO))));
+		buildingCounts.add(new BuildingCount(EBuildingType.WATERWORKS, Math.max(minimumFood, (int) (numberOfFarms * FARM_WATERWORKS_RATIO))));
+		buildingCounts.add(new BuildingCount(EBuildingType.SLAUGHTERHOUSE, Math.max(minimumFood, (int) (numberOfFarms * FARM_SLAUGHTER_RATIO))));
+		buildingCounts.add(new BuildingCount(EBuildingType.PIG_FARM, Math.max(minimumFood, (int) (numberOfFarms * FARM_PIG_FARM_RATIO))));
 
 		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_LUMBERJACK_RATIO), 1);
 		buildingCounts.add(new BuildingCount(EBuildingType.LUMBERJACK, numberOfLumberJacks));
@@ -172,17 +178,17 @@ public class AiMapInformation {
 			this.numberOfBigTemples = maxBigTemples;
 			this.numberOfLumberJacks = numberOfLumberJacks;
 		} else if (numberOfWeaponSmiths > MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION) {
-			 calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, maxBigTemples, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, maxBigTemples, grasTiles);
 		} else if (maxWineGrower > MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION) {
-			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
 		} else if (maxGoldMelts > 1) {
-			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrower, maxBigTemples, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrower, maxBigTemples, grasTiles);
 		} else if (maxWineGrower > 1) {
-			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grasTiles);
 		} else if (maxBigTemples == 1) {
-			 calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
 		} else {
-			 calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
+			calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, 0, grasTiles);
 		}
 	}
 

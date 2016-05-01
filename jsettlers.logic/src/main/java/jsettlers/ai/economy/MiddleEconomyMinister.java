@@ -32,7 +32,6 @@ import static jsettlers.common.buildings.EBuildingType.*;
  */
 public class MiddleEconomyMinister extends BuildingListEconomyMinister implements EconomyMinister {
 
-
 	public MiddleEconomyMinister(AiMapInformation mapInformation) {
 		super();
 		initializeBuildingsToBuild(mapInformation.getBuildingCounts());
@@ -97,6 +96,7 @@ public class MiddleEconomyMinister extends BuildingListEconomyMinister implement
 		}
 
 	}
+
 	private void addManaIndustry(List<BuildingCount> buildingCounts) {
 		while (currentCountOf(WINEGROWER) < plannedCountOf(WINEGROWER, buildingCounts)) {
 			addIfPossible(WINEGROWER, buildingCounts);
@@ -104,6 +104,7 @@ public class MiddleEconomyMinister extends BuildingListEconomyMinister implement
 		}
 		addIfPossible(BIG_TEMPLE, buildingCounts);
 	}
+
 	private void addWeaponsIndustry(List<BuildingCount> buildingCounts) {
 		while (currentCountOf(WEAPONSMITH) < plannedCountOf(WEAPONSMITH, buildingCounts)) {
 			addIfPossible(COALMINE, buildingCounts);
@@ -132,6 +133,15 @@ public class MiddleEconomyMinister extends BuildingListEconomyMinister implement
 	@Override
 	public byte getMidGameNumberOfStoneCutters() {
 		return 3;
+	}
+
+	@Override
+	public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
+		return true;
+	}
+
+	@Override public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
+		return true;
 	}
 
 	@Override
