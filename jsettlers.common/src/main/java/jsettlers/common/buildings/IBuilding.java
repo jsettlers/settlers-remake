@@ -117,17 +117,6 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		int getMaximumRequestedSoldiers(ESoldierClass soldierClass);
 
 		/**
-		 * Sets the maximum number of requested soldiers for the given type. The number may be silently clamped by the logic depending on how much
-		 * free space is available.
-		 * 
-		 * @param soldierClass
-		 *            The class of soldier.
-		 * @param max
-		 *            The maximum.
-		 */
-		void setMaximumRequestedSoldiers(ESoldierClass soldierClass, int max);
-
-		/**
 		 * Gets the number of soldiers that are currently comming or already inside this building.
 		 * 
 		 * @param soldierClass

@@ -135,7 +135,14 @@ public final class DijkstraAlgorithm {
 		}
 
 		public void setSearchType(ESearchType searchType) {
-			this.searchType = searchType;
+			if (this.searchType != searchType) {
+				this.searchType = searchType;
+				radius = 0;
+			}
+		}
+
+		public void reset() {
+			radius = 0;
 		}
 	}
 

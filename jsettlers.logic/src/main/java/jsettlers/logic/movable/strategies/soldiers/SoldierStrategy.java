@@ -167,7 +167,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	private void notifyTowerThatRequestFailed() {
 		if (building.getPlayer() == movable.getPlayer()) { // only notify, if the tower still belongs to this player
-			building.requestFailed(this.movableType);
+			building.requestFailed(this);
 			building = null;
 			state = ESoldierState.AGGRESSIVE;
 		}
@@ -226,16 +226,15 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	protected abstract boolean isEnemyAttackable(IAttackable enemy, boolean isInTower);
 
-	@Override
-	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+	public IBuildingOccupyableMovable setOccupyableBuilding(IOccupyableBuilding building) {
 		if (state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.INIT_GOTO_TOWER) {
 			this.building = building;
 			changeStateTo(ESoldierState.INIT_GOTO_TOWER);
 			super.abortPath();
 			this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
-			return true;
+			return this;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
@@ -251,14 +250,22 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public void leaveOccupyableBuilding(ShortPoint2D newPosition) {
-		super.setPosition(newPosition);
-		super.enableNothingToDoAction(true);
-		super.setVisible(true);
+		if (isInTower) {
+			super.setPosition(newPosition);
+			super.enableNothingToDoAction(true);
+			super.setVisible(true);
+			super.movable.setSelected(false);
 
-		isInTower = false;
-		building = null;
-		defending = false;
-		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+			isInTower = false;
+			building = null;
+			defending = false;
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+
+		} else if (state == ESoldierState.INIT_GOTO_TOWER || state == ESoldierState.GOING_TO_TOWER) {
+			super.abortPath();
+			building = null;
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		}
 	}
 
 	@Override
@@ -291,7 +298,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			oldPathTarget = pathTarget;
 		}
 
-		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
+		if (state == ESoldierState.GOING_TO_TOWER && (building == null || !building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
 			result = false;
 		}
 

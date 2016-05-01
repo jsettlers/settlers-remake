@@ -43,7 +43,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
 		int maxDistance = movable.getPos().getOnGridDistTo(enemy.getPos());
-		return (maxDistance == 1 || (!enemy.isTower() && EMovableType.isPikeman(super.getMovableType()) && maxDistance <= 2));
+		return (maxDistance == 1 || (!enemy.isTower() && super.getMovableType().isPikeman() && maxDistance <= 2));
 	}
 
 	@Override

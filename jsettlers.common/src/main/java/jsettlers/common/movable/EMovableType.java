@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -89,16 +89,23 @@ public enum EMovableType {
 	private final float health;
 	private final float strength;
 
-	private static final Set<EMovableType> soldiers = EnumSet.of(
-			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
-			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3,
-			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
+	private static final Set<EMovableType> swordsmen = EnumSet.of(
+			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3);
 
 	private static final Set<EMovableType> pikemen = EnumSet.of(
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
 	private static final Set<EMovableType> bowmen = EnumSet.of(
 			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
+
+	private static final Set<EMovableType> soldiers = EnumSet.of(
+			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3,
+			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
+
+	private static final Set<EMovableType> infantry = EnumSet.of(
+			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
+			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
 	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
 		this(tool, selectionType, needsPlayersGround, DEFAULT_STEP_DURATION_SECONDS, DEFAULT_HEALTH, DEFAULT_STRENGTH);
@@ -147,15 +154,45 @@ public enum EMovableType {
 		return stepDurationMs;
 	}
 
-	public static boolean isBowman(EMovableType movableType) {
-		return bowmen.contains(movableType);
+	public boolean isBowman() {
+		return bowmen.contains(this);
 	}
 
-	public static boolean isSoldier(EMovableType movableType) {
-		return soldiers.contains(movableType);
+	public boolean isSoldier() {
+		return soldiers.contains(this);
 	}
 
-	public static boolean isPikeman(EMovableType movableType) {
-		return pikemen.contains(movableType);
+	public boolean isSwordsman() {
+		return swordsmen.contains(this);
+	}
+
+	public boolean isPikeman() {
+		return pikemen.contains(this);
+	}
+
+	public boolean isInfantry() {
+		return infantry.contains(this);
+	}
+
+	public ESoldierType getSoldierType() {
+		if (isBowman()) {
+			return ESoldierType.BOWMAN;
+		} else if (isPikeman()) {
+			return ESoldierType.PIKEMAN;
+		} else if (isSwordsman()) {
+			return ESoldierType.SWORDSMAN;
+		} else {
+			return null;
+		}
+	}
+
+	public ESoldierClass getSoldierClass() {
+		if (isBowman()) {
+			return ESoldierClass.BOWMAN;
+		} else if (isInfantry()) {
+			return ESoldierClass.INFANTRY;
+		} else {
+			return null;
+		}
 	}
 }

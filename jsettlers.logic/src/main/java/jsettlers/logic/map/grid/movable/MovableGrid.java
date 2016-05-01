@@ -86,19 +86,13 @@ public final class MovableGrid implements Serializable {
 	 *            Movable that enters the position.
 	 */
 	public final void movableEntered(ShortPoint2D position, Movable movable) {
-		short x = position.x;
-		short y = position.y;
+		final short x = position.x;
+		final short y = position.y;
 
-		int idx = x + y * width;
-		if (idx < 0) {
-			System.out.println("index < 0");
-		}
-
-		this.movableGrid[idx] = movable;
+		this.movableGrid[x + y * width] = movable;
 		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
 			ground.walkOn(x, y);
 		}
-
 	}
 
 	/**
