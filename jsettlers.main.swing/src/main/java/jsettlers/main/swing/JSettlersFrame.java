@@ -14,9 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.HeadlessException;
+import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -67,9 +65,17 @@ public class JSettlersFrame extends JFrame {
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
+
+		setResizable(false);
+		setUndecorated(true);
+
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice dev = env.getDefaultScreenDevice();
+		dev.setFullScreenWindow(this);
 	}
 
 	private void abortRedrawTimerIfPresent() {
