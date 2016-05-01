@@ -16,6 +16,7 @@ package jsettlers.ai.economy;
 
 import jsettlers.ai.construction.BuildingCount;
 import jsettlers.ai.highlevel.AiMapInformation;
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 
 import java.util.ArrayList;
@@ -125,12 +126,12 @@ public class MiddleEconomyMinister extends BuildingListEconomyMinister implement
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSides() {
+	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
 		return 10;
 	}
 
 	@Override
-	public List<EBuildingType> getBuildingsToBuild() {
+	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
 		return buildingsToBuild;
 	}
 

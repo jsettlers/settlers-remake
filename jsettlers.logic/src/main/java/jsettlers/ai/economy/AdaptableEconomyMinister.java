@@ -41,12 +41,12 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSides() {
+	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
 		return 5;
 	}
 
 	@Override
-	public List<EBuildingType> getBuildingsToBuild() {
+	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
 		List<EBuildingType> buildingsToBuild = new Vector<>();
 		buildingsToBuild.addAll(MINIMAL_BUILDING_TYPES);
 		buildingsToBuild.addAll(determineNumberOf(LUMBERJACK));

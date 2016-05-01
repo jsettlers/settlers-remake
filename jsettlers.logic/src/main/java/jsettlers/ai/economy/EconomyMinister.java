@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 
 import java.util.List;
@@ -23,9 +24,9 @@ import java.util.List;
  */
 public interface EconomyMinister {
 
-	int getNumberOfParallelConstructionSides();
+	int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId);
 
-	List<EBuildingType> getBuildingsToBuild();
+	List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId);
 
 	byte getMidGameNumberOfStoneCutters();
 }

@@ -220,7 +220,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildBuildings() {
-		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSides()) {
+		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSides(aiStatistics,
+				playerId)) {
 			if (buildLivingHouse())
 				return;
 			if (buildTower())
@@ -246,7 +247,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private void buildEconomy() {
 		boolean toolsEconomyNeedsToBeChecked = true;
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
-		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild()) {
+		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
 
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
@@ -359,8 +360,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			return Integer.MAX_VALUE;
 		}
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(materialType, playerId)
-				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId)
-				- aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(buildingType, playerId);
+				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId);
 	}
 
 	private boolean construct(EBuildingType type) {

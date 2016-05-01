@@ -14,14 +14,12 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-import jsettlers.ai.construction.BuildingCount;
 import jsettlers.ai.highlevel.AiMapInformation;
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static jsettlers.common.buildings.EBuildingType.*;
 import static jsettlers.common.buildings.EBuildingType.IRONMELT;
@@ -42,22 +40,22 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 
 	private void initializeBuildingsToBuild(AiMapInformation aiMapInformation) {
 		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(SAWMILL);
+		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(FORESTER);
 		buildingsToBuild.add(STONECUTTER);
 		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(FORESTER);
-		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(SAWMILL);
 		buildingsToBuild.add(LUMBERJACK);
+		buildingsToBuild.add(LUMBERJACK);
+		buildingsToBuild.add(FORESTER);
+		buildingsToBuild.add(FORESTER);
+		buildingsToBuild.add(LUMBERJACK);
+		buildingsToBuild.add(LUMBERJACK);
+		buildingsToBuild.add(SAWMILL);
 		buildingsToBuild.add(FORESTER);
 		buildingsToBuild.add(STONECUTTER);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(LUMBERJACK);
-		buildingsToBuild.add(SAWMILL);
-		buildingsToBuild.add(FORESTER);
 		buildingsToBuild.add(STONECUTTER);
 		buildingsToBuild.add(STONECUTTER);
 		buildingsToBuild.add(STONECUTTER);
@@ -120,7 +118,8 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 			}
 			if (i % 6 == 1 || i % 6 == 2 || i % 6 == 5) {
 				foodBuildings.add(PIG_FARM);
-			} if (i % 6 == 1) {
+			}
+			if (i % 6 == 1) {
 				foodBuildings.add(SLAUGHTERHOUSE);
 			}
 		}
@@ -162,24 +161,39 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 		}
 	}
 
-	private BuildingCount take(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
-		for (BuildingCount buildingCount : buildingCounts) {
-			if (buildingCount.buildingType == buildingType) {
-				return buildingCount;
-			}
-		}
-		return null;
-	}
-
 	@Override
 
-	public int getNumberOfParallelConstructionSides() {
+	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
 		return 5;
 	}
 
 	@Override
-	public List<EBuildingType> getBuildingsToBuild() {
-		return buildingsToBuild;
+	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
+		List<EBuildingType> allBuildingsToBuild = getEmergencyBuildings(aiStatistics, playerId);
+		allBuildingsToBuild.addAll(buildingsToBuild);
+		return allBuildingsToBuild;
+	}
+
+	private List<EBuildingType> getEmergencyBuildings(AiStatistics aiStatistics, byte playerId) {
+		List<EBuildingType> emergencyBuildings = new ArrayList<>();
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId) < 1) {
+			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
+				if (aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, enemy) > 0) {
+					emergencyBuildings.add(LUMBERJACK);
+					emergencyBuildings.add(SAWMILL);
+					emergencyBuildings.add(STONECUTTER);
+					emergencyBuildings.add(IRONMELT);
+					emergencyBuildings.add(WEAPONSMITH);
+					emergencyBuildings.add(BARRACK);
+					emergencyBuildings.add(SMALL_LIVINGHOUSE);
+					emergencyBuildings.add(COALMINE);
+					emergencyBuildings.add(IRONMINE);
+					emergencyBuildings.add(MEDIUM_LIVINGHOUSE);
+					return emergencyBuildings;
+				}
+			}
+		}
+	return emergencyBuildings;
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class SwingManagedJSettlers {
 	public static void loadOptionalSettings(OptionableProperties options) {
 		CommonConstants.CONTROL_ALL = options.isOptionSet("control-all");
 		CommonConstants.ACTIVATE_ALL_PLAYERS = options.isOptionSet("activate-all-players");
-		CommonConstants.ENABLE_CONSOLE_LOGGING = options.isOptionSet("console-output");
+		CommonConstants.ENABLE_CONSOLE_LOGGING = true; //options.isOptionSet("console-output");
 		CommonConstants.ENABLE_AI = !options.isOptionSet("disable-ai");
 		CommonConstants.ALL_AI = options.isOptionSet("all-ai");
 		CommonConstants.DISABLE_ORIGINAL_MAPS = options.isOptionSet("disable-original-maps");
