@@ -126,6 +126,10 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 				addIfPossible(buildingMaterialBuildings.get(i), buildingCounts);
 			}
 			if (i < weaponsBuildings.size()) {
+				// If there is no tool smith yet (HIGH_GOODS does not add a TOOLSMITH at the beginning)
+				if (currentCountOf(TOOLSMITH) < 1) {
+					buildingsToBuild.add(TOOLSMITH);
+				}
 				addIfPossible(weaponsBuildings.get(i), buildingCounts);
 			}
 		}
@@ -245,9 +249,13 @@ public class WinnerEconomyMinister extends BuildingListEconomyMinister implement
 
 	@Override
 	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
-		int parallelDueToGoods = (int) Math.ceil((float) aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PLANK, playerId) / 4F);
-		int parallelDueToLumberJacks = Math.max((int) Math.ceil((float) aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) / 2F), 2);
-		return Math.max(parallelDueToGoods, parallelDueToLumberJacks);
+		if (aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PLANK, playerId) > 1
+				&& aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.STONE, playerId)  > 1) {
+			// If plank and stone is still offered, we can build the next building.
+			// If the next building will consume all remaining offers we won't return 100 in the next tick
+			return 100;
+		}
+		return Math.max((int) Math.ceil((float) aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) / 2F), 2);
 	}
 
 	@Override

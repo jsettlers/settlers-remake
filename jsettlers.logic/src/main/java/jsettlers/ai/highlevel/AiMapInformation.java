@@ -49,6 +49,7 @@ public class AiMapInformation {
 	private static final double LUMBERJACK_SAWMILL_RATIO = 1F / 3F;
 	private static final double LUMBERJACK_FORESTER_RATIO = 1F / 2F;
 	private static final double LUMBERJACK_STONE_CUTTER_RATIO = 5F / 8F;
+	public static final float COAL_MINE_TO_SMITH_RATIO = 1.8F;
 	private List<BuildingCount> buildingCounts;
 	private int numberOfFisher;
 	private int numberOfWeaponSmiths;
@@ -103,7 +104,8 @@ public class AiMapInformation {
 		}
 
 		int numberOfPlayers = mainGrid.getPartitionsGrid().getNumberOfPlayers();
-		int maxFishermen = (int) (resourcesCount[EResourceType.FISH.ordinal] / numberOfPlayers) / FISHERMAN_DIVISOR;
+		// maximal 10 Fisher to prevent AI from building only Fishermen which looks very unnatural
+		int maxFishermen = Math.min(10, (int) (resourcesCount[EResourceType.FISH.ordinal] / numberOfPlayers) / FISHERMAN_DIVISOR);
 		int maxCoalMines = (int) (resourcesCount[EResourceType.COAL.ordinal] / numberOfPlayers) / COAL_MINE_DIVISOR;
 		int maxIronMines = (int) (resourcesCount[EResourceType.IRONORE.ordinal] / numberOfPlayers) / IRON_MINE_DIVISOR;
 		int maxGoldMelts = resourcesCount[EResourceType.GOLDORE.ordinal] > 0 ? 2 : 0;
@@ -112,7 +114,7 @@ public class AiMapInformation {
 			maxIronMines = maxCoalMines / COAL_TO_IRON_FACTOR + 1;
 		if (maxCoalMines > maxIronMines * COAL_TO_IRON_FACTOR + 1)
 			maxCoalMines = maxIronMines * COAL_TO_IRON_FACTOR + 1;
-		int maxSmiths = maxCoalMines;
+		int maxSmiths = (int) Math.floor((float) maxCoalMines * COAL_MINE_TO_SMITH_RATIO);
 		calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 4, 1, grasTiles);
 	}
 
@@ -131,7 +133,6 @@ public class AiMapInformation {
 		buildingCounts.add(new BuildingCount(EBuildingType.TOOLSMITH, 1));
 
 		int numberOfFisher = Math.min((int) (numberOfWeaponSmiths * WEAPON_SMITH_FISHER_RATIO), maxFishermen);
-
 		buildingCounts.add(new BuildingCount(EBuildingType.FISHER, numberOfFisher));
 		int numberOfRemainingWeaponSmithsRest = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_FISHER_RATIO));
 
