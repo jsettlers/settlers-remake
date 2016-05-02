@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -15,6 +15,8 @@
 package jsettlers.main.swing;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,29 +55,62 @@ public class JSettlersFrame extends JFrame {
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
+
 	private Timer redrawTimer;
+	private boolean fullScreen = false;
+
 
 	JSettlersFrame() throws HeadlessException {
 		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
 
 		SettingsManager settingsManager = SettingsManager.getInstance();
+
 		Player player = settingsManager.getPlayer();
 		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
 		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
+
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
-
-		setResizable(false);
-		setUndecorated(true);
-
 		pack();
 		setLocationRelativeTo(null);
+
+		fullScreen = settingsManager.getFullScreenMode();
+		updateFullScreenMode();
+
+		KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		keyboardFocusManager.addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if (e.getID() == KeyEvent.KEY_PRESSED) {
+					if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+						switchFullScreenMode();
+						return true; // consume this key event.
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	private void switchFullScreenMode() {
+		fullScreen = !fullScreen;
+		SettingsManager.getInstance().setFullScreenMode(fullScreen);
+		updateFullScreenMode();
+	}
+
+	private void updateFullScreenMode() {
+		dispose();
+
+		setResizable(!fullScreen);
+		setUndecorated(fullScreen);
+
+		pack();
 		setVisible(true);
 
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice dev = env.getDefaultScreenDevice();
-		dev.setFullScreenWindow(this);
+		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+		graphicsDevice.setFullScreenWindow(fullScreen ? this : null);
 	}
 
 	private void abortRedrawTimerIfPresent() {
