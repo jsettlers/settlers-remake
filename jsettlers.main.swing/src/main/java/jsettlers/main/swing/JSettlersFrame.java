@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- * <p/>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * <p/>
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * <p/>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -14,8 +14,13 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
-import java.awt.*;
-import java.awt.event.KeyAdapter;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +34,7 @@ import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommitInfo;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -59,7 +65,6 @@ public class JSettlersFrame extends JFrame {
 	private Timer redrawTimer;
 	private boolean fullScreen = false;
 
-
 	JSettlersFrame() throws HeadlessException {
 		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
 
@@ -84,7 +89,7 @@ public class JSettlersFrame extends JFrame {
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				if (e.getID() == KeyEvent.KEY_PRESSED) {
 					if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-						switchFullScreenMode();
+						toogleFullScreenMode();
 						return true; // consume this key event.
 					}
 				}
@@ -93,7 +98,7 @@ public class JSettlersFrame extends JFrame {
 		});
 	}
 
-	private void switchFullScreenMode() {
+	private void toogleFullScreenMode() {
 		fullScreen = !fullScreen;
 		SettingsManager.getInstance().setFullScreenMode(fullScreen);
 		updateFullScreenMode();
