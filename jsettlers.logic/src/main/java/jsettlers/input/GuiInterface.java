@@ -580,8 +580,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		final List<ISelectable> selected = new LinkedList<ISelectable>();
-		selected.add(centerSelectable);
-
+	
 		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
 			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
 			if (movable != null && movable.getMovableType() == centerSelectable.getMovableType() && canSelectPlayer(movable.getPlayerId())) {
