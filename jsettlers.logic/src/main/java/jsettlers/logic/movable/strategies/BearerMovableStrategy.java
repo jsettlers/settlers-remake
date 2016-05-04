@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -143,6 +143,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		if (request != null) {
 			if (request.isActive() && request.getPos().equals(movable.getPos())) {
 				request.deliveryFulfilled();
+				request = null;
 				return false;
 			} else {
 				request.deliveryAborted();
@@ -167,12 +168,17 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			}
 			break;
 
+		case DROPPING:
+			if (request != null) {
+				boolean offerMaterial = droppingMaterial();
+				super.setMaterial(EMaterialType.NO_MATERIAL);
+				super.getGrid().dropMaterial(super.getPos(), materialType, offerMaterial, false);
+			}
+			break;
+
 		case INIT_BECOME_SOLDIER_JOB:
 		case GOING_TO_BARRACK:
 			barrack.bearerRequestFailed();
-			break;
-
-		case DROPPING: // handled after this
 			break;
 
 		case INIT_CONVERT_WITH_TOOL_JOB:
