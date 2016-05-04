@@ -83,17 +83,16 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(BIG_TEMPLE, buildingCounts);
 		}
 
-		int remainingNumberOfWeaponSmiths = aiMapInformation.getNumberOfWeaponSmiths();
 		List<EBuildingType> weaponsBuildings = new ArrayList<>();
-		if (remainingNumberOfWeaponSmiths < 4) {
-			addGoldBuildings(aiMapInformation, weaponsBuildings);
-		}
-		for (int i = 0; i < aiMapInformation.getNumberOfWeaponSmiths() - 2; i++) {
+		for (int i = 0; i < aiMapInformation.getNumberOfWeaponSmiths(); i++) {
 			weaponsBuildings.add(COALMINE);
 			if (i % 2 == 0) {
 				weaponsBuildings.add(IRONMINE);
 			}
 			weaponsBuildings.add(IRONMELT);
+			if (i == 0 && currentCountOf(TOOLSMITH) < 1) {
+				weaponsBuildings.add(TOOLSMITH);
+			}
 			weaponsBuildings.add(WEAPONSMITH);
 			if (i % 4 == 0) {
 				weaponsBuildings.add(BARRACK);
@@ -101,6 +100,9 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			if (i == 3) {
 				addGoldBuildings(aiMapInformation, weaponsBuildings);
 			}
+		}
+		if (aiMapInformation.getNumberOfWeaponSmiths() < 4) {
+			addGoldBuildings(aiMapInformation, weaponsBuildings);
 		}
 
 		List<EBuildingType> foodBuildings = new ArrayList<>();
@@ -144,21 +146,55 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			}
 		}
 
+		float allBuildingsCount = foodBuildings.size() + buildingMaterialBuildings.size() + weaponsBuildings.size();
+		float weaponsBuildingsRatio = ((float) weaponsBuildings.size()) / allBuildingsCount;
+		float foodBuildingsRatio = ((float) foodBuildings.size()) / allBuildingsCount;
+		float buildingMaterialBuildingRatio = ((float) buildingMaterialBuildings.size()) / allBuildingsCount;
 		for (int i = 0; i < Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size())); i++) {
-			if (i < foodBuildings.size()) {
-				addIfPossible(foodBuildings.get(i), buildingCounts);
-			}
-			if (i < buildingMaterialBuildings.size()) {
-				addIfPossible(buildingMaterialBuildings.get(i), buildingCounts);
-			}
-			if (i < weaponsBuildings.size()) {
-				// If there is no tool smith yet (HIGH_GOODS does not add a TOOLSMITH at the beginning)
-				if (currentCountOf(TOOLSMITH) < 1) {
-					buildingsToBuild.add(TOOLSMITH);
-				}
-				addIfPossible(weaponsBuildings.get(i), buildingCounts);
-			}
+			if (weaponsBuildingsRatio > foodBuildingsRatio && weaponsBuildingsRatio > buildingMaterialBuildingRatio) {
+				mergeNextItems(weaponsBuildings,
+						foodBuildings, foodBuildingsRatio,
+						buildingMaterialBuildings, buildingMaterialBuildingRatio,
+						buildingCounts);
+				addFirstItemToBuildingList(weaponsBuildings, buildingCounts);
+			} else if (buildingMaterialBuildingRatio > foodBuildingsRatio && buildingMaterialBuildingRatio > weaponsBuildingsRatio) {
+				mergeNextItems(buildingMaterialBuildings,
+						weaponsBuildings, weaponsBuildingsRatio,
+						foodBuildings, foodBuildingsRatio,
+						buildingCounts);
 
+			} else {
+				mergeNextItems(foodBuildings,
+						weaponsBuildings, weaponsBuildingsRatio,
+						buildingMaterialBuildings, buildingMaterialBuildingRatio,
+						buildingCounts);
+			}
+		}
+	}
+
+	private void mergeNextItems(
+			List<EBuildingType>  dominantBuildingList,
+			List<EBuildingType> slaveBuildingListA, float targetSlaveRatioA,
+			List<EBuildingType> slaveBuildingListB, float targetSlaveRatioB,
+			List<BuildingCount> buildingCounts) {
+		addFirstItemToBuildingList(dominantBuildingList, buildingCounts);
+		float allBuildingsCount = dominantBuildingList.size() + slaveBuildingListA.size() + slaveBuildingListB.size();
+		if (allBuildingsCount == 0)
+			return;
+
+		float currentSlaveRatioA = ((float) slaveBuildingListA.size()) / allBuildingsCount;
+		float currentSlaveRatioB = ((float) slaveBuildingListB.size()) / allBuildingsCount;
+		if (currentSlaveRatioA > targetSlaveRatioA) {
+			addFirstItemToBuildingList(slaveBuildingListA, buildingCounts);
+		}
+		if (currentSlaveRatioB > targetSlaveRatioB) {
+			addFirstItemToBuildingList(slaveBuildingListB, buildingCounts);
+		}
+	}
+
+	private void addFirstItemToBuildingList(List<EBuildingType> buildingList, List<BuildingCount> buildingCounts) {
+		if (buildingList.size() > 0) {
+			addIfPossible(buildingList.remove(0), buildingCounts);
 		}
 	}
 
@@ -242,7 +278,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(LUMBERJACK, buildingCounts);
 			addIfPossible(SAWMILL, buildingCounts);
 			addIfPossible(LUMBERJACK, buildingCounts);
-			addIfPossible(FORESTER, buildingCounts);;
+			addIfPossible(FORESTER, buildingCounts);
+			;
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER, buildingCounts);
 			addIfPossible(STONECUTTER, buildingCounts);
@@ -277,7 +314,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	@Override
 	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
 		if (aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PLANK, playerId) > 1
-				&& aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.STONE, playerId)  > 1) {
+				&& aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.STONE, playerId) > 1) {
 			// If plank and stone is still offered, we can build the next building.
 			// If the next building will consume all remaining offers we won't return 100 in the next tick
 			return 100;
@@ -319,13 +356,15 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		return 5;
 	}
 
-	@Override public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
+	@Override
+	public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
 		return aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId) >= 2;
 	}
 
-	@Override public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
-		return aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= 8 || aiStatistics.getNumberOfBuildingTypeForPlayer
-				(LUMBERJACK, playerId) >= aiMapInformation.getNumberOfLumberJacks();
+	@Override
+	public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
+		return aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= 8
+				|| aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= aiMapInformation.getNumberOfLumberJacks();
 	}
 
 	@Override
