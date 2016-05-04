@@ -281,22 +281,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(me, playerId) >= howOftenAmIUsed;
 	}
 
-	private boolean buildToolsEconomy() {
-		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1) {
-			return construct(COALMINE);
-		}
-		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId) < 1) {
-			return construct(IRONMINE);
-		}
-		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMELT, playerId) < 1) {
-			return construct(IRONMELT);
-		}
-		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) < 1) {
-			return construct(TOOLSMITH);
-		}
-		return false;
-	}
-
 	private boolean buildingNeedsToBeBuild(Map<EBuildingType, Integer> playerBuildingPlan, EBuildingType currentBuildingType) {
 		int currentNumberOfBuildings = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingType, playerId);
 		int targetNumberOfBuildings = playerBuildingPlan.get(currentBuildingType);
@@ -330,7 +314,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
-					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 3) {
+					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);
 			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) < 2) {
 				return construct(MEDIUM_LIVINGHOUSE);

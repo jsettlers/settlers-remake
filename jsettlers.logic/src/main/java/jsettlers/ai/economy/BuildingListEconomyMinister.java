@@ -279,7 +279,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(SAWMILL, buildingCounts);
 			addIfPossible(LUMBERJACK, buildingCounts);
 			addIfPossible(FORESTER, buildingCounts);
-			;
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER, buildingCounts);
 			addIfPossible(STONECUTTER, buildingCounts);

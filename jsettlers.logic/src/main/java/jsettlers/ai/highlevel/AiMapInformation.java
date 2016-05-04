@@ -149,7 +149,7 @@ public class AiMapInformation {
 		buildingCounts.add(new BuildingCount(EBuildingType.SLAUGHTERHOUSE, Math.max(minimumFood, (int) (numberOfFarms * FARM_SLAUGHTER_RATIO))));
 		buildingCounts.add(new BuildingCount(EBuildingType.PIG_FARM, Math.max(minimumFood, (int) (numberOfFarms * FARM_PIG_FARM_RATIO))));
 
-		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_LUMBERJACK_RATIO), 1);
+		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_LUMBERJACK_RATIO), 3);
 		buildingCounts.add(new BuildingCount(EBuildingType.LUMBERJACK, numberOfLumberJacks));
 		buildingCounts.add(new BuildingCount(EBuildingType.FORESTER, Math.max((int) (numberOfLumberJacks * LUMBERJACK_FORESTER_RATIO), 1)));
 		buildingCounts.add(new BuildingCount(EBuildingType.SAWMILL, Math.max((int) (numberOfLumberJacks * LUMBERJACK_SAWMILL_RATIO), 1)));
