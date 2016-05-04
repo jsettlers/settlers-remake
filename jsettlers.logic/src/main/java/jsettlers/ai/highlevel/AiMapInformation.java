@@ -115,7 +115,7 @@ public class AiMapInformation {
 		if (maxCoalMines > maxIronMines * COAL_TO_IRON_FACTOR + 1)
 			maxCoalMines = maxIronMines * COAL_TO_IRON_FACTOR + 1;
 		int maxSmiths = (int) Math.floor((float) maxCoalMines * COAL_MINE_TO_SMITH_RATIO);
-		calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 4, 1, grasTiles);
+		calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 3, 1, grasTiles);
 	}
 
 	public List<BuildingCount> getBuildingCounts() {
