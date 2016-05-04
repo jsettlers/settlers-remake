@@ -76,7 +76,9 @@ public class BestConstructionPositionFinderFactory {
 		case SLAUGHTERHOUSE:
 			return new NearRequiredBuildingConstructionPositionFinder(type, PIG_FARM);
 		case TEMPLE:
-			return new NearRequiredBuildingConstructionPositionFinder(type, WINEGROWER);
+			return new BestTempleConstructionPositionFinder();
+		case BIG_TEMPLE:
+			return new BestBigTempleConstructionPositionFinder();
 		case GOLDMELT:
 			return new NearRequiredBuildingConstructionPositionFinder(type, GOLDMINE);
 		case FISHER:

@@ -236,6 +236,9 @@ public class AiStatistics {
 		if (landscape.isRiver()) {
 			playerStatistic.rivers.addNoCollission(x, y);
 		}
+		if (objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE)) {
+			playerStatistic.wineCount++;
+		}
 	}
 
 	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
@@ -403,6 +406,10 @@ public class AiStatistics {
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
 		return playerStatistics[playerId].totalBuildingsNumbers[type.ordinal];
+	}
+
+	public int getTotalWineCountForPlayer(byte playerId) {
+		return playerStatistics[playerId].wineCount;
 	}
 
 	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -627,13 +634,14 @@ public class AiStatistics {
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
 		int numberOfNotOccupiedMilitaryBuildings;
+		int wineCount;
 		IMaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
 			stones = new AiPositions();
 			trees = new AiPositions();
-			rivers = new AiPositions();
+			rivers = new AiPositions(); 
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
 			deadMines = new AiPositions();
@@ -671,6 +679,7 @@ public class AiStatistics {
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedMilitaryBuildings = 0;
+			wineCount = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 
