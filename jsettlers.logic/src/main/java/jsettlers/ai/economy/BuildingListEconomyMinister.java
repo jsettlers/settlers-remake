@@ -83,7 +83,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(BIG_TEMPLE, buildingCounts);
 		}
 
-		int remainingNumberOfWeaponSmiths = aiMapInformation.getNumberOfWeaponSmiths() - 2;
+		int remainingNumberOfWeaponSmiths = aiMapInformation.getNumberOfWeaponSmiths();
 		List<EBuildingType> weaponsBuildings = new ArrayList<>();
 		if (remainingNumberOfWeaponSmiths < 4) {
 			addGoldBuildings(aiMapInformation, weaponsBuildings);
@@ -158,6 +158,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 				}
 				addIfPossible(weaponsBuildings.get(i), buildingCounts);
 			}
+
 		}
 	}
 
