@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -93,9 +93,20 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 			} else {
 				reportJobless();
 			}
-		} else {
+
+		} else if (allPositionsFlattened()) { // all positions are flattened => building is finished
 			reportJobless();
+
+		} // else {  not all positions are finished, so wait if one becomes unmarked or all are finished => do nothing
+	}
+
+	private boolean allPositionsFlattened() {
+		for (RelativePoint relativePosition : requester.getBuildingType().getProtectedTiles()) {
+			if (needsToBeWorkedOn(relativePosition.calculatePoint(requester.getPos()))) {
+				return false;
+			}
 		}
+		return true;
 	}
 
 	private ShortPoint2D getDiggablePosition() {
