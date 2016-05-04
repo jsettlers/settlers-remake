@@ -94,7 +94,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 				weaponsBuildings.add(TOOLSMITH);
 			}
 			weaponsBuildings.add(WEAPONSMITH);
-			if (i % 4 == 0) {
+			if (i % 3 == 0) {
 				weaponsBuildings.add(BARRACK);
 			}
 			if (i == 3) {
@@ -138,7 +138,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			if (i % 3 == 1) {
 				buildingMaterialBuildings.add(FORESTER);
 			}
-			if (i % 3 == 1) {
+			if (i % 2 == 1) {
 				buildingMaterialBuildings.add(SAWMILL);
 			}
 			if (i % 2 == 1) {
@@ -150,13 +150,13 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		float weaponsBuildingsRatio = ((float) weaponsBuildings.size()) / allBuildingsCount;
 		float foodBuildingsRatio = ((float) foodBuildings.size()) / allBuildingsCount;
 		float buildingMaterialBuildingRatio = ((float) buildingMaterialBuildings.size()) / allBuildingsCount;
-		for (int i = 0; i < Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size())); i++) {
+		int maxSize = Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size()));
+		for (int i = 0; i < maxSize; i++) {
 			if (weaponsBuildingsRatio > foodBuildingsRatio && weaponsBuildingsRatio > buildingMaterialBuildingRatio) {
 				mergeNextItems(weaponsBuildings,
 						foodBuildings, foodBuildingsRatio,
 						buildingMaterialBuildings, buildingMaterialBuildingRatio,
 						buildingCounts);
-				addFirstItemToBuildingList(weaponsBuildings, buildingCounts);
 			} else if (buildingMaterialBuildingRatio > foodBuildingsRatio && buildingMaterialBuildingRatio > weaponsBuildingsRatio) {
 				mergeNextItems(buildingMaterialBuildings,
 						weaponsBuildings, weaponsBuildingsRatio,

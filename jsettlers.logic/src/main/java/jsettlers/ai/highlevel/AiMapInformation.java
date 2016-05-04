@@ -35,7 +35,7 @@ public class AiMapInformation {
 	private static final short COAL_MINE_DIVISOR = 120;
 	private static final short IRON_MINE_DIVISOR = 50;
 	private static final int COAL_TO_IRON_FACTOR = 2;
-	private static final double WEAPON_SMITH_BARRACKS_RATIO = 4;
+	private static final double WEAPON_SMITH_BARRACKS_RATIO = 3;
 	private static final double WEAPON_SMITH_FISHER_RATIO = 3F / 2F;
 	private static final double WEAPON_SMITH_FARM_RATIO = 1F / 2F;
 	private static final double FARM_BAKER_RATIO = 1F / 3F;
@@ -46,7 +46,7 @@ public class AiMapInformation {
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
 	private static final double WEAPON_SMITH_LUMBERJACK_RATIO = 6F / 8F;
-	private static final double LUMBERJACK_SAWMILL_RATIO = 1F / 3F;
+	private static final double LUMBERJACK_SAWMILL_RATIO = 1F / 2F;
 	private static final double LUMBERJACK_FORESTER_RATIO = 1F / 2F;
 	private static final double LUMBERJACK_STONE_CUTTER_RATIO = 5F / 8F;
 	public static final float COAL_MINE_TO_SMITH_RATIO = 1.8F;
