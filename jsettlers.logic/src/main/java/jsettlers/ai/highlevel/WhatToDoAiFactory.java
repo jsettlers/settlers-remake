@@ -18,9 +18,8 @@ import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.army.LooserGeneral;
 import jsettlers.ai.army.WinnerGeneral;
 import jsettlers.ai.economy.AdaptableEconomyMinister;
+import jsettlers.ai.economy.BuildingListEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.economy.MiddleEconomyMinister;
-import jsettlers.ai.economy.WinnerEconomyMinister;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.grid.MainGrid;
@@ -47,9 +46,9 @@ public class WhatToDoAiFactory {
 		if (type == EPlayerType.AI_VERY_EASY) {
 			return new AdaptableEconomyMinister(aiStatistics, player);
 		} else if (type == EPlayerType.AI_VERY_HARD) {
-			return new WinnerEconomyMinister(aiStatistics, aiMapInformation, player);
+			return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player);
 		}
-		return new MiddleEconomyMinister(aiMapInformation);
+		return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player);
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,

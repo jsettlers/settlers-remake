@@ -16,7 +16,6 @@ package jsettlers.integration.ai;
 
 import static org.junit.Assert.fail;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import jsettlers.common.map.MapLoadException;
@@ -31,7 +30,6 @@ import jsettlers.common.player.ECivilisation;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayUtils;
