@@ -445,16 +445,17 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public void releaseSoldier(ESoldierType soldierType) {
 		Iterator<SoldierRequest> searchedSoldiersIterator = searchedSoldiers.iterator();
 		while (searchedSoldiersIterator.hasNext()) {
-			if (searchedSoldiersIterator.next().soldierType == soldierType) {
+			SoldierRequest soldierRequest = searchedSoldiersIterator.next();
+			if (soldierRequest.soldierType == soldierType) {
 				searchedSoldiersIterator.remove();
+				emptyPlaces.add(soldierRequest.place);
 			}
 		}
 
 		for (Entry<IBuildingOccupyableMovable, SoldierRequest> commingSoldierEntry : commingSoldiers.entrySet()) {
-			if (commingSoldierEntry.getValue().soldierType == soldierType) {
+			if (commingSoldierEntry.getValue().isOfTypeOrClass(soldierType)) {
 				commingSoldierEntry.getKey().leaveOccupyableBuilding(super.getDoor());
 				emptyPlaces.add(commingSoldierEntry.getValue().place);
-
 				commingSoldiers.remove(commingSoldierEntry.getKey());
 				return;
 			}
@@ -637,6 +638,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				}
 			}
 			throw new RuntimeException("Unknown soldier or search type");
+		}
+
+		public boolean isOfTypeOrClass(ESoldierType soldierType) {
+			return this.soldierType == soldierType || soldierClass == soldierType.getSoldierClass();
 		}
 	}
 }
