@@ -33,7 +33,6 @@ import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.STOCK;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
-import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
@@ -78,8 +77,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS = 30;
 	public static final int NUMBER_OF_BIG_LIVINGHOUSE_BEDS = 100;
 	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
-	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 5;
+	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 2;
 	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
+	public static final float WEAPON_SMITH_FACTOR = 4.5F;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -312,7 +312,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
-				|| aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
+				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
+				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);

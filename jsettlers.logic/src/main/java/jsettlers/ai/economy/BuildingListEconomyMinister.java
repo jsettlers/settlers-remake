@@ -73,16 +73,16 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private void initializeBuildingsToBuild(AiStatistics aiStatistics, Player player) {
 		List<BuildingCount> buildingCounts = aiMapInformation.getBuildingCounts();
 		addMinimalBuildingMaterialBuildings(buildingCounts, aiStatistics, player);
-		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
-			addIfPossible(WINEGROWER, buildingCounts);
+		if (isVerySmallMap()) {
+			buildingsToBuild.add(FISHER);
+			buildingsToBuild.add(COALMINE);
+			buildingsToBuild.add(IRONMINE);
+			buildingsToBuild.add(IRONMELT);
+			buildingsToBuild.add(WEAPONSMITH);
+			buildingsToBuild.add(BARRACK);
+		} else {
+			addManaBuildings(buildingCounts);
 		}
-		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
-			addIfPossible(TEMPLE, buildingCounts);
-		}
-		if (aiMapInformation.getNumberOfBigTemples() > 0) {
-			addIfPossible(BIG_TEMPLE, buildingCounts);
-		}
-
 		List<EBuildingType> weaponsBuildings = new ArrayList<>();
 		for (int i = 0; i < aiMapInformation.getNumberOfWeaponSmiths(); i++) {
 			weaponsBuildings.add(COALMINE);
@@ -169,6 +169,26 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 						buildingMaterialBuildings, buildingMaterialBuildingRatio,
 						buildingCounts);
 			}
+		}
+
+		if (isVerySmallMap()) {
+			addManaBuildings(buildingCounts);
+		}
+	}
+
+	private boolean isVerySmallMap() {
+		return aiMapInformation.getNumberOfLumberJacks() < 8;
+	}
+
+	private void addManaBuildings(List<BuildingCount> buildingCounts) {
+		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
+			addIfPossible(WINEGROWER, buildingCounts);
+		}
+		for (int i = 0; i < aiMapInformation.getNumberOfWineGrower(); i++) {
+			addIfPossible(TEMPLE, buildingCounts);
+		}
+		if (aiMapInformation.getNumberOfBigTemples() > 0) {
+			addIfPossible(BIG_TEMPLE, buildingCounts);
 		}
 	}
 

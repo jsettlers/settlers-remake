@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class AiMapInformation {
 
-	private static final short FISHERMAN_DIVISOR = 27;
+	private static final short FISHERMAN_DIVISOR = 40;
 	private static final short COAL_MINE_DIVISOR = 120;
 	private static final short IRON_MINE_DIVISOR = 50;
 	private static final int COAL_TO_IRON_FACTOR = 2;
@@ -137,17 +137,12 @@ public class AiMapInformation {
 		int numberOfRemainingWeaponSmithsRest = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_FISHER_RATIO));
 
 		int numberOfFarms = (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_FARM_RATIO);
-		int minimumFood = 0;
-		if (numberOfFarms == 0 && numberOfWeaponSmiths >= 1) {
-			numberOfFarms++;
-			minimumFood = 1;
-		}
 		buildingCounts.add(new BuildingCount(EBuildingType.FARM, numberOfFarms));
-		buildingCounts.add(new BuildingCount(EBuildingType.BAKER, Math.max(minimumFood, (int) (numberOfFarms * FARM_BAKER_RATIO))));
-		buildingCounts.add(new BuildingCount(EBuildingType.MILL, Math.max(minimumFood, (int) (numberOfFarms * FARM_MILL_RATIO))));
-		buildingCounts.add(new BuildingCount(EBuildingType.WATERWORKS, Math.max(minimumFood, (int) (numberOfFarms * FARM_WATERWORKS_RATIO))));
-		buildingCounts.add(new BuildingCount(EBuildingType.SLAUGHTERHOUSE, Math.max(minimumFood, (int) (numberOfFarms * FARM_SLAUGHTER_RATIO))));
-		buildingCounts.add(new BuildingCount(EBuildingType.PIG_FARM, Math.max(minimumFood, (int) (numberOfFarms * FARM_PIG_FARM_RATIO))));
+		buildingCounts.add(new BuildingCount(EBuildingType.BAKER, (int) (numberOfFarms * FARM_BAKER_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.MILL, (int) (numberOfFarms * FARM_MILL_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.WATERWORKS, (int) (numberOfFarms * FARM_WATERWORKS_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.SLAUGHTERHOUSE, (int) (numberOfFarms * FARM_SLAUGHTER_RATIO)));
+		buildingCounts.add(new BuildingCount(EBuildingType.PIG_FARM, (int) (numberOfFarms * FARM_PIG_FARM_RATIO)));
 
 		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_LUMBERJACK_RATIO), 3);
 		buildingCounts.add(new BuildingCount(EBuildingType.LUMBERJACK, numberOfLumberJacks));
@@ -194,7 +189,7 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(List<BuildingCount> buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = grasTiles / 6;
+		long grasTilesWithoutBuffer = grasTiles / 5;
 		for (BuildingCount buildingCount : buildingCounts) {
 			grasTilesWithoutBuffer -= buildingCount.buildingType.getProtectedTiles().length * buildingCount.count;
 			if (grasTilesWithoutBuffer < 0) {
