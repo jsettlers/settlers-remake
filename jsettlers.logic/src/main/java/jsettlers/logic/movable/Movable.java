@@ -279,7 +279,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	private void pathingAction() {
-		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
@@ -690,8 +690,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	void abortPath() {
-		setState(EMovableState.DOING_NOTHING);
-		movableAction = EMovableAction.NO_ACTION;
 		path = null;
 	}
 
