@@ -157,10 +157,19 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected final int subTimerEvent() {
+		increaseDoorHealth();
+		releaseNextSoldierIfNeeded();
+		searchSoldiersIfNeeded();
+		return TIMER_PERIOD;
+	}
+
+	private void increaseDoorHealth() {
 		if (doorHealth < 1 && !inFight) {
 			doorHealth = Math.min(1, doorHealth + Constants.TOWER_DOOR_REGENERATION);
 		}
+	}
 
+	private void releaseNextSoldierIfNeeded() {
 		if (!toBeReleasedOccupiers.isEmpty()) {
 			Movable movableAtDoor = grid.getMovable(super.getDoor());
 			if (movableAtDoor == null) {
@@ -173,7 +182,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				movableAtDoor.leavePosition();
 			}
 		}
+	}
 
+	private void searchSoldiersIfNeeded() {
 		if (!searchedSoldiers.isEmpty()) {
 			if (dijkstraRequest == null) {
 				dijkstraRequest = new DijkstraContinuableRequest(this, super.pos.x, super.pos.y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
@@ -195,7 +206,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				} // soldier wasn't at the position or wasn't able to take the job to go to this building
 			}
 		}
-		return TIMER_PERIOD;
 	}
 
 	@Override
