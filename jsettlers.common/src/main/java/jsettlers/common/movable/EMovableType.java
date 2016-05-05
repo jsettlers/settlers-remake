@@ -89,21 +89,21 @@ public enum EMovableType {
 	private final float health;
 	private final float strength;
 
-	private static final Set<EMovableType> swordsmen = EnumSet.of(
+	public static final Set<EMovableType> swordsmen = EnumSet.of(
 			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3);
 
-	private static final Set<EMovableType> pikemen = EnumSet.of(
+	public static final Set<EMovableType> pikemen = EnumSet.of(
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
-	private static final Set<EMovableType> bowmen = EnumSet.of(
+	public static final Set<EMovableType> bowmen = EnumSet.of(
 			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
 
-	private static final Set<EMovableType> soldiers = EnumSet.of(
+	public static final Set<EMovableType> soldiers = EnumSet.of(
 			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3,
 			BOWMAN_L1, BOWMAN_L2, BOWMAN_L3);
 
-	private static final Set<EMovableType> infantry = EnumSet.of(
+	public static final Set<EMovableType> infantry = EnumSet.of(
 			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
