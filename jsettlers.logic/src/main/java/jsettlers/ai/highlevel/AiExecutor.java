@@ -40,6 +40,7 @@ public class AiExecutor implements INetworkTimerable {
 		aiStatistics.updateStatistics();
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
+		AiMapInformation aiMapInformation = new AiMapInformation(mainGrid);
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[playerId];
 			if (playerSetting.isAvailable() && playerSetting.getPlayerType().isAi()) {
@@ -50,7 +51,7 @@ public class AiExecutor implements INetworkTimerable {
 						mainGrid.getPartitionsGrid().getPlayer(playerId),
 						mainGrid,
 						mainGrid.getMovableGrid(),
-						taskScheduler, new AiMapInformation(mainGrid)));
+						taskScheduler, aiMapInformation));
 			}
 		}
 	}

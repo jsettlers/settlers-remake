@@ -102,8 +102,8 @@ public class AiMapInformation {
 				}
 			}
 		}
-
 		int numberOfPlayers = mainGrid.getPartitionsGrid().getNumberOfPlayers();
+		grasTiles = grasTiles / numberOfPlayers;
 		// maximal 10 Fisher to prevent AI from building only Fishermen which looks very unnatural
 		int maxFishermen = Math.min(10, (int) (resourcesCount[EResourceType.FISH.ordinal] / numberOfPlayers) / FISHERMAN_DIVISOR);
 		int maxCoalMines = (int) (resourcesCount[EResourceType.COAL.ordinal] / numberOfPlayers) / COAL_MINE_DIVISOR;
@@ -189,7 +189,7 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(List<BuildingCount> buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = grasTiles / 5;
+		long grasTilesWithoutBuffer = Math.round(grasTiles / 2.8F);
 		for (BuildingCount buildingCount : buildingCounts) {
 			grasTilesWithoutBuffer -= buildingCount.buildingType.getProtectedTiles().length * buildingCount.count;
 			if (grasTilesWithoutBuffer < 0) {
