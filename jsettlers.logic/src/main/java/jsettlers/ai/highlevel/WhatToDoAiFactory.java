@@ -43,7 +43,7 @@ public class WhatToDoAiFactory {
 			AiMapInformation aiMapInformation) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
 		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player, aiMapInformation);
-		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
+		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler, aiMapInformation);
 	}
 
 	private EconomyMinister determineMinister(

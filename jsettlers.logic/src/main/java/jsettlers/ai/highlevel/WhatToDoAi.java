@@ -17,8 +17,10 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
+import static jsettlers.common.buildings.EBuildingType.BIG_TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.COALMINE;
 import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
 import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
 import static jsettlers.common.buildings.EBuildingType.IRONMELT;
@@ -37,6 +39,7 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
+import static jsettlers.common.material.EMaterialType.SAW;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
 import java.util.ArrayList;
@@ -59,7 +62,6 @@ import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
@@ -93,15 +95,17 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
+	private final AiMapInformation aiMapInformation;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
-			ITaskScheduler taskScheduler) {
+			ITaskScheduler taskScheduler, AiMapInformation aiMapInformation) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
 		this.economyMinister = economyMinister;
+		this.aiMapInformation = aiMapInformation;
 		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
@@ -250,6 +254,38 @@ public class WhatToDoAi implements IWhatToDoAi {
 						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
 			}
 		}
+		
+		// destroy not necessary buildings to get enough space for livinghouses in end-game
+		if (isEndGame() && isWoodJam()) {
+			List<ShortPoint2D> forresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
+			if (forresters.size() > 1) {
+				for (int i = 1; i < forresters.size(); i++) {
+					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, forresters.get(i)));
+				}
+			}
+			for (ShortPoint2D lumberJackPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId)) {
+				if (aiStatistics.getBuildingAt(lumberJackPosition).cannotWork()) {
+					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition));
+				}
+			}
+			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK,
+					playerId)) {
+				taskScheduler.scheduleTask(
+						new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
+			}
+			for (ShortPoint2D bigTemple: aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
+			}
+		}
+	}
+
+	private boolean isWoodJam() {
+		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.TRUNK, playerId) >
+				aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
+	}
+
+	private boolean isEndGame() {
+		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) > aiMapInformation.getNumberOfWeaponSmiths() * 0.8F;
 	}
 
 	private void destroyHinterlandMilitaryBuildings() {
@@ -285,7 +321,14 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void buildEconomy() {
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
+		boolean isEndgame = isEndGame();
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
+			if (isEndgame && (currentBuildingType == LUMBERJACK
+					|| currentBuildingType == FORESTER
+					|| currentBuildingType == BIG_TEMPLE
+					|| currentBuildingType == SAWMILL)) {
+				continue;
+			}
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
