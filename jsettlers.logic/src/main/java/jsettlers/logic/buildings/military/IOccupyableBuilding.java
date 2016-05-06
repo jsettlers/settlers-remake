@@ -14,8 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.military;
 
-import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.movable.EMovableType;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
@@ -33,7 +32,7 @@ public interface IOccupyableBuilding {
 	 * @param soldier
 	 * @return
 	 */
-	OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier);
+	OccupierPlace addSoldier(IBuildingOccupyableMovable soldier);
 
 	ShortPoint2D getDoor();
 
@@ -51,7 +50,7 @@ public interface IOccupyableBuilding {
 	 */
 	void towerDefended(IBuildingOccupyableMovable soldier);
 
-	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place);
+	public ShortPoint2D getTowerBowmanSearchPosition(OccupierPlace place);
 
 	/**
 	 * 

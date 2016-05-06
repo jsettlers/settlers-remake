@@ -99,13 +99,13 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * 
 	 * @author michael
 	 */
-	static interface IOccupyed extends IBuilding {
+	static interface IOccupied extends IBuilding {
 		/**
 		 * Gets a list of people occupying this building.
 		 * 
 		 * @return The list of people currently in the building.
 		 */
-		List<? extends IBuildingOccupyer> getOccupyers();
+		List<? extends IBuildingOccupier> getOccupiers();
 
 		/**
 		 * Gets the number of currently searched soldiers.

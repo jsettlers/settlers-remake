@@ -72,7 +72,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
@@ -270,7 +269,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {
-		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
+		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupierPlaces().length > 0;
 	}
 
 	private boolean isInsideWater(short x, short y) {

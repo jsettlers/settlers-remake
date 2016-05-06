@@ -15,7 +15,7 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
-import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -146,7 +146,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 		case GOING_TO_TOWER:
 			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
-				OccupyerPlace place = building.addSoldier(this);
+				OccupierPlace place = building.addSoldier(this);
 				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
 				super.enableNothingToDoAction(false);
 				super.setVisible(false);

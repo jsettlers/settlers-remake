@@ -21,7 +21,7 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.buildings.IBuildingOccupyer;
+import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -33,7 +33,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
-public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
+public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
 
 	private final BuildingObject object;
 	private final ShortPoint2D pos;
@@ -117,8 +117,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public List<? extends IBuildingOccupyer> getOccupyers() {
-		return new LinkedList<IBuildingOccupyer>();
+	public List<? extends IBuildingOccupier> getOccupiers() {
+		return new LinkedList<IBuildingOccupier>();
 	}
 
 	@Override

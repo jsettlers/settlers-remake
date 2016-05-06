@@ -29,8 +29,8 @@ import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableR
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.buildings.IBuildingOccupyer;
-import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -59,12 +59,12 @@ import jsettlers.logic.player.Player;
  *
  * @author Andreas Eberle
  */
-public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculatable, IOccupyableBuilding, Serializable {
+public class OccupyingBuilding extends Building implements IBuilding.IOccupied, IPathCalculatable, IOccupyableBuilding, Serializable {
 	private static final long serialVersionUID = 5267249978497095473L;
 
 	private static final int TIMER_PERIOD = 500;
 
-	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<>();
+	private final LinkedList<OccupierPlace> emptyPlaces = new LinkedList<>();
 	private final LinkedList<SoldierRequest> searchedSoldiers = new LinkedList<>();
 	private final OrderedMap<IBuildingOccupyableMovable, SoldierRequest> comingSoldiers = new OrderedMap<>();
 	private final LinkedList<TowerOccupier> sortedOccupiers = new LinkedList<>();
@@ -84,9 +84,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private void initSoldierRequests() {
-		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
-		if (occupyerPlaces.length > 0) {
-			for (OccupyerPlace currPlace : occupyerPlaces) {
+		final OccupierPlace[] occupierPlaces = super.getBuildingType().getOccupierPlaces();
+		if (occupierPlaces.length > 0) {
+			for (OccupierPlace currPlace : occupierPlaces) {
 				emptyPlaces.add(currPlace);
 			}
 			requestSoldier(ESoldierClass.INFANTRY);
@@ -260,7 +260,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final List<? extends IBuildingOccupyer> getOccupyers() {
+	public final List<? extends IBuildingOccupier> getOccupiers() {
 		return sortedOccupiers;
 	}
 
@@ -270,9 +270,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier) {
+	public final OccupierPlace addSoldier(IBuildingOccupyableMovable soldier) {
 		SoldierRequest soldierRequest = comingSoldiers.remove(soldier);
-		OccupyerPlace place = soldierRequest.place;
+		OccupierPlace place = soldierRequest.place;
 
 		TowerOccupier towerOccupier = new TowerOccupier(place, soldier);
 		addOccupier(towerOccupier);
@@ -346,7 +346,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place) {
+	public ShortPoint2D getTowerBowmanSearchPosition(OccupierPlace place) {
 		ShortPoint2D pos = place.getPosition().calculatePoint(super.pos);
 		// FIXME @Andreas Eberle introduce new field in the buildings xml file
 		ShortPoint2D position = new ShortPoint2D(pos.x + 3, pos.y + 6);
@@ -435,7 +435,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		ESoldierClass soldierClass = soldier.getMovableType().getSoldierClass();
-		OccupyerPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierClass);
+		OccupierPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierClass);
 
 		if (emptyPlace == null) {
 			return;
@@ -446,14 +446,14 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	public void requestSoldiers() {
-		for (OccupyerPlace emptyPlace : emptyPlaces) {
+		for (OccupierPlace emptyPlace : emptyPlaces) {
 			searchedSoldiers.add(new SoldierRequest(emptyPlace.getSoldierClass(), emptyPlace));
 		}
 		emptyPlaces.clear();
 	}
 
 	public void requestSoldier(ESoldierType soldierType) {
-		OccupyerPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierType.getSoldierClass());
+		OccupierPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierType.getSoldierClass());
 		if (emptyPlace != null) {
 			emptyPlaces.remove(emptyPlace);
 			searchedSoldiers.add(new SoldierRequest(soldierType, emptyPlace));
@@ -461,7 +461,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private void requestSoldier(ESoldierClass soldierClass) {
-		OccupyerPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierClass);
+		OccupierPlace emptyPlace = getEmptyPlaceForSoldierClass(soldierClass);
 		if (emptyPlace != null) {
 			emptyPlaces.remove(emptyPlace);
 			searchedSoldiers.add(new SoldierRequest(soldierClass, emptyPlace));
@@ -513,8 +513,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 	}
 
-	private OccupyerPlace getEmptyPlaceForSoldierClass(ESoldierClass soldierClass) {
-		for (OccupyerPlace place : emptyPlaces) {
+	private OccupierPlace getEmptyPlaceForSoldierClass(ESoldierClass soldierClass) {
+		for (OccupierPlace place : emptyPlaces) {
 			if (place.getSoldierClass() == soldierClass) {
 				return place;
 			}
@@ -620,19 +620,19 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 	}
 
-	private final static class TowerOccupier implements IBuildingOccupyer, Serializable {
+	private final static class TowerOccupier implements IBuildingOccupier, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
-		final OccupyerPlace place;
+		final OccupierPlace place;
 		final IBuildingOccupyableMovable soldier;
 
-		TowerOccupier(OccupyerPlace place, IBuildingOccupyableMovable soldier) {
+		TowerOccupier(OccupierPlace place, IBuildingOccupyableMovable soldier) {
 			this.place = place;
 			this.soldier = soldier;
 		}
 
 		@Override
-		public OccupyerPlace getPlace() {
+		public OccupierPlace getPlace() {
 			return place;
 		}
 
@@ -649,15 +649,15 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private static class SoldierRequest implements Serializable {
 		final ESoldierClass soldierClass;
 		final ESoldierType soldierType;
-		final OccupyerPlace place;
+		final OccupierPlace place;
 
-		SoldierRequest(ESoldierType soldierType, OccupyerPlace place) {
+		SoldierRequest(ESoldierType soldierType, OccupierPlace place) {
 			this.soldierType = soldierType;
 			soldierClass = null;
 			this.place = place;
 		}
 
-		SoldierRequest(ESoldierClass soldierClass, OccupyerPlace place) {
+		SoldierRequest(ESoldierClass soldierClass, OccupierPlace place) {
 			this.soldierClass = soldierClass;
 			soldierType = null;
 			this.place = place;

@@ -23,7 +23,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.buildings.IBuildingOccupyer;
+import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
@@ -196,14 +196,14 @@ public class BuildingState {
 
 	private Hashtable<ESoldierClass, ArrayList<OccupierState>> computeOccupierStates(IBuilding building) {
 		Hashtable<ESoldierClass, ArrayList<OccupierState>> newStates = null;
-		if (building instanceof IBuilding.IOccupyed && !construction) {
-			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
+		if (building instanceof IBuilding.IOccupied && !construction) {
+			IBuilding.IOccupied occupied = (IBuilding.IOccupied) building;
 			newStates = new Hashtable<>();
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				newStates.put(soldierClass, new ArrayList<OccupierState>());
 			}
 
-			for (IBuildingOccupyer o : occupyed.getOccupyers()) {
+			for (IBuildingOccupier o : occupied.getOccupiers()) {
 				ESoldierClass soldierClass = o.getPlace().getSoldierClass();
 				OccupierState state = new OccupierState(o.getMovable());
 				newStates.get(soldierClass).add(state);
@@ -211,11 +211,11 @@ public class BuildingState {
 
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				ArrayList<OccupierState> list = newStates.get(soldierClass);
-				int coming = occupyed.getComingSoldiers(soldierClass);
+				int coming = occupied.getComingSoldiers(soldierClass);
 				for (; coming > 0; coming--) {
 					list.add(new OccupierState(true));
 				}
-				int requested = occupyed.getSearchedSoldiers(soldierClass);
+				int requested = occupied.getSearchedSoldiers(soldierClass);
 				for (; requested > 0; requested--) {
 					list.add(new OccupierState(false));
 				}
