@@ -189,7 +189,7 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(List<BuildingCount> buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = Math.round(grasTiles / 2.8F);
+		long grasTilesWithoutBuffer = Math.round(grasTiles / 2.5F);
 		for (BuildingCount buildingCount : buildingCounts) {
 			grasTilesWithoutBuffer -= buildingCount.buildingType.getProtectedTiles().length * buildingCount.count;
 			if (grasTilesWithoutBuffer < 0) {
