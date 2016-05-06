@@ -68,8 +68,6 @@ import jsettlers.logic.player.Team;
 public class AiStatistics {
 
 	private static final short BORDER_LAND_WIDTH = 5;
-	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
-	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
 	private static final short TOWER_RADIUS_OVERLAP = 1;

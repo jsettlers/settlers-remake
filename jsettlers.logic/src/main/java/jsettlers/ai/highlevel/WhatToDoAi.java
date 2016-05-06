@@ -50,17 +50,21 @@ import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
@@ -137,8 +141,48 @@ public class WhatToDoAi implements IWhatToDoAi {
 			buildBuildings();
 			armyGeneral.levyUnits();
 			armyGeneral.commandTroops();
+			sendGeologists();
 			occupyMilitaryBuildings();
 		}
+	}
+
+	private void sendGeologists() {
+		int geologistsCount = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.GEOLOGIST, playerId).size();
+		List<ShortPoint2D> bearersPositions = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+		int bearersCount = bearersPositions.size();
+		int stoneCutterCount = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
+		if (geologistsCount == 0 && stoneCutterCount >= 1 && bearersCount - 3 > MINIMUM_NUMBER_OF_BEARERS) {
+			Movable coalGeologist = getBearerAt(bearersPositions.get(0));
+			Movable ironGeologist = getBearerAt(bearersPositions.get(1));
+			Movable goldGeologist = getBearerAt(bearersPositions.get(2));
+
+			List<Integer> targetGeologists = new ArrayList<>();
+			targetGeologists.add(coalGeologist.getID());
+			targetGeologists.add(ironGeologist.getID());
+			targetGeologists.add(goldGeologist.getID());
+			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, targetGeologists, EMovableType.GEOLOGIST));
+
+			sendGeologistToNearest(coalGeologist, EResourceType.COAL);
+			sendGeologistToNearest(ironGeologist, EResourceType.IRONORE);
+			sendGeologistToNearest(goldGeologist, EResourceType.GOLDORE);
+
+		}
+	}
+
+	private void sendGeologistToNearest(Movable geologist, EResourceType resourceType) {
+	ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
+			playerId, Integer.MAX_VALUE);
+		if (resourcePoint == null) {
+			resourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(
+					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE);
+		}
+		if (resourcePoint != null) {
+			sendMovableTo(geologist, resourcePoint);
+		}
+	}
+
+	private Movable getBearerAt(ShortPoint2D point) {
+		return mainGrid.getMovableGrid().getMovableAt(point.x, point.y);
 	}
 
 	private void occupyMilitaryBuildings() {
