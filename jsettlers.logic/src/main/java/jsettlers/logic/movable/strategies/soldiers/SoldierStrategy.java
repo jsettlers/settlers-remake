@@ -153,9 +153,11 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 				if (isBowman()) {
 					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
+					changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+				} else {
+					changeStateTo(ESoldierState.AGGRESSIVE);
 				}
 
-				changeStateTo(ESoldierState.AGGRESSIVE);
 				isInTower = true;
 			} else {
 				changeStateTo(ESoldierState.AGGRESSIVE); // do a check of the surrounding to find possible enemies.
