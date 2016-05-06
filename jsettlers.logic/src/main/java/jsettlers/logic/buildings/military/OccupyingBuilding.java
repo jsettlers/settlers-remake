@@ -82,7 +82,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			for (OccupyerPlace currPlace : occupyerPlaces) {
 				emptyPlaces.add(currPlace);
 			}
-			requestSoldier(ESoldierType.SWORDSMAN);
+			requestSoldier(ESoldierClass.INFANTRY);
 		}
 	}
 
@@ -190,8 +190,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				dijkstraRequest = new DijkstraContinuableRequest(this, super.pos.x, super.pos.y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
 			}
 
-			SoldierRequest soldierRequest = searchedSoldiers.peek();
-			dijkstraRequest.setSearchType(soldierRequest.getSearchType());
+			Set<ESearchType> searchTypes = EnumSet.noneOf(ESearchType.class);
+			for (SoldierRequest soldierRequest : searchedSoldiers) {
+				searchTypes.add(soldierRequest.getSearchType());
+			}
+			dijkstraRequest.setSearchTypes(searchTypes);
 
 			Path path = super.grid.getDijkstra().find(dijkstraRequest);
 			if (path != null) {
@@ -199,13 +202,24 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				if (soldier != null) {
 					IBuildingOccupyableMovable occupier = soldier.setOccupyableBuilding(this);
 					if (occupier != null) {
-						searchedSoldiers.pop();
+						SoldierRequest soldierRequest = removeMatchingSoldierRequest(occupier.getMovableType().getSoldierType());
 						commingSoldiers.put(occupier, soldierRequest);
 						dijkstraRequest.reset();
-					}
-				} // soldier wasn't at the position or wasn't able to take the job to go to this building
+					} // else soldier wasn't able to take the job to go to this building
+				} // else { soldier wasn't at the position
 			}
 		}
+	}
+
+	private SoldierRequest removeMatchingSoldierRequest(ESoldierType soldierType) {
+		for (Iterator<SoldierRequest> iterator = searchedSoldiers.iterator(); iterator.hasNext();) {
+			SoldierRequest soldierRequest = iterator.next();
+			if (soldierRequest.isOfTypeOrClass(soldierType)) {
+				iterator.remove();
+				return soldierRequest;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -308,8 +322,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	 * Adds or removes the informable map object for the given soldier.
 	 *
 	 * @param soldier
-	 * @param add     if true, the object is added<br>
-	 *                if false, the object is removed.
+	 * @param add
+	 *            if true, the object is added<br>
+	 *            if false, the object is removed.
 	 */
 	private void addInformableMapObject(TowerOccupier soldier, boolean add) {
 		if (soldier.place.getSoldierClass() == ESoldierClass.BOWMAN) {
@@ -437,6 +452,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	public void releaseSoldiers() {
+		toBeReleasedOccupiers.clear();
 		toBeReleasedOccupiers.addAll(sortedOccupiers); // release all but first occupier
 		toBeReleasedOccupiers.removeFirst();
 
@@ -453,11 +469,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	public void releaseSoldier(ESoldierType soldierType) {
-		Iterator<SoldierRequest> searchedSoldiersIterator = searchedSoldiers.iterator();
-		while (searchedSoldiersIterator.hasNext()) {
-			SoldierRequest soldierRequest = searchedSoldiersIterator.next();
-			if (soldierRequest.soldierType == soldierType) {
-				searchedSoldiersIterator.remove();
+		for (Iterator<SoldierRequest> iterator = searchedSoldiers.iterator(); iterator.hasNext();) {
+			SoldierRequest soldierRequest = iterator.next();
+			if (soldierRequest.isOfTypeOrClass(soldierType)) {
+				iterator.remove();
 				emptyPlaces.add(soldierRequest.place);
 			}
 		}
@@ -471,10 +486,12 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			}
 		}
 
-		for (TowerOccupier occupier : sortedOccupiers) {
-			if (occupier.soldier.getMovableType().getSoldierType() == soldierType && !toBeReleasedOccupiers.contains(occupier)) {
-				toBeReleasedOccupiers.add(occupier);
-				return;
+		if (sortedOccupiers.size() - toBeReleasedOccupiers.size() > 1) { // always keep one soldier inside
+			for (TowerOccupier occupier : sortedOccupiers) {
+				if (occupier.soldier.getMovableType().getSoldierType() == soldierType && !toBeReleasedOccupiers.contains(occupier)) {
+					toBeReleasedOccupiers.add(occupier);
+					return;
+				}
 			}
 		}
 	}
@@ -632,19 +649,19 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		public ESearchType getSearchType() {
 			if (soldierClass != null) {
 				switch (soldierClass) {
-					case INFANTRY:
-						return ESearchType.SOLDIER_INFANTRY;
-					case BOWMAN:
-						return ESearchType.SOLDIER_BOWMAN;
+				case INFANTRY:
+					return ESearchType.SOLDIER_INFANTRY;
+				case BOWMAN:
+					return ESearchType.SOLDIER_BOWMAN;
 				}
 			} else {
 				switch (soldierType) {
-					case SWORDSMAN:
-						return ESearchType.SOLDIER_SWORDSMAN;
-					case PIKEMAN:
-						return ESearchType.SOLDIER_PIKEMAN;
-					case BOWMAN:
-						return ESearchType.SOLDIER_BOWMAN;
+				case SWORDSMAN:
+					return ESearchType.SOLDIER_SWORDSMAN;
+				case PIKEMAN:
+					return ESearchType.SOLDIER_PIKEMAN;
+				case BOWMAN:
+					return ESearchType.SOLDIER_BOWMAN;
 				}
 			}
 			throw new RuntimeException("Unknown soldier or search type");

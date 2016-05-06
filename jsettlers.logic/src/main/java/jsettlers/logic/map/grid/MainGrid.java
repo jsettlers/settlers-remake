@@ -20,6 +20,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.borders.BordersThread;
@@ -71,6 +72,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
@@ -530,6 +532,16 @@ public final class MainGrid implements Serializable {
 				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
 				return false;
 			}
+		}
+
+		@Override
+		public boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester) {
+			for (ESearchType searchType : types) {
+				if (fitsSearchType(x,y,searchType,requester)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected final boolean canAddRessourceSign(int x, int y) {

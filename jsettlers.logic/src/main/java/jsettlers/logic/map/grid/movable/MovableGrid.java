@@ -66,10 +66,6 @@ public final class MovableGrid implements Serializable {
 		return this.movableGrid[x + y * width];
 	}
 
-	public final void setMovable(short x, short y, Movable movable) {
-		this.movableGrid[x + y * width] = movable;
-	}
-
 	public final void movableLeft(ShortPoint2D position, Movable movable) {
 		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {

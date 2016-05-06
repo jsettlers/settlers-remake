@@ -17,9 +17,13 @@ package jsettlers.algorithms.path.dijkstra;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.material.ESearchType;
 
+import java.util.Set;
+
 public interface IDijkstraPathMap {
 
 	boolean fitsSearchType(int x, int y, ESearchType type, IPathCalculatable requester);
+
+	boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester);
 
 	void setDijkstraSearched(int x, int y);
 

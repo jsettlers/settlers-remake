@@ -15,6 +15,8 @@
 package jsettlers.algorithms.path.dijkstra;
 
 import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.Set;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.InvalidStartPositionException;
@@ -102,41 +104,32 @@ public final class DijkstraAlgorithm {
 		final IPathCalculatable requester;
 		final short cX;
 		final short cY;
-		ESearchType searchType;
+		Set<ESearchType> searchTypes;
 
 		short radius;
 
-		public DijkstraContinuableRequest(final IPathCalculatable requester, short cX, short cY, short minRadius, short maxRadius,
-				ESearchType searchType) {
+		public DijkstraContinuableRequest(final IPathCalculatable requester, short cX, short cY, short minRadius, short maxRadius) {
 			this.requester = requester;
 			this.cX = cX;
 			this.cY = cY;
 			this.minRadius = minRadius;
 			this.maxRadius = maxRadius;
-			this.searchType = searchType;
+			this.searchTypes = EnumSet.noneOf(ESearchType.class);
 
 			this.radius = 0;
 		}
 
-		public DijkstraContinuableRequest(final IPathCalculatable requester, short cX, short cY, short minRadius, short maxRadius) {
-			this(requester, cX, cY, minRadius, maxRadius, null);
-		}
-
 		final short getRadiusSteps() {
-			return 3;
-		}
-
-		public boolean isCenterAt(ShortPoint2D pos) {
-			return pos != null && pos.x == cX && pos.y == cY;
+			return 6;
 		}
 
 		void setRadius(short radius) {
 			this.radius = (short) (radius - this.minRadius + 1);
 		}
 
-		public void setSearchType(ESearchType searchType) {
-			if (this.searchType != searchType) {
-				this.searchType = searchType;
+		public void setSearchTypes(Set<ESearchType> searchTypes) {
+			if (!this.searchTypes.equals(searchTypes)) {
+				this.searchTypes = searchTypes;
 				radius = 0;
 			}
 		}
@@ -168,7 +161,7 @@ public final class DijkstraAlgorithm {
 					y += dy;
 					if (circle.contains(x, y) && isInBounds(x, y)) {
 						map.setDijkstraSearched(x, y);
-						if (map.fitsSearchType(x, y, request.searchType, request.requester)) {
+						if (map.fitsSearchType(x, y, request.searchTypes, request.requester)) {
 							Path path = findPathTo(request.requester, x, y);
 							if (path != null) {
 								request.setRadius(radius);
