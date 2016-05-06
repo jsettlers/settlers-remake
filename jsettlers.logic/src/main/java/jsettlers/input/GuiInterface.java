@@ -14,8 +14,10 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
@@ -84,8 +86,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-			IGameStoppable gameStoppable, byte player,
-			boolean multiplayer) {
+			IGameStoppable gameStoppable, byte player, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
@@ -584,19 +585,31 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void selectPointType(PointAction action) {
 		final ShortPoint2D actionPosition = action.getPosition();
-		final IGuiMovable centerSelectable = getSelectableMovable(actionPosition.x, actionPosition.y);
+		final IGuiMovable selectedMovable = getSelectableMovable(actionPosition.x, actionPosition.y);
 
-		if (centerSelectable == null) { // nothing found at the location
+		if (selectedMovable == null) { // nothing found at the location
 			setSelection(new SelectionSet());
 			return;
 		}
 
-		final List<ISelectable> selected = new LinkedList<ISelectable>();
-		selected.add(centerSelectable);
+		EMovableType selectedType = selectedMovable.getMovableType();
 
+		Set<EMovableType> selectableTypes;
+		if (selectedType.isSwordsman()) {
+			selectableTypes = EMovableType.swordsmen;
+		} else if (selectedType.isPikeman()) {
+			selectableTypes = EMovableType.pikemen;
+		} else if (selectedType.isBowman()) {
+			selectableTypes = EMovableType.bowmen;
+		} else {
+			selectableTypes = EnumSet.of(selectedType);
+		}
+
+		final List<ISelectable> selected = new LinkedList<>();
+		
 		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
 			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
-			if (movable != null && movable.getMovableType() == centerSelectable.getMovableType() && canSelectPlayer(movable.getPlayerId())) {
+			if (movable != null && selectableTypes.contains(movable.getMovableType()) && canSelectPlayer(movable.getPlayerId())) {
 				selected.add(movable);
 			}
 		}
