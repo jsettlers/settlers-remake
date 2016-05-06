@@ -198,7 +198,7 @@ public class BuildingState {
 		Hashtable<ESoldierClass, ArrayList<OccupierState>> newStates = null;
 		if (building instanceof IBuilding.IOccupyed && !construction) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
-			newStates = new Hashtable<ESoldierClass, ArrayList<OccupierState>>();
+			newStates = new Hashtable<>();
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				newStates.put(soldierClass, new ArrayList<OccupierState>());
 			}
@@ -211,12 +211,12 @@ public class BuildingState {
 
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				ArrayList<OccupierState> list = newStates.get(soldierClass);
-				int comming = occupyed.getCommingSoldiers(soldierClass);
-				while (list.size() < comming) {
+				int coming = occupyed.getComingSoldiers(soldierClass);
+				for (; coming > 0; coming--) {
 					list.add(new OccupierState(true));
 				}
-				int requested = occupyed.getRequestedSoldiers(soldierClass);
-				while (list.size() < requested) {
+				int requested = occupyed.getSearchedSoldiers(soldierClass);
+				for (; requested > 0; requested--) {
 					list.add(new OccupierState(false));
 				}
 			}

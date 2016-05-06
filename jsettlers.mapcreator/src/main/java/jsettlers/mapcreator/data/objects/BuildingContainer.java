@@ -137,12 +137,12 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public int getRequestedSoldiers(ESoldierClass type) {
+	public int getSearchedSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
 	@Override
-	public int getCommingSoldiers(ESoldierClass type) {
+	public int getComingSoldiers(ESoldierClass type) {
 		return 0;
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -108,22 +108,22 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		List<? extends IBuildingOccupyer> getOccupyers();
 
 		/**
-		 * Gets the number of soldiers the user has set to be requested at maximum for this building.
+		 * Gets the number of currently searched soldiers.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier.
-		 * @return The number of soldiers we have at maximum.
+		 * @return The number of soldiers currently searched.
 		 */
-		int getRequestedSoldiers(ESoldierClass soldierClass);
+		int getSearchedSoldiers(ESoldierClass soldierClass);
 
 		/**
-		 * Gets the number of soldiers that are currently comming or already inside this building.
+		 * Gets the number of soldiers that are currently comming.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier
-		 * @return The number of soldiers comming plus the number of soldiers already inside the building.
+		 * @return The number of soldiers comming.
 		 */
-		int getCommingSoldiers(ESoldierClass soldierClass);
+		int getComingSoldiers(ESoldierClass soldierClass);
 	}
 
 	/**

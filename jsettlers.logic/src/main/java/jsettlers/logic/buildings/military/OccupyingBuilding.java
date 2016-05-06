@@ -15,7 +15,13 @@
 package jsettlers.logic.buildings.military;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
@@ -36,10 +42,10 @@ import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.map.OrderedMap;
+import jsettlers.common.utils.collections.map.OrderedMap.Entry;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.common.utils.collections.map.OrderedMap.Entry;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
@@ -60,7 +66,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<>();
 	private final LinkedList<SoldierRequest> searchedSoldiers = new LinkedList<>();
-	private final OrderedMap<IBuildingOccupyableMovable, SoldierRequest> commingSoldiers = new OrderedMap<>();
+	private final OrderedMap<IBuildingOccupyableMovable, SoldierRequest> comingSoldiers = new OrderedMap<>();
 	private final LinkedList<TowerOccupier> sortedOccupiers = new LinkedList<>();
 	private final LinkedList<TowerOccupier> toBeReleasedOccupiers = new LinkedList<>();
 
@@ -125,7 +131,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		initSoldierRequests();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 		IBuildingOccupyableMovable newOccupier = attacker.setOccupyableBuilding(this);
-		commingSoldiers.put(newOccupier, searchedSoldiers.pop());
+		comingSoldiers.put(newOccupier, searchedSoldiers.pop());
 
 		doorHealth = 0.1f;
 		inFight = false;
@@ -142,7 +148,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		dijkstraRequest = null;
 		searchedSoldiers.clear();
 		emptyPlaces.clear();
-		commingSoldiers.clear();
+		comingSoldiers.clear();
 	}
 
 	@Override
@@ -204,7 +210,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					IBuildingOccupyableMovable occupier = soldier.setOccupyableBuilding(this);
 					if (occupier != null) {
 						SoldierRequest soldierRequest = removeMatchingSoldierRequest(occupier.getMovableType().getSoldierType());
-						commingSoldiers.put(occupier, soldierRequest);
+						comingSoldiers.put(occupier, soldierRequest);
 						dijkstraRequest.reset();
 					} // else soldier wasn't able to take the job to go to this building
 				} // else { soldier wasn't at the position
@@ -265,7 +271,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier) {
-		SoldierRequest soldierRequest = commingSoldiers.remove(soldier);
+		SoldierRequest soldierRequest = comingSoldiers.remove(soldier);
 		OccupyerPlace place = soldierRequest.place;
 
 		TowerOccupier towerOccupier = new TowerOccupier(place, soldier);
@@ -357,7 +363,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final void requestFailed(IBuildingOccupyableMovable soldier) {
-		SoldierRequest soldierRequest = commingSoldiers.remove(soldier);
+		SoldierRequest soldierRequest = comingSoldiers.remove(soldier);
 		searchedSoldiers.add(soldierRequest);
 	}
 
@@ -401,15 +407,25 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public int getRequestedSoldiers(ESoldierClass soldierClass) {
-		// TODO implement this correctly
-		return 0;
+	public int getSearchedSoldiers(ESoldierClass soldierClass) {
+		int numberOfSearchedSoldiers = 0;
+		for (SoldierRequest searchedSoldier : searchedSoldiers) {
+			if (searchedSoldier.isOfTypeOrClass(soldierClass)) {
+				numberOfSearchedSoldiers++;
+			}
+		}
+		return numberOfSearchedSoldiers;
 	}
 
 	@Override
-	public int getCommingSoldiers(ESoldierClass soldierClass) {
-		// TODO implement this correctly
-		return 0;
+	public int getComingSoldiers(ESoldierClass soldierClass) {
+		int numberOfComingSoldiers = 0;
+		for (Entry<IBuildingOccupyableMovable, SoldierRequest> comingSoldier : comingSoldiers.entrySet()) {
+			if (comingSoldier.getValue().isOfTypeOrClass(soldierClass)) {
+				numberOfComingSoldiers++;
+			}
+		}
+		return numberOfComingSoldiers;
 	}
 
 	@Override
@@ -426,7 +442,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		IBuildingOccupyableMovable occupier = soldier.setOccupyableBuilding(this);
-		commingSoldiers.put(occupier, new SoldierRequest(soldierClass, emptyPlace));
+		comingSoldiers.put(occupier, new SoldierRequest(soldierClass, emptyPlace));
 	}
 
 	public void requestSoldiers() {
@@ -462,11 +478,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 		searchedSoldiers.clear();
 
-		for (Entry<IBuildingOccupyableMovable, SoldierRequest> commingSoldierEntry : commingSoldiers.entrySet()) {
+		for (Entry<IBuildingOccupyableMovable, SoldierRequest> commingSoldierEntry : comingSoldiers.entrySet()) {
 			commingSoldierEntry.getKey().leaveOccupyableBuilding(super.getDoor());
 			emptyPlaces.add(commingSoldierEntry.getValue().place);
 		}
-		commingSoldiers.clear();
+		comingSoldiers.clear();
 	}
 
 	public void releaseSoldier(ESoldierType soldierType) {
@@ -478,11 +494,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			}
 		}
 
-		for (Entry<IBuildingOccupyableMovable, SoldierRequest> commingSoldierEntry : commingSoldiers.entrySet()) {
+		for (Entry<IBuildingOccupyableMovable, SoldierRequest> commingSoldierEntry : comingSoldiers.entrySet()) {
 			if (commingSoldierEntry.getValue().isOfTypeOrClass(soldierType)) {
 				commingSoldierEntry.getKey().leaveOccupyableBuilding(super.getDoor());
 				emptyPlaces.add(commingSoldierEntry.getValue().place);
-				commingSoldiers.remove(commingSoldierEntry.getKey());
+				comingSoldiers.remove(commingSoldierEntry.getKey());
 				return;
 			}
 		}
@@ -670,6 +686,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		public boolean isOfTypeOrClass(ESoldierType soldierType) {
 			return this.soldierType == soldierType || soldierClass == soldierType.getSoldierClass();
+		}
+
+		public boolean isOfTypeOrClass(ESoldierClass soldierClass) {
+			return this.soldierClass == soldierClass || (this.soldierType != null && this.soldierType.getSoldierClass() == soldierClass);
 		}
 	}
 }
