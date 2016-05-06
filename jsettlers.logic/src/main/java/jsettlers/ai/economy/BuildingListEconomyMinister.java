@@ -39,10 +39,18 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private final AiMapInformation aiMapInformation;
 	protected final List<EBuildingType> buildingsToBuild;
 
-	public BuildingListEconomyMinister(AiStatistics aiStatistics, AiMapInformation aiMapInformation, Player player) {
+	/**
+	 *
+	 * @param aiStatistics
+	 * @param aiMapInformation
+	 * @param player
+	 * @param weaponSmithFactor influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the
+	 *                             maximum amount of weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
+	 */
+	public BuildingListEconomyMinister(AiStatistics aiStatistics, AiMapInformation aiMapInformation, Player player, float weaponSmithFactor) {
 		this.buildingsToBuild = new ArrayList<>();
 		this.aiMapInformation = aiMapInformation;
-		initializeBuildingsToBuild(aiStatistics, player);
+		initializeBuildingsToBuild(aiStatistics, player, weaponSmithFactor);
 	};
 
 	protected int plannedCountOf(EBuildingType buildingType, List<BuildingCount> buildingCounts) {
@@ -70,7 +78,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		}
 	}
 
-	private void initializeBuildingsToBuild(AiStatistics aiStatistics, Player player) {
+	private void initializeBuildingsToBuild(AiStatistics aiStatistics, Player player, float weaponSmithFactor) {
 		List<BuildingCount> buildingCounts = aiMapInformation.getBuildingCounts();
 		addMinimalBuildingMaterialBuildings(buildingCounts, aiStatistics, player);
 		if (isVerySmallMap()) {
@@ -84,7 +92,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addManaBuildings(buildingCounts);
 		}
 		List<EBuildingType> weaponsBuildings = new ArrayList<>();
-		for (int i = 0; i < aiMapInformation.getNumberOfWeaponSmiths(); i++) {
+		for (int i = 0; i < (aiMapInformation.getNumberOfWeaponSmiths()*weaponSmithFactor); i++) {
 			weaponsBuildings.add(COALMINE);
 			if (i % 2 == 0) {
 				weaponsBuildings.add(IRONMINE);
@@ -148,8 +156,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 		float allBuildingsCount = foodBuildings.size() + buildingMaterialBuildings.size() + weaponsBuildings.size();
 		float weaponsBuildingsRatio = ((float) weaponsBuildings.size()) / allBuildingsCount;
-		float foodBuildingsRatio = ((float) foodBuildings.size()) / allBuildingsCount;
-		float buildingMaterialBuildingRatio = ((float) buildingMaterialBuildings.size()) / allBuildingsCount;
+		float foodBuildingsRatio = ((float) foodBuildings.size()) / (allBuildingsCount * weaponSmithFactor);
+		float buildingMaterialBuildingRatio = ((float) buildingMaterialBuildings.size()) / (allBuildingsCount * weaponSmithFactor);
 		int maxSize = Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size()));
 		for (int i = 0; i < maxSize; i++) {
 			if (weaponsBuildingsRatio > foodBuildingsRatio && weaponsBuildingsRatio > buildingMaterialBuildingRatio) {

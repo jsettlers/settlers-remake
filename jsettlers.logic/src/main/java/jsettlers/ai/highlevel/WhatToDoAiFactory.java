@@ -32,10 +32,15 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	public IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid,
+	public IWhatToDoAi buildWhatToDoAi(
+			EPlayerType type,
+			ECivilisation civilisation,
+			AiStatistics aiStatistics,
+			Player player,
+			MainGrid mainGrid,
 			MovableGrid movableGrid,
-			ITaskScheduler
-					taskScheduler, AiMapInformation aiMapInformation) {
+			ITaskScheduler taskScheduler,
+			AiMapInformation aiMapInformation) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
 		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player, aiMapInformation);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
@@ -43,17 +48,21 @@ public class WhatToDoAiFactory {
 
 	private EconomyMinister determineMinister(
 			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, AiMapInformation aiMapInformation) {
-		if (type == EPlayerType.AI_VERY_EASY) {
+		switch (type) {
+		case AI_VERY_EASY:
 			return new AdaptableEconomyMinister(aiStatistics, player);
-		} else if (type == EPlayerType.AI_VERY_HARD) {
-			return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player);
+		case AI_EASY:
+			return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player, 1F / 3F);
+		case AI_HARD:
+			return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player, 1F / 2F);
+		default:
+			return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player, 1F);
 		}
-		return new BuildingListEconomyMinister(aiStatistics, aiMapInformation, player);
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
 			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
-		//TODO: use civilisation to determine different general when there is more than ROMAN
+		// TODO: use civilisation to determine different general when there is more than ROMAN
 		if (type == EPlayerType.AI_HARD || type == EPlayerType.AI_VERY_HARD) {
 			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
 		}
