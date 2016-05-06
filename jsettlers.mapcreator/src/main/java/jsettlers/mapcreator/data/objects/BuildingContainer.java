@@ -137,16 +137,12 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public int getMaximumRequestedSoldiers(ESoldierClass type) {
+	public int getRequestedSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
 	@Override
-	public void setMaximumRequestedSoldiers(ESoldierClass type, int max) {
-	}
-
-	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierClass type) {
+	public int getCommingSoldiers(ESoldierClass type) {
 		return 0;
 	}
 

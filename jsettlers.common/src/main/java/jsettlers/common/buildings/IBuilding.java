@@ -114,7 +114,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 *            The class of soldier.
 		 * @return The number of soldiers we have at maximum.
 		 */
-		int getMaximumRequestedSoldiers(ESoldierClass soldierClass);
+		int getRequestedSoldiers(ESoldierClass soldierClass);
 
 		/**
 		 * Gets the number of soldiers that are currently comming or already inside this building.
@@ -123,7 +123,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 *            The class of soldier
 		 * @return The number of soldiers comming plus the number of soldiers already inside the building.
 		 */
-		int getCurrentlyCommingSoldiers(ESoldierClass soldierClass);
+		int getCommingSoldiers(ESoldierClass soldierClass);
 	}
 
 	/**

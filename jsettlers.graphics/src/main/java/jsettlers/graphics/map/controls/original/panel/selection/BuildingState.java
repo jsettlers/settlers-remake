@@ -211,11 +211,11 @@ public class BuildingState {
 
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
 				ArrayList<OccupierState> list = newStates.get(soldierClass);
-				int comming = occupyed.getCurrentlyCommingSoldiers(soldierClass);
+				int comming = occupyed.getCommingSoldiers(soldierClass);
 				while (list.size() < comming) {
 					list.add(new OccupierState(true));
 				}
-				int requested = occupyed.getMaximumRequestedSoldiers(soldierClass);
+				int requested = occupyed.getRequestedSoldiers(soldierClass);
 				while (list.size() < requested) {
 					list.add(new OccupierState(false));
 				}

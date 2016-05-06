@@ -400,13 +400,13 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public int getMaximumRequestedSoldiers(ESoldierClass soldierClass) {
+	public int getRequestedSoldiers(ESoldierClass soldierClass) {
 		// TODO implement this correctly
 		return 0;
 	}
 
 	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierClass soldierClass) {
+	public int getCommingSoldiers(ESoldierClass soldierClass) {
 		// TODO implement this correctly
 		return 0;
 	}
