@@ -437,8 +437,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		EMaterialType material = movable.getMaterial();
 		if (material.isDroppable()) {
 			super.getGrid().dropMaterial(movable.getPos(), material, true, false);
-			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
+		super.setMaterial(EMaterialType.NO_MATERIAL);
 	}
 
 	private void reportAsJobless() {
