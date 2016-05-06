@@ -53,7 +53,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 60 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 70 * MINUTES);
 	}
 
 	@Test
@@ -111,7 +111,8 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 0, null), new PlayerState((byte) 1, null) });
+				MapLoader savegame = MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[]{new PlayerState((byte) 0, null), new PlayerState((byte) 1, null)});
+				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
