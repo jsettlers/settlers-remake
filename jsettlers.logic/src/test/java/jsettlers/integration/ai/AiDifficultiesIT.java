@@ -86,7 +86,7 @@ public class AiDifficultiesIT {
 
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 820;
+		short expectedMinimalProducedSoldiers = 660;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
@@ -100,16 +100,16 @@ public class AiDifficultiesIT {
 		PlayerSetting[] playerSettings = new PlayerSetting[12];
 		playerSettings[0] = new PlayerSetting(false, (byte) -1);
 		playerSettings[1] = new PlayerSetting(false, (byte) -1);
-		playerSettings[2] = new PlayerSetting(false, (byte) -1);
+		playerSettings[2] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 0);
 		playerSettings[3] = new PlayerSetting(false, (byte) -1);
 		playerSettings[4] = new PlayerSetting(false, (byte) -1);
-		playerSettings[5] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[5] = new PlayerSetting(false, (byte) -1);
 		playerSettings[6] = new PlayerSetting(false, (byte) -1);
 		playerSettings[7] = new PlayerSetting(false, (byte) -1);
-		playerSettings[8] = new PlayerSetting(false, (byte) -1);
+		playerSettings[8] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 1);
 		playerSettings[9] = new PlayerSetting(false, (byte) -1);
 		playerSettings[10] = new PlayerSetting(false, (byte) -1);
-		playerSettings[11] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 1);
+		playerSettings[11] = new PlayerSetting(false, (byte) -1);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
@@ -120,11 +120,11 @@ public class AiDifficultiesIT {
 			targetGameTime += JUMP_FORWARD;
 			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
-			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 11) == 0) {
+			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 8) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 5, null), new PlayerState((byte) 11,
+				MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 11,
 						null) });
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
