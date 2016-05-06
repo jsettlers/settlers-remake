@@ -426,6 +426,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	@Override
 	public void buildingDestroyed() {
 		super.setVisible(true);
+		super.abortPath();
 
 		reportAsJobless();
 		dropCurrentMaterial();
@@ -489,7 +490,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return building != null;
+		return isJobless() || building != null;
 	}
 
 	@Override
