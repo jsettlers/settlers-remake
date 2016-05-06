@@ -16,7 +16,6 @@ package jsettlers.logic.buildings.military;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.Map.Entry;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
@@ -36,9 +35,11 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.map.OrderedMap;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.common.utils.collections.map.OrderedMap.Entry;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
@@ -59,7 +60,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<>();
 	private final LinkedList<SoldierRequest> searchedSoldiers = new LinkedList<>();
-	private final HashMap<IBuildingOccupyableMovable, SoldierRequest> commingSoldiers = new LinkedHashMap<>();
+	private final OrderedMap<IBuildingOccupyableMovable, SoldierRequest> commingSoldiers = new OrderedMap<>();
 	private final LinkedList<TowerOccupier> sortedOccupiers = new LinkedList<>();
 	private final LinkedList<TowerOccupier> toBeReleasedOccupiers = new LinkedList<>();
 
@@ -356,7 +357,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final void requestFailed(IBuildingOccupyableMovable soldier) {
-		SoldierRequest soldierRequest = commingSoldiers.remove(soldier.getMovable());
+		SoldierRequest soldierRequest = commingSoldiers.remove(soldier);
 		searchedSoldiers.add(soldierRequest);
 	}
 
