@@ -48,7 +48,6 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
@@ -147,13 +146,7 @@ public class AiStatistics {
 		}
 		playerStatistic.buildingPositions.get(type).add(building.getPos());
 
-		if (building.getBuildingType().isMine() && building.isOccupied()) {
-			MineBuilding mine = (MineBuilding) building;
-			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD
-					&& mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
-				playerStatistic.deadMines.addNoCollission(mine.getPos().x, mine.getPos().y);
-			}
-		} else if (type == EBuildingType.WINEGROWER) {
+		if (type == EBuildingType.WINEGROWER) {
 			playerStatistic.wineGrowerWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
 		} else if (type == EBuildingType.FARM) {
 			playerStatistic.farmWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
@@ -596,10 +589,6 @@ public class AiStatistics {
 		return playerStatistics[playerId].enemyTroopsInTown;
 	}
 
-	public AiPositions getDeadMinesOf(byte playerId) {
-		return playerStatistics[playerId].deadMines;
-	}
-
 	public IMaterialProductionSettings getMaterialProduction(byte playerId) {
 		return playerStatistics[playerId].materialProduction;
 	}
@@ -630,7 +619,6 @@ public class AiStatistics {
 		AiPositions trees;
 		AiPositions rivers;
 		AiPositions enemyTroopsInTown;
-		AiPositions deadMines;
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
 		int numberOfNotOccupiedMilitaryBuildings;
@@ -644,7 +632,6 @@ public class AiStatistics {
 			rivers = new AiPositions(); 
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
-			deadMines = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -660,7 +647,6 @@ public class AiStatistics {
 			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
-			deadMines.clear();
 			stones.clear();
 			trees.clear();
 			rivers.clear();
