@@ -15,6 +15,7 @@
 package jsettlers.logic.buildings.military;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -86,10 +87,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	private void initSoldierRequests() {
 		final OccupierPlace[] occupierPlaces = super.getBuildingType().getOccupierPlaces();
 		if (occupierPlaces.length > 0) {
-			for (OccupierPlace currPlace : occupierPlaces) {
-				emptyPlaces.add(currPlace);
-			}
-			requestSoldier(ESoldierClass.INFANTRY);
+			emptyPlaces.addAll(Arrays.asList(occupierPlaces));
+			requestSoldiers();
 		}
 	}
 
