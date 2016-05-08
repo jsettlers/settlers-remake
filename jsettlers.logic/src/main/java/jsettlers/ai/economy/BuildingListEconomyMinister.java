@@ -22,6 +22,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
@@ -38,6 +39,8 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
  */
 public class BuildingListEconomyMinister implements EconomyMinister {
 
+	private static final EBuildingType[] RUSH_DEFENCE_BUILDINGS = {
+			LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE };
 	private final AiMapInformation aiMapInformation;
 	private final List<EBuildingType> buildingsToBuild;
 	private byte numberOfMidGameStoneCutters = 0;
@@ -364,32 +367,29 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	@Override
 	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
-		List<EBuildingType> allBuildingsToBuild = getRushDefenceBuildingsIfWeAreInDanger(aiStatistics, playerId);
-		allBuildingsToBuild.addAll(buildingsToBuild);
-		return allBuildingsToBuild;
+		if (isDanger(aiStatistics, playerId)) {
+			return prefixBuildingsToBuildWithRushDefence();
+		} else {
+			return buildingsToBuild;
+		}
 	}
 
-	private List<EBuildingType> getRushDefenceBuildingsIfWeAreInDanger(AiStatistics aiStatistics, byte playerId) {
+	private boolean isDanger(AiStatistics aiStatistics, byte playerId) {
 		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BARRACK, playerId) < 1) {
 			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
 				if (aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, enemy) > 0) {
-					List<EBuildingType> defenceBuildings = new ArrayList<>();
-					defenceBuildings.add(LUMBERJACK);
-					defenceBuildings.add(SAWMILL);
-					defenceBuildings.add(STONECUTTER);
-					defenceBuildings.add(IRONMELT);
-					defenceBuildings.add(WEAPONSMITH);
-					defenceBuildings.add(BARRACK);
-					defenceBuildings.add(SMALL_LIVINGHOUSE);
-					defenceBuildings.add(COALMINE);
-					defenceBuildings.add(IRONMINE);
-					defenceBuildings.add(MEDIUM_LIVINGHOUSE);
-					return defenceBuildings;
+					return true;
 				}
 			}
 		}
-		// We are not in danger. We need no defence.
-		return new ArrayList<>();
+		return false;
+	}
+
+	private List<EBuildingType> prefixBuildingsToBuildWithRushDefence() {
+		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.length + buildingsToBuild.size());
+		allBuildingsToBuild.addAll(Arrays.asList(RUSH_DEFENCE_BUILDINGS));
+		allBuildingsToBuild.addAll(buildingsToBuild);
+		return allBuildingsToBuild;
 	}
 
 	@Override
