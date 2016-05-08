@@ -51,7 +51,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 75 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 300 * MINUTES);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void veryHardShouldConquerHard() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 115 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 300 * MINUTES);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class AiDifficultiesIT {
 
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 660;
+		short expectedMinimalProducedSoldiers = 640;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
@@ -125,14 +125,14 @@ public class AiDifficultiesIT {
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
 				MapLoader savegame = MapUtils.saveMainGrid(
-						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 11, null) });
+						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 8, null) });
 				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
 						+ "the maximumTimeToWin.", startedGame);
 			}
-		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 5) > 0);
+		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 2) > 0);
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
 		ReplayUtils.awaitShutdown(startedGame);
@@ -154,7 +154,7 @@ public class AiDifficultiesIT {
 	}
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) throws MapLoadException {
-		MapLoader mapCreator = MapUtils.getMountainlake();
+		MapLoader mapCreator = MapUtils.getSpezialSumpf();
 		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), (byte) 0, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
