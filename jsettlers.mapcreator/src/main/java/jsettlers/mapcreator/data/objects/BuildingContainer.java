@@ -17,6 +17,7 @@ package jsettlers.mapcreator.data.objects;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -93,13 +94,13 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public ELandscapeType[] getAllowedLandscapes() {
-		return object.getType().getGroundtypes();
+	public Set<ELandscapeType> getAllowedLandscapes() {
+		return object.getType().getGroundTypes();
 	}
 
 	@Override
 	public boolean needsFlatGround() {
-		return object.getType().getGroundtypes()[0] != ELandscapeType.MOUNTAIN;
+		return !object.getType().isMine();
 	}
 
 	@Override

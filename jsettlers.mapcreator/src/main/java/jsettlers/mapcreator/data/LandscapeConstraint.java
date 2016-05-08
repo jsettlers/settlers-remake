@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,6 +17,8 @@ package jsettlers.mapcreator.data;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
+import java.util.Set;
+
 /**
  * Placeholder object with harder constraints on the landscape.
  * 
@@ -25,7 +27,7 @@ import jsettlers.mapcreator.data.objects.ObjectContainer;
  */
 public interface LandscapeConstraint extends ObjectContainer {
 
-	public ELandscapeType[] getAllowedLandscapes();
+	Set<ELandscapeType> getAllowedLandscapes();
 
-	public boolean needsFlatGround();
+	boolean needsFlatGround();
 }
