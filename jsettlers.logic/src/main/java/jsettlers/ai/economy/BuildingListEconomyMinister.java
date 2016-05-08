@@ -370,7 +370,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	private List<EBuildingType> getRushDefenceBuildingsIfWeAreInDanger(AiStatistics aiStatistics, byte playerId) {
-		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) < 1) {
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BARRACK, playerId) < 1) {
 			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
 				if (aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, enemy) > 0) {
 					List<EBuildingType> defenceBuildings = new ArrayList<>();
