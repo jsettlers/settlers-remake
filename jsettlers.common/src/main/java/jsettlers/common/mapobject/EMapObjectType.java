@@ -45,7 +45,7 @@ public enum EMapObjectType {
 	/**
 	 * A working area mark. A progress of 0 means the outer ring, 1 means the inner ring. Currently, there are 4 rings.
 	 */
-	WORKAREA_MARK,
+	WORKAREA_MARK(false),
 	/**
 	 * The coal-mark for mountains. 0 means few coal, 1 is a lot.
 	 */
@@ -86,7 +86,7 @@ public enum EMapObjectType {
 	 * The value ranges from 0 to 1 where 0 is best and 1 is worst.<br>
 	 * If there is no marking at a position, the building can not be constructed there.
 	 */
-	CONSTRUCTION_MARK,
+	CONSTRUCTION_MARK(false),
 
 	/**
 	 * Type to represent material stacks.
@@ -146,6 +146,10 @@ public enum EMapObjectType {
 
 	public static final EMapObjectType[] VALUES = EMapObjectType.values();
 	public final byte ordinal;
+	/**
+	 * If true, objects of this type should be saved. If false, they should not be persisted.
+	 */
+	public final boolean persistent;
 
 	public static final Set<EMapObjectType> TO_BE_REMOVED_WHEN_FLATTENED = EnumSet.of(
 			EMapObjectType.ARROW,
@@ -162,6 +166,11 @@ public enum EMapObjectType {
 	);
 
 	EMapObjectType() {
+		this(true);
+	}
+
+	EMapObjectType(boolean persistent) {
 		this.ordinal = (byte) super.ordinal();
+		this.persistent = persistent;
 	}
 }
