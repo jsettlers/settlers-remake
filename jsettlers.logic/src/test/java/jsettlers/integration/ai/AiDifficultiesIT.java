@@ -124,8 +124,9 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapUtils.saveMainGrid(startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 11,
-						null) });
+				MapLoader savegame = MapUtils.saveMainGrid(
+						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 11, null) });
+				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
@@ -153,7 +154,7 @@ public class AiDifficultiesIT {
 	}
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) throws MapLoadException {
-		MapLoader mapCreator = MapUtils.getSpezialSumpf();
+		MapLoader mapCreator = MapUtils.getMountainlake();
 		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), (byte) 0, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}

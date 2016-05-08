@@ -196,7 +196,7 @@ public class AiStatistics {
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
 					if (player != null
 							&& player.playerId != movablePlayerId
-							&& EMovableType.isSoldier(movableType)
+							&& movableType.isSoldier()
 							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}

@@ -1255,7 +1255,7 @@ public final class MainGrid implements Serializable {
 
 			if (movable.isAttackable()) {
 				movableGrid.informMovables(movable, position.x, position.y, informFullArea);
-				objectsGrid.informObjectsAboutAttackble(position, movable, informFullArea, !EMovableType.isBowman(movable.getMovableType()));
+				objectsGrid.informObjectsAboutAttackble(position, movable, informFullArea, !movable.getMovableType().isBowman());
 			}
 		}
 
@@ -1316,7 +1316,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
 				final short maxSearchRadius, final boolean includeTowers) {
-			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
+			boolean isBowman = searchingAttackable.getMovableType().isBowman();
 
 			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, minSearchRadius,
 					maxSearchRadius), isBowman, includeTowers);
