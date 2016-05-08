@@ -948,7 +948,7 @@ public final class MainGrid implements Serializable {
 					return false;
 				}
 			}
-			return buildingType.isMine() || getConstructionMarkValue(x, y, buildingArea) >= 0;
+			return !buildingType.needsFlattenedGround() || getConstructionMarkValue(x, y, buildingArea) >= 0;
 		}
 
 		@Override

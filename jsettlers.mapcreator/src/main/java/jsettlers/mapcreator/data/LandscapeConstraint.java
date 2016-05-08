@@ -29,5 +29,5 @@ public interface LandscapeConstraint extends ObjectContainer {
 
 	Set<ELandscapeType> getAllowedLandscapes();
 
-	boolean needsFlatGround();
+	boolean needsFlattenedGround();
 }

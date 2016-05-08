@@ -33,8 +33,8 @@ public class ProtectLandscapeConstraint extends ProtectContainer implements Land
 	}
 
 	@Override
-	public boolean needsFlatGround() {
-		return !buildingType.isMine();
+	public boolean needsFlattenedGround() {
+		return buildingType.needsFlattenedGround();
 	}
 
 }

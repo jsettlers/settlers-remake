@@ -459,6 +459,10 @@ public enum EBuildingType {
 		return MINE_BUILDINGS.contains(this);
 	}
 
+	public boolean needsFlattenedGround() {
+		return !isMine();
+	}
+
 	/**
 	 * Checks if this building is a military building.
 	 * 

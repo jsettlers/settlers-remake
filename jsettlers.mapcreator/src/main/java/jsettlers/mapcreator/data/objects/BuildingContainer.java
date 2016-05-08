@@ -36,22 +36,22 @@ import jsettlers.mapcreator.data.LandscapeConstraint;
 
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
 
-	private final BuildingObject object;
-	private final ShortPoint2D pos;
+	private final BuildingObject buildingObject;
+	private final ShortPoint2D position;
 
-	public BuildingContainer(BuildingObject object, ShortPoint2D pos) {
-		this.object = object;
-		this.pos = pos;
+	public BuildingContainer(BuildingObject buildingObject, ShortPoint2D position) {
+		this.buildingObject = buildingObject;
+		this.position = position;
 	}
 
 	@Override
 	public BuildingObject getMapObject() {
-		return object;
+		return buildingObject;
 	}
 
 	@Override
 	public RelativePoint[] getProtectedArea() {
-		return object.getType().getProtectedTiles();
+		return buildingObject.getType().getProtectedTiles();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public byte getPlayerId() {
-		return object.getPlayerId();
+		return buildingObject.getPlayerId();
 	}
 
 	@Override
@@ -85,22 +85,22 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public ShortPoint2D getPos() {
-		return pos;
+		return position;
 	}
 
 	@Override
 	public EBuildingType getBuildingType() {
-		return object.getType();
+		return buildingObject.getType();
 	}
 
 	@Override
 	public Set<ELandscapeType> getAllowedLandscapes() {
-		return object.getType().getGroundTypes();
+		return buildingObject.getType().getGroundTypes();
 	}
 
 	@Override
-	public boolean needsFlatGround() {
-		return !object.getType().isMine();
+	public boolean needsFlattenedGround() {
+		return buildingObject.getType().needsFlattenedGround();
 	}
 
 	@Override
