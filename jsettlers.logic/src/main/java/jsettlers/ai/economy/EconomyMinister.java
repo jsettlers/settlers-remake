@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface EconomyMinister {
 
-	int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId);
+	int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId);
 
 	List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId);
 

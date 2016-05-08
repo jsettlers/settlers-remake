@@ -352,7 +352,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
+	public int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId) {
 		if (aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PLANK, playerId) > 1
 				&& aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.STONE, playerId) > 1) {
 			// If plank and stone is still offered, we can build the next building.

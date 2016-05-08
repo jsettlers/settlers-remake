@@ -43,7 +43,7 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSides(AiStatistics aiStatistics, byte playerId) {
+	public int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId) {
 		return 5;
 	}
 

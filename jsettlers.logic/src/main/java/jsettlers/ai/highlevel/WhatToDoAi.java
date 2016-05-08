@@ -39,7 +39,6 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
-import static jsettlers.common.material.EMaterialType.SAW;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
 import java.util.ArrayList;
@@ -295,7 +294,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildBuildings() {
-		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSides(aiStatistics,
+		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites(aiStatistics,
 				playerId)) {
 			if (economyMinister.automaticLivingHousesEnabled(aiStatistics, playerId) && buildLivingHouse())
 				return;
