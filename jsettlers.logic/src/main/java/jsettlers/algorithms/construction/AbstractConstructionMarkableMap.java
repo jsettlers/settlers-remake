@@ -18,6 +18,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.RelativePoint;
 
+import java.util.Set;
+
 /**
  * Interface offering the methods needed by {@link ConstructionMarksThread}.
  * 
@@ -67,7 +69,7 @@ public abstract class AbstractConstructionMarkableMap {
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
+	public abstract boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> landscapeTypes, short partitionId);
 
 	public abstract short getPartitionIdAt(int x, int y);
 
