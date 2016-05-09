@@ -94,18 +94,16 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
-	private final AiMapInformation aiMapInformation;
 	private ArrayList<Object> failedConstructingBuildings;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
-			ITaskScheduler taskScheduler, AiMapInformation aiMapInformation) {
+			ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
 		this.economyMinister = economyMinister;
-		this.aiMapInformation = aiMapInformation;
 		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
@@ -286,7 +284,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean isEndGame() {
-		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) > aiMapInformation.getNumberOfWeaponSmiths() * 0.8F;
+		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) > economyMinister.getNumberOfEndGameWeaponSmiths() * 0.8F;
 	}
 
 	private void destroyHinterlandMilitaryBuildings() {

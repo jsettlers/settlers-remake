@@ -29,7 +29,9 @@ public interface EconomyMinister {
 
 	List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId);
 
-	byte getMidGameNumberOfStoneCutters();
+	int getMidGameNumberOfStoneCutters();
+
+	int getNumberOfEndGameWeaponSmiths();
 
 	boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId);
 

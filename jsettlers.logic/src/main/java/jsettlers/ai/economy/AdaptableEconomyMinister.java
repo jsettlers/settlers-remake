@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
-import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.logic.player.Player;
@@ -51,50 +50,59 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
 		List<EBuildingType> buildingsToBuild = new Vector<>();
 		buildingsToBuild.addAll(MINIMAL_BUILDING_TYPES);
-		buildingsToBuild.addAll(determineNumberOf(LUMBERJACK));
-		buildingsToBuild.addAll(determineNumberOf(STONECUTTER));
-		buildingsToBuild.addAll(determineNumberOf(SAWMILL));
-		buildingsToBuild.addAll(determineNumberOf(SMALL_LIVINGHOUSE));
-		buildingsToBuild.addAll(determineNumberOf(FORESTER));
-		buildingsToBuild.addAll(determineNumberOf(WINEGROWER));
-		buildingsToBuild.addAll(determineNumberOf(FARM));
-		buildingsToBuild.addAll(determineNumberOf(TEMPLE));
-		buildingsToBuild.addAll(determineNumberOf(WATERWORKS));
-		buildingsToBuild.addAll(determineNumberOf(MILL));
-		buildingsToBuild.addAll(determineNumberOf(BAKER));
-		buildingsToBuild.addAll(determineNumberOf(PIG_FARM));
-		buildingsToBuild.addAll(determineNumberOf(SLAUGHTERHOUSE));
-		buildingsToBuild.addAll(determineNumberOf(COALMINE));
-		buildingsToBuild.addAll(determineNumberOf(IRONMINE));
-		buildingsToBuild.addAll(determineNumberOf(IRONMELT));
-		buildingsToBuild.addAll(determineNumberOf(WEAPONSMITH));
-		buildingsToBuild.addAll(determineNumberOf(BARRACK));
-		buildingsToBuild.addAll(determineNumberOf(FISHER));
-		buildingsToBuild.addAll(determineNumberOf(GOLDMINE));
-		buildingsToBuild.addAll(determineNumberOf(GOLDMELT));
-		buildingsToBuild.addAll(determineNumberOf(BIG_TEMPLE));
-		buildingsToBuild.addAll(determineNumberOf(CHARCOAL_BURNER));
-		buildingsToBuild.addAll(determineNumberOf(DONKEY_FARM));
+		buildingsToBuild.addAll(buildListOf(LUMBERJACK));
+		buildingsToBuild.addAll(buildListOf(STONECUTTER));
+		buildingsToBuild.addAll(buildListOf(SAWMILL));
+		buildingsToBuild.addAll(buildListOf(SMALL_LIVINGHOUSE));
+		buildingsToBuild.addAll(buildListOf(FORESTER));
+		buildingsToBuild.addAll(buildListOf(WINEGROWER));
+		buildingsToBuild.addAll(buildListOf(FARM));
+		buildingsToBuild.addAll(buildListOf(TEMPLE));
+		buildingsToBuild.addAll(buildListOf(WATERWORKS));
+		buildingsToBuild.addAll(buildListOf(MILL));
+		buildingsToBuild.addAll(buildListOf(BAKER));
+		buildingsToBuild.addAll(buildListOf(PIG_FARM));
+		buildingsToBuild.addAll(buildListOf(SLAUGHTERHOUSE));
+		buildingsToBuild.addAll(buildListOf(COALMINE));
+		buildingsToBuild.addAll(buildListOf(IRONMINE));
+		buildingsToBuild.addAll(buildListOf(IRONMELT));
+		buildingsToBuild.addAll(buildListOf(WEAPONSMITH));
+		buildingsToBuild.addAll(buildListOf(BARRACK));
+		buildingsToBuild.addAll(buildListOf(FISHER));
+		buildingsToBuild.addAll(buildListOf(GOLDMINE));
+		buildingsToBuild.addAll(buildListOf(GOLDMELT));
+		buildingsToBuild.addAll(buildListOf(BIG_TEMPLE));
+		buildingsToBuild.addAll(buildListOf(CHARCOAL_BURNER));
+		buildingsToBuild.addAll(buildListOf(DONKEY_FARM));
 		return buildingsToBuild;
 	}
 
-	private Collection<EBuildingType> determineNumberOf(EBuildingType buildingType) {
-		Collection<EBuildingType> numberOfBuildingsAsList = new Vector<EBuildingType>();
-		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
-		byte sumOfBuildings = 0;
-		for (byte playerId : enemies) {
-			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
-		}
-		for (int i = 0; i < Math.max(1, sumOfBuildings / enemies.size()) - Collections.frequency(MINIMAL_BUILDING_TYPES, buildingType); i++) {
+	private Collection<EBuildingType> buildListOf(EBuildingType buildingType) {
+		Collection<EBuildingType> numberOfBuildingsAsList = new Vector<EBuildingType>();;
+		int averageSumOfBuildings = determineNumberOf(buildingType);
+		for (int i = 0; i < averageSumOfBuildings - Collections.frequency(MINIMAL_BUILDING_TYPES, buildingType); i++) {
 			numberOfBuildingsAsList.add(buildingType);
 		}
-		;
 		return numberOfBuildingsAsList;
 	}
 
+	private int determineNumberOf(EBuildingType buildingType) {
+		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
+		float sumOfBuildings = 0;
+		for (byte playerId : enemies) {
+			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
+		}
+		return Math.max(1, (int) (sumOfBuildings / enemies.size()));
+	}
+
 	@Override
-	public byte getMidGameNumberOfStoneCutters() {
+	public int getMidGameNumberOfStoneCutters() {
 		return 2;
+	}
+
+	@Override
+	public int getNumberOfEndGameWeaponSmiths() {
+		return determineNumberOf(WEAPONSMITH);
 	}
 
 	@Override
