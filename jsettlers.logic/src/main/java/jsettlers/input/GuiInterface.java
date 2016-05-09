@@ -18,6 +18,8 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
@@ -90,6 +92,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final byte playerId;
 	private final boolean multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
+	private final Timer refreshSelectionTimer;
 
 	/**
 	 * The current selection. This is updated by game logic.
@@ -97,7 +100,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-			IGameStoppable gameStoppable, byte player, boolean multiplayer) {
+						IGameStoppable gameStoppable, byte player, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
@@ -106,6 +109,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.playerId = player;
 		this.multiplayer = multiplayer;
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
+
+		this.refreshSelectionTimer = new Timer("refreshSelectionTimer");
+		this.refreshSelectionTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				refreshSelection();
+			}
+		}, 1000, 1000);
 
 		grid.getPlayer(player).setMessenger(connector);
 		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, playerId));
@@ -621,8 +632,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	@Override
 	public void refreshSelection() {
-		connector.setSelection(null);
-		connector.setSelection(currentSelection);
+		if (!currentSelection.isEmpty()) {
+			SelectionSet newSelection = new SelectionSet();
+
+			for (ISelectable selected : currentSelection) {
+				if (selected.isSelected()) {
+					newSelection.add(selected);
+				}
+			}
+
+			setSelection(newSelection);
+		}
 	}
 
 	@Override
@@ -636,6 +656,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	public void stop() {
 		constructionMarksCalculator.cancel();
 		connector.removeListener(this);
+		refreshSelectionTimer.cancel();
 	}
-
 }
