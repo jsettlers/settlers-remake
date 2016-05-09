@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.partitions.IBlockingProvider;
@@ -347,7 +348,7 @@ public class MapData implements IMapData {
 			}
 			if (objects[x][y] instanceof LandscapeConstraint) {
 				LandscapeConstraint constraint = (LandscapeConstraint) objects[x][y];
-				if (!allowsLandscape(type, constraint)) {
+				if (!constraint.getAllowedLandscapes().contains(type)) {
 					return false;
 				}
 			}
@@ -377,7 +378,7 @@ public class MapData implements IMapData {
 	public void placeObject(MapObject object, int x, int y) {
 		ObjectContainer container = null;
 		ProtectContainer protector = ProtectContainer.getInstance();
-		ELandscapeType[] landscapes = null;
+		Set<ELandscapeType> landscapes = null;
 		if (object instanceof MapTreeObject) {
 			container = TreeObjectContainer.getInstance();
 		} else if (object instanceof MapStoneObject) {
@@ -388,8 +389,8 @@ public class MapData implements IMapData {
 			container = new StackContainer((StackObject) object);
 		} else if (object instanceof BuildingObject) {
 			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
-			landscapes = ((BuildingObject) object).getType().getGroundtypes();
-			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
+			landscapes = ((BuildingObject) object).getType().getGroundTypes();
+			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType());
 		} else if (object instanceof MapDecorationObject) {
 			container = new MapObjectContainer((MapDecorationObject) object);
 		} else {
@@ -401,7 +402,7 @@ public class MapData implements IMapData {
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
 			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
-					|| !listAllowsLandscape(landscapes, getLandscape(abs.x, abs.y))) {
+					|| !landscapes.contains(getLandscape(abs.x, abs.y))) {
 				allowed = false;
 			}
 		}
@@ -417,25 +418,7 @@ public class MapData implements IMapData {
 		}
 	}
 
-	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2, ELandscapeType landscape) {
-		if (landscapes2 == null) {
-			return true;
-		} else {
-			for (ELandscapeType type : landscapes2) {
-				if (type == landscape) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-
 	public void setHeight(int x, int y, int height) {
-		// if (objects[x][y] instanceof LandscapeConstraint &&
-		// !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
-		// return;
-		// }
-
 		byte safeheight;
 		if (height >= Byte.MAX_VALUE) {
 			safeheight = Byte.MAX_VALUE;
@@ -446,16 +429,6 @@ public class MapData implements IMapData {
 		}
 		undoDelta.addHeightChange(x, y, heights[x][y]);
 		heights[x][y] = safeheight;
-		// if (objects[x][y] instanceof BuildingContainer) {
-		// ShortPoint2D center = new ShortPoint2D(x, y);
-		// for (RelativePoint r : ((BuildingContainer)
-		// objects[x][y]).getMapObject().getType().getBlockedTiles()) {
-		// ShortPoint2D pos = r.calculatePoint(center);
-		// undoDelta.addHeightChange(pos.getX(), pos.getY(),
-		// heights[pos.getX()][pos.getY()]);
-		// heights[pos.getX()][pos.getY()] = safeheight;
-		// }
-		// }
 
 		if (backgroundListener != null) {
 			backgroundListener.backgroundChangedAt((short) x, (short) y);
