@@ -71,36 +71,40 @@ public class AiMapInformation {
 			for (int ii = 0; ii < resourceCount.length; ii++) {
 				resourceCount[i][i] = 0;
 			}
-		};
+		}
 		for (int x = 0; x < mainGrid.getWidth(); x++) {
 			for (int y = 0; y < mainGrid.getHeight(); y++) {
-				EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
-				if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
-					int playerId;
-					Player player = partitionsGrid.getPlayerAt(x, y);
-					if (player != null) {
-						playerId = player.playerId;
-					} else {
-						playerId = resourceCount.length - 1;
+				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
+					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
+					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
+						int playerId;
+						Player player = partitionsGrid.getPlayerAt(x, y);
+						if (player != null) {
+							playerId = player.playerId;
+						} else {
+							playerId = resourceCount.length - 1;
+						}
+						resourceCount[playerId][resourceType.ordinal]++;
 					}
-					resourceCount[playerId][resourceType.ordinal]++;
 				}
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
 					grasTiles++;
 				}
 			}
 		}
+		int numberOfPlayers = resourceCount.length;
+		grasTiles = grasTiles / numberOfPlayers;
 	}
 
 	public int[] getBuildingCounts(byte playerId) {
-		int numberOfPlayers = resourceCount.length - 1;
-		int neverland = resourceCount.length-1;
-		grasTiles = grasTiles / numberOfPlayers;
-		int maxFishermen = Math.min(MAX_FISHERS, (int) Math.round(((resourceCount[neverland][EResourceType.FISH.ordinal] / numberOfPlayers) +
-				resourceCount[playerId][EResourceType.FISH.ordinal]) / FISH_TO_FISHER_HUTS_RATIO));
+		int numberOfPlayers = resourceCount.length;
+		int neverland = resourceCount.length - 1;
+		int maxFishermen = Math.max(1, Math.min(MAX_FISHERS, (int) Math.round(
+				((resourceCount[neverland][EResourceType.FISH.ordinal] / numberOfPlayers) + resourceCount[playerId][EResourceType.FISH.ordinal])
+						/ FISH_TO_FISHER_HUTS_RATIO)));
 		int maxCoalMines = (int) Math.round((resourceCountOfAllPlayers(EResourceType.COAL) / numberOfPlayers) / COAL_TO_COAL_MINES_RATIO);
 		int maxIronMines = (int) Math.round((resourceCountOfAllPlayers(EResourceType.IRONORE) / numberOfPlayers) /
-		IRONORE_TO_IRON_MINES_RATIO);
+				IRONORE_TO_IRON_MINES_RATIO);
 		int maxGoldMelts = resourceCountOfAllPlayers(EResourceType.GOLDORE) > 0 ? 2 : 0;
 
 		if (maxIronMines > maxCoalMines / COAL_MINE_TO_IRONORE_MINE_RATIO + 1)
