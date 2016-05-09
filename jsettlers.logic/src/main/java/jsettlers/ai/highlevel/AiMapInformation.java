@@ -139,15 +139,17 @@ public class AiMapInformation {
 
 		int numberOfFisher = Math.min((int) (numberOfWeaponSmiths * WEAPON_SMITH_TO_FISHER_HUT_RATIO), maxFishermen);
 		buildingCounts[EBuildingType.FISHER.ordinal] = numberOfFisher;
-		int numberOfRemainingWeaponSmithsRest = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_TO_FISHER_HUT_RATIO));
+		int numberOfRemainingWeaponSmiths = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_TO_FISHER_HUT_RATIO));
 
-		int numberOfFarms = (int) (numberOfRemainingWeaponSmithsRest * WEAPON_SMITH_TO_FARM_RATIO);
-		buildingCounts[EBuildingType.FARM.ordinal] = numberOfFarms;
-		buildingCounts[EBuildingType.BAKER.ordinal] = (int) (numberOfFarms * FARM_TO_BAKER_RATIO);
-		buildingCounts[EBuildingType.MILL.ordinal] = (int) (numberOfFarms * FARM_TO_MILL_RATIO);
-		buildingCounts[EBuildingType.WATERWORKS.ordinal] = (int) (numberOfFarms * FARM_TO_WATERWORKS_RATIO);
-		buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] = (int) (numberOfFarms * FARM_TO_SLAUGHTER_RATIO);
-		buildingCounts[EBuildingType.PIG_FARM.ordinal] = (int) (numberOfFarms * FARM_TO_PIG_FARM_RATIO);
+		int numberOfFarms = (int) (numberOfRemainingWeaponSmiths * WEAPON_SMITH_TO_FARM_RATIO);
+		if (numberOfFarms > 0) {
+			buildingCounts[EBuildingType.FARM.ordinal] = numberOfFarms;
+			buildingCounts[EBuildingType.BAKER.ordinal] = Math.max(1, (int) (numberOfFarms * FARM_TO_BAKER_RATIO));
+			buildingCounts[EBuildingType.MILL.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_MILL_RATIO));
+			buildingCounts[EBuildingType.WATERWORKS.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_WATERWORKS_RATIO));
+			buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_SLAUGHTER_RATIO));
+			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_PIG_FARM_RATIO));
+		}
 
 		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_TO_LUMBERJACK_RATIO), 3);
 		buildingCounts[EBuildingType.LUMBERJACK.ordinal] = numberOfLumberJacks;
@@ -187,11 +189,14 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(int[] buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = Math.round(grasTiles / 2.5F);
+		long grasTilesWithoutBuffer = Math.round(grasTiles / 1.9F); // 1.9F 2F 2.1F 2.2F für quick ok
 		for (int i = 0; i < buildingCounts.length; i++) {
-			grasTilesWithoutBuffer -= EBuildingType.values()[i].getProtectedTiles().length * buildingCounts[i];
-			if (grasTilesWithoutBuffer < 0) {
-				return false;
+			EBuildingType buildingType = EBuildingType.values()[i];
+			if (!buildingType.isMine()) {
+				grasTilesWithoutBuffer -= EBuildingType.values()[i].getProtectedTiles().length * buildingCounts[i];
+				if (grasTilesWithoutBuffer < 0) {
+					return false;
+				}
 			}
 		}
 
