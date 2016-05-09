@@ -95,6 +95,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
 	private final AiMapInformation aiMapInformation;
+	private ArrayList<Object> failedConstructingBuildings;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
 			ITaskScheduler taskScheduler, AiMapInformation aiMapInformation) {
@@ -140,6 +141,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
+			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			buildBuildings();
 			armyGeneral.levyUnits();
@@ -319,7 +321,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildEconomy() {
-		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
+		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();;
 		boolean isEndgame = isEndGame();
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
 			if (isEndgame && (currentBuildingType == LUMBERJACK
@@ -421,6 +423,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean construct(EBuildingType type) {
+		if (failedConstructingBuildings.size() > 1 && failedConstructingBuildings.contains(type)) {
+			return false;
+		}
 		ShortPoint2D position = bestConstructionPositionFinderFactory
 				.getBestConstructionPositionFinderFor(type)
 				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
@@ -434,6 +439,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			}
 			return true;
 		}
+		failedConstructingBuildings.add(type);
 		return false;
 	}
 
