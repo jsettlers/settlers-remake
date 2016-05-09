@@ -38,22 +38,22 @@ import jsettlers.logic.player.Player;
 public class AiMapInformation {
 
 	private static final double FISH_TO_FISHER_HUTS_RATIO = 80F / 1F;
-	private static final double COAL_TO_COAL_MINES_RATIO = 120F / 1F;
+	private static final double COAL_TO_COAL_MINES_RATIO = 80F / 1F;
 	private static final double IRONORE_TO_IRON_MINES_RATIO = 50F / 1F;
 	private static final double COAL_MINE_TO_IRONORE_MINE_RATIO = 2F / 1F;
 	private static final double WEAPON_SMITH_TO_BARRACKS_RATIO = 3F / 1F;
-	private static final double WEAPON_SMITH_TO_FISHER_HUT_RATIO = 3F / 2F;
-	private static final double WEAPON_SMITH_TO_FARM_RATIO = 1F / 2F;
-	private static final double FARM_TO_BAKER_RATIO = 1F / 3F;
-	private static final double FARM_TO_MILL_RATIO = 1F / 6F;
-	private static final double FARM_TO_WATERWORKS_RATIO = 1F / 3F;
-	private static final double FARM_TO_PIG_FARM_RATIO = 1F / 3F;
-	private static final double FARM_TO_SLAUGHTER_RATIO = 1F / 6F;
-	private static final double WEAPON_SMITH_TO_LUMBERJACK_RATIO = 6F / 8F;
-	private static final double LUMBERJACK_TO_SAWMILL_RATIO = 1F / 2F;
-	private static final double LUMBERJACK_TO_FORESTER_RATIO = 1F / 2F;
-	private static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 5F / 8F;
-	public static final float COAL_MINE_TO_SMITH_RATIO = 9F / 5F;
+	private static final double WEAPON_SMITH_TO_FISHER_HUT_RATIO = 2F / 3F;
+	private static final double WEAPON_SMITH_TO_FARM_RATIO = 2F / 1F;
+	private static final double FARM_TO_BAKER_RATIO = 1F / 1F;
+	private static final double FARM_TO_MILL_RATIO = 3F / 1F;
+	private static final double FARM_TO_WATERWORKS_RATIO = 3F / 1F;
+	private static final double FARM_TO_PIG_FARM_RATIO = 3F / 1F;
+	private static final double FARM_TO_SLAUGHTER_RATIO = 6F / 1F;
+	private static final double WEAPON_SMITH_TO_LUMBERJACK_RATIO = 10F / 8F;
+	private static final double LUMBERJACK_TO_SAWMILL_RATIO = 2F / 1F;
+	private static final double LUMBERJACK_TO_FORESTER_RATIO = 2F / 1F;
+	private static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 8F / 5F;
+	public static final float COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
@@ -68,8 +68,8 @@ public class AiMapInformation {
 		resourceCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.values().length];
 
 		for (int i = 0; i < resourceCount.length; i++) {
-			for (int ii = 0; ii < resourceCount.length; ii++) {
-				resourceCount[i][i] = 0;
+			for (int ii = 0; ii < resourceCount[i].length; ii++) {
+				resourceCount[i][ii] = 0;
 			}
 		}
 		for (int x = 0; x < mainGrid.getWidth(); x++) {
@@ -102,16 +102,16 @@ public class AiMapInformation {
 		int maxFishermen = Math.max(1, Math.min(MAX_FISHERS, (int) Math.round(
 				((resourceCount[neverland][EResourceType.FISH.ordinal] / numberOfPlayers) + resourceCount[playerId][EResourceType.FISH.ordinal])
 						/ FISH_TO_FISHER_HUTS_RATIO)));
-		int maxCoalMines = (int) Math.round((resourceCountOfAllPlayers(EResourceType.COAL) / numberOfPlayers) / COAL_TO_COAL_MINES_RATIO);
-		int maxIronMines = (int) Math.round((resourceCountOfAllPlayers(EResourceType.IRONORE) / numberOfPlayers) /
+		int maxCoalMines = (int) Math.ceil((resourceCountOfAllPlayers(EResourceType.COAL) / numberOfPlayers) / COAL_TO_COAL_MINES_RATIO);
+		int maxIronMines = (int) Math.ceil((resourceCountOfAllPlayers(EResourceType.IRONORE) / numberOfPlayers) /
 				IRONORE_TO_IRON_MINES_RATIO);
 		int maxGoldMelts = resourceCountOfAllPlayers(EResourceType.GOLDORE) > 0 ? 2 : 0;
 
 		if (maxIronMines > maxCoalMines / COAL_MINE_TO_IRONORE_MINE_RATIO + 1)
-			maxIronMines = (int) Math.round(maxCoalMines / COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
+			maxIronMines = (int) Math.ceil(maxCoalMines / COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
 		if (maxCoalMines > maxIronMines * COAL_MINE_TO_IRONORE_MINE_RATIO + 1)
-			maxCoalMines = (int) Math.round(maxIronMines * COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
-		int maxSmiths = (int) Math.floor((float) maxCoalMines * COAL_MINE_TO_SMITH_RATIO);
+			maxCoalMines = (int) Math.ceil(maxIronMines * COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
+		int maxSmiths = (int) Math.floor((float) maxCoalMines / COAL_MINE_TO_SMITH_RATIO);
 		return calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 3, 1, grasTiles);
 	}
 
@@ -137,25 +137,27 @@ public class AiMapInformation {
 		buildingCounts[EBuildingType.BARRACK.ordinal] = (int) Math.ceil((double) numberOfWeaponSmiths / WEAPON_SMITH_TO_BARRACKS_RATIO);
 		buildingCounts[EBuildingType.TOOLSMITH.ordinal] = 1;
 
-		int numberOfFisher = Math.min((int) (numberOfWeaponSmiths * WEAPON_SMITH_TO_FISHER_HUT_RATIO), maxFishermen);
+		int numberOfFisher = Math.min((int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_FISHER_HUT_RATIO), maxFishermen);
 		buildingCounts[EBuildingType.FISHER.ordinal] = numberOfFisher;
-		int numberOfRemainingWeaponSmiths = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher / WEAPON_SMITH_TO_FISHER_HUT_RATIO));
+		int numberOfRemainingWeaponSmiths = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher * WEAPON_SMITH_TO_FISHER_HUT_RATIO));
 
-		int numberOfFarms = (int) (numberOfRemainingWeaponSmiths * WEAPON_SMITH_TO_FARM_RATIO);
-		if (numberOfFarms > 0) {
+		int numberOfFarms = (int) Math.ceil(numberOfRemainingWeaponSmiths / WEAPON_SMITH_TO_FARM_RATIO);
 			buildingCounts[EBuildingType.FARM.ordinal] = numberOfFarms;
-			buildingCounts[EBuildingType.BAKER.ordinal] = Math.max(1, (int) (numberOfFarms * FARM_TO_BAKER_RATIO));
-			buildingCounts[EBuildingType.MILL.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_MILL_RATIO));
-			buildingCounts[EBuildingType.WATERWORKS.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_WATERWORKS_RATIO));
-			buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_SLAUGHTER_RATIO));
-			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  Math.max(1, (int) (numberOfFarms * FARM_TO_PIG_FARM_RATIO));
-		}
+			buildingCounts[EBuildingType.BAKER.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_BAKER_RATIO);
+			buildingCounts[EBuildingType.MILL.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_MILL_RATIO);
+			buildingCounts[EBuildingType.WATERWORKS.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_WATERWORKS_RATIO);
+			buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_SLAUGHTER_RATIO);
+			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_PIG_FARM_RATIO);
 
-		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths * WEAPON_SMITH_TO_LUMBERJACK_RATIO), 3);
+		int minLumberJacks = 8;
+		if (numberOfWeaponSmiths < 4) {
+			minLumberJacks = 3;
+		}
+		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_LUMBERJACK_RATIO), minLumberJacks);
 		buildingCounts[EBuildingType.LUMBERJACK.ordinal] = numberOfLumberJacks;
-		buildingCounts[EBuildingType.FORESTER.ordinal] = Math.max((int) (numberOfLumberJacks * LUMBERJACK_TO_FORESTER_RATIO), 1);
-		buildingCounts[EBuildingType.SAWMILL.ordinal] = Math.max((int) (numberOfLumberJacks * LUMBERJACK_TO_SAWMILL_RATIO), 1);
-		buildingCounts[EBuildingType.STONECUTTER.ordinal] = Math.max((int) (numberOfLumberJacks * LUMBERJACK_TO_STONE_CUTTER_RATIO), 1);
+		buildingCounts[EBuildingType.FORESTER.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_FORESTER_RATIO), 1);
+		buildingCounts[EBuildingType.SAWMILL.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_SAWMILL_RATIO), 1);
+		buildingCounts[EBuildingType.STONECUTTER.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_STONE_CUTTER_RATIO), 1);
 
 		if (maxGoldMelts > 0) {
 			buildingCounts[EBuildingType.GOLDMELT.ordinal] = maxGoldMelts;
@@ -189,7 +191,7 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(int[] buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = Math.round(grasTiles / 1.9F); // 1.9F 2F 2.1F 2.2F für quick ok
+		long grasTilesWithoutBuffer = Math.round(grasTiles / 1.4F);
 		for (int i = 0; i < buildingCounts.length; i++) {
 			EBuildingType buildingType = EBuildingType.values()[i];
 			if (!buildingType.isMine()) {

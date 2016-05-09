@@ -56,12 +56,12 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void hardShouldConquerEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 110 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 120 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 100 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 150 * MINUTES);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class AiDifficultiesIT {
 
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 640;
+		short expectedMinimalProducedSoldiers = 460;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
@@ -100,13 +100,13 @@ public class AiDifficultiesIT {
 		PlayerSetting[] playerSettings = new PlayerSetting[12];
 		playerSettings[0] = new PlayerSetting(false, (byte) -1);
 		playerSettings[1] = new PlayerSetting(false, (byte) -1);
-		playerSettings[2] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[2] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 0);
 		playerSettings[3] = new PlayerSetting(false, (byte) -1);
 		playerSettings[4] = new PlayerSetting(false, (byte) -1);
 		playerSettings[5] = new PlayerSetting(false, (byte) -1);
 		playerSettings[6] = new PlayerSetting(false, (byte) -1);
 		playerSettings[7] = new PlayerSetting(false, (byte) -1);
-		playerSettings[8] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 1);
+		playerSettings[8] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 1);
 		playerSettings[9] = new PlayerSetting(false, (byte) -1);
 		playerSettings[10] = new PlayerSetting(false, (byte) -1);
 		playerSettings[11] = new PlayerSetting(false, (byte) -1);
@@ -120,7 +120,7 @@ public class AiDifficultiesIT {
 			targetGameTime += JUMP_FORWARD;
 			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
-			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 8) == 0) {
+			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 2) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
@@ -132,7 +132,7 @@ public class AiDifficultiesIT {
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
 						+ "the maximumTimeToWin.", startedGame);
 			}
-		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 2) > 0);
+		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 8) > 0);
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
 		ReplayUtils.awaitShutdown(startedGame);

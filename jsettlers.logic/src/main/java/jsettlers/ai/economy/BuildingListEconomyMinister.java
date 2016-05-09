@@ -145,8 +145,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			weaponsBuildings.add(COALMINE);
 			if (i % 2 == 0)
 				weaponsBuildings.add(IRONMINE);
-			if (i % 2 == 0)
-				weaponsBuildings.add(IRONMELT);
+			weaponsBuildings.add(IRONMELT);
 			if (i == 0 && currentCountOf(TOOLSMITH) < 1)
 				weaponsBuildings.add(TOOLSMITH);
 			weaponsBuildings.add(WEAPONSMITH);
