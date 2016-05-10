@@ -636,17 +636,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (!currentSelection.isEmpty()) {
 			SelectionSet newSelection = new SelectionSet();
 
-			boolean somethingWasRemoved = false;
-
 			for (ISelectable selected : currentSelection) {
 				if (selected.isSelected() && canSelectPlayer(selected.getPlayerId())) {
 					newSelection.add(selected);
-				} else {
-					somethingWasRemoved = true;
 				}
 			}
 
-			if (somethingWasRemoved || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
+			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
 				setSelection(newSelection);
 			}
 		}
