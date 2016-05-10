@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -639,7 +639,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			boolean somethingWasRemoved = false;
 
 			for (ISelectable selected : currentSelection) {
-				if (selected.isSelected()) {
+				if (selected.isSelected() && canSelectPlayer(selected.getPlayerId())) {
 					newSelection.add(selected);
 				} else {
 					somethingWasRemoved = true;
