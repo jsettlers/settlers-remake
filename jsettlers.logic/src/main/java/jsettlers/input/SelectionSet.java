@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ import jsettlers.common.selectable.ISelectionSet;
  * 
  */
 public final class SelectionSet implements ISelectionSet {
-	private final List<ISelectable> set = new LinkedList<ISelectable>();
+	private final List<ISelectable> set = new ArrayList<>();
 	private ESelectionType selectionType = ESelectionType.values()[0];
 
 	public SelectionSet() {
@@ -61,20 +62,14 @@ public final class SelectionSet implements ISelectionSet {
 		if (selectionType.priority < this.selectionType.priority) {
 			return; // selectable is of lower priority
 		} else if (selectionType.priority > this.selectionType.priority) {
-			clear();
+			setSelected(false);
+			this.set.clear();
 			this.selectionType = selectionType;
 		}
 
 		if (selectionType.maxSelected > set.size()) {
 			set.add(selectable);
 		}
-	}
-
-	public synchronized void clear() {
-		for (ISelectable curr : set) {
-			curr.setSelected(false);
-		}
-		set.clear();
 	}
 
 	public boolean isEmpty() {
