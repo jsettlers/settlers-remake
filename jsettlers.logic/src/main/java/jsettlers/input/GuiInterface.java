@@ -592,6 +592,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		EMovableType selectedType = selectedMovable.getMovableType();
+		byte selectedPlayerId = selectedMovable.getPlayerId();
 
 		Set<EMovableType> selectableTypes;
 		if (selectedType.isSwordsman()) {
@@ -608,7 +609,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		
 		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
 			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
-			if (movable != null && selectableTypes.contains(movable.getMovableType()) && canSelectPlayer(movable.getPlayerId())) {
+			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
 				selected.add(movable);
 			}
 		}
