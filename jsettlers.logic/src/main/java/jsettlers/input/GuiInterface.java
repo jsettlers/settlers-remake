@@ -623,11 +623,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 *            The selected items. Not null!
 	 */
 	private void setSelection(SelectionSet selection) {
-		currentSelection.clear();
+		currentSelection.setSelected(false);
 
 		selection.setSelected(true);
-		this.connector.setSelection(selection);
-		this.currentSelection = selection;
+		connector.setSelection(selection);
+		currentSelection = selection;
 	}
 
 	@Override
