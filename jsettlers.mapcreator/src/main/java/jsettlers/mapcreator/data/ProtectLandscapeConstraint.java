@@ -14,24 +14,27 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.mapcreator.data.objects.ProtectContainer;
 
+import java.util.Set;
+
 public class ProtectLandscapeConstraint extends ProtectContainer implements LandscapeConstraint {
 
-	private final ELandscapeType[] allowed;
+	private final EBuildingType buildingType;
 
-	public ProtectLandscapeConstraint(ELandscapeType[] allowed) {
-		this.allowed = allowed;
+	public ProtectLandscapeConstraint(EBuildingType buildingType) {
+		this.buildingType = buildingType;
 	}
 
-	public ELandscapeType[] getAllowedLandscapes() {
-		return allowed;
+	public Set<ELandscapeType> getAllowedLandscapes() {
+		return buildingType.getGroundTypes();
 	}
 
 	@Override
-	public boolean needsFlatGround() {
-		return allowed[0] != ELandscapeType.MOUNTAIN;
+	public boolean needsFlattenedGround() {
+		return buildingType.needsFlattenedGround();
 	}
 
 }

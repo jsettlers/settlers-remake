@@ -86,12 +86,12 @@ public class FixHeightsTool extends AbstractTool {
 
 		ObjectContainer container1 = map.getMapObjectContainer(x, y);
 		if (container1 instanceof LandscapeConstraint
-				&& ((LandscapeConstraint) container1).needsFlatGround()) {
+				&& ((LandscapeConstraint) container1).needsFlattenedGround()) {
 			maxHeightDiff = 0;
 		}
 		ObjectContainer container2 = map.getMapObjectContainer(x2, y2);
 		if (container2 instanceof LandscapeConstraint
-				&& ((LandscapeConstraint) container2).needsFlatGround()) {
+				&& ((LandscapeConstraint) container2).needsFlattenedGround()) {
 			maxHeightDiff = 0;
 		}
 

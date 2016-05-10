@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.OccupyerPlace;
@@ -421,8 +422,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return buildmarks.toArray(new RelativePoint[buildmarks.size()]);
 	}
 
-	public ELandscapeType[] getGroundtypes() {
-		return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
+	public List<ELandscapeType> getGroundtypes() {
+		return groundtypes;
 	}
 
 	public short getViewdistance() {

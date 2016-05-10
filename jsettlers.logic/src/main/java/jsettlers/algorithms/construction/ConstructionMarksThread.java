@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -68,8 +68,8 @@ public final class ConstructionMarksThread implements Runnable {
 
 						EBuildingType buildingType = this.buildingType;
 						if (buildingType != null && mapArea != null) { // if the task has already been canceled
-							algorithm.calculateConstructMarks(mapArea, buildingType.getBuildingAreaBitSet(), buildingType.getGroundtypes(),
-									buildingType.getBlockedTiles(), buildingType.isMine());
+							algorithm.calculateConstructMarks(mapArea, buildingType.getBuildingAreaBitSet(), buildingType.getGroundTypes(),
+									buildingType.getBuildingArea(), !buildingType.needsFlattenedGround());
 						}
 
 						watch.stop("calculation of construction marks");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.algorithms.construction;
 
 import java.util.BitSet;
+import java.util.Set;
 
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.landscape.ELandscapeType;
@@ -41,7 +42,7 @@ public final class NewConstructionMarksAlgorithm {
 		this.playerId = player;
 	}
 
-	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final ELandscapeType[] landscapeTypes,
+	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final Set<ELandscapeType> landscapeTypes,
 			RelativePoint[] flattenPositions, boolean binaryConstructionMarkValues) {
 		if (lastArea != null) {
 			removeConstructionMarks(lastArea, mapArea);
