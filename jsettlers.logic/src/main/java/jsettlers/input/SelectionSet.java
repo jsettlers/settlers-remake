@@ -32,7 +32,7 @@ import jsettlers.common.selectable.ISelectionSet;
  * 
  */
 public final class SelectionSet implements ISelectionSet {
-	private List<ISelectable> set = new ArrayList<>();
+	private final List<ISelectable> set = new ArrayList<>();
 	private ESelectionType selectionType = ESelectionType.values()[0];
 
 	public SelectionSet() {
@@ -63,7 +63,7 @@ public final class SelectionSet implements ISelectionSet {
 			return; // selectable is of lower priority
 		} else if (selectionType.priority > this.selectionType.priority) {
 			setSelected(false);
-			this.set = new ArrayList<>();
+			this.set.clear();
 			this.selectionType = selectionType;
 		}
 

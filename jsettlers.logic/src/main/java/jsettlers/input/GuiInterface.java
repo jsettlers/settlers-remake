@@ -100,7 +100,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-						IGameStoppable gameStoppable, byte player, boolean multiplayer) {
+			IGameStoppable gameStoppable, byte player, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
@@ -635,13 +635,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (!currentSelection.isEmpty()) {
 			SelectionSet newSelection = new SelectionSet();
 
+			boolean somethingWasRemoved = false;
+
 			for (ISelectable selected : currentSelection) {
 				if (selected.isSelected()) {
 					newSelection.add(selected);
+				} else {
+					somethingWasRemoved = true;
 				}
 			}
 
-			setSelection(newSelection);
+			if (somethingWasRemoved || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
+				setSelection(newSelection);
+			}
 		}
 	}
 
