@@ -269,7 +269,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {
-		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupierPlaces().length > 0;
+		return object instanceof BuildingObject && ((BuildingObject) object).getType().isMilitaryBuilding();
 	}
 
 	private boolean isInsideWater(short x, short y) {
