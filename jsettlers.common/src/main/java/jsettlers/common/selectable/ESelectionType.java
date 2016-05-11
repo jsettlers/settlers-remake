@@ -22,8 +22,8 @@ package jsettlers.common.selectable;
  * 
  */
 public enum ESelectionType {
-	PEOPLE(Integer.MAX_VALUE),
 	BUILDING(1),
+	PEOPLE(Integer.MAX_VALUE),
 	SPECIALISTS(Integer.MAX_VALUE),
 	SOLDIERS(Integer.MAX_VALUE);
 
