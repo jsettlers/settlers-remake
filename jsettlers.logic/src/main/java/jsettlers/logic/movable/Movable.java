@@ -748,6 +748,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		this.health = -200;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.state = EMovableState.DEAD;
+		this.selected = false;
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);

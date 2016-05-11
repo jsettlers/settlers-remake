@@ -78,7 +78,7 @@ public final class Constants {
 	/**
 	 * This constant is used as a scale factor for the construction mark value calculation.
 	 */
-	public static final float CONSTRUCTION_MARK_SCALE_FACTOR = 3.5f;
+	public static final float CONSTRUCTION_MARK_SCALE_FACTOR = 2.5f;
 	/**
 	 * This constant is used as a pow factor for the construction mark value calculation.
 	 */

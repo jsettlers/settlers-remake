@@ -941,52 +941,35 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
-			RelativePoint[] protectedTiles = type.getProtectedTiles();
-			BuildingAreaBitSet areaBitSet = type.getBuildingAreaBitSet();
+		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
+			RelativePoint[] buildingArea =  buildingType.getBuildingArea();
+			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
 				return false;
 			}
 
-			short partition = getPartitionIdAt(areaBitSet.aPosition.calculateX(x), areaBitSet.aPosition.calculateY(y));
+			short partitionId = getPartitionIdAt(areaBitSet.aPosition.calculateX(x), areaBitSet.aPosition.calculateY(y));
 
-			if (!canPlayerConstructOnPartition(playerId, partition)) {
+			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
 				return false;
 			}
-			for (RelativePoint curr : protectedTiles) {
+			for (RelativePoint curr : buildingArea) {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstructionSafe(currX, currY, type, partition)) {
+				if (!canUsePositionForConstruction(currX, currY, buildingType.getGroundTypes(), partitionId)) {
 					return false;
 				}
 			}
-			return getConstructionMarkValue(x, y, type.getBlockedTiles()) >= 0;
+			return !buildingType.needsFlattenedGround() || getConstructionMarkValue(x, y, buildingArea) >= 0;
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId) {
+		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedBuildingTypes, short partitionId) {
 			return isInBounds(x, y)
 					&& !flagsGrid.isProtected(x, y)
 					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
-					&& isAllowedLandscape(x, y, landscapeTypes);
-		}
-
-		private boolean isAllowedLandscape(int x, int y, ELandscapeType[] landscapes) {
-			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
-			for (byte i = 0; i < landscapes.length; i++) {
-				if (landscapeAt == landscapes[i]) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private boolean canUsePositionForConstructionSafe(int x, int y, EBuildingType buildingType, short partition) {
-			// FIXME @Andreas: this can be merged with canUsePositionForConstruction
-			return !flagsGrid.isProtected(x, y)
-					&& buildingType.allowsGroundTypeId(landscapeGrid.getLandscapeIdAt(x, y))
-					&& partitionsGrid.getPartitionIdAt(x, y) == partition;
+					&& allowedBuildingTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
@@ -1820,7 +1803,7 @@ public final class MainGrid implements Serializable {
 			if (constructionMarksGrid.canConstructAt(position.x, position.y, type, playerId)) {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
-				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING OUTSIDE COUNTRY! Type: " + type + "  pos: " + position + "  playerId: "
+				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position + "  playerId: "
 						+ playerId);
 			}
 		}
