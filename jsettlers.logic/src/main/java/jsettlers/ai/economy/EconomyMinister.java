@@ -36,4 +36,6 @@ public interface EconomyMinister {
 	boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId);
 
 	boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId);
+
+	void update(AiStatistics aiStatistics, byte playerId);
 }

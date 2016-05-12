@@ -32,6 +32,7 @@ public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	private final AiStatistics aiStatistics;
+	private final AiMapInformation aiMapInformation;
 	private final StatisticsStopWatch updateStatisticsStopWatch = new StatisticsStopWatch();
 	private final StatisticsStopWatch applyRulesStopWatch = new StatisticsStopWatch();
 
@@ -40,7 +41,7 @@ public class AiExecutor implements INetworkTimerable {
 		aiStatistics.updateStatistics();
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
-		AiMapInformation aiMapInformation = new AiMapInformation(mainGrid);
+		aiMapInformation = new AiMapInformation(mainGrid);
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[playerId];
 			if (playerSetting.isAvailable() && playerSetting.getPlayerType().isAi()) {
@@ -60,6 +61,7 @@ public class AiExecutor implements INetworkTimerable {
 	public void timerEvent() {
 		updateStatisticsStopWatch.restart();
 		aiStatistics.updateStatistics();
+		aiMapInformation.updateMapInformation();
 		updateStatisticsStopWatch.stop("computerplayer:updateStatistics()");
 		applyRulesStopWatch.restart();
 		for (IWhatToDoAi whatToDoAi : whatToDoAis) {

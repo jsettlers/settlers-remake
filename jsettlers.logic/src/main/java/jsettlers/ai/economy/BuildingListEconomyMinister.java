@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
-import com.sun.java.swing.plaf.windows.WindowsEditorPaneUI;
 import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
@@ -41,29 +40,29 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	private static final EBuildingType[] RUSH_DEFENCE_BUILDINGS = {
 			LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE };
-	private final int[] mapBuildingCounts;
+	private int[] mapBuildingCounts;
 	private final List<EBuildingType> buildingsToBuild;
 	private int numberOfMidGameStoneCutters = 0;
+	private AiMapInformation aiMapInformation;
 	private float weaponSmithFactor;
 
 	/**
 	 *
-	 * @param aiStatistics
 	 * @param aiMapInformation
 	 * @param player
 	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 */
-	public BuildingListEconomyMinister(AiStatistics aiStatistics, AiMapInformation aiMapInformation, Player player, float weaponSmithFactor) {
+	public BuildingListEconomyMinister(AiMapInformation aiMapInformation, Player player, float weaponSmithFactor) {
+		this.aiMapInformation = aiMapInformation;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
-		this.mapBuildingCounts = aiMapInformation.getBuildingCounts(player.playerId);
-		initializeBuildingsToBuild(aiStatistics, player, weaponSmithFactor);
 	};
 
-	private void initializeBuildingsToBuild(AiStatistics aiStatistics, Player player, float weaponSmithFactor) {
-		addMinimalBuildingMaterialBuildings(aiStatistics, player);
+	public void update(AiStatistics aiStatistics, byte playerId) {
+		this.mapBuildingCounts = aiMapInformation.getBuildingCounts(playerId);
+		addMinimalBuildingMaterialBuildings(aiStatistics, playerId);
 		if (isVerySmallMap()) {
 			addSmallWeaponProduction();
 			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry(weaponSmithFactor);
@@ -225,9 +224,9 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		}
 	}
 
-	private void addMinimalBuildingMaterialBuildings(AiStatistics aiStatistics, Player player) {
+	private void addMinimalBuildingMaterialBuildings(AiStatistics aiStatistics, byte playerId) {
 		buildingsToBuild.add(TOWER); // Start Tower
-		if (isHighGoodsGame(aiStatistics, player)) {
+		if (isHighGoodsGame(aiStatistics, playerId)) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -250,7 +249,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
-		} else if (isMiddleGoodsGame(aiStatistics, player)) {
+		} else if (isMiddleGoodsGame(aiStatistics, playerId)) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -313,15 +312,13 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		}
 	}
 
-	private boolean isHighGoodsGame(AiStatistics aiStatistics, Player player) {
-		byte playerId = player.playerId;
+	private boolean isHighGoodsGame(AiStatistics aiStatistics, byte playerId) {
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.AXE, playerId) >= 8 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.SAW, playerId) >= 3 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PICK, playerId) >= 5;
 	}
 
-	private boolean isMiddleGoodsGame(AiStatistics aiStatistics, Player player) {
-		byte playerId = player.playerId;
+	private boolean isMiddleGoodsGame(AiStatistics aiStatistics, byte playerId) {
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.AXE, playerId) >= 6 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.SAW, playerId) >= 2 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PICK, playerId) >= 4;

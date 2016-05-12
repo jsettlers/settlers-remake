@@ -139,6 +139,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
+			economyMinister.update(aiStatistics, playerId);
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			buildBuildings();
