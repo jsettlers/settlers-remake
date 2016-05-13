@@ -52,11 +52,11 @@ public class WhatToDoAiFactory {
 		case AI_VERY_EASY:
 			return new AdaptableEconomyMinister(aiStatistics, player);
 		case AI_EASY:
-			return new BuildingListEconomyMinister(aiMapInformation, player, 1F / 3F);
+			return new BuildingListEconomyMinister(aiMapInformation, 1F / 4F);
 		case AI_HARD:
-			return new BuildingListEconomyMinister(aiMapInformation, player, 1F / 2F);
+			return new BuildingListEconomyMinister(aiMapInformation, 1F / 2F);
 		default:
-			return new BuildingListEconomyMinister(aiMapInformation, player, 1F);
+			return new BuildingListEconomyMinister(aiMapInformation, 1F);
 		}
 	}
 

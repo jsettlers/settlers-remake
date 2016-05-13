@@ -54,7 +54,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 */
-	public BuildingListEconomyMinister(AiMapInformation aiMapInformation, Player player, float weaponSmithFactor) {
+	public BuildingListEconomyMinister(AiMapInformation aiMapInformation, float weaponSmithFactor) {
 		this.aiMapInformation = aiMapInformation;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
@@ -65,16 +65,16 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		addMinimalBuildingMaterialBuildings(aiStatistics, playerId);
 		if (isVerySmallMap()) {
 			addSmallWeaponProduction();
-			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry(weaponSmithFactor);
+			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry();
 			addManaBuildings();
 		} else {
 			addManaBuildings();
-			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry(weaponSmithFactor);
+			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry();
 		}
 	}
 
-	private void addFoodAndBuildingMaterialAndWeaponAndGoldIndustry(float weaponSmithFactor) {
-		List<EBuildingType> weaponsBuildings = determineWeaponAndGoldBuildings(weaponSmithFactor);
+	private void addFoodAndBuildingMaterialAndWeaponAndGoldIndustry() {
+		List<EBuildingType> weaponsBuildings = determineWeaponAndGoldBuildings();
 		List<EBuildingType> foodBuildings = determineFoodBuildings();
 		List<EBuildingType> buildingMaterialBuildings = determineBuildingMaterialBuildings();
 
@@ -138,7 +138,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		return foodBuildings;
 	}
 
-	private List<EBuildingType> determineWeaponAndGoldBuildings(float weaponSmithFactor) {
+	private List<EBuildingType> determineWeaponAndGoldBuildings() {
 		List<EBuildingType> weaponsBuildings = new ArrayList<>();
 		for (int i = 0; i < (mapBuildingCounts[WEAPONSMITH.ordinal] * weaponSmithFactor); i++) {
 			weaponsBuildings.add(COALMINE);
