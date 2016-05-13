@@ -16,6 +16,7 @@
  */
 package jsettlers.ai.army;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -29,7 +30,6 @@ import jsettlers.graphics.action.SetMaterialProductionAction.EMaterialProduction
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
-import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
@@ -45,10 +45,10 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  * @author codingberlin
  */
 public class WinnerGeneral implements ArmyGeneral {
-	private static final byte MIN_ATTACKER_SIZE = 20;
-	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS = 10;
-	private static final byte RUSH_DEFENSE_SPEARMEN = 20;
-	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
+	private static final byte MIN_ATTACKER_COUNT = 20;
+	private static final byte MIN_SWORDSMEN_COUNT = 10;
+	private static final byte MIN_PIKEMEN_COUNT = 20;
+	private static final int BOWMEN_COUNT_OF_KILLING_INFANTRY = 300;
 	private static final EBuildingType[] MIN_BUILDING_REQUIREMENTS_FOR_ATTACK =
 			{EBuildingType.COALMINE, EBuildingType.IRONMINE, EBuildingType.IRONMELT, EBuildingType.WEAPONSMITH, EBuildingType.BARRACK};
 
@@ -66,15 +66,48 @@ public class WinnerGeneral implements ArmyGeneral {
 
 	@Override
 	public void commandTroops() {
-		Situation situation = calculateSituation();
+		Situation situation = calculateSituation(player.playerId);
 		if (aiStatistics.getEnemiesInTownOf(player.playerId).size() > 0) {
 			defend(situation);
-		} else {
-			AttackInformation attackInformation = determineAttackInformation(situation);
-			if (attackInformation != null) {
-				attack(situation, attackInformation);
+		} else if (enemiesAreAlive()) {
+			byte weakestEnemyId = getWeakestEnemy();
+			Situation enemySituation = calculateSituation(weakestEnemyId);
+			boolean infantryWouldDie = wouldInfantryDie(enemySituation);
+			if (attackIsPossible(situation, enemySituation, infantryWouldDie)) {
+				attack(situation, infantryWouldDie);
 			}
 		}
+	}
+
+	private boolean attackIsPossible(Situation situation, Situation enemySituation, boolean infantryWouldDie) {
+		for (EBuildingType requiredType : MIN_BUILDING_REQUIREMENTS_FOR_ATTACK) {
+			if (aiStatistics.getNumberOfBuildingTypeForPlayer(requiredType, player.playerId) < 1) {
+				return false;
+			}
+		}
+
+		float combatStrength = player.getCombatStrengthInformation().getCombatStrength(false);
+		float effectiveAttackerCount;
+		if (infantryWouldDie) {
+			effectiveAttackerCount = situation.bowmenPositions.size() * combatStrength;
+		} else {
+			effectiveAttackerCount = situation.soldiersCount() * combatStrength;
+		}
+		return effectiveAttackerCount >= MIN_ATTACKER_COUNT && effectiveAttackerCount * 1.5 > enemySituation.soldiersCount();
+
+	}
+
+	private boolean wouldInfantryDie(Situation enemySituation) {
+		return enemySituation.bowmenPositions.size() > BOWMEN_COUNT_OF_KILLING_INFANTRY;
+	}
+
+	private boolean enemiesAreAlive() {
+		for (byte enemyId : aiStatistics.getEnemiesOf(player.playerId)) {
+			if (aiStatistics.isAlive(enemyId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -82,23 +115,32 @@ public class WinnerGeneral implements ArmyGeneral {
 		if (!upgradeSoldiers(ESoldierType.BOWMAN))
 			if (!upgradeSoldiers(ESoldierType.PIKEMAN))
 				upgradeSoldiers(ESoldierType.SWORDSMAN);
-		int numberOfMissingSwordsmen = Math.max(0, SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS
+		int numberOfMissingSwordsmen = Math.max(0, MIN_SWORDSMEN_COUNT
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId).size());
 		setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, numberOfMissingSwordsmen);
-		if (numberOfMissingSwordsmen >= SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS / 2) {
+		if (numberOfMissingSwordsmen > 0) {
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
 		} else {
-			int numberOfMissingSpearmen = Math.max(0, RUSH_DEFENSE_SPEARMEN
+			int numberOfMissingSpearmen = Math.max(0, MIN_PIKEMEN_COUNT
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId).size()
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId).size()
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId).size());
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, numberOfMissingSpearmen);
 		}
-		setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0f);
-		setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0f);
-		setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1f);
+		int numberOfBowmen = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, player.playerId).size()
+						+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, player.playerId).size()
+						+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, player.playerId).size();
+		if (numberOfBowmen * player.getCombatStrengthInformation().getCombatStrength(false) >= BOWMEN_COUNT_OF_KILLING_INFANTRY) {
+			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
+			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0F);
+			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
+		} else {
+			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
+			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0.3F);
+			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
+		}
 	}
 
 	private void setNumberOfFutureProducedMaterial(byte playerId, EMaterialType materialType, int numberToProduce) {
@@ -131,57 +173,42 @@ public class WinnerGeneral implements ArmyGeneral {
 		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(player.playerId).iterator().next());
 	}
 
-	private AttackInformation determineAttackInformation(Situation situation) {
-		if (situation.amountOfMyAttackingTroops < MIN_ATTACKER_SIZE) {
-			return null;
+	private void attack(Situation situation, boolean infantryWouldDie) {
+		byte enemyId = getWeakestEnemy();
+		ShortPoint2D targetDoor = getTargetEnemyDoorToAttack(enemyId);
+		if (infantryWouldDie) {
+			sendTroopsTo(situation.bowmenPositions, targetDoor);
+		} else {
+			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.spearmenPositions.size() + situation
+					.swordsmenPositions.size());
+			soldiers.addAll(situation.bowmenPositions);
+			soldiers.addAll(situation.spearmenPositions);
+			soldiers.addAll(situation.swordsmenPositions);
+			sendTroopsTo(soldiers, targetDoor);
 		}
+	}
 
-		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
-		if (enemies.size() == 0) {
-			return null;
-		}
-
-		for (EBuildingType requiredType : MIN_BUILDING_REQUIREMENTS_FOR_ATTACK) {
-			if (aiStatistics.getNumberOfBuildingTypeForPlayer(requiredType, player.playerId) < 1) {
-				return null;
-			}
-		}
-
-		AttackInformation resultAttackInformation = null;
-		for (Byte enemy : enemies) {
-			int amountOfEnemyTroops = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, enemy).size();
-			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, enemy).size();
-			if (situation.amountOfMyAttackingTroops > amountOfEnemyTroops
-					&& (resultAttackInformation == null || resultAttackInformation.amountOfAttackers < amountOfEnemyTroops)) {
-				Building militaryBuildingToAttack = determineMilitaryBuildingToAttack(enemy);
-				if (militaryBuildingToAttack != null) {
-					resultAttackInformation = new AttackInformation(enemy, Math.max(amountOfEnemyTroops, 10), militaryBuildingToAttack);
+	private byte getWeakestEnemy() {
+		byte weakestEnemyId = 0;
+		int minAmountOfEnemyId = Integer.MAX_VALUE;
+		for (byte enemyId : aiStatistics.getEnemiesOf(player.playerId)) {
+			if (aiStatistics.isAlive(enemyId)) {
+				int amountOfEnemyTroops = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, enemyId).size();
+				amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, enemyId).size();
+				if (amountOfEnemyTroops < minAmountOfEnemyId) {
+					minAmountOfEnemyId = amountOfEnemyTroops;
+					weakestEnemyId = enemyId;
 				}
 			}
 		}
-		return resultAttackInformation;
-	}
-
-	private void attack(Situation situation, AttackInformation attackInformation) {
-		List<ShortPoint2D> attackerPositions = new Vector<ShortPoint2D>();
-		int numberOfBowmen = Math.min(attackInformation.amountOfAttackers - MIN_NEAR_COMBAT_SOLDIERS, situation.bowmenPositions.size());
-		attackerPositions.addAll(AiStatistics
-				.detectNearestPointsFromList(attackInformation.militaryBuildingToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen));
-		int numberOfSpearmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		attackerPositions.addAll(AiStatistics
-				.detectNearestPointsFromList(attackInformation.militaryBuildingToAttack.getDoor(), situation.spearmenPositions, numberOfSpearmen));
-		int numberOfSwordsmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		attackerPositions.addAll(AiStatistics
-				.detectNearestPointsFromList(attackInformation.militaryBuildingToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
-
-		sendTroopsTo(attackerPositions, attackInformation.militaryBuildingToAttack.getDoor());
+		return weakestEnemyId;
 	}
 
 	private void sendTroopsTo(List<ShortPoint2D> attackerPositions, ShortPoint2D target) {
@@ -193,7 +220,7 @@ public class WinnerGeneral implements ArmyGeneral {
 		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds));
 	}
 
-	private Building determineMilitaryBuildingToAttack(byte enemyToAttackId) {
+	private ShortPoint2D getTargetEnemyDoorToAttack(byte enemyToAttackId) {
 		List<ShortPoint2D> myMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(),
 				player.playerId);
 		ShortPoint2D myBaseAveragePoint = aiStatistics.calculateAveragePointFromList(myMilitaryBuildings);
@@ -201,47 +228,36 @@ public class WinnerGeneral implements ArmyGeneral {
 		List<ShortPoint2D> enemyMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(),
 				enemyToAttackId);
 
-		if (enemyMilitaryBuildings.size() == 0) {
-			return null;
-		}
-
-		return aiStatistics.getBuildingAt(AiStatistics.detectNearestPointFromList(myBaseAveragePoint, enemyMilitaryBuildings));
+		return aiStatistics.getBuildingAt(AiStatistics.detectNearestPointFromList(myBaseAveragePoint, enemyMilitaryBuildings)).getDoor();
 	}
 
-	private Situation calculateSituation() {
+	private Situation calculateSituation(byte playerId) {
 		Situation situation = new Situation();
-		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, player.playerId));
-		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId));
-		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId));
-		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, player.playerId));
-		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, player.playerId));
-		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, player.playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId));
-		situation.amountOfMyAttackingTroops = Math.max(situation.swordsmenPositions.size() - SWORDSMEN_BUFFER_TO_OCCUPY_MILITARY_BUILDINGS, 0)
-				+ situation.bowmenPositions.size()
-				+ situation.spearmenPositions.size();
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, playerId));
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, playerId));
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, playerId));
+		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, playerId));
+		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, playerId));
+		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, playerId));
+		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, playerId));
+		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, playerId));
+		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, playerId));
 
 		return situation;
+	}
+
+	public boolean attackWithBowmenOnly(Situation situation) {
+		float effectiveBowmenCount = situation.bowmenPositions.size()
+				* player.getCombatStrengthInformation().getCombatStrength(false);
+		return effectiveBowmenCount >= BOWMEN_COUNT_OF_KILLING_INFANTRY;
 	}
 
 	private static class Situation {
 		private final List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
 		private final List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
 		private final List<ShortPoint2D> spearmenPositions = new Vector<ShortPoint2D>();
-		private int amountOfMyAttackingTroops = 0;
-	}
-
-	private static class AttackInformation {
-		// private byte targetPlayerId;
-		private final int amountOfAttackers;
-		private final Building militaryBuildingToAttack;
-
-		public AttackInformation(byte targetPlayerId, int amountOfAttackers, Building militaryBuildingToAttack) {
-			// this.targetPlayerId = targetPlayerId;
-			this.amountOfAttackers = amountOfAttackers;
-			this.militaryBuildingToAttack = militaryBuildingToAttack;
+		public int soldiersCount() {
+			return swordsmenPositions.size() + bowmenPositions.size() + spearmenPositions.size();
 		}
 	}
 
