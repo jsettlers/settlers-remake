@@ -44,7 +44,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  *
  * @author codingberlin
  */
-public class WinnerGeneral implements ArmyGeneral {
+public class ConfigurableGeneral implements ArmyGeneral {
 	private static final byte MIN_ATTACKER_COUNT = 20;
 	private static final byte MIN_SWORDSMEN_COUNT = 10;
 	private static final byte MIN_PIKEMEN_COUNT = 20;
@@ -56,12 +56,15 @@ public class WinnerGeneral implements ArmyGeneral {
 	private final Player player;
 	private final ITaskScheduler taskScheduler;
 	private final MovableGrid movableGrid;
+	private float attackerCountFactor;
 
-	public WinnerGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+	public ConfigurableGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler, float
+			attackerCountFactor) {
 		this.aiStatistics = aiStatistics;
 		this.player = player;
 		this.taskScheduler = taskScheduler;
 		this.movableGrid = movableGrid;
+		this.attackerCountFactor = attackerCountFactor;
 	}
 
 	@Override
@@ -93,7 +96,7 @@ public class WinnerGeneral implements ArmyGeneral {
 		} else {
 			effectiveAttackerCount = situation.soldiersCount() * combatStrength;
 		}
-		return effectiveAttackerCount >= MIN_ATTACKER_COUNT && effectiveAttackerCount * 1.5 > enemySituation.soldiersCount();
+		return effectiveAttackerCount >= MIN_ATTACKER_COUNT && effectiveAttackerCount * attackerCountFactor > enemySituation.soldiersCount();
 
 	}
 
@@ -168,7 +171,7 @@ public class WinnerGeneral implements ArmyGeneral {
 	private void defend(Situation situation) {
 		List<ShortPoint2D> allMyTroops = new Vector<ShortPoint2D>();
 		allMyTroops.addAll(situation.bowmenPositions);
-		allMyTroops.addAll(situation.spearmenPositions);
+		allMyTroops.addAll(situation.pikemenPositions);
 		allMyTroops.addAll(situation.swordsmenPositions);
 		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(player.playerId).iterator().next());
 	}
@@ -179,10 +182,10 @@ public class WinnerGeneral implements ArmyGeneral {
 		if (infantryWouldDie) {
 			sendTroopsTo(situation.bowmenPositions, targetDoor);
 		} else {
-			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.spearmenPositions.size() + situation
+			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.pikemenPositions.size() + situation
 					.swordsmenPositions.size());
 			soldiers.addAll(situation.bowmenPositions);
-			soldiers.addAll(situation.spearmenPositions);
+			soldiers.addAll(situation.pikemenPositions);
 			soldiers.addAll(situation.swordsmenPositions);
 			sendTroopsTo(soldiers, targetDoor);
 		}
@@ -239,25 +242,19 @@ public class WinnerGeneral implements ArmyGeneral {
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, playerId));
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, playerId));
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, playerId));
-		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, playerId));
+		situation.pikemenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, playerId));
+		situation.pikemenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, playerId));
+		situation.pikemenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, playerId));
 
 		return situation;
-	}
-
-	public boolean attackWithBowmenOnly(Situation situation) {
-		float effectiveBowmenCount = situation.bowmenPositions.size()
-				* player.getCombatStrengthInformation().getCombatStrength(false);
-		return effectiveBowmenCount >= BOWMEN_COUNT_OF_KILLING_INFANTRY;
 	}
 
 	private static class Situation {
 		private final List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
 		private final List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
-		private final List<ShortPoint2D> spearmenPositions = new Vector<ShortPoint2D>();
+		private final List<ShortPoint2D> pikemenPositions = new Vector<ShortPoint2D>();
 		public int soldiersCount() {
-			return swordsmenPositions.size() + bowmenPositions.size() + spearmenPositions.size();
+			return swordsmenPositions.size() + bowmenPositions.size() + pikemenPositions.size();
 		}
 	}
 

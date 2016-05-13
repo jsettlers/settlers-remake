@@ -15,8 +15,7 @@
 package jsettlers.ai.highlevel;
 
 import jsettlers.ai.army.ArmyGeneral;
-import jsettlers.ai.army.LooserGeneral;
-import jsettlers.ai.army.WinnerGeneral;
+import jsettlers.ai.army.ConfigurableGeneral;
 import jsettlers.ai.economy.AdaptableEconomyMinister;
 import jsettlers.ai.economy.BuildingListEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
@@ -31,6 +30,8 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  * @author codingberlin
  */
 public class WhatToDoAiFactory {
+
+	private static float[] attackerCountFactor = { 0.5F, 0.75F, 1F, 1.5F, 0F };
 
 	public IWhatToDoAi buildWhatToDoAi(
 			EPlayerType type,
@@ -63,9 +64,6 @@ public class WhatToDoAiFactory {
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
 			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		// TODO: use civilisation to determine different general when there is more than ROMAN
-		if (type == EPlayerType.AI_HARD || type == EPlayerType.AI_VERY_HARD) {
-			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
-		}
-		return new LooserGeneral(aiStatistics, player, movableGrid, taskScheduler);
+		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, attackerCountFactor[type.ordinal()]);
 	}
 }

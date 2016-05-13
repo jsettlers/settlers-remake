@@ -51,17 +51,17 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void easyShouldConquerVeryEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 80 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_EASY, EPlayerType.AI_VERY_EASY, 300 * MINUTES);
 	}
 
 	@Test
 	public void hardShouldConquerEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 120 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 300 * MINUTES);
 	}
 
 	@Test
 	public void veryHardShouldConquerHard() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 150 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_VERY_HARD, EPlayerType.AI_HARD, 299 * MINUTES);
 	}
 
 	@Test
