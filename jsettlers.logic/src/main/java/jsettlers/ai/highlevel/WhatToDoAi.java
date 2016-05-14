@@ -64,6 +64,7 @@ import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.spawn.SpawnBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
@@ -241,18 +242,12 @@ public class WhatToDoAi implements IWhatToDoAi {
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
-			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1
-					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
-			} else if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1
-					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) > 0) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
-			} else if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1
-					&& aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) > 0) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
-						aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
+			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1 && !destroyLivingHouse(SMALL_LIVINGHOUSE)) {
+				if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1 && !destroyLivingHouse(MEDIUM_LIVINGHOUSE)) {
+					if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1) {
+						destroyLivingHouse(BIG_LIVINGHOUSE);
+					}
+				}
 			}
 		}
 		
@@ -278,6 +273,16 @@ public class WhatToDoAi implements IWhatToDoAi {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
 			}
 		}
+	}
+	
+	private boolean destroyLivingHouse(EBuildingType livingHouseType) {
+		for (ShortPoint2D livingHousePosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(livingHouseType, playerId)) {
+			if (aiStatistics.getBuildingAt(livingHousePosition).cannotWork()) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, livingHousePosition));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean isWoodJam() {
@@ -380,8 +385,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private boolean buildLivingHouse() {
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30;
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
 				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
