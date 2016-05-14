@@ -94,6 +94,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
+	private boolean isEndGame = false;
 	private ArrayList<Object> failedConstructingBuildings;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
@@ -140,6 +141,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
 			economyMinister.update(aiStatistics, playerId);
+			isEndGame = economyMinister.isEndGame(aiStatistics, playerId);
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			buildBuildings();
@@ -256,7 +258,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 		
 		// destroy not necessary buildings to get enough space for livinghouses in end-game
-		if (isEndGame() && isWoodJam()) {
+		if (isEndGame && isWoodJam()) {
 			List<ShortPoint2D> forresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
 			if (forresters.size() > 1) {
 				for (int i = 1; i < forresters.size(); i++) {
@@ -284,10 +286,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 				aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
 	}
 
-	private boolean isEndGame() {
-		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) > economyMinister.getNumberOfEndGameWeaponSmiths() * 0.8F;
-	}
-
 	private void destroyHinterlandMilitaryBuildings() {
 		for (ShortPoint2D militaryBuildingPositions : aiStatistics.getHinterlandMilitaryBuildingPositionsOfPlayer(playerId)) {
 			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, militaryBuildingPositions));
@@ -301,6 +299,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 				return;
 			if (economyMinister.automaticTowersEnabled(aiStatistics, playerId) && buildTower())
 				return;
+			if (isEndGame) {
+				return;
+			}
 			if (buildStock())
 				return;
 			buildEconomy();
@@ -321,14 +322,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void buildEconomy() {
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();;
-		boolean isEndgame = isEndGame();
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
-			if (isEndgame && (currentBuildingType == LUMBERJACK
-					|| currentBuildingType == FORESTER
-					|| currentBuildingType == BIG_TEMPLE
-					|| currentBuildingType == SAWMILL)) {
-				continue;
-			}
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {

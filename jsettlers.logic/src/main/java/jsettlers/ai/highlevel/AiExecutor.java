@@ -68,6 +68,8 @@ public class AiExecutor implements INetworkTimerable {
 			whatToDoAi.applyRules();
 		}
 		applyRulesStopWatch.stop("computerplayer:applyRules()");
+		System.out.println(updateStatisticsStopWatch);
+		System.out.println(applyRulesStopWatch);
 	}
 
 	public StatisticsStopWatch getUpdateStatisticsStopWatch() {

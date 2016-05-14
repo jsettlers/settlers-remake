@@ -18,7 +18,6 @@ import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +48,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	/**
 	 *
 	 * @param aiMapInformation
-	 * @param player
 	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
@@ -71,6 +69,15 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addManaBuildings();
 			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry();
 		}
+	}
+
+	@Override
+	public boolean isEndGame(AiStatistics aiStatistics, byte playerId) {
+		double remaningGras = aiMapInformation.getRemainingGrassTiles(aiStatistics, playerId)
+				- aiStatistics.getTreesForPlayer(playerId).size()
+				- aiStatistics.getStonesForPlayer(playerId).size();
+		double availableGras = aiMapInformation.getGrassTilesOf(playerId);
+		return remaningGras / availableGras <= 0.6F;
 	}
 
 	private void addFoodAndBuildingMaterialAndWeaponAndGoldIndustry() {

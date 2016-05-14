@@ -119,6 +119,11 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
+	public boolean isEndGame(AiStatistics aiStatistics, byte playerId) {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return this.getClass().getName();
 	}

@@ -38,4 +38,6 @@ public interface EconomyMinister {
 	boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId);
 
 	void update(AiStatistics aiStatistics, byte playerId);
+
+	boolean isEndGame(AiStatistics aiStatistics, byte playerId);
 }

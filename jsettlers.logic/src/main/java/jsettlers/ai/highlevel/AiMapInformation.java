@@ -208,4 +208,19 @@ public class AiMapInformation {
 
 		return true;
 	}
+
+	public long getRemainingGrassTiles(AiStatistics aiStatistics, byte playerId) {
+		long remainingGrass = resourceAndGrasCount[playerId][GRAS];
+		for (EBuildingType buildingType : EBuildingType.VALUES) {
+			if (!buildingType.isMine()) {
+				remainingGrass -= buildingType.getProtectedTiles().length * aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType,
+						playerId);
+			}
+		}
+		return remainingGrass;
+	}
+
+	public long getGrassTilesOf(byte playerId) {
+		return resourceAndGrasCount[playerId][GRAS];
+	}
 }
