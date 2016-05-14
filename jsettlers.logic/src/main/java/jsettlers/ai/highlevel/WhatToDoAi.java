@@ -140,6 +140,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
+			System.out.println(playerId + ":  " + mainGrid.getPartitionsGrid().getPlayer(playerId).getEndgameStatistic());
 			economyMinister.update();
 			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();

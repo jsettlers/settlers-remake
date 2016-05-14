@@ -32,7 +32,6 @@ public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	private final AiStatistics aiStatistics;
-	private final AiMapInformation aiMapInformation;
 	private final StatisticsStopWatch updateStatisticsStopWatch = new StatisticsStopWatch();
 	private final StatisticsStopWatch applyRulesStopWatch = new StatisticsStopWatch();
 
@@ -41,7 +40,6 @@ public class AiExecutor implements INetworkTimerable {
 		aiStatistics.updateStatistics();
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
-		aiMapInformation = new AiMapInformation(mainGrid);
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[playerId];
 			if (playerSetting.isAvailable() && playerSetting.getPlayerType().isAi()) {
@@ -52,7 +50,7 @@ public class AiExecutor implements INetworkTimerable {
 						mainGrid.getPartitionsGrid().getPlayer(playerId),
 						mainGrid,
 						mainGrid.getMovableGrid(),
-						taskScheduler, aiMapInformation));
+						taskScheduler));
 			}
 		}
 	}
@@ -61,15 +59,12 @@ public class AiExecutor implements INetworkTimerable {
 	public void timerEvent() {
 		updateStatisticsStopWatch.restart();
 		aiStatistics.updateStatistics();
-		aiMapInformation.updateMapInformation();
 		updateStatisticsStopWatch.stop("computerplayer:updateStatistics()");
 		applyRulesStopWatch.restart();
 		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
 			whatToDoAi.applyRules();
 		}
 		applyRulesStopWatch.stop("computerplayer:applyRules()");
-		System.out.println(updateStatisticsStopWatch);
-		System.out.println(applyRulesStopWatch);
 	}
 
 	public StatisticsStopWatch getUpdateStatisticsStopWatch() {

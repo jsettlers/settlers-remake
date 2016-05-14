@@ -89,7 +89,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 			}
 		}
 
-		float combatStrength = player.getCombatStrengthInformation().getCombatStrength(false);
+		float combatStrength = 1F; //TODO: use when storages for gold are working: player.getCombatStrengthInformation().getCombatStrength(false);
 		float effectiveAttackerCount;
 		if (infantryWouldDie) {
 			effectiveAttackerCount = situation.bowmenPositions.size() * combatStrength;
