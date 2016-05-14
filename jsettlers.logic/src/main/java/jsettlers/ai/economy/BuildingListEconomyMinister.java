@@ -45,6 +45,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private AiStatistics aiStatistics;
 	private byte playerId;
 	private float weaponSmithFactor;
+	private boolean isHighGoodsGame;
+	private boolean isMiddleGoodsGame;
 
 	/**
 	 *
@@ -57,9 +59,13 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		this.playerId = player.playerId;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
+		this.isHighGoodsGame = isHighGoodsGame();
+		this.isMiddleGoodsGame = isMiddleGoodsGame();
 	};
 
+	@Override
 	public void update() {
+		buildingsToBuild.clear();
 		this.mapBuildingCounts = aiStatistics.getAiMapInformation().getBuildingCounts(playerId);
 		addMinimalBuildingMaterialBuildings();
 		if (isVerySmallMap()) {
@@ -234,7 +240,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	private void addMinimalBuildingMaterialBuildings() {
 		buildingsToBuild.add(TOWER); // Start Tower
-		if (isHighGoodsGame()) {
+		if (isHighGoodsGame) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -257,7 +263,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
-		} else if (isMiddleGoodsGame()) {
+		} else if (isMiddleGoodsGame) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);

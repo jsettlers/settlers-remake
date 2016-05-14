@@ -49,7 +49,7 @@ public class AiMapInformation {
 	private static final double FARM_TO_WATERWORKS_RATIO = 3F / 1F;
 	private static final double FARM_TO_PIG_FARM_RATIO = 3F / 1F;
 	private static final double FARM_TO_SLAUGHTER_RATIO = 6F / 1F;
-	private static final double WEAPON_SMITH_TO_LUMBERJACK_RATIO = 10F / 8F;
+	private static final double WEAPON_SMITH_TO_LUMBERJACK_RATIO = 20F / 8F;
 	private static final double LUMBERJACK_TO_SAWMILL_RATIO = 2F / 1F;
 	private static final double LUMBERJACK_TO_FORESTER_RATIO = 2F / 1F;
 	private static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 8F / 5F;
@@ -169,7 +169,7 @@ public class AiMapInformation {
 	}
 
 	private boolean isEnoughSpace(int[] buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = Math.round(grasTiles / 1.4F);
+		long grasTilesWithoutBuffer = Math.round(grasTiles / 3F);
 		for (int i = 0; i < buildingCounts.length; i++) {
 			EBuildingType buildingType = EBuildingType.VALUES[i];
 			if (!buildingType.isMine()) {

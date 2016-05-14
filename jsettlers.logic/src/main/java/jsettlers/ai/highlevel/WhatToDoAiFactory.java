@@ -31,7 +31,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	private static float[] ATTACKER_COUNT_FACTOR = { 0.25F, 0.5F, 0.75F, 1F, 0F };
+	private static float[] ATTACKER_COUNT_FACTOR = { 1.1F, 1F, 0.9F, 0.8F, 0F };
 
 	public IWhatToDoAi buildWhatToDoAi(
 			EPlayerType type,

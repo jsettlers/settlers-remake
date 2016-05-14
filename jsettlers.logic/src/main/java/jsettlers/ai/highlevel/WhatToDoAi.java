@@ -84,7 +84,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
 	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 2;
 	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
-	public static final float WEAPON_SMITH_FACTOR = 4.5F;
+	public static final float WEAPON_SMITH_FACTOR = 6F;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -380,13 +380,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean buildLivingHouse() {
-		if (aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) > 0
-				|| aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) > 0) {
-			return false;
-		}
-
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS;
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
 				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
