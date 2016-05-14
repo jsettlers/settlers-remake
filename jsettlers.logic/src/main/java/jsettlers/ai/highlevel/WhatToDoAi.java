@@ -109,7 +109,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
 		initializeBuildingLists();
-		System.out.println(this);
 	}
 
 	private void initializeBuildingLists() {
@@ -140,7 +139,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
-			System.out.println(playerId + ":  " + mainGrid.getPartitionsGrid().getPlayer(playerId).getEndgameStatistic());
 			economyMinister.update();
 			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();
