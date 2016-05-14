@@ -297,7 +297,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites()) {
 			if (economyMinister.automaticLivingHousesEnabled() && buildLivingHouse())
 				return;
-			if (economyMinister.automaticTowersEnabled() && buildTower())
+			if (economyMinister.automaticTowersEnabled() && aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0 && buildTower())
 				return;
 			if (isEndGame) {
 				return;
