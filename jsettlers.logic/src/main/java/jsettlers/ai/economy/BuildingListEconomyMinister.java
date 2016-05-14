@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
-import jsettlers.ai.highlevel.AiMapInformation;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,25 +42,26 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private int[] mapBuildingCounts;
 	private final List<EBuildingType> buildingsToBuild;
 	private int numberOfMidGameStoneCutters = 0;
-	private AiMapInformation aiMapInformation;
+	private AiStatistics aiStatistics;
+	private byte playerId;
 	private float weaponSmithFactor;
 
 	/**
 	 *
-	 * @param aiMapInformation
 	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 */
-	public BuildingListEconomyMinister(AiMapInformation aiMapInformation, float weaponSmithFactor) {
-		this.aiMapInformation = aiMapInformation;
+	public BuildingListEconomyMinister(AiStatistics aiStatistics, Player player, float weaponSmithFactor) {
+		this.aiStatistics = aiStatistics;
+		this.playerId = player.playerId;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
 	};
 
-	public void update(AiStatistics aiStatistics, byte playerId) {
-		this.mapBuildingCounts = aiMapInformation.getBuildingCounts(playerId);
-		addMinimalBuildingMaterialBuildings(aiStatistics, playerId);
+	public void update() {
+		this.mapBuildingCounts = aiStatistics.getAiMapInformation().getBuildingCounts(playerId);
+		addMinimalBuildingMaterialBuildings();
 		if (isVerySmallMap()) {
 			addSmallWeaponProduction();
 			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry();
@@ -72,11 +73,11 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public boolean isEndGame(AiStatistics aiStatistics, byte playerId) {
-		double remaningGras = aiMapInformation.getRemainingGrassTiles(aiStatistics, playerId)
+	public boolean isEndGame() {
+		double remaningGras = aiStatistics.getAiMapInformation().getRemainingGrassTiles(aiStatistics, playerId)
 				- aiStatistics.getTreesForPlayer(playerId).size()
 				- aiStatistics.getStonesForPlayer(playerId).size();
-		double availableGras = aiMapInformation.getGrassTilesOf(playerId);
+		double availableGras = aiStatistics.getAiMapInformation().getGrassTilesOf(playerId);
 		return remaningGras / availableGras <= 0.6F;
 	}
 
@@ -231,9 +232,9 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		}
 	}
 
-	private void addMinimalBuildingMaterialBuildings(AiStatistics aiStatistics, byte playerId) {
+	private void addMinimalBuildingMaterialBuildings() {
 		buildingsToBuild.add(TOWER); // Start Tower
-		if (isHighGoodsGame(aiStatistics, playerId)) {
+		if (isHighGoodsGame()) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -256,7 +257,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
 			addIfPossible(STONECUTTER);
-		} else if (isMiddleGoodsGame(aiStatistics, playerId)) {
+		} else if (isMiddleGoodsGame()) {
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -319,13 +320,13 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		}
 	}
 
-	private boolean isHighGoodsGame(AiStatistics aiStatistics, byte playerId) {
+	private boolean isHighGoodsGame() {
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.AXE, playerId) >= 8 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.SAW, playerId) >= 3 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PICK, playerId) >= 5;
 	}
 
-	private boolean isMiddleGoodsGame(AiStatistics aiStatistics, byte playerId) {
+	private boolean isMiddleGoodsGame() {
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.AXE, playerId) >= 6 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.SAW, playerId) >= 2 &&
 				aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PICK, playerId) >= 4;
@@ -342,7 +343,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId) {
+	public int getNumberOfParallelConstructionSites() {
 		if (aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.PLANK, playerId) > 1
 				&& aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.STONE, playerId) > 1) {
 			// If plank and stone is still offered, we can build the next building.
@@ -353,15 +354,15 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
-		if (isDanger(aiStatistics, playerId)) {
+	public List<EBuildingType> getBuildingsToBuild() {
+		if (isDanger()) {
 			return prefixBuildingsToBuildWithRushDefence();
 		} else {
 			return buildingsToBuild;
 		}
 	}
 
-	private boolean isDanger(AiStatistics aiStatistics, byte playerId) {
+	private boolean isDanger() {
 		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BARRACK, playerId) < 1) {
 			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
 				if (aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, enemy) > 0) {
@@ -390,12 +391,12 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
+	public boolean automaticTowersEnabled() {
 		return aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId) >= 2;
 	}
 
 	@Override
-	public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
+	public boolean automaticLivingHousesEnabled() {
 		return aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= 8
 				|| aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= mapBuildingCounts[LUMBERJACK.ordinal]
 				|| aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) >= mapBuildingCounts[WEAPONSMITH.ordinal] * 0.8F;

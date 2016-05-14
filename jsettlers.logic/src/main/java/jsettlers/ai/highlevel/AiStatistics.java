@@ -84,6 +84,7 @@ public class AiStatistics {
 	private final MovableGrid movableGrid;
 	private final FlagsGrid flagsGrid;
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
+	private final AiMapInformation aiMapInformation;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -95,6 +96,7 @@ public class AiStatistics {
 		this.flagsGrid = mainGrid.getFlagsGrid();
 		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
 		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
+		this.aiMapInformation = new AiMapInformation(this.partitionsGrid);
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
@@ -178,13 +180,29 @@ public class AiStatistics {
 	}
 
 	private void updateMapStatistics() {
+		aiMapInformation.clear();
 		updatePartitionIdsToBuildOn();
-		updateResources();
 		short width = mainGrid.getWidth();
 		short height = mainGrid.getHeight();
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
+				int mapInformationPlayerId;
+				if (player != null) {
+					mapInformationPlayerId = player.playerId;
+				} else {
+					mapInformationPlayerId = aiMapInformation.resourceAndGrasCount.length - 1;
+				}
+				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
+					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
+					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
+					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
+						aiMapInformation.resourceAndGrasCount[mapInformationPlayerId][resourceType.ordinal]++;
+					}
+				}
+				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
+					aiMapInformation.resourceAndGrasCount[mapInformationPlayerId][aiMapInformation.GRAS]++;
+				}
 				Movable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
 					byte movablePlayerId = movable.getPlayerId();
@@ -266,19 +284,6 @@ public class AiStatistics {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
 		if (landscape.isRiver()) {
 			sortedRiversInDefaultPartition.addNoCollission(x, y);
-		}
-	}
-
-	private void updateResources() {
-		short width = mainGrid.getWidth();
-		short height = mainGrid.getHeight();
-		for (short x = 0; x < width; x++) {
-			for (short y = 0; y < height; y++) {
-				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
-					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
-				}
-			}
 		}
 	}
 
@@ -599,6 +604,9 @@ public class AiStatistics {
 		return playerStatistics[playerId].isAlive;
 	}
 
+	public AiMapInformation getAiMapInformation() {
+		return aiMapInformation;
+	}
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;

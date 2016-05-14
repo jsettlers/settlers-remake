@@ -25,19 +25,19 @@ import java.util.List;
  */
 public interface EconomyMinister {
 
-	int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId);
+	int getNumberOfParallelConstructionSites();
 
-	List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId);
+	List<EBuildingType> getBuildingsToBuild();
 
 	int getMidGameNumberOfStoneCutters();
 
 	int getNumberOfEndGameWeaponSmiths();
 
-	boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId);
+	boolean automaticTowersEnabled();
 
-	boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId);
+	boolean automaticLivingHousesEnabled();
 
-	void update(AiStatistics aiStatistics, byte playerId);
+	void update();
 
-	boolean isEndGame(AiStatistics aiStatistics, byte playerId);
+	boolean isEndGame();
 }

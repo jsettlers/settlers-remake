@@ -32,22 +32,22 @@ import static jsettlers.common.buildings.EBuildingType.*;
 public class AdaptableEconomyMinister implements EconomyMinister {
 
 	private final AiStatistics aiStatistics;
-	private final Player player;
+	private final byte playerId;
 	private static final List<EBuildingType> MINIMAL_BUILDING_TYPES = Arrays.asList(LUMBERJACK, STONECUTTER, SAWMILL, SMALL_LIVINGHOUSE, FORESTER,
 			LUMBERJACK, LUMBERJACK, STONECUTTER);
 
 	public AdaptableEconomyMinister(AiStatistics aiStatistics, Player player) {
 		this.aiStatistics = aiStatistics;
-		this.player = player;
+		this.playerId = player.playerId;
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSites(AiStatistics aiStatistics, byte playerId) {
+	public int getNumberOfParallelConstructionSites() {
 		return 5;
 	}
 
 	@Override
-	public List<EBuildingType> getBuildingsToBuild(AiStatistics aiStatistics, byte playerId) {
+	public List<EBuildingType> getBuildingsToBuild() {
 		List<EBuildingType> buildingsToBuild = new Vector<>();
 		buildingsToBuild.addAll(MINIMAL_BUILDING_TYPES);
 		buildingsToBuild.addAll(buildListOf(LUMBERJACK));
@@ -87,7 +87,7 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	private int determineNumberOf(EBuildingType buildingType) {
-		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
+		List<Byte> enemies = aiStatistics.getEnemiesOf(playerId);
 		float sumOfBuildings = 0;
 		for (byte playerId : enemies) {
 			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
@@ -106,20 +106,20 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public boolean automaticTowersEnabled(AiStatistics aiStatistics, byte playerId) {
+	public boolean automaticTowersEnabled() {
 		return true;
 	}
 
-	@Override public boolean automaticLivingHousesEnabled(AiStatistics aiStatistics, byte playerId) {
+	@Override public boolean automaticLivingHousesEnabled() {
 		return true;
 	}
 
-	@Override public void update(AiStatistics aiStatistics, byte playerId) {
+	@Override public void update() {
 		// nothing to update
 	}
 
 	@Override
-	public boolean isEndGame(AiStatistics aiStatistics, byte playerId) {
+	public boolean isEndGame() {
 		return false;
 	}
 

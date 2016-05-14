@@ -31,7 +31,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	private static float[] attackerCountFactor = { 0.5F, 0.75F, 1F, 1.5F, 0F };
+	private static float[] ATTACKER_COUNT_FACTOR = { 0.25F, 0.5F, 0.75F, 1F, 0F };
 
 	public IWhatToDoAi buildWhatToDoAi(
 			EPlayerType type,
@@ -40,30 +40,29 @@ public class WhatToDoAiFactory {
 			Player player,
 			MainGrid mainGrid,
 			MovableGrid movableGrid,
-			ITaskScheduler taskScheduler,
-			AiMapInformation aiMapInformation) {
+			ITaskScheduler taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
-		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player, aiMapInformation);
+		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
 	private EconomyMinister determineMinister(
-			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, AiMapInformation aiMapInformation) {
+			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
 		switch (type) {
 		case AI_VERY_EASY:
 			return new AdaptableEconomyMinister(aiStatistics, player);
 		case AI_EASY:
-			return new BuildingListEconomyMinister(aiMapInformation, 1F / 4F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F);
 		case AI_HARD:
-			return new BuildingListEconomyMinister(aiMapInformation, 1F / 2F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 2F);
 		default:
-			return new BuildingListEconomyMinister(aiMapInformation, 1F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F);
 		}
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
 			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		// TODO: use civilisation to determine different general when there is more than ROMAN
-		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, attackerCountFactor[type.ordinal()]);
+		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, ATTACKER_COUNT_FACTOR[type.ordinal()]);
 	}
 }

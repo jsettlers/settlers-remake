@@ -56,46 +56,20 @@ public class AiMapInformation {
 	public static final float COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
-	private static final int GRAS = EResourceType.VALUES.length;
+	public static final int GRAS = EResourceType.VALUES.length;
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
 	public static final int MAX_FISHERS = 10;
-	private MainGrid mainGrid;
-	private long[][] resourceAndGrasCount;
+	public long[][] resourceAndGrasCount;
 
-	public AiMapInformation(MainGrid mainGrid) {
-		this.mainGrid = mainGrid;
-		PartitionsGrid partitionsGrid = mainGrid.getPartitionsGrid();
+	public AiMapInformation(PartitionsGrid partitionsGrid) {
 		resourceAndGrasCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
 	}
 
-	public void updateMapInformation() {
-		PartitionsGrid partitionsGrid = mainGrid.getPartitionsGrid();
-		LandscapeGrid landscapeGrid = mainGrid.getLandscapeGrid();
-
+	public void clear() {
 		for (int i = 0; i < resourceAndGrasCount.length; i++) {
 			for (int ii = 0; ii < resourceAndGrasCount[i].length; ii++) {
 				resourceAndGrasCount[i][ii] = 0;
-			}
-		}
-		for (int x = 0; x < mainGrid.getWidth(); x++) {
-			for (int y = 0; y < mainGrid.getHeight(); y++) {
-				int playerId;
-				Player player = partitionsGrid.getPlayerAt(x, y);
-				if (player != null) {
-					playerId = player.playerId;
-				} else {
-					playerId = resourceAndGrasCount.length - 1;
-				}
-				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
-					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
-						resourceAndGrasCount[playerId][resourceType.ordinal]++;
-					}
-				}
-				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
-					resourceAndGrasCount[playerId][GRAS]++;
-				}
 			}
 		}
 	}

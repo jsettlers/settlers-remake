@@ -140,8 +140,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
-			economyMinister.update(aiStatistics, playerId);
-			isEndGame = economyMinister.isEndGame(aiStatistics, playerId);
+			economyMinister.update();
+			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			buildBuildings();
@@ -236,7 +236,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 
 		// destroy livinghouses
-		if (economyMinister.automaticLivingHousesEnabled(aiStatistics, playerId)) {
+		if (economyMinister.automaticLivingHousesEnabled()) {
 			int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
 					* NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
@@ -293,11 +293,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildBuildings() {
-		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites(aiStatistics,
-				playerId)) {
-			if (economyMinister.automaticLivingHousesEnabled(aiStatistics, playerId) && buildLivingHouse())
+		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites()) {
+			if (economyMinister.automaticLivingHousesEnabled() && buildLivingHouse())
 				return;
-			if (economyMinister.automaticTowersEnabled(aiStatistics, playerId) && buildTower())
+			if (economyMinister.automaticTowersEnabled() && buildTower())
 				return;
 			if (isEndGame) {
 				return;
@@ -322,7 +321,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void buildEconomy() {
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();;
-		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild(aiStatistics, playerId)) {
+		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild()) {
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
