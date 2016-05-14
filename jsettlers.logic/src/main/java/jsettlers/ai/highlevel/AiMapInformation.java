@@ -37,6 +37,7 @@ import jsettlers.logic.player.Player;
  */
 public class AiMapInformation {
 
+	public static final int GRAS = EResourceType.VALUES.length;
 	private static final double FISH_TO_FISHER_HUTS_RATIO = 80F / 1F;
 	private static final double COAL_TO_COAL_MINES_RATIO = 100F / 1F;
 	private static final double IRONORE_TO_IRON_MINES_RATIO = 100F / 1F;
@@ -53,13 +54,14 @@ public class AiMapInformation {
 	private static final double LUMBERJACK_TO_SAWMILL_RATIO = 2F / 1F;
 	private static final double LUMBERJACK_TO_FORESTER_RATIO = 2F / 1F;
 	private static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 8F / 5F;
-	public static final float COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
+	private static final float COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
+	private static final float GRAS_TO_LUMBERJACK_RATIO = 1360F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
-	public static final int GRAS = EResourceType.VALUES.length;
+	private static final int MIN_LUMBERJACK_COUNT = 3;
+	private static final int MAX_FISHERS = 10;
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
-	public static final int MAX_FISHERS = 10;
 	public long[][] resourceAndGrasCount;
 
 	public AiMapInformation(PartitionsGrid partitionsGrid) {
@@ -127,11 +129,9 @@ public class AiMapInformation {
 			buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_SLAUGHTER_RATIO);
 			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_PIG_FARM_RATIO);
 
-		int minLumberJacks = 8;
-		if (numberOfWeaponSmiths < 6) {
-			minLumberJacks = 3;
-		}
-		int numberOfLumberJacks = Math.max((int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_LUMBERJACK_RATIO), minLumberJacks);
+		int lumberJacksForWeaponSmiths = Math.max(8, (int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_LUMBERJACK_RATIO));
+		int maxLumberJacksForMap = Math.round((float) grasTiles / GRAS_TO_LUMBERJACK_RATIO);
+		int numberOfLumberJacks = Math.max(MIN_LUMBERJACK_COUNT, Math.min(maxLumberJacksForMap, lumberJacksForWeaponSmiths));
 		buildingCounts[EBuildingType.LUMBERJACK.ordinal] = numberOfLumberJacks;
 		buildingCounts[EBuildingType.FORESTER.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_FORESTER_RATIO), 1);
 		buildingCounts[EBuildingType.SAWMILL.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_SAWMILL_RATIO), 1);
