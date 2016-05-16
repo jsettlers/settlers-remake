@@ -144,7 +144,7 @@ public enum EBuildingType {
 
 	private final short viewdistance;
 
-	private final OccupyerPlace[] occupyerPlaces;
+	private final OccupierPlace[] occupyerPlaces;
 
 	private final BuildingAreaBitSet buildingAreaBitSet;
 
@@ -368,9 +368,9 @@ public enum EBuildingType {
 	 * Gets the places where occupiers can be in this building.
 	 * 
 	 * @return The places.
-	 * @see OccupyerPlace
+	 * @see OccupierPlace
 	 */
-	public final OccupyerPlace[] getOccupyerPlaces() {
+	public final OccupierPlace[] getOccupierPlaces() {
 		return occupyerPlaces;
 	}
 

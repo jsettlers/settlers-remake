@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -172,5 +172,27 @@ public enum EMovableType {
 
 	public boolean isInfantry() {
 		return infantry.contains(this);
+	}
+
+	public ESoldierType getSoldierType() {
+		if (isBowman()) {
+			return ESoldierType.BOWMAN;
+		} else if (isPikeman()) {
+			return ESoldierType.PIKEMAN;
+		} else if (isSwordsman()) {
+			return ESoldierType.SWORDSMAN;
+		} else {
+			return null;
+		}
+	}
+
+	public ESoldierClass getSoldierClass() {
+		if (isBowman()) {
+			return ESoldierClass.BOWMAN;
+		} else if (isInfantry()) {
+			return ESoldierClass.INFANTRY;
+		} else {
+			return null;
+		}
 	}
 }

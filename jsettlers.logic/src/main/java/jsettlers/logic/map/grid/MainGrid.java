@@ -269,7 +269,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {
-		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
+		return object instanceof BuildingObject && ((BuildingObject) object).getType().isMilitaryBuilding();
 	}
 
 	private boolean isInsideWater(short x, short y) {
@@ -297,8 +297,9 @@ public final class MainGrid implements Serializable {
 			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayer(buildingObject.getPlayerId()), true);
 
 			if (building instanceof IOccupyableBuilding) {
+				IOccupyableBuilding occupyableBuilding = (IOccupyableBuilding) building;
 				Movable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
-				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
+				occupyableBuilding.requestSoldier(soldier);
 			}
 		} else if (object instanceof MovableObject) {
 			MovableObject movableObject = (MovableObject) object;
@@ -515,10 +516,9 @@ public final class MainGrid implements Serializable {
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
 			case SOLDIER_BOWMAN:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 			case SOLDIER_SWORDSMAN:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 			case SOLDIER_PIKEMAN:
+			case SOLDIER_INFANTRY:
 				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 
 			case RESOURCE_SIGNABLE:
@@ -531,6 +531,16 @@ public final class MainGrid implements Serializable {
 				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
 				return false;
 			}
+		}
+
+		@Override
+		public boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester) {
+			for (ESearchType searchType : types) {
+				if (fitsSearchType(x,y,searchType,requester)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected final boolean canAddRessourceSign(int x, int y) {
@@ -552,14 +562,17 @@ public final class MainGrid implements Serializable {
 				return false;
 			} else {
 				if (movable.getPlayerId() == player && movable.canOccupyBuilding()) {
-					EMovableType type = movable.getMovableType();
+					EMovableType movableType = movable.getMovableType();
+
 					switch (searchType) {
 					case SOLDIER_BOWMAN:
-						return type == EMovableType.BOWMAN_L1 || type == EMovableType.BOWMAN_L2 || type == EMovableType.BOWMAN_L3;
+						return movableType.isBowman();
 					case SOLDIER_SWORDSMAN:
-						return type == EMovableType.SWORDSMAN_L1 || type == EMovableType.SWORDSMAN_L2 || type == EMovableType.SWORDSMAN_L3;
+						return movableType.isSwordsman();
 					case SOLDIER_PIKEMAN:
-						return type == EMovableType.PIKEMAN_L1 || type == EMovableType.PIKEMAN_L2 || type == EMovableType.PIKEMAN_L3;
+						return movableType.isPikeman();
+					case SOLDIER_INFANTRY:
+						return movableType.isInfantry();
 					default:
 						return false;
 					}
@@ -720,8 +733,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
