@@ -17,6 +17,7 @@ package jsettlers.ai.economy;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
@@ -370,6 +371,12 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	private boolean isDanger() {
 		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BARRACK, playerId) < 1) {
+			int numberOfSwordsmen = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, playerId).size()
+					+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, playerId).size()
+					+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, playerId).size();
+			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId) >= numberOfSwordsmen){
+				return true;
+			}
 			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
 				if (aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, enemy) > 0) {
 					return true;
@@ -389,11 +396,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	@Override
 	public int getMidGameNumberOfStoneCutters() {
 		return numberOfMidGameStoneCutters;
-	}
-
-	@Override
-	public int getNumberOfEndGameWeaponSmiths() {
-		return Math.round(mapBuildingCounts[WEAPONSMITH.ordinal] * weaponSmithFactor);
 	}
 
 	@Override

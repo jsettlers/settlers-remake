@@ -31,8 +31,6 @@ public interface EconomyMinister {
 
 	int getMidGameNumberOfStoneCutters();
 
-	int getNumberOfEndGameWeaponSmiths();
-
 	boolean automaticTowersEnabled();
 
 	boolean automaticLivingHousesEnabled();

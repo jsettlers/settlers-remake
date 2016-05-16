@@ -101,11 +101,6 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public int getNumberOfEndGameWeaponSmiths() {
-		return determineNumberOf(WEAPONSMITH);
-	}
-
-	@Override
 	public boolean automaticTowersEnabled() {
 		return true;
 	}
