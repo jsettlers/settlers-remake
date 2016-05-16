@@ -142,7 +142,7 @@ public class MainPanel extends UIPanel {
 	 * @param content
 	 *            The content to change to.
 	 */
-	public void setContent(AbstractContentProvider content) {
+	public synchronized void setContent(AbstractContentProvider content) {
 		activeContent.contentHiding(actionFireable, content);
 
 		ESecondaryTabType tabs = content.getTabs();
@@ -283,7 +283,7 @@ public class MainPanel extends UIPanel {
 		}
 	}
 
-	public IAction catchAction(IAction action) {
+	public synchronized IAction catchAction(IAction action) {
 		action = activeContent.catchAction(action);
 		// TODO: Abort on MOVE_TO-action.
 		EActionType type = action.getActionType();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.buildings.jobs.IBuildingJob;
@@ -52,7 +53,7 @@ public enum EBuildingType {
 	FARM(21),
 	PIG_FARM(20),
 	/**
-	 * Needs to implement {@link IBuilding.Mill}
+	 * Needs to implement {@link IBuilding.IMill}
 	 */
 	MILL(14), // 13 => rotating
 	WATERWORKS(19),
@@ -139,12 +140,11 @@ public enum EBuildingType {
 
 	private final RelativePoint[] buildmarks;
 
-	private final ELandscapeType[] groundtypes;
-	private final long groundtypesFast;
+	private final EnumSet<ELandscapeType> groundTypes;
 
 	private final short viewdistance;
 
-	private final OccupyerPlace[] occupyerPlaces;
+	private final OccupierPlace[] occupyerPlaces;
 
 	private final BuildingAreaBitSet buildingAreaBitSet;
 
@@ -187,13 +187,12 @@ public enum EBuildingType {
 		}
 
 		buildmarks = file.getBuildmarks();
-		groundtypes = file.getGroundtypes();
-		groundtypesFast = packGroundtypes(groundtypes);
+		groundTypes = EnumSet.copyOf(file.getGroundtypes());
 		viewdistance = file.getViewdistance();
 
 		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
 
-		this.buildingAreaBitSet = new BuildingAreaBitSet(this.getProtectedTiles());
+		this.buildingAreaBitSet = new BuildingAreaBitSet(getBuildingArea());
 	}
 
 	/**
@@ -218,6 +217,10 @@ public enum EBuildingType {
 			sum += stack.requiredForBuild();
 		}
 		return sum;
+	}
+
+	public RelativePoint[] getBuildingArea(){
+		return protectedTiles;
 	}
 
 	/**
@@ -348,19 +351,8 @@ public enum EBuildingType {
 	 * 
 	 * @return The ground types.
 	 */
-	public final ELandscapeType[] getGroundtypes() {
-		return groundtypes;
-	}
-
-	/**
-	 * A (fast) method that allows us to check if this landscape type is allowed.
-	 * 
-	 * @param landscapeId
-	 *            The landscape id (ordinal).
-	 * @return True if we allow that landscape as ground type.
-	 */
-	public boolean allowsGroundTypeId(int landscapeId) {
-		return (groundtypesFast & (1 << landscapeId)) != 0;
+	public final Set<ELandscapeType> getGroundTypes() {
+		return groundTypes;
 	}
 
 	/**
@@ -376,9 +368,9 @@ public enum EBuildingType {
 	 * Gets the places where occupiers can be in this building.
 	 * 
 	 * @return The places.
-	 * @see OccupyerPlace
+	 * @see OccupierPlace
 	 */
-	public final OccupyerPlace[] getOccupyerPlaces() {
+	public final OccupierPlace[] getOccupierPlaces() {
 		return occupyerPlaces;
 	}
 
@@ -465,6 +457,10 @@ public enum EBuildingType {
 	 */
 	public boolean isMine() {
 		return MINE_BUILDINGS.contains(this);
+	}
+
+	public boolean needsFlattenedGround() {
+		return !isMine();
 	}
 
 	/**

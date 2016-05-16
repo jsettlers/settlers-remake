@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,6 +18,8 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
@@ -31,6 +33,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
@@ -51,6 +54,8 @@ import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.action.SoldierAction;
+import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
+import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
@@ -67,6 +72,7 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.network.client.interfaces.IGameClock;
@@ -90,6 +96,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final byte playerId;
 	private final boolean multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
+	private final Timer refreshSelectionTimer;
 
 	/**
 	 * The current selection. This is updated by game logic.
@@ -106,6 +113,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.playerId = player;
 		this.multiplayer = multiplayer;
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
+
+		this.refreshSelectionTimer = new Timer("refreshSelectionTimer");
+		this.refreshSelectionTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				refreshSelection();
+			}
+		}, 1000, 1000);
 
 		grid.getPlayer(player).setMessenger(connector);
 		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, playerId));
@@ -324,6 +339,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 		}
 
+		case SOLDIERS_ALL:
+			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
+			break;
+		case SOLDIERS_ONE:
+			requestSoldiers(EChangeTowerSoldierTaskType.ONE, null);
+			break;
+		case SOLDIERS_LESS:
+			requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction)action).getSoldierType());
+			break;
+		case SOLDIERS_MORE:
+			requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction)action).getSoldierType());
+			break;
+
 		case ABORT:
 			break;
 
@@ -333,6 +361,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		default:
 			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+
+
+	private void requestSoldiers(EChangeTowerSoldierTaskType taskType, ESoldierType soldierType) {
+		ISelectable selectable = currentSelection.getSingle();
+		if(selectable instanceof OccupyingBuilding) {
+			OccupyingBuilding building = ((OccupyingBuilding) selectable);
+			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPos(), taskType, soldierType));
 		}
 	}
 
@@ -581,6 +619,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		EMovableType selectedType = selectedMovable.getMovableType();
+		byte selectedPlayerId = selectedMovable.getPlayerId();
 
 		Set<EMovableType> selectableTypes;
 		if (selectedType.isSwordsman()) {
@@ -597,7 +636,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		
 		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
 			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
-			if (movable != null && selectableTypes.contains(movable.getMovableType()) && canSelectPlayer(movable.getPlayerId())) {
+			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
 				selected.add(movable);
 			}
 		}
@@ -612,17 +651,28 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 *            The selected items. Not null!
 	 */
 	private void setSelection(SelectionSet selection) {
-		currentSelection.clear();
+		currentSelection.setSelected(false);
 
 		selection.setSelected(true);
-		this.connector.setSelection(selection);
-		this.currentSelection = selection;
+		connector.setSelection(selection);
+		currentSelection = selection;
 	}
 
 	@Override
 	public void refreshSelection() {
-		connector.setSelection(null);
-		connector.setSelection(currentSelection);
+		if (!currentSelection.isEmpty()) {
+			SelectionSet newSelection = new SelectionSet();
+
+			for (ISelectable selected : currentSelection) {
+				if (selected.isSelected() && canSelectPlayer(selected.getPlayerId())) {
+					newSelection.add(selected);
+				}
+			}
+
+			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
+				setSelection(newSelection);
+			}
+		}
 	}
 
 	@Override
@@ -636,6 +686,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	public void stop() {
 		constructionMarksCalculator.cancel();
 		connector.removeListener(this);
+		refreshSelectionTimer.cancel();
 	}
-
 }
