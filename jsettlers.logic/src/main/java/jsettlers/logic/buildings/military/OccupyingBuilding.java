@@ -42,8 +42,8 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.map.OrderedMap;
-import jsettlers.common.utils.collections.map.OrderedMap.Entry;
+import jsettlers.common.utils.collections.map.ArrayListMap;
+import jsettlers.common.utils.collections.map.ArrayListMap.Entry;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
@@ -67,7 +67,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 	private final LinkedList<OccupierPlace> emptyPlaces = new LinkedList<>();
 	private final LinkedList<SoldierRequest> searchedSoldiers = new LinkedList<>();
-	private final OrderedMap<IBuildingOccupyableMovable, SoldierRequest> comingSoldiers = new OrderedMap<>();
+	private final ArrayListMap<IBuildingOccupyableMovable, SoldierRequest> comingSoldiers = new ArrayListMap<>();
 	private final LinkedList<TowerOccupier> sortedOccupiers = new LinkedList<>();
 	private final LinkedList<TowerOccupier> toBeReleasedOccupiers = new LinkedList<>();
 

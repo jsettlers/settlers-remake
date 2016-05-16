@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Created by Andreas Eberle on 06.05.2016.
  */
-public class OrderedMap<K, V> implements Serializable {
+public class ArrayListMap<K, V> implements Serializable {
 	public static class Entry<K, V> implements Serializable {
 		final K key;
 		final V value;
