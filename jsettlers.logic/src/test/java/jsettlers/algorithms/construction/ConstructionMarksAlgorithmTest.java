@@ -17,6 +17,7 @@ package jsettlers.algorithms.construction;
 import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
+import java.util.Set;
 
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.landscape.ELandscapeType;
@@ -172,7 +173,7 @@ public class ConstructionMarksAlgorithmTest {
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId) {
+		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> landscapeTypes, short partitionId) {
 			return isInBounds(x, y) && !blockedSet.get(x + y * width);
 		}
 

@@ -20,6 +20,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.borders.BordersThread;
@@ -268,7 +269,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {
-		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
+		return object instanceof BuildingObject && ((BuildingObject) object).getType().isMilitaryBuilding();
 	}
 
 	private boolean isInsideWater(short x, short y) {
@@ -296,8 +297,9 @@ public final class MainGrid implements Serializable {
 			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayer(buildingObject.getPlayerId()), true);
 
 			if (building instanceof IOccupyableBuilding) {
+				IOccupyableBuilding occupyableBuilding = (IOccupyableBuilding) building;
 				Movable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
-				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
+				occupyableBuilding.requestSoldier(soldier);
 			}
 		} else if (object instanceof MovableObject) {
 			MovableObject movableObject = (MovableObject) object;
@@ -514,10 +516,9 @@ public final class MainGrid implements Serializable {
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
 			case SOLDIER_BOWMAN:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 			case SOLDIER_SWORDSMAN:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 			case SOLDIER_PIKEMAN:
+			case SOLDIER_INFANTRY:
 				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 
 			case RESOURCE_SIGNABLE:
@@ -530,6 +531,16 @@ public final class MainGrid implements Serializable {
 				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
 				return false;
 			}
+		}
+
+		@Override
+		public boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester) {
+			for (ESearchType searchType : types) {
+				if (fitsSearchType(x,y,searchType,requester)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected final boolean canAddRessourceSign(int x, int y) {
@@ -551,14 +562,17 @@ public final class MainGrid implements Serializable {
 				return false;
 			} else {
 				if (movable.getPlayerId() == player && movable.canOccupyBuilding()) {
-					EMovableType type = movable.getMovableType();
+					EMovableType movableType = movable.getMovableType();
+
 					switch (searchType) {
 					case SOLDIER_BOWMAN:
-						return type == EMovableType.BOWMAN_L1 || type == EMovableType.BOWMAN_L2 || type == EMovableType.BOWMAN_L3;
+						return movableType.isBowman();
 					case SOLDIER_SWORDSMAN:
-						return type == EMovableType.SWORDSMAN_L1 || type == EMovableType.SWORDSMAN_L2 || type == EMovableType.SWORDSMAN_L3;
+						return movableType.isSwordsman();
 					case SOLDIER_PIKEMAN:
-						return type == EMovableType.PIKEMAN_L1 || type == EMovableType.PIKEMAN_L2 || type == EMovableType.PIKEMAN_L3;
+						return movableType.isPikeman();
+					case SOLDIER_INFANTRY:
+						return movableType.isInfantry();
 					default:
 						return false;
 					}
@@ -719,8 +733,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -927,52 +941,35 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
-			RelativePoint[] protectedTiles = type.getProtectedTiles();
-			BuildingAreaBitSet areaBitSet = type.getBuildingAreaBitSet();
+		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
+			RelativePoint[] buildingArea =  buildingType.getBuildingArea();
+			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
 				return false;
 			}
 
-			short partition = getPartitionIdAt(areaBitSet.aPosition.calculateX(x), areaBitSet.aPosition.calculateY(y));
+			short partitionId = getPartitionIdAt(areaBitSet.aPosition.calculateX(x), areaBitSet.aPosition.calculateY(y));
 
-			if (!canPlayerConstructOnPartition(playerId, partition)) {
+			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
 				return false;
 			}
-			for (RelativePoint curr : protectedTiles) {
+			for (RelativePoint curr : buildingArea) {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstructionSafe(currX, currY, type, partition)) {
+				if (!canUsePositionForConstruction(currX, currY, buildingType.getGroundTypes(), partitionId)) {
 					return false;
 				}
 			}
-			return getConstructionMarkValue(x, y, type.getBlockedTiles()) >= 0;
+			return !buildingType.needsFlattenedGround() || getConstructionMarkValue(x, y, buildingArea) >= 0;
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId) {
+		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedBuildingTypes, short partitionId) {
 			return isInBounds(x, y)
 					&& !flagsGrid.isProtected(x, y)
 					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
-					&& isAllowedLandscape(x, y, landscapeTypes);
-		}
-
-		private boolean isAllowedLandscape(int x, int y, ELandscapeType[] landscapes) {
-			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
-			for (byte i = 0; i < landscapes.length; i++) {
-				if (landscapeAt == landscapes[i]) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private boolean canUsePositionForConstructionSafe(int x, int y, EBuildingType buildingType, short partition) {
-			// FIXME @Andreas: this can be merged with canUsePositionForConstruction
-			return !flagsGrid.isProtected(x, y)
-					&& buildingType.allowsGroundTypeId(landscapeGrid.getLandscapeIdAt(x, y))
-					&& partitionsGrid.getPartitionIdAt(x, y) == partition;
+					&& allowedBuildingTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
@@ -1806,7 +1803,7 @@ public final class MainGrid implements Serializable {
 			if (constructionMarksGrid.canConstructAt(position.x, position.y, type, playerId)) {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
-				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING OUTSIDE COUNTRY! Type: " + type + "  pos: " + position + "  playerId: "
+				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position + "  playerId: "
 						+ playerId);
 			}
 		}

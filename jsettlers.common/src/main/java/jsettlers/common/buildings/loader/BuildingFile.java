@@ -18,9 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.stacks.ConstructionStack;
@@ -34,7 +35,6 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.resources.ResourceManager;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
@@ -102,7 +102,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
 	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
-	private ArrayList<OccupyerPlace> occupyerplaces = new ArrayList<OccupyerPlace>();
+	private ArrayList<OccupierPlace> occupyerplaces = new ArrayList<OccupierPlace>();
 	private short viewdistance = 0;
 	private final String buildingName;
 
@@ -187,7 +187,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 			ESoldierClass type = ESoldierClass.valueOf(attributes.getValue("type"));
 			RelativePoint position = new RelativePoint(Short.parseShort(attributes.getValue("soldierX")), Short.parseShort(attributes
 					.getValue("soldierY")));
-			OccupyerPlace place = new OccupyerPlace(x, y, type, position, "true".equals(attributes.getValue("looksRight")));
+			OccupierPlace place = new OccupierPlace(x, y, type, position, "true".equals(attributes.getValue("looksRight")));
 			occupyerplaces.add(place);
 		} catch (NumberFormatException e) {
 			System.err.println("Warning: illegal number " + "for occupyer x/y attribute, in definiton for " + buildingName);
@@ -421,15 +421,15 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return buildmarks.toArray(new RelativePoint[buildmarks.size()]);
 	}
 
-	public ELandscapeType[] getGroundtypes() {
-		return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
+	public List<ELandscapeType> getGroundtypes() {
+		return groundtypes;
 	}
 
 	public short getViewdistance() {
 		return viewdistance;
 	}
 
-	public OccupyerPlace[] getOccupyerPlaces() {
-		return occupyerplaces.toArray(new OccupyerPlace[occupyerplaces.size()]);
+	public OccupierPlace[] getOccupyerPlaces() {
+		return occupyerplaces.toArray(new OccupierPlace[occupyerplaces.size()]);
 	}
 }

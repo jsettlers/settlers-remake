@@ -458,6 +458,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		releaseRequestStacks();
 		allBuildings.remove(this);
 		this.state = EBuildingState.DESTROYED;
+		this.selected = false;
 	}
 
 	private void placeReusableMaterials() {

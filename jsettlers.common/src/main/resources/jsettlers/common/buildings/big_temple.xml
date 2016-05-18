@@ -148,9 +148,8 @@
 
 	<door dx="0" dy="2" />
 
-	<constructionStack dx="5" dy="6" material="STONE" buildrequired="8" />
+	<constructionStack dx="5" dy="6" material="STONE" buildrequired="14" />
 	<constructionStack dx="0" dy="6" material="PLANK" buildrequired="8" />
-	<constructionStack dx="5" dy="9" material="PLANK" buildrequired="6" />
 
 	<bricklayer dx="-2" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="7" direction="NORTH_EAST" />
