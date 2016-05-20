@@ -33,6 +33,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.input.IGuiMovable;
+import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -282,7 +283,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	private void pathingAction() {
-		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+		if (path == null || !path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
@@ -693,8 +694,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	}
 
 	void abortPath() {
-		setState(EMovableState.DOING_NOTHING);
-		movableAction = EMovableAction.NO_ACTION;
 		path = null;
 	}
 
@@ -887,11 +886,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		setState(EMovableState.DOING_NOTHING);
 	}
 
-	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
+	public final IBuildingOccupyableMovable setOccupyableBuilding(IOccupyableBuilding building) {
 		if (canOccupyBuilding()) {
 			return ((SoldierStrategy) strategy).setOccupyableBuilding(building);
 		} else {
-			return false;
+			return null;
 		}
 	}
 

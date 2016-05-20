@@ -27,8 +27,6 @@ import jsettlers.logic.movable.interfaces.IAttackableMovable;
  */
 public interface IBuildingOccupyableMovable {
 
-	boolean setOccupyableBuilding(IOccupyableBuilding building);
-
 	EMovableType getMovableType();
 
 	ESoldierClass getSoldierClass();

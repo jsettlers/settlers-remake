@@ -24,7 +24,7 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author michael
  */
-public class OccupyerPlace implements Serializable {
+public class OccupierPlace implements Serializable {
 	private static final long serialVersionUID = 1355922428788608890L;
 
 	private final ESoldierClass soldierClass;
@@ -34,7 +34,7 @@ public class OccupyerPlace implements Serializable {
 
 	private final boolean looksRight;
 
-	public OccupyerPlace(int offsetX, int offsetY, ESoldierClass soldierClass, RelativePoint position, boolean looksRight) {
+	public OccupierPlace(int offsetX, int offsetY, ESoldierClass soldierClass, RelativePoint position, boolean looksRight) {
 		if (position == null || soldierClass == null) {
 			throw new NullPointerException();
 		}

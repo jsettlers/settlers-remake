@@ -23,6 +23,8 @@ import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.Set;
+
 public class SimpleDijkstraTester {
 	private static final short WIDTH = (short) 200;
 	private static final short HEIGHT = (short) 200;
@@ -38,6 +40,11 @@ public class SimpleDijkstraTester {
 				if (x == 118 && y == 115)
 					return true;
 
+				return false;
+			}
+
+			@Override
+			public boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester) {
 				return false;
 			}
 

@@ -220,8 +220,8 @@ public abstract class AbstractLineLoader implements Runnable {
 						IMapObject object = map.getMapObjectsAt(x, y);
 						IBuilding building = (object != null) ? (IBuilding) object.getMapObject(EMapObjectType.BUILDING) : null;
 
-						if (building instanceof IBuilding.IOccupyed) {
-							IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
+						if (building instanceof IBuilding.IOccupied) {
+							IBuilding.IOccupied occupyed = (IBuilding.IOccupied) building;
 							if (occupyed.isOccupied()) {
 								settlerColor = context.getPlayerColor(occupyed.getPlayerId()).toShortColor(1);
 							}

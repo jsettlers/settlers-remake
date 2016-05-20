@@ -467,15 +467,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		if (isConstructionFinished()) {
 			for (ConstructionStack curr : type.getConstructionStacks()) {
-				ShortPoint2D position = buildingArea.get(posIdx);
-				posIdx += 2;
-				byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
-						Constants.STACK_SIZE);
-				grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
+				byte paybackAmount = (byte) (curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
+				while (paybackAmount > 0) {
+					byte paybackForStack = (byte) Math.min(Constants.STACK_SIZE, paybackAmount);
+					ShortPoint2D position = buildingArea.get(posIdx);
+					grid.pushMaterialsTo(position, curr.getMaterialType(), paybackForStack);
+					paybackAmount -= paybackForStack;
+					posIdx += 4;
+				}
 			}
 		} else {
 			for (IRequestStack stack : stacks) {
-				posIdx += 2;
+				posIdx += 4;
 				int paybackAmount = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
 				if (paybackAmount > 0) {
 					ShortPoint2D position = buildingArea.get(posIdx);

@@ -22,7 +22,7 @@ import jsettlers.common.movable.IMovable;
  * @author michael
  * 
  */
-public interface IBuildingOccupyer {
+public interface IBuildingOccupier {
 	/**
 	 * gets the movable
 	 * 
@@ -35,5 +35,5 @@ public interface IBuildingOccupyer {
 	 * 
 	 * @return The place, as given by the building type.
 	 */
-	public OccupyerPlace getPlace();
+	public OccupierPlace getPlace();
 }

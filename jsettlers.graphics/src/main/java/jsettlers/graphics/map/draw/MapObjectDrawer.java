@@ -21,9 +21,9 @@ import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.buildings.IBuilding.IOccupyed;
-import jsettlers.common.buildings.IBuildingOccupyer;
-import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.IBuilding.IOccupied;
+import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -893,9 +893,9 @@ public class MapObjectDrawer {
 					draw(image, x, y, color, building.getBuildingType() == EBuildingType.MARKET_PLACE);
 				}
 
-				if (building instanceof IBuilding.IOccupyed
+				if (building instanceof IOccupied
 						&& context.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED) {
-					drawOccupiers(x, y, (IBuilding.IOccupyed) building, color);
+					drawOccupiers(x, y, (IOccupied) building, color);
 				}
 
 				for (int i = 1; i < images.length; i++) {
@@ -945,7 +945,7 @@ public class MapObjectDrawer {
 	 * @param basecolor
 	 *            The base color (gray shade).
 	 */
-	private void drawOccupiers(int x, int y, IOccupyed building, float basecolor) {
+	private void drawOccupiers(int x, int y, IOccupied building, float basecolor) {
 		// this can cause a ConcurrentModificationException when
 		// a soldier enters the tower!
 		try {
@@ -954,8 +954,8 @@ public class MapObjectDrawer {
 			float towerY = context.getConverter().getViewY(x, y, height);
 			GLDrawContext gl = context.getGl();
 
-			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
-				OccupyerPlace place = occupyer.getPlace();
+			for (IBuildingOccupier occupyer : building.getOccupiers()) {
+				OccupierPlace place = occupyer.getPlace();
 
 				IMovable movable = occupyer.getMovable();
 				Color color = context.getPlayerColor(movable.getPlayerId());

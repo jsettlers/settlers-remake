@@ -107,6 +107,6 @@
 	<element x="103" y="410" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.SoldierButton">
 		<action action="SOLDIERS_LESS" />
 		<soldierType soldierType="PIKEMAN"/>
-		<image type="GUI" file="3" sequence="34" />
+		<image type="GUI" file="3" sequence="33" />
 	</element>
 </element>
