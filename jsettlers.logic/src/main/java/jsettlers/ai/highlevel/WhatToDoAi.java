@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.ai.highlevel.AiBuildingConstants.IRONMELT_TO_WEAPON_SMITH_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.IRON_MINE_TO_IRONMELT_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WINEGROWER_TO_TEMPLE_RATIO;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
@@ -22,7 +25,6 @@ import static jsettlers.common.buildings.EBuildingType.COALMINE;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
-import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
 import static jsettlers.common.buildings.EBuildingType.IRONMELT;
 import static jsettlers.common.buildings.EBuildingType.IRONMINE;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
@@ -36,6 +38,7 @@ import static jsettlers.common.buildings.EBuildingType.STOCK;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
@@ -49,7 +52,6 @@ import java.util.Map;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
-import jsettlers.ai.construction.BuildingCount;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
@@ -64,10 +66,20 @@ import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
-import jsettlers.logic.buildings.spawn.SpawnBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes
@@ -90,8 +102,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
-	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
-	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
@@ -106,35 +116,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
 		this.economyMinister = economyMinister;
-		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
-		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-		initializeBuildingLists();
-	}
-
-	private void initializeBuildingLists() {
-		for (EBuildingType buildingType : EBuildingType.VALUES) {
-			buildingNeeds.put(buildingType, new ArrayList<BuildingCount>());
-			buildingIsNeededBy.put(buildingType, new ArrayList<EBuildingType>());
-		}
-		buildingNeeds.get(SAWMILL).add(new BuildingCount(LUMBERJACK, 3));
-		buildingNeeds.get(TEMPLE).add(new BuildingCount(WINEGROWER, 1));
-		buildingNeeds.get(MILL).add(new BuildingCount(FARM, 1));
-		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, (float) 1 / 3));
-		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
-		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, (float) 1 / 3));
-		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 0.25F));
-		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
-		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 0.5f));
-		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
-		// Ironmine depends of coalmine to prevent iron and coal are build 1:1 when picks are missing
-		// otherwise always as loop: one additional ironmine and coalmine would be build for inform toolsmith to produce picks
-		buildingNeeds.get(IRONMINE).add(new BuildingCount(COALMINE, 2));
-		for (Map.Entry<EBuildingType, List<BuildingCount>> buildingNeedsEntry : buildingNeeds.entrySet()) {
-			for (BuildingCount neededBuildingCount : buildingNeedsEntry.getValue()) {
-				buildingIsNeededBy.get(neededBuildingCount.buildingType).add(buildingNeedsEntry.getKey());
-			}
-		}
 	}
 
 	@Override
@@ -176,8 +158,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void sendGeologistToNearest(Movable geologist, EResourceType resourceType) {
-	ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
-			playerId, Integer.MAX_VALUE);
+		ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
+				playerId, Integer.MAX_VALUE);
 		if (resourcePoint == null) {
 			resourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(
 					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE);
@@ -250,7 +232,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				}
 			}
 		}
-		
+
 		// destroy not necessary buildings to get enough space for livinghouses in end-game
 		if (isEndGame && isWoodJam()) {
 			List<ShortPoint2D> forresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
@@ -269,12 +251,12 @@ public class WhatToDoAi implements IWhatToDoAi {
 				taskScheduler.scheduleTask(
 						new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
-			for (ShortPoint2D bigTemple: aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
+			for (ShortPoint2D bigTemple : aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
 			}
 		}
 	}
-	
+
 	private boolean destroyLivingHouse(EBuildingType livingHouseType) {
 		for (ShortPoint2D livingHousePosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(livingHouseType, playerId)) {
 			if (aiStatistics.getBuildingAt(livingHousePosition).cannotWork()) {
@@ -286,8 +268,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean isWoodJam() {
-		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.TRUNK, playerId) >
-				aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
+		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.TRUNK,
+				playerId) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
 	}
 
 	private void destroyHinterlandMilitaryBuildings() {
@@ -324,7 +306,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void buildEconomy() {
-		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();;
+		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
+		;
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild()) {
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
@@ -338,26 +321,40 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
-		boolean buildingDependenciesAreFulfilled = true;
-		for (BuildingCount neededBuilding : buildingNeeds.get(targetBuilding)) {
-			if (!unusedBuildingExists(neededBuilding.buildingType)) {
-				buildingDependenciesAreFulfilled = false;
-			}
+		switch (targetBuilding) {
+		case IRONMINE:
+			return ratioFits(COALMINE, COAL_MINE_TO_IRONORE_MINE_RATIO, IRONMINE);
+		case WEAPONSMITH:
+			return ratioFits(IRONMELT, IRONMELT_TO_WEAPON_SMITH_RATIO, WEAPONSMITH);
+		case IRONMELT:
+			return ratioFits(COALMINE, COAL_MINE_TO_SMITH_RATIO, IRONMELT)
+					&& ratioFits(IRONMINE, IRON_MINE_TO_IRONMELT_RATIO, IRONMELT);
+		case BARRACK:
+			return ratioFits(WEAPONSMITH, WEAPON_SMITH_TO_BARRACKS_RATIO, BARRACK);
+		case MILL:
+			return ratioFits(FARM, FARM_TO_MILL_RATIO, MILL);
+		case BAKER:
+			return ratioFits(FARM, FARM_TO_BAKER_RATIO, BAKER);
+		case WATERWORKS:
+			return ratioFits(FARM, FARM_TO_WATERWORKS_RATIO, WATERWORKS);
+		case SLAUGHTERHOUSE:
+			return ratioFits(FARM, FARM_TO_SLAUGHTER_RATIO, SLAUGHTERHOUSE);
+		case PIG_FARM:
+			return ratioFits(FARM, FARM_TO_PIG_FARM_RATIO, PIG_FARM);
+		case TEMPLE:
+			return ratioFits(WINEGROWER, WINEGROWER_TO_TEMPLE_RATIO, TEMPLE);
+		case SAWMILL:
+			return ratioFits(LUMBERJACK, LUMBERJACK_TO_SAWMILL_RATIO, SAWMILL);
+		case FORESTER:
+			return ratioFits(LUMBERJACK, LUMBERJACK_TO_FORESTER_RATIO, FORESTER);
+		default:
+			return true;
 		}
-		return buildingDependenciesAreFulfilled;
 	}
 
-	private boolean unusedBuildingExists(EBuildingType me) {
-		float howOftenAmIUsed = 0;
-		for (EBuildingType buildingWhichNeedsMe : buildingIsNeededBy.get(me)) {
-			for (BuildingCount buildingCount : buildingNeeds.get(buildingWhichNeedsMe)) {
-				if (buildingCount.buildingType == me) {
-					howOftenAmIUsed = howOftenAmIUsed + buildingCount.count
-							* aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingWhichNeedsMe, playerId);
-				}
-			}
-		}
-		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(me, playerId) >= howOftenAmIUsed;
+	private boolean ratioFits(EBuildingType leftBuilding, double leftToRightBuildingRatio, EBuildingType rightBuilding) {
+		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(leftBuilding,
+				playerId) >= (double) aiStatistics.getTotalNumberOfBuildingTypeForPlayer(rightBuilding, playerId) / leftToRightBuildingRatio;
 	}
 
 	private boolean buildingNeedsToBeBuild(Map<EBuildingType, Integer> playerBuildingPlan, EBuildingType currentBuildingType) {
@@ -389,7 +386,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
-				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
+						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);

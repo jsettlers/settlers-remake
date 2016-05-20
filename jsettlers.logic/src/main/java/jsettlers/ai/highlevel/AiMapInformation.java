@@ -15,12 +15,23 @@
 package jsettlers.ai.highlevel;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
-import jsettlers.logic.player.Player;
+
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FISHER_HUT_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_LUMBERJACK_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_STONE_CUTTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
 
 /**
  * This class calculates information about the map for the AI. At the moment it calculates how many buildings of a building type can be build on
@@ -41,20 +52,6 @@ public class AiMapInformation {
 	private static final double FISH_TO_FISHER_HUTS_RATIO = 80F / 1F;
 	private static final double COAL_TO_COAL_MINES_RATIO = 100F / 1F;
 	private static final double IRONORE_TO_IRON_MINES_RATIO = 100F / 1F;
-	private static final double COAL_MINE_TO_IRONORE_MINE_RATIO = 2F / 1F;
-	private static final double WEAPON_SMITH_TO_BARRACKS_RATIO = 3F / 1F;
-	private static final double WEAPON_SMITH_TO_FISHER_HUT_RATIO = 2F / 3F;
-	private static final double WEAPON_SMITH_TO_FARM_RATIO = 2F / 1F;
-	private static final double FARM_TO_BAKER_RATIO = 1F / 1F;
-	private static final double FARM_TO_MILL_RATIO = 3F / 1F;
-	private static final double FARM_TO_WATERWORKS_RATIO = 3F / 1F;
-	private static final double FARM_TO_PIG_FARM_RATIO = 3F / 1F;
-	private static final double FARM_TO_SLAUGHTER_RATIO = 6F / 1F;
-	private static final double WEAPON_SMITH_TO_LUMBERJACK_RATIO = 20F / 8F;
-	private static final double LUMBERJACK_TO_SAWMILL_RATIO = 2F / 1F;
-	private static final double LUMBERJACK_TO_FORESTER_RATIO = 2F / 1F;
-	private static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 8F / 5F;
-	private static final float COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
 	private static final float GRAS_TO_LUMBERJACK_RATIO = 1360F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
