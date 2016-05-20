@@ -158,9 +158,6 @@ public class AiStatistics {
 		if (building.getStateProgress() == 1f) {
 			playerStatistic.buildingsNumbers[type.ordinal]++;
 		}
-		if (!building.isOccupied()) {
-			playerStatistic.unoccupiedBuildingsNumbers[type.ordinal]++;
-		}
 	}
 
 	private void updateNumberOfNotFinishedBuildings(PlayerStatistic playerStatistic, Building building) {
@@ -562,10 +559,6 @@ public class AiStatistics {
 		return playerStatistics[playerId].rivers;
 	}
 
-	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
-		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
-	}
-
 	public List<Byte> getEnemiesOf(byte playerId) {
 		List<Byte> enemies = new ArrayList<Byte>();
 		for (Team team : partitionsGrid.getTeams()) {
@@ -612,7 +605,6 @@ public class AiStatistics {
 		boolean isAlive;
 		int[] totalBuildingsNumbers;
 		int[] buildingsNumbers;
-		int[] unoccupiedBuildingsNumbers;
 		Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		List<ShortPoint2D> farmWorkAreas;
 		List<ShortPoint2D> wineGrowerWorkAreas;
@@ -642,7 +634,6 @@ public class AiStatistics {
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			farmWorkAreas = new Vector<ShortPoint2D>();
 			wineGrowerWorkAreas = new Vector<ShortPoint2D>();
 			clearIntegers();
@@ -667,7 +658,6 @@ public class AiStatistics {
 		private void clearIntegers() {
 			clearIntegerArray(totalBuildingsNumbers);
 			clearIntegerArray(buildingsNumbers);
-			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedMilitaryBuildings = 0;
