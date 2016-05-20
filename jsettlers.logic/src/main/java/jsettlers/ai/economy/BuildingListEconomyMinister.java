@@ -81,11 +81,11 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	@Override
 	public boolean isEndGame() {
-		double remaningGras = aiStatistics.getAiMapInformation().getRemainingGrassTiles(aiStatistics, playerId)
+		double remaningGrass = aiStatistics.getAiMapInformation().getRemainingGrassTiles(aiStatistics, playerId)
 				- aiStatistics.getTreesForPlayer(playerId).size()
 				- aiStatistics.getStonesForPlayer(playerId).size();
-		double availableGras = aiStatistics.getAiMapInformation().getGrassTilesOf(playerId);
-		return remaningGras / availableGras <= 0.6F;
+		double availableGrass = aiStatistics.getAiMapInformation().getGrassTilesOf(playerId);
+		return remaningGrass / availableGrass <= 0.6F;
 	}
 
 	private void addFoodAndBuildingMaterialAndWeaponAndGoldIndustry() {

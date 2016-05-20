@@ -191,17 +191,17 @@ public class AiStatistics {
 				if (player != null) {
 					mapInformationPlayerId = player.playerId;
 				} else {
-					mapInformationPlayerId = aiMapInformation.resourceAndGrasCount.length - 1;
+					mapInformationPlayerId = aiMapInformation.resourceAndGrassCount.length - 1;
 				}
 				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
 					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
 					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
 					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
-						aiMapInformation.resourceAndGrasCount[mapInformationPlayerId][resourceType.ordinal]++;
+						aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][resourceType.ordinal]++;
 					}
 				}
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
-					aiMapInformation.resourceAndGrasCount[mapInformationPlayerId][aiMapInformation.GRAS]++;
+					aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][aiMapInformation.GRASS_INDEX]++;
 				}
 				Movable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {

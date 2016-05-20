@@ -48,44 +48,44 @@ import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATI
  */
 public class AiMapInformation {
 
-	public static final int GRAS = EResourceType.VALUES.length;
+	public static final int GRASS_INDEX = EResourceType.VALUES.length;
 	private static final double FISH_TO_FISHER_HUTS_RATIO = 80F / 1F;
 	private static final double COAL_TO_COAL_MINES_RATIO = 100F / 1F;
 	private static final double IRONORE_TO_IRON_MINES_RATIO = 100F / 1F;
-	private static final float GRAS_TO_LUMBERJACK_RATIO = 1360F;
+	private static final float GRASS_TO_LUMBERJACK_RATIO = 1360F;
 	private static final int MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION = 10;
 	private static final int MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION = 2;
 	private static final int MIN_LUMBERJACK_COUNT = 3;
 	private static final int MAX_FISHERS = 10;
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
-	public long[][] resourceAndGrasCount;
+	public long[][] resourceAndGrassCount;
 
 	public AiMapInformation(PartitionsGrid partitionsGrid) {
-		resourceAndGrasCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
+		resourceAndGrassCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
 	}
 
 	public void clear() {
-		for (int i = 0; i < resourceAndGrasCount.length; i++) {
-			for (int ii = 0; ii < resourceAndGrasCount[i].length; ii++) {
-				resourceAndGrasCount[i][ii] = 0;
+		for (int i = 0; i < resourceAndGrassCount.length; i++) {
+			for (int ii = 0; ii < resourceAndGrassCount[i].length; ii++) {
+				resourceAndGrassCount[i][ii] = 0;
 			}
 		}
 	}
 
 	public int[] getBuildingCounts(byte playerId) {
-		int numberOfPlayers = resourceAndGrasCount.length - 1;
-		int neverland = resourceAndGrasCount.length - 1;
-		long playersAndNeverlandFish = Math.round(resourceAndGrasCount[neverland][EResourceType.FISH.ordinal] / numberOfPlayers) +
-				resourceAndGrasCount[playerId][EResourceType.FISH.ordinal];
-		long playersAndNeverlandCoal = Math.round(resourceAndGrasCount[neverland][EResourceType.COAL.ordinal] / numberOfPlayers) +
-				resourceAndGrasCount[playerId][EResourceType.COAL.ordinal];
-		long playersAndNeverlandIronOre = Math.round(resourceAndGrasCount[neverland][EResourceType.IRONORE.ordinal] / numberOfPlayers) +
-				resourceAndGrasCount[playerId][EResourceType.IRONORE.ordinal];
-		long playersAndNeverlandGold = Math.round(resourceAndGrasCount[neverland][EResourceType.GOLDORE.ordinal] / numberOfPlayers) +
-				resourceAndGrasCount[playerId][EResourceType.GOLDORE.ordinal];
-		long playersAndNeverlandGras = Math.round(resourceAndGrasCount[neverland][GRAS] / numberOfPlayers) +
-				resourceAndGrasCount[playerId][GRAS];
+		int numberOfPlayers = resourceAndGrassCount.length - 1;
+		int neverland = resourceAndGrassCount.length - 1;
+		long playersAndNeverlandFish = Math.round(resourceAndGrassCount[neverland][EResourceType.FISH.ordinal] / numberOfPlayers) +
+				resourceAndGrassCount[playerId][EResourceType.FISH.ordinal];
+		long playersAndNeverlandCoal = Math.round(resourceAndGrassCount[neverland][EResourceType.COAL.ordinal] / numberOfPlayers) +
+				resourceAndGrassCount[playerId][EResourceType.COAL.ordinal];
+		long playersAndNeverlandIronOre = Math.round(resourceAndGrassCount[neverland][EResourceType.IRONORE.ordinal] / numberOfPlayers) +
+				resourceAndGrassCount[playerId][EResourceType.IRONORE.ordinal];
+		long playersAndNeverlandGold = Math.round(resourceAndGrassCount[neverland][EResourceType.GOLDORE.ordinal] / numberOfPlayers) +
+				resourceAndGrassCount[playerId][EResourceType.GOLDORE.ordinal];
+		long playersAndNeverlandGras = Math.round(resourceAndGrassCount[neverland][GRASS_INDEX] / numberOfPlayers) +
+				resourceAndGrassCount[playerId][GRASS_INDEX];
 
 		int maxFishermen = Math.max(1, (int) Math.min(MAX_FISHERS, Math.ceil(playersAndNeverlandFish / FISH_TO_FISHER_HUTS_RATIO)));
 		int maxCoalMines = (int) Math.ceil(playersAndNeverlandCoal / COAL_TO_COAL_MINES_RATIO);
@@ -127,7 +127,7 @@ public class AiMapInformation {
 			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_PIG_FARM_RATIO);
 
 		int lumberJacksForWeaponSmiths = Math.max(8, (int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_LUMBERJACK_RATIO));
-		int maxLumberJacksForMap = Math.round((float) grasTiles / GRAS_TO_LUMBERJACK_RATIO);
+		int maxLumberJacksForMap = Math.round((float) grasTiles / GRASS_TO_LUMBERJACK_RATIO);
 		int numberOfLumberJacks = Math.max(MIN_LUMBERJACK_COUNT, Math.min(maxLumberJacksForMap, lumberJacksForWeaponSmiths));
 		buildingCounts[EBuildingType.LUMBERJACK.ordinal] = numberOfLumberJacks;
 		buildingCounts[EBuildingType.FORESTER.ordinal] = Math.max((int) (numberOfLumberJacks / LUMBERJACK_TO_FORESTER_RATIO), 1);
@@ -181,7 +181,7 @@ public class AiMapInformation {
 	}
 
 	public long getRemainingGrassTiles(AiStatistics aiStatistics, byte playerId) {
-		long remainingGrass = resourceAndGrasCount[playerId][GRAS];
+		long remainingGrass = resourceAndGrassCount[playerId][GRASS_INDEX];
 		for (EBuildingType buildingType : EBuildingType.VALUES) {
 			if (!buildingType.isMine()) {
 				remainingGrass -= buildingType.getProtectedTiles().length * aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType,
@@ -192,6 +192,6 @@ public class AiMapInformation {
 	}
 
 	public long getGrassTilesOf(byte playerId) {
-		return resourceAndGrasCount[playerId][GRAS];
+		return resourceAndGrassCount[playerId][GRASS_INDEX];
 	}
 }
