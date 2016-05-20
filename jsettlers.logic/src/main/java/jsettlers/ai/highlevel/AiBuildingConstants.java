@@ -34,6 +34,6 @@ public class AiBuildingConstants {
 	public static final double LUMBERJACK_TO_FORESTER_RATIO = 2F / 1F;
 	public static final double LUMBERJACK_TO_STONE_CUTTER_RATIO = 8F / 5F;
 	public static final double COAL_MINE_TO_SMITH_RATIO = 1F / 1.8F;
-	public static final double IRON_MINE_TO_IRONMELT_RATIO = COAL_MINE_TO_IRONORE_MINE_RATIO / COAL_MINE_TO_IRONORE_MINE_RATIO;
+	public static final double IRON_MINE_TO_IRONMELT_RATIO = COAL_MINE_TO_SMITH_RATIO / COAL_MINE_TO_IRONORE_MINE_RATIO;
 	public static final double WINEGROWER_TO_TEMPLE_RATIO = 1F / 1F;
 }

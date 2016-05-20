@@ -320,15 +320,15 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
+private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 		switch (targetBuilding) {
 		case IRONMINE:
 			return ratioFits(COALMINE, COAL_MINE_TO_IRONORE_MINE_RATIO, IRONMINE);
 		case WEAPONSMITH:
 			return ratioFits(IRONMELT, IRONMELT_TO_WEAPON_SMITH_RATIO, WEAPONSMITH);
 		case IRONMELT:
-			return ratioFits(COALMINE, COAL_MINE_TO_SMITH_RATIO, IRONMELT)
-					&& ratioFits(IRONMINE, IRON_MINE_TO_IRONMELT_RATIO, IRONMELT);
+			return ratioFits(COALMINE, 1.0 / COAL_MINE_TO_SMITH_RATIO, IRONMELT)
+					&& ratioFits(IRONMINE, 1.0 / IRON_MINE_TO_IRONMELT_RATIO, IRONMELT);
 		case BARRACK:
 			return ratioFits(WEAPONSMITH, WEAPON_SMITH_TO_BARRACKS_RATIO, BARRACK);
 		case MILL:
