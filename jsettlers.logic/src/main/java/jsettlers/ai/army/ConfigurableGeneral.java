@@ -40,7 +40,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  * occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the strongest military unit. It upgrades bowmen
  * first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3 is reached
  * to get as many level3 bowmen as posibble. TODO: store bows until level3 is reached TODO: group soldiers in direction of enemy groups to defeat them
- * TODO: group soldiers in direction of enemy groups to attack them TODO: introduce rush defency by early weaponsmith when enemy rushes
+ * TODO: group soldiers in direction of enemy groups to attack them
  *
  * @author codingberlin
  */
