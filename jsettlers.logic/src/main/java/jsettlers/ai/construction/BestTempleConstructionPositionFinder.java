@@ -35,10 +35,10 @@ public class BestTempleConstructionPositionFinder extends NearRequiredBuildingCo
 			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		int availableWine = aiStatistics.getTotalWineCountForPlayer(playerId);
 		int usedWine = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TEMPLE, playerId) * WINE_PER_TEMPLE;
-		if (availableWine - usedWine >= WINE_PER_TEMPLE ) {
+		if (availableWine - usedWine >= WINE_PER_TEMPLE) {
 			return super.findBestConstructionPosition(aiStatistics, constructionMap, playerId);
 		} else {
-			//reject construction of temple - the wine is not grown yet
+			// reject construction of temple - the wine is not grown yet
 			return null;
 		}
 	}

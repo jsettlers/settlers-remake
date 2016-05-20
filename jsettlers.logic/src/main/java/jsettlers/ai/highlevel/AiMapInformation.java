@@ -34,12 +34,12 @@ import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_STONE_CUT
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
 
 /**
- * This class calculates information about the map for the AI. At the moment it calculates how many buildings of a building type can be build on
- * the map by each player. In a nutshell it divides the landscape and resources of the map by the number of possible players. Then it determines
- * the maximal possible iron mines and coal mines. Depending of mines to smiths ratio it calculates the maximal number of possible smiths. Then it
- * calculates the needed amount of food building by preferring fisher huts over farms. At least it calculates how many lumberjacks and stone
- * cutters are needed to build this economy including the necessary living houses to levy soldiers. Now it checks if the calculated buildings have
- * enough space to be build on the map. If not it reduces the number of smiths unless it hits a threshold. Then it reduces the number of gold smith,
+ * This class calculates information about the map for the AI. At the moment it calculates how many buildings of a building type can be build on the
+ * map by each player. In a nutshell it divides the landscape and resources of the map by the number of possible players. Then it determines the
+ * maximal possible iron mines and coal mines. Depending of mines to smiths ratio it calculates the maximal number of possible smiths. Then it
+ * calculates the needed amount of food building by preferring fisher huts over farms. At least it calculates how many lumberjacks and stone cutters
+ * are needed to build this economy including the necessary living houses to levy soldiers. Now it checks if the calculated buildings have enough
+ * space to be build on the map. If not it reduces the number of smiths unless it hits a threshold. Then it reduces the number of gold smith,
  * winegrowers and big temples to a minimum set of this buildings. If again this are too much buildings. It keeps reducing smiths.
  *
  * TODO: add information where to find the resources and how far they are to let AI use pioneers instead of towers
@@ -119,12 +119,12 @@ public class AiMapInformation {
 		int numberOfRemainingWeaponSmiths = Math.max(0, numberOfWeaponSmiths - (int) (numberOfFisher * WEAPON_SMITH_TO_FISHER_HUT_RATIO));
 
 		int numberOfFarms = (int) Math.ceil(numberOfRemainingWeaponSmiths / WEAPON_SMITH_TO_FARM_RATIO);
-			buildingCounts[EBuildingType.FARM.ordinal] = numberOfFarms;
-			buildingCounts[EBuildingType.BAKER.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_BAKER_RATIO);
-			buildingCounts[EBuildingType.MILL.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_MILL_RATIO);
-			buildingCounts[EBuildingType.WATERWORKS.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_WATERWORKS_RATIO);
-			buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_SLAUGHTER_RATIO);
-			buildingCounts[EBuildingType.PIG_FARM.ordinal] =  (int) Math.ceil(numberOfFarms / FARM_TO_PIG_FARM_RATIO);
+		buildingCounts[EBuildingType.FARM.ordinal] = numberOfFarms;
+		buildingCounts[EBuildingType.BAKER.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_BAKER_RATIO);
+		buildingCounts[EBuildingType.MILL.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_MILL_RATIO);
+		buildingCounts[EBuildingType.WATERWORKS.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_WATERWORKS_RATIO);
+		buildingCounts[EBuildingType.SLAUGHTERHOUSE.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_SLAUGHTER_RATIO);
+		buildingCounts[EBuildingType.PIG_FARM.ordinal] = (int) Math.ceil(numberOfFarms / FARM_TO_PIG_FARM_RATIO);
 
 		int lumberJacksForWeaponSmiths = Math.max(8, (int) (numberOfWeaponSmiths / WEAPON_SMITH_TO_LUMBERJACK_RATIO));
 		int maxLumberJacksForMap = Math.round((float) grasTiles / GRASS_TO_LUMBERJACK_RATIO);

@@ -374,7 +374,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			int numberOfSwordsmen = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, playerId).size()
 					+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, playerId).size()
 					+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, playerId).size();
-			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId) >= numberOfSwordsmen){
+			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId) >= numberOfSwordsmen) {
 				return true;
 			}
 			for (byte enemy : aiStatistics.getEnemiesOf(playerId)) {
