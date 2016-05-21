@@ -22,6 +22,7 @@ import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
@@ -40,14 +41,21 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	private static final EBuildingType[] RUSH_DEFENCE_BUILDINGS = {
 			LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE };
+	private static final Collection<EBuildingType> BUILDING_INDUSTRY;
 	private int[] mapBuildingCounts;
 	private final List<EBuildingType> buildingsToBuild;
 	private int numberOfMidGameStoneCutters = 0;
 	private AiStatistics aiStatistics;
+	private float buildingIndustryFactor;
 	private byte playerId;
 	private float weaponSmithFactor;
 	private boolean isHighGoodsGame;
 	private boolean isMiddleGoodsGame;
+
+	static {
+		EBuildingType[] buildingIndustry = {LUMBERJACK, FORESTER, SAWMILL, STONECUTTER};
+		BUILDING_INDUSTRY = Arrays.asList(buildingIndustry);
+	}
 
 	/**
 	 *
@@ -55,8 +63,9 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 */
-	public BuildingListEconomyMinister(AiStatistics aiStatistics, Player player, float weaponSmithFactor) {
+	public BuildingListEconomyMinister(AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor) {
 		this.aiStatistics = aiStatistics;
+		this.buildingIndustryFactor = buildingIndustryFactor;
 		this.playerId = player.playerId;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
@@ -116,7 +125,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 
 	private List<EBuildingType> determineBuildingMaterialBuildings() {
 		List<EBuildingType> buildingMaterialBuildings = new ArrayList<>();
-		for (int i = 0; i < mapBuildingCounts[LUMBERJACK.ordinal] - 8; i++) {
+		for (int i = 0; i < Math.ceil(mapBuildingCounts[LUMBERJACK.ordinal] * buildingIndustryFactor) - 8; i++) {
 			buildingMaterialBuildings.add(LUMBERJACK);
 			if (i % 3 == 1)
 				buildingMaterialBuildings.add(FORESTER);
@@ -193,7 +202,11 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	protected void addIfPossible(EBuildingType buildingType) {
-		if (currentCountOf(buildingType) < mapBuildingCounts[buildingType.ordinal]) {
+		float factor = 1F;
+		if (BUILDING_INDUSTRY.contains(buildingType)) {
+			factor = buildingIndustryFactor;
+		}
+		if (currentCountOf(buildingType) < Math.ceil(mapBuildingCounts[buildingType.ordinal]*factor)) {
 			buildingsToBuild.add(buildingType);
 		}
 	}
