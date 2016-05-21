@@ -327,8 +327,8 @@ private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 		case WEAPONSMITH:
 			return ratioFits(IRONMELT, IRONMELT_TO_WEAPON_SMITH_RATIO, WEAPONSMITH);
 		case IRONMELT:
-			return ratioFits(COALMINE, 1.0 / COAL_MINE_TO_SMITH_RATIO, IRONMELT)
-					&& ratioFits(IRONMINE, 1.0 / IRON_MINE_TO_IRONMELT_RATIO, IRONMELT);
+			return ratioFits(COALMINE, COAL_MINE_TO_SMITH_RATIO, IRONMELT)
+					&& ratioFits(IRONMINE, IRON_MINE_TO_IRONMELT_RATIO, IRONMELT);
 		case BARRACK:
 			return ratioFits(WEAPONSMITH, WEAPON_SMITH_TO_BARRACKS_RATIO, BARRACK);
 		case MILL:
@@ -354,7 +354,7 @@ private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 
 	private boolean ratioFits(EBuildingType leftBuilding, double leftToRightBuildingRatio, EBuildingType rightBuilding) {
 		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(leftBuilding,
-				playerId) >= (double) aiStatistics.getTotalNumberOfBuildingTypeForPlayer(rightBuilding, playerId) / leftToRightBuildingRatio;
+				playerId) >= (double) aiStatistics.getTotalNumberOfBuildingTypeForPlayer(rightBuilding, playerId) * leftToRightBuildingRatio;
 	}
 
 	private boolean buildingNeedsToBeBuild(Map<EBuildingType, Integer> playerBuildingPlan, EBuildingType currentBuildingType) {
