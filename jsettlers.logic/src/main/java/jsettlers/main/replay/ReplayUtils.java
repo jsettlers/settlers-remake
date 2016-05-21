@@ -177,7 +177,7 @@ public class ReplayUtils {
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
 				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings());
 
-		DataOutputStream dos = new DataOutputStream(ResourceManager.writeConfigurationFile(newReplayFile));
+		DataOutputStream dos = new DataOutputStream(ResourceManager.writeUserFile(newReplayFile));
 		replayInfo.serialize(dos);
 		gameClock.saveRemainingTasks(dos);
 

@@ -424,7 +424,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			}
 
 		case PATHING:
-			if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
+			if (path == null || pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
@@ -476,7 +476,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		case DOING_NOTHING:
 			return true;
 		case PATHING:
-			return pushingMovable.path != null && pushingMovable.path.hasNextStep();
+			return path != null && pushingMovable.path != null && pushingMovable.path.hasNextStep();
 		default:
 			return false;
 		}
@@ -947,7 +947,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				+ " direction: " + direction + " material: " + materialType;
 	}
 
-	private static enum EMovableState {
+	private enum EMovableState {
 		PLAYING_ACTION,
 		PATHING,
 		DOING_NOTHING,
