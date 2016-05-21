@@ -45,7 +45,7 @@ public class SwingResourceProvider implements IResourceProvider {
 
 	@Override
 	public OutputStream writeUserFile(String name) throws IOException {
-		File file = new File("."+File.separator+ name);
+		File file = new File("." + File.separator + name);
 		file.getParentFile().mkdirs();
 		return new FileOutputStream(file);
 	}
