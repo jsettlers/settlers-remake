@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -325,8 +325,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 			if (offer != null) {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
 				if (manageableBearer != null) {
-					manageableBearer.becomeWorker(this, workerCreationRequest, offer.getPos());
-					return true;
+					return manageableBearer.becomeWorker(this, workerCreationRequest, offer.getPos());
 
 				} else { // no free movable found => return material and add the creation request to the end of the queue
 					materialOffers.addOffer(offer.getPos(), tool);
@@ -341,8 +340,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		} else { // create worker without a tool
 			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerCreationRequest.getPos());
 			if (manageableBearer != null) {
-				manageableBearer.becomeWorker(this, workerCreationRequest);
-				return true;
+				return manageableBearer.becomeWorker(this, workerCreationRequest);
 			} else {
 				return false;
 			}
@@ -358,9 +356,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		SoilderCreationRequest soilderRequest = soilderCreationRequests.poll();
 		if (soilderRequest != null) {
 			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(soilderRequest.getPos());
-			if (manageableBearer != null) {
-				manageableBearer.becomeSoldier(soilderRequest.getBarrack());
-			} else {
+			if (manageableBearer == null || !manageableBearer.becomeSoldier(soilderRequest.getBarrack())) {
 				soilderCreationRequests.addLast(soilderRequest);
 			}
 		}
