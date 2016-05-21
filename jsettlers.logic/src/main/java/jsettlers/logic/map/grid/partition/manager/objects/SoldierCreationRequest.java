@@ -20,18 +20,18 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 
-public final class SoilderCreationRequest implements ILocatable, Serializable {
+public final class SoldierCreationRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = -3108188242025391145L;
 
 	public final IBarrack barrack;
 
-	public SoilderCreationRequest(IBarrack barrack) {
+	public SoldierCreationRequest(IBarrack barrack) {
 		this.barrack = barrack;
 	}
 
 	@Override
 	public String toString() {
-		return "SoilderCreationRequest[" + barrack + "|" + barrack.getDoor() + "]";
+		return "SoldierCreationRequest[" + barrack + "|" + barrack.getDoor() + "]";
 	}
 
 	@Override
