@@ -1549,8 +1549,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void requestSoilderable(IBarrack barrack) {
-			partitionsGrid.getPartitionAt(barrack).requestSoilderable(barrack);
+		public final void requestSoldierable(IBarrack barrack) {
+			partitionsGrid.getPartitionAt(barrack).requestSoldierable(barrack);
 		}
 
 		@Override
