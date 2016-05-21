@@ -33,7 +33,7 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
  * This economy minister is as optimized as possible to create fast and many level 3 soldiers with high combat strength. It builds a longterm economy
  * with rush defence if needed. It starts with 8 lumberjacks first, then it builds mana. Then food, weapons, more lumberjacks and gold economy is
  * build in parallel until the full amount of possible buildings of the map is reached. If the map is smaller than 8 lumberjacks, it builds weapon
- * smiths before mana. The minister is down sizable by a weapon smiths factor.
+ * smiths before mana. The minister is down sizable by a weapon smiths factor and a building industry factor.
  *
  * @author codingberlin
  */
@@ -62,6 +62,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
+	 * @param buildingIndustryFactor
+	 *            influences the amount of lumberjacks, sawmills, foresters and stone cutters to slow down the AI.
 	 */
 	public BuildingListEconomyMinister(AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor) {
 		this.aiStatistics = aiStatistics;
