@@ -307,15 +307,12 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void buildEconomy() {
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
-		;
 		for (EBuildingType currentBuildingType : economyMinister.getBuildingsToBuild()) {
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
-					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
-				int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingType);
-				if (numberOfAvailableTools >= 0 && construct(currentBuildingType)) {
-					return;
-				}
+					&& buildingDependenciesAreFulfilled(currentBuildingType)
+					&& construct(currentBuildingType)) {
+				return;
 			}
 		}
 	}

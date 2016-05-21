@@ -66,6 +66,7 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 		buildingsToBuild.addAll(buildListOf(COALMINE));
 		buildingsToBuild.addAll(buildListOf(IRONMINE));
 		buildingsToBuild.addAll(buildListOf(IRONMELT));
+		buildingsToBuild.add(TOOLSMITH);
 		buildingsToBuild.addAll(buildListOf(WEAPONSMITH));
 		buildingsToBuild.addAll(buildListOf(BARRACK));
 		buildingsToBuild.addAll(buildListOf(FISHER));
