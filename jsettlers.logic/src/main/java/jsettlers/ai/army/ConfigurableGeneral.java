@@ -116,30 +116,46 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		if (!upgradeSoldiers(ESoldierType.BOWMAN))
 			if (!upgradeSoldiers(ESoldierType.PIKEMAN))
 				upgradeSoldiers(ESoldierType.SWORDSMAN);
-		int numberOfMissingSwordsmen = Math.max(0, MIN_SWORDSMEN_COUNT
+
+		int missingSwordsmenCount = Math.max(0, MIN_SWORDSMEN_COUNT
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, player.playerId).size()
 				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, player.playerId).size());
-		setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, numberOfMissingSwordsmen);
-		if (numberOfMissingSwordsmen > 0) {
+		int missingSpearmenCount = Math.max(0, MIN_PIKEMEN_COUNT
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId).size()
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId).size()
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId).size());
+		int bowmenCount = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, player.playerId).size()
+				+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, player.playerId).size()
+				+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, player.playerId).size();
+
+		if (missingSwordsmenCount > 0) {
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, missingSwordsmenCount);
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
-		} else {
-			int numberOfMissingSpearmen = Math.max(0, MIN_PIKEMEN_COUNT
-					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, player.playerId).size()
-					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, player.playerId).size()
-					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, player.playerId).size());
-			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, numberOfMissingSpearmen);
-		}
-		int numberOfBowmen = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, player.playerId).size()
-						+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, player.playerId).size()
-						+ aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, player.playerId).size();
-		if (numberOfBowmen * player.getCombatStrengthInformation().getCombatStrength(false) >= BOWMEN_COUNT_OF_KILLING_INFANTRY) {
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.BOW, 0);
 			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
-			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0F);
-			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
-		} else {
+			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 1F);
+			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 0F);
+		} else if (missingSpearmenCount > 0) {
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, 0);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, missingSpearmenCount);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.BOW, 0);
 			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
 			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0.3F);
+			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
+		} else if (bowmenCount * player.getCombatStrengthInformation().getCombatStrength(false) < BOWMEN_COUNT_OF_KILLING_INFANTRY){
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, 0);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.BOW, 0);
+			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
+			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0.3F);
+			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
+		} else {
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, 0);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
+			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.BOW, 0);
+			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
+			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0F);
 			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
 		}
 	}
