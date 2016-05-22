@@ -48,7 +48,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	private final EMovableType movableType;
 
-	private ESoldierState state = ESoldierState.AGGRESSIVE;
+	private ESoldierState state = ESoldierState.SEARCH_FOR_ENEMIES;
 	private IOccupyableBuilding building;
 	private IAttackable enemy;
 	private ShortPoint2D oldPathTarget;
