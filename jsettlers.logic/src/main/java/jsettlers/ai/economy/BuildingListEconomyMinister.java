@@ -87,7 +87,15 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		} else {
 			addManaBuildings();
 			addFoodAndBuildingMaterialAndWeaponAndGoldIndustry();
+			addSecondToolSmith();
 		}
+	}
+
+	private void addSecondToolSmith() {
+		if (mapBuildingCounts[WEAPONSMITH.ordinal] * weaponSmithFactor >= 16) {
+			buildingsToBuild.add(80, TOOLSMITH);
+		}
+
 	}
 
 	@Override
