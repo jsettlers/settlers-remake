@@ -880,6 +880,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		this.strategy = newStrategy;
 		this.movableAction = EMovableAction.NO_ACTION;
 		setState(EMovableState.DOING_NOTHING);
+		grid.notifyAttackers(position, this, true);
 	}
 
 	public final IBuildingOccupyableMovable setOccupyableBuilding(IOccupyableBuilding building) {
