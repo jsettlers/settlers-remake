@@ -193,7 +193,7 @@ public final class ObjectsGrid implements Serializable {
 	 *            if false, only the border of the area is informed.
 	 * @param b
 	 */
-	public void informObjectsAboutAttackble(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
+	public void informObjectsAboutAttackable(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
 		IMapArea area;
 		if (informFullArea) {
 			area = new HexGridArea(position.x, position.y, (short) 1, Constants.TOWER_SEARCH_RADIUS);

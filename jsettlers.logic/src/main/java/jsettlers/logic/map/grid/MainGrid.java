@@ -536,7 +536,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester) {
 			for (ESearchType searchType : types) {
-				if (fitsSearchType(x,y,searchType,requester)) {
+				if (fitsSearchType(x, y, searchType, requester)) {
 					return true;
 				}
 			}
@@ -942,7 +942,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
-			RelativePoint[] buildingArea =  buildingType.getBuildingArea();
+			RelativePoint[] buildingArea = buildingType.getBuildingArea();
 			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
 				return false;
@@ -1250,9 +1250,14 @@ public final class MainGrid implements Serializable {
 		public void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea) {
 			movableGrid.movableEntered(position, movable);
 
+			notifyAttackers(position, movable, informFullArea);
+
+		}
+
+		public void notifyAttackers(ShortPoint2D position, Movable movable, boolean informFullArea) {
 			if (movable.isAttackable()) {
 				movableGrid.informMovables(movable, position.x, position.y, informFullArea);
-				objectsGrid.informObjectsAboutAttackble(position, movable, informFullArea, !movable.getMovableType().isBowman());
+				objectsGrid.informObjectsAboutAttackable(position, movable, informFullArea, !movable.getMovableType().isBowman());
 			}
 		}
 
@@ -1803,7 +1808,8 @@ public final class MainGrid implements Serializable {
 			if (constructionMarksGrid.canConstructAt(position.x, position.y, type, playerId)) {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
-				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position + "  playerId: "
+				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position
+						+ "  playerId: "
 						+ playerId);
 			}
 		}

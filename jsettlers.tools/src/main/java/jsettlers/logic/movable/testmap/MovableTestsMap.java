@@ -377,6 +377,10 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
+		public void notifyAttackers(ShortPoint2D position, Movable movable, boolean informFullArea) {
+		}
+
+		@Override
 		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player) {
 		}
 
