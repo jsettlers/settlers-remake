@@ -133,9 +133,13 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer()) {
+		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
 		}
+	}
+
+	private boolean alreadyWalkingToPosition(ShortPoint2D targetPosition) {
+		return this.state == EMovableState.PATHING && this.path.getTargetPos().equals(targetPosition);
 	}
 
 	public void leavePosition() {

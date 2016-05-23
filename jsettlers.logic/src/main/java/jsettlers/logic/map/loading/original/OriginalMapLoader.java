@@ -47,7 +47,7 @@ public class OriginalMapLoader extends MapLoader {
 	public OriginalMapLoader(IListedMap listedMap) throws MapLoadException {
 		this.listedMap = listedMap;
 		fileName = listedMap.getFileName();
-		creationDate = new Date(listedMap.getFile().lastModified());
+		creationDate = getCreationDateFrom(listedMap);
 		try {
 			mapContent = new OriginalMapFileContentReader(listedMap.getInputStream());
 		} catch (IOException e) {
@@ -72,6 +72,14 @@ public class OriginalMapLoader extends MapLoader {
 		mapContent.freeBuffer();
 
 		isMapOK = true;
+	}
+
+	private Date getCreationDateFrom(IListedMap listedMap) {
+		try {
+			return new Date(listedMap.getFile().lastModified());
+		} catch (UnsupportedOperationException e) {
+			return new Date();
+		}
 	}
 
 	// ---------------------------//

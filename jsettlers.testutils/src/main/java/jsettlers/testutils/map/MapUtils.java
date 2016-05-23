@@ -101,6 +101,10 @@ public final class MapUtils {
 		return getMap(MapUtils.class, "bigmap.rmap");
 	}
 
+	public static MapLoader getSpezialSumpf() throws MapLoadException {
+		return getMap(MapUtils.class, "SpezialSumpf_12.map");
+	}
+
 	public static MapLoader getMountainlake() throws MapLoadException {
 		return getMap(MapUtils.class, "mountainlake.rmap");
 	}

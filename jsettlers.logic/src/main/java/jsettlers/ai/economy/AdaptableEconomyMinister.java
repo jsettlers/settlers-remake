@@ -23,25 +23,26 @@ import java.util.*;
 import static jsettlers.common.buildings.EBuildingType.*;
 
 /**
-  * This economy minister checks how many buildings of each type its enemies did build and build one building less than the player with the fewest
- * number of that building. But it builds minimal 1 building for each building type.
- * This leads to an adaptive AI which can be beaten by the weakest player in the game.
+ * This economy minister checks how many buildings of each type its enemies did build and build one building less than the player with the fewest
+ * number of that building. But it builds minimal 1 building for each building type. This leads to an adaptive AI which can be beaten by the weakest
+ * player in the game.
+ * 
  * @author codingberlin
  */
 public class AdaptableEconomyMinister implements EconomyMinister {
 
 	private final AiStatistics aiStatistics;
-	private final Player player;
-	private static final List<EBuildingType> MINIMAL_BUILDING_TYPES =
-			Arrays.asList(LUMBERJACK, STONECUTTER, SAWMILL, SMALL_LIVINGHOUSE, FORESTER, LUMBERJACK, LUMBERJACK, STONECUTTER);
+	private final byte playerId;
+	private static final List<EBuildingType> MINIMAL_BUILDING_TYPES = Arrays.asList(LUMBERJACK, STONECUTTER, SAWMILL, SMALL_LIVINGHOUSE, FORESTER,
+			LUMBERJACK, LUMBERJACK, STONECUTTER);
 
 	public AdaptableEconomyMinister(AiStatistics aiStatistics, Player player) {
 		this.aiStatistics = aiStatistics;
-		this.player = player;
+		this.playerId = player.playerId;
 	}
 
 	@Override
-	public int getNumberOfParallelConstructionSides() {
+	public int getNumberOfParallelConstructionSites() {
 		return 5;
 	}
 
@@ -49,49 +50,73 @@ public class AdaptableEconomyMinister implements EconomyMinister {
 	public List<EBuildingType> getBuildingsToBuild() {
 		List<EBuildingType> buildingsToBuild = new Vector<>();
 		buildingsToBuild.addAll(MINIMAL_BUILDING_TYPES);
-		buildingsToBuild.addAll(determineNumberOf(LUMBERJACK));
-		buildingsToBuild.addAll(determineNumberOf(STONECUTTER));
-		buildingsToBuild.addAll(determineNumberOf(SAWMILL));
-		buildingsToBuild.addAll(determineNumberOf(SMALL_LIVINGHOUSE));
-		buildingsToBuild.addAll(determineNumberOf(FORESTER));
-		buildingsToBuild.addAll(determineNumberOf(WINEGROWER));
-		buildingsToBuild.addAll(determineNumberOf(FARM));
-		buildingsToBuild.addAll(determineNumberOf(TEMPLE));
-		buildingsToBuild.addAll(determineNumberOf(WATERWORKS));
-		buildingsToBuild.addAll(determineNumberOf(MILL));
-		buildingsToBuild.addAll(determineNumberOf(BAKER));
-		buildingsToBuild.addAll(determineNumberOf(PIG_FARM));
-		buildingsToBuild.addAll(determineNumberOf(SLAUGHTERHOUSE));
-		buildingsToBuild.addAll(determineNumberOf(COALMINE));
-		buildingsToBuild.addAll(determineNumberOf(IRONMINE));
-		buildingsToBuild.addAll(determineNumberOf(IRONMELT));
-		buildingsToBuild.addAll(determineNumberOf(WEAPONSMITH));
-		buildingsToBuild.addAll(determineNumberOf(BARRACK));
-		buildingsToBuild.addAll(determineNumberOf(FISHER));
-		buildingsToBuild.addAll(determineNumberOf(GOLDMINE));
-		buildingsToBuild.addAll(determineNumberOf(GOLDMELT));
-		buildingsToBuild.addAll(determineNumberOf(BIG_TEMPLE));
-		buildingsToBuild.addAll(determineNumberOf(CHARCOAL_BURNER));
-		buildingsToBuild.addAll(determineNumberOf(DONKEY_FARM));
+		buildingsToBuild.addAll(buildListOf(LUMBERJACK));
+		buildingsToBuild.addAll(buildListOf(STONECUTTER));
+		buildingsToBuild.addAll(buildListOf(SAWMILL));
+		buildingsToBuild.addAll(buildListOf(SMALL_LIVINGHOUSE));
+		buildingsToBuild.addAll(buildListOf(FORESTER));
+		buildingsToBuild.addAll(buildListOf(WINEGROWER));
+		buildingsToBuild.addAll(buildListOf(FARM));
+		buildingsToBuild.addAll(buildListOf(TEMPLE));
+		buildingsToBuild.addAll(buildListOf(WATERWORKS));
+		buildingsToBuild.addAll(buildListOf(MILL));
+		buildingsToBuild.addAll(buildListOf(BAKER));
+		buildingsToBuild.addAll(buildListOf(PIG_FARM));
+		buildingsToBuild.addAll(buildListOf(SLAUGHTERHOUSE));
+		buildingsToBuild.addAll(buildListOf(COALMINE));
+		buildingsToBuild.addAll(buildListOf(IRONMINE));
+		buildingsToBuild.addAll(buildListOf(IRONMELT));
+		buildingsToBuild.add(TOOLSMITH);
+		buildingsToBuild.addAll(buildListOf(WEAPONSMITH));
+		buildingsToBuild.addAll(buildListOf(BARRACK));
+		buildingsToBuild.addAll(buildListOf(FISHER));
+		buildingsToBuild.addAll(buildListOf(GOLDMINE));
+		buildingsToBuild.addAll(buildListOf(GOLDMELT));
+		buildingsToBuild.addAll(buildListOf(BIG_TEMPLE));
+		buildingsToBuild.addAll(buildListOf(CHARCOAL_BURNER));
+		buildingsToBuild.addAll(buildListOf(DONKEY_FARM));
 		return buildingsToBuild;
 	}
 
-	private Collection<EBuildingType> determineNumberOf(EBuildingType buildingType) {
-		Collection<EBuildingType> numberOfBuildingsAsList = new Vector<EBuildingType>();
-		List<Byte> enemies = aiStatistics.getEnemiesOf(player.playerId);
-		byte sumOfBuildings = 0;
-		for(byte playerId : enemies) {
-			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
-		}
-		for (int i = 0; i < Math.max(1, sumOfBuildings / enemies.size()) - Collections.frequency(MINIMAL_BUILDING_TYPES, buildingType); i++) {
+	private Collection<EBuildingType> buildListOf(EBuildingType buildingType) {
+		Collection<EBuildingType> numberOfBuildingsAsList = new Vector<EBuildingType>();;
+		int averageSumOfBuildings = determineNumberOf(buildingType);
+		for (int i = 0; i < averageSumOfBuildings - Collections.frequency(MINIMAL_BUILDING_TYPES, buildingType); i++) {
 			numberOfBuildingsAsList.add(buildingType);
-		};
+		}
 		return numberOfBuildingsAsList;
 	}
 
+	private int determineNumberOf(EBuildingType buildingType) {
+		List<Byte> enemies = aiStatistics.getEnemiesOf(playerId);
+		float sumOfBuildings = 0;
+		for (byte playerId : enemies) {
+			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
+		}
+		return Math.max(1, (int) (sumOfBuildings / enemies.size()));
+	}
+
 	@Override
-	public byte getMidGameNumberOfStoneCutters() {
+	public int getMidGameNumberOfStoneCutters() {
 		return 2;
+	}
+
+	@Override
+	public boolean automaticTowersEnabled() {
+		return true;
+	}
+
+	@Override public boolean automaticLivingHousesEnabled() {
+		return true;
+	}
+
+	@Override public void update() {
+		// nothing to update
+	}
+
+	@Override
+	public boolean isEndGame() {
+		return false;
 	}
 
 	@Override

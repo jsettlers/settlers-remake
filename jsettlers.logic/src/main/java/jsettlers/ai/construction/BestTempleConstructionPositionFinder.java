@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,21 +14,33 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Whis this class you can store a specific count of a specific building type. e.g. you can use this class to store dependencies like that a baker
- * needs 1/3 mills: BuildingCount(MILL, 0.33f)
- * 
  * @author codingberlin
  */
-public class BuildingCount {
+public class BestTempleConstructionPositionFinder extends NearRequiredBuildingConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	public final EBuildingType buildingType;
-	public final float count;
+	public static final int WINE_PER_TEMPLE = 15;
 
-	public BuildingCount(EBuildingType buildingType, float count) {
-		this.buildingType = buildingType;
-		this.count = count;
+	public BestTempleConstructionPositionFinder() {
+		super(EBuildingType.TEMPLE, EBuildingType.WINEGROWER);
 	}
+
+	@Override
+	public ShortPoint2D findBestConstructionPosition(
+			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		int availableWine = aiStatistics.getTotalWineCountForPlayer(playerId);
+		int usedWine = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TEMPLE, playerId) * WINE_PER_TEMPLE;
+		if (availableWine - usedWine >= WINE_PER_TEMPLE) {
+			return super.findBestConstructionPosition(aiStatistics, constructionMap, playerId);
+		} else {
+			// reject construction of temple - the wine is not grown yet
+			return null;
+		}
+	}
+
 }
