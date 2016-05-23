@@ -1,4 +1,8 @@
-apply plugin: 'java'
+apply plugin: 'application'
+
+# Allows you to use:
+# ./gradlew :jsettlers.tools:run -DMAIN_CLASS=jsettlers.graphics.debug.ImagePreloadAnalyzer
+mainClassName = System.getProperty("MAIN_CLASS");
 
 compileJava {
     sourceCompatibility = 1.8
