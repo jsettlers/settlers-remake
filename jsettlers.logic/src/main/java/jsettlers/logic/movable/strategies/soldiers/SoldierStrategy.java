@@ -331,23 +331,23 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
 
-			EDirection leftDir = direction.getNeighbor(-1);
-			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-			EDirection rightDir = direction.getNeighbor(1);
+			EDirection rightDir = direction.getNeighbor(-1);
 			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+			EDirection leftDir = direction.getNeighbor(1);
+			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 
-			ShortPoint2D freePosition = getRandomFreePosition(leftPos, rightPos);
+			ShortPoint2D freePosition = getRandomFreePosition(rightPos, leftPos);
 
 			if (freePosition != null) {
 				return new Path(freePosition);
 
 			} else {
-				EDirection twoLeftDir = direction.getNeighbor(-2);
-				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
-				EDirection twoRightDir = direction.getNeighbor(2);
+				EDirection twoRightDir = direction.getNeighbor(-2);
 				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
+				EDirection twoLeftDir = direction.getNeighbor(2);
+				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
 
-				freePosition = getRandomFreePosition(twoLeftPos, twoRightPos);
+				freePosition = getRandomFreePosition(twoRightPos, twoLeftPos);
 
 				if (freePosition != null) {
 					return new Path(freePosition);

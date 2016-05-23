@@ -258,42 +258,42 @@ public abstract class MovableStrategy implements Serializable {
 
 		AbstractMovableGrid grid = movable.grid;
 
-		EDirection leftDir = direction.getNeighbor(-1);
-		EDirection rightDir = direction.getNeighbor(1);
+		EDirection rightDir = direction.getNeighbor(-1);
+		EDirection leftDir = direction.getNeighbor(1);
 
 		ShortPoint2D straightPos = direction.getNextHexPoint(position);
 		ShortPoint2D twoStraightPos = direction.getNextHexPoint(position, 2);
 
-		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
-		ShortPoint2D straightLeftPos = leftDir.getNextHexPoint(straightPos);
-
 		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
 		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
 		ShortPoint2D straightRightPos = rightDir.getNextHexPoint(straightPos);
+
+		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
+		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
+		ShortPoint2D straightLeftPos = leftDir.getNextHexPoint(straightPos);
 
 		ShortPoint2D overNextPos = path.getOverNextPos();
 
 		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<ShortPoint2D[]>();
 
 		if (twoStraightPos.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
-				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
-			} else if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
+			if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
 				possiblePaths.add(new ShortPoint2D[] { rightPos, rightStraightPos });
+			} else if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
+				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
 		}
 
-		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
-			possiblePaths.add(new ShortPoint2D[] { leftPos });
-		}
 		if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos)) {
 			possiblePaths.add(new ShortPoint2D[] { rightPos });
 		}
+		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
+			possiblePaths.add(new ShortPoint2D[] { leftPos });
+		}
 
-		if ((straightLeftPos.equals(overNextPos) || straightRightPos.equals(overNextPos))
+		if ((straightRightPos.equals(overNextPos) || straightLeftPos.equals(overNextPos))
 				&& isValidPosition(straightPos) && grid.hasNoMovableAt(straightPos.x, straightPos.y)) {
 			possiblePaths.add(new ShortPoint2D[] { straightPos });
 
