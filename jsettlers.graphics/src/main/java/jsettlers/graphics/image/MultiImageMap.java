@@ -17,13 +17,17 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 import go.graphics.TextureHandle;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.GLPreloadTask;
@@ -37,13 +41,23 @@ import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
+<<<<<<< ours
  * This is a map of multiple images of one sequence. It always contains the settler image and the torso. This class allows packing the settler images
  * to a single, big texture.
+=======
+ * This is a map of multiple images of one sequence. It always contains the settler image and the torso
+>>>>>>> theirs
  * 
  * @author Michael Zangl
  */
 public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 
+	/**
+	 * Change this every time you change the file format.
+	 */
+	protected static final int CACHE_MAGIC = 0x8273433;
+	protected static final byte TYPE_IMAGE = 1;
+	protected static final byte TYPE_NULL_IMAGE = 2;
 	private final int width;
 	private final int height;
 	private int drawx = 0; // x coordinate of free space
@@ -54,6 +68,8 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private boolean textureValid = false;
 	private TextureHandle texture = null;
 	private ShortBuffer buffers;
+	// TODO: Release this buffer once we sent it over to OpenGL and the cache file was written successfully. We can always read it back from the cache
+	// file if we need to.
 	private ByteBuffer byteBuffer;
 
 	private final File cacheFile;
@@ -76,113 +92,115 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		cacheFile = new File(root, "cache-" + id);
 	}
 
-	private void allocateBuffers() {
-		byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		buffers = byteBuffer.asShortBuffer();
-	}
-
 	/**
-	 * Adds a list of textures to this file. The images can be referenced by the image handles added to addTo.
+	 * Load this texture. The texture may be loaded from either the cache file or the original file.
 	 * 
 	 * @param dfr
-	 *            The reader to read the textures from.
 	 * @param sequenceIndexes
-	 *            The indexes where the sequences start.
+	 *            The sequences to load.
 	 * @param addTo
-	 *            The image sequence to add image references to the newly added images to.
-	 * @throws IOException
-	 *             If the file could not be read.
 	 */
-	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
-			Sequence<Image>[] addTo) throws IOException {
+	public void load(AdvancedDatFileReader dfr, int[] sequenceIndexes, Sequence<Image>[] addTo) {
+		if (hasCache()) {
+			ImageProvider.traceImageLoad("Cache for " + dfr + ": In cache");
+			try {
+				CacheFileReader cacheReader = new CacheFileReader(cacheFile);
+				allocateBuffers();
+				for (int s : sequenceIndexes) {
+					// TODO: Check sequence index matches
+					cacheReader.readImageSequence(this, addTo);
+				}
+				cacheReader.readTexture(byteBuffer);
+				cacheReader.close();
+				ImageProvider.traceImageLoad("Cache for " + dfr + ": Done loading cached");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				loadOriginal(dfr, sequenceIndexes, addTo);
+			}
+		} else {
+			loadOriginal(dfr, sequenceIndexes, addTo);
+		}
+	}
+
+	private void loadOriginal(AdvancedDatFileReader dfr, int[] sequenceIndexes, Sequence<Image>[] addTo) {
+		ImageProvider.traceImageLoad("Cache for " + dfr + ": Loading original file");
+		CacheFileWriter cacheWriter = new CacheFileWriter(cacheFile);
+		cacheWriter.open();
+		try {
+			loadFromDatFile(dfr, sequenceIndexes, addTo, cacheWriter);
+			cacheWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			// TODO: Error handling, do not leak cacheWriter
+		}
+		ImageProvider.traceImageLoad("Cache for " + dfr + ": Done, written to " + cacheFile + " => " + cacheFile.isFile());
+	}
+
+	private void loadFromDatFile(AdvancedDatFileReader dfr, int[] sequenceIndexes,
+								 Sequence<Image>[] addTo, CacheFileWriter cacheWriter) throws IOException {
+		ImageProvider.traceImageLoad("Preloading for file: " + dfr + " -> settlers -> " + Arrays.toString(sequenceIndexes));
 		allocateBuffers();
 
-		ImageMetadata settlermeta = new ImageMetadata();
-		ImageMetadata reusableTorsometa = new ImageMetadata();
 		for (int seqindex : sequenceIndexes) {
-			long[] settlers = dfr.getSettlerPointers(seqindex);
-			long[] torsos = dfr.getTorsoPointers(seqindex);
-
-			Image[] images = new Image[settlers.length];
-			for (int i = 0; i < settlers.length; i++) {
-				// System.out.println("Processing seq + " + seqindex +
-				// ", image " + i + ":");
-
-				ByteReader reader;
-				reader = dfr.getReaderForPointer(settlers[i]);
-				DatBitmapReader.uncompressImage(reader,
-						dfr.getSettlerTranslator(), settlermeta,
-						this);
-				int settlerx = drawx - settlermeta.width;
-				int settlery = linetop;
-
-				int torsox = 0;
-				int torsoy = 0;
-
-				ImageMetadata torsometa;
-				if (torsos != null) {
-					torsometa = reusableTorsometa;
-					reader = dfr.getReaderForPointer(torsos[i]);
-					if (reader != null) {
-						DatBitmapReader.uncompressImage(reader,
-								dfr.getTorsoTranslator(),
-								torsometa, this);
-						torsox = drawx - torsometa.width;
-						torsoy = linetop;
-					}
-				} else {
-					torsometa = null;
-				}
-
-				images[i] =
-						new MultiImageImage(this, settlermeta, settlerx,
-								settlery, torsometa,
-								torsox, torsoy);
-			}
-			addTo[seqindex] = new ArraySequence<Image>(images);
+			loadSequenceFromDatFile(dfr, addTo, seqindex, cacheWriter);
 		}
 
+		cacheWriter.writeTexture(byteBuffer);
 		// request a opengl rerender, or do it ourselves on the next image
 		textureValid = false;
 		ImageProvider.getInstance().addPreloadTask(this);
 	}
+	private void loadSequenceFromDatFile(AdvancedDatFileReader dfr, Sequence<Image>[] addTo, int seqindex, CacheFileWriter cacheWriter)
+			throws IOException
+	{
+		ImageMetadata settlermeta = new ImageMetadata();
+		ImageMetadata torsometa = new ImageMetadata();
+		long[] settlers = dfr.getSettlerPointers(seqindex);
+		long[] torsos = dfr.getTorsoPointers(seqindex);
 
-	/**
-	 * Forces the regeneration of the cache file.
-	 */
-	public synchronized void writeCache() {
-		FileOutputStream out = null;
-		try {
-			cacheFile.getParentFile().mkdirs();
-			cacheFile.delete();
-			File tempFile = new File(cacheFile.getParentFile(), cacheFile.getName() + ".tmp");
-			out = new FileOutputStream(tempFile);
+		Image[] images = new Image[settlers.length];
+		cacheWriter.writeSequenceStart(seqindex, settlers.length);
+		for (int i = 0; i < settlers.length; i++) {
+			ImageProvider.traceImageLoad("Preload image: " + dfr + " -> settlers -> " + seqindex + " -> " + i);
 
-			try {
-				byte[] line = new byte[this.width * 2];
-				byteBuffer.rewind();
-				while (byteBuffer.hasRemaining()) {
-					byteBuffer.get(line);
-					out.write(line);
-				}
-			} finally {
-				out.close();
+			ByteReader reader;
+			reader = dfr.getReaderForPointer(settlers[i]);
+			DatBitmapReader.uncompressImage(reader, dfr.getSettlerTranslator(), settlermeta, this);
+			if (settlermeta.width == 0 || settlermeta.height == 0) {
+				ImageProvider.traceImageLoad("Using null image");
+				cacheWriter.writeNullImage();
+				images[i] = NullImage.getInstance();
+				continue;
 			}
+			int settlerx = drawx - settlermeta.width;
+			int settlery = linetop;
 
-			tempFile.renameTo(cacheFile);
-
-			buffers = null;
-			byteBuffer = null;
-		} catch (IOException e) {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e1) {
+			int torsox = 0;
+			int torsoy = 0;
+			if (torsos != null) {
+				reader = dfr.getReaderForPointer(torsos[i]);
+				if (reader != null) {
+					DatBitmapReader.uncompressImage(reader, dfr.getTorsoTranslator(), torsometa, this);
+					torsox = drawx - torsometa.width;
+					torsoy = linetop;
 				}
 			}
-			e.printStackTrace();
+			ImageProvider.traceImageLoad("Allocated at settlerx = " + settlerx + ", settlery = " + settlery + ", w=" + settlermeta.width + ", h="
+					+ settlermeta.height);
+
+			MultiImageImage image = new MultiImageImage(this, settlermeta, settlerx, settlery, torsos == null || torsometa.width == 0
+					|| torsometa.height == 0 ? null : torsometa, torsox, torsoy);
+			images[i] = image;
+			cacheWriter.writeImage(image);
 		}
+		addTo[seqindex] = new ArraySequence<Image>(images);
+	}
+
+	private void allocateBuffers() {
+		byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		buffers = byteBuffer.asShortBuffer();
 	}
 
 	/**
@@ -274,25 +292,12 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
 			IOException {
 		if (buffers == null) {
-			allocateBuffers();
-			FileInputStream in = new FileInputStream(cacheFile);
-			try {
-				byte[] line = new byte[this.width * 2];
-				while (in.available() > 0) {
-					if (in.read(line) <= 0) {
-						throw new IOException();
-					}
-					byteBuffer.put(line);
-				}
-				byteBuffer.rewind();
-			} finally {
-				in.close();
-			}
+			readBufferFromCache();
 		}
 
 		buffers.rewind();
 		texture = gl.generateTexture(width, height, buffers);
-		System.out.println("opengl Texture: " + texture
+		ImageProvider.traceImageLoad("Allocated multi texture: " + texture
 				+ ", thread: " + Thread.currentThread().toString());
 		if (texture != null) {
 			textureValid = true;
@@ -301,8 +306,188 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		byteBuffer = null;
 	}
 
+	private void readBufferFromCache() throws FileNotFoundException, IOException {
+		allocateBuffers();
+		FileInputStream in = new FileInputStream(cacheFile);
+		try {
+			byte[] line = new byte[this.width * 2];
+			while (in.available() > 0) {
+				if (in.read(line) <= 0) {
+					throw new IOException();
+				}
+				byteBuffer.put(line);
+			}
+			byteBuffer.rewind();
+		} finally {
+			in.close();
+		}
+	}
+
 	@Override
 	public void run(GLDrawContext context) {
 		getTexture(context);
+	}
+
+	private static class CacheFileWriter {
+		private final File cacheFile;
+		private final File tempFile;
+		private DataOutputStream out;
+		private boolean hadWriteError;
+
+		public CacheFileWriter(File cacheFile) {
+			super();
+			this.cacheFile = cacheFile;
+			tempFile = new File(cacheFile.getParentFile(), cacheFile.getName() + ".tmp");
+		}
+
+		public void open() {
+			try {
+				cacheFile.getParentFile().mkdirs();
+				cacheFile.delete();
+				out = new DataOutputStream(new FileOutputStream(tempFile));
+				out.writeInt(CACHE_MAGIC);
+			} catch (IOException e) {
+				onWriteError(e);
+			}
+		}
+
+		/**
+		 * Write a sequence start.
+		 * 
+		 * @param seqIndex
+		 *            The index of the sequence.
+		 * @param imageCount
+		 *            The number of {@link #writeImage(MultiImageImage)} calls that follow.
+		 */
+		public void writeSequenceStart(int seqIndex, int imageCount) {
+			if (!hadWriteError) {
+				try {
+					if (imageCount == 0) {
+						throw new IOException("There may be no empty sequences in chache files.");
+					}
+					out.writeInt(seqIndex);
+					out.writeInt(imageCount);
+				} catch (IOException e) {
+					onWriteError(e);
+				}
+			}
+		}
+
+		public void writeImage(MultiImageImage image) {
+			if (!hadWriteError) {
+				try {
+					out.writeByte(TYPE_IMAGE);
+					image.writeTo(out);
+				} catch (IOException e) {
+					onWriteError(e);
+				}
+			}
+		}
+
+		public void writeNullImage() {
+			if (!hadWriteError) {
+				try {
+					out.writeByte(TYPE_NULL_IMAGE);
+				} catch (IOException e) {
+					onWriteError(e);
+				}
+			}
+		}
+
+		public void writeTexture(ByteBuffer byteBuffer) {
+			if (!hadWriteError) {
+				try {
+					byte[] line = new byte[4096];
+					byteBuffer.rewind();
+					out.writeInt(byteBuffer.remaining());
+					while (byteBuffer.hasRemaining()) {
+						int length = Math.min(line.length, byteBuffer.remaining());
+						byteBuffer.get(line, 0, length);
+						out.write(line, 0, length);
+					}
+				} catch (IOException e) {
+					onWriteError(e);
+				}
+			}
+		}
+
+		private void onWriteError(IOException e) {
+			hadWriteError = true;
+			e.printStackTrace();
+			// TODO: Error reporting.
+		}
+
+		public void close() {
+			if (!hadWriteError) {
+				try {
+					out.close();
+
+					tempFile.renameTo(cacheFile);
+				} catch (IOException e) {
+					onWriteError(e);
+				}
+			}
+		}
+
+	}
+
+	private static class CacheFileReader {
+
+		private final File cacheFile;
+		private final DataInputStream in;
+
+		public CacheFileReader(File cacheFile) throws IOException {
+			this.cacheFile = cacheFile;
+			in = new DataInputStream(new FileInputStream(cacheFile));
+
+			int magic = in.readInt();
+			if (magic != CACHE_MAGIC) {
+				throw new IOException("Invalid cache magic byte: " + magic);
+			}
+		}
+
+		public void readImageSequence(MultiImageMap map, Sequence<Image>[] addTo) throws IOException {
+			int seqIndex = in.readInt();
+			int imageCount = in.readInt();
+			if (imageCount == 0) {
+				throw new IOException("There may be no empty sequences in chache files.");
+			}
+			ImageProvider.traceImageLoad("Reading sequence from cache " + seqIndex + ", length=" + imageCount);
+
+			Image[] images = new Image[imageCount];
+			for (int i = 0; i < imageCount; i++) {
+				byte type = in.readByte();
+				switch (type) {
+				case TYPE_IMAGE:
+					images[i] = MultiImageImage.readFrom(map, in);
+					break;
+				case TYPE_NULL_IMAGE:
+					images[i] = NullImage.getInstance();
+					break;
+				default:
+					throw new IOException("Unsupported image type: " + type);
+				}
+			}
+			addTo[seqIndex] = new ArraySequence<Image>(images);
+		}
+
+		public void readTexture(ByteBuffer byteBuffer) throws IOException {
+			byteBuffer.rewind();
+			int available = in.readInt();
+			if (byteBuffer.remaining() != available) {
+				throw new IOException("Buffer lengths do not match. Expected " + byteBuffer.remaining() + " got " + available);
+			}
+			byte[] line = new byte[4096];
+			while (byteBuffer.hasRemaining()) {
+				int length = Math.min(line.length, byteBuffer.remaining());
+				in.read(line, 0, length);
+				byteBuffer.put(line, 0, length);
+			}
+		}
+
+		public void close() throws IOException {
+			in.close();
+		}
+
 	}
 }

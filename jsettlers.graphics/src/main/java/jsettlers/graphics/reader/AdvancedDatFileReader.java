@@ -27,6 +27,7 @@ import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.TorsoImage;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.reader.translator.GuiTranslator;
@@ -441,8 +442,6 @@ public class AdvancedDatFileReader implements DatFileSet {
 			if (settlersequences[index] == null) {
 				settlersequences[index] = NULL_SETTLER_SEQUENCE;
 				try {
-					System.out.println("Loading Sequence number " + index);
-
 					loadSettlers(index);
 				} catch (Exception e) {
 				}
@@ -458,7 +457,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private synchronized void loadSettlers(int index) throws IOException {
-
+		ImageProvider.traceImageLoad("Loading sequence: " + file + " -> settlers -> " + index + " as single images");
 		int position = settlerstarts[index];
 		long[] framePositions = readSequenceHeader(position);
 
@@ -552,6 +551,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 	private void loadLandscapeImage(int index) {
 		try {
+			ImageProvider.traceImageLoad("Loading sequence: " + file + " -> landscape -> " + index + " as single image");
 			reader.skipTo(landscapestarts[index]);
 			LandscapeImage image =
 					DatBitmapReader.getImage(landscapeTranslator, reader);
@@ -601,6 +601,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 	private void loadGuiImage(int index) {
 		try {
+			ImageProvider.traceImageLoad("Loading sequence: " + file + " -> gui -> " + index + " as single image");
 			reader.skipTo(guistarts[index]);
 			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
 			guiimages[index] = image;
@@ -642,10 +643,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		initializeIfNeeded();
 
 		MultiImageMap map = new MultiImageMap(width, height, id);
-		if (!map.hasCache()) {
-			map.addSequences(this, sequences, settlersequences);
-			map.writeCache();
-		}
+		map.load(this, sequences, settlersequences);
 	}
 
 	public DatBitmapTranslator<SettlerImage> getSettlerTranslator() {
@@ -659,4 +657,16 @@ public class AdvancedDatFileReader implements DatFileSet {
 	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
 		return landscapeTranslator;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AdvancedDatFileReader [file=");
+		builder.append(file);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }
