@@ -103,6 +103,6 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	@Override
 	public void materialDelivered(RequestStack stack) {
-		super.grid.requestSoldierable(Barrack.this);
+		super.grid.requestSoldierable(this);
 	}
 }
