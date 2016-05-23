@@ -21,7 +21,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,15 +37,9 @@ import jsettlers.graphics.reader.ImageArrayProvider;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.sequence.ArraySequence;
-import jsettlers.graphics.sequence.Sequence;
 
 /**
-<<<<<<< ours
- * This is a map of multiple images of one sequence. It always contains the settler image and the torso. This class allows packing the settler images
- * to a single, big texture.
-=======
- * This is a map of multiple images of one sequence. It always contains the settler image and the torso
->>>>>>> theirs
+ * This is a map of multiple images of one sequence. It always contains the settler image and the torso.
  * 
  * @author Michael Zangl
  */
@@ -55,11 +48,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	/**
 	 * Change this every time you change the file format.
 	 */
-	protected static final int CACHE_MAGIC = 0x8273433;
+	protected static final int CACHE_MAGIC = 0x8273434;
 	protected static final byte TYPE_IMAGE = 1;
 	protected static final byte TYPE_NULL_IMAGE = 2;
-	private final int width;
-	private final int height;
+	protected final MultiImageMapSpecification specification;
 	private int drawx = 0; // x coordinate of free space
 	private int linetop = 0;
 	private int linebottom = 0;
@@ -74,95 +66,89 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 
 	private final File cacheFile;
 
-	/**
-	 * Creates a new {@link MultiImageMap}.
-	 * 
-	 * @param width
-	 *            The width of the base image.
-	 * @param height
-	 *            The height of the base image.
-	 * @param id
-	 *            The id of the map.
-	 * @see #addSequences(AdvancedDatFileReader, int[], Sequence[])
-	 */
-	public MultiImageMap(int width, int height, String id) {
-		this.width = width;
-		this.height = height;
+	public MultiImageMap(MultiImageMapSpecification specification) {
+		this.specification = specification;
+		specification.bake();
 		File root = new File(ResourceManager.getResourcesDirectory(), "cache");
-		cacheFile = new File(root, "cache-" + id);
+		cacheFile = new File(root, "cache-" + specification.id);
 	}
 
 	/**
 	 * Load this texture. The texture may be loaded from either the cache file or the original file.
-	 * 
-	 * @param dfr
-	 * @param sequenceIndexes
-	 *            The sequences to load.
-	 * @param addTo
+	 * <p>
+	 * The backing buffer is filled with the texture.
 	 */
-	public void load(AdvancedDatFileReader dfr, int[] sequenceIndexes, Sequence<Image>[] addTo) {
+	public void load() {
 		if (hasCache()) {
-			ImageProvider.traceImageLoad("Cache for " + dfr + ": In cache");
-			try {
-				CacheFileReader cacheReader = new CacheFileReader(cacheFile);
-				allocateBuffers();
-				for (int s : sequenceIndexes) {
-					// TODO: Check sequence index matches
-					cacheReader.readImageSequence(this, addTo);
-				}
-				cacheReader.readTexture(byteBuffer);
-				cacheReader.close();
-				ImageProvider.traceImageLoad("Cache for " + dfr + ": Done loading cached");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				loadOriginal(dfr, sequenceIndexes, addTo);
-			}
+			loadFromCache();
 		} else {
-			loadOriginal(dfr, sequenceIndexes, addTo);
+			loadOriginal();
+		}
+		// request a opengl rerender, or do it ourselves on the next image
+		// request
+		textureValid = false;
+		ImageProvider.getInstance().addPreloadTask(this);
+	}
+
+	private void loadFromCache() {
+		ImageProvider.traceImageLoad("Cache for " + specification + ": In cache");
+		try {
+			CacheFileReader cacheReader = new CacheFileReader(cacheFile);
+			allocateBuffers();
+			for (int i = 0; i < specification.size(); i++) {
+				AdvancedDatFileReader dfr = specification.getReader(i);
+				cacheReader.readImageSequence(this, dfr);
+			}
+			cacheReader.readTexture(byteBuffer);
+			cacheReader.close();
+			ImageProvider.traceImageLoad("Cache for " + specification + ": Done loading cached");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			loadOriginal();
 		}
 	}
 
-	private void loadOriginal(AdvancedDatFileReader dfr, int[] sequenceIndexes, Sequence<Image>[] addTo) {
-		ImageProvider.traceImageLoad("Cache for " + dfr + ": Loading original file");
+	private void loadOriginal() {
+		ImageProvider.traceImageLoad("Cache for " + specification + ": Loading original file");
 		CacheFileWriter cacheWriter = new CacheFileWriter(cacheFile);
 		cacheWriter.open();
 		try {
-			loadFromDatFile(dfr, sequenceIndexes, addTo, cacheWriter);
+			loadFromDatFile(cacheWriter);
 			cacheWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			// TODO: Error handling, do not leak cacheWriter
 		}
-		ImageProvider.traceImageLoad("Cache for " + dfr + ": Done, written to " + cacheFile + " => " + cacheFile.isFile());
+		ImageProvider.traceImageLoad("Cache for " + specification + ": Done, written to " + cacheFile + " => " + cacheFile.isFile());
 	}
 
-	private void loadFromDatFile(AdvancedDatFileReader dfr, int[] sequenceIndexes,
-								 Sequence<Image>[] addTo, CacheFileWriter cacheWriter) throws IOException {
-		ImageProvider.traceImageLoad("Preloading for file: " + dfr + " -> settlers -> " + Arrays.toString(sequenceIndexes));
+	private void loadFromDatFile(
+			CacheFileWriter cacheWriter) throws IOException {
+		ImageProvider.traceImageLoad("Preloading for file: " + specification);
 		allocateBuffers();
 
-		for (int seqindex : sequenceIndexes) {
-			loadSequenceFromDatFile(dfr, addTo, seqindex, cacheWriter);
+		for (int i = 0; i < specification.size(); i++) {
+			loadSequenceFromDatFile(i, cacheWriter);
 		}
 
 		cacheWriter.writeTexture(byteBuffer);
-		// request a opengl rerender, or do it ourselves on the next image
-		textureValid = false;
-		ImageProvider.getInstance().addPreloadTask(this);
 	}
-	private void loadSequenceFromDatFile(AdvancedDatFileReader dfr, Sequence<Image>[] addTo, int seqindex, CacheFileWriter cacheWriter)
-			throws IOException
-	{
+
+	protected void loadSequenceFromDatFile(int index, CacheFileWriter cacheWriter)
+			throws IOException {
+		AdvancedDatFileReader dfr = specification.getReader(index);
+		int seqIndex = specification.getSequence(index);
+
 		ImageMetadata settlermeta = new ImageMetadata();
 		ImageMetadata torsometa = new ImageMetadata();
-		long[] settlers = dfr.getSettlerPointers(seqindex);
-		long[] torsos = dfr.getTorsoPointers(seqindex);
+		long[] settlers = dfr.getSettlerPointers(seqIndex);
+		long[] torsos = dfr.getTorsoPointers(seqIndex);
 
 		Image[] images = new Image[settlers.length];
-		cacheWriter.writeSequenceStart(seqindex, settlers.length);
+		cacheWriter.writeSequenceStart(seqIndex, settlers.length);
 		for (int i = 0; i < settlers.length; i++) {
-			ImageProvider.traceImageLoad("Preload image: " + dfr + " -> settlers -> " + seqindex + " -> " + i);
+			ImageProvider.traceImageLoad("Preload image: " + dfr + " -> settlers -> " + seqIndex + " -> " + i);
 
 			ByteReader reader;
 			reader = dfr.getReaderForPointer(settlers[i]);
@@ -189,18 +175,25 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			ImageProvider.traceImageLoad("Allocated at settlerx = " + settlerx + ", settlery = " + settlery + ", w=" + settlermeta.width + ", h="
 					+ settlermeta.height);
 
-			MultiImageImage image = new MultiImageImage(this, settlermeta, settlerx, settlery, torsos == null || torsometa.width == 0
-					|| torsometa.height == 0 ? null : torsometa, torsox, torsoy);
-			images[i] = image;
+			MultiImageImage image = generateImage(settlermeta, torsos == null || torsometa.width == 0
+					|| torsometa.height == 0 ? null : torsometa, settlerx, settlery, torsox, torsoy);
 			cacheWriter.writeImage(image);
+			images[i] = image;
 		}
-		addTo[seqindex] = new ArraySequence<Image>(images);
+		dfr.pushSettlerSequence(seqIndex, new ArraySequence<Image>(images));
+	}
+
+	protected MultiImageImage generateImage(ImageMetadata settlermeta, ImageMetadata torsometa, int settlerx, int settlery,
+			int torsox,
+			int torsoy) {
+		return new MultiImageImage(this, settlermeta, settlerx, settlery, torsometa, torsox, torsoy);
 	}
 
 	private void allocateBuffers() {
-		byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
+		byteBuffer = ByteBuffer.allocateDirect(specification.width * specification.height * 2);
 		byteBuffer.order(ByteOrder.nativeOrder());
 		buffers = byteBuffer.asShortBuffer();
+		ImageProvider.traceImageLoad("Allocate: " + specification);
 	}
 
 	/**
@@ -213,9 +206,9 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	}
 
 	@Override
-	public void startImage(int imageWidth, int imageHeight) throws IOException {
-		if (this.width < drawx + imageWidth) {
-			if (linebottom + imageHeight <= this.height) {
+	public void startImage(int width, int height) throws IOException {
+		if (specification.width < drawx + width) {
+			if (linebottom + height <= specification.height) {
 				linetop = linebottom;
 				drawx = 0;
 			} else {
@@ -226,12 +219,12 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			}
 		}
 
-		if (linetop + imageHeight < this.height) {
+		if (linetop + height < specification.height) {
 			drawEnabled = true;
 			textureValid = false;
-			drawpointer = drawx + linetop * this.width;
-			drawx += imageWidth;
-			linebottom = Math.max(linebottom, linetop + imageHeight);
+			drawpointer = drawx + linetop * specification.width;
+			drawx += width;
+			linebottom = Math.max(linebottom, linetop + height);
 		} else {
 			System.err.println("Error adding image to texture: "
 					+ "Line to low");
@@ -246,7 +239,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			int dp = drawpointer;
 			buffers.position(dp);
 			buffers.put(data, 0, length);
-			drawpointer = dp + this.width;
+			drawpointer = dp + specification.width;
 		}
 	}
 
@@ -256,7 +249,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 * @return The width.
 	 */
 	public int getWidth() {
-		return width;
+		return specification.width;
 	}
 
 	/**
@@ -265,7 +258,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	 * @return The height.
 	 */
 	public int getHeight() {
-		return height;
+		return specification.height;
 	}
 
 	/**
@@ -292,11 +285,11 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
 			IOException {
 		if (buffers == null) {
-			readBufferFromCache();
+			load();
 		}
 
 		buffers.rewind();
-		texture = gl.generateTexture(width, height, buffers);
+		texture = gl.generateTexture(specification.width, specification.height, buffers);
 		ImageProvider.traceImageLoad("Allocated multi texture: " + texture
 				+ ", thread: " + Thread.currentThread().toString());
 		if (texture != null) {
@@ -304,23 +297,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		}
 		buffers = null;
 		byteBuffer = null;
-	}
-
-	private void readBufferFromCache() throws FileNotFoundException, IOException {
-		allocateBuffers();
-		FileInputStream in = new FileInputStream(cacheFile);
-		try {
-			byte[] line = new byte[this.width * 2];
-			while (in.available() > 0) {
-				if (in.read(line) <= 0) {
-					throw new IOException();
-				}
-				byteBuffer.put(line);
-			}
-			byteBuffer.rewind();
-		} finally {
-			in.close();
-		}
+		ImageProvider.traceImageLoad("Deallocate: " + specification);
 	}
 
 	@Override
@@ -328,7 +305,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		getTexture(context);
 	}
 
-	private static class CacheFileWriter {
+	protected static class CacheFileWriter {
 		private final File cacheFile;
 		private final File tempFile;
 		private DataOutputStream out;
@@ -446,7 +423,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			}
 		}
 
-		public void readImageSequence(MultiImageMap map, Sequence<Image>[] addTo) throws IOException {
+		public void readImageSequence(MultiImageMap map, AdvancedDatFileReader addTo) throws IOException {
 			int seqIndex = in.readInt();
 			int imageCount = in.readInt();
 			if (imageCount == 0) {
@@ -468,7 +445,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 					throw new IOException("Unsupported image type: " + type);
 				}
 			}
-			addTo[seqIndex] = new ArraySequence<Image>(images);
+			addTo.pushSettlerSequence(seqIndex, new ArraySequence<Image>(images));
 		}
 
 		public void readTexture(ByteBuffer byteBuffer) throws IOException {
@@ -488,6 +465,83 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		public void close() throws IOException {
 			in.close();
 		}
+	}
 
+	/**
+	 * This defines what to display on the {@link MultiImageMap}
+	 * 
+	 * @author Michael Zangl
+	 */
+	public static class MultiImageMapSpecification {
+		private final int width;
+		private final int height;
+
+		private final String id;
+
+		/**
+		 * An array of (file, sequence) pairs.
+		 */
+		private int[] sequences = new int[64];
+		private int sequenceCount = 0;
+
+		private boolean baked = false;
+
+		public MultiImageMapSpecification(int width, int height, String id) {
+			super();
+			this.width = width;
+			this.height = height;
+			this.id = id;
+		}
+
+		public void add(int file, int sequence) {
+			if (baked) {
+				throw new IllegalStateException("Cannot add any more images.");
+			}
+
+			if (sequenceCount * 2 >= sequences.length) {
+				sequences = Arrays.copyOf(sequences, sequences.length * 2);
+			}
+			sequences[sequenceCount * 2] = file;
+			sequences[sequenceCount * 2 + 1] = sequence;
+			sequenceCount++;
+		}
+
+		public int size() {
+			return sequenceCount;
+		}
+
+		private AdvancedDatFileReader getReader(int index) throws IOException {
+			int file = getFile(index);
+			AdvancedDatFileReader reader = ImageProvider.getInstance().getFileReader(file);
+			if (reader == null) {
+				throw new IOException("Could not create reader for " + file);
+			}
+			return reader;
+		}
+
+		public int getFile(int index) {
+			return sequences[index * 2];
+		}
+
+		public int getSequence(int index) {
+			return sequences[index * 2 + 1];
+		}
+
+		public void bake() {
+			baked = true;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("MultiImageMapSpecification [width=");
+			builder.append(width);
+			builder.append(", height=");
+			builder.append(height);
+			builder.append(", id=");
+			builder.append(id);
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 }

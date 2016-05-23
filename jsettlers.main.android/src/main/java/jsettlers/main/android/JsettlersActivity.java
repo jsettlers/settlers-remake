@@ -98,7 +98,7 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		}
 
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		if (manager.getLargeMemoryClass() < 256) {
+		if (manager.getLargeMemoryClass() < 128) {
 			Toast.makeText(this, "Low memory!", Toast.LENGTH_LONG).show();
 		} else {
 			ImageProvider.getInstance().startPreloading();

@@ -14,11 +14,24 @@
  *******************************************************************************/
 package jsettlers.graphics.map.draw;
 
+import jsettlers.graphics.image.MultiImageMap;
+import jsettlers.graphics.image.MultiImageMap.MultiImageMapSpecification;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 
 public class ImagePreloadTask implements Runnable {
+	private static final int FILE_LANDSCAPE = 1;
+	private static final int FILE_ROMAN_BEARER = 10;
+	private static final int FILE_ROMAN_WORKER = 11;
+	private static final int FILE_ROMAN_SOLDIER = 12;
+
+	private static boolean wasRunning = false;
+
 	@Override
 	public void run() {
+		if (wasRunning) {
+			throw new IllegalStateException("Can only preload once.");
+		}
+		wasRunning = true;
 		ImageProvider.traceImageLoad("Image preload task starting");
 		SettlerImageMap.getInstance();
 
@@ -48,64 +61,64 @@ public class ImagePreloadTask implements Runnable {
 
 	private void loadLandscapeObjects(ImageProvider ip) {
 		try {
-			ip.getFileReader(1).generateImageMap(1024, 2048, new int[] {
-					// trees
-					1,// grown
-					2,// grown
-					3,
-					4,// grown
-					6,
-					7,// grown
-					8,// grown
-					9,
-					16,// grown
-					17,// grown
-					18,
-					// water
-					26,
-					// stones
-					31,
-					// goods
-					33,
-					34,
-					35,
-					36,
-					37,
-					38,
-					39,
-					40,
-					41,
-					42,
-					43,
-					44,
-					45,
-					46,
-					47,
-					48,
-					49,
-					50,
-					51,
-					52,
-					53,
-					54,
-					55,
-					56,
-					// signs
-					93,
-					94,
-					95,
-					96,
-					97,
-					98,
-					99,
-					// arrows
-					100,
-					101,
-					102,
-					103,
-					104,
-					105,
-			}, "1");
+			MultiImageMapSpecification spec = new MultiImageMapSpecification(2048, 1024, "landscape");
+			// trees
+			spec.add(FILE_LANDSCAPE, 1);
+			spec.add(FILE_LANDSCAPE, 2);
+			spec.add(FILE_LANDSCAPE, 3);
+			spec.add(FILE_LANDSCAPE, 4);
+			spec.add(FILE_LANDSCAPE, 6);
+			spec.add(FILE_LANDSCAPE, 7);
+			spec.add(FILE_LANDSCAPE, 8);
+			spec.add(FILE_LANDSCAPE, 9);
+			spec.add(FILE_LANDSCAPE, 16);
+			spec.add(FILE_LANDSCAPE, 17);
+			spec.add(FILE_LANDSCAPE, 18);
+			// water
+			spec.add(FILE_LANDSCAPE, 26);
+			// stones
+			spec.add(FILE_LANDSCAPE, 31);
+			// goods
+			spec.add(FILE_LANDSCAPE, 33);
+			spec.add(FILE_LANDSCAPE, 34);
+			spec.add(FILE_LANDSCAPE, 35);
+			spec.add(FILE_LANDSCAPE, 36);
+			spec.add(FILE_LANDSCAPE, 37);
+			spec.add(FILE_LANDSCAPE, 38);
+			spec.add(FILE_LANDSCAPE, 39);
+			spec.add(FILE_LANDSCAPE, 40);
+			spec.add(FILE_LANDSCAPE, 41);
+			spec.add(FILE_LANDSCAPE, 42);
+			spec.add(FILE_LANDSCAPE, 43);
+			spec.add(FILE_LANDSCAPE, 44);
+			spec.add(FILE_LANDSCAPE, 45);
+			spec.add(FILE_LANDSCAPE, 46);
+			spec.add(FILE_LANDSCAPE, 47);
+			spec.add(FILE_LANDSCAPE, 48);
+			spec.add(FILE_LANDSCAPE, 49);
+			spec.add(FILE_LANDSCAPE, 50);
+			spec.add(FILE_LANDSCAPE, 51);
+			spec.add(FILE_LANDSCAPE, 52);
+			spec.add(FILE_LANDSCAPE, 53);
+			spec.add(FILE_LANDSCAPE, 54);
+			spec.add(FILE_LANDSCAPE, 55);
+			spec.add(FILE_LANDSCAPE, 56);
+			// signs
+			spec.add(FILE_LANDSCAPE, 93);
+			spec.add(FILE_LANDSCAPE, 94);
+			spec.add(FILE_LANDSCAPE, 95);
+			spec.add(FILE_LANDSCAPE, 96);
+			spec.add(FILE_LANDSCAPE, 97);
+			spec.add(FILE_LANDSCAPE, 98);
+			spec.add(FILE_LANDSCAPE, 99);
+			// arrows
+			spec.add(FILE_LANDSCAPE, 100);
+			spec.add(FILE_LANDSCAPE, 101);
+			spec.add(FILE_LANDSCAPE, 102);
+			spec.add(FILE_LANDSCAPE, 103);
+			spec.add(FILE_LANDSCAPE, 104);
+			spec.add(FILE_LANDSCAPE, 105);
+			preload(spec);
 		} catch (Throwable e) {
 			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
@@ -114,45 +127,45 @@ public class ImagePreloadTask implements Runnable {
 
 	private void loadRomanSettlers(ImageProvider ip) {
 		try {
-			ip.getFileReader(10).generateImageMap(2048, 2048, new int[] {
-					// settlers
-					0,
-					1,
-					2,
-					3,
-					4,
-					5,
-					6,
-					7,
-					8,
-					9,
-					10,
-					11,
-					12,
-					13,
-					14,
-					15,
-					16,
-					17,
-					18,
-					19,
-					20,
-					21,
-					22,
-					23,
-					24,
-					25,
-					26,
-					27,
-					28,
-					29,
-					30,
-					31,
-					32,
-					33,
-					34,
-					45
-			}, "10");
+			MultiImageMapSpecification spec = new MultiImageMapSpecification(2048, 2048, "rb");
+			// settlers
+			spec.add(FILE_ROMAN_BEARER, 0);
+			spec.add(FILE_ROMAN_BEARER, 1);
+			spec.add(FILE_ROMAN_BEARER, 2);
+			spec.add(FILE_ROMAN_BEARER, 3);
+			spec.add(FILE_ROMAN_BEARER, 4);
+			spec.add(FILE_ROMAN_BEARER, 5);
+			spec.add(FILE_ROMAN_BEARER, 6);
+			spec.add(FILE_ROMAN_BEARER, 7);
+			spec.add(FILE_ROMAN_BEARER, 8);
+			spec.add(FILE_ROMAN_BEARER, 9);
+			spec.add(FILE_ROMAN_BEARER, 10);
+			spec.add(FILE_ROMAN_BEARER, 11);
+			spec.add(FILE_ROMAN_BEARER, 12);
+			spec.add(FILE_ROMAN_BEARER, 13);
+			spec.add(FILE_ROMAN_BEARER, 14);
+			spec.add(FILE_ROMAN_BEARER, 15);
+			spec.add(FILE_ROMAN_BEARER, 16);
+			spec.add(FILE_ROMAN_BEARER, 17);
+			spec.add(FILE_ROMAN_BEARER, 18);
+			spec.add(FILE_ROMAN_BEARER, 19);
+			spec.add(FILE_ROMAN_BEARER, 20);
+			spec.add(FILE_ROMAN_BEARER, 21);
+			spec.add(FILE_ROMAN_BEARER, 22);
+			spec.add(FILE_ROMAN_BEARER, 23);
+			spec.add(FILE_ROMAN_BEARER, 24);
+			spec.add(FILE_ROMAN_BEARER, 25);
+			spec.add(FILE_ROMAN_BEARER, 26);
+			spec.add(FILE_ROMAN_BEARER, 27);
+			spec.add(FILE_ROMAN_BEARER, 28);
+			spec.add(FILE_ROMAN_BEARER, 29);
+			spec.add(FILE_ROMAN_BEARER, 30);
+			spec.add(FILE_ROMAN_BEARER, 31);
+			spec.add(FILE_ROMAN_BEARER, 32);
+			spec.add(FILE_ROMAN_BEARER, 33);
+			spec.add(FILE_ROMAN_BEARER, 34);
+			spec.add(FILE_ROMAN_BEARER, 45);
+			preload(spec);
 		} catch (Throwable e) {
 			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
@@ -161,74 +174,74 @@ public class ImagePreloadTask implements Runnable {
 
 	private void loadRomanWorkers(ImageProvider ip) {
 		try {
-			ip.getFileReader(11).generateImageMap(2048, 2048, new int[] {
-					// workers
-					13,
-					14,
-					15,
-					16,
-					17,
-					18,
-					19,
-					20,
-					21,
-					22,
-					23,
-					24,
-					25,
-					26,
-					27,
-					28,
-					29,
-					30,
-					31,
-					32,
-					33,
-					34,
-					35,
-					36,
+			MultiImageMapSpecification spec = new MultiImageMapSpecification(2048, 2048, "rw");
+			// workers
+			spec.add(FILE_ROMAN_WORKER, 13);
+			spec.add(FILE_ROMAN_WORKER, 14);
+			spec.add(FILE_ROMAN_WORKER, 15);
+			spec.add(FILE_ROMAN_WORKER, 16);
+			spec.add(FILE_ROMAN_WORKER, 17);
+			spec.add(FILE_ROMAN_WORKER, 18);
+			spec.add(FILE_ROMAN_WORKER, 19);
+			spec.add(FILE_ROMAN_WORKER, 20);
+			spec.add(FILE_ROMAN_WORKER, 21);
+			spec.add(FILE_ROMAN_WORKER, 22);
+			spec.add(FILE_ROMAN_WORKER, 23);
+			spec.add(FILE_ROMAN_WORKER, 24);
+			spec.add(FILE_ROMAN_WORKER, 25);
+			spec.add(FILE_ROMAN_WORKER, 26);
+			spec.add(FILE_ROMAN_WORKER, 27);
+			spec.add(FILE_ROMAN_WORKER, 28);
+			spec.add(FILE_ROMAN_WORKER, 29);
+			spec.add(FILE_ROMAN_WORKER, 30);
+			spec.add(FILE_ROMAN_WORKER, 31);
+			spec.add(FILE_ROMAN_WORKER, 32);
+			spec.add(FILE_ROMAN_WORKER, 33);
+			spec.add(FILE_ROMAN_WORKER, 34);
+			spec.add(FILE_ROMAN_WORKER, 35);
+			spec.add(FILE_ROMAN_WORKER, 36);
 
-					// pioneer
-					37,
-					38,
-					39,
+			// pioneer
+			spec.add(FILE_ROMAN_WORKER, 37);
+			spec.add(FILE_ROMAN_WORKER, 38);
+			spec.add(FILE_ROMAN_WORKER, 39);
 
-					// default workers
-					40,
-					55,
-					65,
+			// default workers
+			spec.add(FILE_ROMAN_WORKER, 40);
+			spec.add(FILE_ROMAN_WORKER, 55);
+			spec.add(FILE_ROMAN_WORKER, 65);
 
-					// priest
-					188,
+			// priest
+			spec.add(FILE_ROMAN_WORKER, 188);
 
-					// pioneer
-					204,
-					205,
-					206,
+			// pioneer
+			spec.add(FILE_ROMAN_WORKER, 204);
+			spec.add(FILE_ROMAN_WORKER, 205);
+			spec.add(FILE_ROMAN_WORKER, 206);
 
-					// building workers
-					206,
-					207,
-					208,
-					209,
-					210,
-					211,
-					212,
-					213,
-					214,
-					215,
-					216,
-					217,
-					218,
-					219,
-					220,
-					221,
-					222,
-					223,
+			// building workers
+			spec.add(FILE_ROMAN_WORKER, 206);
+			spec.add(FILE_ROMAN_WORKER, 207);
+			spec.add(FILE_ROMAN_WORKER, 208);
+			spec.add(FILE_ROMAN_WORKER, 209);
+			spec.add(FILE_ROMAN_WORKER, 210);
+			spec.add(FILE_ROMAN_WORKER, 211);
+			spec.add(FILE_ROMAN_WORKER, 212);
+			spec.add(FILE_ROMAN_WORKER, 213);
+			spec.add(FILE_ROMAN_WORKER, 214);
+			spec.add(FILE_ROMAN_WORKER, 215);
+			spec.add(FILE_ROMAN_WORKER, 216);
+			spec.add(FILE_ROMAN_WORKER, 217);
+			spec.add(FILE_ROMAN_WORKER, 218);
+			spec.add(FILE_ROMAN_WORKER, 219);
+			spec.add(FILE_ROMAN_WORKER, 220);
+			spec.add(FILE_ROMAN_WORKER, 221);
+			spec.add(FILE_ROMAN_WORKER, 222);
+			spec.add(FILE_ROMAN_WORKER, 223);
 
-					231,
-					232,
-			}, "11");
+			spec.add(FILE_ROMAN_WORKER, 231);
+			spec.add(FILE_ROMAN_WORKER, 232);
+			preload(spec);
 		} catch (Throwable e) {
 			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
@@ -237,39 +250,39 @@ public class ImagePreloadTask implements Runnable {
 
 	private void loadRomanSoldiers(ImageProvider ip) {
 		try {
-			ip.getFileReader(12).generateImageMap(2048, 2048, new int[] {
-					// soldiers
+			MultiImageMapSpecification spec = new MultiImageMapSpecification(2048, 2048, "rs");
+			// soldiers
 
-					// swordsman
-					9,
-					10,
-					11,
-					12,
-					13,
-					14,
+			// swordsman
+			spec.add(FILE_ROMAN_SOLDIER, 9);
+			spec.add(FILE_ROMAN_SOLDIER, 10);
+			spec.add(FILE_ROMAN_SOLDIER, 11);
+			spec.add(FILE_ROMAN_SOLDIER, 12);
+			spec.add(FILE_ROMAN_SOLDIER, 13);
+			spec.add(FILE_ROMAN_SOLDIER, 14);
 
-					// pikeman
-					15,
-					// 16,
-					17,
-					18,
-					// 19,
-					20,
+			// pikeman
+			spec.add(FILE_ROMAN_SOLDIER, 15);
+			// 16,
+			spec.add(FILE_ROMAN_SOLDIER, 17);
+			spec.add(FILE_ROMAN_SOLDIER, 18);
+			// 19,
+			spec.add(FILE_ROMAN_SOLDIER, 20);
 
-					// bowman
-					21,
-					// 22,
-					23,
-					24,
-					// 25,
-					26,
+			// bowman
+			spec.add(FILE_ROMAN_SOLDIER, 21);
+			// 22,
+			spec.add(FILE_ROMAN_SOLDIER, 23);
+			spec.add(FILE_ROMAN_SOLDIER, 24);
+			// 25,
+			spec.add(FILE_ROMAN_SOLDIER, 26);
 
-					// ghost
-					27,
+			// ghost
+			spec.add(FILE_ROMAN_SOLDIER, 27);
 
-					// inside tower
-					28
-			}, "12");
+			// inside tower
+			spec.add(FILE_ROMAN_SOLDIER, 28);
+			preload(spec);
 		} catch (Throwable e) {
 			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
@@ -278,12 +291,16 @@ public class ImagePreloadTask implements Runnable {
 
 	private void loadRomanBuildings(ImageProvider ip) {
 		try {
-			ip.getFileReader(13).generateImageMap(2048, 2048, new int[] {
-					0, 1, 3, 17, 63, 64, 65
-			}, "13");
+			// ip.getFileReader(13).generateImageMap(2048, 2048, new int[] {
+			// 0, 1, 3, 17, 63, 64, 65
+			// }, "13");
 		} catch (Throwable e) {
 			ImageProvider.traceImageLoad("Error pre-loading: " + e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	protected void preload(MultiImageMapSpecification spec) {
+		new MultiImageMap(spec).load();
 	}
 }

@@ -96,6 +96,7 @@ public final class ImageProvider {
 	 * The lookup paths for the dat files.
 	 */
 	private final List<File> lookupPaths = new ArrayList<File>();
+	private boolean preloaded;
 
 	private ImageProvider() {
 	}
@@ -339,16 +340,20 @@ public final class ImageProvider {
 	 * 
 	 * @return
 	 */
-	public Thread startPreloading() {
-		if (!lookupPaths.isEmpty()) {
+	public synchronized Thread startPreloading() {
+		if (preloaded) {
+			traceImageLoad("Preloading already started.");
+			return null;
+		} else if (lookupPaths.isEmpty()) {
+			traceImageLoad("No lookup path set. Image preloading failed.");
+		} else {
 			Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
 			thread.start();
+			preloaded = true;
 			traceImageLoad("Started image preload thread with id=" + thread.getId());
 			return thread;
-		} else {
-			traceImageLoad("No lookup path set. Image preloading failed.");
-			return null;
 		}
+		return null;
 	}
 
 	/**

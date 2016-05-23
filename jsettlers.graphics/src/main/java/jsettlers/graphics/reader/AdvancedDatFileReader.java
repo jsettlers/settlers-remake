@@ -21,7 +21,6 @@ import java.io.RandomAccessFile;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
@@ -638,12 +637,17 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return reader;
 	}
 
-	public void generateImageMap(int width, int height, int[] sequences,
-			String id) throws IOException {
+	/**
+	 * Override a sequence. This can be used if a cache knows the sequence and wants to inform this reader about it.
+	 * 
+	 * @param sequenceIndex
+	 *            The sequence to override.
+	 * @param sequence
+	 *            The sequence data.
+	 */
+	public void pushSettlerSequence(int sequenceIndex, Sequence<Image> sequence) {
 		initializeIfNeeded();
-
-		MultiImageMap map = new MultiImageMap(width, height, id);
-		map.load(this, sequences, settlersequences);
+		settlersequences[sequenceIndex] = sequence;
 	}
 
 	public DatBitmapTranslator<SettlerImage> getSettlerTranslator() {
