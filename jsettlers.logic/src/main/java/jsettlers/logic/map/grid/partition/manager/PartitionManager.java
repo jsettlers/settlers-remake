@@ -55,9 +55,8 @@ import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public class PartitionManager implements IScheduledTimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 3759772044136966735L;
@@ -200,7 +199,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	 *            new manager of the given position <br>
 	 *            NOTE: the new manager MUST NOT be null!
 	 * @param newHasSamePlayer
-	 */
+	 */	
 	public void removePositionTo(final int x, final int y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
 
@@ -227,6 +226,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		removePositionTo(position, this.bricklayerRequests, newManager.bricklayerRequests, newHasSamePlayer);
 		removePositionTo(position, this.diggerRequests, newManager.diggerRequests, newHasSamePlayer);
 		removePositionTo(position, this.workerRequests, newManager.workerRequests, newHasSamePlayer);
+		removePositionTo(position, this.soldierCreationRequests, newManager.soldierCreationRequests, newHasSamePlayer);
 	}
 
 	private <T extends ILocatable> void removePositionTo(ShortPoint2D pos, LinkedList<T> fromList, LinkedList<T> toList, boolean newHasSamePlayer) {
@@ -307,7 +307,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	private void handleWorkerCreationRequests() {
-		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty();) {
+		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty(); ) {
 			WorkerCreationRequest workerCreationRequest = iterator.next();
 			if (!workerCreationRequest.isRequestAlive() || tryToCreateWorker(workerCreationRequest)) {
 				iterator.remove();
@@ -453,7 +453,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	/**
 	 * FOR TESTS ONLY!
-	 * 
+	 *
 	 * @param pos
 	 * @param material
 	 * @return
