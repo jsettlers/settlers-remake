@@ -154,10 +154,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		soldierCreationRequests.offer(new SoldierCreationRequest(barrack));
 	}
 
-	public IManageableBearer removeJobless(ShortPoint2D position) {
-		return joblessBearer.removeObjectAt(position);
-	}
-
 	public void addJobless(IManageableBearer bearer) {
 		this.joblessBearer.insert(bearer);
 	}
@@ -410,18 +406,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				bricklayerRequests.offerLast(bricklayerRequest);
 			}
 		}
-	}
-
-	/**
-	 * removes an offer of the given materialType if it exists.
-	 * 
-	 * @param pos
-	 *            position of the offer
-	 * @param materialType
-	 *            {@link EMaterialType} to be checked.
-	 */
-	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
-		this.materialOffers.removeOfferAt(pos, materialType);
 	}
 
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
