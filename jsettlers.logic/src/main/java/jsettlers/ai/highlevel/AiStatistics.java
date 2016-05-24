@@ -229,14 +229,16 @@ public class AiStatistics {
 	}
 
 	private boolean isBorderOf(short x, short y, byte playerId) {
-		return isNoLandOf((short) (x + 1), (short) (y + 1), playerId)
-				|| isNoLandOf((short) (x + 1), (short) (y - 1), playerId)
-				|| isNoLandOf((short) (x - 1), (short) (y + 1), playerId)
-				|| isNoLandOf((short) (x - 1), (short) (y - 1), playerId);
+		return isIngestibleBy((short) (x + 1), (short) (y + 1), playerId)
+				|| isIngestibleBy((short) (x + 1), (short) (y - 1), playerId)
+				|| isIngestibleBy((short) (x - 1), (short) (y + 1), playerId)
+				|| isIngestibleBy((short) (x - 1), (short) (y - 1), playerId);
 	}
 
-	private boolean isNoLandOf(short x, short y, byte playerId) {
-		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) != playerId;
+	private boolean isIngestibleBy(short x, short y, byte playerId) {
+		return mainGrid.isInBounds(x, y)
+				&& partitionsGrid.getPlayerIdAt(x, y) != playerId
+				&& !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking;
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
