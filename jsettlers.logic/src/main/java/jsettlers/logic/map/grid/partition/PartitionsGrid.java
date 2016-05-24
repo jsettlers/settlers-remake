@@ -469,12 +469,14 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
 			Short currPartitionId = currPartition.e1;
 			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartitionId);
-			if (existingPartitionPos != null) {
-				checkIfDividePartition(currPartitionId, currPartition.e2, existingPartitionPos);
-				// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
-				// happen with partitions which also have currPartitionId.
-				if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
-					foundPartitionsSet.put(currPartitionId, currPartition.e2);
+			if (existingPartitionPos != null ) {
+				if(partitionObjects[currPartitionId].playerId != playerId) {  // the player cannot divide its own partitions => only check other player's positions
+					checkIfDividePartition(currPartitionId, currPartition.e2, existingPartitionPos);
+					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
+					// happen with partitions which also have currPartitionId.
+					if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
+						foundPartitionsSet.put(currPartitionId, currPartition.e2);
+					}
 				}
 			} else {
 				foundPartitionsSet.put(currPartitionId, currPartition.e2);
