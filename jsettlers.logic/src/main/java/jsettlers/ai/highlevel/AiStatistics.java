@@ -221,8 +221,22 @@ public class AiStatistics {
 				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn) {
 					updatePlayerLand(x, y, player);
 				}
+				if (player != null && isBorderOf(x, y, player.playerId)) {
+					playerStatistics[player.playerId].border.add(x, y);
+				}
 			}
 		}
+	}
+
+	private boolean isBorderOf(short x, short y, byte playerId) {
+		return isNoLandOf((short) (x + 1), (short) (y + 1), playerId)
+				|| isNoLandOf((short) (x + 1), (short) (y - 1), playerId)
+				|| isNoLandOf((short) (x - 1), (short) (y + 1), playerId)
+				|| isNoLandOf((short) (x - 1), (short) (y - 1), playerId);
+	}
+
+	private boolean isNoLandOf(short x, short y, byte playerId) {
+		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) != playerId;
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
@@ -593,6 +607,9 @@ public class AiStatistics {
 		return playerStatistics[playerId].referencePosition;
 	}
 
+	public AiPositions getBorderOf(byte playerId) {
+		return playerStatistics[playerId].border;
+	}
 	public boolean isAlive(byte playerId) {
 		return playerStatistics[playerId].isAlive;
 	}
@@ -612,6 +629,7 @@ public class AiStatistics {
 		IPartitionData materials;
 		AiPositions landToBuildOn;
 		AiPositions borderLandNextToFreeLand;
+		AiPositions border;
 		Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		AiPositions stones;
 		AiPositions trees;
@@ -631,6 +649,7 @@ public class AiStatistics {
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
+			border = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -649,6 +668,7 @@ public class AiStatistics {
 			rivers.clear();
 			landToBuildOn.clear();
 			borderLandNextToFreeLand.clear();
+			border.clear();
 			movablePositions.clear();
 			farmWorkAreas.clear();
 			wineGrowerWorkAreas.clear();
