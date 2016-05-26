@@ -106,6 +106,7 @@ public class JSettlersGame {
 		MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = controlAll;
 		MatchConstants.ENABLE_ALL_PLAYER_SELECTION = controlAll;
 		MatchConstants.ENABLE_FOG_OF_WAR_DISABLING = controlAll;
+		MatchConstants.ENABLE_DEBUG_COLORS = controlAll;
 
 		this.gameRunner = new GameRunner();
 	}
@@ -130,7 +131,7 @@ public class JSettlersGame {
 	 * @param playerId
 	 */
 	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerId, PlayerSetting[] playerSettings) {
-		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, true, false, null);
+		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, CommonConstants.CONTROL_ALL, false, null);
 	}
 
 	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
