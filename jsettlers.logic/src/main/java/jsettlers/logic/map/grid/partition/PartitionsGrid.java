@@ -463,21 +463,23 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		// check for divides
-		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
-		for (BorderPartitionInfo currPartition : partitionsList) {
-			Short currPartitionId = currPartition.partitionId;
-			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartitionId);
-			if (existingPartitionPos != null ) {
+		HashMap<Short, BorderPartitionInfo> foundPartitionsSet = new HashMap<>();
+		for (BorderPartitionInfo currPartitionInfo : partitionsList) {
+			Short currPartitionId = currPartitionInfo.partitionId;
+			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
+			if (existingPartitionInfo != null ) {
 				if(partitionObjects[currPartitionId].playerId != playerId) {  // the player cannot divide its own partitions => only check other player's positions
-					checkIfDividePartition(currPartitionId, currPartition.positionOfPartition, existingPartitionPos);
+					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
+					
 					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
 					// happen with partitions which also have currPartitionId.
-					if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
-						foundPartitionsSet.put(currPartitionId, currPartition.positionOfPartition);
+					short newPartitionIdOfExistingPartition = getPartitionIdAt(existingPartitionInfo.positionOfPartition.x, existingPartitionInfo.positionOfPartition.y);
+					if (newPartitionIdOfExistingPartition != currPartitionId) {
+						foundPartitionsSet.put(currPartitionId, currPartitionInfo);
 					}
 				}
 			} else {
-				foundPartitionsSet.put(currPartitionId, currPartition.positionOfPartition);
+				foundPartitionsSet.put(currPartitionId, currPartitionInfo);
 			}
 		}
 
@@ -499,9 +501,16 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param pos1
 	 * @param pos2
 	 */
-	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
+	private void checkIfDividePartition(BorderPartitionInfo partition1, BorderPartitionInfo partition2) {
+		assert partition1.partitionId == partition2.partitionId;
+		
+		final short partition = partition1.partitionId;
+		final ShortPoint2D pos1 = partition1.positionOfPartition;
+		final ShortPoint2D pos2 = partition2.positionOfPartition;
+		
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
+		
 		if (partition != NO_PLAYER_PARTITION_ID
 				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
 						partition2Size, partition)) {
