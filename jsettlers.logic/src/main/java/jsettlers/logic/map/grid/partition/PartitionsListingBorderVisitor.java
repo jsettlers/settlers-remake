@@ -33,7 +33,7 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 	private final IBlockingProvider blockingProvider;
 	private final LinkedList<BorderPartitionInfo> partitionsList = new LinkedList<>();
 
-	private short lastPartititon = -1;
+	private short lastPartition = -1;
 
 	public PartitionsListingBorderVisitor(PartitionsGrid grid, IBlockingProvider blockingProvider) {
 		this.grid = grid;
@@ -43,24 +43,25 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 	@Override
 	public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
 		if (blockingProvider.isBlocked(outsideX, outsideY)) {
-			lastPartititon = -1;
+			lastPartition = -1;
 		} else {
 			short currPartition = grid.partitionObjects[grid.partitions[outsideX + outsideY * grid.width]].partitionId;
 
-			if (currPartition != lastPartititon) {
-				partitionsList.addLast(new BorderPartitionInfo(currPartition, new ShortPoint2D(outsideX, outsideY), new ShortPoint2D(insideX, insideY)));
+			if (currPartition != lastPartition) {
+				partitionsList.addLast(new BorderPartitionInfo(currPartition, new ShortPoint2D(outsideX, outsideY),
+						new ShortPoint2D(insideX, insideY)));
 			}
 
-			lastPartititon = currPartition;
+			lastPartition = currPartition;
 		}
 		return true;
 	}
 
 	public LinkedList<BorderPartitionInfo> getPartitionsList() {
-		LinkedList<BorderPartitionInfo> resultList = new LinkedList<BorderPartitionInfo>();
+		LinkedList<BorderPartitionInfo> resultList = new LinkedList<>();
 		resultList.addAll(partitionsList);
 
-		if (resultList.size() >= 2 && resultList.getFirst().partitionId == resultList.getLast().partitionId && lastPartititon != -1) {
+		if (resultList.size() >= 2 && resultList.getFirst().partitionId == resultList.getLast().partitionId && lastPartition != -1) {
 			resultList.removeFirst();
 		}
 
@@ -71,8 +72,8 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 		public final short partitionId;
 		public final ShortPoint2D positionOfPartition;
 		public final ShortPoint2D insideNeighborPosition;
-		
-		private BorderPartitionInfo(short partitionId, ShortPoint2D positionOfPartition, ShortPoint2D insideNeighborPosition){
+
+		private BorderPartitionInfo(short partitionId, ShortPoint2D positionOfPartition, ShortPoint2D insideNeighborPosition) {
 			this.partitionId = partitionId;
 			this.positionOfPartition = positionOfPartition;
 			this.insideNeighborPosition = insideNeighborPosition;

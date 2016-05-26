@@ -35,8 +35,9 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 		final short startX = startPos.x;
 		final short startY = startPos.y;
 
-		if (grid.isBlocked(startX, startY))
+		if (grid.isBlocked(startX, startY)) {
 			return;
+		}
 
 		short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
 
@@ -45,7 +46,6 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 
 			if (grid.isBlocked(currPos.x, currPos.y)) {
 				if (needsRelabel(grid, containingProvider, currPos, startPartition)) {
-					// System.out.println("relabel needed at " + currX + "|" + currY + " with startPartition: " + startPartition);
 					relabel(grid, containingProvider, currPos, startPartition);
 				}
 			}
@@ -67,18 +67,13 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 	/**
 	 * Checks if the blocked partition given by the coordinates blockedX and blockedY is surrounded by the given partition.
 	 * 
-	 * @param containingProvider2
-	 * @param grid2
-	 * 
-	 * @param blockedX
-	 * @param blockedY
-	 * @param partition
+	 * @param grid
+	 * @param containingProvider
 	 * @param blockedStartPos
 	 * @return
 	 */
 	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider,
-			ShortPoint2D blockedStartPos,
-			final short partition) {
+			ShortPoint2D blockedStartPos, final short partition) {
 		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new IBorderVisitor() {
 			@Override
 			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {

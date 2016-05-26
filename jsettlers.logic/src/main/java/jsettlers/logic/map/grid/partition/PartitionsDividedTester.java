@@ -38,8 +38,6 @@ final class PartitionsDividedTester {
 	/**
 	 * Tests if the given positions (that need to lie on the border of the given partition) are connected by the given partition.
 	 * 
-	 * @param debugColorSetable
-	 * 
 	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
@@ -54,29 +52,28 @@ final class PartitionsDividedTester {
 			MutableInt partition1Size, BorderPartitionInfo partition2, MutableInt partition2Size) {
 
 		assert partition1.partitionId == partition2.partitionId;
-		
-		return posNotOnBorder(partitionObjects, partitions, width, partition1.positionOfPartition, 
+
+		return posNotOnBorder(partitionObjects, partitions, width, partition1.positionOfPartition,
 					partition1.insideNeighborPosition, partition2.positionOfPartition, partition1.partitionId, partition1Size)
-				&& posNotOnBorder(partitionObjects, partitions, width, partition2.positionOfPartition, 
+				&& posNotOnBorder(partitionObjects, partitions, width, partition2.positionOfPartition,
 					partition2.insideNeighborPosition, partition1.positionOfPartition, partition1.partitionId, partition2Size);
 	}
 
 	/**
 	 * NOTE: The call to this method is different if the given positions are swapped!
-	 * 
-	 * @param debugColorSetable
+	 *
 	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
 	 * @param insideStartPosition
 	 * @param checkPosition
 	 * @param partitionSize
-	 * @param partition
 	 * @return
 	 */
 	private static boolean posNotOnBorder(final Partition[] partitionObjects, final short[] partitions, final short width,
-			final ShortPoint2D insideStartPosition, final ShortPoint2D outsideStartPosition, final ShortPoint2D checkPosition,	
+			final ShortPoint2D insideStartPosition, final ShortPoint2D outsideStartPosition, final ShortPoint2D checkPosition,
 			final short partitionId, MutableInt partitionSize) {
+
 		final short checkPositionX = checkPosition.x;
 		final short checkPositionY = checkPosition.y;
 
@@ -91,7 +88,7 @@ final class PartitionsDividedTester {
 				return checkPositionX != insideX || checkPositionY != insideY;
 			}
 		}, false, partitionSize);
-		
+
 		return pos2NotOnBorder;
 	}
 }

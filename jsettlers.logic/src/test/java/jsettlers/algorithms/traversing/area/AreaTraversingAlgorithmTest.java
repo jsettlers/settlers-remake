@@ -21,7 +21,6 @@ import java.util.BitSet;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;

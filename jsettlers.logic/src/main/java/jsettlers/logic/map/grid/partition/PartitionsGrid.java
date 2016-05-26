@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -91,7 +91,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
-		Map<Byte,Team> teams = new HashMap<Byte,Team>();
+		Map<Byte, Team> teams = new HashMap<Byte, Team>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
 			if (teams.get(playerSetting.getTeamId()) == null) {
@@ -467,13 +467,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		for (BorderPartitionInfo currPartitionInfo : partitionsList) {
 			Short currPartitionId = currPartitionInfo.partitionId;
 			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
-			if (existingPartitionInfo != null ) {
-				if(partitionObjects[currPartitionId].playerId != playerId) {  // the player cannot divide its own partitions => only check other player's positions
+			if (existingPartitionInfo != null) {
+				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other
+																				// player's positions
 					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
-					
+
 					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
 					// happen with partitions which also have currPartitionId.
-					short newPartitionIdOfExistingPartition = getPartitionIdAt(existingPartitionInfo.positionOfPartition.x, existingPartitionInfo.positionOfPartition.y);
+					short newPartitionIdOfExistingPartition = getPartitionIdAt(existingPartitionInfo.positionOfPartition.x,
+							existingPartitionInfo.positionOfPartition.y);
 					if (newPartitionIdOfExistingPartition != currPartitionId) {
 						foundPartitionsSet.put(currPartitionId, currPartitionInfo);
 					}
@@ -497,27 +499,24 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	/**
 	 * Checks if the given partitions is divided and the both given positions are on separated parts of the partition.
 	 * 
-	 * @param partition
-	 * @param pos1
-	 * @param pos2
+	 * @param partitionInfo1
+	 * @param partitionInfo2
 	 */
-	private void checkIfDividePartition(BorderPartitionInfo partition1, BorderPartitionInfo partition2) {
-		assert partition1.partitionId == partition2.partitionId;
-		
-		final short partition = partition1.partitionId;
-		final ShortPoint2D pos1 = partition1.positionOfPartition;
-		final ShortPoint2D pos2 = partition2.positionOfPartition;
-		
+	private void checkIfDividePartition(BorderPartitionInfo partitionInfo1, BorderPartitionInfo partitionInfo2) {
+		assert partitionInfo1.partitionId == partitionInfo2.partitionId;
+
+		final short partition = partitionInfo1.partitionId;
+
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
-		
+
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partition1, partition1Size, partition2,
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2,
 						partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
-				dividePartition(partition, pos1, pos2);
+				dividePartition(partition, partitionInfo1.positionOfPartition, partitionInfo2.positionOfPartition);
 			} else {
-				dividePartition(partition, pos2, pos1);
+				dividePartition(partition, partitionInfo2.positionOfPartition, partitionInfo1.positionOfPartition);
 			}
 		}
 	}
