@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,9 +15,10 @@
 package jsettlers.algorithms.landmarks;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -53,7 +54,7 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 
 	private static void relabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos,
 			final short newPartition) {
-		ITraversingVisitor visitor = new ITraversingVisitor() {
+		IAreaVisitor visitor = new IAreaVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				grid.setPartitionAt(x, y, newPartition);
@@ -78,7 +79,7 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider,
 			ShortPoint2D blockedStartPos,
 			final short partition) {
-		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new ITraversingVisitor() {
+		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new IBorderVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				return grid.getPartitionAt((short) x, (short) y) == partition;

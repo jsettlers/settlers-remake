@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,8 +15,8 @@
 package jsettlers.logic.map.grid.partition;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MutableInt;
 
@@ -81,7 +81,7 @@ final class PartitionsDividedTester {
 			public boolean contains(int x, int y) {
 				return partitionObjects[partitions[x + y * width]].partitionId == partition;
 			}
-		}, startPosition, new ITraversingVisitor() {
+		}, startPosition, new IBorderVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				return checkPositionX != x || checkPositionY != y;

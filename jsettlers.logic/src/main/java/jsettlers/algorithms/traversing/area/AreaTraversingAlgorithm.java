@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,12 +18,12 @@ import java.util.BitSet;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
+import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This algorithm offers a method to traverse a connected area with an {@link ITraversingVisitor}.
+ * This algorithm offers a method to traverse a connected area with an {@link IBorderVisitor}.
  * 
  * @author Andreas Eberle
  * 
@@ -53,7 +53,7 @@ public final class AreaTraversingAlgorithm {
 	 * @return true if the traversing finished<br>
 	 *         false if the visitor returned false at any position and therefore caused the traversing to be canceled.
 	 */
-	public static boolean traverseArea(IContainingProvider containingProvider, ITraversingVisitor visitor, ShortPoint2D startPos, int width,
+	public static boolean traverseArea(IContainingProvider containingProvider, IAreaVisitor visitor, ShortPoint2D startPos, int width,
 			int height) {
 
 		LinkedList<ShortPoint2D> stack = new LinkedList<ShortPoint2D>();

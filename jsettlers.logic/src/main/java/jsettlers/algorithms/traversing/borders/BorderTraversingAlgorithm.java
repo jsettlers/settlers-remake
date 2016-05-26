@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,6 @@
 package jsettlers.algorithms.traversing.borders;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MutableInt;
@@ -57,10 +56,10 @@ public final class BorderTraversingAlgorithm {
 	 *            after the call.
 	 * @return true if the whole border has been traversed.<br>
 	 *         false if the traversing has been canceled by the
-	 *         {@link ITraversingVisitor}'s visit() method.
+	 *         {@link IBorderVisitor}'s visit() method.
 	 */
 	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos,
-			final ITraversingVisitor visitor, boolean visitOutside, MutableInt traversedPositions) {
+			final IBorderVisitor visitor, boolean visitOutside, MutableInt traversedPositions) {
 
 		ShortPoint2D outsidePosition = findOutsidePosition(startPos, containingProvider);
 
@@ -138,7 +137,7 @@ public final class BorderTraversingAlgorithm {
 	}
 
 	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos,
-			final ITraversingVisitor visitor, boolean visitOutside) {
+			final IBorderVisitor visitor, boolean visitOutside) {
 		return traverseBorder(containingProvider, startPos, visitor, visitOutside, new MutableInt());
 	}
 }

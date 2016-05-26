@@ -23,8 +23,8 @@ import java.util.*;
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FilteredMapArea;
@@ -664,7 +664,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		};
 
-		ITraversingVisitor relabelAreaVisitor = new ITraversingVisitor() {
+		IAreaVisitor relabelAreaVisitor = new IAreaVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				changePartitionUncheckedAt(x, y, newPartition);

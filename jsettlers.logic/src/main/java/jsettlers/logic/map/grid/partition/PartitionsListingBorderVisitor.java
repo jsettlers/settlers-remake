@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,18 +17,18 @@ package jsettlers.logic.map.grid.partition;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
+import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 
 /**
- * This class implements the {@link ITraversingVisitor} and is used to detect all the partitions that are on the traversed positions.<br>
+ * This class implements the {@link IBorderVisitor} and is used to detect all the partitions that are on the traversed positions.<br>
  * NOTE: This class is especially used for detecting necessary merges and divides when a position has changed player.
  * 
  * @author Andreas Eberle
  * 
  */
-final class PartitionsListingBorderVisitor implements ITraversingVisitor {
+final class PartitionsListingBorderVisitor implements IBorderVisitor {
 
 	private final PartitionsGrid grid;
 	private final IBlockingProvider blockingProvider;

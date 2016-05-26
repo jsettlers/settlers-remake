@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,19 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.algorithms.traversing;
-
-import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
-import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+package jsettlers.algorithms.traversing.borders;
 
 /**
- * Interface defining the methods to be able to traverse borders or the areas with the {@link BorderTraversingAlgorithm} or the
- * {@link AreaTraversingAlgorithm}.
+ * Interface defining the methods to be able to traverse borders with the {@link BorderTraversingAlgorithm}.
  * 
  * @author Andreas Eberle
  * 
  */
-public interface ITraversingVisitor {
+public interface IBorderVisitor {
 	/**
 	 * Called when the given coordinate is visited..
 	 * 
