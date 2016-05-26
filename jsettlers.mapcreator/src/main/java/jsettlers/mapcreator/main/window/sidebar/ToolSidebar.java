@@ -132,6 +132,8 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					new PlaceMapObjectTool(MapStoneObject.getInstance(8)),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(11)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(12)),
 					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
 					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION))
 					}),
