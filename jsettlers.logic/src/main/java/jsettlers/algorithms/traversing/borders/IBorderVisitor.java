@@ -24,14 +24,18 @@ public interface IBorderVisitor {
 	/**
 	 * Called when the given coordinate is visited..
 	 * 
-	 * @param x
-	 *            X coordinate.
-	 * @param y
-	 *            Y coordinate.
+	 * @param insideX
+	 *            Inside X coordinate.
+	 * @param insideY
+	 *            Inside Y coordinate.
+	 * @param outsideX
+	 *            Outside X coordinate.
+	 * @param outsideY
+	 *            Outside Y coordinate.
 	 * 
 	 * @return True if the traversing shall be continued.<br>
 	 *         False if it shall be stopped.
 	 */
-	boolean visit(int x, int y);
+	boolean visit(int insideX, int insideY, int outsideX, int outsideY);
 
 }

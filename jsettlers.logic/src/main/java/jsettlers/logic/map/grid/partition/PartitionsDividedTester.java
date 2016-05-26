@@ -59,7 +59,7 @@ final class PartitionsDividedTester {
 	}
 
 	/**
-	 * NOTE: The call to this method is different if the given positions are swaped!
+	 * NOTE: The call to this method is different if the given positions are swapped!
 	 * 
 	 * @param debugColorSetable
 	 * @param partitionObjects
@@ -83,8 +83,8 @@ final class PartitionsDividedTester {
 			}
 		}, startPosition, new IBorderVisitor() {
 			@Override
-			public boolean visit(int x, int y) {
-				return checkPositionX != x || checkPositionY != y;
+			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
+				return checkPositionX != insideX || checkPositionY != insideY;
 			}
 		}, false, partitionSize);
 		return pos2NotOnBorder;

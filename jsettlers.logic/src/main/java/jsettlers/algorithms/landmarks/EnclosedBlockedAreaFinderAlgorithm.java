@@ -81,8 +81,8 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 			final short partition) {
 		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new IBorderVisitor() {
 			@Override
-			public boolean visit(int x, int y) {
-				return grid.getPartitionAt((short) x, (short) y) == partition;
+			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
+				return grid.getPartitionAt((short) outsideX, (short) outsideY) == partition;
 			}
 		}, true);
 	}

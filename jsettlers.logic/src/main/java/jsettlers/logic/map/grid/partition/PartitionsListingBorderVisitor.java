@@ -42,14 +42,14 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 	}
 
 	@Override
-	public boolean visit(int x, int y) {
-		if (blockingProvider.isBlocked(x, y)) {
+	public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
+		if (blockingProvider.isBlocked(outsideX, outsideY)) {
 			lastPartititon = -1;
 		} else {
-			short currPartition = grid.partitionObjects[grid.partitions[x + y * grid.width]].partitionId;
+			short currPartition = grid.partitionObjects[grid.partitions[outsideX + outsideY * grid.width]].partitionId;
 
 			if (currPartition != lastPartititon) {
-				partitionsList.addLast(new Tuple<Short, ShortPoint2D>(currPartition, new ShortPoint2D(x, y)));
+				partitionsList.addLast(new Tuple<Short, ShortPoint2D>(currPartition, new ShortPoint2D(outsideX, outsideY)));
 			}
 
 			lastPartititon = currPartition;
