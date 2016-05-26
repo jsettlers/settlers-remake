@@ -107,7 +107,7 @@ public class DirectoryMapLister implements IMapLister {
 
 	@Override
 	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
+		String name = header.getName().toLowerCase().replaceAll("\\W+", "-");
 		if (name.isEmpty()) {
 			name = "map";
 		}
