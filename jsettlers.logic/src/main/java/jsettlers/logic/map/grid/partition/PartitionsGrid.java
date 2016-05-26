@@ -43,6 +43,7 @@ import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
+import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.player.Player;
@@ -451,45 +452,42 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 				}
 			}, pos, borderVisitor, true);
 
-			// get the partitions around the partition.
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = borderVisitor.getPartitionsList();
-
-			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, partitionsList);
+			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
 	}
 
 	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList) {
+			LinkedList<BorderPartitionInfo> partitionsList) {
 		if (partitionsList.isEmpty()) {
 			return; // nothing to do
 		}
 
 		// check for divides
 		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Short currPartitionId = currPartition.e1;
+		for (BorderPartitionInfo currPartition : partitionsList) {
+			Short currPartitionId = currPartition.partitionId;
 			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartitionId);
 			if (existingPartitionPos != null ) {
 				if(partitionObjects[currPartitionId].playerId != playerId) {  // the player cannot divide its own partitions => only check other player's positions
-					checkIfDividePartition(currPartitionId, currPartition.e2, existingPartitionPos);
+					checkIfDividePartition(currPartitionId, currPartition.positionOfPartition, existingPartitionPos);
 					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
 					// happen with partitions which also have currPartitionId.
 					if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
-						foundPartitionsSet.put(currPartitionId, currPartition.e2);
+						foundPartitionsSet.put(currPartitionId, currPartition.positionOfPartition);
 					}
 				}
 			} else {
-				foundPartitionsSet.put(currPartitionId, currPartition.e2);
+				foundPartitionsSet.put(currPartitionId, currPartition.positionOfPartition);
 			}
 		}
 
 		// check if partitions need to be merged
 		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
 
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Partition currPartitionObject = partitionObjects[currPartition.e1];
-			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.e1] != partitionObjects[innerPartition]) {
-				mergePartitions(currPartition.e1, innerPartition);
+		for (BorderPartitionInfo currPartition : partitionsList) {
+			Partition currPartitionObject = partitionObjects[currPartition.partitionId];
+			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.partitionId] != partitionObjects[innerPartition]) {
+				mergePartitions(currPartition.partitionId, innerPartition);
 			}
 		}
 	}

@@ -19,7 +19,6 @@ import java.util.LinkedList;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.Tuple;
 
 /**
  * This class implements the {@link IBorderVisitor} and is used to detect all the partitions that are on the traversed positions.<br>
@@ -32,7 +31,7 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 
 	private final PartitionsGrid grid;
 	private final IBlockingProvider blockingProvider;
-	private final LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = new LinkedList<Tuple<Short, ShortPoint2D>>();
+	private final LinkedList<BorderPartitionInfo> partitionsList = new LinkedList<>();
 
 	private short lastPartititon = -1;
 
@@ -49,7 +48,7 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 			short currPartition = grid.partitionObjects[grid.partitions[outsideX + outsideY * grid.width]].partitionId;
 
 			if (currPartition != lastPartititon) {
-				partitionsList.addLast(new Tuple<Short, ShortPoint2D>(currPartition, new ShortPoint2D(outsideX, outsideY)));
+				partitionsList.addLast(new BorderPartitionInfo(currPartition, new ShortPoint2D(outsideX, outsideY), new ShortPoint2D(insideX, insideY)));
 			}
 
 			lastPartititon = currPartition;
@@ -57,15 +56,26 @@ final class PartitionsListingBorderVisitor implements IBorderVisitor {
 		return true;
 	}
 
-	public LinkedList<Tuple<Short, ShortPoint2D>> getPartitionsList() {
-		LinkedList<Tuple<Short, ShortPoint2D>> resultList = new LinkedList<Tuple<Short, ShortPoint2D>>();
+	public LinkedList<BorderPartitionInfo> getPartitionsList() {
+		LinkedList<BorderPartitionInfo> resultList = new LinkedList<BorderPartitionInfo>();
 		resultList.addAll(partitionsList);
 
-		if (resultList.size() >= 2 && resultList.getFirst().e1.equals(resultList.getLast().e1) && lastPartititon != -1) {
+		if (resultList.size() >= 2 && resultList.getFirst().partitionId == resultList.getLast().partitionId && lastPartititon != -1) {
 			resultList.removeFirst();
 		}
 
 		return resultList;
 	}
 
+	public static class BorderPartitionInfo {
+		public final short partitionId;
+		public final ShortPoint2D positionOfPartition;
+		public final ShortPoint2D insideNeighborPosition;
+		
+		private BorderPartitionInfo(short partitionId, ShortPoint2D positionOfPartition, ShortPoint2D insideNeighborPosition){
+			this.partitionId = partitionId;
+			this.positionOfPartition = positionOfPartition;
+			this.insideNeighborPosition = insideNeighborPosition;
+		}
+	}
 }
