@@ -512,8 +512,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		MutableInt partition2Size = new MutableInt();
 		
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
-						partition2Size, partition)) {
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partition1, partition1Size, partition2,
+						partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
 				dividePartition(partition, pos1, pos2);
 			} else {

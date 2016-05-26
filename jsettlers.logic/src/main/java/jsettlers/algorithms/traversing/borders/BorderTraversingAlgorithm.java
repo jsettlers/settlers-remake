@@ -31,6 +31,11 @@ public final class BorderTraversingAlgorithm {
 	private BorderTraversingAlgorithm() {
 	}
 
+	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos,
+			final IBorderVisitor visitor, boolean visitOutside) {
+		return traverseBorder(containingProvider, startPos, visitor, visitOutside, new MutableInt());
+	}
+
 	/**
 	 * Traverses the border of an area defined by the given
 	 * {@link IContainingProvider} starting at {@link startPos}. The given
@@ -58,14 +63,16 @@ public final class BorderTraversingAlgorithm {
 	 *         false if the traversing has been canceled by the
 	 *         {@link IBorderVisitor}'s visit() method.
 	 */
-	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D insideStartPosition,
-			final IBorderVisitor visitor, boolean visitOutside, MutableInt traversedPositions) {
-		
+	public static boolean traverseBorder(final IContainingProvider containingProvider,
+			final ShortPoint2D insideStartPosition, final IBorderVisitor visitor, boolean visitOutside,
+			MutableInt traversedPositions) {
+
 		ShortPoint2D outsideStartPosition = findOutsidePosition(insideStartPosition, containingProvider);
-		
-		return traverseBorder(containingProvider, insideStartPosition, outsideStartPosition, visitor, visitOutside, traversedPositions);
+
+		return traverseBorder(containingProvider, insideStartPosition, outsideStartPosition, visitor, visitOutside,
+				traversedPositions);
 	}
-	
+
 	/**
 	 * Traverses the border of an area defined by the given
 	 * {@link IContainingProvider} starting at {@link startPos}. The given
@@ -78,11 +85,12 @@ public final class BorderTraversingAlgorithm {
 	 *            {@link IContainingProvider} defining the position that are in
 	 *            and the ones that are outside the area.
 	 * @param insideStartPosition
-	 *            The inside start position for the traversing. This position must be
-	 *            in the area but at the border!
+	 *            The inside start position for the traversing. This position
+	 *            must be in the area but at the border!
 	 * @param outsideStartPosition
-	 *            The outside start position for the traversing. This position must be
-	 *            outside the area but at the border and a neighbor of insideStartPosition
+	 *            The outside start position for the traversing. This position
+	 *            must be outside the area but at the border and a neighbor of
+	 *            insideStartPosition
 	 * @param visitor
 	 *            The visitor that will be called for every border position (a
 	 *            border position is a position outside the border!).
@@ -96,9 +104,10 @@ public final class BorderTraversingAlgorithm {
 	 *         false if the traversing has been canceled by the
 	 *         {@link IBorderVisitor}'s visit() method.
 	 */
-	public static boolean traverseBorder(IContainingProvider containingProvider, ShortPoint2D insideStartPosition,ShortPoint2D outsideStartPosition,
-			final IBorderVisitor visitor, boolean visitOutside, MutableInt traversedPositions) {
-		
+	public static boolean traverseBorder(IContainingProvider containingProvider, ShortPoint2D insideStartPosition,
+			ShortPoint2D outsideStartPosition, final IBorderVisitor visitor, boolean visitOutside,
+			MutableInt traversedPositions) {
+
 		final int startInsideX = insideStartPosition.x;
 		final int startInsideY = insideStartPosition.y;
 
@@ -144,13 +153,15 @@ public final class BorderTraversingAlgorithm {
 					return false;
 				}
 			}
-		} while (insideX != startInsideX || insideY != startInsideY || outsideX != startOutsideX || outsideY != startOutsideY);
+		} while (insideX != startInsideX || insideY != startInsideY || outsideX != startOutsideX
+				|| outsideY != startOutsideY);
 
 		traversedPositions.value = traversedPositionsCounter;
 		return true;
 	}
 
-	private static ShortPoint2D findOutsidePosition(ShortPoint2D insideStartPosition, IContainingProvider containingProvider) {
+	private static ShortPoint2D findOutsidePosition(ShortPoint2D insideStartPosition,
+			IContainingProvider containingProvider) {
 		int outsideX = -1;
 		int outsideY = -1;
 
@@ -167,8 +178,4 @@ public final class BorderTraversingAlgorithm {
 		return null; // no neighbor of the start position is on the outside.
 	}
 
-	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos,
-			final IBorderVisitor visitor, boolean visitOutside) {
-		return traverseBorder(containingProvider, startPos, visitor, visitOutside, new MutableInt());
-	}
 }
