@@ -78,7 +78,7 @@ public class MapData implements IMapData {
 	private final short[][] blockedPartitions;
 
 	private MapDataDelta undoDelta;
-	private int playercount;
+	private int playerCount;
 
 	/**
 	 * Start position of all player, will be converted to a border in ValidatePlayerStartPosition
@@ -95,7 +95,7 @@ public class MapData implements IMapData {
 	private final LandscapeFader fader = new LandscapeFader();
 	private IGraphicsBackgroundListener backgroundListener;
 
-	public MapData(int width, int height, int playercount, ELandscapeType ground) {
+	public MapData(int width, int height, int playerCount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("width and height must be positive");
 		}
@@ -104,13 +104,13 @@ public class MapData implements IMapData {
 			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
-		if (playercount <= 0 || playercount > CommonConstants.MAX_PLAYERS) {
+		if (playerCount <= 0 || playerCount > CommonConstants.MAX_PLAYERS) {
 			throw new IllegalArgumentException("Player count must be 1.." + CommonConstants.MAX_PLAYERS);
 		}
 
-		this.playercount = playercount;
-		this.playerStarts = new ShortPoint2D[playercount];
-		for (int i = 0; i < playercount; i++) {
+		this.playerCount = playerCount;
+		this.playerStarts = new ShortPoint2D[playerCount];
+		for (int i = 0; i < playerCount; i++) {
 			playerStarts[i] = new ShortPoint2D(width / 2, height / 2);
 		}
 
@@ -223,7 +223,7 @@ public class MapData implements IMapData {
 		}
 
 		System.out.println("searching border tiles...");
-		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<FadeTask>();
+		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<>();
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
 				// we cannot use done[x][y], because done flag is set for other tiles, too.
@@ -362,21 +362,12 @@ public class MapData implements IMapData {
 		return true;
 	}
 
-	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
-		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
-			if (t == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void setListener(IGraphicsBackgroundListener backgroundListener) {
 		this.backgroundListener = backgroundListener;
 	}
 
 	public void placeObject(MapObject object, int x, int y) {
-		ObjectContainer container = null;
+		ObjectContainer container;
 		ProtectContainer protector = ProtectContainer.getInstance();
 		Set<ELandscapeType> landscapes = null;
 		if (object instanceof MapTreeObject) {
@@ -402,7 +393,7 @@ public class MapData implements IMapData {
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
 			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
-					|| !landscapes.contains(getLandscape(abs.x, abs.y))) {
+					|| (landscapes != null && !landscapes.contains(getLandscape(abs.x, abs.y)))) {
 				allowed = false;
 			}
 		}
@@ -547,7 +538,7 @@ public class MapData implements IMapData {
 
 	@Override
 	public int getPlayerCount() {
-		return playercount;
+		return playerCount;
 	}
 
 	/**
@@ -577,8 +568,8 @@ public class MapData implements IMapData {
 		}
 
 		@Override
-		public void setDimension(int width, int height, int playercount) {
-			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
+		public void setDimension(int width, int height, int playerCount) {
+			data = new MapData(width, height, playerCount, ELandscapeType.GRASS);
 		}
 
 		@Override
@@ -610,7 +601,7 @@ public class MapData implements IMapData {
 	public void deleteObject(int x, int y) {
 		ObjectContainer obj = objects[x][y];
 		if (obj instanceof ProtectContainer) {
-			return;
+
 		} else if (obj != null) {
 			undoDelta.addObject(x, y, obj);
 			objects[x][y] = null;
@@ -679,9 +670,9 @@ public class MapData implements IMapData {
 
 		ShortPoint2D[] newPlayerStarts = new ShortPoint2D[maxPlayer];
 		for (int i = 0; i < maxPlayer; i++) {
-			newPlayerStarts[i] = i < playercount ? playerStarts[i] : new ShortPoint2D(width / 2, height / 2);
+			newPlayerStarts[i] = i < playerCount ? playerStarts[i] : new ShortPoint2D(width / 2, height / 2);
 		}
-		this.playercount = maxPlayer;
+		this.playerCount = maxPlayer;
 		this.playerStarts = newPlayerStarts;
 
 	}
