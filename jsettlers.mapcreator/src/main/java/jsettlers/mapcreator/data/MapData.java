@@ -402,7 +402,7 @@ public class MapData implements IMapData {
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
 			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
-					|| !landscapes.contains(getLandscape(abs.x, abs.y))) {
+					|| (landscapes != null && !landscapes.contains(getLandscape(abs.x, abs.y)))) {
 				allowed = false;
 			}
 		}
