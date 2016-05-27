@@ -54,4 +54,15 @@
     <string name="resource_directory_title">Graphics and sound folders</string>
     <string name="resource_directory_info">JSettlers requires the GFX and SND folders from The Settlers 3. Locate the folders in the installation directory of an original copy of The Settlers 3 and copy to them to your Android device before locating them in JSettlers.</string>
     <string name="resource_directory_button">Locate folders</string>
+
+    <string name="menu_single_player_title">Single player</string>
+    <string name="menu_single_player_info">Do battle with computer opponents.</string>
+
+    <string name="menu_multi_player_title">Multiplayer</string>
+    <string name="menu_multi_player_info">Challenge your friends on phone, tablet or desktop.</string>
+
+    <string name="menu_new">New</string>
+    <string name="menu_load">Load</string>
+    <string name="menu_resume">Resume</string>
+    <string name="menu_join">Join</string>
 </resources>

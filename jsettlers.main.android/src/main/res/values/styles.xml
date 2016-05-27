@@ -10,6 +10,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="android:windowBackground">@color/grayLight</item>
+
     </style>
 
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
