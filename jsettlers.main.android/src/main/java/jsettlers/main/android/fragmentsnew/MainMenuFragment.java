@@ -2,10 +2,8 @@ package jsettlers.main.android.fragmentsnew;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +16,9 @@ import android.widget.LinearLayout;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.dialogs.DirectoryPickerDialog;
+import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
+import jsettlers.main.android.utils.FragmentUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,8 +26,11 @@ import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
+	private MainMenuNavigator navigator;
+
 	private LinearLayout mainLinearLayout;
 	private View resourcesView;
+
 	private boolean showDirectoryPicker = false;
 
 	public static MainMenuFragment newInstance() {
@@ -45,11 +48,15 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	};
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		navigator = (MainMenuNavigator)getActivity();
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
-
-		AppCompatActivity activity = (AppCompatActivity) getActivity();
-		activity.setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
+		FragmentUtil.setActionBar(this, view);
 
 		mainLinearLayout = (LinearLayout)view.findViewById(R.id.linear_layout_main);
 
@@ -60,6 +67,14 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			Button button = (Button)resourcesView.findViewById(R.id.button_resources);
 			button.setOnClickListener(resourcesButtonListener);
 		}
+
+		Button newSingleGameButton = (Button)view.findViewById(R.id.button_new_single_game);
+		newSingleGameButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				navigator.showNewLocal();
+			}
+		});
 
 		return view;
 	}

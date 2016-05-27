@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">JSettlers</string>
     <string name="please_wait">Please wait</string>
-    
+
     <string name="f12_string">Skip one minute</string>
     <string name="save_string">Save</string>
     <string name="stop_string">Stop</string>
@@ -11,7 +11,7 @@
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
-    
+
     <string name="local_game">Local game</string>
     <string name="local_game_new">New game</string>
     <string name="local_game_load">Load game</string>
@@ -22,9 +22,9 @@
     <string name="startscreen_network_new">New game</string>
     <string name="startscreen_network_join">Join game</string>
     <string name="startscreen_network_load">Load saved game</string>
-    
+
     <string name="game_title">Welcome to JSettlers</string>
-    
+
     <string name="maplist_local_new_headline">Start new game</string>
     <string name="maplist_local_new_submit">Start</string>
     <string name="maplist_local_load_headline">Load saved game</string>
@@ -33,12 +33,12 @@
     <string name="maplist_network_new_submit">Start</string>
     <string name="maplist_network_join_headline">Join network game</string>
     <string name="maplist_network_join_submit">Join</string>
-    
+
     <string name="player_count">Player count</string>
     <string name="illegal_playercount">Invalid player count</string>
     <string name="illegal_playercount_too_high">The player count is too high</string>
     <string name="illegal_playercount_too_low">The player count is too low</string>
-    
+
     <string name="send">Send</string>
     <string name="accept_start">Ready</string>
     <string name="local_game_delete">Delete saved game</string>
@@ -52,7 +52,7 @@
     <string name="filechoser_message">Where are the Gfx and Snd folders?</string>
 
     <string name="resource_directory_title">Graphics and sound folders</string>
-    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from The Settlers 3. Locate the folders in the installation directory of an original copy of The Settlers 3 and copy to them to your Android device before locating them in JSettlers.</string>
+    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from the installation folder of an original copy of The Settlers 3. Find those folders and copy them to your Android device before locating them for use in JSettlers.</string>
     <string name="resource_directory_button">Locate folders</string>
 
     <string name="menu_single_player_title">Single player</string>
@@ -65,4 +65,7 @@
     <string name="menu_load">Load</string>
     <string name="menu_resume">Resume</string>
     <string name="menu_join">Join</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

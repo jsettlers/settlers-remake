@@ -1,13 +1,14 @@
 package jsettlers.main.android.activities;
 
+import jsettlers.main.android.R;
+import jsettlers.main.android.fragmentsnew.MainMenuFragment;
+import jsettlers.main.android.fragmentsnew.NewLocalFragment;
+import jsettlers.main.android.navigation.MainMenuNavigator;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import jsettlers.main.android.R;
-import jsettlers.main.android.fragmentsnew.MainMenuFragment;
-import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +21,13 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.frame_layout, MainMenuFragment.newInstance())
                 .commit();
+	}
+
+	@Override
+	public void showNewLocal() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, NewLocalFragment.newInstance())
+				.addToBackStack(null)
+				.commit();
 	}
 }
