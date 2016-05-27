@@ -51,4 +51,7 @@
     <string name="filechoser_ok">Use this directory</string>
     <string name="filechoser_message">Where are the Gfx and Snd folders?</string>
 
+    <string name="resource_directory_title">Graphics and sound folders</string>
+    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from The Settlers 3. Locate the folders in the installation directory of an original copy of The Settlers 3 and copy to them to your Android device before locating them in JSettlers.</string>
+    <string name="resource_directory_button">Locate folders</string>
 </resources>

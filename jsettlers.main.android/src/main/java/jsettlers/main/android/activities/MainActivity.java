@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.MainMenuFragment;
+import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 
 public class MainActivity extends AppCompatActivity {
 

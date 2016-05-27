@@ -11,4 +11,11 @@
         <item name="windowNoTitle">true</item>
 
     </style>
+
+    <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
+        <!-- customize the color palette -->
+        <item name="android:textColor">@android:color/white</item>
+        <item name="colorButtonNormal">@color/primaryDark</item>
+
+    </style>
 </resources>
