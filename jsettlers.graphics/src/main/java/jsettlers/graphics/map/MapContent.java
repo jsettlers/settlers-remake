@@ -31,6 +31,7 @@ import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
+import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.AnimationSequence;
@@ -293,6 +294,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			drawMessages(gl);
 
 			drawFramerate(gl);
+			drawCommitHash(gl);
 			if (actionThreadIsSlow) {
 				drawActionThreadSlow(gl);
 			}
@@ -416,6 +418,15 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
 		drawer.drawString(windowWidth - 9 * (float) spacing, y, fps);
 		drawer.drawString(windowWidth - 23 * (float) spacing, y, timeString);
+	}
+
+	private void drawCommitHash(GLDrawContext gl) {
+		String commitHash = CommitInfo.COMMIT_HASH_SHORT;
+
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
+		double spacing = drawer.getWidth("_");
+		float y = 1.5f * (float) drawer.getHeight("X");
+		drawer.drawString(windowWidth - 8 * (float) spacing, y, commitHash);
 	}
 
 	private void drawTooltip(GLDrawContext gl) {

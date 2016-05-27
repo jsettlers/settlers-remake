@@ -16,7 +16,12 @@ package jsettlers.main.swing;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,6 +34,7 @@ import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommitInfo;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -55,21 +61,61 @@ public class JSettlersFrame extends JFrame {
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
 	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
+
 	private Timer redrawTimer;
+	private boolean fullScreen = false;
 
 	JSettlersFrame() throws HeadlessException {
 		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
 
 		SettingsManager settingsManager = SettingsManager.getInstance();
+
 		Player player = settingsManager.getPlayer();
 		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
 		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
+
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
 		pack();
 		setLocationRelativeTo(null);
+
+		fullScreen = settingsManager.getFullScreenMode();
+		updateFullScreenMode();
+
+		KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		keyboardFocusManager.addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if (e.getID() == KeyEvent.KEY_PRESSED) {
+					if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+						toogleFullScreenMode();
+						return true; // consume this key event.
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	private void toogleFullScreenMode() {
+		fullScreen = !fullScreen;
+		SettingsManager.getInstance().setFullScreenMode(fullScreen);
+		updateFullScreenMode();
+	}
+
+	private void updateFullScreenMode() {
+		dispose();
+
+		setResizable(!fullScreen);
+		setUndecorated(fullScreen);
+
+		pack();
 		setVisible(true);
+
+		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+		graphicsDevice.setFullScreenWindow(fullScreen ? this : null);
 	}
 
 	private void abortRedrawTimerIfPresent() {
