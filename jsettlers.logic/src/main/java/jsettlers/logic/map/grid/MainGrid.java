@@ -716,6 +716,10 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
+			if (!MatchConstants.ENABLE_DEBUG_COLORS) {
+				return 0;
+			}
+
 			switch (debugColorMode) {
 			case BLOCKED_PARTITIONS:
 				return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
@@ -740,7 +744,7 @@ public final class MainGrid implements Serializable {
 				return Color.getARGB(1, .6f, 0, resource);
 			case NONE:
 			default:
-				return -1;
+				return 0;
 			}
 		}
 
