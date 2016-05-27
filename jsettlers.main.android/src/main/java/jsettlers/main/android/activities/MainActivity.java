@@ -2,7 +2,7 @@ package jsettlers.main.android.activities;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.MainMenuFragment;
-import jsettlers.main.android.fragmentsnew.NewLocalFragment;
+import jsettlers.main.android.fragmentsnew.MapPickerFragment;
 import jsettlers.main.android.navigation.MainMenuNavigator;
 
 import android.os.Bundle;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showNewLocal() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewLocalFragment.newInstance())
+				.replace(R.id.frame_layout, MapPickerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
 	}
