@@ -320,7 +320,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
+	private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 		switch (targetBuilding) {
 		case IRONMINE:
 			return ratioFits(COALMINE, COAL_MINE_TO_IRONORE_MINE_RATIO, IRONMINE);
@@ -393,16 +393,18 @@ private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 				}
 				taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
 			}
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, PioneerAi.findTarget(aiStatistics, playerId), pioneerIds));
+			ShortPoint2D pioneerTarget = PioneerAi.findTarget(aiStatistics, playerId);
+			if (pioneerTarget != null) {
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, pioneerTarget, pioneerIds));
+			}
 		}
 
 		return false;
-		/*if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1
-				&& aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0) {
-			destroyHinterlandMilitaryBuildings();
-			return construct(TOWER);
-		}
-		return false;*/
+		/*
+		 * if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1 &&
+		 * aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0) { destroyHinterlandMilitaryBuildings(); return construct(TOWER); }
+		 * return false;
+		 */
 	}
 
 	private boolean buildLivingHouse() {

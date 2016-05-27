@@ -16,6 +16,7 @@ package jsettlers.ai.construction;
 
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -27,12 +28,35 @@ public class PioneerAi {
 	public static ShortPoint2D findTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
-		//if (aiStatistics.getTreesForPlayer(playerId).size() < 30) {
-			ShortPoint2D nearestTree = aiStatistics
-					.getNearestCuttableObjectPointInDefaultPartitionFor(myCenter, EMapObjectType.TREE_ADULT, Integer.MAX_VALUE);
-			return myBorder.getNearestPoint(nearestTree, Integer.MAX_VALUE, null);
-		//}
-		//return null;
-
-	};
+		if (aiStatistics.getTreesForPlayer(playerId).size() < 30) {
+			ShortPoint2D nearestTree = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(myCenter, EMapObjectType.TREE_ADULT,
+					Integer.MAX_VALUE);
+			return myBorder.getNearestPoint(nearestTree);
+		} else if (aiStatistics.getStonesForPlayer(playerId).size() < 15) {
+			ShortPoint2D nearestStone = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(myCenter, EMapObjectType.STONE,
+					Integer.MAX_VALUE);
+			return myBorder.getNearestPoint(nearestStone);
+		} else if (aiStatistics.getRiversForPlayer(playerId).size() < 15) {
+			ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(myCenter, Integer.MAX_VALUE);
+			return myBorder.getNearestPoint(nearestRiver);
+		} else {
+			EResourceType[] resources = { EResourceType.COAL, EResourceType.IRONORE, EResourceType.FISH, EResourceType.GOLDORE };
+			for (EResourceType resourceType : resources) {
+				ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType,
+						Integer.MAX_VALUE);
+				if (nearestResourceAbroad == null) {
+					continue;
+				}
+				ShortPoint2D nearestResourceInland = aiStatistics.getNearestResourcePointForPlayer(myCenter, resourceType, playerId,
+						Integer.MAX_VALUE);
+				if (nearestResourceInland == null || nearestResourceInland.getOnGridDistTo(nearestResourceAbroad) < 3) {
+					ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+					if (resourceType != EResourceType.FISH || nearestResourceInland.getOnGridDistTo(nearestResourceAbroad) > 1) {
+						return target;
+					}
+				}
+			}
+			return null;
+		}
+	}
 }
