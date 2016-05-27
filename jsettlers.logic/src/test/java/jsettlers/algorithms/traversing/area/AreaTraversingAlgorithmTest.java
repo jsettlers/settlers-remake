@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,8 +21,6 @@ import java.util.BitSet;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
-import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
@@ -49,7 +47,7 @@ public class AreaTraversingAlgorithmTest {
 
 		final LinkedList<ShortPoint2D> area = new LinkedList<ShortPoint2D>();
 		final BitSet visited = new BitSet(WIDTH * HEIGHT);
-		ITraversingVisitor visitor = new ITraversingVisitor() {
+		IAreaVisitor visitor = new IAreaVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				assertTrue(c1.contains(x, y) && !c2.contains(x, y)); // checks if the position is in the area

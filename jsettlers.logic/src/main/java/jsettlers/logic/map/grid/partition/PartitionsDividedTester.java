@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,10 +15,11 @@
 package jsettlers.logic.map.grid.partition;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MutableInt;
+import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 
 /**
  * This class implements an algorithm used by the {@link PartitionsGrid} to check if two positions of a partition are divided.
@@ -37,56 +38,57 @@ final class PartitionsDividedTester {
 	/**
 	 * Tests if the given positions (that need to lie on the border of the given partition) are connected by the given partition.
 	 * 
-	 * @param debugColorSetable
-	 * 
 	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
-	 * @param pos1
-	 *            The first position.
-	 * @param pos2
-	 *            The second position.
-	 * @param partition
-	 *            The partition of both positions.
+	 * @param partition1
+	 * @param partition1Size
+	 * @param partition2
+	 * @param partition2Size
 	 * @return true if both positions are connected by the given partition.<br>
 	 *         false if the positions are not connected.
 	 */
-	public static boolean isPartitionDivided(Partition[] partitionObjects, short[] partitions, short width, ShortPoint2D pos1,
-			MutableInt partition1Size, ShortPoint2D pos2, MutableInt partition2Size, short partition) {
+	public static boolean isPartitionDivided(Partition[] partitionObjects, short[] partitions, short width, BorderPartitionInfo partition1,
+			MutableInt partition1Size, BorderPartitionInfo partition2, MutableInt partition2Size) {
 
-		return posNotOnBorder(partitionObjects, partitions, width, pos1, pos2, partition, partition1Size)
-				&& posNotOnBorder(partitionObjects, partitions, width, pos2, pos1, partition, partition2Size);
+		assert partition1.partitionId == partition2.partitionId;
+
+		return posNotOnBorder(partitionObjects, partitions, width, partition1.positionOfPartition,
+					partition1.insideNeighborPosition, partition2.positionOfPartition, partition1.partitionId, partition1Size)
+				&& posNotOnBorder(partitionObjects, partitions, width, partition2.positionOfPartition,
+					partition2.insideNeighborPosition, partition1.positionOfPartition, partition1.partitionId, partition2Size);
 	}
 
 	/**
-	 * NOTE: The call to this method is different if the given positions are swaped!
-	 * 
-	 * @param debugColorSetable
+	 * NOTE: The call to this method is different if the given positions are swapped!
+	 *
 	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
-	 * @param startPosition
+	 * @param insideStartPosition
 	 * @param checkPosition
-	 * @param partition
+	 * @param partitionSize
 	 * @return
 	 */
 	private static boolean posNotOnBorder(final Partition[] partitionObjects, final short[] partitions, final short width,
-			final ShortPoint2D startPosition, final ShortPoint2D checkPosition, final short partition,
-			MutableInt partitionSize) {
+			final ShortPoint2D insideStartPosition, final ShortPoint2D outsideStartPosition, final ShortPoint2D checkPosition,
+			final short partitionId, MutableInt partitionSize) {
+
 		final short checkPositionX = checkPosition.x;
 		final short checkPositionY = checkPosition.y;
 
 		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionObjects[partitions[x + y * width]].partitionId == partition;
+				return partitionObjects[partitions[x + y * width]].partitionId == partitionId;
 			}
-		}, startPosition, new ITraversingVisitor() {
+		}, insideStartPosition, outsideStartPosition, new IBorderVisitor() {
 			@Override
-			public boolean visit(int x, int y) {
-				return checkPositionX != x || checkPositionY != y;
+			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
+				return checkPositionX != insideX || checkPositionY != insideY;
 			}
 		}, false, partitionSize);
+
 		return pos2NotOnBorder;
 	}
 }
