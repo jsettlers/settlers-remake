@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#43A047</color>
+    <color name="primaryDark">#2E7D32</color>
+    <color name="accent">#D50000</color>
 
     <color name="bg">#9000</color>
     <color name="network_not_ready">#fff</color>
