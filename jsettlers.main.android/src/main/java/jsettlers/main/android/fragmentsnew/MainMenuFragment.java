@@ -25,11 +25,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuNavigator navigator;
+	private boolean showDirectoryPicker = false;
 
 	private LinearLayout mainLinearLayout;
 	private View resourcesView;
-
-	private boolean showDirectoryPicker = false;
 
 	public static MainMenuFragment newInstance() {
 		return new MainMenuFragment();
@@ -38,17 +37,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	public MainMenuFragment() {
 	}
 
-	private View.OnClickListener resourcesButtonListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			showDirectoryPicker();
-		}
-	};
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		navigator = (MainMenuNavigator)getActivity();
+		navigator = (MainMenuNavigator) getActivity();
 	}
 
 	@Override
@@ -56,21 +48,26 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		mainLinearLayout = (LinearLayout)view.findViewById(R.id.linear_layout_main);
+		mainLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout_main);
 
-		if (!new ResourceLocationScanner(getActivity()).scanForResources()) {
+		if (!tryLoadResources()) {
 			resourcesView = inflater.inflate(R.layout.include_resources_card, mainLinearLayout, false);
 			mainLinearLayout.addView(resourcesView, 0);
 
-			Button button = (Button)resourcesView.findViewById(R.id.button_resources);
-			button.setOnClickListener(resourcesButtonListener);
+			Button button = (Button) resourcesView.findViewById(R.id.button_resources);
+			button.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					showDirectoryPicker();
+				}
+			});
 		}
 
-		Button newSingleGameButton = (Button)view.findViewById(R.id.button_new_single_game);
+		Button newSingleGameButton = (Button) view.findViewById(R.id.button_new_single_game);
 		newSingleGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				navigator.showNewLocal();
+				navigator.showNewSinglePlayer();
 			}
 		});
 
@@ -80,6 +77,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	@Override
 	public void onResume() {
 		super.onResume();
+		// Work around for IllegalStateException when trying to show dialog from onPermissionResult. Meant to be fixed in v24 support library
 		if (showDirectoryPicker) {
 			showDirectoryPicker();
 			showDirectoryPicker = false;
@@ -88,25 +86,31 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 
 	@Override
 	public void onDirectorySelected() {
-		mainLinearLayout.removeView(resourcesView);
+		if (tryLoadResources()) {
+			mainLinearLayout.removeView(resourcesView);
+		} else {
+			throw new RuntimeException("Resources not found or not valid after directory chosen by user");
+		}
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		switch (requestCode) {
-			case REQUEST_CODE_PERMISSION_STORAGE:
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					showDirectoryPicker = true;
-				}
-				break;
+		case REQUEST_CODE_PERMISSION_STORAGE:
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				showDirectoryPicker = true;
+			}
+			break;
 		}
 	}
 
-	private void showDirectoryPicker() {
-		int permission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+	private boolean tryLoadResources() {
+		return new ResourceLocationScanner(getActivity()).scanForResources();
+	}
 
-		if (permission != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String [] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
+	private void showDirectoryPicker() {
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
 		} else {
 			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
 		}

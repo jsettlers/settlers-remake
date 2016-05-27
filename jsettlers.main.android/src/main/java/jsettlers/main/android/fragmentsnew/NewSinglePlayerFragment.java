@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import jsettlers.main.android.R;
 import jsettlers.main.android.utils.FragmentUtil;
 
-public class NewLocalFragment extends Fragment {
+public class NewSinglePlayerFragment extends Fragment {
 
-	public static NewLocalFragment newInstance() {
-		return new NewLocalFragment();
+	public static NewSinglePlayerFragment newInstance() {
+		return new NewSinglePlayerFragment();
 	}
 
-	public NewLocalFragment() {
+	public NewSinglePlayerFragment() {
 	}
 
 	@Override
