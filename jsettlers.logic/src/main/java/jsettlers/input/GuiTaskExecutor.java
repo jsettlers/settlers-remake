@@ -24,6 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
@@ -182,9 +183,32 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 		}
 
+		case CHANGE_TOWER_SOLDIERS:
+			changeTowerSoldiers((ChangeTowerSoldiersGuiTask) guiTask);
+
 		default:
 			break;
 
+		}
+	}
+
+	private void changeTowerSoldiers(ChangeTowerSoldiersGuiTask soldierTask) {
+		ShortPoint2D buildingPosition = soldierTask.getBuildingPos();
+		OccupyingBuilding occupyingBuilding = (OccupyingBuilding) grid.getBuildingAt(buildingPosition.x, buildingPosition.y);
+
+		switch(soldierTask.getTaskType()) {
+			case FULL:
+				occupyingBuilding.requestSoldiers();
+				break;
+			case MORE:
+				occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
+				break;
+			case ONE:
+				occupyingBuilding.releaseSoldiers();
+				break;
+			case LESS:
+				occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
+				break;
 		}
 	}
 

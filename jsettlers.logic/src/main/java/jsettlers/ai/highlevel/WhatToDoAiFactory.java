@@ -15,12 +15,10 @@
 package jsettlers.ai.highlevel;
 
 import jsettlers.ai.army.ArmyGeneral;
-import jsettlers.ai.army.LooserGeneral;
-import jsettlers.ai.army.WinnerGeneral;
+import jsettlers.ai.army.ConfigurableGeneral;
 import jsettlers.ai.economy.AdaptableEconomyMinister;
+import jsettlers.ai.economy.BuildingListEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.economy.MiddleEconomyMinister;
-import jsettlers.ai.economy.WinnerEconomyMinister;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.grid.MainGrid;
@@ -33,30 +31,38 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
  */
 public class WhatToDoAiFactory {
 
-	public IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid,
+	private static float[] ATTACKER_COUNT_FACTOR = { 1.1F, 1F, 0.9F, 0.8F, 0F };
+
+	public IWhatToDoAi buildWhatToDoAi(
+			EPlayerType type,
+			ECivilisation civilisation,
+			AiStatistics aiStatistics,
+			Player player,
+			MainGrid mainGrid,
 			MovableGrid movableGrid,
-			ITaskScheduler
-					taskScheduler) {
+			ITaskScheduler taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
 		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
-		if (type == EPlayerType.AI_VERY_EASY) {
+	private EconomyMinister determineMinister(
+			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
+		switch (type) {
+		case AI_VERY_EASY:
 			return new AdaptableEconomyMinister(aiStatistics, player);
-		} else if (type == EPlayerType.AI_VERY_HARD) {
-			return new WinnerEconomyMinister();
+		case AI_EASY:
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F, 1F / 2F);
+		case AI_HARD:
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 2F, 3F / 4F);
+		default:
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F, 1F);
 		}
-		return new MiddleEconomyMinister();
 	}
 
 	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
 			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
-		//TODO: use civilisation to determine different general when there is more than ROMAN
-		if (type == EPlayerType.AI_HARD || type == EPlayerType.AI_VERY_HARD) {
-			return new WinnerGeneral(aiStatistics, player, movableGrid, taskScheduler);
-		}
-		return new LooserGeneral(aiStatistics, player, movableGrid, taskScheduler);
+		// TODO: use civilisation to determine different general when there is more than ROMAN
+		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, ATTACKER_COUNT_FACTOR[type.ordinal()]);
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -143,6 +143,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		if (request != null) {
 			if (request.isActive() && request.getPos().equals(movable.getPos())) {
 				request.deliveryFulfilled();
+				request = null;
 				return false;
 			} else {
 				request.deliveryAborted();
@@ -167,12 +168,17 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			}
 			break;
 
+		case DROPPING:
+			if (request != null) {
+				boolean offerMaterial = droppingMaterial();
+				super.setMaterial(EMaterialType.NO_MATERIAL);
+				super.getGrid().dropMaterial(super.getPos(), materialType, offerMaterial, false);
+			}
+			break;
+
 		case INIT_BECOME_SOLDIER_JOB:
 		case GOING_TO_BARRACK:
 			barrack.bearerRequestFailed();
-			break;
-
-		case DROPPING: // handled after this
 			break;
 
 		case INIT_CONVERT_WITH_TOOL_JOB:
@@ -234,27 +240,45 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest) {
-		this.workerRequester = requester;
-		this.workerCreationRequest = workerCreationRequest;
-		this.state = EBearerState.INIT_CONVERT_JOB;
-		this.offer = null;
-		this.materialType = null;
+	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest) {
+		if (state == EBearerState.JOBLESS) {
+			this.workerRequester = requester;
+			this.workerCreationRequest = workerCreationRequest;
+			this.state = EBearerState.INIT_CONVERT_JOB;
+			this.offer = null;
+			this.materialType = null;
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
-		this.workerRequester = requester;
-		this.workerCreationRequest = workerCreationRequest;
-		this.offer = offer;
-		this.state = EBearerState.INIT_CONVERT_WITH_TOOL_JOB;
-		this.materialType = workerCreationRequest.requestedMovableType().getTool();
+	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
+		if (state == EBearerState.JOBLESS) {
+			this.workerRequester = requester;
+			this.workerCreationRequest = workerCreationRequest;
+			this.offer = offer;
+			this.state = EBearerState.INIT_CONVERT_WITH_TOOL_JOB;
+			this.materialType = workerCreationRequest.requestedMovableType().getTool();
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public void becomeSoldier(IBarrack barrack) {
-		this.barrack = barrack;
-		this.state = EBearerState.INIT_BECOME_SOLDIER_JOB;
+	public boolean becomeSoldier(IBarrack barrack) {
+		if (state == EBearerState.JOBLESS) {
+			this.barrack = barrack;
+			this.state = EBearerState.INIT_BECOME_SOLDIER_JOB;
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -265,10 +289,6 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			handleJobFailed(false);
 		}
 		state = EBearerState.DEAD_OBJECT;
-	}
-
-	public boolean isDead() {
-		return state == EBearerState.DEAD_OBJECT;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,11 +28,11 @@ import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
  */
 public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
 
-	void becomeWorker(IWorkerRequester requester, WorkerCreationRequest request);
+	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request);
 
-	void becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, ShortPoint2D offer);
+	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, ShortPoint2D offer);
 
-	void becomeSoldier(IBarrack barrack);
+	boolean becomeSoldier(IBarrack barrack);
 
 	/**
 	 * This interface is used by the bearers to signal the need of a reoffer of the worker creation request.
@@ -40,7 +40,7 @@ public interface IManageableBearer extends IManageable, ILocatable, IManagerBear
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public static interface IWorkerRequester {
+	interface IWorkerRequester {
 		void workerCreationRequestFailed(WorkerCreationRequest failedRequest);
 	}
 }

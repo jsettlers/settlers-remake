@@ -88,7 +88,7 @@ public interface IBuildingsGrid {
 
 	void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding);
 
-	void requestSoilderable(IBarrack barrack);
+	void requestSoldierable(IBarrack barrack);
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 

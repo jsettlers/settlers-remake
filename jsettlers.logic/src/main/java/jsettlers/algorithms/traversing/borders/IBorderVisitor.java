@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,23 +12,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.construction;
-
-import jsettlers.common.buildings.EBuildingType;
+package jsettlers.algorithms.traversing.borders;
 
 /**
- * Whis this class you can store a specific count of a specific building type. e.g. you can use this class to store dependencies like that a baker
- * needs 1/3 mills: BuildingCount(MILL, 0.33f)
+ * Interface defining the methods to be able to traverse borders with the {@link BorderTraversingAlgorithm}.
  * 
- * @author codingberlin
+ * @author Andreas Eberle
+ * 
  */
-public class BuildingCount {
+public interface IBorderVisitor {
+	/**
+	 * Called when the given coordinate is visited..
+	 * 
+	 * @param insideX
+	 *            Inside X coordinate.
+	 * @param insideY
+	 *            Inside Y coordinate.
+	 * @param outsideX
+	 *            Outside X coordinate.
+	 * @param outsideY
+	 *            Outside Y coordinate.
+	 * 
+	 * @return True if the traversing shall be continued.<br>
+	 *         False if it shall be stopped.
+	 */
+	boolean visit(int insideX, int insideY, int outsideX, int outsideY);
 
-	public final EBuildingType buildingType;
-	public final float count;
-
-	public BuildingCount(EBuildingType buildingType, float count) {
-		this.buildingType = buildingType;
-		this.count = count;
-	}
 }

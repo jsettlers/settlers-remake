@@ -15,13 +15,14 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
-import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupierPlace;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
@@ -48,7 +49,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	private final EMovableType movableType;
 
-	private ESoldierState state = ESoldierState.AGGRESSIVE;
+	private ESoldierState state = ESoldierState.SEARCH_FOR_ENEMIES;
 	private IOccupyableBuilding building;
 	private IAttackable enemy;
 	private ShortPoint2D oldPathTarget;
@@ -146,16 +147,18 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 		case GOING_TO_TOWER:
 			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
-				OccupyerPlace place = building.addSoldier(this);
+				OccupierPlace place = building.addSoldier(this);
 				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
 				super.enableNothingToDoAction(false);
 				super.setVisible(false);
 
 				if (isBowman()) {
 					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
+					changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+				} else {
+					changeStateTo(ESoldierState.AGGRESSIVE);
 				}
 
-				changeStateTo(ESoldierState.AGGRESSIVE);
 				isInTower = true;
 			} else {
 				changeStateTo(ESoldierState.AGGRESSIVE); // do a check of the surrounding to find possible enemies.
@@ -167,7 +170,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	private void notifyTowerThatRequestFailed() {
 		if (building.getPlayer() == movable.getPlayer()) { // only notify, if the tower still belongs to this player
-			building.requestFailed(this.movableType);
+			building.requestFailed(this);
 			building = null;
 			state = ESoldierState.AGGRESSIVE;
 		}
@@ -226,16 +229,15 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	protected abstract boolean isEnemyAttackable(IAttackable enemy, boolean isInTower);
 
-	@Override
-	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+	public IBuildingOccupyableMovable setOccupyableBuilding(IOccupyableBuilding building) {
 		if (state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.INIT_GOTO_TOWER) {
 			this.building = building;
 			changeStateTo(ESoldierState.INIT_GOTO_TOWER);
 			super.abortPath();
 			this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
-			return true;
+			return this;
 		} else {
-			return false;
+			return null;
 		}
 	}
 
@@ -251,14 +253,22 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public void leaveOccupyableBuilding(ShortPoint2D newPosition) {
-		super.setPosition(newPosition);
-		super.enableNothingToDoAction(true);
-		super.setVisible(true);
+		if (isInTower) {
+			super.setPosition(newPosition);
+			super.enableNothingToDoAction(true);
+			super.setVisible(true);
+			super.movable.setSelected(false);
 
-		isInTower = false;
-		building = null;
-		defending = false;
-		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+			isInTower = false;
+			building = null;
+			defending = false;
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+
+		} else if (state == ESoldierState.INIT_GOTO_TOWER || state == ESoldierState.GOING_TO_TOWER) {
+			super.abortPath();
+			building = null;
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		}
 	}
 
 	@Override
@@ -291,7 +301,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			oldPathTarget = pathTarget;
 		}
 
-		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
+		if (state == ESoldierState.GOING_TO_TOWER && (building == null || !building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
 			result = false;
 		}
 
@@ -321,32 +331,47 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
 
-			AbstractMovableGrid grid = super.getGrid();
-			EDirection leftDir = direction.getNeighbor(-1);
-			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-			EDirection rightDir = direction.getNeighbor(1);
+			EDirection rightDir = direction.getNeighbor(-1);
 			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+			EDirection leftDir = direction.getNeighbor(1);
+			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 
-			if (grid.isFreePosition(leftPos)) {
-				return new Path(leftPos);
-			} else if (grid.isFreePosition(rightPos)) {
-				return new Path(rightPos);
+			ShortPoint2D freePosition = getRandomFreePosition(rightPos, leftPos);
+
+			if (freePosition != null) {
+				return new Path(freePosition);
+
 			} else {
-				EDirection twoLeftDir = direction.getNeighbor(-2);
-				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
-				EDirection twoRightDir = direction.getNeighbor(2);
+				EDirection twoRightDir = direction.getNeighbor(-2);
 				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
+				EDirection twoLeftDir = direction.getNeighbor(2);
+				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
 
-				if (grid.isFreePosition(twoLeftPos)) {
-					return new Path(twoLeftPos);
-				} else if (grid.isFreePosition(twoRightPos)) {
-					return new Path(twoRightPos);
+				freePosition = getRandomFreePosition(twoRightPos, twoLeftPos);
+
+				if (freePosition != null) {
+					return new Path(freePosition);
 				} else {
 					return path;
 				}
 			}
 		} else {
 			return super.findWayAroundObstacle(position, path);
+		}
+	}
+
+	private ShortPoint2D getRandomFreePosition(ShortPoint2D pos1, ShortPoint2D pos2) {
+		boolean pos1Free = getGrid().isFreePosition(pos1);
+		boolean pos2Free = getGrid().isFreePosition(pos2);
+
+		if (pos1Free && pos2Free) {
+			return MatchConstants.random().nextBoolean() ? pos1 : pos2;
+		} else if (pos1Free) {
+			return pos1;
+		} else if (pos2Free) {
+			return pos2;
+		} else {
+			return null;
 		}
 	}
 

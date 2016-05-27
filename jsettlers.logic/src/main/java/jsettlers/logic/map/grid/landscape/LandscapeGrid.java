@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,7 +19,6 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -96,7 +95,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	private final void initDebugColors() {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			this.debugColors = new int[width * height];
 		} else {
 			this.debugColors = null;
@@ -109,10 +108,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return ELandscapeType.VALUES[landscapeGrid[x + y * width]];
-	}
-
-	public final int getLandscapeIdAt(int x, int y) {
-		return landscapeGrid[x + y * width];
 	}
 
 	public boolean isLandscapeOf(int x, int y, ELandscapeType... landscapeTypes) {
@@ -136,13 +131,13 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	@Override
 	public final void setDebugColor(int x, int y, int argb) {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			debugColors[x + y * width] = argb;
 		}
 	}
 
 	public final int getDebugColor(int x, int y) {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			return debugColors[x + y * width];
 		} else {
 			return 0;
@@ -150,7 +145,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final void resetDebugColors() {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			for (int i = 0; i < debugColors.length; i++) {
 				debugColors[i] = 0;
 			}

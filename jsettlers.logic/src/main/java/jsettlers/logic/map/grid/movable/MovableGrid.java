@@ -66,10 +66,6 @@ public final class MovableGrid implements Serializable {
 		return this.movableGrid[x + y * width];
 	}
 
-	public final void setMovable(short x, short y, Movable movable) {
-		this.movableGrid[x + y * width] = movable;
-	}
-
 	public final void movableLeft(ShortPoint2D position, Movable movable) {
 		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {
@@ -86,19 +82,13 @@ public final class MovableGrid implements Serializable {
 	 *            Movable that enters the position.
 	 */
 	public final void movableEntered(ShortPoint2D position, Movable movable) {
-		short x = position.x;
-		short y = position.y;
+		final short x = position.x;
+		final short y = position.y;
 
-		int idx = x + y * width;
-		if (idx < 0) {
-			System.out.println("index < 0");
-		}
-
-		this.movableGrid[idx] = movable;
+		this.movableGrid[x + y * width] = movable;
 		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
 			ground.walkOn(x, y);
 		}
-
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.partitions.IBlockingProvider;
@@ -77,7 +78,7 @@ public class MapData implements IMapData {
 	private final short[][] blockedPartitions;
 
 	private MapDataDelta undoDelta;
-	private int playercount;
+	private int playerCount;
 
 	/**
 	 * Start position of all player, will be converted to a border in ValidatePlayerStartPosition
@@ -94,7 +95,7 @@ public class MapData implements IMapData {
 	private final LandscapeFader fader = new LandscapeFader();
 	private IGraphicsBackgroundListener backgroundListener;
 
-	public MapData(int width, int height, int playercount, ELandscapeType ground) {
+	public MapData(int width, int height, int playerCount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("width and height must be positive");
 		}
@@ -103,13 +104,13 @@ public class MapData implements IMapData {
 			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
-		if (playercount <= 0 || playercount > CommonConstants.MAX_PLAYERS) {
+		if (playerCount <= 0 || playerCount > CommonConstants.MAX_PLAYERS) {
 			throw new IllegalArgumentException("Player count must be 1.." + CommonConstants.MAX_PLAYERS);
 		}
 
-		this.playercount = playercount;
-		this.playerStarts = new ShortPoint2D[playercount];
-		for (int i = 0; i < playercount; i++) {
+		this.playerCount = playerCount;
+		this.playerStarts = new ShortPoint2D[playerCount];
+		for (int i = 0; i < playerCount; i++) {
 			playerStarts[i] = new ShortPoint2D(width / 2, height / 2);
 		}
 
@@ -222,7 +223,7 @@ public class MapData implements IMapData {
 		}
 
 		System.out.println("searching border tiles...");
-		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<FadeTask>();
+		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<>();
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
 				// we cannot use done[x][y], because done flag is set for other tiles, too.
@@ -347,7 +348,7 @@ public class MapData implements IMapData {
 			}
 			if (objects[x][y] instanceof LandscapeConstraint) {
 				LandscapeConstraint constraint = (LandscapeConstraint) objects[x][y];
-				if (!allowsLandscape(type, constraint)) {
+				if (!constraint.getAllowedLandscapes().contains(type)) {
 					return false;
 				}
 			}
@@ -361,23 +362,14 @@ public class MapData implements IMapData {
 		return true;
 	}
 
-	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
-		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
-			if (t == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void setListener(IGraphicsBackgroundListener backgroundListener) {
 		this.backgroundListener = backgroundListener;
 	}
 
 	public void placeObject(MapObject object, int x, int y) {
-		ObjectContainer container = null;
+		ObjectContainer container;
 		ProtectContainer protector = ProtectContainer.getInstance();
-		ELandscapeType[] landscapes = null;
+		Set<ELandscapeType> landscapes = null;
 		if (object instanceof MapTreeObject) {
 			container = TreeObjectContainer.getInstance();
 		} else if (object instanceof MapStoneObject) {
@@ -388,8 +380,8 @@ public class MapData implements IMapData {
 			container = new StackContainer((StackObject) object);
 		} else if (object instanceof BuildingObject) {
 			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
-			landscapes = ((BuildingObject) object).getType().getGroundtypes();
-			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
+			landscapes = ((BuildingObject) object).getType().getGroundTypes();
+			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType());
 		} else if (object instanceof MapDecorationObject) {
 			container = new MapObjectContainer((MapDecorationObject) object);
 		} else {
@@ -401,7 +393,7 @@ public class MapData implements IMapData {
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
 			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
-					|| !listAllowsLandscape(landscapes, getLandscape(abs.x, abs.y))) {
+					|| (landscapes != null && !landscapes.contains(getLandscape(abs.x, abs.y)))) {
 				allowed = false;
 			}
 		}
@@ -417,25 +409,7 @@ public class MapData implements IMapData {
 		}
 	}
 
-	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2, ELandscapeType landscape) {
-		if (landscapes2 == null) {
-			return true;
-		} else {
-			for (ELandscapeType type : landscapes2) {
-				if (type == landscape) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-
 	public void setHeight(int x, int y, int height) {
-		// if (objects[x][y] instanceof LandscapeConstraint &&
-		// !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
-		// return;
-		// }
-
 		byte safeheight;
 		if (height >= Byte.MAX_VALUE) {
 			safeheight = Byte.MAX_VALUE;
@@ -446,16 +420,6 @@ public class MapData implements IMapData {
 		}
 		undoDelta.addHeightChange(x, y, heights[x][y]);
 		heights[x][y] = safeheight;
-		// if (objects[x][y] instanceof BuildingContainer) {
-		// ShortPoint2D center = new ShortPoint2D(x, y);
-		// for (RelativePoint r : ((BuildingContainer)
-		// objects[x][y]).getMapObject().getType().getBlockedTiles()) {
-		// ShortPoint2D pos = r.calculatePoint(center);
-		// undoDelta.addHeightChange(pos.getX(), pos.getY(),
-		// heights[pos.getX()][pos.getY()]);
-		// heights[pos.getX()][pos.getY()] = safeheight;
-		// }
-		// }
 
 		if (backgroundListener != null) {
 			backgroundListener.backgroundChangedAt((short) x, (short) y);
@@ -574,7 +538,7 @@ public class MapData implements IMapData {
 
 	@Override
 	public int getPlayerCount() {
-		return playercount;
+		return playerCount;
 	}
 
 	/**
@@ -604,8 +568,8 @@ public class MapData implements IMapData {
 		}
 
 		@Override
-		public void setDimension(int width, int height, int playercount) {
-			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
+		public void setDimension(int width, int height, int playerCount) {
+			data = new MapData(width, height, playerCount, ELandscapeType.GRASS);
 		}
 
 		@Override
@@ -637,7 +601,7 @@ public class MapData implements IMapData {
 	public void deleteObject(int x, int y) {
 		ObjectContainer obj = objects[x][y];
 		if (obj instanceof ProtectContainer) {
-			return;
+
 		} else if (obj != null) {
 			undoDelta.addObject(x, y, obj);
 			objects[x][y] = null;
@@ -706,9 +670,9 @@ public class MapData implements IMapData {
 
 		ShortPoint2D[] newPlayerStarts = new ShortPoint2D[maxPlayer];
 		for (int i = 0; i < maxPlayer; i++) {
-			newPlayerStarts[i] = i < playercount ? playerStarts[i] : new ShortPoint2D(width / 2, height / 2);
+			newPlayerStarts[i] = i < playerCount ? playerStarts[i] : new ShortPoint2D(width / 2, height / 2);
 		}
-		this.playercount = maxPlayer;
+		this.playerCount = maxPlayer;
 		this.playerStarts = newPlayerStarts;
 
 	}

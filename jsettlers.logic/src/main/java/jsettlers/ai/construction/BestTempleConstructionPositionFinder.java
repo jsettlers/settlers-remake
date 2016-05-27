@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,28 +12,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.buildings;
+package jsettlers.ai.construction;
 
-import jsettlers.common.movable.IMovable;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This interface allows the graphics to get the occupyer in a building.
- * 
- * @author michael
- * 
+ * @author codingberlin
  */
-public interface IBuildingOccupyer {
-	/**
-	 * gets the movable
-	 * 
-	 * @return The type.
-	 */
-	public IMovable getMovable();
+public class BestTempleConstructionPositionFinder extends NearRequiredBuildingConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	/**
-	 * The place the occupyer was placed
-	 * 
-	 * @return The place, as given by the building type.
-	 */
-	public OccupyerPlace getPlace();
+	public static final int WINE_PER_TEMPLE = 15;
+
+	public BestTempleConstructionPositionFinder() {
+		super(EBuildingType.TEMPLE, EBuildingType.WINEGROWER);
+	}
+
+	@Override
+	public ShortPoint2D findBestConstructionPosition(
+			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		int availableWine = aiStatistics.getTotalWineCountForPlayer(playerId);
+		int usedWine = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TEMPLE, playerId) * WINE_PER_TEMPLE;
+		if (availableWine - usedWine >= WINE_PER_TEMPLE) {
+			return super.findBestConstructionPosition(aiStatistics, constructionMap, playerId);
+		} else {
+			// reject construction of temple - the wine is not grown yet
+			return null;
+		}
+	}
+
 }

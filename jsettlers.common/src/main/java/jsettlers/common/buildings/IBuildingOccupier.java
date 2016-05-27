@@ -12,30 +12,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.algorithms.traversing;
+package jsettlers.common.buildings;
 
-import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
-import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.common.movable.IMovable;
 
 /**
- * Interface defining the methods to be able to traverse borders or the areas with the {@link BorderTraversingAlgorithm} or the
- * {@link AreaTraversingAlgorithm}.
+ * This interface allows the graphics to get the occupyer in a building.
  * 
- * @author Andreas Eberle
+ * @author michael
  * 
  */
-public interface ITraversingVisitor {
+public interface IBuildingOccupier {
 	/**
-	 * Called when the given coordinate is visited..
+	 * gets the movable
 	 * 
-	 * @param x
-	 *            X coordinate.
-	 * @param y
-	 *            Y coordinate.
-	 * 
-	 * @return True if the traversing shall be continued.<br>
-	 *         False if it shall be stopped.
+	 * @return The type.
 	 */
-	boolean visit(int x, int y);
+	public IMovable getMovable();
 
+	/**
+	 * The place the occupyer was placed
+	 * 
+	 * @return The place, as given by the building type.
+	 */
+	public OccupierPlace getPlace();
 }

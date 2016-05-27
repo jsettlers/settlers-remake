@@ -48,7 +48,6 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
@@ -69,8 +68,6 @@ import jsettlers.logic.player.Team;
 public class AiStatistics {
 
 	private static final short BORDER_LAND_WIDTH = 5;
-	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
-	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
 	private static final short TOWER_RADIUS_OVERLAP = 1;
@@ -87,6 +84,7 @@ public class AiStatistics {
 	private final MovableGrid movableGrid;
 	private final FlagsGrid flagsGrid;
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
+	private final AiMapInformation aiMapInformation;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -98,6 +96,7 @@ public class AiStatistics {
 		this.flagsGrid = mainGrid.getFlagsGrid();
 		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
 		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
+		this.aiMapInformation = new AiMapInformation(this.partitionsGrid);
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
@@ -147,13 +146,7 @@ public class AiStatistics {
 		}
 		playerStatistic.buildingPositions.get(type).add(building.getPos());
 
-		if (building.getBuildingType().isMine() && building.isOccupied()) {
-			MineBuilding mine = (MineBuilding) building;
-			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD
-					&& mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
-				playerStatistic.deadMines.addNoCollission(mine.getPos().x, mine.getPos().y);
-			}
-		} else if (type == EBuildingType.WINEGROWER) {
+		if (type == EBuildingType.WINEGROWER) {
 			playerStatistic.wineGrowerWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
 		} else if (type == EBuildingType.FARM) {
 			playerStatistic.farmWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());
@@ -164,9 +157,6 @@ public class AiStatistics {
 		playerStatistic.totalBuildingsNumbers[type.ordinal]++;
 		if (building.getStateProgress() == 1f) {
 			playerStatistic.buildingsNumbers[type.ordinal]++;
-		}
-		if (!building.isOccupied()) {
-			playerStatistic.unoccupiedBuildingsNumbers[type.ordinal]++;
 		}
 	}
 
@@ -187,13 +177,29 @@ public class AiStatistics {
 	}
 
 	private void updateMapStatistics() {
+		aiMapInformation.clear();
 		updatePartitionIdsToBuildOn();
-		updateResources();
 		short width = mainGrid.getWidth();
 		short height = mainGrid.getHeight();
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
+				int mapInformationPlayerId;
+				if (player != null) {
+					mapInformationPlayerId = player.playerId;
+				} else {
+					mapInformationPlayerId = aiMapInformation.resourceAndGrassCount.length - 1;
+				}
+				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
+					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
+					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
+					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
+						aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][resourceType.ordinal]++;
+					}
+				}
+				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
+					aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][aiMapInformation.GRASS_INDEX]++;
+				}
 				Movable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
 					byte movablePlayerId = movable.getPlayerId();
@@ -205,7 +211,7 @@ public class AiStatistics {
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
 					if (player != null
 							&& player.playerId != movablePlayerId
-							&& EMovableType.isSoldier(movableType)
+							&& movableType.isSoldier()
 							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}
@@ -235,6 +241,9 @@ public class AiStatistics {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
 		if (landscape.isRiver()) {
 			playerStatistic.rivers.addNoCollission(x, y);
+		}
+		if (objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE)) {
+			playerStatistic.wineCount++;
 		}
 	}
 
@@ -272,19 +281,6 @@ public class AiStatistics {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
 		if (landscape.isRiver()) {
 			sortedRiversInDefaultPartition.addNoCollission(x, y);
-		}
-	}
-
-	private void updateResources() {
-		short width = mainGrid.getWidth();
-		short height = mainGrid.getHeight();
-		for (short x = 0; x < width; x++) {
-			for (short y = 0; y < height; y++) {
-				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
-					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
-				}
-			}
 		}
 	}
 
@@ -403,6 +399,10 @@ public class AiStatistics {
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
 		return playerStatistics[playerId].totalBuildingsNumbers[type.ordinal];
+	}
+
+	public int getTotalWineCountForPlayer(byte playerId) {
+		return playerStatistics[playerId].wineCount;
 	}
 
 	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -559,10 +559,6 @@ public class AiStatistics {
 		return playerStatistics[playerId].rivers;
 	}
 
-	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
-		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
-	}
-
 	public List<Byte> getEnemiesOf(byte playerId) {
 		List<Byte> enemies = new ArrayList<Byte>();
 		for (Team team : partitionsGrid.getTeams()) {
@@ -589,10 +585,6 @@ public class AiStatistics {
 		return playerStatistics[playerId].enemyTroopsInTown;
 	}
 
-	public AiPositions getDeadMinesOf(byte playerId) {
-		return playerStatistics[playerId].deadMines;
-	}
-
 	public IMaterialProductionSettings getMaterialProduction(byte playerId) {
 		return playerStatistics[playerId].materialProduction;
 	}
@@ -605,12 +597,14 @@ public class AiStatistics {
 		return playerStatistics[playerId].isAlive;
 	}
 
+	public AiMapInformation getAiMapInformation() {
+		return aiMapInformation;
+	}
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
 		int[] totalBuildingsNumbers;
 		int[] buildingsNumbers;
-		int[] unoccupiedBuildingsNumbers;
 		Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		List<ShortPoint2D> farmWorkAreas;
 		List<ShortPoint2D> wineGrowerWorkAreas;
@@ -623,25 +617,23 @@ public class AiStatistics {
 		AiPositions trees;
 		AiPositions rivers;
 		AiPositions enemyTroopsInTown;
-		AiPositions deadMines;
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
 		int numberOfNotOccupiedMilitaryBuildings;
+		int wineCount;
 		IMaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
 			stones = new AiPositions();
 			trees = new AiPositions();
-			rivers = new AiPositions();
+			rivers = new AiPositions(); 
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
-			deadMines = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			farmWorkAreas = new Vector<ShortPoint2D>();
 			wineGrowerWorkAreas = new Vector<ShortPoint2D>();
 			clearIntegers();
@@ -652,7 +644,6 @@ public class AiStatistics {
 			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
-			deadMines.clear();
 			stones.clear();
 			trees.clear();
 			rivers.clear();
@@ -667,10 +658,10 @@ public class AiStatistics {
 		private void clearIntegers() {
 			clearIntegerArray(totalBuildingsNumbers);
 			clearIntegerArray(buildingsNumbers);
-			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedMilitaryBuildings = 0;
+			wineCount = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 

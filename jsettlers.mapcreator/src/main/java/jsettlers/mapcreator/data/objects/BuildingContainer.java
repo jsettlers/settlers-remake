@@ -17,11 +17,12 @@ package jsettlers.mapcreator.data.objects;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.buildings.IBuildingOccupyer;
+import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -33,24 +34,24 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
-public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
+public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
 
-	private final BuildingObject object;
-	private final ShortPoint2D pos;
+	private final BuildingObject buildingObject;
+	private final ShortPoint2D position;
 
-	public BuildingContainer(BuildingObject object, ShortPoint2D pos) {
-		this.object = object;
-		this.pos = pos;
+	public BuildingContainer(BuildingObject buildingObject, ShortPoint2D position) {
+		this.buildingObject = buildingObject;
+		this.position = position;
 	}
 
 	@Override
 	public BuildingObject getMapObject() {
-		return object;
+		return buildingObject;
 	}
 
 	@Override
 	public RelativePoint[] getProtectedArea() {
-		return object.getType().getProtectedTiles();
+		return buildingObject.getType().getProtectedTiles();
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public byte getPlayerId() {
-		return object.getPlayerId();
+		return buildingObject.getPlayerId();
 	}
 
 	@Override
@@ -84,22 +85,22 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public ShortPoint2D getPos() {
-		return pos;
+		return position;
 	}
 
 	@Override
 	public EBuildingType getBuildingType() {
-		return object.getType();
+		return buildingObject.getType();
 	}
 
 	@Override
-	public ELandscapeType[] getAllowedLandscapes() {
-		return object.getType().getGroundtypes();
+	public Set<ELandscapeType> getAllowedLandscapes() {
+		return buildingObject.getType().getGroundTypes();
 	}
 
 	@Override
-	public boolean needsFlatGround() {
-		return object.getType().getGroundtypes()[0] != ELandscapeType.MOUNTAIN;
+	public boolean needsFlattenedGround() {
+		return buildingObject.getType().needsFlattenedGround();
 	}
 
 	@Override
@@ -117,8 +118,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public List<? extends IBuildingOccupyer> getOccupyers() {
-		return new LinkedList<IBuildingOccupyer>();
+	public List<? extends IBuildingOccupier> getOccupiers() {
+		return new LinkedList<IBuildingOccupier>();
 	}
 
 	@Override
@@ -137,16 +138,12 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public int getMaximumRequestedSoldiers(ESoldierClass type) {
+	public int getSearchedSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
 	@Override
-	public void setMaximumRequestedSoldiers(ESoldierClass type, int max) {
-	}
-
-	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierClass type) {
+	public int getComingSoldiers(ESoldierClass type) {
 		return 0;
 	}
 
