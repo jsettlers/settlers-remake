@@ -52,6 +52,7 @@ import java.util.Map;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.construction.PioneerAi;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
@@ -392,9 +393,7 @@ private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 				}
 				taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
 			}
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, border.getNearestPoint(aiStatistics.getPositionOfPartition(playerId)),
-					pioneerIds));
-
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, PioneerAi.findTarget(aiStatistics, playerId), pioneerIds));
 		}
 
 		return false;
