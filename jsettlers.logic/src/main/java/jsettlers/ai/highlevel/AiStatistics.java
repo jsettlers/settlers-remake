@@ -85,6 +85,7 @@ public class AiStatistics {
 	private final FlagsGrid flagsGrid;
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
 	private final AiMapInformation aiMapInformation;
+	private final long[] resourceCountInDefaultPartition;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -106,6 +107,7 @@ public class AiStatistics {
 		for (int i = 0; i < sortedResourceTypes.length; i++) {
 			sortedResourceTypes[i] = new AiPositions();
 		}
+		resourceCountInDefaultPartition = new long[EResourceType.VALUES.length];
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -181,6 +183,9 @@ public class AiStatistics {
 		updatePartitionIdsToBuildOn();
 		short width = mainGrid.getWidth();
 		short height = mainGrid.getHeight();
+		for (int i = 0; i < resourceCountInDefaultPartition.length; i++) {
+			resourceCountInDefaultPartition[i] = 0;
+		}
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
@@ -195,6 +200,11 @@ public class AiStatistics {
 					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
 					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
 						aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][resourceType.ordinal]++;
+					}
+					if (player != null) {
+						playerStatistics[player.playerId].resourceCount[resourceType.ordinal]++;
+					} else {
+						resourceCountInDefaultPartition[resourceType.ordinal]++;
 					}
 				}
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
@@ -619,6 +629,15 @@ public class AiStatistics {
 	public AiMapInformation getAiMapInformation() {
 		return aiMapInformation;
 	}
+
+	public long resourceCountInDefaultPartition(EResourceType resourceType) {
+		return resourceCountInDefaultPartition[resourceType.ordinal];
+	}
+
+	public long resourceCountOfPlayer(EResourceType resourceType, byte playerId) {
+		return playerStatistics[playerId].resourceCount[resourceType.ordinal];
+	}
+
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
@@ -637,6 +656,7 @@ public class AiStatistics {
 		AiPositions trees;
 		AiPositions rivers;
 		AiPositions enemyTroopsInTown;
+		long[] resourceCount;
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
 		int numberOfNotOccupiedMilitaryBuildings;
@@ -657,6 +677,7 @@ public class AiStatistics {
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			farmWorkAreas = new Vector<ShortPoint2D>();
 			wineGrowerWorkAreas = new Vector<ShortPoint2D>();
+			resourceCount = new long[EResourceType.VALUES.length];
 			clearIntegers();
 		}
 
@@ -680,11 +701,18 @@ public class AiStatistics {
 		private void clearIntegers() {
 			clearIntegerArray(totalBuildingsNumbers);
 			clearIntegerArray(buildingsNumbers);
+			clearLongArray(resourceCount);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedMilitaryBuildings = 0;
 			wineCount = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
+		}
+
+		private void clearLongArray(long[] theArray) {
+			for (int i = 0; i < theArray.length; i++) {
+				theArray[i] = 0;
+			}
 		}
 
 		private void clearIntegerArray(int[] theArray) {
