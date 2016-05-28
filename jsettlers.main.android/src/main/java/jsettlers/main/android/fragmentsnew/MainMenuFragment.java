@@ -26,6 +26,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 
 	private MainMenuNavigator navigator;
 	private boolean showDirectoryPicker = false;
+	private boolean resourcesLoaded = false;
 
 	private LinearLayout mainLinearLayout;
 	private View resourcesView;
@@ -64,9 +65,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		}
 
 		Button newSingleGameButton = (Button) view.findViewById(R.id.button_new_single_game);
-		newSingleGameButton.setOnClickListener(new View.OnClickListener() {
+		newSingleGameButton.setOnClickListener(new GameButtonClickListener() {
 			@Override
-			public void onClick(View v) {
+			protected void doAction() {
 				navigator.showNewSinglePlayerMapPicker();
 			}
 		});
@@ -105,7 +106,8 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private boolean tryLoadResources() {
-		return new ResourceLocationScanner(getActivity()).scanForResources();
+		resourcesLoaded = new ResourceLocationScanner(getActivity()).scanForResources();
+		return resourcesLoaded;
 	}
 
 	private void showDirectoryPicker() {
@@ -114,5 +116,16 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		} else {
 			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
 		}
+	}
+
+	private abstract class GameButtonClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+			if (resourcesLoaded) {
+				doAction();
+			}
+		}
+
+		protected abstract void doAction();
 	}
 }

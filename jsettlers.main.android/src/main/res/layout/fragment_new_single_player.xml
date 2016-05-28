@@ -18,20 +18,26 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp">
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/text_view_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_view_name" />
+                android:layout_marginTop="16dp"
+                android:text="Number of players\nPlayer races\netc..." />
 
             <Button
                 android:id="@+id/button_start_game"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/start_game"/>
+                android:layout_marginTop="16dp"
+                android:text="@string/start_game" />
 
         </LinearLayout>
     </ScrollView>
