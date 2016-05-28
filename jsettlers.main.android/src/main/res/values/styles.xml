@@ -5,7 +5,9 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
+
         <item name="colorButtonNormal">@color/primary</item>
+        <item name="buttonStyle">@style/PrimaryButton</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -15,9 +17,12 @@
     </style>
 
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
-        <!-- customize the color palette -->
         <item name="android:textColor">@android:color/white</item>
         <item name="colorButtonNormal">@color/primaryDark</item>
 
+    </style>
+
+    <style name="PrimaryButton" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

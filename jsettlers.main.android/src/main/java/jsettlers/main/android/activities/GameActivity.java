@@ -9,10 +9,9 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.android.MainApplication;
 import jsettlers.main.android.R;
-import jsettlers.main.android.fragmentsnew.GameFragment;
+import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.navigation.GameNavigator;
 import jsettlers.main.android.providers.GameProvider;
@@ -61,7 +60,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
     @Override
     public void showGame() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, GameFragment.newInstance())
+                .replace(R.id.frame_layout, MapFragment.newInstance())
                 .commit();
     }
 

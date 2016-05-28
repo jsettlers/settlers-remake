@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
@@ -16,6 +17,13 @@ import jsettlers.main.android.utils.FragmentUtil;
 public class NewSinglePlayerFragment extends Fragment {
 	private GameStarter gameStarter;
 	private IMapDefinition map;
+
+	private View.OnClickListener startGameClickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			gameStarter.startGame(map);
+		}
+	};
 
 	public static NewSinglePlayerFragment newInstance() {
 		return new NewSinglePlayerFragment();
@@ -29,8 +37,6 @@ public class NewSinglePlayerFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		gameStarter = (GameStarter)getActivity();
 		map = gameStarter.getSelectedMap();
-		String name = map.getMapName();
-
 	}
 
 	@Override
@@ -38,13 +44,11 @@ public class NewSinglePlayerFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_new_single_player, container, false);
 		FragmentUtil.setActionBar(this, view);
 
+		TextView textViewName = (TextView)view.findViewById(R.id.text_view_name);
+		textViewName.setText(map.getMapName());
+
 		Button startGameButton = (Button)view.findViewById(R.id.button_start_game);
-		startGameButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				gameStarter.startGame(map);
-			}
-		});
+		startGameButton.setOnClickListener(startGameClickListener);
 
 		return view;
 	}

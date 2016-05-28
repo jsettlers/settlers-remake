@@ -13,9 +13,8 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
 
-/**
- * Created by tingl on 28/05/2016.
- */
+
+
 public class MainApplication extends Application {
 	private static final int SOUND_THREADS = 6;
 
