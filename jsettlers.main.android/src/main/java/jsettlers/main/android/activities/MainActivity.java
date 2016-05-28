@@ -3,6 +3,7 @@ package jsettlers.main.android.activities;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.StartScreenConnector;
+import jsettlers.main.android.MainApplication;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.MainMenuFragment;
 import jsettlers.main.android.fragmentsnew.MapPickerFragment;
@@ -10,6 +11,7 @@ import jsettlers.main.android.fragmentsnew.NewSinglePlayerFragment;
 import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -18,10 +20,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	private StartScreenConnector startScreenConnector;
 
+	private MainApplication mainApplication;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mainApplication = (MainApplication)getApplication();
 
 		if (savedInstanceState != null)
 			return;
@@ -31,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 				.commit();
 	}
 
+	/**
+	 * GameStarter
+	 */
 	@Override
 	public ChangingList<? extends IMapDefinition> getSinglePlayerMaps() {
 		return getStartScreenConnector().getSingleplayerMaps();
@@ -42,6 +50,17 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		return mapPickerFragment.getSelectedMap();
 	}
 
+	@Override
+	public void startGame(IMapDefinition map) {
+		mainApplication.startSinglePlayerGame(map);
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
+	}
+
+
+	/**
+	 * MainMenu Navigation
+	 */
 	@Override
 	public void showNewSinglePlayerMapPicker() {
 		getSupportFragmentManager().beginTransaction()

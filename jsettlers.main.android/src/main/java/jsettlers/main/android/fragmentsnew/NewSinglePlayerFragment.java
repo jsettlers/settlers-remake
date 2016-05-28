@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
@@ -36,6 +37,15 @@ public class NewSinglePlayerFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_single_player, container, false);
 		FragmentUtil.setActionBar(this, view);
+
+		Button startGameButton = (Button)view.findViewById(R.id.button_start_game);
+		startGameButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gameStarter.startGame(map);
+			}
+		});
+
 		return view;
 	}
 

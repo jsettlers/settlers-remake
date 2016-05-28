@@ -21,6 +21,12 @@
             android:paddingBottom="8dp"
             android:paddingTop="8dp">
 
+            <Button
+                android:id="@+id/button_start_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/start_game"/>
 
         </LinearLayout>
     </ScrollView>
