@@ -103,12 +103,12 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public int getMinPlayers() {
-		return header.getMinPlayer();
+		return header.getMinPlayers();
 	}
 
 	@Override
 	public int getMaxPlayers() {
-		return header.getMaxPlayer();
+		return header.getMaxPlayers();
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		return header.getBgimage();
+		return header.getBgImage();
 	}
 
 	@Override

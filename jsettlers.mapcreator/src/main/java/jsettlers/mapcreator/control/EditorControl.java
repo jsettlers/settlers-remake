@@ -242,7 +242,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 *            Ground to use for the new map
 	 */
 	public void createNewMap(MapFileHeader header, ELandscapeType ground) {
-		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
+		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayers(), ground));
 	}
 
 	/**
@@ -642,7 +642,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			@Override
 			public void applyNewHeader(MapFileHeader header) {
 				setHeader(header);
-				mapData.setMaxPlayers(header.getMaxPlayer());
+				mapData.setMaxPlayers(header.getMaxPlayers());
 				updatePlayerCombobox();
 				validator.reValidate();
 			}
