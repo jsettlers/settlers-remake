@@ -6,4 +6,5 @@ package jsettlers.main.android.navigation;
 public interface MainMenuNavigator {
     void showNewSinglePlayerMapPicker();
     void showNewSinglePlayerSetup();
+    void showGame();
 }

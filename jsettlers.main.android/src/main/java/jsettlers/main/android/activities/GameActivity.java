@@ -58,7 +58,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
      * @return
      */
     @Override
-    public void showGame() {
+    public void showMap() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_layout, MapFragment.newInstance())
                 .commit();

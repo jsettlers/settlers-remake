@@ -11,17 +11,20 @@ import android.widget.TextView;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
+import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 
 public class NewSinglePlayerFragment extends Fragment {
 	private GameStarter gameStarter;
+	private MainMenuNavigator navigator;
 	private IMapDefinition map;
 
 	private View.OnClickListener startGameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			gameStarter.startGame(map);
+			navigator.showGame();
 		}
 	};
 
@@ -36,6 +39,7 @@ public class NewSinglePlayerFragment extends Fragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		gameStarter = (GameStarter)getActivity();
+		navigator = (MainMenuNavigator)getActivity();
 		map = gameStarter.getSelectedMap();
 	}
 

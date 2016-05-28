@@ -23,6 +23,8 @@ import android.widget.TextView;
  * A simple {@link Fragment} subclass.
  */
 public class MapPickerFragment extends Fragment {
+	private static final String STATE_MAP_ID = "map_id";
+
 	private MapAdapter adapter;
 	private IMapDefinition selectedMap;
 	private MainMenuNavigator navigator;
@@ -42,6 +44,18 @@ public class MapPickerFragment extends Fragment {
 		GameStarter gameStarter = (GameStarter) getActivity();
 		adapter = new MapAdapter(gameStarter.getSinglePlayerMaps());
 		navigator = (MainMenuNavigator)getActivity();
+
+		if (savedInstanceState != null) {
+			String mapId = savedInstanceState.getString(STATE_MAP_ID);
+			if (mapId != null) {
+				for (IMapDefinition map : adapter.getMaps()) {
+					if (map.getMapId().equals(mapId)) {
+						selectedMap = map;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -55,6 +69,14 @@ public class MapPickerFragment extends Fragment {
 		recyclerView.setAdapter(adapter);
 
 		return view;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (selectedMap != null) {
+			outState.putString(STATE_MAP_ID, selectedMap.getMapId());
+		}
 	}
 
 	@Override
@@ -125,6 +147,10 @@ public class MapPickerFragment extends Fragment {
 
 		public void onDestroy() {
 			changingMaps.removeListener(this);
+		}
+
+		public List<? extends IMapDefinition> getMaps() {
+			return maps;
 		}
 
 		// private Comparator<IMapDefinition> getDefaultComparator() {

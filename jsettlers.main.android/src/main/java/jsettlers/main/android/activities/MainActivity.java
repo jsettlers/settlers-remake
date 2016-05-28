@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void startGame(IMapDefinition map) {
 		mainApplication.startSinglePlayerGame(map);
-		Intent intent = new Intent(this, GameActivity.class);
-		startActivity(intent);
 	}
 
 
@@ -75,6 +73,12 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 				.replace(R.id.frame_layout, NewSinglePlayerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
+	}
+
+	@Override
+	public void showGame() {
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivity(intent);
 	}
 
 	private StartScreenConnector getStartScreenConnector() {
