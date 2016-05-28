@@ -8,6 +8,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
+import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.android.MainApplication;
 import jsettlers.main.android.R;
@@ -46,6 +47,11 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
     @Override
     public IMapInterfaceConnector loadFinished(IStartedGame game) {
         return mainApplication.gameStarted(game, this);
+    }
+
+    @Override
+    public MapContent getMapContent() {
+        return mainApplication.getMapContent();
     }
 
     /**
