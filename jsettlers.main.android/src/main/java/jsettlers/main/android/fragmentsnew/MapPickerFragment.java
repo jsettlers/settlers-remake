@@ -6,6 +6,7 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.main.android.R;
+import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 
@@ -23,6 +24,10 @@ import android.widget.TextView;
  */
 public class MapPickerFragment extends Fragment {
 	private MapAdapter adapter;
+	private IMapDefinition selectedMap;
+	private MainMenuNavigator navigator;
+
+	private RecyclerView recyclerView;
 
 	public static MapPickerFragment newInstance() {
 		return new MapPickerFragment();
@@ -36,6 +41,7 @@ public class MapPickerFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		GameStarter gameStarter = (GameStarter) getActivity();
 		adapter = new MapAdapter(gameStarter.getSinglePlayerMaps());
+		navigator = (MainMenuNavigator)getActivity();
 	}
 
 	@Override
@@ -43,7 +49,7 @@ public class MapPickerFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 		recyclerView.setAdapter(adapter);
@@ -57,9 +63,32 @@ public class MapPickerFragment extends Fragment {
 		adapter.onDestroy();
 	}
 
+	public IMapDefinition getSelectedMap() {
+		return selectedMap;
+	}
+
+	private void mapSelected(IMapDefinition map) {
+		selectedMap = map;
+		navigator.showNewSinglePlayerSetup();
+	}
+
+
+	/**
+	 * RecyclerView Adapter for displaying list of maps
+	 */
 	private class MapAdapter extends RecyclerView.Adapter<MapHolder> implements IChangingListListener<IMapDefinition> {
 		private ChangingList<? extends IMapDefinition> changingMaps;
 		private List<? extends IMapDefinition> maps;
+
+		private View.OnClickListener itemClickListener = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(v);
+				int position = viewHolder.getAdapterPosition();
+				IMapDefinition map = maps.get(position);
+				mapSelected(map);
+			}
+		};
 
 		public MapAdapter(ChangingList<? extends IMapDefinition> changingMaps) {
 			this.maps = changingMaps.getItems();
@@ -76,7 +105,7 @@ public class MapPickerFragment extends Fragment {
 		public MapHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			final View itemView = getActivity().getLayoutInflater().inflate(R.layout.item_map, parent, false);
 			final MapHolder mapHolder = new MapHolder(itemView);
-
+			itemView.setOnClickListener(itemClickListener);
 			return mapHolder;
 		}
 

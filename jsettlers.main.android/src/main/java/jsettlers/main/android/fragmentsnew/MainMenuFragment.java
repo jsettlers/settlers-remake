@@ -67,7 +67,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		newSingleGameButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				navigator.showNewSinglePlayer();
+				navigator.showNewSinglePlayerMapPicker();
 			}
 		});
 
