@@ -13,10 +13,13 @@ import jsettlers.main.android.providers.GameStarter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator, GameStarter {
 	private static final String TAG_MAP_PICKER = "map_picker";
+	private static final int REQUEST_CODE_GAME = 10;
 
 	private StartScreenConnector startScreenConnector;
 
@@ -26,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mainApplication = (MainApplication)getApplication();
+		mainApplication = (MainApplication) getApplication();
 
 		if (savedInstanceState != null)
 			return;
@@ -34,6 +37,16 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.frame_layout, MainMenuFragment.newInstance())
 				.commit();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_CODE_GAME:
+			getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			break;
+		}
 	}
 
 	/**
@@ -46,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public IMapDefinition getSelectedMap() {
-		MapPickerFragment mapPickerFragment = (MapPickerFragment)getSupportFragmentManager().findFragmentByTag(TAG_MAP_PICKER);
+		MapPickerFragment mapPickerFragment = (MapPickerFragment) getSupportFragmentManager().findFragmentByTag(TAG_MAP_PICKER);
 		return mapPickerFragment.getSelectedMap();
 	}
 
@@ -54,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	public void startGame(IMapDefinition map) {
 		mainApplication.startSinglePlayerGame(map);
 	}
-
 
 	/**
 	 * MainMenu Navigation
@@ -78,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showGame() {
 		Intent intent = new Intent(this, GameActivity.class);
-		startActivity(intent);
+		startActivityForResult(intent, REQUEST_CODE_GAME);
 	}
 
 	private StartScreenConnector getStartScreenConnector() {
