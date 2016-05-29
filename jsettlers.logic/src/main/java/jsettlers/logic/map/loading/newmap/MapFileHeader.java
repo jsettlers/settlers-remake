@@ -154,6 +154,10 @@ public class MapFileHeader {
 		return bgImage;
 	}
 
+	public PlayerConfiguration[] getPlayerConfigurations() {
+		return playerConfigurations;
+	}
+
 	public void writeTo(OutputStream stream) throws IOException {
 		DataOutputStream out = new DataOutputStream(stream);
 		out.write(START_BYTES);
@@ -188,8 +192,7 @@ public class MapFileHeader {
 	 *            The stream to read from.
 	 * @return
 	 */
-	public static MapFileHeader readFromStream(InputStream stream)
-			throws IOException {
+	public static MapFileHeader readFromStream(InputStream stream) throws IOException {
 		try {
 			DataInputStream in = new DataInputStream(stream);
 			for (byte b : START_BYTES) {

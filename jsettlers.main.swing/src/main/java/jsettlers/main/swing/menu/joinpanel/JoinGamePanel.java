@@ -52,6 +52,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.PlayerConfiguration;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersFrame;
@@ -369,14 +370,16 @@ public class JoinGamePanel extends BackgroundPanel {
 				}
 			}
 			for (int i = players.size(); i < playerSlots.size(); i++) {
-				playerSlots.get(i).setPlayerType(EPlayerType.AI_VERY_HARD);
+				playerSlots.get(i).setPlayerType(EPlayerType.AI_VERY_HARD, false);
 			}
 			setCancelButtonActionListener(e -> {
 				joinMultiPlayerMap.abort();
 				settlersFrame.showMainMenu();
 			});
 		});
-	};
+	}
+
+	;
 
 	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
@@ -401,9 +404,27 @@ public class JoinGamePanel extends BackgroundPanel {
 			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, this.mapLoader);
 			playerSlots.add(playerSlot);
 		}
+
+		PlayerConfiguration[] playerConfigurations = mapLoader.getFileHeader().getPlayerConfigurations();
 		for (byte i = 0; i < playerSlots.size(); i++) {
-			playerSlots.get(i).setSlot(i);
-			playerSlots.get(i).setTeam(i);
+			PlayerSlot playerSlot = playerSlots.get(i);
+			PlayerConfiguration playerConfiguration = playerConfigurations[i];
+
+			playerSlot.setSlot(i);
+
+			if (playerConfiguration.getTeam() != null) {
+				playerSlot.setTeam(playerConfiguration.getTeam(), false);
+			} else {
+				playerSlot.setTeam(i);
+			}
+
+			if (playerConfiguration.getCivilisation() != null) {
+				playerSlot.setCivilisation(playerConfiguration.getCivilisation(), false);
+			}
+
+			if (playerConfiguration.getPlayerType() != null) {
+				playerSlot.setPlayerType(playerConfiguration.getPlayerType(), false);
+			}
 		}
 	}
 

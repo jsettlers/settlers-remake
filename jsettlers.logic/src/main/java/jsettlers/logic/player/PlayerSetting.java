@@ -1,6 +1,7 @@
 package jsettlers.logic.player;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
@@ -35,8 +36,12 @@ public class PlayerSetting {
 	public PlayerSetting(boolean isAvailable, EPlayerType playerType, ECivilisation civilisation, byte teamId) {
 		this.isAvailable = isAvailable;
 		this.playerType = playerType;
-		this.civilisation = civilisation;
+		this.civilisation = civilisation != null ? civilisation : getRandomCivilisation();
 		this.teamId = teamId;
+	}
+
+	private static ECivilisation getRandomCivilisation() {
+		return ECivilisation.values()[new Random().nextInt(ECivilisation.values().length)];
 	}
 
 	public boolean isAvailable() {
