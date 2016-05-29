@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartScreen;
@@ -26,9 +27,8 @@ import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This class implements the {@link IStartScreen} interface and acts as connector between the start screen and the game logic.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public class StartScreenConnector implements IStartScreen {
 
@@ -60,20 +60,30 @@ public class StartScreenConnector implements IStartScreen {
 
 	@Override
 	public IStartingGame startSingleplayerGame(IMapDefinition map) {
-		return startGame(map.getMapId());
+		MapLoader mapLoader = mapList.getMapById(map.getMapId());
+
+		byte playerId = (byte) 0;
+		PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
+
+		JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
+		return game.start();
 	}
 
 	@Override
 	public IStartingGame loadSingleplayerGame(IMapDefinition map) {
-		return startGame(map.getMapId());
-	}
+		MapLoader mapLoader = mapList.getMapById(map.getMapId());
 
-	private IStartingGame startGame(String mapId) {
-		MapLoader mapLoader = mapList.getMapById(mapId);
-		long randomSeed = 4711L;
-		byte playerId = 0;
-		PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
-		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings);
+		PlayerSetting[] playerSettings = PlayerSetting.createSettings(mapLoader.getFileHeader().getPlayerConfigurations());
+
+		byte playerId = 0; // find playerId of HUMAN player
+		for (byte i = 0; i < playerSettings.length; i++) {
+			if (playerSettings[i].getPlayerType() == EPlayerType.HUMAN) {
+				playerId = i;
+				break;
+			}
+		}
+
+		JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
 		return game.start();
 	}
 
