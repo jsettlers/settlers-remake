@@ -1,50 +1,67 @@
 package jsettlers.logic.player;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
-import jsettlers.logic.map.loading.PlayerConfiguration;
 
 /**
  * @author codingberlin
+ * @author Andreas Eberle
  */
 public class PlayerSetting {
 
-	private final EPlayerType playerType;
+	private static final short INITIAL_VERSION = 1;
+
+	private final boolean available;
+	private final Byte teamId;
 	private final ECivilisation civilisation;
-	private final byte teamId;
-	private boolean isAvailable;
+	private final EPlayerType playerType;
+
+	/**
+	 * Create unspecified PlayerSetting which is not limiting the choices of the user.
+	 * 
+	 * @param available
+	 */
+	public PlayerSetting(boolean available) {
+		this(available, null, null, null);
+	}
 
 	/**
 	 * Creates a new {@link PlayerSetting} object for a human player.
 	 *
-	 * @param isAvailable
+	 * @param teamId
 	 */
-	public PlayerSetting(boolean isAvailable, byte teamId) {
-		this(isAvailable, EPlayerType.HUMAN, ECivilisation.ROMAN, teamId);
+	public PlayerSetting(byte teamId) {
+		this(true, EPlayerType.HUMAN, ECivilisation.ROMAN, teamId);
 	}
 
 	/**
 	 * Creates a new PlayerSetting object for a not available player
 	 */
 	public PlayerSetting() {
-		this(false, null, null, (byte) -1);
+		this(false);
 	}
 
 	/**
 	 * Creates a new {@link PlayerSetting} object for a human player or an AI player.
 	 *
-	 * @param isAvailable
 	 * @param playerType
 	 *            {@link EPlayerType} defining the type of the AI player. If <code>null</code>, a human player is assumed.
 	 */
-	public PlayerSetting(boolean isAvailable, EPlayerType playerType, ECivilisation civilisation, byte teamId) {
-		this.isAvailable = isAvailable;
+	public PlayerSetting(EPlayerType playerType, ECivilisation civilisation, Byte teamId) {
+		this(true, playerType, civilisation != null ? civilisation : getRandomCivilisation(), teamId);
+	}
+
+	private PlayerSetting(boolean available, EPlayerType playerType, ECivilisation civilisation, Byte teamId) {
+		this.available = available;
 		this.playerType = playerType;
-		this.civilisation = civilisation != null ? civilisation : getRandomCivilisation();
+		this.civilisation = civilisation;
 		this.teamId = teamId;
 	}
 
@@ -52,8 +69,16 @@ public class PlayerSetting {
 		return ECivilisation.values()[new Random().nextInt(ECivilisation.values().length)];
 	}
 
+	public static PlayerSetting[] getUnspecifiedPlayerSettings(short maxPlayers) {
+		PlayerSetting[] playerSettings = new PlayerSetting[maxPlayers];
+		for (int i = 0; i < maxPlayers; i++) {
+			playerSettings[i] = new PlayerSetting(true);
+		}
+		return playerSettings;
+	}
+
 	public boolean isAvailable() {
-		return isAvailable;
+		return available;
 	}
 
 	public EPlayerType getPlayerType() {
@@ -66,11 +91,46 @@ public class PlayerSetting {
 
 	@Override
 	public String toString() {
-		return "PlayerSetting(isAvailable: " + isAvailable + ", playerType: " + playerType + ")";
+		return "PlayerSetting{" +
+				"available=" + available +
+				", teamId=" + teamId +
+				", civilisation=" + civilisation +
+				", playerType=" + playerType +
+				'}';
 	}
 
-	public byte getTeamId() {
+	public Byte getTeamId() {
 		return teamId;
+	}
+
+	public static PlayerSetting readFromStream(DataInputStream dis) throws IOException {
+		dis.readShort(); // read version
+		boolean available = dis.readBoolean();
+		if (available) {
+			byte readTeamId = dis.readByte();
+			Byte teamId = readTeamId == -1 ? null : readTeamId;
+
+			String civilizationName = dis.readUTF();
+			ECivilisation civilisation = civilizationName.isEmpty() ? null : ECivilisation.valueOf(civilizationName);
+
+			String playerTypeName = dis.readUTF();
+			EPlayerType playerType = playerTypeName.isEmpty() ? null : EPlayerType.valueOf(playerTypeName);
+
+			return new PlayerSetting(playerType, civilisation, teamId);
+		} else {
+			return new PlayerSetting();
+		}
+	}
+
+	public void writeTo(DataOutputStream dos) throws IOException {
+		dos.writeShort(INITIAL_VERSION);
+
+		dos.writeBoolean(available);
+		if (available) {
+			dos.writeByte(teamId == null ? -1 : teamId.byteValue());
+			dos.writeUTF(civilisation == null ? "" : civilisation.name());
+			dos.writeUTF(playerType == null ? "" : playerType.name());
+		}
 	}
 
 	public static PlayerSetting[] createDefaultSettings(byte playerId, byte maxPlayers) {
@@ -80,7 +140,7 @@ public class PlayerSetting {
 		byte offsetToSkipHuman = 0;
 		for (byte i = 0; i < playerSettings.length; i++) {
 			if (i == playerId) {
-				playerSettings[playerId] = new PlayerSetting(true, i);
+				playerSettings[playerId] = new PlayerSetting(i);
 			} else {
 				EPlayerType aiType;
 				if (CommonConstants.FIXED_AI_TYPE != null) {
@@ -96,22 +156,6 @@ public class PlayerSetting {
 			}
 		}
 		System.out.println("created player settings: " + Arrays.toString(playerSettings));
-
-		return playerSettings;
-	}
-
-	public static PlayerSetting[] createSettings(PlayerConfiguration[] playerConfigurations) {
-		PlayerSetting[] playerSettings = new PlayerSetting[playerConfigurations.length];
-
-		for (int i = 0; i < playerConfigurations.length; i++) {
-			PlayerConfiguration playerConfiguration = playerConfigurations[i];
-			if (playerConfiguration.isAvailable()) {
-				playerSettings[i] = new PlayerSetting(true, playerConfiguration.getPlayerType(), playerConfiguration.getCivilisation(),
-						playerConfiguration.getTeam());
-			} else {
-				playerSettings[i] = new PlayerSetting();
-			}
-		}
 
 		return playerSettings;
 	}

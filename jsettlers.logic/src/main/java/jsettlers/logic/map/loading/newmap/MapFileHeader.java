@@ -14,14 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.newmap;
 
-import jsettlers.logic.map.loading.PlayerConfiguration;
+import jsettlers.logic.player.PlayerSetting;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
@@ -72,7 +70,7 @@ public class MapFileHeader {
 	private final short width;
 	private final short height;
 	private final short minPlayers;
-	private final PlayerConfiguration[] playerConfigurations;
+	private final PlayerSetting[] playerSettings;
 	private final Date creationDate;
 	private final short[] bgImage;
 
@@ -88,25 +86,17 @@ public class MapFileHeader {
 
 	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
 			short maxPlayers, Date date, short[] bgImage) {
-		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, getDefaultPlayerConfigurations(maxPlayers),
+		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, PlayerSetting.getUnspecifiedPlayerSettings(maxPlayers),
 				date, bgImage);
 	}
 
 	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
-			PlayerConfiguration[] playerConfigurations, Date date, short[] bgImage) {
+						 PlayerSetting[] playerConfigurations, Date date, short[] bgImage) {
 		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, bgImage);
 	}
 
-	private static PlayerConfiguration[] getDefaultPlayerConfigurations(short maxPlayers) {
-		PlayerConfiguration[] playerConfigurations = new PlayerConfiguration[maxPlayers];
-		for (int i = 0; i < maxPlayers; i++) {
-			playerConfigurations[i] = new PlayerConfiguration(true);
-		}
-		return playerConfigurations;
-	}
-
 	private MapFileHeader(MapType type, String name, String mapId, String baseMapId, String description, short width, short height, short minPlayers,
-			PlayerConfiguration[] playerConfigurations, Date date, short[] bgImage) {
+			PlayerSetting[] playerSettings, Date date, short[] bgImage) {
 		if (bgImage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
 			throw new IllegalArgumentException("bg image has wrong size.");
 		}
@@ -118,7 +108,7 @@ public class MapFileHeader {
 		this.width = width;
 		this.height = height;
 		this.minPlayers = minPlayers;
-		this.playerConfigurations = playerConfigurations;
+		this.playerSettings = playerSettings;
 		this.creationDate = date;
 		this.bgImage = bgImage;
 	}
@@ -152,15 +142,15 @@ public class MapFileHeader {
 	}
 
 	public short getMaxPlayers() {
-		return (short) playerConfigurations.length;
+		return (short) playerSettings.length;
 	}
 
 	public short[] getBgImage() {
 		return bgImage;
 	}
 
-	public PlayerConfiguration[] getPlayerConfigurations() {
-		return playerConfigurations;
+	public PlayerSetting[] getPlayerSettings() {
+		return playerSettings;
 	}
 
 	public void writeTo(OutputStream stream) throws IOException {
@@ -177,9 +167,9 @@ public class MapFileHeader {
 		out.writeShort(height);
 		out.writeShort(minPlayers);
 
-		out.writeShort(playerConfigurations.length);
-		for (int i = 0; i < playerConfigurations.length; i++) {
-			playerConfigurations[i].writeTo(out);
+		out.writeShort(playerSettings.length);
+		for (int i = 0; i < playerSettings.length; i++) {
+			playerSettings[i].writeTo(out);
 		}
 
 		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
@@ -226,14 +216,14 @@ public class MapFileHeader {
 			short minPlayers = in.readShort();
 			short maxPlayers = in.readShort();
 
-			PlayerConfiguration[] playerConfigurations;
+			PlayerSetting[] playerConfigurations;
 
 			if (version < VERSION_PLAYER_CONFIGURATIONS) {
-				playerConfigurations = getDefaultPlayerConfigurations(maxPlayers);
+				playerConfigurations = PlayerSetting.getUnspecifiedPlayerSettings(maxPlayers);
 			} else {
-				playerConfigurations = new PlayerConfiguration[maxPlayers];
+				playerConfigurations = new PlayerSetting[maxPlayers];
 				for (int i = 0; i < maxPlayers; i++) {
-					playerConfigurations[i] = PlayerConfiguration.readFromStream(in);
+					playerConfigurations[i] = PlayerSetting.readFromStream(in);
 				}
 			}
 

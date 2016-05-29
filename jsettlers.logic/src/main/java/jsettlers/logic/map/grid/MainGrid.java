@@ -103,10 +103,9 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
-import jsettlers.logic.map.loading.PlayerConfiguration;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -316,13 +315,13 @@ public final class MainGrid implements Serializable {
 		short[] bgImage = previewImageCreator.getPreviewImage();
 
 		Player[] players = partitionsGrid.getPlayers();
-		PlayerConfiguration[] playerConfigurations = new PlayerConfiguration[players.length];
+		PlayerSetting[] playerConfigurations = new PlayerSetting[players.length];
 		for (int i = 0; i < players.length; i++) {
 			Player player = players[i];
 			if (player != null) {
-				playerConfigurations[i] = new PlayerConfiguration(player.getTeamId(), player.getCivilisation(), player.getPlayerType());
+				playerConfigurations[i] = new PlayerSetting(player.getPlayerType(), player.getCivilisation(), player.getTeamId());
 			} else {
-				playerConfigurations[i] = new PlayerConfiguration(false);
+				playerConfigurations[i] = new PlayerSetting(false);
 			}
 		}
 
@@ -392,11 +391,15 @@ public final class MainGrid implements Serializable {
 	/**
 	 * Creates a new building at the given position.
 	 *
-	 * @param position         The position to place the building.
-	 * @param type             The {@link EBuildingType} of the building.
-	 * @param player           The player owning the building.
-	 * @param fullyConstructed If true, the building will be placed as fully constructed building.<br>
-	 *                         If false, it will only be placed as a construction site.
+	 * @param position
+	 *            The position to place the building.
+	 * @param type
+	 *            The {@link EBuildingType} of the building.
+	 * @param player
+	 *            The player owning the building.
+	 * @param fullyConstructed
+	 *            If true, the building will be placed as fully constructed building.<br>
+	 *            If false, it will only be placed as a construction site.
 	 * @return The newly created building.
 	 */
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
@@ -479,64 +482,64 @@ public final class MainGrid implements Serializable {
 		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculatable pathCalculable) {
 			switch (searchType) {
 
-				case UNENFORCED_FOREIGN_GROUND:
-					return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+			case UNENFORCED_FOREIGN_GROUND:
+				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
-				case VALID_FREE_POSITION:
-					return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
+			case VALID_FREE_POSITION:
+				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
 
-				case PLANTABLE_TREE:
-					return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
-							&& hasSamePlayer(x, y + 1, pathCalculable) && !isMarked(x, y);
-				case CUTTABLE_TREE:
-					return isInBounds(x - 1, y - 1)
-							&& isMapObjectCuttable(x - 1, y - 1, EMapObjectType.TREE_ADULT)
-							&& hasSamePlayer(x - 1, y - 1, pathCalculable) && !isMarked(x, y);
+			case PLANTABLE_TREE:
+				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
+						&& hasSamePlayer(x, y + 1, pathCalculable) && !isMarked(x, y);
+			case CUTTABLE_TREE:
+				return isInBounds(x - 1, y - 1)
+						&& isMapObjectCuttable(x - 1, y - 1, EMapObjectType.TREE_ADULT)
+						&& hasSamePlayer(x - 1, y - 1, pathCalculable) && !isMarked(x, y);
 
-				case PLANTABLE_CORN:
-					return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
-				case CUTTABLE_CORN:
-					return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+			case PLANTABLE_CORN:
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
+			case CUTTABLE_CORN:
+				return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-				case PLANTABLE_WINE:
-					return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
-				case HARVESTABLE_WINE:
-					return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+			case PLANTABLE_WINE:
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
+			case HARVESTABLE_WINE:
+				return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-				case CUTTABLE_STONE:
-					return y + 1 < height && x - 1 > 0 && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
-							&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+			case CUTTABLE_STONE:
+				return y + 1 < height && x - 1 > 0 && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
+						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-				case ENEMY: {
-					IMovable movable = movableGrid.getMovableAt(x, y);
-					return movable != null && movable.getPlayerId() != pathCalculable.getPlayerId();
-				}
+			case ENEMY: {
+				IMovable movable = movableGrid.getMovableAt(x, y);
+				return movable != null && movable.getPlayerId() != pathCalculable.getPlayerId();
+			}
 
-				case RIVER:
-					return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+			case RIVER:
+				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-				case FISHABLE:
-					return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
+			case FISHABLE:
+				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
 
-				case NON_BLOCKED_OR_PROTECTED:
-					return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y))
-							&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
+			case NON_BLOCKED_OR_PROTECTED:
+				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y))
+						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
-				case SOLDIER_BOWMAN:
-				case SOLDIER_SWORDSMAN:
-				case SOLDIER_PIKEMAN:
-				case SOLDIER_INFANTRY:
-					return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
+			case SOLDIER_BOWMAN:
+			case SOLDIER_SWORDSMAN:
+			case SOLDIER_PIKEMAN:
+			case SOLDIER_INFANTRY:
+				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
 
-				case RESOURCE_SIGNABLE:
-					return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
+			case RESOURCE_SIGNABLE:
+				return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
 
-				case FOREIGN_MATERIAL:
-					return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
+			case FOREIGN_MATERIAL:
+				return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
 
-				default:
-					System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
-					return false;
+			default:
+				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
+				return false;
 			}
 		}
 
@@ -555,12 +558,12 @@ public final class MainGrid implements Serializable {
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
 					&& !objectsGrid.hasMapObjectType(x, y,
-					EMapObjectType.FOUND_COAL,
-					EMapObjectType.FOUND_IRON,
-					EMapObjectType.FOUND_GOLD,
-					EMapObjectType.FOUND_NOTHING,
-					EMapObjectType.FOUND_GEMSTONE,
-					EMapObjectType.FOUND_BRIMSTONE);
+							EMapObjectType.FOUND_COAL,
+							EMapObjectType.FOUND_IRON,
+							EMapObjectType.FOUND_GOLD,
+							EMapObjectType.FOUND_NOTHING,
+							EMapObjectType.FOUND_GEMSTONE,
+							EMapObjectType.FOUND_BRIMSTONE);
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
@@ -572,16 +575,16 @@ public final class MainGrid implements Serializable {
 					EMovableType movableType = movable.getMovableType();
 
 					switch (searchType) {
-						case SOLDIER_BOWMAN:
-							return movableType.isBowman();
-						case SOLDIER_SWORDSMAN:
-							return movableType.isSwordsman();
-						case SOLDIER_PIKEMAN:
-							return movableType.isPikeman();
-						case SOLDIER_INFANTRY:
-							return movableType.isInfantry();
-						default:
-							return false;
+					case SOLDIER_BOWMAN:
+						return movableType.isBowman();
+					case SOLDIER_SWORDSMAN:
+						return movableType.isSwordsman();
+					case SOLDIER_PIKEMAN:
+						return movableType.isPikeman();
+					case SOLDIER_INFANTRY:
+						return movableType.isInfantry();
+					default:
+						return false;
 					}
 				} else {
 					return false;
@@ -660,7 +663,7 @@ public final class MainGrid implements Serializable {
 					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
 							EMapObjectType.WINE_DEAD)
 							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
-							EMapObjectType.WINE_DEAD);
+									EMapObjectType.WINE_DEAD);
 				}
 			}
 			return false;
@@ -728,30 +731,30 @@ public final class MainGrid implements Serializable {
 			}
 
 			switch (debugColorMode) {
-				case BLOCKED_PARTITIONS:
-					return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
-				case PARTITION_ID:
-					return getScaledColor(partitionsGrid.getPartitionIdAt(x, y));
-				case REAL_PARTITION_ID:
-					return getScaledColor(partitionsGrid.getRealPartitionIdAt(x, y));
-				case PLAYER_ID:
-					return getScaledColor(partitionsGrid.getPlayerIdAt(x, y) + 1);
-				case TOWER_COUNT:
-					return getScaledColor(partitionsGrid.getTowerCountAt(x, y) + 1);
-				case DEBUG_COLOR:
-					return landscapeGrid.getDebugColor(x, y);
-				case MARKS_AND_OBJECTS:
-					return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-							: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-							: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
-				case RESOURCE_AMOUNTS:
-					float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
-					return Color.getARGB(1, .6f, 0, resource);
-				case NONE:
-				default:
-					return 0;
+			case BLOCKED_PARTITIONS:
+				return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
+			case PARTITION_ID:
+				return getScaledColor(partitionsGrid.getPartitionIdAt(x, y));
+			case REAL_PARTITION_ID:
+				return getScaledColor(partitionsGrid.getRealPartitionIdAt(x, y));
+			case PLAYER_ID:
+				return getScaledColor(partitionsGrid.getPlayerIdAt(x, y) + 1);
+			case TOWER_COUNT:
+				return getScaledColor(partitionsGrid.getTowerCountAt(x, y) + 1);
+			case DEBUG_COLOR:
+				return landscapeGrid.getDebugColor(x, y);
+			case MARKS_AND_OBJECTS:
+				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			case RESOURCE_AMOUNTS:
+				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
+				return Color.getARGB(1, .6f, 0, resource);
+			case NONE:
+			default:
+				return 0;
 			}
 		}
 
@@ -1192,7 +1195,7 @@ public final class MainGrid implements Serializable {
 
 					if (isInBounds(x, y)
 							&& (landscapeTypeAt == ELandscapeType.RIVER1 || landscapeTypeAt == ELandscapeType.RIVER2
-							|| landscapeTypeAt == ELandscapeType.RIVER3 || landscapeTypeAt == ELandscapeType.RIVER4)) {
+									|| landscapeTypeAt == ELandscapeType.RIVER3 || landscapeTypeAt == ELandscapeType.RIVER4)) {
 						return direction;
 					}
 				}
@@ -1328,7 +1331,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public IAttackable getEnemyInSearchArea(final ShortPoint2D position, final IAttackable searchingAttackable, final short minSearchRadius,
-												final short maxSearchRadius, final boolean includeTowers) {
+				final short maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = searchingAttackable.getMovableType().isBowman();
 
 			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, minSearchRadius,
@@ -1716,7 +1719,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround,
-														final byte playerId, short targetRadius) {
+				final byte playerId, short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
 

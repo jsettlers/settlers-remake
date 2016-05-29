@@ -90,7 +90,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		SavegameLoader savegameLoader = (SavegameLoader) map;
 
 		if (savegameLoader != null) {
-			PlayerSetting[] playerSettings = PlayerSetting.createSettings(savegameLoader.getFileHeader().getPlayerConfigurations());
+			PlayerSetting[] playerSettings = savegameLoader.getFileHeader().getPlayerSettings();
 
 			byte playerId = 0; // find playerId of HUMAN player
 			for (byte i = 0; i < playerSettings.length; i++) {

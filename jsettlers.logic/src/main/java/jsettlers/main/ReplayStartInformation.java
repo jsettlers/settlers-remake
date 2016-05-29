@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,21 +17,20 @@ package jsettlers.main;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 import jsettlers.logic.player.PlayerSetting;
 
 /**
- * 
  * @author Andreas Eberle
- * 
  */
-public class ReplayStartInformation {
+public class ReplayStartInformation implements Serializable {
 
 	private long randomSeed;
 	private String mapName;
 	private String mapId;
 	private int playerId;
-	private boolean[] availablePlayers;
+	private PlayerSetting[] playerSettings;
 
 	public ReplayStartInformation() {
 	}
@@ -41,12 +40,7 @@ public class ReplayStartInformation {
 		this.playerId = playerId;
 		this.mapName = mapName;
 		this.mapId = mapId;
-
-		boolean[] availablePlayers = new boolean[playerSettings.length];
-		for (int i = 0; i < playerSettings.length; i++) {
-			availablePlayers[i] = playerSettings[i].isAvailable();
-		}
-		this.availablePlayers = availablePlayers;
+		this.playerSettings = playerSettings;
 	}
 
 	public long getRandomSeed() {
@@ -66,35 +60,30 @@ public class ReplayStartInformation {
 	}
 
 	public PlayerSetting[] getPlayerSettings() {
-		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
-		for (int i = 0; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(availablePlayers[i], (byte) i);
-		}
 		return playerSettings;
 	}
 
-	public void serialize(DataOutputStream oos) throws IOException {
-		oos.writeLong(randomSeed);
-		oos.writeByte(playerId);
-		oos.writeUTF(mapName);
-		oos.writeUTF(mapId);
+	public void serialize(DataOutputStream dos) throws IOException {
+		dos.writeLong(randomSeed);
+		dos.writeByte(playerId);
+		dos.writeUTF(mapName);
+		dos.writeUTF(mapId);
 
-		oos.writeByte(availablePlayers.length);
-		for (boolean curr : availablePlayers) {
-			oos.writeBoolean(curr);
+		dos.writeInt(playerSettings.length);
+		for (PlayerSetting playerSetting : playerSettings) {
+			playerSetting.writeTo(dos);
 		}
 	}
 
-	public void deserialize(DataInputStream ois) throws IOException {
-		randomSeed = ois.readLong();
-		playerId = ois.readByte();
-		mapName = ois.readUTF();
-		mapId = ois.readUTF();
+	public void deserialize(DataInputStream dis) throws IOException {
+		randomSeed = dis.readLong();
+		playerId = dis.readByte();
+		mapName = dis.readUTF();
+		mapId = dis.readUTF();
 
-		availablePlayers = new boolean[ois.readByte()];
-		for (int i = 0; i < availablePlayers.length; i++) {
-			availablePlayers[i] = ois.readBoolean();
+		playerSettings = new PlayerSetting[dis.readInt()];
+		for (int i = 0; i < playerSettings.length; i++) {
+			playerSettings[i] = PlayerSetting.readFromStream(dis);
 		}
 	}
-
 }

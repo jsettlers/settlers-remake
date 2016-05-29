@@ -21,8 +21,8 @@ import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
@@ -73,7 +73,7 @@ public class StartScreenConnector implements IStartScreen {
 	public IStartingGame loadSingleplayerGame(IMapDefinition map) {
 		MapLoader mapLoader = mapList.getMapById(map.getMapId());
 
-		PlayerSetting[] playerSettings = PlayerSetting.createSettings(mapLoader.getFileHeader().getPlayerConfigurations());
+		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
 
 		byte playerId = 0; // find playerId of HUMAN player
 		for (byte i = 0; i < playerSettings.length; i++) {
