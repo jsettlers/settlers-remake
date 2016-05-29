@@ -24,15 +24,6 @@ public class PlayerSetting {
 	private final EPlayerType playerType;
 
 	/**
-	 * Create unspecified PlayerSetting which is not limiting the choices of the user.
-	 * 
-	 * @param available
-	 */
-	public PlayerSetting(boolean available) {
-		this(available, null, null, null);
-	}
-
-	/**
 	 * Creates a new {@link PlayerSetting} object for a human player.
 	 *
 	 * @param teamId
@@ -45,7 +36,7 @@ public class PlayerSetting {
 	 * Creates a new PlayerSetting object for a not available player
 	 */
 	public PlayerSetting() {
-		this(false);
+		this(false, null, null, null);
 	}
 
 	/**
@@ -72,7 +63,7 @@ public class PlayerSetting {
 	public static PlayerSetting[] getUnspecifiedPlayerSettings(short maxPlayers) {
 		PlayerSetting[] playerSettings = new PlayerSetting[maxPlayers];
 		for (int i = 0; i < maxPlayers; i++) {
-			playerSettings[i] = new PlayerSetting(true);
+			playerSettings[i] = new PlayerSetting(true, null, null, null);
 		}
 		return playerSettings;
 	}

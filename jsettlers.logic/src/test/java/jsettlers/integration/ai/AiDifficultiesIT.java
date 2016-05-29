@@ -154,8 +154,16 @@ public class AiDifficultiesIT {
 	}
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) throws MapLoadException {
+		byte playerId =0;
+		for (byte i = 0; i < playerSettings.length;i++){
+			if (playerSettings[i].isAvailable()){
+				playerId = i;
+				break;
+			}
+		}
+
 		MapLoader mapCreator = MapUtils.getSpezialSumpf();
-		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), (byte) 0, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), playerId, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 

@@ -321,7 +321,7 @@ public final class MainGrid implements Serializable {
 			if (player != null) {
 				playerConfigurations[i] = new PlayerSetting(player.getPlayerType(), player.getCivilisation(), player.getTeamId());
 			} else {
-				playerConfigurations[i] = new PlayerSetting(false);
+				playerConfigurations[i] = new PlayerSetting();
 			}
 		}
 

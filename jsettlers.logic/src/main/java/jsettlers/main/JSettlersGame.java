@@ -119,8 +119,7 @@ public class JSettlersGame {
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
-			PlayerSetting[] playerSettings) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings) {
 		this(mapCreator, randomSeed, networkConnector, playerId, playerSettings, CommonConstants.CONTROL_ALL, true, null);
 	}
 
@@ -136,13 +135,14 @@ public class JSettlersGame {
 	}
 
 	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
-												   ReplayStartInformation replayStartInformation) throws MapLoadException {
+			ReplayStartInformation replayStartInformation) throws MapLoadException {
 		try {
 			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
 			replayStartInformation.deserialize(replayFileInputStream);
 
 			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
-			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
+					(byte) replayStartInformation.getPlayerId(),
 					replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
 		} catch (IOException e) {
 			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
@@ -248,8 +248,8 @@ public class JSettlersGame {
 				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
-				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT!
-				// =================================
+				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED!
+				// NO CONFIGURATION AFTER THIS POINT! =================================
 				gameRunning = true;
 
 				startingGameListener.startFinished();
