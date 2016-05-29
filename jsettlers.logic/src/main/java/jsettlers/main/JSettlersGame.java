@@ -142,8 +142,7 @@ public class JSettlersGame {
 
 			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
 			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-					(byte) replayStartInformation.getPlayerId(),
-					replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
+					(byte) replayStartInformation.getPlayerId(), replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
 		} catch (IOException e) {
 			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
 		}

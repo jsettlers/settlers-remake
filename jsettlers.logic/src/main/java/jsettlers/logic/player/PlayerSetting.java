@@ -49,7 +49,7 @@ public class PlayerSetting {
 		this(true, playerType, civilisation != null ? civilisation : getRandomCivilisation(), teamId);
 	}
 
-	private PlayerSetting(boolean available, EPlayerType playerType, ECivilisation civilisation, Byte teamId) {
+	public PlayerSetting(boolean available, EPlayerType playerType, ECivilisation civilisation, Byte teamId) {
 		this.available = available;
 		this.playerType = playerType;
 		this.civilisation = civilisation;

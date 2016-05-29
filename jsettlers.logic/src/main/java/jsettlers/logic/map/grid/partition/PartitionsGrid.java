@@ -99,7 +99,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 					teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
 				}
 				Team team = teams.get(playerSetting.getTeamId());
-				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(), playerSetting.getCivilisation());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(),
+						playerSetting.getCivilisation());
 				team.registerPlayer(this.players[playerId]);
 				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
@@ -114,6 +115,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
 
 		initAdditionalFields();
+	}
+
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && playerSettings[i].isAvailable()) {
+				players[i].setPlayerType(playerSettings[i].getPlayerType());
+				players[i].setCivilisation(playerSettings[i].getCivilisation());
+			}
+		}
 	}
 
 	public short getWidth() {

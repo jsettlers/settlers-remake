@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.logic.player.PlayerSetting;
 
 /**
@@ -85,5 +86,14 @@ public class ReplayStartInformation implements Serializable {
 		for (int i = 0; i < playerSettings.length; i++) {
 			playerSettings[i] = PlayerSetting.readFromStream(dis);
 		}
+	}
+
+	public PlayerSetting[] getReplayablePlayerSettings() {
+		PlayerSetting[] playerSettings = new PlayerSetting[this.playerSettings.length];
+		for (int i = 0; i < playerSettings.length; i++) {
+			PlayerSetting originalSetting = this.playerSettings[i];
+			playerSettings[i] = new PlayerSetting(originalSetting.isAvailable(), EPlayerType.HUMAN, originalSetting.getCivilisation(), originalSetting.getTeamId());
+		}
+		return playerSettings;
 	}
 }

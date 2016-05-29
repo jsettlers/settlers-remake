@@ -29,9 +29,8 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
 
 /**
  * This class represents a player in the game. It can be used to access player specific statistics and methods.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
@@ -39,8 +38,8 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	public final byte playerId;
 	private final Team team;
 	private final byte numberOfPlayers;
-	private final EPlayerType playerType;
-	private final ECivilisation civilisation;
+	private transient EPlayerType playerType;
+	private transient ECivilisation civilisation;
 
 	private final ManaInformation manaInformation = new ManaInformation();
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
@@ -121,7 +120,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		this.combatStrengthInfo.updateGoldCombatStrength(numberOfPlayers, amountOfGold);
 	}
 
-	public byte getTeamId(){
+	public byte getTeamId() {
 		return team.getTeamId();
 	}
 
@@ -131,5 +130,13 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	public ECivilisation getCivilisation() {
 		return civilisation;
+	}
+
+	public void setPlayerType(EPlayerType playerType) {
+		this.playerType = playerType;
+	}
+
+	public void setCivilisation(ECivilisation civilisation) {
+		this.civilisation = civilisation;
 	}
 }

@@ -39,6 +39,7 @@ import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.testutils.map.DebugMapLister;
 
 /**
  * Utility class holding methods needed by serveral test classes.
@@ -77,11 +78,12 @@ public class TestUtils {
 			File tempDirectory = Files.createTempDirectory("saves").toFile();
 			tempDirectory.deleteOnExit();
 			System.out.println("Using temp resource manager with directory: " + tempDirectory);
-			
+
 			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 
 			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
 			mapListFactory.addResourcesDirectory(tempDirectory);
+			mapListFactory.addSaveDirectory(new DebugMapLister(new File(tempDirectory, "save"), true));
 			MapList.setDefaultListFactory(mapListFactory);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

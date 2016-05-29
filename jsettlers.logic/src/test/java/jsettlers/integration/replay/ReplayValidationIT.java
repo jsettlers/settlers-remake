@@ -66,8 +66,7 @@ public class ReplayValidationIT {
 		assertDirectSavegameReplay(1, directSavegameReplay);
 		MapLoader savegame = directSavegameReplay.getSavegames()[0];
 
-		MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(directSavegameReplay, targetTimeMinutes,
-				REMAINING_REPLAY_FILENAME);
+		MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(directSavegameReplay, targetTimeMinutes, REMAINING_REPLAY_FILENAME);
 
 		// compare direct savegame with replayed savegame.
 		MapUtils.compareMapFiles(savegame, replayedSavegame);

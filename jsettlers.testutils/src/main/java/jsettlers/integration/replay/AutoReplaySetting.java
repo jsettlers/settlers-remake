@@ -32,16 +32,10 @@ public class AutoReplaySetting {
 
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
-				new AutoReplaySetting("basicproduction", 15),
-
-				new AutoReplaySetting("fullproduction", 10),
-				new AutoReplaySetting("fullproduction", 20),
-				new AutoReplaySetting("fullproduction", 30),
-				new AutoReplaySetting("fullproduction", 40),
 				new AutoReplaySetting("fullproduction", 50),
-				new AutoReplaySetting("fullproduction", 69),
-
-				new AutoReplaySetting("fighting", 8));
+				new AutoReplaySetting("fullproduction", 90),
+				new AutoReplaySetting("fullproduction", 150)
+				);
 	}
 
 	private final String typeName;

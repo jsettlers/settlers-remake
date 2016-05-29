@@ -449,6 +449,10 @@ public final class MainGrid implements Serializable {
 		return flagsGrid;
 	}
 
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		partitionsGrid.initWithPlayerSettings(playerSettings);
+	}
+
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 

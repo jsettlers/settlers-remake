@@ -33,33 +33,35 @@ import jsettlers.testutils.map.MapUtils;
  */
 public class RegenerateAutoReplayITReferences {
 
-    static {
-        CommonConstants.ENABLE_CONSOLE_LOGGING=true;
-        CommonConstants.CONTROL_ALL=true;
-        CommonConstants.USE_SAVEGAME_COMPRESSION=true;
-        Constants.FOG_OF_WAR_DEFAULT_ENABLED=false;
+	static {
+		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		CommonConstants.CONTROL_ALL = true;
+		CommonConstants.USE_SAVEGAME_COMPRESSION = true;
+		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 
-        TestUtils.setupTempResourceManager();
-    }
+		TestUtils.setupTempResourceManager();
+	}
 
-    public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException, SwingResourceLoader.ResourceSetupException {
-        System.out.println("Creating reference files for replays...");
+	public static void main(String[] args) throws IOException, MapLoadException, ClassNotFoundException, SwingResourceLoader.ResourceSetupException {
+		System.out.println("Creating reference files for replays...");
 
-        for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {
-            MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(), AutoReplaySetting.REMAINING_REPLAY_FILENAME);
-            MapLoader expectedSavegame = setting.getReferenceSavegame();
+		for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {
+			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(),
+					AutoReplaySetting.REMAINING_REPLAY_FILENAME);
 
-            try {
-                MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-                System.out.println("New savegame is equal to old one => won't replace.");
-                actualSavegame.getListedMap().delete();
+			try {
+				MapLoader expectedSavegame = setting.getReferenceSavegame();
 
-            } catch (AssertionError | IOException ex) { // if the files are not equal, replace the existing one.
-                System.out.println("Replacing reference file '" + expectedSavegame + "' with new savegame '" + actualSavegame + "'");
-                Files.move(Paths.get(actualSavegame.getListedMap().getFile().toString()),
-                        Paths.get("jsettlers.testutils/src/main/resources" + setting.getReplayPath()),
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
-    }
+				MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
+				System.out.println("New savegame is equal to old one => won't replace.");
+				actualSavegame.getListedMap().delete();
+
+			} catch (AssertionError | IOException | MapLoadException ex) { // if the files are not equal, replace the existing one.
+				System.out.println("Replacing reference file with new savegame '" + actualSavegame + "'");
+				Files.move(Paths.get(actualSavegame.getListedMap().getFile().toString()),
+						Paths.get("jsettlers.testutils/src/main/resources" + setting.getReplayPath()),
+						StandardCopyOption.REPLACE_EXISTING);
+			}
+		}
+	}
 }
