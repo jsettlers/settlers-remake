@@ -6,6 +6,7 @@ import java.util.Random;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.logic.map.loading.PlayerConfiguration;
 
 /**
  * @author codingberlin
@@ -19,11 +20,18 @@ public class PlayerSetting {
 
 	/**
 	 * Creates a new {@link PlayerSetting} object for a human player.
-	 * 
+	 *
 	 * @param isAvailable
 	 */
 	public PlayerSetting(boolean isAvailable, byte teamId) {
 		this(isAvailable, EPlayerType.HUMAN, ECivilisation.ROMAN, teamId);
+	}
+
+	/**
+	 * Creates a new PlayerSetting object for a not available player
+	 */
+	public PlayerSetting() {
+		this(false, null, null, (byte) -1);
 	}
 
 	/**
@@ -88,6 +96,22 @@ public class PlayerSetting {
 			}
 		}
 		System.out.println("created player settings: " + Arrays.toString(playerSettings));
+
+		return playerSettings;
+	}
+
+	public static PlayerSetting[] createSettings(PlayerConfiguration[] playerConfigurations) {
+		PlayerSetting[] playerSettings = new PlayerSetting[playerConfigurations.length];
+
+		for (int i = 0; i < playerConfigurations.length; i++) {
+			PlayerConfiguration playerConfiguration = playerConfigurations[i];
+			if (playerConfiguration.isAvailable()) {
+				playerSettings[i] = new PlayerSetting(true, playerConfiguration.getPlayerType(), playerConfiguration.getCivilisation(),
+						playerConfiguration.getTeam());
+			} else {
+				playerSettings[i] = new PlayerSetting();
+			}
+		}
 
 		return playerSettings;
 	}

@@ -51,6 +51,7 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.main.replay.ReplayUtils;
@@ -83,7 +84,7 @@ public class JSettlersGame {
 	private PrintStream systemOutStream;
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
-			PlayerSetting[] playerSettings, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+						  PlayerSetting[] playerSettings, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
 		System.out.println("OS version: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
@@ -112,14 +113,13 @@ public class JSettlersGame {
 	}
 
 	/**
-	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param networkConnector
 	 * @param playerId
 	 */
 	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
-			PlayerSetting[] playerSettings) {
+						 PlayerSetting[] playerSettings) {
 		this(mapCreator, randomSeed, networkConnector, playerId, playerSettings, CommonConstants.CONTROL_ALL, true, null);
 	}
 
@@ -174,7 +174,10 @@ public class JSettlersGame {
 		PartitionsGrid partitionsGrid = gameRunner.getMainGrid().getPartitionsGrid();
 		System.out.println("Endgame statistic:");
 		for (byte playerId = 0; playerId < partitionsGrid.getNumberOfPlayers(); playerId++) {
-			System.out.println("Player " + playerId + ": " + partitionsGrid.getPlayer(playerId).getEndgameStatistic());
+			Player player = partitionsGrid.getPlayer(playerId);
+			if (player != null) {
+				System.out.println("Player " + playerId + ": " + player.getEndgameStatistic());
+			}
 		}
 	}
 
@@ -245,7 +248,7 @@ public class JSettlersGame {
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
 				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT!
-															// =================================
+				// =================================
 				gameRunning = true;
 
 				startingGameListener.startFinished();
@@ -319,7 +322,7 @@ public class JSettlersGame {
 		}
 
 		private void updateProgressListener(EProgressState progressState,
-				float progress) {
+											float progress) {
 			this.progressState = progressState;
 			this.progress = progress;
 

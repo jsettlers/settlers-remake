@@ -18,9 +18,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.messages.IMessage;
 import jsettlers.common.menu.messages.IMessenger;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
@@ -37,6 +39,8 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	public final byte playerId;
 	private final Team team;
 	private final byte numberOfPlayers;
+	private final EPlayerType playerType;
+	private final ECivilisation civilisation;
 
 	private final ManaInformation manaInformation = new ManaInformation();
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
@@ -45,10 +49,12 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
 
-	public Player(byte playerId, Team team, byte numberOfPlayers) {
+	public Player(byte playerId, Team team, byte numberOfPlayers, EPlayerType playerType, ECivilisation civilisation) {
 		this.playerId = playerId;
 		this.team = team;
 		this.numberOfPlayers = numberOfPlayers;
+		this.playerType = playerType;
+		this.civilisation = civilisation;
 		team.registerPlayer(this);
 		updateCombatStrengths();
 	}
@@ -113,5 +119,17 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private void updateCombatStrengths() {
 		int amountOfGold = getAmountOf(EMaterialType.GOLD);
 		this.combatStrengthInfo.updateGoldCombatStrength(numberOfPlayers, amountOfGold);
+	}
+
+	public byte getTeamId(){
+		return team.getTeamId();
+	}
+
+	public EPlayerType getPlayerType() {
+		return playerType;
+	}
+
+	public ECivilisation getCivilisation() {
+		return civilisation;
 	}
 }

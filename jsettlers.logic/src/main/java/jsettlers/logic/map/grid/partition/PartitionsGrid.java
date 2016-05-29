@@ -94,13 +94,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		Map<Byte, Team> teams = new HashMap<Byte, Team>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
-			if (teams.get(playerSetting.getTeamId()) == null) {
-				teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+			if (playerSetting.isAvailable()) {
+				if (teams.get(playerSetting.getTeamId()) == null) {
+					teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+				}
+				Team team = teams.get(playerSetting.getTeamId());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(), playerSetting.getCivilisation());
+				team.registerPlayer(this.players[playerId]);
+				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
-			Team team = teams.get(playerSetting.getTeamId());
-			this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length);
-			team.registerPlayer(this.players[playerId]);
-			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 		Team[] teamsArray = new Team[teams.size()];
 		this.teams = teams.values().toArray(teamsArray);
@@ -173,6 +175,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public byte getPlayerIdAt(int x, int y) {
 		return getPartitionAt(x, y).playerId;
+	}
+
+	public Player[] getPlayers() {
+		return players;
 	}
 
 	public Player getPlayer(int playerId) {

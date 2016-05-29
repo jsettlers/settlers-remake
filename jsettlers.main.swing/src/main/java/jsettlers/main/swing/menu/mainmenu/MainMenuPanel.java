@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -73,7 +74,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
 
-		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showdNewSingleplayerGamePanel);
+		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewSingleplayerGamePanel);
 		openSaveGamePanel = new OpenPanel(MapList.getDefaultList().getSavedMaps(), this::loadSavegame);
 		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
 		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), this::showJoinMultiplayerGamePanel);
@@ -87,18 +88,25 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	private void loadSavegame(MapLoader map) {
 		SavegameLoader savegameLoader = (SavegameLoader) map;
+
 		if (savegameLoader != null) {
-			// TODO: read playersettings out of savegame file
-			long randomSeed = 4711L;
-			byte playerId = 0;
-			PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) savegameLoader.getMaxPlayers());
-			JSettlersGame game = new JSettlersGame(savegameLoader, randomSeed, playerId, playerSettings);
+			PlayerSetting[] playerSettings = PlayerSetting.createSettings(savegameLoader.getFileHeader().getPlayerConfigurations());
+
+			byte playerId = 0; // find playerId of HUMAN player
+			for (byte i = 0; i < playerSettings.length; i++) {
+				if (playerSettings[i].getPlayerType() == EPlayerType.HUMAN) {
+					playerId = i;
+					break;
+				}
+			}
+
+			JSettlersGame game = new JSettlersGame(savegameLoader, -1, playerId, playerSettings);
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
 		}
 	}
 
-	private void showdNewSingleplayerGamePanel(MapLoader map) {
+	private void showNewSingleplayerGamePanel(MapLoader map) {
 		settlersFrame.showNewSinglePlayerGameMenu(map);
 	}
 

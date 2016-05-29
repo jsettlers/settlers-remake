@@ -92,10 +92,15 @@ public class MapFileHeader {
 				date, bgImage);
 	}
 
+	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
+			PlayerConfiguration[] playerConfigurations, Date date, short[] bgImage) {
+		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, bgImage);
+	}
+
 	private static PlayerConfiguration[] getDefaultPlayerConfigurations(short maxPlayers) {
 		PlayerConfiguration[] playerConfigurations = new PlayerConfiguration[maxPlayers];
-		for (short i = 0; i < maxPlayers; i++) {
-			playerConfigurations[i] = new PlayerConfiguration(i);
+		for (int i = 0; i < maxPlayers; i++) {
+			playerConfigurations[i] = new PlayerConfiguration(true);
 		}
 		return playerConfigurations;
 	}
