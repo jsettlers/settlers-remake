@@ -63,7 +63,10 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 * @param buildingIndustryFactor
+	 * 			 influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount
+	 * 			 of building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
 	 * @param limitByWeakestEnemy
+	 *          when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
 	 */
 	public BuildingListEconomyMinister(
 			AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor, boolean limitByWeakestEnemy) {
