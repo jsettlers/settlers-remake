@@ -42,19 +42,17 @@ public class PioneerAi {
 		} else {
 			EResourceType[] resources = { EResourceType.COAL, EResourceType.IRONORE, EResourceType.FISH, EResourceType.GOLDORE };
 			for (EResourceType resourceType : resources) {
-				ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType,
-						Integer.MAX_VALUE);
-				if (nearestResourceAbroad == null) {
+				if (aiStatistics.resourceCountInDefaultPartition(resourceType) == 0
+						|| aiStatistics.resourceCountOfPlayer(resourceType, playerId) > 10) {
 					continue;
 				}
-				ShortPoint2D nearestResourceInland = aiStatistics.getNearestResourcePointForPlayer(myCenter, resourceType, playerId,
-						Integer.MAX_VALUE);
-				if (nearestResourceInland == null || nearestResourceInland.getOnGridDistTo(nearestResourceAbroad) < 3) {
-					ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
-					if (resourceType != EResourceType.FISH || nearestResourceInland.getOnGridDistTo(nearestResourceAbroad) > 1) {
-						return target;
-					}
+				ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType, Integer.MAX_VALUE);
+				ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+				if (resourceType == EResourceType.FISH && nearestResourceAbroad.getOnGridDistTo(target) == 1) {
+					continue;
 				}
+
+				return target;
 			}
 			return null;
 		}
