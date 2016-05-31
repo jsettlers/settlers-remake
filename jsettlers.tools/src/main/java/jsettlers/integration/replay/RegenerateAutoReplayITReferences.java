@@ -46,21 +46,24 @@ public class RegenerateAutoReplayITReferences {
 		System.out.println("Creating reference files for replays...");
 
 		for (AutoReplaySetting setting : AutoReplaySetting.getDefaultSettings()) {
-			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(),
-					AutoReplaySetting.REMAINING_REPLAY_FILENAME);
+			int[] gameTimeMinutes = setting.getTimeMinutes();
+			MapLoader[] actualSavegames = ReplayUtils.replayAndCreateSavegames(setting.getReplayFile(), gameTimeMinutes);
 
-			try {
-				MapLoader expectedSavegame = setting.getReferenceSavegame();
+			for (int i = 0; i <actualSavegames.length;i++) {
+				MapLoader actualSavegame = actualSavegames[i];
+				try {
+					MapLoader expectedSavegame = setting.getReferenceSavegame(i);
 
-				MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-				System.out.println("New savegame is equal to old one => won't replace.");
-				actualSavegame.getListedMap().delete();
+					MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
+					System.out.println("New savegame is equal to old one => won't replace.");
+					actualSavegame.getListedMap().delete();
 
-			} catch (AssertionError | IOException | MapLoadException ex) { // if the files are not equal, replace the existing one.
-				System.out.println("Replacing reference file with new savegame '" + actualSavegame + "'");
-				Files.move(Paths.get(actualSavegame.getListedMap().getFile().toString()),
-						Paths.get("jsettlers.testutils/src/main/resources" + setting.getReplayPath()),
-						StandardCopyOption.REPLACE_EXISTING);
+				} catch (AssertionError | IOException | MapLoadException ex) { // if the files are not equal, replace the existing one.
+					System.out.println("Replacing reference file with new savegame '" + actualSavegame + "'");
+					Files.move(Paths.get(actualSavegame.getListedMap().getFile().toString()),
+							Paths.get("jsettlers.testutils/src/main/resources" + setting.getReplayPath(i)),
+							StandardCopyOption.REPLACE_EXISTING);
+				}
 			}
 		}
 	}

@@ -21,10 +21,3 @@ dependencies {
     compile project(':jsettlers.testutils')
     testCompile project(':jsettlers.testutils')
 }
-
-
-tasks.withType(Test) {
-    testLogging {
-        events 'started', 'passed'
-    }
-}

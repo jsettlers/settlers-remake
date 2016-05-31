@@ -53,7 +53,7 @@ import jsettlers.network.client.interfaces.INetworkConnector;
  */
 public class ReplayUtils {
 
-	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, float targetGameTimeMinutes, String newReplayFile)
+	public static MapLoader replayAndCreateSavegame(IReplayStreamProvider replayFile, int targetGameTimeMinutes, String newReplayFile)
 			throws MapLoadException, IOException {
 		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
@@ -71,6 +71,18 @@ public class ReplayUtils {
 		return newSavegame;
 	}
 
+	public static MapLoader[] replayAndCreateSavegames(IReplayStreamProvider replayFile, int[] targetGameTimeMinutes)			throws MapLoadException, IOException {
+		OfflineNetworkConnector networkConnector = createPausingOfflineNetworkConnector();
+		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
+		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
+
+		MapLoader[] newSavegame = playGameToTargetTimeAndGetSavegames(game, networkConnector, targetGameTimeMinutes);
+
+		System.out.println("Replayed: " + replayFile + " and created savegames: " +Arrays.asList( newSavegame));
+
+		return newSavegame;
+	}
+
 	public static OfflineNetworkConnector createPausingOfflineNetworkConnector() {
 		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
 		networkConnector.getGameClock().setPausing(true);
@@ -78,13 +90,13 @@ public class ReplayUtils {
 	}
 
 	public static MapLoader[] playGameToTargetTimeAndGetSavegames(JSettlersGame game, OfflineNetworkConnector networkConnector,
-			final float... targetGameTimesMinutes) throws IOException {
+			final int... targetGameTimesMinutes) throws IOException {
 		IStartedGame startedGame = startGame(game);
 		return playGameToTargetTimeAndGetSavegames(startedGame, networkConnector, targetGameTimesMinutes);
 	}
 
 	private static MapLoader[] playGameToTargetTimeAndGetSavegames(IStartedGame startedGame, OfflineNetworkConnector networkConnector,
-			final float... targetGameTimesMinutes) {
+			final int... targetGameTimesMinutes) {
 		final int[] targetGameTimesMs = getGameTimeMsFromMinutes(targetGameTimesMinutes);
 
 		// schedule the save task and run the game to the target game time
@@ -103,10 +115,10 @@ public class ReplayUtils {
 		return savegames;
 	}
 
-	private static int[] getGameTimeMsFromMinutes(final float... targetGameTimesMinutes) {
+	private static int[] getGameTimeMsFromMinutes(final int... targetGameTimesMinutes) {
 		final int[] targetGameTimesMs = new int[targetGameTimesMinutes.length];
 		for (int i = 0; i < targetGameTimesMinutes.length; i++) {
-			targetGameTimesMs[i] = (int) (targetGameTimesMinutes[i] * 60 * 1000);
+			targetGameTimesMs[i] = targetGameTimesMinutes[i] * 60 * 1000;
 		}
 		Arrays.sort(targetGameTimesMs);
 		return targetGameTimesMs;
@@ -186,7 +198,7 @@ public class ReplayUtils {
 		System.out.println("New jsettlers.integration.replay file successfully created!");
 	}
 
-	public static PlayMapResult playMapToTargetTimes(MapLoader map, final float... targetTimeMinutes) throws IOException {
+	public static PlayMapResult playMapToTargetTimes(MapLoader map, final int... targetTimeMinutes) throws IOException {
 		OfflineNetworkConnector networkConnector = ReplayUtils.createPausingOfflineNetworkConnector();
 		byte playerId = (byte) 0;
 		JSettlersGame game = new JSettlersGame(map, 0L, networkConnector, playerId,

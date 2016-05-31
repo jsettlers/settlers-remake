@@ -59,7 +59,7 @@ public class ReplayValidationIT {
 
 	@Test
 	public void testIfReplayIsEqualToOriginalPlay() throws IOException, MapLoadException, ClassNotFoundException {
-		final float targetTimeMinutes = 60f;
+		final int targetTimeMinutes = 60;
 		MapLoader map = MapUtils.getMountainlake();
 
 		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
@@ -74,7 +74,7 @@ public class ReplayValidationIT {
 
 	@Test
 	public void testIfSavegameOfSavegameEqualsSavegame() throws IOException, MapLoadException, ClassNotFoundException, InterruptedException {
-		final float targetTimeMinutes = 30f;
+		final int targetTimeMinutes = 30;
 		MapLoader map = MapUtils.getMountainlake();
 
 		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
@@ -103,7 +103,7 @@ public class ReplayValidationIT {
 	@Ignore
 	@Test
 	public void testReplayForSavegame() throws IOException, MapLoadException, ClassNotFoundException {
-		final float[] targetTimeMinutes = new float[] { 30f, 60f };
+		final int[] targetTimeMinutes = new int[] { 30, 60 };
 		MapLoader map = MapUtils.getMountainlake();
 
 		ReplayUtils.PlayMapResult directSavegameReplay = ReplayUtils.playMapToTargetTimes(map, targetTimeMinutes);
@@ -111,7 +111,7 @@ public class ReplayValidationIT {
 
 		MapLoader[] savegames = directSavegameReplay.getSavegames();
 		for (int i = 0; i < targetTimeMinutes.length; i++) {
-			float targetTime = targetTimeMinutes[i];
+			int targetTime = targetTimeMinutes[i];
 			MapLoader savegame = savegames[i];
 
 			MapLoader replayedSavegame = ReplayUtils.replayAndCreateSavegame(directSavegameReplay, targetTime,
