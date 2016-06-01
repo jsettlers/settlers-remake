@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,6 +32,7 @@ public class SettingsManager {
 	public static final String SETTING_USERNAME = "name";
 	public static final String SETTING_SERVER = "server";
 	public static final String SETTING_VOLUME = "volume";
+	public static final String FULL_SCREEN_MODE = "fullScreenMode";
 
 	private static Reference<SettingsManager> manager;
 
@@ -103,5 +104,13 @@ public class SettingsManager {
 		} catch (NumberFormatException e) {
 		}
 		return 1;
+	}
+
+	public void setFullScreenMode(boolean fullScreenMode) {
+		set(FULL_SCREEN_MODE, "" + fullScreenMode);
+	}
+
+	public boolean getFullScreenMode() {
+		return Boolean.valueOf(get(FULL_SCREEN_MODE));
 	}
 }

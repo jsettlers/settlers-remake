@@ -15,7 +15,7 @@ public class DebugOutputStream extends OutputStream {
 	@Override
 	public void write(int b) throws IOException {
 		byteCounter++;
-		if (byteCounter == 492198) {
+		if (byteCounter == 492368) {
 			System.out.println();
 		}
 		outputStream.write(b);

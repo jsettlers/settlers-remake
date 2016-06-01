@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,8 +23,8 @@ import java.util.*;
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FilteredMapArea;
@@ -43,6 +43,7 @@ import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
+import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.player.Player;
@@ -90,16 +91,19 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
-		Map<Byte,Team> teams = new HashMap<Byte,Team>();
+		Map<Byte, Team> teams = new HashMap<Byte, Team>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
-			if (teams.get(playerSetting.getTeamId()) == null) {
-				teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+			if (playerSetting.isAvailable()) {
+				if (teams.get(playerSetting.getTeamId()) == null) {
+					teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+				}
+				Team team = teams.get(playerSetting.getTeamId());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(),
+						playerSetting.getCivilisation());
+				team.registerPlayer(this.players[playerId]);
+				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
-			Team team = teams.get(playerSetting.getTeamId());
-			this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length);
-			team.registerPlayer(this.players[playerId]);
-			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 		Team[] teamsArray = new Team[teams.size()];
 		this.teams = teams.values().toArray(teamsArray);
@@ -111,6 +115,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
 
 		initAdditionalFields();
+	}
+
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && playerSettings[i].isAvailable()) {
+				players[i].setPlayerType(playerSettings[i].getPlayerType());
+				players[i].setCivilisation(playerSettings[i].getCivilisation());
+			}
+		}
 	}
 
 	public short getWidth() {
@@ -172,6 +185,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public byte getPlayerIdAt(int x, int y) {
 		return getPartitionAt(x, y).playerId;
+	}
+
+	public Player[] getPlayers() {
+		return players;
 	}
 
 	public Player getPlayer(int playerId) {
@@ -298,7 +315,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.VALUES) {
-				borderVisitor.visit(currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+				borderVisitor.visit(position.x, position.y, currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
@@ -451,43 +468,46 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 				}
 			}, pos, borderVisitor, true);
 
-			// get the partitions around the partition.
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = borderVisitor.getPartitionsList();
-
-			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, partitionsList);
+			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
 	}
 
 	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList) {
+			LinkedList<BorderPartitionInfo> partitionsList) {
 		if (partitionsList.isEmpty()) {
 			return; // nothing to do
 		}
 
 		// check for divides
-		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Short currPartitionId = currPartition.e1;
-			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartitionId);
-			if (existingPartitionPos != null) {
-				checkIfDividePartition(currPartitionId, currPartition.e2, existingPartitionPos);
-				// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
-				// happen with partitions which also have currPartitionId.
-				if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
-					foundPartitionsSet.put(currPartitionId, currPartition.e2);
+		HashMap<Short, BorderPartitionInfo> foundPartitionsSet = new HashMap<>();
+		for (BorderPartitionInfo currPartitionInfo : partitionsList) {
+			Short currPartitionId = currPartitionInfo.partitionId;
+			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
+			if (existingPartitionInfo != null) {
+				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other
+																				// player's positions
+					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
+
+					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
+					// happen with partitions which also have currPartitionId.
+					short newPartitionIdOfExistingPartition = getPartitionIdAt(existingPartitionInfo.positionOfPartition.x,
+							existingPartitionInfo.positionOfPartition.y);
+					if (newPartitionIdOfExistingPartition != currPartitionId) {
+						foundPartitionsSet.put(currPartitionId, currPartitionInfo);
+					}
 				}
 			} else {
-				foundPartitionsSet.put(currPartitionId, currPartition.e2);
+				foundPartitionsSet.put(currPartitionId, currPartitionInfo);
 			}
 		}
 
 		// check if partitions need to be merged
 		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
 
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Partition currPartitionObject = partitionObjects[currPartition.e1];
-			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.e1] != partitionObjects[innerPartition]) {
-				mergePartitions(currPartition.e1, innerPartition);
+		for (BorderPartitionInfo currPartition : partitionsList) {
+			Partition currPartitionObject = partitionObjects[currPartition.partitionId];
+			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.partitionId] != partitionObjects[innerPartition]) {
+				mergePartitions(currPartition.partitionId, innerPartition);
 			}
 		}
 	}
@@ -495,20 +515,24 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	/**
 	 * Checks if the given partitions is divided and the both given positions are on separated parts of the partition.
 	 * 
-	 * @param partition
-	 * @param pos1
-	 * @param pos2
+	 * @param partitionInfo1
+	 * @param partitionInfo2
 	 */
-	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
+	private void checkIfDividePartition(BorderPartitionInfo partitionInfo1, BorderPartitionInfo partitionInfo2) {
+		assert partitionInfo1.partitionId == partitionInfo2.partitionId;
+
+		final short partition = partitionInfo1.partitionId;
+
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
+
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
-						partition2Size, partition)) {
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2,
+						partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
-				dividePartition(partition, pos1, pos2);
+				dividePartition(partition, partitionInfo1.positionOfPartition, partitionInfo2.positionOfPartition);
 			} else {
-				dividePartition(partition, pos2, pos1);
+				dividePartition(partition, partitionInfo2.positionOfPartition, partitionInfo1.positionOfPartition);
 			}
 		}
 	}
@@ -662,7 +686,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		};
 
-		ITraversingVisitor relabelAreaVisitor = new ITraversingVisitor() {
+		IAreaVisitor relabelAreaVisitor = new IAreaVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				changePartitionUncheckedAt(x, y, newPartition);

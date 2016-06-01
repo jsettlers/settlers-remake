@@ -103,9 +103,9 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -116,7 +116,7 @@ import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public final class MainGrid implements Serializable {
@@ -309,11 +309,21 @@ public final class MainGrid implements Serializable {
 
 	public MapFileHeader generateSaveHeader() {
 		// TODO: description
-		// TODO: count alive players, count all players
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 				landscapeGrid.getPreviewImageDataSupplier());
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
+
+		Player[] players = partitionsGrid.getPlayers();
+		PlayerSetting[] playerConfigurations = new PlayerSetting[players.length];
+		for (int i = 0; i < players.length; i++) {
+			Player player = players[i];
+			if (player != null) {
+				playerConfigurations[i] = new PlayerSetting(player.getPlayerType(), player.getCivilisation(), player.getTeamId());
+			} else {
+				playerConfigurations[i] = new PlayerSetting();
+			}
+		}
 
 		return new MapFileHeader(
 				MapType.SAVED_SINGLE,
@@ -322,7 +332,7 @@ public final class MainGrid implements Serializable {
 				width,
 				height,
 				(short) 1,
-				getPartitionsGrid().getNumberOfPlayers(),
+				playerConfigurations,
 				new Date(),
 				bgImage);
 	}
@@ -363,7 +373,7 @@ public final class MainGrid implements Serializable {
 
 	/**
 	 * FOR TESTS ONLY!!
-	 * 
+	 *
 	 * @return
 	 */
 	public IAStarPathMap getPathfinderGrid() {
@@ -380,7 +390,7 @@ public final class MainGrid implements Serializable {
 
 	/**
 	 * Creates a new building at the given position.
-	 * 
+	 *
 	 * @param position
 	 *            The position to place the building.
 	 * @param type
@@ -437,6 +447,10 @@ public final class MainGrid implements Serializable {
 
 	public FlagsGrid getFlagsGrid() {
 		return flagsGrid;
+	}
+
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		partitionsGrid.initWithPlayerSettings(playerSettings);
 	}
 
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -716,6 +730,10 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
+			if (!MatchConstants.ENABLE_DEBUG_COLORS) {
+				return 0;
+			}
+
 			switch (debugColorMode) {
 			case BLOCKED_PARTITIONS:
 				return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
@@ -740,7 +758,7 @@ public final class MainGrid implements Serializable {
 				return Color.getARGB(1, .6f, 0, resource);
 			case NONE:
 			default:
-				return -1;
+				return 0;
 			}
 		}
 
@@ -1867,9 +1885,8 @@ public final class MainGrid implements Serializable {
 	/**
 	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid
 	 * changes it's player.
-	 * 
+	 *
 	 * @author Andreas Eberle
-	 * 
 	 */
 	final class PlayerChangedListener implements IPlayerChangedListener {
 

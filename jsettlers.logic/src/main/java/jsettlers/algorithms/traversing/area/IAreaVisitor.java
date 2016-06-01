@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,48 +12,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.mapvalidator.tasks.error;
-
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
-import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
+package jsettlers.algorithms.traversing.area;
 
 /**
- * Check the all player are valid
+ * Interface defining the methods to be able to traverse areas with the {@link AreaTraversingAlgorithm}.
  * 
- * @author Andreas Butti
+ * @author Andreas Eberle
+ * 
  */
-public class ValidatePlayer extends AbstractValidationTask {
-
+public interface IAreaVisitor {
 	/**
-	 * Fix for wrong placed settlers
+	 * Called when the given coordinate is visited..
+	 * 
+	 * @param x
+	 *            X coordinate.
+	 * @param y
+	 *            Y coordinate.
+	 * 
+	 * @return True if the traversing shall be continued.<br>
+	 *         False if it shall be stopped.
 	 */
-	private final DeleteObjectFix fix = new DeleteObjectFix();
-
-	/**
-	 * Constructor
-	 */
-	public ValidatePlayer() {
-	}
-
-	@Override
-	public void doTest() {
-		int playerCount = header.getMaxPlayers();
-		addHeader("player.header", fix);
-
-		for (int x = 0; x < data.getWidth(); x++) {
-			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof IPlayerable) {
-					int p = ((IPlayerable) mapObject).getPlayerId();
-					if (p >= playerCount) {
-						fix.addInvalidObject(new ShortPoint2D(x, y));
-						addErrorMessage("player.text", new ShortPoint2D(x, y));
-					}
-				}
-			}
-		}
-	}
+	boolean visit(int x, int y);
 }
