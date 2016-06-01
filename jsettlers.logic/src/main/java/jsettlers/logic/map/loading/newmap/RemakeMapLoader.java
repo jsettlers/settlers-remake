@@ -133,7 +133,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		return header.getBgImage();
+		return header.getPreviewImage();
 	}
 
 	@Override

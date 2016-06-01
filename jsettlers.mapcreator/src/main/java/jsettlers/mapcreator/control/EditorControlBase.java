@@ -57,7 +57,7 @@ public abstract class EditorControlBase {
 	 */
 	protected void createNewHeaderWithName(String name) {
 		setHeader(new MapFileHeader(header.getType(), name, null, header.getDescription(), header.getWidth(),
-				header.getHeight(), header.getMinPlayers(), header.getMaxPlayers(), new Date(), header.getBgImage().clone()));
+				header.getHeight(), header.getMinPlayers(), header.getMaxPlayers(), new Date(), header.getPreviewImage().clone()));
 	}
 
 	/**

@@ -72,7 +72,7 @@ public class MapFileHeader {
 	private final short minPlayers;
 	private final PlayerSetting[] playerSettings;
 	private final Date creationDate;
-	private final short[] bgImage;
+	private final short[] previewImage;
 
 	/**
 	 * The content type of a map file.
@@ -85,19 +85,19 @@ public class MapFileHeader {
 	}
 
 	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
-			short maxPlayers, Date date, short[] bgImage) {
+			short maxPlayers, Date date, short[] previewImage) {
 		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, PlayerSetting.getUnspecifiedPlayerSettings(maxPlayers),
-				date, bgImage);
+				date, previewImage);
 	}
 
 	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
-						 PlayerSetting[] playerConfigurations, Date date, short[] bgImage) {
-		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, bgImage);
+						 PlayerSetting[] playerConfigurations, Date date, short[] previewImage) {
+		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, previewImage);
 	}
 
 	private MapFileHeader(MapType type, String name, String mapId, String baseMapId, String description, short width, short height, short minPlayers,
-			PlayerSetting[] playerSettings, Date date, short[] bgImage) {
-		if (bgImage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
+			PlayerSetting[] playerSettings, Date date, short[] previewImage) {
+		if (previewImage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
 			throw new IllegalArgumentException("bg image has wrong size.");
 		}
 		this.type = type;
@@ -110,7 +110,7 @@ public class MapFileHeader {
 		this.minPlayers = minPlayers;
 		this.playerSettings = playerSettings;
 		this.creationDate = date;
-		this.bgImage = bgImage;
+		this.previewImage = previewImage;
 	}
 
 	public MapType getType() {
@@ -145,8 +145,8 @@ public class MapFileHeader {
 		return (short) playerSettings.length;
 	}
 
-	public short[] getBgImage() {
-		return bgImage;
+	public short[] getPreviewImage() {
+		return previewImage;
 	}
 
 	public PlayerSetting[] getPlayerSettings() {
@@ -173,7 +173,7 @@ public class MapFileHeader {
 		}
 
 		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
-			out.writeShort(bgImage[i]);
+			out.writeShort(previewImage[i]);
 		}
 
 		out.writeLong(creationDate.getTime());
