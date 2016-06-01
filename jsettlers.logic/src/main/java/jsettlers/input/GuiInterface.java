@@ -75,6 +75,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
+import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
@@ -104,15 +105,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-			IGameStoppable gameStoppable, byte player, boolean multiplayer) {
+			IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
 		this.grid = grid;
 		this.gameStoppable = gameStoppable;
-		this.playerId = player;
+		this.playerId = playerId;
 		this.multiplayer = multiplayer;
-		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
+		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, playerId);
 
 		this.refreshSelectionTimer = new Timer("refreshSelectionTimer");
 		this.refreshSelectionTimer.schedule(new TimerTask() {
@@ -122,8 +123,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 		}, 1000, 1000);
 
-		grid.getPlayer(player).setMessenger(connector);
-		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, playerId));
+		Player player = grid.getPlayer(playerId);
+		if(player != null ){
+			player.setMessenger(connector);
+		}
+		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, this.playerId));
 		connector.addListener(this);
 	}
 
@@ -633,7 +637,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		final List<ISelectable> selected = new LinkedList<>();
-		
+
 		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
 			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
 			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {

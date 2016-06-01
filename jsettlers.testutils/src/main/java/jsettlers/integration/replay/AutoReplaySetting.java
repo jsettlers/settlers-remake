@@ -32,22 +32,14 @@ public class AutoReplaySetting {
 
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
-				new AutoReplaySetting("basicproduction", 15),
-
-				new AutoReplaySetting("fullproduction", 10),
-				new AutoReplaySetting("fullproduction", 20),
-				new AutoReplaySetting("fullproduction", 30),
-				new AutoReplaySetting("fullproduction", 40),
-				new AutoReplaySetting("fullproduction", 50),
-				new AutoReplaySetting("fullproduction", 69),
-
-				new AutoReplaySetting("fighting", 8));
+				new AutoReplaySetting("fullproduction", 10, 20, 40, 90, 150)
+				);
 	}
 
 	private final String typeName;
-	private final int timeMinutes;
+	private final int[] timeMinutes;
 
-	public AutoReplaySetting(String typeName, int timeMinutes) {
+	public AutoReplaySetting(String typeName, int... timeMinutes) {
 		this.typeName = typeName;
 		this.timeMinutes = timeMinutes;
 	}
@@ -56,12 +48,12 @@ public class AutoReplaySetting {
 		return typeName;
 	}
 
-	public int getTimeMinutes() {
+	public int[] getTimeMinutes() {
 		return timeMinutes;
 	}
 
-	public String getPath() {
-		return getTypeName() + "/savegame-" + getTimeMinutes() + "m.zmap";
+	public String getPath(int index) {
+		return getTypeName() + "/savegame-" + timeMinutes[index] + "m.zmap";
 	}
 
 	public MapLoader getMap() throws MapLoadException {
@@ -76,22 +68,22 @@ public class AutoReplaySetting {
 		return MapUtils.createReplayForResource(getClass(), getReplayName(), getMap());
 	}
 
-	MapLoader getReferenceSavegame() throws MapLoadException, IOException {
-		String replayPath = getReplayPath();
+	MapLoader getReferenceSavegame(int index) throws MapLoadException, IOException {
+		String replayPath = getReplayPath(index);
 
 		System.out.println("Using reference file: " + replayPath);
 		return MapLoader.getLoaderForListedMap(new MapList.ListedResourceMap(replayPath));
 	}
 
-	public String getReplayPath() {
-		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath();
+	public String getReplayPath(int index) {
+		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath(index);
 	}
 
 	@Override
 	public String toString() {
 		return "AutoReplaySetting{" +
 				"typeName='" + typeName + '\'' +
-				", timeMinutes=" + timeMinutes +
+				", timeMinutes=" + Arrays.toString(timeMinutes) +
 				'}';
 	}
 }

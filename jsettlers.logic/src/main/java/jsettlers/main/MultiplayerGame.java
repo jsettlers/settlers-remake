@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,8 +29,8 @@ import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
@@ -145,13 +145,13 @@ public class MultiplayerGame {
 
 		byte i = 0;
 		for (; i < playersList.getItems().size(); i++) {
-			playerSettings[i] = new PlayerSetting(true, i);
+			playerSettings[i] = new PlayerSetting(i);
 		}
 
 		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : EPlayerType.HUMAN;
 
 		for (; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN, i);
+			playerSettings[i] = new PlayerSetting(aiType, ECivilisation.ROMAN, i);
 		}
 
 		return playerSettings;

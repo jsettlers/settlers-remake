@@ -49,7 +49,7 @@ public class AutoReplayIT {
 
 	@Parameters(name = "{index}: {0}")
 	public static Collection<Object[]> replaySets() {
-		return AutoReplaySetting.getDefaultSettings().stream().map(s -> new Object[] {s}).collect(Collectors.toList());
+		return AutoReplaySetting.getDefaultSettings().stream().map(s -> new Object[] { s }).collect(Collectors.toList());
 	}
 
 	private final AutoReplaySetting setting;
@@ -61,11 +61,15 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(), AutoReplaySetting.REMAINING_REPLAY_FILENAME);
-			MapLoader expectedSavegame = setting.getReferenceSavegame();
+			MapLoader[] actualSavegames = ReplayUtils.replayAndCreateSavegames(setting.getReplayFile(), setting.getTimeMinutes());
 
-			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-			actualSavegame.getListedMap().delete();
+			for (int i = 0; i < actualSavegames.length; i++) {
+				MapLoader actualSavegame = actualSavegames[i];
+				MapLoader expectedSavegame = setting.getReferenceSavegame(i);
+
+				MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
+				actualSavegame.getListedMap().delete();
+			}
 		}
 	}
 }
