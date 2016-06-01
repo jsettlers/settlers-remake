@@ -90,6 +90,11 @@ public class PlayerSetting {
 				'}';
 	}
 
+	/**
+	 * 
+	 * @return The id of the team this player is fixed to (e.g. if the map designer fixed the team id of this player or it is the team from a
+	 *         savegame) or <code>null</code> if the team is not fixed and the user can freely choose his team.
+	 */
 	public Byte getTeamId() {
 		return teamId;
 	}
