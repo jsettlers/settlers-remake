@@ -112,7 +112,7 @@ public class PlayerSetting {
 			String playerTypeName = dis.readUTF();
 			EPlayerType playerType = playerTypeName.isEmpty() ? null : EPlayerType.valueOf(playerTypeName);
 
-			return new PlayerSetting(playerType, civilisation, teamId);
+			return new PlayerSetting(true, playerType, civilisation, teamId);
 		} else {
 			return new PlayerSetting();
 		}
