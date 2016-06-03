@@ -76,7 +76,7 @@ subprojects {
 
 	tasks.withType(Test) {
 		testLogging {
-			events 'passed'
+			events 'started', 'passed'
 		}
 	}
 }

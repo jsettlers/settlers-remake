@@ -45,12 +45,13 @@ import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.trading.MarketBuilding;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.main.replay.ReplayUtils;
@@ -86,7 +87,8 @@ public class JSettlersGame {
 			PlayerSetting[] playerSettings, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
-		System.out.println("OS version: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version"));
+		System.out.println("OS version: " + System.getProperty("os.name") + " " + System.getProperty("os.arch") + " "
+				+ System.getProperty("os.version"));
 		System.out.println("Java version: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(playerSettings) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
@@ -112,14 +114,12 @@ public class JSettlersGame {
 	}
 
 	/**
-	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
-			PlayerSetting[] playerSettings) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings) {
 		this(mapCreator, randomSeed, networkConnector, playerId, playerSettings, CommonConstants.CONTROL_ALL, true, null);
 	}
 
@@ -135,14 +135,14 @@ public class JSettlersGame {
 	}
 
 	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
-												   ReplayStartInformation replayStartInformation) throws MapLoadException {
+			ReplayStartInformation replayStartInformation) throws MapLoadException {
 		try {
 			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
 			replayStartInformation.deserialize(replayFileInputStream);
 
 			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
-			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
-					replayStartInformation.getPlayerSettings(), true, false, replayFileInputStream);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
+					(byte) replayStartInformation.getPlayerId(), replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
 		} catch (IOException e) {
 			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
 		}
@@ -174,7 +174,10 @@ public class JSettlersGame {
 		PartitionsGrid partitionsGrid = gameRunner.getMainGrid().getPartitionsGrid();
 		System.out.println("Endgame statistic:");
 		for (byte playerId = 0; playerId < partitionsGrid.getNumberOfPlayers(); playerId++) {
-			System.out.println("Player " + playerId + ": " + partitionsGrid.getPlayer(playerId).getEndgameStatistic());
+			Player player = partitionsGrid.getPlayer(playerId);
+			if (player != null) {
+				System.out.println("Player " + playerId + ": " + player.getEndgameStatistic());
+			}
 		}
 	}
 
@@ -203,7 +206,7 @@ public class JSettlersGame {
 				try {
 					MatchConstants.clock().setReplayLogStream(createReplayFileStream());
 				} catch (IOException e) {
-					//TODO: log that we do not have write access to resources.
+					// TODO: log that we do not have write access to resources.
 					System.out.println("Cannot write jsettlers.integration.replay file.");
 				}
 
@@ -244,8 +247,8 @@ public class JSettlersGame {
 				aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
-				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED! NO CONFIGURATION AFTER THIS POINT!
-															// =================================
+				MatchConstants.clock().startExecution(); // WARNING: GAME CLOCK IS STARTED!
+				// NO CONFIGURATION AFTER THIS POINT! =================================
 				gameRunning = true;
 
 				startingGameListener.startFinished();

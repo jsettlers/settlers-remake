@@ -47,6 +47,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private int numberOfMidGameStoneCutters = 0;
 	private AiStatistics aiStatistics;
 	private float buildingIndustryFactor;
+	private boolean limitByWeakestEnemy;
 	private byte playerId;
 	private float weaponSmithFactor;
 	private boolean isHighGoodsGame;
@@ -58,16 +59,20 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	/**
-	 *
-	 * @param weaponSmithFactor
+	 *  @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 * @param buildingIndustryFactor
-	 *            influences the amount of lumberjacks, sawmills, foresters and stone cutters to slow down the AI.
+	 * 			 influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount
+	 * 			 of building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
+	 * @param limitByWeakestEnemy
+	 *          when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
 	 */
-	public BuildingListEconomyMinister(AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor) {
+	public BuildingListEconomyMinister(
+			AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor, boolean limitByWeakestEnemy) {
 		this.aiStatistics = aiStatistics;
 		this.buildingIndustryFactor = buildingIndustryFactor;
+		this.limitByWeakestEnemy = limitByWeakestEnemy;
 		this.playerId = player.playerId;
 		this.weaponSmithFactor = weaponSmithFactor;
 		this.buildingsToBuild = new ArrayList<>();
@@ -216,9 +221,23 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		if (BUILDING_INDUSTRY.contains(buildingType)) {
 			factor = buildingIndustryFactor;
 		}
-		if (currentCountOf(buildingType) < Math.ceil(mapBuildingCounts[buildingType.ordinal]*factor)) {
+		double currentCount = currentCountOf(buildingType);
+		if (currentCount < Math.ceil(mapBuildingCounts[buildingType.ordinal]*factor)
+				&& currentCount < maximumAllowedCount(buildingType)) {
 			buildingsToBuild.add(buildingType);
 		}
+	}
+
+	private int maximumAllowedCount(EBuildingType buildingType) {
+		if (!limitByWeakestEnemy) {
+			return Integer.MAX_VALUE;
+		}
+		List<Byte> enemies = aiStatistics.getAliveEnemiesOf(playerId);
+		float sumOfBuildings = 0;
+		for (byte playerId : enemies) {
+			sumOfBuildings += aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId);
+		}
+		return Math.max(1, (int) (sumOfBuildings / enemies.size()));
 	}
 
 	private boolean isVerySmallMap() {

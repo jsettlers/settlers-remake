@@ -597,6 +597,16 @@ public class AiStatistics {
 		return enemies;
 	}
 
+	public List<Byte> getAliveEnemiesOf(byte playerId) {
+		List<Byte> aliveEnemies = new ArrayList<>();
+		for (byte enemyId : getEnemiesOf(playerId)) {
+			if (isAlive(enemyId)) {
+				aliveEnemies.add(enemyId);
+			}
+		}
+		return aliveEnemies;
+	}
+
 	public ShortPoint2D calculateAveragePointFromList(List<ShortPoint2D> points) {
 		int averageX = 0;
 		int averageY = 0;

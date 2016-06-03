@@ -53,6 +53,7 @@ public class SavegameLoader extends RemakeMapLoader {
 			PlayerState[] playerStates = (PlayerState[]) ois.readObject();
 			GameSerializer gameSerializer = new GameSerializer();
 			MainGrid mainGrid = gameSerializer.load(ois);
+			mainGrid.initWithPlayerSettings(playerSettings);
 			RescheduleTimer.loadFrom(ois);
 
 			ois.close();
