@@ -14,11 +14,15 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages_es;
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.util.List;
 
 /**
  * @author codingberlin
@@ -28,33 +32,106 @@ public class PioneerAi {
 	public static ShortPoint2D findTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
-		if (aiStatistics.getTreesForPlayer(playerId).size() < 30) {
-			ShortPoint2D nearestTree = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(myCenter, EMapObjectType.TREE_ADULT,
-					Integer.MAX_VALUE);
-			return myBorder.getNearestPoint(nearestTree);
-		} else if (aiStatistics.getStonesForPlayer(playerId).size() < 15) {
-			ShortPoint2D nearestStone = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(myCenter, EMapObjectType.STONE,
-					Integer.MAX_VALUE);
-			return myBorder.getNearestPoint(nearestStone);
-		} else if (aiStatistics.getRiversForPlayer(playerId).size() < 15) {
-			ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(myCenter, Integer.MAX_VALUE);
-			return myBorder.getNearestPoint(nearestRiver);
-		} else {
-			EResourceType[] resources = { EResourceType.COAL, EResourceType.IRONORE, EResourceType.FISH, EResourceType.GOLDORE };
-			for (EResourceType resourceType : resources) {
-				if (aiStatistics.resourceCountInDefaultPartition(resourceType) == 0
-						|| aiStatistics.resourceCountOfPlayer(resourceType, playerId) > 10) {
-					continue;
-				}
-				ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType, Integer.MAX_VALUE);
-				ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
-				if (resourceType == EResourceType.FISH && nearestResourceAbroad.getOnGridDistTo(target) == 1) {
-					continue;
-				}
+int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 
-				return target;
+		System.out.println("check trees");
+		ShortPoint2D target = targetForCuttingBuilding(aiStatistics, myBorder, myCenter, playerId, EMapObjectType.TREE_ADULT,
+				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check stones");
+		target = targetForCuttingBuilding(aiStatistics, myBorder, myCenter, playerId, EMapObjectType.STONE, EBuildingType.STONECUTTER,
+				aiStatistics.getStonesForPlayer(playerId), 4, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check coal");
+		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check ironore");
+		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check rivers");
+		target = targetForRivers(aiStatistics, myBorder, myCenter, playerId, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check gold");
+		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
+		if (target != null)
+			return target;
+
+		System.out.println("check fish");
+		System.out.println("check fish");
+		return targetForFish(aiStatistics, myBorder, myCenter, playerId, maxDistance);
+	}
+
+	private static int halfDistanceToNearestEnemy(AiStatistics aiStatistics, byte playerId, ShortPoint2D myCenter) {
+		int distance = Integer.MAX_VALUE;
+		for (byte enemyId :
+		aiStatistics.getAliveEnemiesOf(playerId)){
+			int enemyDistance = myCenter.getOnGridDistTo(aiStatistics.getPositionOfPartition(enemyId));
+			if (enemyDistance < distance) {
+				distance = enemyDistance;
 			}
-			return null;
 		}
+		return (int) Math.ceil(distance / 1.9F);
+	}
+
+	private static ShortPoint2D targetForFish(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId, int
+			maxDistance) {
+		return null;
+	}
+
+	public static ShortPoint2D targetForCuttingBuilding(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId,
+			EMapObjectType cuttableObjectType, EBuildingType cuttingBuildingType, AiPositions cuttableObjectsOfPlayer, int factor, int maxDistance) {
+		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(cuttingBuildingType, playerId) + 1;
+		if (cuttableObjectsOfPlayer.size() > buildingCount * factor)
+			return null;
+
+		List<ShortPoint2D> cuttingBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(cuttingBuildingType, playerId);
+		ShortPoint2D referencePoint = cuttingBuildings.size() > 0 ? cuttingBuildings.get(0) : myCenter;
+		ShortPoint2D nearestCuttableObject = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(referencePoint, cuttableObjectType,
+				maxDistance);
+		if (nearestCuttableObject == null)
+			return null;
+
+		return myBorder.getNearestPoint(nearestCuttableObject);
+	}
+
+	public static ShortPoint2D targetForRivers(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId, int maxDistance) {
+		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.WATERWORKS, playerId) + 1;
+		if (aiStatistics.getRiversForPlayer(playerId).size() > buildingCount * 5)
+			return null;
+
+		ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(myCenter, maxDistance);
+		if (nearestRiver == null)
+			return null;
+
+		return myBorder.getNearestPoint(nearestRiver);
+	}
+
+	public static ShortPoint2D targetForMine(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId,
+			EResourceType resourceType, EBuildingType buildingType, int maxDistance) {
+		if (aiStatistics.resourceCountInDefaultPartition(resourceType) == 0)
+			return null;
+
+		int factor = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) + 1;
+		int tiles = buildingType.getProtectedTiles().length * 2;
+
+		if (aiStatistics.resourceCountOfPlayer(resourceType, playerId) > tiles * factor)
+			return null;
+
+		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType, maxDistance);
+		if (nearestResourceAbroad == null)
+			return null;
+
+		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+		return target;
 	}
 }

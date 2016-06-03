@@ -16,6 +16,7 @@ package jsettlers.ai.highlevel;
 
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
@@ -260,7 +261,7 @@ public class AiStatistics {
 		if (o != null) {
 			if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.stones.addNoCollission(x, y);
-			} else if (o.hasCuttableObject(TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
+			} else if (o.hasMapObjectTypes(TREE_GROWING, TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
 				playerStatistic.trees.addNoCollission(x, y);
 			}
 		}
