@@ -399,8 +399,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		if (attackableTowerObject.currDefender == null) {
 			System.err.println("ERROR: WHAT? No defender in a defended tower!");
 		} else {
-			addOccupier(new TowerOccupier(attackableTowerObject.currDefender.place, soldier));
+			TowerOccupier towerOccupier = new TowerOccupier(attackableTowerObject.currDefender.place, soldier);
+			addOccupier(towerOccupier);
 			attackableTowerObject.currDefender = null;
+			addInformableMapObject(towerOccupier, true);
 		}
 		doorHealth = 0.1f;
 	}
