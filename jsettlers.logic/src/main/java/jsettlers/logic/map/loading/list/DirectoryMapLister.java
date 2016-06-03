@@ -107,10 +107,18 @@ public class DirectoryMapLister implements IMapLister {
 
 	@Override
 	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-		String name = header.getName().toLowerCase().replaceAll("^\\W+|\\W+$", "").replaceAll("\\W+", "-");
+		String name = header.getName().toLowerCase().replaceAll("^\\W+|\\W+$", "").replaceAll("\\W+", "_");
 		if (name.isEmpty()) {
 			name = "map";
 		}
+
+		String sizePrefix;
+		if (header.getWidth() == header.getHeight()) {
+			sizePrefix = "" + header.getWidth();
+		} else {
+			sizePrefix = header.getWidth() + "x" + header.getHeight();
+		}
+		name = sizePrefix + "-" + header.getMaxPlayers() + "-" + name;
 
 		Date date = header.getCreationDate();
 		if (date != null) {
