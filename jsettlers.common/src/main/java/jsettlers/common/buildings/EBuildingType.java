@@ -109,6 +109,8 @@ public enum EBuildingType {
 
 	private final short workRadius;
 
+	private final boolean mine;
+
 	private final ConstructionStack[] constructionStacks;
 	private final RelativeStack[] requestStacks;
 	private final RelativeStack[] offerStacks;
@@ -158,6 +160,7 @@ public enum EBuildingType {
 
 		workRadius = file.getWorkradius();
 		workCenter = file.getWorkcenter();
+		mine = file.isMine();
 		flag = file.getFlag();
 		bricklayers = file.getBricklayers();
 		occupierPlaces = file.getOccupyerPlaces();
@@ -174,7 +177,7 @@ public enum EBuildingType {
 
 		this.buildingAreaBitSet = new BuildingAreaBitSet(getBuildingArea());
 
-		if (workerType == EMovableType.MINER) {
+		if (mine) {
 			int centerIndex = -buildingAreaBitSet.minX - buildingAreaBitSet.minY * buildingAreaBitSet.width;
 			this.buildingAreaBitSet.xJumps[centerIndex] = 1;
 			this.buildingAreaBitSet.yJumps[centerIndex] = 1;
@@ -342,11 +345,9 @@ public enum EBuildingType {
 	/**
 	 * Queries a building job with the given name that needs to be accessible from the start job.
 	 * 
-	 * @param jobname
-	 *            The name of the job.
+	 * @param jobname The name of the job.
 	 * @return The job if found.
-	 * @throws IllegalArgumentException
-	 *             If the name was not found.
+	 * @throws IllegalArgumentException If the name was not found.
 	 */
 	public final IBuildingJob getJobByName(String jobname) {
 		HashSet<String> visited = new HashSet<String>();
@@ -421,11 +422,11 @@ public enum EBuildingType {
 	 * @return <code>true</code> iff this building is a mine.
 	 */
 	public boolean isMine() {
-		return MINE_BUILDINGS.contains(this);
+		return mine;
 	}
 
 	public boolean needsFlattenedGround() {
-		return !isMine();
+		return !mine;
 	}
 
 	/**
@@ -447,7 +448,7 @@ public enum EBuildingType {
 	}
 
 	public Set<ELandscapeType> getRequiredGroundTypeAt(int relativeX, int relativeY) {
-		if (relativeX == 0 && relativeY == 0 && isMine()) { // if it is a mine and we are in the center
+		if (relativeX == 0 && relativeY == 0 && mine) { // if it is a mine and we are in the center
 			return ELandscapeType.MOUNTAIN_TYPES;
 		} else {
 			return groundTypes;

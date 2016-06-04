@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd">
-<building worker="MINER">
+<building worker="MINER" mine="true">
     <ground groundtype="MOUNTAIN" />
 	<ground groundtype="MOUNTAINBORDER" />
 	<ground groundtype="MOUNTAINBORDEROUTER" />

@@ -95,6 +95,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<RelativeBricklayer> bricklayers = new ArrayList<>();
 
 	private int workradius;
+	private boolean mine;
 	private RelativePoint workCenter = new RelativePoint(0, 0);
 	private RelativePoint flag = new RelativePoint(0, 0);
 	private ArrayList<RelativePoint> buildmarks = new ArrayList<RelativePoint>();
@@ -337,6 +338,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 		if (viewdistance != null && viewdistance.matches("\\d+")) {
 			this.viewdistance = Short.parseShort(viewdistance);
 		}
+
+		this.mine = Boolean.valueOf(attributes.getValue("mine"));
 	}
 
 	public IBuildingJob getStartJob() {
@@ -395,6 +398,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public short getWorkradius() {
 		return (short) workradius;
+	}
+
+	public boolean isMine() {
+		return mine;
 	}
 
 	public RelativePoint getWorkcenter() {

@@ -115,9 +115,10 @@
 <!ELEMENT building (ground+, blocked+, door, constructionStack+, requestStack*, offerStack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
-   worker CDATA #REQUIRED
-   workradius CDATA #IMPLIED
-   viewdistance CDATA #IMPLIED
+   	worker CDATA #REQUIRED
+	workradius CDATA #IMPLIED
+	viewdistance CDATA #IMPLIED
+	mine (true|false) "false"
 >
 
 <!ELEMENT ground EMPTY>
