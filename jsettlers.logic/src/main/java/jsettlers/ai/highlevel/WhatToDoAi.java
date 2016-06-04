@@ -37,7 +37,6 @@ import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.STOCK;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
-import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
@@ -100,7 +99,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 3;
 	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	public static final float WEAPON_SMITH_FACTOR = 7F;
-	public static final int PIONEER_GROUP_COUNT = 30;
+	public static final int RRESOURCE_PIONEER_GROUP_COUNT = 15;
+	public static final int BROADEN_PIONEER_GROUP_COUNT = 15;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -374,37 +374,58 @@ public class WhatToDoAi implements IWhatToDoAi {
 		AiPositions border = aiStatistics.getBorderOf(playerId);
 		if (border.size() > 0) {
 			List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
-			List<Integer> pioneerIds = new ArrayList<>(PIONEER_GROUP_COUNT);
+			List<Integer> pioneerIds = new ArrayList<>(RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT);
 			for (ShortPoint2D pioneer : pioneers) {
 				pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneer.x, pioneer.y).getID());
 			}
-			if (pioneers.size() < PIONEER_GROUP_COUNT) {
-				List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+			List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+			if (pioneers.size() < RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT) {
 				List<Integer> newPioneers = new ArrayList<>();
 				for (ShortPoint2D bearerPosition : bearers) {
+					if (bearers.size() <= MINIMUM_NUMBER_OF_BEARERS) {
+						break;
+					}
+					int remainingBearers = bearers.size() - newPioneers.size() - aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) *
+							NUMBER_OF_BEARERSS_PER_HOUSE;
+					if (remainingBearers <= 0) {
+						break;
+					}
 					Movable bearer = mainGrid.getMovableGrid().getMovableAt(bearerPosition.x, bearerPosition.y);
 					if (bearer.getAction() == EMovableAction.NO_ACTION) {
 						newPioneers.add(bearer.getID());
 						pioneerIds.add(bearer.getID());
-						if (pioneers.size() + newPioneers.size() == PIONEER_GROUP_COUNT) {
+						if (pioneers.size() + newPioneers.size() == RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT) {
 							break;
 						}
 					}
 				}
-				taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
+				if (newPioneers.size() > 0) {
+					taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
+				}
 			}
-			ShortPoint2D pioneerTarget = PioneerAi.findTarget(aiStatistics, playerId);
-			if (pioneerTarget != null) {
-				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, pioneerTarget, pioneerIds));
+
+			Collections.sort(pioneerIds);
+
+			if (pioneerIds.size() > 0) {
+				ShortPoint2D resourcePioneerTarget = PioneerAi.findResourceTarget(aiStatistics, playerId);
+				if (resourcePioneerTarget != null) {
+					List<Integer> resourcePioneerIds = pioneerIds.subList(0,
+							Math.min(pioneerIds.size(), RRESOURCE_PIONEER_GROUP_COUNT));
+					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourcePioneerTarget, resourcePioneerIds));
+					if (resourcePioneerIds.size() < pioneerIds.size()) {
+						pioneerIds = pioneerIds.subList(RRESOURCE_PIONEER_GROUP_COUNT, pioneerIds.size());
+					}
+				}
+			}
+			if (pioneerIds.size() > 0) {
+				ShortPoint2D broadenerPioneerTarget = PioneerAi.findBroadenTarget(aiStatistics, playerId);
+				if (broadenerPioneerTarget != null) {
+					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenerPioneerTarget, pioneerIds));
+				}
 			}
 		}
 
 		return false;
-		/*
-		 * if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1 &&
-		 * aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0) { destroyHinterlandMilitaryBuildings(); return construct(TOWER); }
-		 * return false;
-		 */
 	}
 
 	private boolean buildLivingHouse() {

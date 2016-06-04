@@ -31,7 +31,7 @@ public class PioneerAi {
 
 	public static final int FISH_NEEDED_BY_FISHER = 10;
 
-	public static ShortPoint2D findTarget(AiStatistics aiStatistics, byte playerId) {
+	public static ShortPoint2D findResourceTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
 int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
@@ -139,5 +139,10 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 
 		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
 		return target;
+	}
+
+	public static ShortPoint2D findBroadenTarget(AiStatistics aiStatistics, byte playerId) {
+		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
+		return myBorder.getNearestPoint(aiStatistics.getPositionOfPartition(playerId));
 	}
 }
