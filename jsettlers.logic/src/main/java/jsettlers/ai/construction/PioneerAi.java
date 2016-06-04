@@ -34,41 +34,33 @@ public class PioneerAi {
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
 int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 
-		System.out.println("check trees");
 		ShortPoint2D target = targetForCuttingBuilding(aiStatistics, myBorder, myCenter, playerId, EMapObjectType.TREE_ADULT,
 				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check stones");
 		target = targetForCuttingBuilding(aiStatistics, myBorder, myCenter, playerId, EMapObjectType.STONE, EBuildingType.STONECUTTER,
 				aiStatistics.getStonesForPlayer(playerId), 4, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check coal");
 		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check ironore");
 		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check rivers");
 		target = targetForRivers(aiStatistics, myBorder, myCenter, playerId, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check gold");
 		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		System.out.println("check fish");
-		System.out.println("check fish");
-		return targetForFish(aiStatistics, myBorder, myCenter, playerId, maxDistance);
+		return targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.FISH, EBuildingType.FISHER, maxDistance);
 	}
 
 	private static int halfDistanceToNearestEnemy(AiStatistics aiStatistics, byte playerId, ShortPoint2D myCenter) {
@@ -81,11 +73,6 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 			}
 		}
 		return (int) Math.ceil(distance / 1.9F);
-	}
-
-	private static ShortPoint2D targetForFish(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId, int
-			maxDistance) {
-		return null;
 	}
 
 	public static ShortPoint2D targetForCuttingBuilding(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId,

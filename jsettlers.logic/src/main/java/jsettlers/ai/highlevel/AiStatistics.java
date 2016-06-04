@@ -199,13 +199,33 @@ public class AiStatistics {
 				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
 					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
 					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
-					if (resourceType != EResourceType.FISH || landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
+					if (resourceType != EResourceType.FISH) {
 						aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][resourceType.ordinal]++;
-					}
-					if (player != null) {
-						playerStatistics[player.playerId].resourceCount[resourceType.ordinal]++;
-					} else {
-						resourceCountInDefaultPartition[resourceType.ordinal]++;
+						if (player != null) {
+							playerStatistics[player.playerId].resourceCount[resourceType.ordinal]++;
+						} else {
+							resourceCountInDefaultPartition[resourceType.ordinal]++;
+						}
+					} else if (landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.WATER1) {
+						int fishMapInformationPlayerId = mapInformationPlayerId;
+						if (mapInformationPlayerId == aiMapInformation.resourceAndGrassCount.length - 1) {
+							fishMapInformationPlayerId = mapInformationPlayerIdOfPosition((short) (x + 3), y);
+							if (fishMapInformationPlayerId == aiMapInformation.resourceAndGrassCount.length - 1) {
+								fishMapInformationPlayerId = mapInformationPlayerIdOfPosition((short) (x - 3), y);
+								if (fishMapInformationPlayerId == aiMapInformation.resourceAndGrassCount.length - 1) {
+									fishMapInformationPlayerId = mapInformationPlayerIdOfPosition(x, (short) (y + 3));
+									if (fishMapInformationPlayerId == aiMapInformation.resourceAndGrassCount.length - 1) {
+										fishMapInformationPlayerId = mapInformationPlayerIdOfPosition(x, (short) (y - 3));
+									}
+								}
+							}
+						}
+						aiMapInformation.resourceAndGrassCount[fishMapInformationPlayerId][resourceType.ordinal]++;
+						if (fishMapInformationPlayerId != aiMapInformation.resourceAndGrassCount.length - 1) {
+							playerStatistics[fishMapInformationPlayerId].resourceCount[resourceType.ordinal]++;
+						} else {
+							resourceCountInDefaultPartition[resourceType.ordinal]++;
+						}
 					}
 				}
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
@@ -237,6 +257,19 @@ public class AiStatistics {
 				}
 			}
 		}
+	}
+
+	private int mapInformationPlayerIdOfPosition(short x, short y) {
+		if (!mainGrid.isInBounds(x, y)) {
+			return aiMapInformation.resourceAndGrassCount.length - 1;
+		}
+		
+		byte playerId = mainGrid.getPartitionsGrid().getPlayerIdAt(x, y);
+		if (playerId == -1) {
+			return aiMapInformation.resourceAndGrassCount.length - 1;
+		}
+		
+		return playerId;
 	}
 
 	private boolean isBorderOf(short x, short y, byte playerId) {

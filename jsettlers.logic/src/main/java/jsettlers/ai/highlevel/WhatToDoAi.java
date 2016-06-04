@@ -100,7 +100,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 3;
 	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	public static final float WEAPON_SMITH_FACTOR = 7F;
-	public static final int PIONEER_GROUP_COUNT = 15;
+	public static final int PIONEER_GROUP_COUNT = 30;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
