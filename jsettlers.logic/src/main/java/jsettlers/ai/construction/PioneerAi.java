@@ -143,6 +143,19 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 
 	public static ShortPoint2D findBroadenTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		return myBorder.getNearestPoint(aiStatistics.getPositionOfPartition(playerId));
+		return myBorder.getNearestPoint(getCentroidOf(aiStatistics, playerId));
+	}
+
+	private static ShortPoint2D getCentroidOf(AiStatistics aiStatistics, byte playerId) {
+		AiPositions landForPlayer = aiStatistics.getLandForPlayer(playerId);
+		long x = 0;
+		long y = 0;
+		for (int i = 0; i < landForPlayer.size(); i += 50) {
+			ShortPoint2D position = landForPlayer.get(i);
+			x += position.x;
+			y += position.y;
+		}
+		int divisor = landForPlayer.size() / 50;
+		return new ShortPoint2D((int) (x / divisor), (int) (y / divisor));
 	}
 }

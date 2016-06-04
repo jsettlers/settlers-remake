@@ -201,6 +201,10 @@ public class AiPositions implements IMapArea {
 		return resY >= 0 ? new ShortPoint2D(resX, resY) : null;
 	}
 
+	public ShortPoint2D get(int index) {
+		return new ShortPoint2D(unpackX(points[index]), unpackY(points[index]));
+	}
+
 	private int findClosestIndex(int x, int y) {
 		return Math.abs(indexOf(x, y));
 	}
