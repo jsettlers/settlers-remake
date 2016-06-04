@@ -50,7 +50,7 @@ public final class NewConstructionMarksAlgorithm {
 		}
 
 		BuildingAreaBitSet buildingArea = buildingType.getBuildingAreaBitSet();
-		boolean isMine = buildingType.isMine();
+		boolean binaryConstructionMarkValues = !buildingType.needsFlattenedGround();
 		RelativePoint[] positionsToBeFlattened = buildingType.getBuildingArea();
 
 		// declare local variables
@@ -107,7 +107,7 @@ public final class NewConstructionMarksAlgorithm {
 								&& !map.canUsePositionForConstruction(x + buildingPositionX, y + buildingPositionY,
 										buildingType.getRequiredGroundTypeAt(buildingPositionX, buildingPositionY), partitionId)) {
 
-							map.setConstructMarking(x, y, false, isMine, null);
+							map.setConstructMarking(x, y, false, binaryConstructionMarkValues, null);
 
 							// prune the positions we already know that they are invalid.
 							for (int pruneX = 0; pruneX < xJumps[index]; pruneX++) {
@@ -119,7 +119,7 @@ public final class NewConstructionMarksAlgorithm {
 
 									doneSet.set((dx + pruneX) + (line + pruneY) * lineLength);
 
-									map.setConstructMarking(x + pruneX, y + pruneY, false, isMine, null);
+									map.setConstructMarking(x + pruneX, y + pruneY, false, binaryConstructionMarkValues, null);
 								}
 							}
 
@@ -129,7 +129,7 @@ public final class NewConstructionMarksAlgorithm {
 				}
 
 				// no bad position found, so set the construction mark
-				map.setConstructMarking(x, y, true, isMine, positionsToBeFlattened);
+				map.setConstructMarking(x, y, true, binaryConstructionMarkValues, positionsToBeFlattened);
 			}
 		}
 
