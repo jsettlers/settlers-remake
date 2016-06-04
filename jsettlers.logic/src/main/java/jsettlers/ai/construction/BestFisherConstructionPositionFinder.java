@@ -40,13 +40,13 @@ public class BestFisherConstructionPositionFinder implements IBestConstructionPo
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		int fishDistance = Integer.MAX_VALUE;
+
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
 					playerId, buildingType)) {
-				ShortPoint2D fishPosition = aiStatistics.getNearestResourcePointForPlayer(point, FISH, playerId, fishDistance);
+				ShortPoint2D fishPosition = aiStatistics.getNearestResourcePointForPlayer(point, FISH, playerId, buildingType.getWorkradius());
 				if (fishPosition != null) {
-					fishDistance = point.getOnGridDistTo(fishPosition);
+					int fishDistance = point.getOnGridDistTo(fishPosition);
 					scoredConstructionPositions.add(new ScoredConstructionPosition(point, fishDistance));
 				}
 			}
