@@ -419,6 +419,20 @@ public class AiStatistics {
 				currentNearestPointDistance);
 	}
 
+	public ShortPoint2D getNearestFishPointForPlayer(ShortPoint2D point, final byte playerId, int currentNearestPointDistance) {
+		return sortedResourceTypes[EResourceType.FISH.ordinal].getNearestPoint(point, currentNearestPointDistance, new AiPositionFilter() {
+			@Override
+			public boolean contains(int x, int y) {
+				return isPlayerThere(x + 3, y) || isPlayerThere(x - 3, y) || isPlayerThere(x, y + 3)
+						|| isPlayerThere(x, y - 3);
+			}
+
+			private boolean isPlayerThere(int x, int y) {
+				return mainGrid.isInBounds(x, y) && partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
+			}
+		});
+	}
+
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
 			int currentNearestPointDistance) {
 		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance);

@@ -29,6 +29,8 @@ import java.util.List;
  */
 public class PioneerAi {
 
+	public static final int FISH_NEEDED_BY_FISHER = 10;
+
 	public static ShortPoint2D findTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
@@ -60,7 +62,7 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (target != null)
 			return target;
 
-		return targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.FISH, EBuildingType.FISHER, maxDistance);
+		return targetForFish(aiStatistics, myBorder, myCenter, playerId, maxDistance);
 	}
 
 	private static int halfDistanceToNearestEnemy(AiStatistics aiStatistics, byte playerId, ShortPoint2D myCenter) {
@@ -115,6 +117,23 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 			return null;
 
 		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType, maxDistance);
+		if (nearestResourceAbroad == null)
+			return null;
+
+		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+		return target;
+	}
+
+	public static ShortPoint2D targetForFish(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId, int maxDistance) {
+		if (aiStatistics.resourceCountInDefaultPartition(EResourceType.FISH) == 0)
+			return null;
+
+		int factor = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.FISHER, playerId) + 1;
+
+		if (aiStatistics.resourceCountOfPlayer(EResourceType.FISH, playerId) > FISH_NEEDED_BY_FISHER * factor)
+			return null;
+
+		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestFishPointForPlayer(myCenter, playerId, maxDistance);
 		if (nearestResourceAbroad == null)
 			return null;
 
