@@ -15,9 +15,11 @@
 package jsettlers.algorithms.construction;
 
 import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import jsettlers.common.buildings.BuildingAreaBitSet;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -42,11 +44,14 @@ public final class NewConstructionMarksAlgorithm {
 		this.playerId = player;
 	}
 
-	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final Set<ELandscapeType> landscapeTypes,
-			RelativePoint[] flattenPositions, boolean binaryConstructionMarkValues) {
+	public void calculateConstructMarks(final MapRectangle mapArea, EBuildingType buildingType) {
 		if (lastArea != null) {
 			removeConstructionMarks(lastArea, mapArea);
 		}
+
+		BuildingAreaBitSet buildingArea = buildingType.getBuildingAreaBitSet();
+		boolean isMine = buildingType.isMine();
+		RelativePoint[] positionsToBeFlattened = buildingType.getBuildingArea();
 
 		// declare local variables
 		final short[] xJumps = buildingArea.xJumps;
@@ -93,12 +98,16 @@ public final class NewConstructionMarksAlgorithm {
 					for (int buildingDy = buildingAreaHeight - 1; buildingDy >= 0; buildingDy--) {
 						int index = buildingDx + buildingDy * buildingAreaWidth;
 
+						// relative position regarding the building
+						int buildingPositionX = buildingDx + xOffsetForBuilding;
+						int buildingPositionY = buildingDy + yOffsetForBuilding;
+
 						// if the position must be free, but isn't
 						if (xJumps[index] != 0
-								&& !map.canUsePositionForConstruction(x + buildingDx + xOffsetForBuilding, y + buildingDy + yOffsetForBuilding,
-										landscapeTypes, partitionId)) {
+								&& !map.canUsePositionForConstruction(x + buildingPositionX, y + buildingPositionY,
+										buildingType.getRequiredGroundTypeAt(buildingPositionX, buildingPositionY), partitionId)) {
 
-							map.setConstructMarking(x, y, false, binaryConstructionMarkValues, null);
+							map.setConstructMarking(x, y, false, isMine, null);
 
 							// prune the positions we already know that they are invalid.
 							for (int pruneX = 0; pruneX < xJumps[index]; pruneX++) {
@@ -110,7 +119,7 @@ public final class NewConstructionMarksAlgorithm {
 
 									doneSet.set((dx + pruneX) + (line + pruneY) * lineLength);
 
-									map.setConstructMarking(x + pruneX, y + pruneY, false, binaryConstructionMarkValues, null);
+									map.setConstructMarking(x + pruneX, y + pruneY, false, isMine, null);
 								}
 							}
 
@@ -120,7 +129,7 @@ public final class NewConstructionMarksAlgorithm {
 				}
 
 				// no bad position found, so set the construction mark
-				map.setConstructMarking(x, y, true, binaryConstructionMarkValues, flattenPositions);
+				map.setConstructMarking(x, y, true, isMine, positionsToBeFlattened);
 			}
 		}
 
@@ -130,7 +139,6 @@ public final class NewConstructionMarksAlgorithm {
 
 	/**
 	 * Removes all construction marks on the screen.
-	 * 
 	 */
 	public void removeConstructionMarks() {
 		if (lastArea != null) {

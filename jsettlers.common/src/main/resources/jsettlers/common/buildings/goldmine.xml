@@ -2,6 +2,11 @@
 <!DOCTYPE building SYSTEM "building.dtd" >
 <building worker="MINER">
     <ground groundtype="MOUNTAIN" />
+    <ground groundtype="MOUNTAINBORDER" />
+    <ground groundtype="MOUNTAINBORDEROUTER" />
+    <ground groundtype="GRASS"/>
+    <ground groundtype="EARTH"/>
+    <ground groundtype="FLATTENED"/>
 
     <blocked dx="-2" dy="0" block="true" />
     <blocked dx="-2" dy="-1" block="true" />

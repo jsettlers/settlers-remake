@@ -193,6 +193,12 @@ public enum EBuildingType {
 		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
 
 		this.buildingAreaBitSet = new BuildingAreaBitSet(getBuildingArea());
+
+		if (workerType == EMovableType.MINER) {
+			int centerIndex = -buildingAreaBitSet.minX - buildingAreaBitSet.minY * buildingAreaBitSet.width;
+			this.buildingAreaBitSet.xJumps[centerIndex] = 1;
+			this.buildingAreaBitSet.yJumps[centerIndex] = 1;
+		}
 	}
 
 	/**
@@ -219,7 +225,7 @@ public enum EBuildingType {
 		return sum;
 	}
 
-	public RelativePoint[] getBuildingArea(){
+	public RelativePoint[] getBuildingArea() {
 		return protectedTiles;
 	}
 
@@ -266,11 +272,6 @@ public enum EBuildingType {
 	 */
 	public final RelativePoint[] getProtectedTiles() {
 		return protectedTiles;
-	}
-
-	@Deprecated
-	public final int getImageIndex() {
-		return imageIndex;
 	}
 
 	/**
@@ -479,5 +480,13 @@ public enum EBuildingType {
 	 */
 	public static EnumSet<EBuildingType> getMilitaryBuildings() {
 		return MILITARY_BUILDINGS;
+	}
+
+	public Set<ELandscapeType> getRequiredGroundTypeAt(int relativeX, int relativeY) {
+		if (relativeX == 0 && relativeY == 0 && isMine()) { // if it is a mine and we are in the center
+			return ELandscapeType.MOUNTAIN_TYPES;
+		} else {
+			return groundTypes;
+		}
 	}
 }
