@@ -23,9 +23,7 @@ import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
 import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
-import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
@@ -37,57 +35,52 @@ import jsettlers.common.position.RelativePoint;
  * @author Andreas Eberle
  */
 public enum EBuildingType {
-	STONECUTTER(3),
-	FORESTER(7),
-	LUMBERJACK(0),
-	SAWMILL(1),
+	STONECUTTER,
+	FORESTER,
+	LUMBERJACK,
+	SAWMILL,
 
-	COALMINE(6),
-	IRONMINE(4),
-	GOLDMINE(5),
-	GOLDMELT(8),
-	IRONMELT(9),
-	TOOLSMITH(10),
-	WEAPONSMITH(11),
+	COALMINE,
+	IRONMINE,
+	GOLDMINE,
+	GOLDMELT,
+	IRONMELT,
+	TOOLSMITH,
+	WEAPONSMITH,
 
-	FARM(21),
-	PIG_FARM(20),
+	FARM,
+	PIG_FARM,
 	/**
 	 * Needs to implement {@link IBuilding.IMill}
 	 */
-	MILL(14), // 13 => rotating
-	WATERWORKS(19),
-	SLAUGHTERHOUSE(13),
-	BAKER(23),
-	FISHER(22),
-	WINEGROWER(33),
-	CHARCOAL_BURNER(30),
-	DONKEY_FARM(35), // GUI 87
+	MILL,
+	WATERWORKS,
+	SLAUGHTERHOUSE,
+	BAKER,
+	FISHER,
+	WINEGROWER,
+	CHARCOAL_BURNER,
+	DONKEY_FARM,
 
-	SMALL_LIVINGHOUSE(24),
-	MEDIUM_LIVINGHOUSE(25),
-	BIG_LIVINGHOUSE(26),
+	SMALL_LIVINGHOUSE,
+	MEDIUM_LIVINGHOUSE,
+	BIG_LIVINGHOUSE,
 
-	LOOKOUT_TOWER(2),
-	TOWER(17),
-	BIG_TOWER(18),
-	CASTLE(16),
-	HOSPITAL(29), // GUI 93
-	BARRACK(34),
+	LOOKOUT_TOWER,
+	TOWER,
+	BIG_TOWER,
+	CASTLE,
+	HOSPITAL,
+	BARRACK,
 
-	DOCKYARD(45),
-	HARBOR(44),
-	STOCK(-1),
-	// 27: katapult
+	DOCKYARD,
+	HARBOR,
+	STOCK,
 
-	TEMPLE(31),
-	BIG_TEMPLE(32),
+	TEMPLE,
+	BIG_TEMPLE,
 
-	MARKET_PLACE(0);
-
-	private static final int SIZEOF_LONG = 64;
-
-	private static final int IMAGE_ROMAN = 13;
+	MARKET_PLACE;
 
 	/**
 	 * A copy of {@link #values()}. Do not modify this array. This is intended for quicker access to this value.
@@ -114,15 +107,13 @@ public enum EBuildingType {
 
 	private final RelativePoint[] blockedTiles;
 
-	private final int imageIndex;
-
-	private final short workradius;
+	private final short workRadius;
 
 	private final ConstructionStack[] constructionStacks;
 	private final RelativeStack[] requestStacks;
 	private final RelativeStack[] offerStacks;
 
-	private final RelativePoint workcenter;
+	private final RelativePoint workCenter;
 
 	private final RelativePoint flag;
 
@@ -138,26 +129,22 @@ public enum EBuildingType {
 
 	private final RelativePoint[] protectedTiles;
 
-	private final RelativePoint[] buildmarks;
+	private final RelativePoint[] buildMarks;
 
 	private final EnumSet<ELandscapeType> groundTypes;
 
-	private final short viewdistance;
+	private final short viewDistance;
 
-	private final OccupierPlace[] occupyerPlaces;
+	private final OccupierPlace[] occupierPlaces;
 
 	private final BuildingAreaBitSet buildingAreaBitSet;
 
 	/**
 	 * Constructs an enum object.
-	 * 
-	 * @param imageIndex
-	 *            The image index in the roman image file.
 	 */
-	EBuildingType(int imageIndex) {
+	EBuildingType() {
 		this.ordinal = ordinal();
 
-		this.imageIndex = imageIndex;
 		BuildingFile file = new BuildingFile(this.toString());
 		startJob = file.getStartJob();
 		workerType = file.getWorkerType();
@@ -169,26 +156,19 @@ public enum EBuildingType {
 		requestStacks = file.getRequestStacks();
 		offerStacks = file.getOfferStacks();
 
-		workradius = file.getWorkradius();
-		workcenter = file.getWorkcenter();
+		workRadius = file.getWorkradius();
+		workCenter = file.getWorkcenter();
 		flag = file.getFlag();
 		bricklayers = file.getBricklayers();
-		occupyerPlaces = file.getOccupyerPlaces();
+		occupierPlaces = file.getOccupyerPlaces();
 		guiImage = file.getGuiImage();
-		ImageLink[] tempimages = file.getImages();
-		if (tempimages.length == 0) {
-			// TODO: this can be removed if all images are converted
-			System.out.println("WARNING: Building " + this.toString() + " does not have an image definition.");
-			images = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, IMAGE_ROMAN, imageIndex, 0) };
-			buildImages = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, IMAGE_ROMAN, imageIndex, 1) };
-		} else {
-			images = tempimages;
-			buildImages = file.getBuildImages();
-		}
 
-		buildmarks = file.getBuildmarks();
+		images = file.getImages();
+		buildImages = file.getBuildImages();
+
+		buildMarks = file.getBuildmarks();
 		groundTypes = EnumSet.copyOf(file.getGroundtypes());
-		viewdistance = file.getViewdistance();
+		viewDistance = file.getViewdistance();
 
 		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
 
@@ -199,22 +179,6 @@ public enum EBuildingType {
 			this.buildingAreaBitSet.xJumps[centerIndex] = 1;
 			this.buildingAreaBitSet.yJumps[centerIndex] = 1;
 		}
-	}
-
-	/**
-	 * Converts the list of supported ground types to a long for fast lookup.
-	 * 
-	 * @param groundtypeArray
-	 *            The array of ground types.
-	 * @return A packed bitset with each bit set if the ground type with that ordinal is in it.
-	 */
-	private long packGroundtypes(ELandscapeType[] groundtypeArray) {
-		assert ELandscapeType.VALUES.length <= SIZEOF_LONG : "Too many ground types.";
-		long res = 0;
-		for (ELandscapeType g : groundtypeArray) {
-			res |= (1 << g.ordinal);
-		}
-		return res;
 	}
 
 	private byte calculateNumberOfConstructionMaterials() {
@@ -306,8 +270,8 @@ public enum EBuildingType {
 	 * 
 	 * @return The radius.
 	 */
-	public final short getWorkradius() {
-		return workradius;
+	public final short getWorkRadius() {
+		return workRadius;
 	}
 
 	/**
@@ -316,7 +280,7 @@ public enum EBuildingType {
 	 * @return The default work center position.
 	 */
 	public final RelativePoint getDefaultWorkcenter() {
-		return workcenter;
+		return workCenter;
 	}
 
 	/**
@@ -343,8 +307,8 @@ public enum EBuildingType {
 	 * 
 	 * @return The positions of the marks.
 	 */
-	public final RelativePoint[] getBuildmarks() {
-		return buildmarks;
+	public final RelativePoint[] getBuildMarks() {
+		return buildMarks;
 	}
 
 	/**
@@ -362,7 +326,7 @@ public enum EBuildingType {
 	 * @return The view distance.
 	 */
 	public final short getViewDistance() {
-		return viewdistance;
+		return viewDistance;
 	}
 
 	/**
@@ -372,7 +336,7 @@ public enum EBuildingType {
 	 * @see OccupierPlace
 	 */
 	public final OccupierPlace[] getOccupierPlaces() {
-		return occupyerPlaces;
+		return occupierPlaces;
 	}
 
 	/**

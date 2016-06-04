@@ -146,7 +146,7 @@ public class BuildingMenu extends AndroidMenu {
 
 		addSpace(tabs);
 
-		if (building.getBuildingType().getWorkradius() > 0) {
+		if (building.getBuildingType().getWorkRadius() > 0) {
 			ImageButton button =
 					generateImageButtonTab(tabs,
 							R.drawable.building_set_workarea);

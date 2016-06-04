@@ -456,7 +456,7 @@ public class AiStatistics {
 
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].wineGrowerWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkradius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkRadius()) {
 					return true;
 				}
 			}
@@ -464,7 +464,7 @@ public class AiStatistics {
 
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].farmWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkradius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkRadius()) {
 					return true;
 				}
 			}
