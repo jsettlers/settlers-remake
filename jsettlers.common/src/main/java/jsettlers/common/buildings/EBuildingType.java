@@ -178,9 +178,7 @@ public enum EBuildingType {
 		this.buildingAreaBitSet = new BuildingAreaBitSet(getBuildingArea());
 
 		if (mine) {
-			int centerIndex = -buildingAreaBitSet.minX - buildingAreaBitSet.minY * buildingAreaBitSet.width;
-			this.buildingAreaBitSet.xJumps[centerIndex] = 1;
-			this.buildingAreaBitSet.yJumps[centerIndex] = 1;
+			this.buildingAreaBitSet.setCenter((short) 1, (short) 1);
 		}
 	}
 
@@ -345,9 +343,11 @@ public enum EBuildingType {
 	/**
 	 * Queries a building job with the given name that needs to be accessible from the start job.
 	 * 
-	 * @param jobname The name of the job.
+	 * @param jobname
+	 *            The name of the job.
 	 * @return The job if found.
-	 * @throws IllegalArgumentException If the name was not found.
+	 * @throws IllegalArgumentException
+	 *             If the name was not found.
 	 */
 	public final IBuildingJob getJobByName(String jobname) {
 		HashSet<String> visited = new HashSet<String>();
