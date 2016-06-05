@@ -353,10 +353,8 @@ public class AiStatistics {
 		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
 	}
 
-	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId,
-			int currentNearestPointDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId,
-				currentNearestPointDistance);
+	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance) {
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId, searchDistance);
 	}
 
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
@@ -364,25 +362,22 @@ public class AiStatistics {
 		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject,
-			int currentNearestPointDistance) {
-		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, currentNearestPointDistance, (byte) -1);
+	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance) {
+		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, searchDistance, (byte) -1);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
-			int currentNearestPointDistance, byte playerId) {
+	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, byte playerId) {
 		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		if (sortedResourcePoints == null) {
 			return null;
 		}
 
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, searchDistance);
 	}
 
 	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId,
-			int currentNearestPointDistance) {
-		return sortedPoints.getNearestPoint(point, currentNearestPointDistance, new AiPositionFilter() {
-
+			int searchDistance) {
+		return sortedPoints.getNearestPoint(point, searchDistance, new AiPositionFilter() {
 			@Override
 			public boolean contains(int x, int y) {
 				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
@@ -546,9 +541,8 @@ public class AiStatistics {
 		return mainGrid;
 	}
 
-	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint, int currentNearestPointDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1,
-				currentNearestPointDistance);
+	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint, int searchDistance) {
+		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1, searchDistance);
 	}
 
 	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {
@@ -610,6 +604,7 @@ public class AiStatistics {
 	public AiMapInformation getAiMapInformation() {
 		return aiMapInformation;
 	}
+
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
@@ -637,7 +632,7 @@ public class AiStatistics {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
 			stones = new AiPositions();
 			trees = new AiPositions();
-			rivers = new AiPositions(); 
+			rivers = new AiPositions();
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
