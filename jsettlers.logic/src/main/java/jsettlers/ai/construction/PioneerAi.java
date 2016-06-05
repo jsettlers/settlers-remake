@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages_es;
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
@@ -46,6 +45,10 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (target != null)
 			return target;
 
+		target = targetForNearStoneFields(aiStatistics, myBorder, playerId);
+		if (target != null)
+			return target;
+
 		target = targetForMine(aiStatistics, myBorder, myCenter, playerId, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
 		if (target != null)
 			return target;
@@ -63,6 +66,16 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 			return target;
 
 		return targetForFish(aiStatistics, myBorder, myCenter, playerId, maxDistance);
+	}
+
+	private static ShortPoint2D targetForNearStoneFields(AiStatistics aiStatistics, AiPositions myBorder, byte playerId) {
+		for (ShortPoint2D stonePosition : aiStatistics.getStonesInDefaultPosition()) {
+			ShortPoint2D target = myBorder.getNearestPoint(stonePosition, 10, null);
+			if (target != null) {
+				return target;
+			}
+		}
+		return null;
 	}
 
 	private static int halfDistanceToNearestEnemy(AiStatistics aiStatistics, byte playerId, ShortPoint2D myCenter) {

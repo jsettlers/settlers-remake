@@ -696,6 +696,10 @@ public class AiStatistics {
 		return playerStatistics[playerId].resourceCount[resourceType.ordinal];
 	}
 
+	public AiPositions getStonesInDefaultPosition() {
+		return sortedCuttableObjectsInDefaultPartition.get(STONE);
+	}
+
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
