@@ -241,8 +241,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				}
 			}
 			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(
-					LUMBERJACK,
-					playerId)) {
+					LUMBERJACK, playerId)) {
 				taskScheduler.scheduleTask(
 						new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
