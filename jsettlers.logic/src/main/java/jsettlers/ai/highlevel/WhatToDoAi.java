@@ -201,7 +201,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				int numberOfStoneCutters = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
 
 				ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId)
-						.getNearestPoint(stoneCutterPosition, STONECUTTER.getWorkradius() * MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR, null);
+						.getNearestPoint(stoneCutterPosition, STONECUTTER.getWorkRadius() * MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR, null);
 				if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
 					taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
 				} else {

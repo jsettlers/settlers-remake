@@ -109,7 +109,7 @@ public class AiStatistics {
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
-		byte flattenEffort = constructionMarksGrid.getConstructionMarkValue(position.x, position.y, buildingType.getProtectedTiles());
+		byte flattenEffort = constructionMarksGrid.calculateConstructionMarkValue(position.x, position.y, buildingType.getProtectedTiles());
 		if (flattenEffort == -1) {
 			return Byte.MAX_VALUE;
 		}
@@ -451,7 +451,7 @@ public class AiStatistics {
 
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].wineGrowerWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkradius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkRadius()) {
 					return true;
 				}
 			}
@@ -459,7 +459,7 @@ public class AiStatistics {
 
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].farmWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkradius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkRadius()) {
 					return true;
 				}
 			}

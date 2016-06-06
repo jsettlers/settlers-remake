@@ -47,7 +47,7 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 					return RATE_INVALID;
 				}
 
-				short workradius = buildingType.getWorkradius();
+				short workradius = buildingType.getWorkRadius();
 				ShortPoint2D nearestTreePosition = objects.getNearestPoint(p, Math.min(workradius, currentBestRating - score), null);
 				if (nearestTreePosition == null) {
 					return RATE_INVALID;
