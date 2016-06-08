@@ -72,6 +72,10 @@ public class PioneerAi {
 		if (target != null)
 			return target;
 
+		target = targetForOtherPartition(myBorder);
+		if (target != null)
+			return target;
+
 		target = targetForNearStoneFields(myBorder);
 		if (target != null)
 			return target;
@@ -92,11 +96,7 @@ public class PioneerAi {
 		if (target != null)
 			return target;
 
-		target = targetForFish(myBorder, maxDistance);
-		if (target != null)
-			return target;
-
-		return targetForOtherPartition(myBorder);
+		return targetForFish(myBorder, maxDistance);
 	}
 
 	private ShortPoint2D targetForOtherPartition(AiPositions myBorder) {
