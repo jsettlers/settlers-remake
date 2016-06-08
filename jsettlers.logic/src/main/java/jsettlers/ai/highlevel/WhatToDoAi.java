@@ -108,6 +108,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final ArmyGeneral armyGeneral;
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
+	private final PioneerAi pioneerAi;
 	private boolean isEndGame = false;
 	private ArrayList<Object> failedConstructingBuildings;
 
@@ -119,6 +120,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
 		this.economyMinister = economyMinister;
+		this.pioneerAi = new PioneerAi(aiStatistics, playerId);
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
 	}
 
@@ -401,7 +403,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			Collections.sort(pioneerIds);
 
 			if (pioneerIds.size() > 0) {
-				ShortPoint2D resourcePioneerTarget = PioneerAi.findResourceTarget(aiStatistics, playerId);
+				ShortPoint2D resourcePioneerTarget = pioneerAi.findResourceTarget();
 				if (resourcePioneerTarget != null) {
 					List<Integer> resourcePioneerIds = pioneerIds.subList(0,
 							Math.min(pioneerIds.size(), RRESOURCE_PIONEER_GROUP_COUNT));
@@ -412,7 +414,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				}
 			}
 			if (pioneerIds.size() > 0) {
-				ShortPoint2D broadenerPioneerTarget = PioneerAi.findBroadenTarget(aiStatistics, playerId);
+				ShortPoint2D broadenerPioneerTarget = pioneerAi.findBroadenTarget();
 				if (broadenerPioneerTarget != null) {
 					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenerPioneerTarget, pioneerIds));
 				}
