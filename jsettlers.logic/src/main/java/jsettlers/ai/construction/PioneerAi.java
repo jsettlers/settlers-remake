@@ -35,26 +35,34 @@ public class PioneerAi {
 	private final byte playerId;
 	private final int searchRadius;
 
+	private ShortPoint2D lastResourceTarget;
+
 	public PioneerAi(AiStatistics aiStatistics, byte playerId) {
 		this.aiStatistics = aiStatistics;
 		this.playerId = playerId;
 		this.searchRadius = aiStatistics.getMainGrid().getWidth() / 2;
+		this.lastResourceTarget = getCentroid();
 	}
 
 	public ShortPoint2D findResourceTarget() {
-		// TODO: ressourcen pios gucken von ihrer aktuellen position aus, nicht mehr vom center. Bekämpft schneeberg auf mountain lake
 		// TODO: verbreitungspios merken sich letztes target und erst wenn dadrum herum gut eingenommen wurde, gibt es ein neues
+		ShortPoint2D newTarget = findResourceTargetNearLastTarget();
+		if (newTarget != null) {
+			lastResourceTarget = newTarget;
+		}
+		return newTarget;
+	}
 
+	private ShortPoint2D findResourceTargetNearLastTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
-		int maxDistance = halfDistanceToNearestEnemy(myCenter);
+		int maxDistance = halfDistanceToNearestEnemy(getCentroid());
 
-		ShortPoint2D target = targetForCuttingBuilding(myBorder, myCenter, EMapObjectType.TREE_ADULT,
+		ShortPoint2D target = targetForCuttingBuilding(myBorder, lastResourceTarget, EMapObjectType.TREE_ADULT,
 				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForCuttingBuilding(myBorder, myCenter, EMapObjectType.STONE, EBuildingType.STONECUTTER,
+		target = targetForCuttingBuilding(myBorder, lastResourceTarget, EMapObjectType.STONE, EBuildingType.STONECUTTER,
 				aiStatistics.getStonesForPlayer(playerId), 4, maxDistance);
 		if (target != null)
 			return target;
@@ -63,23 +71,23 @@ public class PioneerAi {
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, myCenter, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
+		target = targetForMine(myBorder, lastResourceTarget, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, myCenter, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
+		target = targetForMine(myBorder, lastResourceTarget, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForRivers(myBorder, myCenter, maxDistance);
+		target = targetForRivers(myBorder, lastResourceTarget, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, myCenter, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
+		target = targetForMine(myBorder, lastResourceTarget, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		return targetForFish(myBorder, myCenter, maxDistance);
+		return targetForFish(myBorder, lastResourceTarget, maxDistance);
 	}
 
 	private ShortPoint2D targetForNearStoneFields(AiPositions myBorder) {
@@ -170,10 +178,10 @@ public class PioneerAi {
 
 	public ShortPoint2D findBroadenTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		return myBorder.getNearestPoint(getCentroidOf(), searchRadius);
+		return myBorder.getNearestPoint(getCentroid(), searchRadius);
 	}
 
-	private ShortPoint2D getCentroidOf() {
+	private ShortPoint2D getCentroid() {
 		AiPositions landForPlayer = aiStatistics.getLandForPlayer(playerId);
 		long x = 0;
 		long y = 0;
