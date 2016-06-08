@@ -57,18 +57,17 @@ public class PioneerAi {
 	}
 
 	private ShortPoint2D findResourceTargetNearLastTarget() {
-		//TODO sicherstellen, dass kein Feindesland eingenommen wird
-		//TODO entfernte partitions einnehmen
-		//TODO wenn turmbau dann richtung feinde (in der naehe) ansonsten richtung wald\Stein in der naehe
+		// TODO sicherstellen, dass kein Feindesland eingenommen wird
+		// TODO wenn turmbau dann richtung feinde (in der naehe) ansonsten richtung wald\Stein in der naehe
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		int maxDistance = halfDistanceToNearestEnemy(centroid);
 
-		ShortPoint2D target = targetForCuttingBuilding(myBorder, lastResourceTarget, EMapObjectType.TREE_ADULT,
+		ShortPoint2D target = targetForCuttingBuilding(myBorder, EMapObjectType.TREE_ADULT,
 				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForCuttingBuilding(myBorder, lastResourceTarget, EMapObjectType.STONE, EBuildingType.STONECUTTER,
+		target = targetForCuttingBuilding(myBorder, EMapObjectType.STONE, EBuildingType.STONECUTTER,
 				aiStatistics.getStonesForPlayer(playerId), 4, maxDistance);
 		if (target != null)
 			return target;
@@ -77,23 +76,39 @@ public class PioneerAi {
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, lastResourceTarget, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
+		target = targetForMine(myBorder, EResourceType.COAL, EBuildingType.COALMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, lastResourceTarget, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
+		target = targetForMine(myBorder, EResourceType.IRONORE, EBuildingType.IRONMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForRivers(myBorder, lastResourceTarget, maxDistance);
+		target = targetForRivers(myBorder, maxDistance);
 		if (target != null)
 			return target;
 
-		target = targetForMine(myBorder, lastResourceTarget, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
+		target = targetForMine(myBorder, EResourceType.GOLDORE, EBuildingType.GOLDMINE, maxDistance);
 		if (target != null)
 			return target;
 
-		return targetForFish(myBorder, lastResourceTarget, maxDistance);
+		target = targetForFish(myBorder, maxDistance);
+		if (target != null)
+			return target;
+
+		return targetForOtherPartition(myBorder);
+	}
+
+	private ShortPoint2D targetForOtherPartition(AiPositions myBorder) {
+		AiPositions otherPartitionBorder = aiStatistics.getOtherPartitionBorderOf(playerId);
+		if (otherPartitionBorder.size() == 0) {
+			return null;
+		}
+
+		ShortPoint2D nearestOtherPartitionBorderPoint = otherPartitionBorder.getNearestPoint(lastResourceTarget,
+				aiStatistics.getMainGrid().getWidth());
+		int searchDistance = nearestOtherPartitionBorderPoint.getOnGridDistTo(lastResourceTarget) + 10;
+		return myBorder.getNearestPoint(nearestOtherPartitionBorderPoint, searchDistance);
 	}
 
 	private ShortPoint2D targetForNearStoneFields(AiPositions myBorder) {
@@ -117,14 +132,14 @@ public class PioneerAi {
 		return (int) Math.ceil(distance / 1.9F);
 	}
 
-	private ShortPoint2D targetForCuttingBuilding(AiPositions myBorder, ShortPoint2D myCenter,
-			EMapObjectType cuttableObjectType, EBuildingType cuttingBuildingType, AiPositions cuttableObjectsOfPlayer, int factor, int maxDistance) {
+	private ShortPoint2D targetForCuttingBuilding(AiPositions myBorder, EMapObjectType cuttableObjectType, EBuildingType cuttingBuildingType,
+			AiPositions cuttableObjectsOfPlayer, int factor, int maxDistance) {
 		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(cuttingBuildingType, playerId) + 1;
 		if (cuttableObjectsOfPlayer.size() > buildingCount * factor)
 			return null;
 
 		List<ShortPoint2D> cuttingBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(cuttingBuildingType, playerId);
-		ShortPoint2D referencePoint = cuttingBuildings.size() > 0 ? cuttingBuildings.get(0) : myCenter;
+		ShortPoint2D referencePoint = cuttingBuildings.size() > 0 ? cuttingBuildings.get(0) : lastResourceTarget;
 		ShortPoint2D nearestCuttableObject = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(referencePoint, cuttableObjectType,
 				maxDistance);
 		if (nearestCuttableObject == null)
@@ -133,21 +148,19 @@ public class PioneerAi {
 		return myBorder.getNearestPoint(nearestCuttableObject, CommonConstants.TOWER_RADIUS);
 	}
 
-	private ShortPoint2D targetForRivers(AiPositions myBorder, ShortPoint2D myCenter,
-			int maxDistance) {
+	private ShortPoint2D targetForRivers(AiPositions myBorder, int maxDistance) {
 		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.WATERWORKS, playerId) + 1;
 		if (aiStatistics.getRiversForPlayer(playerId).size() > buildingCount * 5)
 			return null;
 
-		ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(myCenter, maxDistance);
+		ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(lastResourceTarget, maxDistance);
 		if (nearestRiver == null)
 			return null;
 
 		return myBorder.getNearestPoint(nearestRiver, searchRadius);
 	}
 
-	private ShortPoint2D targetForMine(AiPositions myBorder, ShortPoint2D myCenter,
-			EResourceType resourceType, EBuildingType buildingType, int maxDistance) {
+	private ShortPoint2D targetForMine(AiPositions myBorder, EResourceType resourceType, EBuildingType buildingType, int maxDistance) {
 		if (aiStatistics.resourceCountInDefaultPartition(resourceType) == 0)
 			return null;
 
@@ -157,7 +170,7 @@ public class PioneerAi {
 		if (aiStatistics.resourceCountOfPlayer(resourceType, playerId) > tiles * factor)
 			return null;
 
-		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(myCenter, resourceType, maxDistance);
+		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(lastResourceTarget, resourceType, maxDistance);
 		if (nearestResourceAbroad == null)
 			return null;
 
@@ -165,7 +178,7 @@ public class PioneerAi {
 		return target;
 	}
 
-	private ShortPoint2D targetForFish(AiPositions myBorder, ShortPoint2D myCenter, int maxDistance) {
+	private ShortPoint2D targetForFish(AiPositions myBorder, int maxDistance) {
 		if (aiStatistics.resourceCountInDefaultPartition(EResourceType.FISH) == 0)
 			return null;
 
@@ -174,7 +187,7 @@ public class PioneerAi {
 		if (aiStatistics.resourceCountOfPlayer(EResourceType.FISH, playerId) > FISH_NEEDED_BY_FISHER * factor)
 			return null;
 
-		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestFishPointForPlayer(myCenter, playerId, maxDistance);
+		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestFishPointForPlayer(lastResourceTarget, playerId, maxDistance);
 		if (nearestResourceAbroad == null)
 			return null;
 

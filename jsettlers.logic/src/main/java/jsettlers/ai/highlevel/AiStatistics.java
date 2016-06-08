@@ -253,7 +253,11 @@ public class AiStatistics {
 					updatePlayerLand(x, y, player);
 				}
 				if (player != null && isBorderOf(x, y, player.playerId)) {
-					playerStatistics[player.playerId].border.add(x, y);
+					if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn) {
+						playerStatistics[player.playerId].border.add(x, y);
+					} else {
+						playerStatistics[player.playerId].otherPartitionBorder.add(x, y);
+					}
 				}
 			}
 		}
@@ -674,6 +678,11 @@ public class AiStatistics {
 	public AiPositions getBorderOf(byte playerId) {
 		return playerStatistics[playerId].border;
 	}
+
+	public AiPositions getOtherPartitionBorderOf(byte playerId) {
+		return playerStatistics[playerId].otherPartitionBorder;
+	}
+
 	public boolean isAlive(byte playerId) {
 		return playerStatistics[playerId].isAlive;
 	}
@@ -707,6 +716,7 @@ public class AiStatistics {
 		AiPositions landToBuildOn;
 		AiPositions borderLandNextToFreeLand;
 		AiPositions border;
+		AiPositions otherPartitionBorder;
 		Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		AiPositions stones;
 		AiPositions trees;
@@ -728,6 +738,7 @@ public class AiStatistics {
 			enemyTroopsInTown = new AiPositions();
 			borderLandNextToFreeLand = new AiPositions();
 			border = new AiPositions();
+			otherPartitionBorder = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -748,6 +759,7 @@ public class AiStatistics {
 			landToBuildOn.clear();
 			borderLandNextToFreeLand.clear();
 			border.clear();
+			otherPartitionBorder.clear();
 			movablePositions.clear();
 			farmWorkAreas.clear();
 			wineGrowerWorkAreas.clear();
