@@ -272,12 +272,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 				playerId) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
 	}
 
-	private void destroyHinterlandMilitaryBuildings() {
-		for (ShortPoint2D militaryBuildingPositions : aiStatistics.getHinterlandMilitaryBuildingPositionsOfPlayer(playerId)) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, militaryBuildingPositions));
-		}
-	}
-
 	private void buildBuildings() {
 		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites()) {
 			if (economyMinister.automaticLivingHousesEnabled() && buildLivingHouse())

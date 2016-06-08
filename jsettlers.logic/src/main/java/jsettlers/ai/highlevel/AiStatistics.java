@@ -33,13 +33,11 @@ import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -71,7 +69,6 @@ public class AiStatistics {
 	private static final short BORDER_LAND_WIDTH = 5;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
-	private static final short TOWER_RADIUS_OVERLAP = 1;
 
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;
@@ -380,39 +377,6 @@ public class AiStatistics {
 		}
 	}
 
-	public List<ShortPoint2D> getHinterlandMilitaryBuildingPositionsOfPlayer(byte playerId) {
-		List<ShortPoint2D> hinterlandMilitaryBuildingPositions = new ArrayList<ShortPoint2D>();
-		for (ShortPoint2D militaryBuildingPosition : getBuildingPositionsOfTypesForPlayer(EBuildingType.getMilitaryBuildings(), playerId)) {
-			Building militaryBuilding = getBuildingAt(militaryBuildingPosition);
-			if (isMilitaryBuildingInHinterland(militaryBuilding, playerId)) {
-				hinterlandMilitaryBuildingPositions.add(militaryBuildingPosition);
-			}
-		}
-		return hinterlandMilitaryBuildingPositions;
-	}
-
-	private boolean isMilitaryBuildingInHinterland(Building militaryBuilding, byte playerId) {
-		for (ShortPoint2D influencedPositions : new MapCircle(militaryBuilding.getPos(), CommonConstants.TOWER_RADIUS + TOWER_RADIUS_OVERLAP)) {
-			if (!mainGrid.isInBounds(influencedPositions.x, influencedPositions.y)) {
-				continue;
-			}
-			if (positionIsBorderLandAndIsProtectedOnlyFromOneTower(playerId, influencedPositions) ||
-					positionIsOtherPlayersLand(influencedPositions, playerId)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean positionIsOtherPlayersLand(ShortPoint2D position, byte playerId) {
-		return mainGrid.getPartitionsGrid().getPartitionIdAt(position.x, position.y) != playerStatistics[playerId].partitionIdToBuildOn;
-	}
-
-	private boolean positionIsBorderLandAndIsProtectedOnlyFromOneTower(byte playerId, ShortPoint2D occupiedPosition) {
-		return getBorderLandNextToFreeLandForPlayer(playerId).contains(occupiedPosition)
-				&& partitionsGrid.getTowerCountAt(occupiedPosition.x, occupiedPosition.y) == 1;
-	}
-
 	public Building getBuildingAt(ShortPoint2D point) {
 		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
 	}
@@ -519,10 +483,6 @@ public class AiStatistics {
 
 	public AiPositions getBorderLandNextToFreeLandForPlayer(byte playerId) {
 		return playerStatistics[playerId].borderLandNextToFreeLand;
-	}
-
-	public int getNumberOfNotOccupiedMilitaryBuildings(short playerId) {
-		return playerStatistics[playerId].numberOfNotOccupiedMilitaryBuildings;
 	}
 
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
