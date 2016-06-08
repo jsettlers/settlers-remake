@@ -65,7 +65,7 @@ public class BuildingDefinition {
 			}
 		}
 
-		buildmarks.addAll(Arrays.asList(type.getBuildmarks()));
+		buildmarks.addAll(Arrays.asList(type.getBuildMarks()));
 		bricklayers.addAll(Arrays.asList(type.getBricklayers()));
 
 		door = type.getDoorTile();

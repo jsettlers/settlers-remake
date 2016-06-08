@@ -53,7 +53,7 @@ public abstract class CommonConstants {
 	/**
 	 * This is the default address the network game connects to.
 	 */
-	public static String DEFAULT_SERVER_ADDRESS = "87.106.88.80";
+	public static String DEFAULT_SERVER_ADDRESS = "217.160.141.89";
 
 	/**
 	 * If this is set to <code>true</code> the UI allows you to control all players.

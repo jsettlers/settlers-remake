@@ -51,18 +51,13 @@ public class ConstructionMarksAlgorithmTest {
 				{ false, false, false, false, false, false, false, false, false, false, false, false },
 				{ false, false, false, false, false, false, false, false, false, false, false, false } };
 
-		boolean[][] buildingMask = {
-				{ false, false, true, false, false },
-				{ true, true, true, true, true },
-				{ false, false, false, false, false } };
-
 		MapRectangle mapArea = new MapRectangle(-15, -15, 30, 30);
 
-		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(BuildingAreaUtils.createRelativePoints(buildingMask));
+		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(EBuildingType.TOWER.getBuildingArea());
 
 		TestMap map = new TestMap(blocked);
 		NewConstructionMarksAlgorithm algorithm = new NewConstructionMarksAlgorithm(map, (byte) 0);
-		algorithm.calculateConstructMarks(mapArea, buildingSet, null, null, false);
+		algorithm.calculateConstructMarks(mapArea, EBuildingType.TOWER);
 
 		// print(map, blocked, buildingSet);
 
@@ -207,7 +202,7 @@ public class ConstructionMarksAlgorithmTest {
 		};
 
 		@Override
-		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		public byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			throw new UnsupportedOperationException("not mocked");
 		}
 

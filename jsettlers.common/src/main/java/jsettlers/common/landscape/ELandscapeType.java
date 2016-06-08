@@ -62,6 +62,7 @@ public enum ELandscapeType {
 
 	public static final ELandscapeType[] VALUES = ELandscapeType.values();
 	private static final Set<ELandscapeType> RIVERS = EnumSet.of(RIVER1, RIVER2, RIVER3, RIVER4);
+	public static final Set<ELandscapeType> MOUNTAIN_TYPES = EnumSet.of(MOUNTAIN, MOUNTAINBORDER);
 
 	public final int image;
 	public final Color color;

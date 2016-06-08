@@ -79,5 +79,5 @@ public abstract class AbstractConstructionMarkableMap {
 
 	public abstract boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
 
-	public abstract byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions);
+	public abstract byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions);
 }

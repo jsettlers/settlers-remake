@@ -940,7 +940,7 @@ public final class MainGrid implements Serializable {
 		public final void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
 				if (set) {
-					byte newValue = binaryConstructionMarkValues ? 0 : getConstructionMarkValue(x, y, flattenPositions);
+					byte newValue = binaryConstructionMarkValues ? 0 : calculateConstructionMarkValue(x, y, flattenPositions);
 					mapObjectsManager.setConstructionMarking(x, y, newValue);
 				} else {
 					mapObjectsManager.setConstructionMarking(x, y, (byte) -1);
@@ -975,23 +975,23 @@ public final class MainGrid implements Serializable {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstruction(currX, currY, buildingType.getGroundTypes(), partitionId)) {
+				if (!canUsePositionForConstruction(currX, currY, buildingType.getRequiredGroundTypeAt(currX, currY), partitionId)) {
 					return false;
 				}
 			}
-			return !buildingType.needsFlattenedGround() || getConstructionMarkValue(x, y, buildingArea) >= 0;
+			return !buildingType.needsFlattenedGround() || calculateConstructionMarkValue(x, y, buildingArea) >= 0;
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedBuildingTypes, short partitionId) {
+		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedGroundTypes, short partitionId) {
 			return isInBounds(x, y)
 					&& !flagsGrid.isProtected(x, y)
 					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
-					&& allowedBuildingTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
+					&& allowedGroundTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
-		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		public byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			int sum = 0;
 
 			for (RelativePoint currPos : flattenPositions) {
@@ -1836,7 +1836,8 @@ public final class MainGrid implements Serializable {
 		public void positionClicked(short x, short y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
 					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
-					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y));
+					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y) + " landscapeType: "
+					+ landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override

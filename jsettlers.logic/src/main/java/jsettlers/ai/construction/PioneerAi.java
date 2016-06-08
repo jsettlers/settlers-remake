@@ -16,6 +16,7 @@ package jsettlers.ai.construction;
 
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -29,8 +30,10 @@ import java.util.List;
 public class PioneerAi {
 
 	public static final int FISH_NEEDED_BY_FISHER = 10;
+	public static int searchRadius;
 
 	public static ShortPoint2D findResourceTarget(AiStatistics aiStatistics, byte playerId) {
+		searchRadius = aiStatistics.getMainGrid().getWidth() / 2;
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D myCenter = aiStatistics.getPositionOfPartition(playerId);
 int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
@@ -70,7 +73,7 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 
 	private static ShortPoint2D targetForNearStoneFields(AiStatistics aiStatistics, AiPositions myBorder, byte playerId) {
 		for (ShortPoint2D stonePosition : aiStatistics.getStonesInDefaultPosition()) {
-			ShortPoint2D target = myBorder.getNearestPoint(stonePosition, 10, null);
+			ShortPoint2D target = myBorder.getNearestPoint(stonePosition, 5);
 			if (target != null) {
 				return target;
 			}
@@ -103,7 +106,7 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (nearestCuttableObject == null)
 			return null;
 
-		return myBorder.getNearestPoint(nearestCuttableObject);
+		return myBorder.getNearestPoint(nearestCuttableObject, CommonConstants.TOWER_RADIUS);
 	}
 
 	public static ShortPoint2D targetForRivers(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId, int maxDistance) {
@@ -115,7 +118,7 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (nearestRiver == null)
 			return null;
 
-		return myBorder.getNearestPoint(nearestRiver);
+		return myBorder.getNearestPoint(nearestRiver, searchRadius);
 	}
 
 	public static ShortPoint2D targetForMine(AiStatistics aiStatistics, AiPositions myBorder, ShortPoint2D myCenter, byte playerId,
@@ -133,7 +136,7 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (nearestResourceAbroad == null)
 			return null;
 
-		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad, searchRadius);
 		return target;
 	}
 
@@ -150,13 +153,13 @@ int maxDistance =	halfDistanceToNearestEnemy(aiStatistics, playerId, myCenter);
 		if (nearestResourceAbroad == null)
 			return null;
 
-		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad);
+		ShortPoint2D target = myBorder.getNearestPoint(nearestResourceAbroad, searchRadius);
 		return target;
 	}
 
 	public static ShortPoint2D findBroadenTarget(AiStatistics aiStatistics, byte playerId) {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		return myBorder.getNearestPoint(getCentroidOf(aiStatistics, playerId));
+		return myBorder.getNearestPoint(getCentroidOf(aiStatistics, playerId), searchRadius);
 	}
 
 	private static ShortPoint2D getCentroidOf(AiStatistics aiStatistics, byte playerId) {

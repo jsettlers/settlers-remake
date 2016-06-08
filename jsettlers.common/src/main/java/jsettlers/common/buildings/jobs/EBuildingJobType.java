@@ -116,7 +116,7 @@ public enum EBuildingJobType {
 	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
 	 * 
 	 * @see ESearchType
-	 * @see EBuildingType#getWorkradius()
+	 * @see EBuildingType#getWorkRadius()
 	 */
 	PRE_SEARCH,
 
@@ -134,7 +134,7 @@ public enum EBuildingJobType {
 	 * Fail: If the searched thing was not found.
 	 * 
 	 * @see ESearchType
-	 * @see EBuildingType#getWorkradius()
+	 * @see EBuildingType#getWorkRadius()
 	 */
 	PRE_SEARCH_IN_AREA,
 

@@ -447,7 +447,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			layout.priority.setPriority(supported, building.getPriority());
 		}
 
-		if (building.getBuildingType().getWorkradius() <= 0) {
+		if (building.getBuildingType().getWorkRadius() <= 0) {
 			layout.background.removeChild(layout.workRadius);
 		}
 

@@ -160,8 +160,8 @@ public class AiPositions implements IMapArea {
 		points = new int[MIN_SIZE];
 	}
 
-	public ShortPoint2D getNearestPoint(ShortPoint2D point) {
-		return getNearestPoint(point, Integer.MAX_VALUE, null);
+	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance) {
+		return getNearestPoint(center, maxDistance, null);
 	}
 
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
