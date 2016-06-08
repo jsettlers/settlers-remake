@@ -368,7 +368,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private boolean buildTower() {
 		AiPositions border = aiStatistics.getBorderOf(playerId);
-		if (border.size() > 0) {
+		if (border.size() > 0 && aiStatistics.getEnemiesInTownOf(playerId).size() == 0) {
 			int maximumPossiblePioneers = aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 4;
 			int resourcePioneerGroutCount = Math.min(maximumPossiblePioneers, RRESOURCE_PIONEER_GROUP_COUNT);
 			int broadenPioneerGroupCount = Math.min(maximumPossiblePioneers - resourcePioneerGroutCount, BROADEN_PIONEER_GROUP_COUNT);

@@ -59,7 +59,7 @@ public class PioneerAi {
 	private ShortPoint2D findResourceTargetNearLastTarget() {
 		//TODO sicherstellen, dass kein Feindesland eingenommen wird
 		//TODO entfernte partitions einnehmen
-		//TODO when enemies in town keine pios rekrutieren
+		//TODO wenn turmbau dann richtung feinde (in der naehe) ansonsten richtung wald\Stein in der naehe
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		int maxDistance = halfDistanceToNearestEnemy(centroid);
 
