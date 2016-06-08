@@ -131,6 +131,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
+			commandPios();
 			buildBuildings();
 			armyGeneral.levyUnits();
 			armyGeneral.commandTroops();
@@ -281,8 +282,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites()) {
 			if (economyMinister.automaticLivingHousesEnabled() && buildLivingHouse())
 				return;
-			if (buildTower())
-				return;
 			if (isEndGame) {
 				return;
 			}
@@ -366,7 +365,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		playerBuildingPlan.put(buildingType, playerBuildingPlan.get(buildingType) + 1);
 	}
 
-	private boolean buildTower() {
+	private boolean commandPios() {
 		AiPositions border = aiStatistics.getBorderOf(playerId);
 		if (border.size() > 0 ) {
 			int maximumPossiblePioneers = aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 4;
