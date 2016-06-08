@@ -57,6 +57,9 @@ public class PioneerAi {
 	}
 
 	private ShortPoint2D findResourceTargetNearLastTarget() {
+		//TODO sicherstellen, dass kein Feindesland eingenommen wird
+		//TODO entfernte partitions einnehmen
+		//TODO when enemies in town keine pios rekrutieren
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		int maxDistance = halfDistanceToNearestEnemy(centroid);
 

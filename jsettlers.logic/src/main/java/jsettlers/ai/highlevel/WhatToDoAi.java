@@ -100,7 +100,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	public static final float WEAPON_SMITH_FACTOR = 7F;
 	public static final int RRESOURCE_PIONEER_GROUP_COUNT = 15;
-	public static final int BROADEN_PIONEER_GROUP_COUNT = 15;
+	public static final int BROADEN_PIONEER_GROUP_COUNT = 30;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -281,7 +281,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) < economyMinister.getNumberOfParallelConstructionSites()) {
 			if (economyMinister.automaticLivingHousesEnabled() && buildLivingHouse())
 				return;
-			if (economyMinister.automaticTowersEnabled() && aiStatistics.getNumberOfNotOccupiedMilitaryBuildings(playerId) == 0 && buildTower())
+			if (buildTower())
 				return;
 			if (isEndGame) {
 				return;
@@ -369,13 +369,17 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private boolean buildTower() {
 		AiPositions border = aiStatistics.getBorderOf(playerId);
 		if (border.size() > 0) {
+			int maximumPossiblePioneers = aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 4;
+			int resourcePioneerGroutCount = Math.min(maximumPossiblePioneers, RRESOURCE_PIONEER_GROUP_COUNT);
+			int broadenPioneerGroupCount = Math.min(maximumPossiblePioneers - resourcePioneerGroutCount, BROADEN_PIONEER_GROUP_COUNT);
+
 			List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
-			List<Integer> pioneerIds = new ArrayList<>(RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT);
+			List<Integer> pioneerIds = new ArrayList<>(resourcePioneerGroutCount + broadenPioneerGroupCount);
 			for (ShortPoint2D pioneer : pioneers) {
 				pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneer.x, pioneer.y).getID());
 			}
 			List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
-			if (pioneers.size() < RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT) {
+			if (pioneers.size() < resourcePioneerGroutCount + broadenPioneerGroupCount) {
 				List<Integer> newPioneers = new ArrayList<>();
 				for (ShortPoint2D bearerPosition : bearers) {
 					if (bearers.size() <= MINIMUM_NUMBER_OF_BEARERS) {
@@ -390,7 +394,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 					if (bearer.getAction() == EMovableAction.NO_ACTION) {
 						newPioneers.add(bearer.getID());
 						pioneerIds.add(bearer.getID());
-						if (pioneers.size() + newPioneers.size() == RRESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT) {
+						if (pioneers.size() + newPioneers.size() == resourcePioneerGroutCount + broadenPioneerGroupCount) {
 							break;
 						}
 					}
@@ -407,10 +411,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 				ShortPoint2D resourcePioneerTarget = pioneerAi.findResourceTarget();
 				if (resourcePioneerTarget != null) {
 					List<Integer> resourcePioneerIds = pioneerIds.subList(0,
-							Math.min(pioneerIds.size(), RRESOURCE_PIONEER_GROUP_COUNT));
+							Math.min(pioneerIds.size(), resourcePioneerGroutCount));
 					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourcePioneerTarget, resourcePioneerIds));
 					if (resourcePioneerIds.size() < pioneerIds.size()) {
-						pioneerIds = pioneerIds.subList(RRESOURCE_PIONEER_GROUP_COUNT, pioneerIds.size());
+						pioneerIds = pioneerIds.subList(broadenPioneerGroupCount, pioneerIds.size());
 					}
 				}
 			}
