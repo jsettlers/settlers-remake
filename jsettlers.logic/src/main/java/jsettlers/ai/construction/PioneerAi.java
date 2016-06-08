@@ -36,16 +36,19 @@ public class PioneerAi {
 	private final int searchRadius;
 
 	private ShortPoint2D lastResourceTarget;
+	private ShortPoint2D lastBroadeningTarget;
+	private ShortPoint2D centroid;
+	private int ticksUntilBroadenFromCentroid = 0;
 
 	public PioneerAi(AiStatistics aiStatistics, byte playerId) {
 		this.aiStatistics = aiStatistics;
 		this.playerId = playerId;
 		this.searchRadius = aiStatistics.getMainGrid().getWidth() / 2;
-		this.lastResourceTarget = getCentroid();
+		this.lastResourceTarget = aiStatistics.getPositionOfPartition(playerId);
+		this.lastBroadeningTarget = lastResourceTarget;
 	}
 
 	public ShortPoint2D findResourceTarget() {
-		// TODO: verbreitungspios merken sich letztes target und erst wenn dadrum herum gut eingenommen wurde, gibt es ein neues
 		ShortPoint2D newTarget = findResourceTargetNearLastTarget();
 		if (newTarget != null) {
 			lastResourceTarget = newTarget;
@@ -55,7 +58,7 @@ public class PioneerAi {
 
 	private ShortPoint2D findResourceTargetNearLastTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		int maxDistance = halfDistanceToNearestEnemy(getCentroid());
+		int maxDistance = halfDistanceToNearestEnemy(centroid);
 
 		ShortPoint2D target = targetForCuttingBuilding(myBorder, lastResourceTarget, EMapObjectType.TREE_ADULT,
 				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
@@ -177,11 +180,26 @@ public class PioneerAi {
 	}
 
 	public ShortPoint2D findBroadenTarget() {
-		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		return myBorder.getNearestPoint(getCentroid(), searchRadius);
+		ShortPoint2D target = findBroadenTargetNextToLastTarget();
+		if (target != null) {
+			lastBroadeningTarget = target;
+		}
+		return target;
 	}
 
-	private ShortPoint2D getCentroid() {
+	private ShortPoint2D findBroadenTargetNextToLastTarget() {
+		ShortPoint2D reference = lastBroadeningTarget;
+		if (ticksUntilBroadenFromCentroid == 0) {
+			ticksUntilBroadenFromCentroid = 20;
+			reference = centroid;
+		} else {
+			ticksUntilBroadenFromCentroid--;
+		}
+		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
+		return myBorder.getNearestPoint(reference, searchRadius);
+	}
+
+	public void update() {
 		AiPositions landForPlayer = aiStatistics.getLandForPlayer(playerId);
 		long x = 0;
 		long y = 0;
@@ -191,6 +209,6 @@ public class PioneerAi {
 			y += position.y;
 		}
 		int divisor = landForPlayer.size() / 50;
-		return new ShortPoint2D((int) (x / divisor), (int) (y / divisor));
+		centroid = new ShortPoint2D((int) (x / divisor), (int) (y / divisor));
 	}
 }

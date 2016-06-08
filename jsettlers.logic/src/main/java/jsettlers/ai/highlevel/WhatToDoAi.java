@@ -403,6 +403,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 			Collections.sort(pioneerIds);
 
 			if (pioneerIds.size() > 0) {
+				pioneerAi.update();
 				ShortPoint2D resourcePioneerTarget = pioneerAi.findResourceTarget();
 				if (resourcePioneerTarget != null) {
 					List<Integer> resourcePioneerIds = pioneerIds.subList(0,
