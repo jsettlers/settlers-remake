@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
@@ -663,6 +664,29 @@ public class AiStatistics {
 		return sortedCuttableObjectsInDefaultPartition.get(STONE);
 	}
 
+	public List<ShortPoint2D> threatenedBorderOf(byte playerId) {
+		//if (playerStatistics[playerId].threatenedBorder == null) {
+			AiPositions borderOfOtherPlayers = new AiPositions();
+			for (byte otherPlayerId = 0; otherPlayerId < playerStatistics.length; otherPlayerId++) {
+				if (otherPlayerId == playerId || !isAlive(otherPlayerId)) {
+					continue;
+				}
+
+				borderOfOtherPlayers.addAllNoCollision(getBorderOf(otherPlayerId));
+			}
+			playerStatistics[playerId].threatenedBorder = new ArrayList<>();
+			AiPositions myBorder = getBorderOf(playerId);
+			for (int i = 0; i < myBorder.size(); i += 10) {
+				ShortPoint2D myBorderPosition = myBorder.get(i);
+				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0
+						&& borderOfOtherPlayers.getNearestPoint(myBorderPosition, CommonConstants.TOWER_RADIUS) != null) {
+					playerStatistics[playerId].threatenedBorder.add(myBorderPosition);
+				}
+			}
+		//}
+		return playerStatistics[playerId].threatenedBorder;
+	}
+
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
@@ -682,6 +706,7 @@ public class AiStatistics {
 		AiPositions trees;
 		AiPositions rivers;
 		AiPositions enemyTroopsInTown;
+		List<ShortPoint2D> threatenedBorder;
 		long[] resourceCount;
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
@@ -723,6 +748,7 @@ public class AiStatistics {
 			movablePositions.clear();
 			farmWorkAreas.clear();
 			wineGrowerWorkAreas.clear();
+			threatenedBorder = null;
 			clearIntegers();
 		}
 

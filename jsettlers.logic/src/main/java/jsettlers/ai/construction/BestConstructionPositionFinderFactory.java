@@ -28,6 +28,9 @@ import static jsettlers.common.landscape.EResourceType.COAL;
 import static jsettlers.common.landscape.EResourceType.GOLDORE;
 import static jsettlers.common.landscape.EResourceType.IRONORE;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ShortPoint2D;
+
+import java.util.List;
 
 public class BestConstructionPositionFinderFactory {
 
@@ -86,6 +89,10 @@ public class BestConstructionPositionFinderFactory {
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}
+	}
+
+	public final IBestConstructionPositionFinder getBorderDefenceConstructionPosition(List<ShortPoint2D> threatenedBorder) {
+		return new BorderDefenceConstructionPositionFinder(threatenedBorder);
 	}
 
 }

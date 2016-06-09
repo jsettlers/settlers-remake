@@ -99,6 +99,16 @@ public class AiPositions implements IMapArea {
 		sorted = false;
 	}
 
+	public void addAllNoCollision(AiPositions otherAiPositions) {
+		int newSize = size + otherAiPositions.size;
+		if (newSize > points.length) {
+			resizeTo(newSize * 2);
+		}
+		System.arraycopy(otherAiPositions.points, 0, points, size, otherAiPositions.size);
+		size = newSize;
+		sorted = false;
+	}
+
 	public void remove(int x, int y) {
 		ensureSorted();
 		int index = indexOf(x, y);
@@ -165,6 +175,7 @@ public class AiPositions implements IMapArea {
 	}
 
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
+		ensureSorted();
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
 		if (median >= size) {
