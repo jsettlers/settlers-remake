@@ -665,7 +665,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> threatenedBorderOf(byte playerId) {
-		//if (playerStatistics[playerId].threatenedBorder == null) {
+		if (playerStatistics[playerId].threatenedBorder == null) {
 			AiPositions borderOfOtherPlayers = new AiPositions();
 			for (byte otherPlayerId = 0; otherPlayerId < playerStatistics.length; otherPlayerId++) {
 				if (otherPlayerId == playerId || !isAlive(otherPlayerId)) {
@@ -683,7 +683,7 @@ public class AiStatistics {
 					playerStatistics[playerId].threatenedBorder.add(myBorderPosition);
 				}
 			}
-		//}
+		}
 		return playerStatistics[playerId].threatenedBorder;
 	}
 
