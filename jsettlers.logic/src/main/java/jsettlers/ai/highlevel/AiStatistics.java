@@ -70,6 +70,7 @@ public class AiStatistics {
 	private static final short BORDER_LAND_WIDTH = 5;
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
+	public static final int NEAR_STONE_DISTANCE = 5;
 
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;
@@ -339,10 +340,24 @@ public class AiStatistics {
 				sortedCuttableObjectsInDefaultPartition.put(STONE, stones);
 			}
 			stones.addNoCollission(x, y);
+			updateNearStones(x, y);
 		}
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
 		if (landscape.isRiver()) {
 			sortedRiversInDefaultPartition.addNoCollission(x, y);
+		}
+	}
+
+	private void updateNearStones(short x, short y) {
+		for (EDirection dir : EDirection.VALUES) {
+			int dx = x + dir.gridDeltaX * NEAR_STONE_DISTANCE;
+			int dy = y + dir.gridDeltaY * NEAR_STONE_DISTANCE;
+			if (mainGrid.isInBounds(dx, dy)) {
+				byte playerId = partitionsGrid.getPlayerIdAt(dx, dy);
+				if (playerId != -1) {
+					playerStatistics[playerId].stonesNearBy.addNoCollission(x, y);
+				}
+			}
 		}
 	}
 
@@ -685,6 +700,10 @@ public class AiStatistics {
 		return playerStatistics[playerId].threatenedBorder;
 	}
 
+	public AiPositions getStonesNearBy(byte playerId) {
+		return playerStatistics[playerId].stonesNearBy;
+	}
+
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
@@ -701,6 +720,7 @@ public class AiStatistics {
 		AiPositions otherPartitionBorder;
 		Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		AiPositions stones;
+		AiPositions stonesNearBy;
 		AiPositions trees;
 		AiPositions rivers;
 		AiPositions enemyTroopsInTown;
@@ -715,6 +735,7 @@ public class AiStatistics {
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
 			stones = new AiPositions();
+			stonesNearBy = new AiPositions();
 			trees = new AiPositions();
 			rivers = new AiPositions();
 			landToBuildOn = new AiPositions();
@@ -737,6 +758,7 @@ public class AiStatistics {
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
 			stones.clear();
+			stonesNearBy.clear();
 			trees.clear();
 			rivers.clear();
 			landToBuildOn.clear();

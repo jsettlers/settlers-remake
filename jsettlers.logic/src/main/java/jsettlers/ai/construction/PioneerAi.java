@@ -61,7 +61,11 @@ public class PioneerAi {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		int maxDistance = halfDistanceToNearestEnemy(centroid);
 
-		ShortPoint2D target = targetForCuttingBuilding(myBorder, EMapObjectType.TREE_ADULT,
+		ShortPoint2D target = targetForNearStoneFields(maxDistance);
+		if (target != null)
+			return target;
+
+		target = targetForCuttingBuilding(myBorder, EMapObjectType.TREE_ADULT,
 				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
 		if (target != null)
 			return target;
@@ -72,10 +76,6 @@ public class PioneerAi {
 			return target;
 
 		target = targetForOtherPartition(myBorder);
-		if (target != null)
-			return target;
-
-		target = targetForNearStoneFields(myBorder);
 		if (target != null)
 			return target;
 
@@ -110,14 +110,8 @@ public class PioneerAi {
 		return myBorder.getNearestPoint(nearestOtherPartitionBorderPoint, searchDistance);
 	}
 
-	private ShortPoint2D targetForNearStoneFields(AiPositions myBorder) {
-		for (ShortPoint2D stonePosition : aiStatistics.getStonesInDefaultPosition()) {
-			ShortPoint2D target = myBorder.getNearestPoint(stonePosition, 5);
-			if (target != null) {
-				return target;
-			}
-		}
-		return null;
+	private ShortPoint2D targetForNearStoneFields(int maxDistance) {
+		return aiStatistics.getStonesNearBy(playerId).getNearestPoint(lastResourceTarget, maxDistance);
 	}
 
 	private int halfDistanceToNearestEnemy(ShortPoint2D myCenter) {
