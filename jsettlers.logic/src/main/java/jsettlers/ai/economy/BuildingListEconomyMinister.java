@@ -441,11 +441,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	@Override
-	public boolean automaticTowersEnabled() {
-		return aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId) >= 2;
-	}
-
-	@Override
 	public boolean automaticLivingHousesEnabled() {
 		return aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= 8
 				|| aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) >= mapBuildingCounts[LUMBERJACK.ordinal]
