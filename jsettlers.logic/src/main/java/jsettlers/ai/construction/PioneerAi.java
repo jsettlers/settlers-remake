@@ -190,23 +190,12 @@ public class PioneerAi {
 	}
 
 	public ShortPoint2D findBroadenTarget() {
-		ShortPoint2D target = findBroadenTargetNextToLastTarget();
+		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
+		ShortPoint2D target = myBorder.getNearestPoint(centroid, searchRadius);
 		if (target != null) {
 			lastBroadeningTarget = target;
 		}
 		return target;
-	}
-
-	private ShortPoint2D findBroadenTargetNextToLastTarget() {
-		ShortPoint2D reference = lastBroadeningTarget;
-		if (ticksUntilBroadenFromCentroid == 0) {
-			ticksUntilBroadenFromCentroid = 20;
-			reference = centroid;
-		} else {
-			ticksUntilBroadenFromCentroid--;
-		}
-		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		return myBorder.getNearestPoint(reference, searchRadius);
 	}
 
 	public void update() {

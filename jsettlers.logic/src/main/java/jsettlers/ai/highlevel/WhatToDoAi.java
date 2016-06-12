@@ -104,6 +104,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int RESOURCE_PIONEER_GROUP_COUNT = 15;
 	public static final int BROADEN_PIONEER_GROUP_COUNT = 60;
 	public static final float LUMBERJACK_TO_PIONEER_RATIO = 8F / (RESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT);
+	public static final int BROADENER_PIONEER_TARGET_REFRESH_PERIOD = 25;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -112,6 +113,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
 	private final PioneerAi pioneerAi;
+	private byte ticksUntilNextBroadenPioneerGroupTarget = 0;
 	private boolean isEndGame = false;
 	private ArrayList<Object> failedConstructingBuildings;
 
@@ -399,7 +401,11 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private void commandPioneers() {
 		AiPositions border = aiStatistics.getBorderOf(playerId);
 		if (border.size() > 0) {
-			List<Integer> pioneerIds = getPioneerIds();
+			List<Integer> pioneerIds = collectPioneers();
+			List<Integer> newPioneerIds = recruitNewPioneers(pioneerIds.size());
+			pioneerIds.addAll(newPioneerIds);
+			Collections.sort(pioneerIds);
+
 			if (pioneerIds.size() > 0) {
 				pioneerAi.update();
 				ShortPoint2D resourcePioneerTarget = pioneerAi.findResourceTarget();
@@ -414,55 +420,66 @@ public class WhatToDoAi implements IWhatToDoAi {
 					}
 				}
 				if (pioneerIds.size() > 0) {
-					ShortPoint2D broadenerPioneerTarget = pioneerAi.findBroadenTarget();
-					if (broadenerPioneerTarget != null) {
-						taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenerPioneerTarget, pioneerIds));
+					if (newPioneerIds.size() > 0 || ticksUntilNextBroadenPioneerGroupTarget < 1) {
+						ShortPoint2D broadenerPioneerTarget = pioneerAi.findBroadenTarget();
+						if (broadenerPioneerTarget != null) {
+							taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenerPioneerTarget, pioneerIds));
+							ticksUntilNextBroadenPioneerGroupTarget = BROADENER_PIONEER_TARGET_REFRESH_PERIOD;
+						}
 					}
+					ticksUntilNextBroadenPioneerGroupTarget--;
 				}
 			}
 		}
 	}
 
-	private List<Integer> getPioneerIds() {
-		int maximumPossiblePioneers = Math.round(aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) /
-				LUMBERJACK_TO_PIONEER_RATIO);
-		int resourcePioneerGroupCount = Math.min(maximumPossiblePioneers, RESOURCE_PIONEER_GROUP_COUNT);
-		int broadenPioneerGroupCount = Math.min(maximumPossiblePioneers - resourcePioneerGroupCount, BROADEN_PIONEER_GROUP_COUNT);
-
+	private List<Integer> collectPioneers() {
 		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
-		List<Integer> pioneerIds = new ArrayList<>(resourcePioneerGroupCount + broadenPioneerGroupCount);
+		List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
 		for (ShortPoint2D pioneer : pioneers) {
 			pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneer.x, pioneer.y).getID());
 		}
-		// Do not recruit new pioneers when enemies would kill them immediately
-		if (aiStatistics.getEnemiesInTownOf(playerId).size() == 0) {
-			List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
-			if (pioneers.size() < resourcePioneerGroupCount + broadenPioneerGroupCount && bearers.size() > MINIMUM_NUMBER_OF_BEARERS) {
-				{
-					List<Integer> newPioneers = new ArrayList<>();
-					for (ShortPoint2D bearerPosition : bearers) {
-						int remainingBearers = bearers.size() - newPioneers.size()
-								- aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE;
-						if (remainingBearers <= 0) {
-							break;
-						}
-						Movable bearer = mainGrid.getMovableGrid().getMovableAt(bearerPosition.x, bearerPosition.y);
-						if (bearer.getAction() == EMovableAction.NO_ACTION) {
-							newPioneers.add(bearer.getID());
-							pioneerIds.add(bearer.getID());
-							if (pioneers.size() + newPioneers.size() == resourcePioneerGroupCount + broadenPioneerGroupCount) {
-								break;
-							}
-						}
-					}
-					if (newPioneers.size() > 0) {
-						taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
-					}
+		return pioneerIds;
+	}
+
+	private List<Integer> recruitNewPioneers(int existentPioneersCount) {
+		if (aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
+			return Collections.emptyList();
+		}
+
+		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+		if (bearers.size() <= MINIMUM_NUMBER_OF_BEARERS) {
+			return Collections.emptyList();
+		}
+
+		int missingPioneersCount = Math.min(
+				Math.round(aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) / LUMBERJACK_TO_PIONEER_RATIO),
+				BROADEN_PIONEER_GROUP_COUNT + RESOURCE_PIONEER_GROUP_COUNT - existentPioneersCount);
+		if (missingPioneersCount == 0) {
+			return Collections.emptyList();
+		}
+
+		List<Integer> pioneerIds = new ArrayList<>(missingPioneersCount);
+		List<Integer> newPioneers = new ArrayList<>();
+		for (ShortPoint2D bearerPosition : bearers) {
+			int remainingBearers = bearers.size() - newPioneers.size()
+					- aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE;
+			if (remainingBearers <= 0) {
+				break;
+			}
+			Movable bearer = mainGrid.getMovableGrid().getMovableAt(bearerPosition.x, bearerPosition.y);
+			if (bearer.getAction() == EMovableAction.NO_ACTION) {
+				newPioneers.add(bearer.getID());
+				pioneerIds.add(bearer.getID());
+				if (newPioneers.size() == missingPioneersCount) {
+					break;
 				}
 			}
 		}
 
-		Collections.sort(pioneerIds);
+		if (newPioneers.size() > 0) {
+			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
+		}
 
 		return pioneerIds;
 	}
@@ -485,19 +502,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 			}
 		}
 		return false;
-	}
-
-	private int numberOfAvailableToolsForBuildingType(EBuildingType buildingType) {
-		EMovableType movableType = buildingType.getWorkerType();
-		if (movableType == null) {
-			return Integer.MAX_VALUE;
-		}
-		EMaterialType materialType = movableType.getTool();
-		if (materialType == EMaterialType.NO_MATERIAL) {
-			return Integer.MAX_VALUE;
-		}
-		return aiStatistics.getNumberOfMaterialTypeForPlayer(materialType, playerId)
-				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId);
 	}
 
 	private boolean construct(EBuildingType type) {
