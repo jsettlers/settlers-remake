@@ -288,9 +288,9 @@ public class AiStatistics {
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
-		int playerId = player.playerId;
+		byte playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
-		updateBorderlandNextToFreeLand(playerStatistic, x, y);
+		updateBorderlandNextToFreeLand(playerStatistic, playerId, x, y);
 		playerStatistic.landToBuildOn.addNoCollission(x, y);
 		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 		if (o != null) {
@@ -365,15 +365,13 @@ public class AiStatistics {
 		}
 	}
 
-	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, short x, short y) {
+	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, byte playerId, short x, short y) {
 		for (EDirection dir : EDirection.VALUES) {
-			int lx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
-			int ly = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
-			if (mainGrid.isInBounds(lx, ly)) {
-				if (partitionsGrid.isDefaultPartition(partitionsGrid.getPartitionIdAt(lx, ly))) {
-					playerStatistic.borderLandNextToFreeLand.addNoCollission(x, y);
-					break;
-				}
+			int dx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
+			int dy = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
+			if (mainGrid.isInBounds(dx, dy) && partitionsGrid.getPlayerIdAt(dx, dy) != playerId) {
+				playerStatistic.borderLandNextToFreeLand.addNoCollission(x, y);
+				break;
 			}
 		}
 	}
