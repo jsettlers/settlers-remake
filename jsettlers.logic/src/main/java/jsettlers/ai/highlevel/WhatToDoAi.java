@@ -434,6 +434,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private List<Integer> collectPioneers() {
+		//TODO collect not working pioneers in a way to retarget them
+		//TODO test size of broadener pioneer group
 		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
 		List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
 		for (ShortPoint2D pioneer : pioneers) {
