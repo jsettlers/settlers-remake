@@ -291,7 +291,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			buildingsToBuild.add(TOWER);
+			//buildingsToBuild.add(TOWER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -314,7 +314,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			buildingsToBuild.add(TOWER);
+			//buildingsToBuild.add(TOWER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -339,7 +339,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(FORESTER);
-			buildingsToBuild.add(TOWER);
+			//buildingsToBuild.add(TOWER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(IRONMELT);
 			addIfPossible(TOOLSMITH);
