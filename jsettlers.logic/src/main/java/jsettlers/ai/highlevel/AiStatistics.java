@@ -71,6 +71,7 @@ public class AiStatistics {
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
 			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
 	public static final int NEAR_STONE_DISTANCE = 5;
+	public static final int DEFAULT_PLAYER_ID = -1;
 
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;
@@ -291,7 +292,7 @@ public class AiStatistics {
 	private void updatePlayerLand(short x, short y, Player player) {
 		byte playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
-		updateBorderlandNextToFreeLand(playerStatistic, playerId, x, y);
+		updateThreatenedBorderland(playerStatistic, playerId, x, y);
 		playerStatistic.landToBuildOn.addNoCollission(x, y);
 		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 		if (o != null) {
@@ -380,13 +381,16 @@ public class AiStatistics {
 		}
 	}
 
-	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, byte playerId, short x, short y) {
+	private void updateThreatenedBorderland(PlayerStatistic playerStatistic, byte playerId, short x, short y) {
 		for (EDirection dir : EDirection.VALUES) {
 			int dx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
 			int dy = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
-			if (mainGrid.isInBounds(dx, dy) && partitionsGrid.getPlayerIdAt(dx, dy) != playerId) {
-				playerStatistic.borderLandNextToFreeLand.addNoCollission(x, y);
-				break;
+			if (mainGrid.isInBounds(dx, dy)) {
+				byte enemyId = partitionsGrid.getPlayerIdAt(dx, dy);
+				if (enemyId != DEFAULT_PLAYER_ID && enemyId != playerId) {
+					playerStatistic.threatenedBorderLand.addNoCollission(x, y);
+					break;
+				}
 			}
 		}
 	}
@@ -495,8 +499,8 @@ public class AiStatistics {
 		return playerStatistics[playerId].landToBuildOn;
 	}
 
-	public AiPositions getBorderLandNextToFreeLandForPlayer(byte playerId) {
-		return playerStatistics[playerId].borderLandNextToFreeLand;
+	public AiPositions getThreatenedBorderLandForPlayer(byte playerId) {
+		return playerStatistics[playerId].threatenedBorderLand;
 	}
 
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
@@ -715,7 +719,7 @@ public class AiStatistics {
 		short partitionIdToBuildOn;
 		IPartitionData materials;
 		AiPositions landToBuildOn;
-		AiPositions borderLandNextToFreeLand;
+		AiPositions threatenedBorderLand;
 		AiPositions border;
 		AiPositions otherPartitionBorder;
 		Map<EMovableType, List<ShortPoint2D>> movablePositions;
@@ -740,7 +744,7 @@ public class AiStatistics {
 			rivers = new AiPositions();
 			landToBuildOn = new AiPositions();
 			enemyTroopsInTown = new AiPositions();
-			borderLandNextToFreeLand = new AiPositions();
+			threatenedBorderLand = new AiPositions();
 			border = new AiPositions();
 			otherPartitionBorder = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
@@ -762,7 +766,7 @@ public class AiStatistics {
 			trees.clear();
 			rivers.clear();
 			landToBuildOn.clear();
-			borderLandNextToFreeLand.clear();
+			threatenedBorderLand.clear();
 			border.clear();
 			otherPartitionBorder.clear();
 			movablePositions.clear();

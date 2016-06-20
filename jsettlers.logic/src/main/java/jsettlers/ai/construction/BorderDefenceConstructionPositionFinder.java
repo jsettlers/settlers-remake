@@ -23,8 +23,7 @@ public class BorderDefenceConstructionPositionFinder implements IBestConstructio
 	@Override
 	public ShortPoint2D findBestConstructionPosition(
 			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		// TODO not only free land but threatened, too
-		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
+		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getThreatenedBorderLandForPlayer(playerId);
 		if (borderLandNextToFreeLandForPlayer.size() == 0) {
 			return null;
 		}
