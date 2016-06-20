@@ -36,16 +36,15 @@ public class PioneerAi {
 	private final int searchRadius;
 
 	private ShortPoint2D lastResourceTarget;
-	private ShortPoint2D lastBroadeningTarget;
 	private ShortPoint2D centroid;
-	private int ticksUntilBroadenFromCentroid = 0;
+	private boolean enoughTreesFoundAlready;
 
 	public PioneerAi(AiStatistics aiStatistics, byte playerId) {
 		this.aiStatistics = aiStatistics;
 		this.playerId = playerId;
 		this.searchRadius = aiStatistics.getMainGrid().getWidth() / 2;
 		this.lastResourceTarget = aiStatistics.getPositionOfPartition(playerId);
-		this.lastBroadeningTarget = lastResourceTarget;
+		this.enoughTreesFoundAlready = false;
 	}
 
 	public ShortPoint2D findResourceTarget() {
@@ -62,12 +61,16 @@ public class PioneerAi {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		int maxDistance = halfDistanceToNearestEnemy(centroid);
 
-		ShortPoint2D target = targetForNearStoneFields(maxDistance);
-		if (target != null)
-			return target;
+		if (!enoughTreesFoundAlready) {
+			ShortPoint2D treeTarget = targetForCuttingBuilding(myBorder, EMapObjectType.TREE_ADULT,
+					EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 10, maxDistance);
+			if (treeTarget == null)
+				enoughTreesFoundAlready = true;
+			else
+				return treeTarget;
+		}
 
-		target = targetForCuttingBuilding(myBorder, EMapObjectType.TREE_ADULT,
-				EBuildingType.LUMBERJACK, aiStatistics.getTreesForPlayer(playerId), 6, maxDistance);
+		ShortPoint2D target = targetForNearStoneFields(maxDistance);
 		if (target != null)
 			return target;
 
@@ -192,9 +195,6 @@ public class PioneerAi {
 	public ShortPoint2D findBroadenTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 		ShortPoint2D target = myBorder.getNearestPoint(centroid, searchRadius);
-		if (target != null) {
-			lastBroadeningTarget = target;
-		}
 		return target;
 	}
 
