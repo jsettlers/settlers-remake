@@ -382,6 +382,9 @@ public class AiStatistics {
 	}
 
 	private void updateThreatenedBorderland(PlayerStatistic playerStatistic, byte playerId, short x, short y) {
+		if (!partitionsGrid.isEnforcedByTower(x, y)) {
+			return;
+		}
 		for (EDirection dir : EDirection.VALUES) {
 			int dx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
 			int dy = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
