@@ -401,7 +401,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void commandPioneers() {
-		if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) < 4 || aiStatistics.getBorderOf(playerId).size() == 0) {
+		if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) < 4 || aiStatistics.getBorderOf(playerId).size() == 0 ||
+				aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
 			return;
 		}
 
@@ -444,8 +445,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-		// TODO test size of broadener pioneer group
-		// TODO check BuildingListEconomyMinister for Towers
+	// TODO test size of broadener pioneer group
+	// TODO check BuildingListEconomyMinister for Towers
 
 	private List<Integer> recruitNewPioneers(int existentPioneersCount) {
 		if (aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
