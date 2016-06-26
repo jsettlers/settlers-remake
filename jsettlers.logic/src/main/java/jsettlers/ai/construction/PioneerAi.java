@@ -54,8 +54,6 @@ public class PioneerAi {
 	}
 
 	private ShortPoint2D findResourceTargetNearLastTarget() {
-		// TODO wenn turmbau dann richtung feinde (in der naehe) ansonsten richtung wald\Stein in der naehe
-		// TODO isEndgame setyen, wenn livinghouses nicht mehr gebaut werden koennen
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 
 		if (!enoughTreesFoundAlready) {

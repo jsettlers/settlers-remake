@@ -445,50 +445,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	// TODO test size of broadener pioneer group
-	// TODO check BuildingListEconomyMinister for Towers
-
-	private List<Integer> recruitNewPioneers(int existentPioneersCount) {
-		if (aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
-			return Collections.emptyList();
-		}
-
-		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
-		if (bearers.size() <= MINIMUM_NUMBER_OF_BEARERS) {
-			return Collections.emptyList();
-		}
-
-		int missingPioneersCount = Math.min(
-				Math.round(aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) / LUMBERJACK_TO_PIONEER_RATIO),
-				BROADEN_PIONEER_GROUP_COUNT + RESOURCE_PIONEER_GROUP_COUNT - existentPioneersCount);
-		if (missingPioneersCount == 0) {
-			return Collections.emptyList();
-		}
-
-		List<Integer> pioneerIds = new ArrayList<>(missingPioneersCount);
-		List<Integer> newPioneers = new ArrayList<>();
-		for (ShortPoint2D bearerPosition : bearers) {
-			int remainingBearers = bearers.size() - newPioneers.size()
-					- aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE;
-			if (remainingBearers <= 0) {
-				break;
-			}
-			Movable bearer = mainGrid.getMovableGrid().getMovableAt(bearerPosition.x, bearerPosition.y);
-			if (bearer.getAction() == EMovableAction.NO_ACTION) {
-				newPioneers.add(bearer.getID());
-				pioneerIds.add(bearer.getID());
-				if (newPioneers.size() == missingPioneersCount) {
-					break;
-				}
-			}
-		}
-
-		if (newPioneers.size() > 0) {
-			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneers, EMovableType.PIONEER));
-		}
-
-		return pioneerIds;
-	}
 
 	private boolean buildLivingHouse() {
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()

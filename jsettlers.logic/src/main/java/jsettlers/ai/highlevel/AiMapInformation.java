@@ -42,8 +42,6 @@ import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATI
  * space to be build on the map. If not it reduces the number of smiths unless it hits a threshold. Then it reduces the number of gold smith,
  * winegrowers and big temples to a minimum set of this buildings. If again this are too much buildings. It keeps reducing smiths.
  *
- * TODO: add information where to find the resources and how far they are to let AI use pioneers instead of towers
- *
  * @author codingberlin
  */
 public class AiMapInformation {
