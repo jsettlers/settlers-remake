@@ -104,7 +104,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 	public static final int RESOURCE_PIONEER_GROUP_COUNT = 15;
 	public static final int BROADEN_PIONEER_GROUP_COUNT = 60;
 	public static final float LUMBERJACK_TO_PIONEER_RATIO = 8F / (RESOURCE_PIONEER_GROUP_COUNT + BROADEN_PIONEER_GROUP_COUNT);
-	public static final int BROADENER_PIONEER_TARGET_REFRESH_PERIOD = 25;
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -113,9 +112,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	private final EconomyMinister economyMinister;
 	private final PioneerAi pioneerAi;
-	private byte ticksUntilNextBroadenPioneerGroupTarget = 0;
 	private boolean isEndGame = false;
 	private ArrayList<Object> failedConstructingBuildings;
+	private PioneerGroup resourcePioneers;
+	private PioneerGroup broadenerPioneers;
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
 			ITaskScheduler taskScheduler) {
@@ -127,6 +127,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 		this.economyMinister = economyMinister;
 		this.pioneerAi = new PioneerAi(aiStatistics, playerId);
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
+		resourcePioneers = new PioneerGroup(RESOURCE_PIONEER_GROUP_COUNT);
+		broadenerPioneers = new PioneerGroup(BROADEN_PIONEER_GROUP_COUNT);
 	}
 
 	@Override
@@ -399,51 +401,51 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void commandPioneers() {
-		AiPositions border = aiStatistics.getBorderOf(playerId);
-		if (border.size() > 0) {
-			List<Integer> pioneerIds = collectPioneers();
-			List<Integer> newPioneerIds = recruitNewPioneers(pioneerIds.size());
-			pioneerIds.addAll(newPioneerIds);
-			Collections.sort(pioneerIds);
+		if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) < 4 || aiStatistics.getBorderOf(playerId).size() == 0) {
+			return;
+		}
 
-			if (pioneerIds.size() > 0) {
-				pioneerAi.update();
-				ShortPoint2D resourcePioneerTarget = pioneerAi.findResourceTarget();
-				if (resourcePioneerTarget != null) {
-					int resourcePioneerGroupCount = Math.min(pioneerIds.size(), RESOURCE_PIONEER_GROUP_COUNT);
-					List<Integer> resourcePioneerIds = pioneerIds.subList(0, resourcePioneerGroupCount);
-					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourcePioneerTarget, resourcePioneerIds));
-					if (resourcePioneerIds.size() < pioneerIds.size()) {
-						pioneerIds = pioneerIds.subList(resourcePioneerGroupCount, pioneerIds.size());
-					} else {
-						pioneerIds = Collections.emptyList();
-					}
-				}
-				if (pioneerIds.size() > 0) {
-					if (newPioneerIds.size() > 0 || ticksUntilNextBroadenPioneerGroupTarget < 1) {
-						ShortPoint2D broadenerPioneerTarget = pioneerAi.findBroadenTarget();
-						if (broadenerPioneerTarget != null) {
-							taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenerPioneerTarget, pioneerIds));
-							ticksUntilNextBroadenPioneerGroupTarget = BROADENER_PIONEER_TARGET_REFRESH_PERIOD;
-						}
-					}
-					ticksUntilNextBroadenPioneerGroupTarget--;
+		resourcePioneers.removeDeadPioneers();
+		broadenerPioneers.removeDeadPioneers();
+
+		if (!resourcePioneers.isFull()) {
+			fill(resourcePioneers);
+			setNewTargetForResourcePioneers();
+		} else {
+			setNewTargetForResourcePioneers();
+			if (!broadenerPioneers.isFull()) {
+				fill(broadenerPioneers);
+			}
+			if (broadenerPioneers.isNotEmpty()) {
+				PioneerGroup pioneersWithNoAction = broadenerPioneers.getPioneersWithNoAction();
+				ShortPoint2D broadenTarget = pioneerAi.findBroadenTarget();
+				if (broadenTarget != null) {
+					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenTarget, pioneersWithNoAction.getPioneerIds()));
 				}
 			}
 		}
 	}
 
-	private List<Integer> collectPioneers() {
-		//TODO collect not working pioneers in a way to retarget them
-		//TODO test size of broadener pioneer group
-		//TODO check BuildingListEconomyMinister for Towers
-		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
-		List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
-		for (ShortPoint2D pioneer : pioneers) {
-			pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneer.x, pioneer.y).getID());
+	private void setNewTargetForResourcePioneers() {
+		if (resourcePioneers.isNotEmpty()) {
+			ShortPoint2D resourceTarget = pioneerAi.findResourceTarget();
+			if (resourceTarget != null) {
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, resourceTarget, resourcePioneers.getPioneerIds()));
+			}
 		}
-		return pioneerIds;
 	}
+
+	private void fill(PioneerGroup pioneerGroup) {
+		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+		int maxNewPioneersCount = bearers.size() - Math.max(
+				MINIMUM_NUMBER_OF_BEARERS, aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE);
+		if (maxNewPioneersCount > 0) {
+			pioneerGroup.fill(taskScheduler, aiStatistics, playerId, maxNewPioneersCount);
+		}
+	}
+
+		// TODO test size of broadener pioneer group
+		// TODO check BuildingListEconomyMinister for Towers
 
 	private List<Integer> recruitNewPioneers(int existentPioneersCount) {
 		if (aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
