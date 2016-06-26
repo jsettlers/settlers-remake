@@ -28,7 +28,7 @@ import jsettlers.common.position.ShortPoint2D;
 public class PioneerAi {
 
 	public static final int FISH_NEEDED_BY_FISHER = 10;
-	public static final int MAX_SEARCH_DISTANCE = 300;
+	public static final int MAX_SEARCH_DISTANCE = 900;
 
 	private final AiStatistics aiStatistics;
 	private final byte playerId;

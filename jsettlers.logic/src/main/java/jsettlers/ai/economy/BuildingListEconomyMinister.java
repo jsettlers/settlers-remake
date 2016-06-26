@@ -54,19 +54,19 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private boolean isMiddleGoodsGame;
 
 	static {
-		EBuildingType[] buildingIndustry = {LUMBERJACK, FORESTER, SAWMILL, STONECUTTER};
+		EBuildingType[] buildingIndustry = { LUMBERJACK, FORESTER, SAWMILL, STONECUTTER };
 		BUILDING_INDUSTRY = Arrays.asList(buildingIndustry);
 	}
 
 	/**
-	 *  @param weaponSmithFactor
+	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 * @param buildingIndustryFactor
-	 * 			 influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount
-	 * 			 of building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
+	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
+	 *            building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
 	 * @param limitByWeakestEnemy
-	 *          when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
+	 *            when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
 	 */
 	public BuildingListEconomyMinister(
 			AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor, boolean limitByWeakestEnemy) {
@@ -189,6 +189,12 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			weaponsBuildings.add(WEAPONSMITH);
 			if (i % 3 == 0)
 				weaponsBuildings.add(BARRACK);
+			if (i == 2)
+				weaponsBuildings.add(TOWER);
+			if (i == 6)
+				weaponsBuildings.add(BIG_TOWER);
+			if (i == 16)
+				weaponsBuildings.add(CASTLE);
 			if (i == 3)
 				addGoldBuildings(weaponsBuildings);
 		}
@@ -217,14 +223,18 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	protected void addIfPossible(EBuildingType buildingType) {
-		float factor = 1F;
-		if (BUILDING_INDUSTRY.contains(buildingType)) {
-			factor = buildingIndustryFactor;
-		}
-		double currentCount = currentCountOf(buildingType);
-		if (currentCount < Math.ceil(mapBuildingCounts[buildingType.ordinal]*factor)
-				&& currentCount < maximumAllowedCount(buildingType)) {
+		if (buildingType.isMilitaryBuilding()) {
 			buildingsToBuild.add(buildingType);
+		} else {
+			float factor = 1F;
+			if (BUILDING_INDUSTRY.contains(buildingType)) {
+				factor = buildingIndustryFactor;
+			}
+			double currentCount = currentCountOf(buildingType);
+			if (currentCount < Math.ceil(mapBuildingCounts[buildingType.ordinal] * factor)
+					&& currentCount < maximumAllowedCount(buildingType)) {
+				buildingsToBuild.add(buildingType);
+			}
 		}
 	}
 
@@ -291,7 +301,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			//buildingsToBuild.add(TOWER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -314,7 +323,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			//buildingsToBuild.add(TOWER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -339,7 +347,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(FORESTER);
-			//buildingsToBuild.add(TOWER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(IRONMELT);
 			addIfPossible(TOOLSMITH);
