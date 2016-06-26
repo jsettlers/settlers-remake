@@ -57,7 +57,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getThreatenedBorderLandForPlayer(playerId);
+		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getLandForPlayer(playerId);
 		if (borderLandNextToFreeLandForPlayer.size() == 0) {
 			return null;
 		}

@@ -26,6 +26,6 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public interface IBestConstructionPositionFinder {
 
-	abstract ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
+	ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
 			byte playerId);
 }

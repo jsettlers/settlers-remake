@@ -22,27 +22,20 @@ public class BorderDefenceConstructionPositionFinder implements IBestConstructio
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(
-			AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getThreatenedBorderLandForPlayer(playerId);
-		if (borderLandNextToFreeLandForPlayer.size() == 0) {
-			return null;
-		}
-
-		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<>();
-		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
-			if (constructionMap.canConstructAt(point.x, point.y, EBuildingType.TOWER, playerId)
-					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId, EBuildingType.TOWER)) {
-				int score = 0;
-				for (ShortPoint2D threatenedBorder : threatenedBorders) {
-					if (threatenedBorder.getOnGridDistTo(point) <= CommonConstants.TOWER_RADIUS) {
-						score++;
-					}
-
+			final AiStatistics aiStatistics, final AbstractConstructionMarkableMap constructionMap, final byte playerId) {
+		AiPositions landToBuildOn = aiStatistics.getLandForPlayer(playerId);
+		for (ShortPoint2D threatenedBorder : threatenedBorders) {
+			ShortPoint2D constructionPosition = landToBuildOn.getNearestPoint(threatenedBorder, CommonConstants.TOWER_RADIUS, new AiPositions
+					.AiPositionFilter() {
+				@Override public boolean contains(int x, int y) {
+					return constructionMap.canConstructAt((short) x, (short) y, EBuildingType.TOWER, playerId)
+							&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(new ShortPoint2D(x, y), playerId, EBuildingType.TOWER);
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, score));
+			});
+			if (constructionPosition != null) {
+				return constructionPosition;
 			}
 		}
-		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
-
+		return null;
 	}
 }
