@@ -285,7 +285,8 @@ public class AiStatistics {
 	private boolean isIngestibleBy(short x, short y, byte playerId) {
 		return mainGrid.isInBounds(x, y)
 				&& partitionsGrid.getPlayerIdAt(x, y) != playerId
-				&& !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking;
+				&& !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking
+				&& !partitionsGrid.isEnforcedByTower(x, y);
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
@@ -655,10 +656,6 @@ public class AiStatistics {
 
 	public long resourceCountOfPlayer(EResourceType resourceType, byte playerId) {
 		return playerStatistics[playerId].resourceCount[resourceType.ordinal];
-	}
-
-	public AiPositions getStonesInDefaultPosition() {
-		return sortedCuttableObjectsInDefaultPartition.get(STONE);
 	}
 
 	public List<ShortPoint2D> threatenedBorderOf(byte playerId) {
