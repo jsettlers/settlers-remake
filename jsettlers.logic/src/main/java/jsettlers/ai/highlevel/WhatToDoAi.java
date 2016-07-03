@@ -52,8 +52,9 @@ import java.util.Map;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
-import jsettlers.ai.construction.PioneerAi;
+import jsettlers.ai.highlevel.pioneers.PioneerAi;
 import jsettlers.ai.economy.EconomyMinister;
+import jsettlers.ai.highlevel.pioneers.PioneerGroup;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
