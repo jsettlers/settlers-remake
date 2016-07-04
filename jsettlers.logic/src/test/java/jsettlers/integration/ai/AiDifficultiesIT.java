@@ -92,8 +92,8 @@ public class AiDifficultiesIT {
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
-		int expectedWinnerSlotId = 5;
-		int expectedLooserSlotId = 11;
+		int expectedWinnerSlotId = 7;
+		int expectedLooserSlotId = 9;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
 		playerSettings[expectedWinnerSlotId] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
 		playerSettings[expectedLooserSlotId] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
