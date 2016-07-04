@@ -1,13 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'java'
 
-test {
-        testLogging {
-                events "failed"
-                exceptionFormat "short"
-        }
-}
-
 buildscript {
 	repositories {
 		jcenter()
@@ -28,6 +21,12 @@ allprojects {
 
 subprojects {
 	plugins.withType(JavaPlugin).whenPluginAdded {
+		test {
+			testLogging {
+				events "failed"
+				exceptionFormat "short"
+			}
+		}
 		compileJava {
 			sourceCompatibility = 1.7
 			targetCompatibility = 1.7
