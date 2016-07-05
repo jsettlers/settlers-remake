@@ -47,4 +47,4 @@ env:
   
   - TARGET="release deployToGithub"
 
-script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew --info $TARGET
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET

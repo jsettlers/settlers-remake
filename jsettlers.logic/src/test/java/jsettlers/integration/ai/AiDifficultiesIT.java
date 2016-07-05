@@ -17,7 +17,6 @@ package jsettlers.integration.ai;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -45,8 +44,6 @@ import jsettlers.testutils.map.MapUtils;
 public class AiDifficultiesIT {
 	public static final int MINUTES = 1000 * 60;
 	public static final int JUMP_FORWARD = 2 * MINUTES;
-
-	private static final Logger log = Logger.getLogger("AiDifficultiesIT");
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
@@ -110,7 +107,6 @@ public class AiDifficultiesIT {
 			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) expectedWinnerSlotId) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
-			//TODO hard vs easy .... easz vs very easy
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
 				MapLoader savegame = MapUtils.saveMainGrid(
 						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte)
@@ -133,14 +129,10 @@ public class AiDifficultiesIT {
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
 		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
-			log.info(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
 			fail(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
 					+ "caused the AI to have a worse runtime performance.");
 		}
 		if (stopWatch.getMax() > max) {
-			log.info(description + "'s max is higher than " + max + ". It was " + stopWatch.getMax() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
 			fail(description + "'s max is higher than " + max + ". It was " + stopWatch.getMax() + ".\nSomething in the code changed which "
 					+ "caused the AI to have a worse runtime performance.");
 		}
