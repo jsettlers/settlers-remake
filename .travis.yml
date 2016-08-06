@@ -41,20 +41,20 @@ before_script:
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
 
-env:
+#env:
   # Only compile and build basic jars
-  - TARGET="assemble"
-  - TARGET=":jsettlers.main.android:build"
+  #- TARGET="assemble"
+  #- TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
-  - TARGET=":jsettlers.logic:test:unitTest"
-  - TARGET=":jsettlers.common:test:test"
-  - TARGET=":jsettlers.network:test --info"
-  - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
-  - TARGET=":jsettlers.logic:test:autoReplayIT"
-  - TARGET=":jsettlers.logic:test:replayValidationIT"
-    
-  # Test release generation
-  - TARGET="release"
+  #- TARGET=":jsettlers.logic:test:unitTest"
+  #- TARGET=":jsettlers.common:test:test"
+  #- TARGET=":jsettlers.network:test --info"
+  #- TARGET=":jsettlers.logic:test:aiDifficultiesIT"
+  #- TARGET=":jsettlers.logic:test:autoReplayIT"
+  #- TARGET=":jsettlers.logic:test:replayValidationIT"
 
-script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+script: ./deploy.sh
+
+after_success:
+- ./deploy.sh
