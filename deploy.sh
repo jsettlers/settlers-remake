@@ -9,12 +9,17 @@ function doCompile {
   GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew release
 }
 
-# Pull requests and commits to other branches shouldn't try to deploy, just build to verify
-#if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-#    echo "Skipping deploy; just doing a build."
-#    doCompile
-#    exit 0
-#fi
+# Commits to other branches than master shouldn't be deployed
+if [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
+    echo "This is the build of a branch => Skipping deploy;"
+    exit 0
+fi
+
+
+if [ -z "$encrypted_af9c5a2dd85c_key" ]; then 
+	echo "No encryption key for deploy provided => Skipping deplo;"
+	exit 0;
+fi
 
 # Save some useful information
 REPO=`git config remote.origin.url`
@@ -55,6 +60,9 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
 elif [ -n "$TRAVIS_TAG" ]; then
 	FOLDER="tags/$TRAVIS_TAG"
 
+elif [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
+	FOLDER="$SOURCE_BRANCH"
+	
 else
 	FOLDER="branch/$TRAVIS_BRANCH"
 	
@@ -77,7 +85,6 @@ git config user.email "travis@settlers-remake"
 
 
 # Commit the "changes", i.e. the new version.
-# The delta will show diffs between new and old versions.
 git add .
 git commit -m "Deploy to GitHub Pages: ${SHA}"
 
