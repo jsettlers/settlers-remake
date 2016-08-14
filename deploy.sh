@@ -10,10 +10,10 @@ function doCompile {
 }
 
 # Commits to other branches than master shouldn't be deployed
-if [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-    echo "This is the build of a branch => Skipping deploy;"
-    exit 0
-fi
+#if [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
+#    echo "This is the build of a branch => Skipping deploy;"
+#    exit 0
+#fi
 
 
 if [ -z "$encrypted_af9c5a2dd85c_key" ]; then 
@@ -23,17 +23,19 @@ fi
 
 # Save some useful information
 REPO=`git config remote.origin.url`
-SSH_REPO=git@github.com:andreas-eberle/settlers-remake.git
-SHA=`git rev-parse --verify HEAD`
+SSH_REPO=git@github.com:jsettlers/settlers-nightlies.git
+SHA=`git rev-parse --short=7 --verify HEAD`
 
 
+cd settings
 
 # Get the deploy key by using Travis's stored variables to decrypt deploy_key.enc
-openssl aes-256-cbc -K $encrypted_af9c5a2dd85c_key -iv $encrypted_af9c5a2dd85c_iv -in deploy_key.enc -out deploy_key -d 
+openssl aes-256-cbc -K $encrypted_af9c5a2dd85c_key -iv $encrypted_af9c5a2dd85c_iv -in deploy_key.enc -out deploy_key -d
 chmod 600 deploy_key
 eval `ssh-agent -s`
 ssh-add deploy_key
 
+cd ..
 
 
 
@@ -44,10 +46,6 @@ rm -rf gh-pages
 
 git clone $SSH_REPO --branch $TARGET_BRANCH --single-branch gh-pages
 
-
-
-# Clean out existing contents
-rm -rf gh-pages/**/* || exit 0
 
 # Run our compile script
 doCompile

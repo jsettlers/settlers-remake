@@ -34,7 +34,7 @@ before_script:
   
 env:
   # Only compile and build basic jars
-#  - TARGET="assemble"
+ # - TARGET="assemble"
  # - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
