@@ -37,6 +37,9 @@ ssh-add deploy_key
 cd ..
 
 
+# Run our compile script
+doCompile
+
 
 # Clone the existing gh-pages for this repo into out/
 # Create a new empty branch if gh-pages doesn't exist yet (should only happen on first deply)
@@ -44,11 +47,6 @@ cd ..
 rm -rf gh-pages
 
 git clone $SSH_REPO --branch $TARGET_BRANCH --single-branch gh-pages
-
-
-# Run our compile script
-doCompile
-
 
 # Create the folder name
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then 
