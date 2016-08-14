@@ -69,14 +69,14 @@ mkdir -v -p "$FOLDER"
 
 
 # Copy the release files into the folder
-cp -R release/ "$FOLDER/${DATE}_$SHA/"
+cp -R release/ "$FOLDER/${DATE}__$SHA/"
 
 cd gh-pages
 
 
 # Set git config
 git config user.name "Travis CI"
-git config user.email "travis@settlers-remake"
+git config user.email "travis@jsettlers"
 
 
 # Commit the "changes", i.e. the new version.
