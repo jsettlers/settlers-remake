@@ -2,7 +2,6 @@
 
 set -e # Exit with nonzero exit code if anything fails
 
-SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 function doCompile {
@@ -10,7 +9,7 @@ function doCompile {
 }
 
 # Commits to other branches than master shouldn't be deployed
-#if [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
+#if [ "$TRAVIS_BRANCH" != "master" ]; then
 #    echo "This is the build of a branch => Skipping deploy;"
 #    exit 0
 #fi
@@ -58,8 +57,8 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
 elif [ -n "$TRAVIS_TAG" ]; then
 	FOLDER="tags/$TRAVIS_TAG"
 
-elif [ "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-	FOLDER="$SOURCE_BRANCH"
+elif [ "$TRAVIS_BRANCH" == "master" ]; then
+	FOLDER="master"
 	
 else
 	FOLDER="branch/$TRAVIS_BRANCH"
