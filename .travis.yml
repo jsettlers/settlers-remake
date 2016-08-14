@@ -34,23 +34,22 @@ before_script:
   
 env:
   # Only compile and build basic jars
- # - TARGET="assemble"
- # - TARGET=":jsettlers.main.android:build"
+  - TARGET="assemble"
+  - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
- # - TARGET=":jsettlers.logic:test:unitTest"
- # - TARGET=":jsettlers.common:test:test"
- # - TARGET=":jsettlers.network:test --info"
- # - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
- # - TARGET=":jsettlers.logic:test:autoReplayIT"
- # - TARGET=":jsettlers.logic:test:replayValidationIT"
+  - TARGET=":jsettlers.logic:test:unitTest"
+  - TARGET=":jsettlers.common:test:test"
+  - TARGET=":jsettlers.network:test --info"
+  - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
+  - TARGET=":jsettlers.logic:test:autoReplayIT"
+  - TARGET=":jsettlers.logic:test:replayValidationIT"
   
- # - TARGET="release"
+  - TARGET="release"
 
   
-script: ./deploy.sh 
-#GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
 
 
-#after_success:
-#- ./deploy.sh
+after_success:
+- ./deploy.sh
