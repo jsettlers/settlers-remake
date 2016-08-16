@@ -9,10 +9,10 @@ function doCompile {
 }
 
 # Commits to other branches than master shouldn't be deployed
-#if [ "$TRAVIS_BRANCH" != "master" ]; then
-#    echo "This is the build of a branch => Skipping deploy;"
-#    exit 0
-#fi
+if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "$TRAVIS_TAG" -a "$TRAVIS_BRANCH" != "master" ]; then
+    echo "This is the build of a branch => Skipping deploy;"
+    exit 0
+fi
 
 
 if [ -z "$encrypted_af9c5a2dd85c_key" ]; then 
