@@ -4,9 +4,6 @@ set -e # Exit with nonzero exit code if anything fails
 
 TARGET_BRANCH="gh-pages"
 
-function doCompile {
-  GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew release
-}
 
 # Commits to other branches than master shouldn't be deployed
 if [ "$TRAVIS_PULL_REQUEST" == "false" -a -z "$TRAVIS_TAG" -a "$TRAVIS_BRANCH" != "master" ]; then
@@ -37,12 +34,7 @@ ssh-add deploy_key
 cd ..
 
 
-# Run our compile script
-doCompile
-
-
-# Clone the existing gh-pages for this repo into out/
-# Create a new empty branch if gh-pages doesn't exist yet (should only happen on first deply)
+# Clone the existing gh-pages for this repo into gh-pages/
 
 rm -rf gh-pages
 

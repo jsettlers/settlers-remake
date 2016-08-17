@@ -45,11 +45,7 @@ env:
   - TARGET=":jsettlers.logic:test:autoReplayIT"
   - TARGET=":jsettlers.logic:test:replayValidationIT"
   
-  - TARGET="release"
+  - TARGET="release deployToGithub"
 
   
 script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
-
-
-after_success:
-- ./deploy.sh
