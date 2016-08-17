@@ -16,7 +16,7 @@ fi
 
 
 if [ -z "$encrypted_af9c5a2dd85c_key" ]; then 
-	echo "No encryption key for deploy provided => Skipping deplo;"
+	echo "No encryption key for deploy provided => Skipping deploy;"
 	exit 0;
 fi
 
