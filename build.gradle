@@ -3,91 +3,88 @@ apply plugin: 'java'
 
 
 buildscript {
-	repositories {
-		jcenter()
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
-		classpath 'com.android.tools.build:gradle:2.1.0'
-	}
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
+        classpath 'com.android.tools.build:gradle:2.1.0'
+    }
 }
 
 allprojects {
-	repositories {
-		jcenter()
-	}
+    repositories {
+        jcenter()
+    }
 }
 
 
 subprojects {
-	plugins.withType(JavaPlugin).whenPluginAdded {
-		compileJava {
-			sourceCompatibility = 1.7
-			targetCompatibility = 1.7
-		}
-		compileTestJava {
-			sourceCompatibility = 1.8
-			targetCompatibility = 1.8
-		}
-		dependencies {
-			testCompile 'junit:junit:4.12'
-		}
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        compileJava {
+            sourceCompatibility = 1.7
+            targetCompatibility = 1.7
+        }
+        compileTestJava {
+            sourceCompatibility = 1.8
+            targetCompatibility = 1.8
+        }
+        dependencies {
+            testCompile 'junit:junit:4.12'
+        }
 
-		//sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
-		if (gradle.ext.projectsWithExtraTest.contains(project.path)) {
-			// println "Disable tests for " + project
-			project.test.onlyIf ( {p -> false} )
-			project.compileTestJava.onlyIf ( {p -> false} )
-			println sourceSets.test.getClass()
-		}
-		if (project.name == 'test' && gradle.ext.projectsWithExtraTest.contains(project.parent.path)) {
-			// println "Configure additional tests for " + project.parent
-			sourceSets.main.java.exclude { f -> true }
-			sourceSets.main.resources.exclude { f -> true }
-			sourceSets.test.java.srcDirs = parent.sourceSets.test.java.srcDirs;
-			sourceSets.test.resources.srcDirs = parent.sourceSets.test.resources.srcDirs;
-			parent.sourceSets.test.java.srcDirs = [];
-			parent.sourceSets.test.resources.srcDirs = [];
-			parent.sourceSets.test.java.exclude { f -> true }
-			parent.sourceSets.test.resources.exclude { f -> true }
-			compileJava {
-				sourceCompatibility = 1.8
-				targetCompatibility = 1.8
-			}
-			dependencies {
-				compile project.parent
-				testCompile project(':jsettlers.testutils')
-			}
-		}
-	}
-	plugins.withType(ApplicationPlugin).whenPluginAdded {
-		startScripts {
-			defaultJvmOpts = ['-Xmx2G']
-			optsEnvironmentVar = "XXXREPLACEXXX"
-			def args = '"-Dsettlers.maps=$APP_HOME/maps"'
-			doLast {
-				unixScript.text = unixScript.text.replace('$XXXREPLACEXXX', args)
-				windowsScript.text = windowsScript.text.replace('%XXXREPLACEXXX%', args.replace('$APP_HOME', '%APP_HOME%'))
-			}
-		}
-	}
+        //sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+        if (gradle.ext.projectsWithExtraTest.contains(project.path)) {
+            // println "Disable tests for " + project
+            project.test.onlyIf({ p -> false })
+            project.compileTestJava.onlyIf({ p -> false })
+            println sourceSets.test.getClass()
+        }
+        if (project.name == 'test' && gradle.ext.projectsWithExtraTest.contains(project.parent.path)) {
+            // println "Configure additional tests for " + project.parent
+            sourceSets.main.java.exclude { f -> true }
+            sourceSets.main.resources.exclude { f -> true }
+            sourceSets.test.java.srcDirs = parent.sourceSets.test.java.srcDirs;
+            sourceSets.test.resources.srcDirs = parent.sourceSets.test.resources.srcDirs;
+            parent.sourceSets.test.java.srcDirs = [];
+            parent.sourceSets.test.resources.srcDirs = [];
+            parent.sourceSets.test.java.exclude { f -> true }
+            parent.sourceSets.test.resources.exclude { f -> true }
+            compileJava {
+                sourceCompatibility = 1.8
+                targetCompatibility = 1.8
+            }
+            dependencies {
+                compile project.parent
+                testCompile project(':jsettlers.testutils')
+            }
+        }
+    }
+    plugins.withType(ApplicationPlugin).whenPluginAdded {
+        startScripts {
+            defaultJvmOpts = ['-Xmx2G']
+            optsEnvironmentVar = "XXXREPLACEXXX"
+            def args = '"-Dsettlers.maps=$APP_HOME/maps"'
+            doLast {
+                unixScript.text = unixScript.text.replace('$XXXREPLACEXXX', args)
+                windowsScript.text = windowsScript.text.replace('%XXXREPLACEXXX%', args.replace('$APP_HOME', '%APP_HOME%'))
+            }
+        }
+    }
 
 
-	tasks.withType(Test) {
-		testLogging {
-			events 'started', 'passed'
-		}
-	}
+    tasks.withType(Test) {
+        testLogging {
+            events 'started', 'passed'
+        }
+    }
 }
-
-
-
 
 // This is a hack to make ./gradlew run only run the swing version.
 task run(dependsOn: ':jsettlers.main.swing:run') << {
     // We do not need any more tasks.
-    tasks.getAsMap().values().each {Task task -> if (!task.state.executed && task != tasks.getByPath(":run")) task.onlyIf {false}}
+    tasks.getAsMap().values().each { Task task -> if (!task.state.executed && task != tasks.getByPath(":run")) task.onlyIf { false } }
 }
 tasks.getByPath(":jsettlers.mapcreator:run").onlyIf { !gradle.taskGraph.hasTask(":run") }
 tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":run") }
@@ -95,20 +92,20 @@ tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":r
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
-	Properties local = new Properties()
-	local.load(new FileInputStream("local.properties"))
-	def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
-	println 'Copy files to your device...'
-	exec {
-		commandLine adb, 'uninstall', 'jsettlers.main.android'
-	}
-	exec {
-		commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
-	}
-	exec {
-		commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
-	}
-	println 'The application should have started now.'
+    Properties local = new Properties()
+    local.load(new FileInputStream("local.properties"))
+    def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
+    println 'Copy files to your device...'
+    exec {
+        commandLine adb, 'uninstall', 'jsettlers.main.android'
+    }
+    exec {
+        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
+    }
+    exec {
+        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+    }
+    println 'The application should have started now.'
 }
 
 
@@ -118,19 +115,19 @@ task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
 def releaseDir = project.file('release')
 
 
-task releaseJSettlers(type:Zip) {
-	into('JSettlers') {
-		from { project.getRootProject().file('LICENSE.txt')}
-		from tasks.getByPath(':jsettlers.main.swing:releaseJar')
-		from tasks.getByPath(':jsettlers.mapcreator:releaseJar')
+task releaseJSettlers(type: Zip) {
+    into('JSettlers') {
+        from { project.getRootProject().file('LICENSE.txt') }
+        from tasks.getByPath(':jsettlers.main.swing:releaseJar')
+        from tasks.getByPath(':jsettlers.mapcreator:releaseJar')
 
-		into('maps') {
-			from project.getRootProject().file('maps/release')
-		}
-	}
+        into('maps') {
+            from project.getRootProject().file('maps/release')
+        }
+    }
 
-	destinationDir releaseDir
-	baseName "JSettlers"
+    destinationDir releaseDir
+    baseName "JSettlers"
 }
 
 
@@ -140,19 +137,25 @@ task releaseDedicatedServer(type: Copy) {
 }
 
 
-task releaseAndroid(type:Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
-	into('JSettlers-Android') {
-		from { project.getRootProject().file('LICENSE.txt') }
-		from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
-		rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
-	}
+task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
+    into('JSettlers-Android') {
+        from { project.getRootProject().file('LICENSE.txt') }
+        from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
+        rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
+    }
 
-	destinationDir releaseDir
-	baseName "JSettlers-Android"
+    destinationDir releaseDir
+    baseName "JSettlers-Android"
 }
 
 
 task release(dependsOn: ['releaseJSettlers', 'releaseDedicatedServer', 'releaseAndroid'])
+
+
+task deployToGithub(type: Exec, dependsOn: 'release') {
+    commandLine 'bash', './deploy.sh'
+}
+
 
 clean {
     delete releaseDir
