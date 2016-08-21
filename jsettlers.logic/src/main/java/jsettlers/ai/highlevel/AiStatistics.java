@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
+import static jsettlers.common.buildings.EBuildingType.CASTLE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
@@ -67,10 +71,8 @@ import jsettlers.logic.player.Team;
  */
 public class AiStatistics {
 
-	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {
-			EBuildingType.LUMBERJACK, EBuildingType.TOWER, EBuildingType.BIG_TOWER, EBuildingType.CASTLE };
+	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {LUMBERJACK, TOWER, BIG_TOWER, CASTLE };
 	public static final int NEAR_STONE_DISTANCE = 5;
-	public static final int DEFAULT_PLAYER_ID = -1;
 
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;

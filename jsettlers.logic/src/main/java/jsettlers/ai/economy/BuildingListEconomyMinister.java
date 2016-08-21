@@ -21,8 +21,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
@@ -39,9 +39,11 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
  */
 public class BuildingListEconomyMinister implements EconomyMinister {
 
-	private static final EBuildingType[] RUSH_DEFENCE_BUILDINGS = {
-			LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE };
-	private static final Collection<EBuildingType> BUILDING_INDUSTRY;
+
+	private static final Collection<EBuildingType> RUSH_DEFENCE_BUILDINGS =
+			EnumSet.of(LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE);
+	private static final Collection<EBuildingType> BUILDING_INDUSTRY =
+			EnumSet.of(LUMBERJACK, FORESTER, SAWMILL, STONECUTTER);
 	private int[] mapBuildingCounts;
 	private final List<EBuildingType> buildingsToBuild;
 	private int numberOfMidGameStoneCutters = 0;
@@ -52,11 +54,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private float weaponSmithFactor;
 	private boolean isHighGoodsGame;
 	private boolean isMiddleGoodsGame;
-
-	static {
-		EBuildingType[] buildingIndustry = { LUMBERJACK, FORESTER, SAWMILL, STONECUTTER };
-		BUILDING_INDUSTRY = Arrays.asList(buildingIndustry);
-	}
 
 	/**
 	 * @param weaponSmithFactor
@@ -438,8 +435,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	private List<EBuildingType> prefixBuildingsToBuildWithRushDefence() {
-		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.length + buildingsToBuild.size());
-		allBuildingsToBuild.addAll(Arrays.asList(RUSH_DEFENCE_BUILDINGS));
+		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.size() + buildingsToBuild.size());
+		allBuildingsToBuild.addAll(RUSH_DEFENCE_BUILDINGS);
 		allBuildingsToBuild.addAll(buildingsToBuild);
 		return allBuildingsToBuild;
 	}
