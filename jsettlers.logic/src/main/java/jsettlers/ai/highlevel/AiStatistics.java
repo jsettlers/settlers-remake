@@ -277,14 +277,14 @@ public class AiStatistics {
 		return playerId;
 	}
 
-	private boolean isBorderOf(short x, short y, byte playerId) {
-		return isIngestibleBy((short) (x + 1), (short) (y + 1), playerId)
-				|| isIngestibleBy((short) (x + 1), (short) (y - 1), playerId)
-				|| isIngestibleBy((short) (x - 1), (short) (y + 1), playerId)
-				|| isIngestibleBy((short) (x - 1), (short) (y - 1), playerId);
+	private boolean isBorderOf(int x, int y, byte playerId) {
+		return isIngestibleBy(x + 1, y + 1, playerId)
+				|| isIngestibleBy(x + 1, y - 1, playerId)
+				|| isIngestibleBy(x - 1, y + 1, playerId)
+				|| isIngestibleBy(x - 1, y - 1, playerId);
 	}
 
-	private boolean isIngestibleBy(short x, short y, byte playerId) {
+	private boolean isIngestibleBy(int x, int y, byte playerId) {
 		return mainGrid.isInBounds(x, y)
 				&& partitionsGrid.getPlayerIdAt(x, y) != playerId
 				&& !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking
