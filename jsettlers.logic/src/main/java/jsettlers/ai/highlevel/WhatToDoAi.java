@@ -400,11 +400,27 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void commandPioneers() {
-		if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) < 4 || aiStatistics.getBorderOf(playerId).size() == 0 ||
-				aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
-			return;
+		if (aiStatistics.getBorderOf(playerId).size() == 0 || aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
+			releaseAllPioneers();
+		} else if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) >= 4) {
+			sendOutPioneers();
 		}
+	}
 
+	private void releaseAllPioneers() {
+		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
+		if (!pioneers.isEmpty()) {
+			List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
+			for (ShortPoint2D pioneerPosition : pioneers) {
+				pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID());
+			}
+			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
+			//pioneers which can not be converted shall walk into player's land to be converted the next tic
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
+		}
+	}
+
+	private void sendOutPioneers() {
 		resourcePioneers.removeDeadPioneers();
 		broadenerPioneers.removeDeadPioneers();
 
