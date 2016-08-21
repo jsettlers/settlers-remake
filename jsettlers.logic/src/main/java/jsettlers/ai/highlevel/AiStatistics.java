@@ -26,6 +26,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -738,26 +739,14 @@ public class AiStatistics {
 		}
 
 		private void clearIntegers() {
-			clearIntegerArray(totalBuildingsNumbers);
-			clearIntegerArray(buildingsNumbers);
-			clearLongArray(resourceCount);
+			Arrays.fill(totalBuildingsNumbers, 0);
+			Arrays.fill(buildingsNumbers, 0);
+			Arrays.fill(resourceCount, 0);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedMilitaryBuildings = 0;
 			wineCount = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
-		}
-
-		private void clearLongArray(long[] theArray) {
-			for (int i = 0; i < theArray.length; i++) {
-				theArray[i] = 0;
-			}
-		}
-
-		private void clearIntegerArray(int[] theArray) {
-			for (int i = 0; i < theArray.length; i++) {
-				theArray[i] = 0;
-			}
 		}
 	}
 
