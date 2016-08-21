@@ -295,16 +295,17 @@ public class AiStatistics {
 	private void updatePlayerLand(short x, short y, Player player) {
 		byte playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
-		if (!mainGrid.getFlagsGrid().isProtected(x, y)) {
-			playerStatistic.landToBuildOn.addNoCollission(x, y);
-		}
-		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
-		if (o != null) {
-			if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
-				playerStatistic.stones.addNoCollission(x, y);
-			} else if (o.hasMapObjectTypes(TREE_GROWING, TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
-				playerStatistic.trees.addNoCollission(x, y);
+		if (mainGrid.getFlagsGrid().isProtected(x, y)) {
+			AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
+			if (o != null) {
+				if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
+					playerStatistic.stones.addNoCollission(x, y);
+				} else if (o.hasMapObjectTypes(TREE_GROWING, TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
+					playerStatistic.trees.addNoCollission(x, y);
+				}
 			}
+		} else {
+			playerStatistic.landToBuildOn.addNoCollission(x, y);
 		}
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
 		if (landscape.isRiver()) {
