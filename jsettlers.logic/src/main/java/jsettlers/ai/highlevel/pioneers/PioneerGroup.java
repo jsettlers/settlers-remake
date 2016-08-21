@@ -32,12 +32,12 @@ import java.util.List;
  */
 public class PioneerGroup {
 
-	private int targetSize;
-	private List<Integer> pioneerIds;
+	private final int targetSize;
+	private final List<Integer> pioneerIds;
 
 	private PioneerGroup(List<Integer> pioneerIds, int targetSize) {
 		this.targetSize = targetSize;
-		this.pioneerIds = pioneerIds;
+		this.pioneerIds = new ArrayList<>(pioneerIds);
 	}
 
 	public PioneerGroup(int targetSize) {
