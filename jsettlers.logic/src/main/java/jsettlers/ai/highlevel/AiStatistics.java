@@ -295,7 +295,9 @@ public class AiStatistics {
 	private void updatePlayerLand(short x, short y, Player player) {
 		byte playerId = player.playerId;
 		PlayerStatistic playerStatistic = playerStatistics[playerId];
-		playerStatistic.landToBuildOn.addNoCollission(x, y);
+		if (!mainGrid.getFlagsGrid().isProtected(x, y)) {
+			playerStatistic.landToBuildOn.addNoCollission(x, y);
+		}
 		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
 		if (o != null) {
 			if (o.hasCuttableObject(STONE) && isCuttableByPlayer(x, y, player.playerId)) {
