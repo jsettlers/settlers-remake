@@ -44,6 +44,8 @@ import jsettlers.testutils.map.MapUtils;
 public class AiDifficultiesIT {
 	public static final int MINUTES = 1000 * 60;
 	public static final int JUMP_FORWARD = 2 * MINUTES;
+	private static final String LOW_PERFORMANCE_FAILURE_MESSAGE =
+			"%s's %s is higher than %d. It was %d\nSome code change caused the AI to have a worse runtime performance.";
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
@@ -84,7 +86,7 @@ public class AiDifficultiesIT {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
 					+ "soldiers were produced. Some code changes make the AI weaker.");
 		}
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 2500);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 1, 2);
 		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
 	}
 
@@ -129,12 +131,10 @@ public class AiDifficultiesIT {
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
 		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
-			fail(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
+			fail(String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian()));
 		}
 		if (stopWatch.getMax() > max) {
-			fail(description + "'s max is higher than " + max + ". It was " + stopWatch.getMax() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
+			fail(String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax()));
 		}
 	}
 
