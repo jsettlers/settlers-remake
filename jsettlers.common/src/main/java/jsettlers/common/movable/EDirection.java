@@ -193,6 +193,14 @@ public enum EDirection {
 		return (short) (y + gridDeltaY);
 	}
 
+	public final short getNextTileX(int x, int steps) {
+		return (short) (x + gridDeltaX * steps);
+	}
+
+	public final short getNextTileY(int y, int steps) {
+		return (short) (y + gridDeltaY * steps);
+	}
+
 	/**
 	 * returns the coordinates of the next tile if you go in this direction from the given coordinates
 	 * 

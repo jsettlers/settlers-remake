@@ -352,8 +352,8 @@ public class AiStatistics {
 
 	private void updateNearStones(short x, short y) {
 		for (EDirection dir : EDirection.VALUES) {
-			int dx = x + dir.gridDeltaX * NEAR_STONE_DISTANCE;
-			int dy = y + dir.gridDeltaY * NEAR_STONE_DISTANCE;
+			int dx = dir.getNextTileX(x, NEAR_STONE_DISTANCE);
+			int dy = dir.getNextTileY(y, NEAR_STONE_DISTANCE);
 			if (mainGrid.isInBounds(dx, dy)) {
 				byte playerId = partitionsGrid.getPlayerIdAt(dx, dy);
 				if (playerId != -1) {
