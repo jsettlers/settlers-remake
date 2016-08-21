@@ -690,24 +690,24 @@ public class AiStatistics {
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
 		boolean isAlive;
-		final int[] totalBuildingsNumbers;
-		final int[] buildingsNumbers;
-		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
-		final List<ShortPoint2D> farmWorkAreas;
-		final List<ShortPoint2D> wineGrowerWorkAreas;
+		final int[] totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+		final int[] buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions =  new HashMap<EBuildingType, List<ShortPoint2D>>();
+		final List<ShortPoint2D> farmWorkAreas = new Vector<ShortPoint2D>();
+		final List<ShortPoint2D> wineGrowerWorkAreas = new Vector<ShortPoint2D>();
 		short partitionIdToBuildOn;
 		IPartitionData materials;
-		final AiPositions landToBuildOn;
-		final AiPositions border;
-		final AiPositions otherPartitionBorder;
-		final Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		final AiPositions stones;
-		final AiPositions stonesNearBy;
-		final AiPositions trees;
-		final AiPositions rivers;
-		final AiPositions enemyTroopsInTown;
+		final AiPositions landToBuildOn = new AiPositions();
+		final AiPositions border = new AiPositions();
+		final AiPositions otherPartitionBorder = new AiPositions();
+		final Map<EMovableType, List<ShortPoint2D>> movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
+		final AiPositions stones = new AiPositions();
+		final AiPositions stonesNearBy = new AiPositions();
+		final AiPositions trees = new AiPositions();
+		final AiPositions rivers = new AiPositions();
+		final AiPositions enemyTroopsInTown = new AiPositions();
 		List<ShortPoint2D> threatenedBorder;
-		final long[] resourceCount;
+		final long[] resourceCount = new long[EResourceType.VALUES.length];
 		int numberOfNotFinishedBuildings;
 		int numberOfTotalBuildings;
 		int numberOfNotOccupiedMilitaryBuildings;
@@ -715,21 +715,6 @@ public class AiStatistics {
 		IMaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
-			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
-			stones = new AiPositions();
-			stonesNearBy = new AiPositions();
-			trees = new AiPositions();
-			rivers = new AiPositions();
-			landToBuildOn = new AiPositions();
-			enemyTroopsInTown = new AiPositions();
-			border = new AiPositions();
-			otherPartitionBorder = new AiPositions();
-			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
-			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			farmWorkAreas = new Vector<ShortPoint2D>();
-			wineGrowerWorkAreas = new Vector<ShortPoint2D>();
-			resourceCount = new long[EResourceType.VALUES.length];
 			clearIntegers();
 		}
 
