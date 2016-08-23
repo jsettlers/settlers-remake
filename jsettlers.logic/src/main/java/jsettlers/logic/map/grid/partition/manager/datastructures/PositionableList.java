@@ -159,6 +159,10 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		}
 	}
 
+	public int size() {
+		return data.size();
+	}
+
 	public interface IMovedVisitor<T> {
 		void visit(T moved);
 	}
