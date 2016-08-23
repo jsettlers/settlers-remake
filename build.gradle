@@ -73,6 +73,13 @@ subprojects {
             }
         }
     }
+    plugins.withId("me.tatarka.retrolambda") {
+        retrolambda {
+            jdk System.getenv("JAVA_HOME")
+            oldJdk System.getenv("JAVA_HOME")
+            javaVersion JavaVersion.VERSION_1_7
+        }
+    }
 
 
     tasks.withType(Test) {
