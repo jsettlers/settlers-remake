@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'me.tatarka.retrolambda'
 
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
