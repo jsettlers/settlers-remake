@@ -3,22 +3,32 @@
 gradle.ext.projectsWithExtraTest = []
 
 include ':go.graphics'
-include ':go.graphics.android'
 include ':go.graphics.swing'
 include ':jsettlers.buildingcreator'
 include ':jsettlers.common'
 include ':jsettlers.graphics'
 include ':jsettlers.graphics:layoutbuilder'
-include ':jsettlers.graphics.androidui'
 include ':jsettlers.graphics.swing'
 include ':jsettlers.logic'
-include ':jsettlers.main.android'
 include ':jsettlers.main.swing'
 include ':jsettlers.mapcreator'
 include ':jsettlers.network'
 include ':jsettlers.tests'
 include ':jsettlers.testutils'
 include ':jsettlers.tools'
+
+// Android projects
+// Android is automatically disabled if SDK is not set.
+def androidFile = new File(rootProject.dir, 'local.properties');
+if (androidFile.isFile() && androidFile.text.matches('(?s)^(.*\\n)?\\s*sdk.dir=.*'))  {
+	include ':go.graphics.android'
+	include ':jsettlers.graphics.androidui'
+	include ':jsettlers.main.android'
+} else {
+	println 'WARNING: Android is disabled.'
+	println 'To enable Android build, download the Android SDK. Then create a file local.properties with the following content:'
+	println '    sdk.dir=<path to sdk>'
+}
 
 rootProject.name = 'settlers-remake'
 // This will loop through the object descriptors
