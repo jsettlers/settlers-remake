@@ -94,9 +94,13 @@ task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 if (findProject(':jsettlers.main.android')) {
 	// Android is present.
 	task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
-	    Properties local = new Properties()
-	    local.load(new FileInputStream("local.properties"))
-	    def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
+		def androidHome = System.env.ANDROID_HOME;
+		if (!androidHome) {
+		    Properties local = new Properties()
+		    local.load(new FileInputStream("local.properties"))
+			androidHome = local.getProperty('sdk.dir');
+		}
+	    def adb = androidHome + '/platform-tools/adb'
 	    println 'Copy files to your device...'
 	    exec {
 	        commandLine adb, 'uninstall', 'jsettlers.main.android'
