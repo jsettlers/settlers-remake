@@ -91,23 +91,29 @@ tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":r
 
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
-task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
-    Properties local = new Properties()
-    local.load(new FileInputStream("local.properties"))
-    def adb = local.getProperty('sdk.dir') + '/platform-tools/adb'
-    println 'Copy files to your device...'
-    exec {
-        commandLine adb, 'uninstall', 'jsettlers.main.android'
-    }
-    exec {
-        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
-    }
-    exec {
-        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
-    }
-    println 'The application should have started now.'
+if (findProject(':jsettlers.main.android')) {
+	// Android is present.
+	task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
+		def androidHome = System.env.ANDROID_HOME;
+		if (!androidHome) {
+		    Properties local = new Properties()
+		    local.load(new FileInputStream("local.properties"))
+			androidHome = local.getProperty('sdk.dir');
+		}
+	    def adb = androidHome + '/platform-tools/adb'
+	    println 'Copy files to your device...'
+	    exec {
+	        commandLine adb, 'uninstall', 'jsettlers.main.android'
+	    }
+	    exec {
+	        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
+	    }
+	    exec {
+	        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+	    }
+	    println 'The application should have started now.'
+	}
 }
-
 
 
 
@@ -137,15 +143,17 @@ task releaseDedicatedServer(type: Copy) {
 }
 
 
-task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
-    into('JSettlers-Android') {
-        from { project.getRootProject().file('LICENSE.txt') }
-        from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
-        rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
-    }
+if (findProject(':jsettlers.main.android')) {
+	task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
+	    into('JSettlers-Android') {
+	        from { project.getRootProject().file('LICENSE.txt') }
+	        from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
+	        rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
+	    }
 
-    destinationDir releaseDir
-    baseName "JSettlers-Android"
+	    destinationDir releaseDir
+	    baseName "JSettlers-Android"
+	}
 }
 
 
