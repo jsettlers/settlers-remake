@@ -25,7 +25,7 @@ import jsettlers.common.material.EMaterialType;
  */
 public interface IOffersCountListener extends Serializable {
 
-	public static final IOffersCountListener DEFAULT_IMPLEMENTATION = new IOffersCountListener() {
+	IOffersCountListener DEFAULT_IMPLEMENTATION = new IOffersCountListener() {
 		private static final long serialVersionUID = 7842646893654546055L;
 
 		@Override

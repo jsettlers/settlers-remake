@@ -85,6 +85,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
@@ -1141,7 +1142,7 @@ public final class MainGrid implements Serializable {
 			}
 
 			if (successful && offer) {
-				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType, EOfferPriority.OFFER_TO_ALL);
 			}
 
 			return successful;
@@ -1542,12 +1543,11 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			// FIXME @Andreas Eberle: implement check to prevent multiple offers for the same material
 			public final void createOffersForAvailableMaterials(ShortPoint2D position, EMaterialType materialType) {
 				byte stackSize = mapObjectsManager.getStackSize(position.x, position.y, materialType);
 				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				for (byte i = 0; i < stackSize; i++) {
-					partition.addOffer(position, materialType);
+					partition.addOffer(position, materialType, EOfferPriority.OFFER_TO_ALL);
 				}
 			}
 		}

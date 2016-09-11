@@ -75,7 +75,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 		this.listener = listener;
 
 		float max = 0.0001f;
-		int count = distributionSettings.getNumberOfBuildings();
+		int count = distributionSettings.getNumberOfBuildingTypes();
 		for (int i = 0; i < count; i++) {
 			max = Math.max(distributionSettings.getProbablity(i), max);
 		}
@@ -86,7 +86,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 
 	@Override
 	public int getCount() {
-		return distributionSettings.getNumberOfBuildings();
+		return distributionSettings.getNumberOfBuildingTypes();
 	}
 
 	@Override

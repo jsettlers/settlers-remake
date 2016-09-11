@@ -40,6 +40,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
@@ -77,22 +78,22 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final PartitionManagerSettings settings = new PartitionManagerSettings();
 
-	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
+	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<>();
 	private final OffersList materialOffers;
 
 	private final MaterialsManager materialsManager;
 
-	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
-	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
+	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<>();
+	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<>();
 
-	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<DiggerRequest>();
-	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
+	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<>();
+	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<>();
 
-	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<BricklayerRequest>();
-	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
+	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<>();
+	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<>();
 
-	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<WorkerCreationRequest>();
-	private final LinkedList<SoldierCreationRequest> soldierCreationRequests = new LinkedList<SoldierCreationRequest>();
+	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<>();
+	private final LinkedList<SoldierCreationRequest> soldierCreationRequests = new LinkedList<>();
 
 	private boolean stopped = true;
 
@@ -130,8 +131,8 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return settings.getMaterialProductionSettings();
 	}
 
-	public void addOffer(ShortPoint2D position, EMaterialType materialType) {
-		materialOffers.addOffer(position, materialType);
+	public void addOffer(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority) {
+		materialOffers.addOffer(position, materialType, offerPriority);
 	}
 
 	public void request(EMaterialType materialType, MaterialRequestObject requestObject) {
@@ -195,7 +196,8 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	 *            new manager of the given position <br>
 	 *            NOTE: the new manager MUST NOT be null!
 	 * @param newHasSamePlayer
-	 */	
+	 * Specifies if the new manager has the same player. If so, requests also need to be moved.
+	 */
 	public void removePositionTo(final int x, final int y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
 
@@ -267,19 +269,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 		handleWorkerCreationRequests();
 		handleSoldierCreationRequest();
-		updateMaterialProduction();
 
 		return SCHEDULING_PERIOD;
 	}
 
-	private void updateMaterialProduction() {
-		Vector<EMaterialType> neededTools = new Vector<EMaterialType>();
-		for (WorkerCreationRequest workerCreationRequest : workerCreationRequests) {
-			if (workerCreationRequest.isRequestAlive() && workerCreationRequest.isToolProductionRequired()) {
-				neededTools.add(workerCreationRequest.requestedMovableType().getTool());
-			}
-		}
-	}
 
 	private void handleWorkerRequest() {
 		WorkerRequest workerRequest = workerRequests.poll();
@@ -303,7 +296,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	private void handleWorkerCreationRequests() {
-		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty(); ) {
+		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty();) {
 			WorkerCreationRequest workerCreationRequest = iterator.next();
 			if (!workerCreationRequest.isRequestAlive() || tryToCreateWorker(workerCreationRequest)) {
 				iterator.remove();
@@ -316,7 +309,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		EMaterialType tool = movableType.getTool();
 
 		if (tool != EMaterialType.NO_MATERIAL) { // try to create a worker with a tool
-			MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, workerCreationRequest.getPos());
+			MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, EOfferPriority.LOWEST, workerCreationRequest.getPos());
 
 			if (offer != null) {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
@@ -324,7 +317,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 					return manageableBearer.becomeWorker(this, workerCreationRequest, offer.getPos());
 
 				} else { // no free movable found => return material and add the creation request to the end of the queue
-					materialOffers.addOffer(offer.getPos(), tool);
+					materialOffers.addOffer(offer.getPos(), tool, offer.getPriority());
 					return false;
 				}
 
@@ -416,7 +409,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 			if (!request.isRequestAlive() || !request.isToolProductionRequired())
 				continue; // skip inactive requests and requests not needing a tool production
 
-			request.setToolProductionRequired(false);
+			request.setToolProductionRequired(false); // FIXME @andreas-eberle: Investigate if this is correct! And why it doesn't break the system
 
 			EMaterialType tool = request.requestedMovableType().getTool();
 			byte prio = priorityForTool[tool.ordinal];
@@ -438,12 +431,16 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	/**
 	 * FOR TESTS ONLY!
 	 *
-	 * @param pos
-	 * @param material
-	 * @return
+	 * @param position
+	 *            position to look for the offer
+	 * @param materialType
+	 *            type of material of the offer
+	 * @param offerPriority
+	 *            offerPriority of the offer
+	 * @return Returns the offer at the given position of given materialType and offerPriority or <code>null</code>
 	 */
-	public MaterialOffer getMaterialOfferAt(ShortPoint2D pos, EMaterialType material) {
-		return this.materialOffers.getOfferObjectAt(pos, material);
+	public MaterialOffer getMaterialOfferAt(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority) {
+		return this.materialOffers.getOfferObjectAt(position, materialType, offerPriority);
 	}
 
 	public IPartitionSettings getPartitionSettings() {

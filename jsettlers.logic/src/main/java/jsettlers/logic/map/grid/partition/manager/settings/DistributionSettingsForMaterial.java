@@ -54,7 +54,7 @@ public final class DistributionSettingsForMaterial implements IMaterialsDistribu
 	}
 
 	@Override
-	public int getNumberOfBuildings() {
+	public int getNumberOfBuildingTypes() {
 		return requestingBuildings.length;
 	}
 

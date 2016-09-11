@@ -318,7 +318,8 @@ public final class PartitionsGrid implements Serializable {
 	/**
 	 * Recalculates the tower counter for the given area. <br>
 	 * NOTE: The given area must completely belong to the given player!
-	 * 
+	 *
+	 * @param tower
 	 * @param tower
 	 * @param area
 	 */

@@ -36,8 +36,8 @@ import jsettlers.logic.constants.MatchConstants;
 public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMaterialRequestPriorityQueue {
 	private static final long serialVersionUID = 4856036773080549412L;
 
-	private static final EBuildingType[] ADDITIONAL_BUILDINGS = { EBuildingType.STOCK, EBuildingType.HARBOR, EBuildingType.MARKET_PLACE };
-	private static final int NUMBER_OF_ADDITIONAL_BUILDINGS = ADDITIONAL_BUILDINGS.length;
+	private static final EBuildingType[] ADDITIONAL_BUILDING_TYPES = { EBuildingType.STOCK, EBuildingType.HARBOR, EBuildingType.MARKET_PLACE };
+	private static final int NUMBER_OF_ADDITIONAL_BUILDING_TYPES = ADDITIONAL_BUILDING_TYPES.length;
 
 	private final DoubleLinkedList<MaterialRequestObject> queues[][];
 
@@ -51,7 +51,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		queues = new DoubleLinkedList[EPriority.NUMBER_OF_PRIORITIES][];
 		for (int i = 0; i < queues.length; i++) {
-			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildings() + NUMBER_OF_ADDITIONAL_BUILDINGS);
+			queues[i] = DoubleLinkedList.getArray(settings.getNumberOfBuildingTypes() + NUMBER_OF_ADDITIONAL_BUILDING_TYPES);
 		}
 
 		calculateBuildingTypesToIndex();
@@ -63,12 +63,12 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		for (int i = 0; i < buildingTypesToIndex.length; i++) {
 			buildingTypesToIndex[i] = -1;
 		}
-		int numberOfBuildings = settings.getNumberOfBuildings();
+		int numberOfBuildings = settings.getNumberOfBuildingTypes();
 		for (int i = 0; i < numberOfBuildings; i++) {
 			buildingTypesToIndex[settings.getBuildingType(i).ordinal] = i;
 		}
-		for (int i = 0; i < NUMBER_OF_ADDITIONAL_BUILDINGS; i++) {
-			buildingTypesToIndex[ADDITIONAL_BUILDINGS[i].ordinal] = numberOfBuildings + i;
+		for (int i = 0; i < NUMBER_OF_ADDITIONAL_BUILDING_TYPES; i++) {
+			buildingTypesToIndex[ADDITIONAL_BUILDING_TYPES[i].ordinal] = numberOfBuildings + i;
 		}
 	}
 
@@ -92,13 +92,13 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		int startIndex = getRandomStartIndex();
 
-		final int numberOfSettingsBuildings = settings.getNumberOfBuildings();
-		final int numberOfBuildings = numberOfSettingsBuildings + NUMBER_OF_ADDITIONAL_BUILDINGS;
+		final int numberOfBuildingTypes = settings.getNumberOfBuildingTypes();
+		final int numberOfBuildings = numberOfBuildingTypes + NUMBER_OF_ADDITIONAL_BUILDING_TYPES;
 		for (int i = 0; i < numberOfBuildings; i++) {
 			int buildingIdx = (i + startIndex) % numberOfBuildings;
 
 			// if this building type should not receive any materials, skip it; if it is additional building, always check it
-			if (buildingIdx < numberOfSettingsBuildings && settings.getProbablity(buildingIdx) <= 0.0f)
+			if (buildingIdx < numberOfBuildingTypes && settings.getProbablity(buildingIdx) <= 0.0f)
 				continue;
 
 			MaterialRequestObject foundRequest = findRequestInQueue(queues[buildingIdx]);
@@ -114,7 +114,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		float randomNumber = MatchConstants.random().nextFloat();
 		float sum = 0;
 
-		int numberOfBuildings = settings.getNumberOfBuildings();
+		int numberOfBuildings = settings.getNumberOfBuildingTypes();
 		for (int i = 0; i < numberOfBuildings; i++) {
 			sum += settings.getProbablity(i);
 			if (randomNumber < sum) {
@@ -162,7 +162,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";
 
 		MaterialsForBuildingsRequestPrioQueue newQueue = (MaterialsForBuildingsRequestPrioQueue) newAbstractQueue;
-		final int numberOfBuildings = settings.getNumberOfBuildings();
+		final int numberOfBuildings = settings.getNumberOfBuildingTypes();
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
 			DoubleLinkedList<MaterialRequestObject>[] prioQueue = queues[prioIdx];
@@ -185,7 +185,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		assert newAbstractQueue instanceof MaterialsForBuildingsRequestPrioQueue : "can't move positions between diffrent types of queues.";
 
 		MaterialsForBuildingsRequestPrioQueue newQueue = (MaterialsForBuildingsRequestPrioQueue) newAbstractQueue;
-		final int numberOfBuildings = settings.getNumberOfBuildings();
+		final int numberOfBuildings = settings.getNumberOfBuildingTypes();
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
 			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {

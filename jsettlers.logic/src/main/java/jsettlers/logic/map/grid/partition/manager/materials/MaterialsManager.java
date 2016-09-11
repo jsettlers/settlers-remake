@@ -21,6 +21,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMaterialRequestPriorityQueue;
@@ -83,21 +84,30 @@ public final class MaterialsManager implements Serializable {
 
 	public void distributeJobs() {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS && !joblessSupplier.isEmpty(); i++) {
+			if (joblessSupplier.isEmpty()) // no jobless? just return
+				break;
+
 			distributeJobForMaterial(settings.getMaterialTypeForPrio(i));
 		}
 	}
 
 	private void distributeJobForMaterial(EMaterialType materialType) {
-		if (offersList.isEmpty(materialType) || joblessSupplier.isEmpty()) // no offers? or no jobless? just return
+		if (offersList.isEmpty(materialType, EOfferPriority.LOWEST)){
 			return;
+		}
 
 		AbstractMaterialRequestPriorityQueue requestQueue = requestQueues[materialType.ordinal];
 		MaterialRequestObject request = requestQueue.getHighestRequest();
 
-		if (request == null) // no request, return
+		if (request == null) // no request => return
 			return;
 
-		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, request.getPos());
+		EOfferPriority minimumIncludedOfferPriority = request.getMinimumAcceptedOfferPriority();
+		if (offersList.isEmpty(materialType, minimumIncludedOfferPriority)) {
+			return; // no offers => return
+		}
+
+		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
 
 		assert offer != null : "The offer can't be null here!";
 
@@ -106,7 +116,7 @@ public final class MaterialsManager implements Serializable {
 		assert jobless != null : "The jobless can't be null here!";
 
 		if (!jobless.deliver(materialType, offer.getPos(), request)) {
-			offersList.addOffer(offer.getPos(), materialType);
+			offersList.addOffer(offer.getPos(), materialType, offer.getPriority());
 		}
 	}
 

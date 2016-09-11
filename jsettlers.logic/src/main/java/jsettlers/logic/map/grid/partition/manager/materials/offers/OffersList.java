@@ -17,12 +17,10 @@ package jsettlers.logic.map.grid.partition.manager.materials.offers;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
-import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
-import jsettlers.logic.map.grid.partition.manager.datastructures.PrioritisedPositionableList;
+import jsettlers.logic.map.grid.partition.manager.datastructures.PrioritizedPositionableList;
 
 /**
  * This class builds a data structure to hold {@link MaterialOffer}s and access them with range searches.
@@ -32,9 +30,8 @@ import jsettlers.logic.map.grid.partition.manager.datastructures.PrioritisedPosi
 public final class OffersList implements IMaterialCounts, Serializable {
 	private static final long serialVersionUID = 3747575330300586115L;
 
-	private static final EOfferPriority LOWEST_PRIORITY = EOfferPriority.VALUES[0];
 
-	private final PrioritisedPositionableList<EOfferPriority, MaterialOffer>[] offersLists;
+	private final PrioritizedPositionableList<EOfferPriority, MaterialOffer>[] offersLists;
 	private final short[] numberOfOffers = new short[EMaterialType.NUMBER_OF_MATERIALS];
 	private final IOffersCountListener countListener;
 
@@ -43,9 +40,9 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public OffersList(IOffersCountListener countListener) {
-		offersLists = new PrioritisedPositionableList[EMaterialType.NUMBER_OF_MATERIALS];
+		offersLists = new PrioritizedPositionableList[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			offersLists[i] = new PrioritisedPositionableList<>(EOfferPriority.NUMBER_OF_PRIORITIES);
+			offersLists[i] = new PrioritizedPositionableList<>(EOfferPriority.NUMBER_OF_PRIORITIES);
 		}
 
 		if (countListener != null) {
@@ -61,14 +58,14 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 * @param position The position the offered material is located.
 	 * @param material The material that is offered at the given position.
 	 */
-	public void addOffer(ShortPoint2D position, EMaterialType material) {
-		PrioritisedPositionableList<EOfferPriority, MaterialOffer> list = offersLists[material.ordinal];
+	public void addOffer(ShortPoint2D position, EMaterialType material, EOfferPriority offerPriority) {
+		PrioritizedPositionableList<EOfferPriority, MaterialOffer> list = offersLists[material.ordinal];
 
-		MaterialOffer existingOffer = list.getObjectAt(position, LOWEST_PRIORITY);
+		MaterialOffer existingOffer = list.getObjectAt(position, offerPriority);
 		if (existingOffer != null) {
 			existingOffer.incAmount();
 		} else {
-			list.insert(EOfferPriority.NORMAL, new MaterialOffer(position, (byte) 1));
+			list.insert(offerPriority, new MaterialOffer(position,offerPriority, (byte) 1));
 		}
 
 		numberOfOffers[material.ordinal]++;
@@ -79,11 +76,12 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 * Checks if there are any offers for the given {@link EMaterialType}.
 	 *
 	 * @param materialType The {@link EMaterialType} to be checked.
+	 * @param  minimumIncludedPriority The lowest priority to be included in
 	 * @return Returns true if there are no offers for the given {@link EMaterialType},<br>
 	 * false otherwise.
 	 */
-	public boolean isEmpty(EMaterialType materialType) {
-		return offersLists[materialType.ordinal].isEmpty(LOWEST_PRIORITY);
+	public boolean isEmpty(EMaterialType materialType, EOfferPriority minimumIncludedPriority) {
+		return offersLists[materialType.ordinal].isEmpty(minimumIncludedPriority);
 	}
 
 	/**
@@ -92,16 +90,16 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	 * @return Returns an offer of the given {@link EMaterialType} that's close to the given position or <br>
 	 * null if no offer for the given {@link EMaterialType} exists.
 	 */
-	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, ShortPoint2D position) {
-		PrioritisedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
-		MaterialOffer offer = offerSlot.getObjectCloseTo(position, LOWEST_PRIORITY);
+	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, EOfferPriority minimumIncludedPriority, ShortPoint2D position) {
+		PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
+		MaterialOffer offer = offerSlot.getObjectCloseTo(position, minimumIncludedPriority);
 
 		decrementOfferAmount(offerSlot, materialType, offer);
 		return offer;
 	}
 
 
-	private void decrementOfferAmount(PrioritisedPositionableList<EOfferPriority, MaterialOffer> offerSlot, EMaterialType materialType, MaterialOffer offer) {
+	private void decrementOfferAmount(PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot, EMaterialType materialType, MaterialOffer offer) {
 		if (offer != null) {
 			if (offer.decAmount() <= 0) { // if the offer is now empty.
 				offerSlot.remove(offer);
@@ -114,13 +112,14 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	/**
 	 * FOR TESTS ONLY!
 	 *
-	 * @param position
-	 * @param materialType
+	 * @param position position to look for the offer
+	 * @param materialType type of material of the offer
+	 * @param offerPriority offerPriority of the offer
 	 * @return
 	 */
-	public MaterialOffer getOfferObjectAt(ShortPoint2D position, EMaterialType materialType) {
-		PrioritisedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
-		return offerSlot.getObjectAt(position, LOWEST_PRIORITY);
+	public MaterialOffer getOfferObjectAt(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority) {
+		PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
+		return offerSlot.getObjectAt(position, offerPriority);
 	}
 
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
