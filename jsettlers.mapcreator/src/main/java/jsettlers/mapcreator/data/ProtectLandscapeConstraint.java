@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data;
 
+import java.util.Set;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.mapcreator.data.objects.ProtectContainer;
-
-import java.util.Set;
 
 public class ProtectLandscapeConstraint extends ProtectContainer implements LandscapeConstraint {
 
