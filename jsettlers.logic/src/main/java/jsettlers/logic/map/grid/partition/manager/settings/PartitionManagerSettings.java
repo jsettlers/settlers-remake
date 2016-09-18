@@ -41,6 +41,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
 	private final MaterialProductionSettings materialProductionSettings;
+	private final boolean[] acceptedStockMaterials;
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -58,6 +59,8 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		}
 
 		materialProductionSettings = new MaterialProductionSettings();
+
+		acceptedStockMaterials=new boolean[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 	}
 
 	@Override
@@ -90,8 +93,12 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	}
 
 	@Override
-	public boolean getStockAcceptsMaterial(EMaterialType material) {
-		// TODO Auto-generated method stub
-		return true;
+	public boolean isAcceptByStocks(EMaterialType material) {
+		return acceptedStockMaterials[material.ordinal];
+	}
+
+	@Override
+	public void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted) {
+		acceptedStockMaterials[materialType.ordinal] = accepted;
 	}
 }

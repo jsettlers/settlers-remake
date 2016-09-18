@@ -46,11 +46,13 @@ public interface IPartitionSettings {
 	EMaterialType getMaterialTypeForPrio(int priorityIdx);
 
 	/**
-	 * Checks if stock buildings accept this material in this partiton.
+	 * Checks if stock buildings accept this material in this partition.
 	 * 
 	 * @param material
 	 *            The material.
 	 * @return <code>true</code> if they accept this material.
 	 */
-	boolean getStockAcceptsMaterial(EMaterialType material);
+	boolean isAcceptByStocks(EMaterialType material);
+
+	void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted);
 }

@@ -27,7 +27,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
+import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.ui.Button;
@@ -179,8 +179,8 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 					// FIXME: Synchronize!
 					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
 				}
-				for (EMaterialType m : EMaterialType.VALUES) {
-					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
+				for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
+					materialsAccepted.set(m.ordinal, data.getPartitionSettings().isAcceptByStocks(m));
 				}
 				setOrder(newOrder);
 
@@ -395,7 +395,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			if (selected == null || mapPosition == null) {
 				return null;
 			}
-			return new SetMaterialStockAcceptedAction(mapPosition, selected, accept);
+			return new SetAcceptedStockMaterialAction(mapPosition, selected, accept, false);
 		}
 	}
 

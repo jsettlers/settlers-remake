@@ -33,6 +33,7 @@ import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
@@ -43,6 +44,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
@@ -86,20 +88,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case SET_WORK_AREA: {
 			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;
 			setWorkArea(task.getPosition(), task.getBuildingPos().x, task.getBuildingPos().y);
-		}
 			break;
+		}
 
 		case BUILD: {
 			ConstructBuildingTask task = (ConstructBuildingTask) guiTask;
 			grid.constructBuildingAt(task.getPosition(), task.getType(), task.getPlayerId());
-		}
 			break;
+		}
 
 		case MOVE_TO: {
 			MoveToGuiTask task = (MoveToGuiTask) guiTask;
 			moveSelectedTo(task.getPosition(), task.getSelection());
-		}
 			break;
+		}
 
 		case QUICK_SAVE:
 			save();
@@ -111,8 +113,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building != null) {
 				building.kill();
 			}
-		}
 			break;
+		}
 
 		case DESTROY_MOVABLES:
 			killSelectedMovables(((MovableGuiTask) guiTask).getSelection());
@@ -134,8 +136,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			SetMaterialDistributionSettingsGuiTask task = (SetMaterialDistributionSettingsGuiTask) guiTask;
 			grid.setMaterialDistributionSettings(task.getManagerPosition(), task.getMaterialType(), task.getProbabilities());
-		}
 			break;
+		}
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesGuiTask task = (SetMaterialPrioritiesGuiTask) guiTask;
@@ -146,8 +148,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
 			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
-		}
 			break;
+		}
 
 		case CHANGE_TRADING: {
 			ChangeTradingRequestGuiTask task = (ChangeTradingRequestGuiTask) guiTask;
@@ -156,8 +158,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building instanceof TradingBuilding) {
 				((TradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
 			}
-		}
 			break;
+		}
 
 		case SET_TRADING_WAYPOINT: {
 			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
@@ -166,8 +168,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building instanceof TradingBuilding) {
 				((TradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
 			}
-		}
 			break;
+		}
 
 		case SET_MATERIAL_PRODUCTION: {
 			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
@@ -190,10 +192,28 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case CHANGE_TOWER_SOLDIERS:
 			changeTowerSoldiers((ChangeTowerSoldiersGuiTask) guiTask);
+			break;
+
+		case SET_ACCEPTED_STOCK_MATERIAL:
+			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask)guiTask);
+			break;
 
 		default:
 			break;
 
+		}
+	}
+
+	private void setAcceptedStockMaterial(SetAcceptedStockMaterialGuiTask guiTask) {
+		if (guiTask.isLocal()){
+			IBuilding building =grid.getBuildingAt(guiTask.getPosition().x, guiTask.getPosition().y);
+			if (building != null && building instanceof StockBuilding){
+				StockBuilding stock = (StockBuilding) building;
+				stock.setAcceptedMaterial(guiTask.getMaterialType(), guiTask.isAccepted());
+			}
+
+		} else {
+			grid.setAcceptedStockMaterial(guiTask.getPosition(), guiTask.getMaterialType(), guiTask.isAccepted());
 		}
 	}
 

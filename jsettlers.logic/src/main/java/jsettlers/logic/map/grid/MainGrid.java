@@ -1808,6 +1808,11 @@ public final class MainGrid implements Serializable {
 		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
 			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
+
+		@Override
+		public void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted) {
+			partitionsGrid.getPartitionAt(position.x, position.y).setAcceptedStockMaterial(materialType, accepted);
+		}
 	}
 
 	/**
