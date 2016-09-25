@@ -408,6 +408,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void releaseAllPioneers() {
+		broadenerPioneers.clear();
+		resourcePioneers.clear();
 		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
 		if (!pioneers.isEmpty()) {
 			List<Integer> pioneerIds = new ArrayList<>(pioneers.size());

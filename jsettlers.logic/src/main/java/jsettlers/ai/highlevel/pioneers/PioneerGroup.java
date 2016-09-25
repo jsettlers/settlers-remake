@@ -48,6 +48,10 @@ public class PioneerGroup {
 		this(pioneerIds, pioneerIds.size());
 	}
 
+	public void clear() {
+		pioneerIds.clear();
+	}
+
 	public void removeDeadPioneers() {
 		Collection<Integer> idsToRemove = new ArrayList<>(pioneerIds.size());
 		for (Integer pioneerId : pioneerIds) {
