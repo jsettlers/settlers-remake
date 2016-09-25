@@ -58,9 +58,11 @@ public class AiMapInformation {
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
 	public long[][] resourceAndGrassCount;
+	public final boolean[] wasFishNearByAtGameStart;
 
 	public AiMapInformation(PartitionsGrid partitionsGrid) {
 		resourceAndGrassCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
+		wasFishNearByAtGameStart = new boolean[partitionsGrid.getWidth() * partitionsGrid.getHeight()];
 	}
 
 	public void clear() {

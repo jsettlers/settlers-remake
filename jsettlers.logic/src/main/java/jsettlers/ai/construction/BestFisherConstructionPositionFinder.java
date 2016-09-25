@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import static jsettlers.common.landscape.EResourceType.FISH;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +41,8 @@ public class BestFisherConstructionPositionFinder implements IBestConstructionPo
 
 		int fishDistance = buildingType.getWorkRadius();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
-					playerId, buildingType)) {
+			if (aiStatistics.wasFishNearByAtGameStart(point) && constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)
+					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId, buildingType)) {
 				ShortPoint2D fishPosition = aiStatistics.getNearestFishPointForPlayer(point, playerId, fishDistance);
 				if (fishPosition != null) {
 					fishDistance = point.getOnGridDistTo(fishPosition);
