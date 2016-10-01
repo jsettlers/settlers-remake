@@ -86,8 +86,8 @@ public class AiDifficultiesIT {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
 					+ "soldiers were produced. Some code changes make the AI weaker.");
 		}
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 100, 2500);
-		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 200, 2500);
+		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 100, 2500);
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
@@ -124,17 +124,21 @@ public class AiDifficultiesIT {
 				" minutes.");
 		ReplayUtils.awaitShutdown(startedGame);
 
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 100, 3000);
-		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 200, 3000);
+		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 100, 2500);
 	}
 
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
 		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
-			fail(String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian()));
+			String medianText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian());
+			System.out.println(medianText);
+			fail(medianText);
 		}
 		if (stopWatch.getMax() > max) {
-			fail(String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax()));
+			String maxText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax());
+			System.out.println(maxText);
+			fail(maxText);
 		}
 	}
 
