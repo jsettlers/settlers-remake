@@ -47,8 +47,10 @@ import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
@@ -133,16 +135,17 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
+			Set<Integer> soldiersWithOrders = new HashSet<Integer>();
 			economyMinister.update();
 			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			commandPioneers();
 			buildBuildings();
+			occupyMilitaryBuildings(soldiersWithOrders);
 			armyGeneral.levyUnits();
-			armyGeneral.commandTroops();
+			armyGeneral.commandTroops(soldiersWithOrders);
 			sendGeologists();
-			occupyMilitaryBuildings();
 		}
 	}
 
@@ -185,15 +188,16 @@ public class WhatToDoAi implements IWhatToDoAi {
 		return mainGrid.getMovableGrid().getMovableAt(point.x, point.y);
 	}
 
-	private void occupyMilitaryBuildings() {
+	private void occupyMilitaryBuildings(Set<Integer> soldiersWithOrders) {
 		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(
 				EBuildingType.getMilitaryBuildings(), playerId)) {
 
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
-			if (militaryBuilding.getStateProgress() == 1 && !militaryBuilding.isOccupied()) {
+			if (!militaryBuilding.isOccupied()) {
 				ShortPoint2D door = militaryBuilding.getDoor();
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
 				if (soldier != null && militaryBuilding.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
+					soldiersWithOrders.add(soldier.getID());
 					sendMovableTo(soldier, door);
 				}
 			}
