@@ -34,7 +34,8 @@ public class RiverTargetFinder extends AbstractTargetFinder implements ITargetFi
 		if (aiStatistics.getRiversForPlayer(playerId).size() > buildingCount * 5)
 			return null;
 
-		ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(center, searchDistance);
+		ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(
+				center, searchDistance, new SameBlockedPartitionLikePlayerFilter(aiStatistics, playerId));
 		if (nearestRiver == null)
 			return null;
 

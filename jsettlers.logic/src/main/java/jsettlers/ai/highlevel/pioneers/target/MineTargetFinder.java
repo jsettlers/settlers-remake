@@ -27,14 +27,17 @@ public class MineTargetFinder extends AbstractTargetFinder implements ITargetFin
 
 	private final EResourceType resourceType;
 	private final EBuildingType mineBuildingType;
-	private final AiPositions.AiPositionFilter sourroundedByResourceFilter;
+	private final AiPositions.AiPositionFilter mineFilters;
 
 	public MineTargetFinder(final AiStatistics aiStatistics, final byte playerId, final int searchDistance, final EResourceType resourceType,
 			final EBuildingType mineBuildingType) {
 		super(aiStatistics, playerId, searchDistance);
 		this.resourceType = resourceType;
 		this.mineBuildingType = mineBuildingType;
-		sourroundedByResourceFilter = new SurroundedByResourcesFilter(aiStatistics.getMainGrid(), aiStatistics.getMainGrid().getLandscapeGrid(), resourceType);
+		AiPositions.AiPositionFilter firstFilter = new SameBlockedPartitionLikePlayerFilter(this.aiStatistics, playerId);
+		SurroundedByResourcesFilter secondFilter = new SurroundedByResourcesFilter(aiStatistics.getMainGrid(),
+				aiStatistics.getMainGrid().getLandscapeGrid(), resourceType);
+		mineFilters =  new AiPositions.CombinedAiPositionFilter(firstFilter, secondFilter);
 	}
 
 	@Override
@@ -49,7 +52,7 @@ public class MineTargetFinder extends AbstractTargetFinder implements ITargetFin
 			return null;
 
 		ShortPoint2D nearestResourceAbroad =
-				aiStatistics.getNearestResourcePointInDefaultPartitionFor(center, resourceType, searchDistance, sourroundedByResourceFilter);
+				aiStatistics.getNearestResourcePointInDefaultPartitionFor(center, resourceType, searchDistance, mineFilters);
 		if (nearestResourceAbroad == null)
 			return null;
 

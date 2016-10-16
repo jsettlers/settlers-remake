@@ -27,7 +27,22 @@ public class AiPositions implements IMapArea {
 	 *
 	 */
 	public interface AiPositionFilter {
-		public boolean contains(int x, int y);
+		boolean contains(int x, int y);
+	}
+
+	public static class CombinedAiPositionFilter implements AiPositionFilter {
+		private AiPositionFilter firstFilter;
+		private AiPositionFilter secondFilter;
+
+		public CombinedAiPositionFilter(AiPositionFilter firstFilter, AiPositionFilter secondFilter) {
+			this.firstFilter = firstFilter;
+			this.secondFilter = secondFilter;
+		}
+
+		@Override
+		public boolean contains(int x, int y) {
+			return firstFilter.contains(x, y) && secondFilter.contains(x, y);
+		}
 	}
 
 	/**

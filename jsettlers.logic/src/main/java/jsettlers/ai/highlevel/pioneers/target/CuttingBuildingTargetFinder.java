@@ -44,7 +44,7 @@ public abstract class CuttingBuildingTargetFinder extends AbstractTargetFinder i
 			return null;
 
 		ShortPoint2D nearestCuttableObject = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(
-				center, cuttableObjectType, searchDistance);
+				center, cuttableObjectType, searchDistance, new SameBlockedPartitionLikePlayerFilter(aiStatistics, playerId));
 		if (nearestCuttableObject == null)
 			return null;
 
