@@ -425,8 +425,9 @@ public class AiStatistics {
 		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
 	}
 
-	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId, searchDistance);
+	public ShortPoint2D getNearestResourcePointForPlayer(
+			ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance, AiPositionFilter filter) {
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId, searchDistance, filter);
 	}
 
 	public ShortPoint2D getNearestFishPointForPlayer(ShortPoint2D point, final byte playerId, int currentNearestPointDistance) {
@@ -443,9 +444,9 @@ public class AiStatistics {
 		});
 	}
 
-	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
-			int currentNearestPointDistance) {
-		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance);
+	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(
+			ShortPoint2D point, EResourceType resourceType, int currentNearestPointDistance, AiPositionFilter filter) {
+		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance, filter);
 	}
 
 	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance) {
@@ -458,15 +459,15 @@ public class AiStatistics {
 			return null;
 		}
 
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, searchDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, searchDistance, null);
 	}
 
-	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId,
-			int searchDistance) {
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(
+			ShortPoint2D point, AiPositions sortedPoints, final byte playerId, int searchDistance, final AiPositionFilter filter) {
 		return sortedPoints.getNearestPoint(point, searchDistance, new AiPositionFilter() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
+				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId && (filter == null || filter.contains(x, y));
 			}
 		});
 	}
@@ -624,7 +625,7 @@ public class AiStatistics {
 	}
 
 	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint, int searchDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1, searchDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1, searchDistance, null);
 	}
 
 	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {

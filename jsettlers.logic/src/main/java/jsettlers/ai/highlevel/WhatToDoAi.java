@@ -57,6 +57,7 @@ import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.highlevel.pioneers.PioneerAi;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.ai.highlevel.pioneers.PioneerGroup;
+import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
@@ -117,6 +118,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private ArrayList<Object> failedConstructingBuildings;
 	private PioneerGroup resourcePioneers;
 	private PioneerGroup broadenerPioneers;
+	private AiPositions.AiPositionFilter[] geologistFilters = new AiPositions.AiPositionFilter[EResourceType.values().length];
 
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
 			ITaskScheduler taskScheduler) {
@@ -130,6 +132,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
 		resourcePioneers = new PioneerGroup(RESOURCE_PIONEER_GROUP_COUNT);
 		broadenerPioneers = new PioneerGroup(BROADEN_PIONEER_GROUP_COUNT);
+		for (EResourceType resourceType: EResourceType.VALUES) {
+			geologistFilters[resourceType.ordinal] = new SurroundedByResourcesFilter(mainGrid, mainGrid.getLandscapeGrid(), resourceType);
+		}
 	}
 
 	@Override
@@ -174,10 +179,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private void sendGeologistToNearest(Movable geologist, EResourceType resourceType) {
 		ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
-				playerId, Integer.MAX_VALUE);
+				playerId, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
 		if (resourcePoint == null) {
 			resourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(
-					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE);
+					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
 		}
 		if (resourcePoint != null) {
 			sendMovableTo(geologist, resourcePoint);
