@@ -36,6 +36,10 @@ public class ConnectPartitionsTargetFinder extends AbstractTargetFinder implemen
 
 		ShortPoint2D nearestOtherPartitionBorderPoint = otherPartitionBorder.getNearestPoint(
 				center, aiStatistics.getMainGrid().getWidth(), new SameBlockedPartitionLikePlayerFilter(aiStatistics, playerId));
+		if (nearestOtherPartitionBorderPoint == null) {
+			return null;
+		}
+
 		int searchDistance = nearestOtherPartitionBorderPoint.getOnGridDistTo(center) + 10;
 		return playerBorder.getNearestPoint(nearestOtherPartitionBorderPoint, searchDistance);
 	}
