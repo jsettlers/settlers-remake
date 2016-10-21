@@ -29,6 +29,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * @author codingberlin
@@ -59,7 +60,12 @@ public class PioneerAi {
 
 	public ShortPoint2D findResourceTarget() {
 		ShortPoint2D newTarget = findResourceTargetNearLastTarget();
-		if (newTarget != null) {
+		if (newTarget == null) {
+			AiPositions border = aiStatistics.getBorderOf(playerId);
+			if (border.size() > 1) {
+				lastResourceTarget = border.get(MatchConstants.random().nextInt(border.size()));
+			}
+		} else {
 			lastResourceTarget = newTarget;
 		}
 		return newTarget;
