@@ -63,7 +63,7 @@ public class PioneerAi {
 		if (newTarget == null) {
 			AiPositions border = aiStatistics.getBorderOf(playerId);
 			if (border.size() > 1) {
-				lastResourceTarget = border.get(MatchConstants.random().nextInt(border.size()));
+				lastResourceTarget = border.get(MatchConstants.aiRandom().nextInt(border.size()));
 			}
 		} else {
 			lastResourceTarget = newTarget;
