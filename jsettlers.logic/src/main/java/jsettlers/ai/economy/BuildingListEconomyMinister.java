@@ -121,14 +121,11 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		int maxSize = Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size()));
 		for (int i = 0; i < maxSize; i++) {
 			if (weaponsBuildingsRatio > foodBuildingsRatio && weaponsBuildingsRatio > buildingMaterialBuildingRatio) {
-				mergeAndAddNextItems(
-						weaponsBuildings, foodBuildings, foodBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
+				mergeAndAddNextItems(weaponsBuildings, foodBuildings, foodBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
 			} else if (buildingMaterialBuildingRatio > foodBuildingsRatio && buildingMaterialBuildingRatio > weaponsBuildingsRatio) {
-				mergeAndAddNextItems(
-						buildingMaterialBuildings, weaponsBuildings, weaponsBuildingsRatio, foodBuildings, foodBuildingsRatio);
+				mergeAndAddNextItems(buildingMaterialBuildings, weaponsBuildings, weaponsBuildingsRatio, foodBuildings, foodBuildingsRatio);
 			} else {
-				mergeAndAddNextItems(
-						foodBuildings, weaponsBuildings, weaponsBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
+				mergeAndAddNextItems(foodBuildings, weaponsBuildings, weaponsBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
 			}
 		}
 

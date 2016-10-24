@@ -32,7 +32,7 @@ public interface ArmyGeneral {
 
 	/**
 	 * - upgrades soldiers
-	 * - enable and disable recrution (not implemented yet)
+	 * - enable and disable recruitment (not implemented yet)
 	 * - choose the weapons to produce (not implemented yet)
 	 */
 	void levyUnits();

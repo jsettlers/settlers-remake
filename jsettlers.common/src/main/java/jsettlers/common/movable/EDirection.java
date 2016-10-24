@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,7 +18,7 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Enumeration for directions that can be gone on the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public enum EDirection {
@@ -223,7 +223,7 @@ public enum EDirection {
 	}
 
 	public ShortPoint2D getNextHexPoint(ShortPoint2D pos, int steps) {
-		return new ShortPoint2D(pos.x + gridDeltaX * steps, pos.y + gridDeltaY * steps);
+		return new ShortPoint2D(getNextTileX(pos.x, steps), getNextTileY(pos.y, steps));
 	}
 
 	/**

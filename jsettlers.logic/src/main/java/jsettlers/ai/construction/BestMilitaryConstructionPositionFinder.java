@@ -14,16 +14,16 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import java.util.Collection;
-
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.Collection;
+
 /**
- * builds the military building right next to one other tower
+ * Builds the military building right next to one other tower
  *
  * @author codingberlin
  */
@@ -36,8 +36,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	}
 
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
-			final byte playerId) {
+	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, final byte playerId) {
 		Collection<ShortPoint2D> towerPositions = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId);
 		if (towerPositions.isEmpty()) {
 			return null;
