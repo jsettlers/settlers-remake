@@ -18,6 +18,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
+import java.util.BitSet;
+
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FISHER_HUT_RATIO;
@@ -58,11 +60,11 @@ public class AiMapInformation {
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
 	public long[][] resourceAndGrassCount;
-	public final boolean[] wasFishNearByAtGameStart;
+	public final BitSet wasFishNearByAtGameStart;
 
 	public AiMapInformation(PartitionsGrid partitionsGrid) {
 		resourceAndGrassCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
-		wasFishNearByAtGameStart = new boolean[partitionsGrid.getWidth() * partitionsGrid.getHeight()];
+		wasFishNearByAtGameStart = new BitSet(partitionsGrid.getWidth() * partitionsGrid.getHeight());
 	}
 
 	public void clear() {
