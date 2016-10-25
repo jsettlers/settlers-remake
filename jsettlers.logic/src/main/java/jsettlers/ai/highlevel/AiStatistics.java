@@ -22,6 +22,7 @@ import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -44,7 +45,6 @@ import jsettlers.logic.player.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -116,35 +116,19 @@ public class AiStatistics {
 		resourceCountInDefaultPartition = new long[EResourceType.VALUES.length];
 	}
 
-	private void calculateIsFishNearBy() {
-		Collection<RelativePoint> reachablePositionsByFisher = calculateReachablePositionsByFisher();
+	private void calculateIsFishNearBy() { // TODO @Andreas Eberle implement linearly scanning algorithm
 		for (int x = 0; x < partitionsGrid.getWidth(); x++) {
 			for (int y = 0; y < partitionsGrid.getHeight(); y++) {
 				if (landscapeGrid.getResourceTypeAt(x, y) == EResourceType.FISH && landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					for (RelativePoint relativeRechablePosition : reachablePositionsByFisher) {
-						ShortPoint2D absolutePoint = relativeRechablePosition.calculatePoint(new ShortPoint2D(x, y));
-						if (mainGrid.isInBounds(absolutePoint.x, absolutePoint.y)) {
-							int index = absolutePoint.x * partitionsGrid.getWidth() + absolutePoint.y;
+					for (ShortPoint2D position : new MapCircle(x, y, FISHER.getWorkRadius())) {
+						if (mainGrid.isInBounds(position.x, position.y)) {
+							int index = position.x * partitionsGrid.getWidth() + position.y;
 							aiMapInformation.wasFishNearByAtGameStart.set(index, true);
 						}
 					}
 				}
 			}
 		}
-	}
-
-	private Collection<RelativePoint> calculateReachablePositionsByFisher() {
-		Collection<RelativePoint> reachablePositions = new ArrayList<>();
-		ShortPoint2D referencePosition = new ShortPoint2D(0, 0);
-		for (short x = (short) (-1 * FISHER.getWorkRadius()); x <= FISHER.getWorkRadius(); x++) {
-			for (short y = (short) (-1 * FISHER.getWorkRadius()); y <= FISHER.getWorkRadius(); y++) {
-				ShortPoint2D position = new ShortPoint2D(x, y);
-				if (position.getOnGridDistTo(referencePosition) < FISHER.getWorkRadius()) {
-					reachablePositions.add(RelativePoint.getRelativePoint(referencePosition, position));
-				}
-			}
-		}
-		return reachablePositions;
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -220,9 +204,8 @@ public class AiStatistics {
 		updatePartitionIdsToBuildOn();
 		short width = mainGrid.getWidth();
 		short height = mainGrid.getHeight();
-		for (int i = 0; i < resourceCountInDefaultPartition.length; i++) {
-			resourceCountInDefaultPartition[i] = 0;
-		}
+		Arrays.fill(resourceCountInDefaultPartition, 0);
+
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
@@ -390,10 +373,10 @@ public class AiStatistics {
 
 	private void updateNearStones(short x, short y) {
 		for (EDirection dir : EDirection.VALUES) {
-			int dx = dir.getNextTileX(x, NEAR_STONE_DISTANCE);
-			int dy = dir.getNextTileY(y, NEAR_STONE_DISTANCE);
-			if (mainGrid.isInBounds(dx, dy)) {
-				byte playerId = partitionsGrid.getPlayerIdAt(dx, dy);
+			int currX = dir.getNextTileX(x, NEAR_STONE_DISTANCE);
+			int currY = dir.getNextTileY(y, NEAR_STONE_DISTANCE);
+			if (mainGrid.isInBounds(currX, currY)) {
+				byte playerId = partitionsGrid.getPlayerIdAt(currX, currY);
 				if (playerId != -1 && hasPlayersBlockedPartition(playerId, x, y)) {
 					playerStatistics[playerId].stonesNearBy.addNoCollission(x, y);
 				}
@@ -448,8 +431,8 @@ public class AiStatistics {
 		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance, filter);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance,
-			AiPositionFilter filter) {
+	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(
+			ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, AiPositionFilter filter) {
 		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, searchDistance, (byte) -1, filter);
 	}
 
@@ -474,8 +457,8 @@ public class AiStatistics {
 	}
 
 	public boolean hasPlayersBlockedPartition(byte playerId, int x, int y) {
-		return landscapeGrid.getBlockedPartitionAt(x, y) == landscapeGrid.getBlockedPartitionAt(playerStatistics[playerId].referencePosition.x,
-				playerStatistics[playerId].referencePosition.y);
+		ShortPoint2D referencePosition = playerStatistics[playerId].referencePosition;
+		return landscapeGrid.getBlockedPartitionAt(x, y) == landscapeGrid.getBlockedPartitionAt(referencePosition.x, referencePosition.y);
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {

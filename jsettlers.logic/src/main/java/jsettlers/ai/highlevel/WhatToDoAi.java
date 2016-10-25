@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,51 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import jsettlers.ai.army.ArmyGeneral;
+import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.economy.EconomyMinister;
+import jsettlers.ai.highlevel.pioneers.PioneerAi;
+import jsettlers.ai.highlevel.pioneers.PioneerGroup;
+import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
+import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.movable.Movable;
+import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.IRONMELT_TO_WEAPON_SMITH_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.IRON_MINE_TO_IRONMELT_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.WINEGROWER_TO_TEMPLE_RATIO;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
@@ -43,50 +86,6 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import jsettlers.ai.army.ArmyGeneral;
-import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
-import jsettlers.ai.highlevel.pioneers.PioneerAi;
-import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.highlevel.pioneers.PioneerGroup;
-import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
-import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
-import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.movable.Movable;
-import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes
@@ -143,14 +142,13 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (aiStatistics.isAlive(playerId)) {
-			Set<Integer> soldiersWithOrders = new HashSet<Integer>();
 			economyMinister.update();
 			isEndGame = economyMinister.isEndGame();
 			failedConstructingBuildings = new ArrayList<>();
 			destroyBuildings();
 			commandPioneers();
 			buildBuildings();
-			occupyMilitaryBuildings(soldiersWithOrders);
+			Set<Integer> soldiersWithOrders = occupyMilitaryBuildings();
 			armyGeneral.levyUnits();
 			armyGeneral.commandTroops(soldiersWithOrders);
 			sendGeologists();
@@ -196,7 +194,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 		return mainGrid.getMovableGrid().getMovableAt(point.x, point.y);
 	}
 
-	private void occupyMilitaryBuildings(Set<Integer> soldiersWithOrders) {
+	private Set<Integer> occupyMilitaryBuildings() {
+		Set<Integer> soldiersWithOrders = new HashSet<>();
+
 		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(
 				EBuildingType.getMilitaryBuildings(), playerId)) {
 
@@ -210,6 +210,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 				}
 			}
 		}
+
+		return soldiersWithOrders;
 	}
 
 	private void sendMovableTo(IMovable movable, ShortPoint2D target) {
@@ -429,7 +431,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 				pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID());
 			}
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
-			//pioneers which can not be converted shall walk into player's land to be converted the next tic
+			// pioneers which can not be converted shall walk into player's land to be converted the next tic
 			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
 		}
 	}
@@ -473,7 +475,6 @@ public class WhatToDoAi implements IWhatToDoAi {
 			pioneerGroup.fill(taskScheduler, aiStatistics, playerId, maxNewPioneersCount);
 		}
 	}
-
 
 	private boolean buildLivingHouse() {
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
