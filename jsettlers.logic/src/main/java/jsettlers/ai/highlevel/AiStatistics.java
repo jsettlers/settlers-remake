@@ -395,10 +395,12 @@ public class AiStatistics {
 			}
 
 			if (referencePosition != null) {
-				playerStatistics[playerId].referencePosition = referencePosition;
-				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
-				playerStatistics[playerId].materialProduction = partitionsGrid.getMaterialProductionAt(referencePosition.x, referencePosition.y);
-				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
+				PlayerStatistic playerStatistic = playerStatistics[playerId];
+				playerStatistic.referencePosition = referencePosition;
+				playerStatistic.partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
+				playerStatistic.blockedPartitionId = landscapeGrid.getBlockedPartitionAt(referencePosition.x,referencePosition.y);
+				playerStatistic.materialProduction = partitionsGrid.getMaterialProductionAt(referencePosition.x, referencePosition.y);
+				playerStatistic.materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
 	}
@@ -457,8 +459,7 @@ public class AiStatistics {
 	}
 
 	public boolean hasPlayersBlockedPartition(byte playerId, int x, int y) {
-		ShortPoint2D referencePosition = playerStatistics[playerId].referencePosition;
-		return landscapeGrid.getBlockedPartitionAt(x, y) == landscapeGrid.getBlockedPartitionAt(referencePosition.x, referencePosition.y);
+		return landscapeGrid.getBlockedPartitionAt(x, y) ==  playerStatistics[playerId].blockedPartitionId;
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
@@ -729,6 +730,7 @@ public class AiStatistics {
 		final List<ShortPoint2D> farmWorkAreas = new Vector<ShortPoint2D>();
 		final List<ShortPoint2D> wineGrowerWorkAreas = new Vector<ShortPoint2D>();
 		short partitionIdToBuildOn;
+		public short blockedPartitionId;
 		IPartitionData materials;
 		final AiPositions landToBuildOn = new AiPositions();
 		final AiPositions border = new AiPositions();
@@ -779,6 +781,7 @@ public class AiStatistics {
 			numberOfNotOccupiedMilitaryBuildings = 0;
 			wineCount = 0;
 			partitionIdToBuildOn = Short.MIN_VALUE;
+			blockedPartitionId = Short.MIN_VALUE;
 		}
 	}
 
