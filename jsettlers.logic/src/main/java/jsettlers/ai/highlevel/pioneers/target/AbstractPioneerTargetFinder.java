@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,12 +15,23 @@
 package jsettlers.ai.highlevel.pioneers.target;
 
 import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
  * @author codingberlin
  */
-public interface ITargetFinder {
+public abstract class AbstractPioneerTargetFinder {
 
-	ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center);
+	protected final AiStatistics aiStatistics;
+	protected final byte playerId;
+	protected final int searchDistance;
+
+	public AbstractPioneerTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
+		this.aiStatistics = aiStatistics;
+		this.playerId = playerId;
+		this.searchDistance = searchDistance;
+	}
+
+	public abstract ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center);
 }

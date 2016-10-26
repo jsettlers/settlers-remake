@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -63,7 +63,7 @@ public class PioneerGroup {
 	}
 
 	public boolean isFull() {
-		return pioneerIds.size() - targetSize == 0;
+		return pioneerIds.size() >= targetSize;
 	}
 
 	public void fill(ITaskScheduler taskScheduler, AiStatistics aiStatistics, byte playerId, int maxNewPioneersCount) {
@@ -75,7 +75,7 @@ public class PioneerGroup {
 		MovableGrid movableGrid = aiStatistics.getMainGrid().getMovableGrid();
 		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
 		for (ShortPoint2D bearerPosition : bearers) {
-			if (newPioneerIds.size() == maxNewPioneersCount || isFull()) {
+			if (newPioneerIds.size() >= maxNewPioneersCount || isFull()) {
 				break;
 			}
 			Movable bearer = movableGrid.getMovableAt(bearerPosition.x, bearerPosition.y);

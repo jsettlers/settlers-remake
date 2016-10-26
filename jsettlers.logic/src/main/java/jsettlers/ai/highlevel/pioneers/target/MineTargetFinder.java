@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,7 +23,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * @author codingberlin
  */
-public class MineTargetFinder extends AbstractTargetFinder implements ITargetFinder {
+public class MineTargetFinder extends AbstractPioneerTargetFinder {
 
 	private final EResourceType resourceType;
 	private final EBuildingType mineBuildingType;
@@ -37,7 +37,7 @@ public class MineTargetFinder extends AbstractTargetFinder implements ITargetFin
 		AiPositions.AiPositionFilter firstFilter = new SameBlockedPartitionLikePlayerFilter(this.aiStatistics, playerId);
 		SurroundedByResourcesFilter secondFilter = new SurroundedByResourcesFilter(aiStatistics.getMainGrid(),
 				aiStatistics.getMainGrid().getLandscapeGrid(), resourceType);
-		mineFilters =  new AiPositions.CombinedAiPositionFilter(firstFilter, secondFilter);
+		mineFilters = new AiPositions.CombinedAiPositionFilter(firstFilter, secondFilter);
 	}
 
 	@Override
@@ -45,14 +45,14 @@ public class MineTargetFinder extends AbstractTargetFinder implements ITargetFin
 		if (aiStatistics.resourceCountInDefaultPartition(resourceType) == 0)
 			return null;
 
-		int factor = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(mineBuildingType, playerId) + 1;
+		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(mineBuildingType, playerId) + 1;
 		int tiles = mineBuildingType.getProtectedTiles().length * 2;
 
-		if (aiStatistics.resourceCountOfPlayer(resourceType, playerId) > tiles * factor)
+		if (aiStatistics.resourceCountOfPlayer(resourceType, playerId) > tiles * buildingCount)
 			return null;
 
-		ShortPoint2D nearestResourceAbroad =
-				aiStatistics.getNearestResourcePointInDefaultPartitionFor(center, resourceType, searchDistance, mineFilters);
+		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestResourcePointInDefaultPartitionFor(center, resourceType, searchDistance,
+				mineFilters);
 		if (nearestResourceAbroad == null)
 			return null;
 

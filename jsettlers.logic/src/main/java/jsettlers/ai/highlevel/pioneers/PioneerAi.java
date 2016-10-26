@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,18 +16,16 @@ package jsettlers.ai.highlevel.pioneers;
 
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.ai.highlevel.pioneers.target.AbstractPioneerTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.ConnectPartitionsTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.FishTargetFinder;
-import jsettlers.ai.highlevel.pioneers.target.ITargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.LumberJackTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.MineTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.NearStonesTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.RiverTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.StoneCutterTargetFinder;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
 
@@ -39,7 +37,7 @@ public class PioneerAi {
 	private final AiStatistics aiStatistics;
 	private final byte playerId;
 	private final int searchDistance;
-	private final ITargetFinder[] targetFinders = new ITargetFinder[9];
+	private final AbstractPioneerTargetFinder[] targetFinders = new AbstractPioneerTargetFinder[9];
 	private ShortPoint2D lastResourceTarget;
 
 	public PioneerAi(AiStatistics aiStatistics, byte playerId) {
@@ -74,7 +72,7 @@ public class PioneerAi {
 	private ShortPoint2D findResourceTargetNearLastTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
 
-		for (ITargetFinder targetFinder : targetFinders) {
+		for (AbstractPioneerTargetFinder targetFinder : targetFinders) {
 			ShortPoint2D target = targetFinder.findTarget(myBorder, lastResourceTarget);
 			if (target != null) {
 				return target;

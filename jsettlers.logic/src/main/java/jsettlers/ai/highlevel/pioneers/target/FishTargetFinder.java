@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,7 +23,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * @author codingberlin
  */
-public class FishTargetFinder extends AbstractTargetFinder implements ITargetFinder {
+public class FishTargetFinder extends AbstractPioneerTargetFinder {
 
 	public static final int FISH_NEEDED_BY_FISHER = 10;
 	public FishTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
@@ -35,9 +35,9 @@ public class FishTargetFinder extends AbstractTargetFinder implements ITargetFin
 		if (aiStatistics.resourceCountInDefaultPartition(EResourceType.FISH) == 0)
 			return null;
 
-		int factor = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.FISHER, playerId) + 1;
+		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.FISHER, playerId) + 1;
 
-		if (aiStatistics.resourceCountOfPlayer(EResourceType.FISH, playerId) > FISH_NEEDED_BY_FISHER * factor)
+		if (aiStatistics.resourceCountOfPlayer(EResourceType.FISH, playerId) > FISH_NEEDED_BY_FISHER * buildingCount)
 			return null;
 
 		ShortPoint2D nearestResourceAbroad = aiStatistics.getNearestFishPointForPlayer(center, playerId, searchDistance);

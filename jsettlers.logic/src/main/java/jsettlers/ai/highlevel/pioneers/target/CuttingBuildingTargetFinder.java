@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,7 +24,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * @author codingberlin
  */
-public abstract class CuttingBuildingTargetFinder extends AbstractTargetFinder implements ITargetFinder {
+public abstract class CuttingBuildingTargetFinder extends AbstractPioneerTargetFinder {
 
 	protected final EBuildingType buildingType;
 	protected final int cuttableObjectsPerBuilding;
@@ -38,7 +38,7 @@ public abstract class CuttingBuildingTargetFinder extends AbstractTargetFinder i
 		this.cuttableObjectType = cuttableObjectType;
 	}
 
-	public ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center, int cuttableObjectsCount) {
+	protected ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center, int cuttableObjectsCount) {
 		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) + 1;
 		if (cuttableObjectsCount > buildingCount * cuttableObjectsPerBuilding)
 			return null;

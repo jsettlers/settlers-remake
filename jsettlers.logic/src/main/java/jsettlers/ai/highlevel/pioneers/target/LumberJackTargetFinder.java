@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,12 +23,11 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * @author codingberlin
  */
-public class LumberJackTargetFinder extends CuttingBuildingTargetFinder implements ITargetFinder {
+public class LumberJackTargetFinder extends CuttingBuildingTargetFinder {
 
 	private boolean disabled;
 
-	public LumberJackTargetFinder(
-			AiStatistics aiStatistics, byte playerId, int searchDistance, int cuttableObjectsPerBuilding) {
+	public LumberJackTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance, int cuttableObjectsPerBuilding) {
 		super(aiStatistics, playerId, searchDistance, EBuildingType.LUMBERJACK, cuttableObjectsPerBuilding, EMapObjectType.TREE_ADULT);
 		disabled = false;
 	}

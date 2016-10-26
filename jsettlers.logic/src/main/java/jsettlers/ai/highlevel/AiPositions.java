@@ -1,10 +1,10 @@
 package jsettlers.ai.highlevel;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * This is a set of points on the map. It is optimized for range queries.
@@ -237,6 +237,10 @@ public class AiPositions implements IMapArea {
 
 	public int size() {
 		return size;
+	}
+
+	public boolean isEmpty() {
+		return size <= 0;
 	}
 
 	@Override
