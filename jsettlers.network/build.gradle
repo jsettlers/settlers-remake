@@ -1,5 +1,4 @@
 apply plugin: 'application'
-apply plugin: 'me.tatarka.retrolambda'
 
 mainClassName = 'jsettlers.network.server.DedicatedServerApp'
 

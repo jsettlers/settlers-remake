@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 15
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "jsettlers.main.android"
         minSdkVersion 15
-        targetSdkVersion 17
+        targetSdkVersion 24
+        jackOptions {
+            enabled true
+        }
     }
 
     buildTypes {
