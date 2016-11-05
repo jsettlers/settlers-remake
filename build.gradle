@@ -78,6 +78,22 @@ subprojects {
             events 'started', 'passed'
         }
     }
+
+    // Add streamsupport dependency
+    def addStreamSupportDependency = {
+        dependencies {
+            compile 'net.sourceforge.streamsupport:streamsupport:1.5.2'
+            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:1.5.2'
+            compile 'net.sourceforge.streamsupport:streamsupport-atomic:1.5.2'
+            compile 'net.sourceforge.streamsupport:streamsupport-flow:1.5.2'
+            compile 'net.sourceforge.streamsupport:streamsupport-literal:1.5.2'
+        }
+    }
+
+    plugins.withId('java', addStreamSupportDependency)
+    plugins.withId('application', addStreamSupportDependency)
+    plugins.withId('com.android.application', addStreamSupportDependency)
+    plugins.withId('com.android.library', addStreamSupportDependency)
 }
 
 // This is a hack to make ./gradlew run only run the swing version.
