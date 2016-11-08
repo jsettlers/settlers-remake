@@ -7,4 +7,5 @@ public interface MainMenuNavigator {
     void showNewSinglePlayerMapPicker();
     void showNewSinglePlayerSetup();
     void showGame();
+    void resumeGame();
 }

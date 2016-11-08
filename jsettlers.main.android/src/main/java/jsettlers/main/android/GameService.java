@@ -42,6 +42,10 @@ public class GameService extends Service {
         return gameBinder;
     }
 
+    public boolean isGameInProgress() {
+        return startingGame != null || mapContent != null;
+    }
+
     public void startSinglePlayerGame(IMapDefinition mapDefinition) {
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle("TutorialsFace Music Player")

@@ -1,5 +1,6 @@
 package jsettlers.main.android.fragmentsnew;
 
+import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.navigation.MainMenuNavigator;
@@ -7,8 +8,13 @@ import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.utils.FragmentUtil;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,6 +37,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 
 	private LinearLayout mainLinearLayout;
 	private View resourcesView;
+	private View resumeView;
+
+	private boolean bound = false;
 
 	public static MainMenuFragment newInstance() {
 		return new MainMenuFragment();
@@ -51,6 +60,15 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		FragmentUtil.setActionBar(this, view);
 
 		mainLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout_main);
+		resumeView = view.findViewById(R.id.card_view_resume);
+
+		View resumeButton = view.findViewById(R.id.button_resume);
+		resumeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				navigator.resumeGame();
+			}
+		});
 
 		if (!tryLoadResources()) {
 			resourcesView = inflater.inflate(R.layout.include_resources_card, mainLinearLayout, false);
@@ -77,17 +95,22 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-	}
-
-	@Override
 	public void onResume() {
 		super.onResume();
 		// Work around for IllegalStateException when trying to show dialog from onPermissionResult. Meant to be fixed in v24 support library
 		if (showDirectoryPicker) {
 			showDirectoryPicker();
 			showDirectoryPicker = false;
+		}
+
+		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (bound) {
+			getActivity().unbindService(serviceConnection);
 		}
 	}
 
@@ -128,6 +151,25 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
 		}
 	}
+
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
+			GameService gameService = gameBinder.getService();
+
+			bound = true;
+
+			if (gameService.isGameInProgress()) {
+				resumeView.setVisibility(View.VISIBLE);
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			bound = false;
+		}
+	};
 
 	private abstract class GameButtonClickListener implements View.OnClickListener {
 		@Override

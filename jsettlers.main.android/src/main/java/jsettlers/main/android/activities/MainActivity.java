@@ -9,6 +9,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.MainMenuFragment;
 import jsettlers.main.android.fragmentsnew.MapPickerFragment;
 import jsettlers.main.android.fragmentsnew.NewSinglePlayerFragment;
+import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 
@@ -17,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,13 +28,10 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	private StartScreenConnector startScreenConnector;
 
-	private MainApplication mainApplication;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mainApplication = (MainApplication) getApplication();
 
 		if (savedInstanceState != null)
 			return;
@@ -70,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void startGame() {
-	//	mainApplication.startSinglePlayerGame(map);
 		startService(new Intent(this, GameService.class));
 		bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -97,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showGame() {
 		Intent intent = new Intent(this, GameActivity.class);
+		startActivityForResult(intent, REQUEST_CODE_GAME);
+	}
+
+	@Override
+	public void resumeGame() {
+		Intent intent = new Intent(this, GameActivity.class);
+		intent.setAction(Actions.RESUME_GAME);
 		startActivityForResult(intent, REQUEST_CODE_GAME);
 	}
 
