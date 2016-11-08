@@ -96,7 +96,9 @@ public class AndroidMenuPutable implements ActionFireable {
 		synchronized (activeMenuMutex) {
 			actionFireable.fireAction(new Action(EActionType.ABORT));
 			activeMenu.add(fragment);
-			fragmentHandler.showMenuFragment(fragment);
+
+			// COMMENTED OUT AS USING SUPPORT FRAGMENTS AND AFFECTED GAMEACTIVITY
+			//fragmentHandler.showMenuFragment(fragment);
 		}
 	}
 
@@ -112,7 +114,7 @@ public class AndroidMenuPutable implements ActionFireable {
 			int size = activeMenu.size();
 			if (size >= 2) {
 				activeMenu.remove(size - 1);
-				fragmentHandler.showMenuFragment(activeMenu.get(size - 2));
+				//fragmentHandler.showMenuFragment(activeMenu.get(size - 2));
 				return true;
 			} else if (size >= 1) {
 				hideMenu();

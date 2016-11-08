@@ -1,7 +1,11 @@
 package jsettlers.main.android.fragmentsnew;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +19,9 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
+import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.navigation.GameNavigator;
 import jsettlers.main.android.providers.GameProvider;
@@ -23,9 +29,9 @@ import jsettlers.main.android.providers.GameProvider;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoadingFragment extends Fragment implements IStartingGameListener {
+public class LoadingFragment extends Fragment implements IStartingGameListener, IFragmentHandler {
 
-	private GameProvider gameProvider;
+	private GameService gameService;
 	private GameNavigator gameNavigator;
 
 	private ProgressBar progressBar;
@@ -41,8 +47,8 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//gameProvider = (GameProvider) getActivity();
 		gameNavigator = (GameNavigator)getActivity();
+		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -60,8 +66,8 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 
 	@Override
 	public void onDestroyView() {
-		if (gameProvider != null) {
-			gameProvider.getStartingGame().setListener(null);
+		if (gameService != null) {
+			gameService.getStartingGame().setListener(null);
 		}
 		super.onDestroyView();
 	}
@@ -80,7 +86,7 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 
 	@Override
 	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-		IMapInterfaceConnector mapInterfaceConnector = gameProvider.loadFinished(game);
+		IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, this);
 		gameNavigator.showMap();
 		return mapInterfaceConnector;
 	}
@@ -95,14 +101,35 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 
 	}
 
-	public void setGameProvider(GameProvider gameProvider) {
-		this.gameProvider = gameProvider;
+//	public void setGameService(GameProvider gameService) {
+//		this.gameService = gameService;
+//
+//		IStartingGame startingGame = gameService.getStartingGame();
+//		if (startingGame.isStartupFinished()) {
+//			getActivity().getSupportFragmentManager().popBackStack();
+//		} else {
+//			startingGame.setListener(this);
+//		}
+//	}
 
-		IStartingGame startingGame = gameProvider.getStartingGame();
-		if (startingGame.isStartupFinished()) {
-			getActivity().getSupportFragmentManager().popBackStack();
-		} else {
-			startingGame.setListener(this);
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			GameService.GameBinder binder = (GameService.GameBinder) service;
+			gameService = binder.getService();
+
+			IStartingGame startingGame = gameService.getStartingGame();
+			startingGame.setListener(LoadingFragment.this);
+
 		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+		}
+	};
+
+	@Override
+	public void hideMenu() {
+
 	}
 }

@@ -22,7 +22,7 @@ import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.navigation.GameNavigator;
 import jsettlers.main.android.providers.GameProvider;
 
-public class GameActivity extends AppCompatActivity implements GameNavigator, GameProvider, IFragmentHandler {
+public class GameActivity extends AppCompatActivity implements GameNavigator, GameProvider {
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
     private GameService gameService;
@@ -32,7 +32,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+    //    bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
         if (savedInstanceState != null)
             return;
@@ -53,7 +53,8 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
 
     @Override
     public IMapInterfaceConnector loadFinished(IStartedGame game) {
-        return gameService.gameStarted(game, this);
+    //    return gameService.gameStarted(game, this);
+        return null;
     }
 
     @Override
@@ -71,33 +72,4 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Ga
                 .replace(R.id.frame_layout, MapFragment.newInstance())
                 .commit();
     }
-
-    /**
-     * IFragmentHandler
-     * @return
-     */
-    @Override
-    public void showMenuFragment(Fragment fragment) {
-
-    }
-
-    @Override
-    public void hideMenu() {
-
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            GameService.GameBinder binder = (GameService.GameBinder) service;
-            gameService = (GameService)binder.getService();
-
-            LoadingFragment loadingFragment = (LoadingFragment)getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_LOADING);
-            loadingFragment.setGameProvider(GameActivity.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 }
