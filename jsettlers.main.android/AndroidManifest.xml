@@ -44,7 +44,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.GameActivity"></activity>
+        <activity android:name=".activities.GameActivity" />
+
+        <service
+            android:name=".GameService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

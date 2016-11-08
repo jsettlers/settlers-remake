@@ -3,6 +3,7 @@ package jsettlers.main.android.activities;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.StartScreenConnector;
+import jsettlers.main.android.GameService;
 import jsettlers.main.android.MainApplication;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.MainMenuFragment;
@@ -11,9 +12,13 @@ import jsettlers.main.android.fragmentsnew.NewSinglePlayerFragment;
 import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -64,8 +69,10 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void startGame(IMapDefinition map) {
-		mainApplication.startSinglePlayerGame(map);
+	public void startGame() {
+	//	mainApplication.startSinglePlayerGame(map);
+		startService(new Intent(this, GameService.class));
+		bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	/**
@@ -99,4 +106,19 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		}
 		return startScreenConnector;
 	}
+
+	private ServiceConnection serviceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
+			GameService gameService = gameBinder.getService();
+
+			gameService.startSinglePlayerGame(getSelectedMap());
+			showGame();
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+		}
+	};
 }

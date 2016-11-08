@@ -41,7 +41,7 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameProvider = (GameProvider) getActivity();
+		//gameProvider = (GameProvider) getActivity();
 		gameNavigator = (GameNavigator)getActivity();
 	}
 
@@ -56,17 +56,13 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		IStartingGame startingGame = gameProvider.getStartingGame();
-		if (startingGame.isStartupFinished()) {
-			getActivity().getSupportFragmentManager().popBackStack();
-		} else {
-			startingGame.setListener(this);
-		}
 	}
 
 	@Override
 	public void onDestroyView() {
-		gameProvider.getStartingGame().setListener(null);
+		if (gameProvider != null) {
+			gameProvider.getStartingGame().setListener(null);
+		}
 		super.onDestroyView();
 	}
 
@@ -97,5 +93,16 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public void startFinished() {
 
+	}
+
+	public void setGameProvider(GameProvider gameProvider) {
+		this.gameProvider = gameProvider;
+
+		IStartingGame startingGame = gameProvider.getStartingGame();
+		if (startingGame.isStartupFinished()) {
+			getActivity().getSupportFragmentManager().popBackStack();
+		} else {
+			startingGame.setListener(this);
+		}
 	}
 }

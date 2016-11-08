@@ -9,5 +9,5 @@ import jsettlers.common.utils.collections.ChangingList;
 public interface GameStarter {
     ChangingList<? extends IMapDefinition> getSinglePlayerMaps();
     IMapDefinition getSelectedMap();
-    void startGame(IMapDefinition map);
+    void startGame();
 }
