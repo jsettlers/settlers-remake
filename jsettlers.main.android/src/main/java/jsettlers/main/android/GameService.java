@@ -23,6 +23,7 @@ public class GameService extends Service {
 
     private IStartingGame startingGame;
     private MapContent mapContent;
+    private AndroidSoundPlayer soundPlayer;
 
     private GameBinder gameBinder = new GameBinder();
 
@@ -42,6 +43,13 @@ public class GameService extends Service {
         return gameBinder;
     }
 
+    public class GameBinder extends Binder {
+        public GameService getService() {
+            return GameService.this;
+        }
+    }
+
+    // GameService API
     public boolean isGameInProgress() {
         return startingGame != null || mapContent != null;
     }
@@ -65,7 +73,7 @@ public class GameService extends Service {
     public MapInterfaceConnector gameStarted(IStartedGame game, IFragmentHandler fragmentHandler) {
         // startingGame == null ??????
 
-        AndroidSoundPlayer soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
+        soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         mapContent = new MapContent(game, soundPlayer, new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
 
         // game.setGameExitListener(this);
@@ -77,9 +85,11 @@ public class GameService extends Service {
         return mapContent;
     }
 
-    public class GameBinder extends Binder {
-        public GameService getService() {
-            return GameService.this;
-        }
+    public void mute() {
+        soundPlayer.setPaused(true);
+    }
+
+    public void unMute() {
+        soundPlayer.setPaused(false);
     }
 }
