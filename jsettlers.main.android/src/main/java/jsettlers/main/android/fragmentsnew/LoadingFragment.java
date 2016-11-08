@@ -60,16 +60,19 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-	}
-
-	@Override
 	public void onDestroyView() {
 		if (gameService != null) {
 			gameService.getStartingGame().setListener(null);
 		}
+
+
 		super.onDestroyView();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getActivity().unbindService(serviceConnection);
 	}
 
 	@Override
@@ -93,24 +96,11 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
-
 	}
 
 	@Override
 	public void startFinished() {
-
 	}
-
-//	public void setGameService(GameProvider gameService) {
-//		this.gameService = gameService;
-//
-//		IStartingGame startingGame = gameService.getStartingGame();
-//		if (startingGame.isStartupFinished()) {
-//			getActivity().getSupportFragmentManager().popBackStack();
-//		} else {
-//			startingGame.setListener(this);
-//		}
-//	}
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
@@ -120,7 +110,6 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 
 			IStartingGame startingGame = gameService.getStartingGame();
 			startingGame.setListener(LoadingFragment.this);
-
 		}
 
 		@Override

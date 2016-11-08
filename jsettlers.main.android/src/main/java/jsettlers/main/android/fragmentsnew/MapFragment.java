@@ -25,7 +25,6 @@ import android.widget.FrameLayout;
 
 public class MapFragment extends Fragment {
 	private GameService gameService;
-	private GameProvider gameProvider;
 
 	private IContextDestroyedListener contextDestroyedListener = new IContextDestroyedListener() {
 		@Override
@@ -44,14 +43,12 @@ public class MapFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameProvider = (GameProvider)getActivity();
 		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
-
 		return view;
 	}
 
