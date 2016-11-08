@@ -17,11 +17,13 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 
 import jsettlers.TestToolUtils;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.input.SelectionSet;
@@ -34,10 +36,11 @@ import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
-	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1);
+	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1, EPlayerType.HUMAN, ECivilisation.ROMAN);
 	private final Movable movable;
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException,
+			SwingResourceLoader.ResourceSetupException {
 		new MovableTestWindow();
 	}
 

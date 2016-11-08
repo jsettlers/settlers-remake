@@ -65,7 +65,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 					return RATE_INVALID;
 				}
 
-				short workradius = STONECUTTER.getWorkradius();
+				short workradius = STONECUTTER.getWorkRadius();
 				for (ShortPoint2D otherStoneCutterPositions : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 					if (otherStoneCutterPositions.getOnGridDistTo(p) <= workradius) {
 						score += NEAR_OTHER_STONE_CUTTER_MALUS;

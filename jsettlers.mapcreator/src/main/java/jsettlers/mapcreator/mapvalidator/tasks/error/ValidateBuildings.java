@@ -21,7 +21,6 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;

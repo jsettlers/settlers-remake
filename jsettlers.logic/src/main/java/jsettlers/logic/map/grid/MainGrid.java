@@ -103,9 +103,9 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -116,7 +116,7 @@ import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public final class MainGrid implements Serializable {
@@ -309,11 +309,21 @@ public final class MainGrid implements Serializable {
 
 	public MapFileHeader generateSaveHeader() {
 		// TODO: description
-		// TODO: count alive players, count all players
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 				landscapeGrid.getPreviewImageDataSupplier());
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
+
+		Player[] players = partitionsGrid.getPlayers();
+		PlayerSetting[] playerConfigurations = new PlayerSetting[players.length];
+		for (int i = 0; i < players.length; i++) {
+			Player player = players[i];
+			if (player != null) {
+				playerConfigurations[i] = new PlayerSetting(player.getPlayerType(), player.getCivilisation(), player.getTeamId());
+			} else {
+				playerConfigurations[i] = new PlayerSetting();
+			}
+		}
 
 		return new MapFileHeader(
 				MapType.SAVED_SINGLE,
@@ -322,7 +332,7 @@ public final class MainGrid implements Serializable {
 				width,
 				height,
 				(short) 1,
-				getPartitionsGrid().getNumberOfPlayers(),
+				playerConfigurations,
 				new Date(),
 				bgImage);
 	}
@@ -363,7 +373,7 @@ public final class MainGrid implements Serializable {
 
 	/**
 	 * FOR TESTS ONLY!!
-	 * 
+	 *
 	 * @return
 	 */
 	public IAStarPathMap getPathfinderGrid() {
@@ -380,7 +390,7 @@ public final class MainGrid implements Serializable {
 
 	/**
 	 * Creates a new building at the given position.
-	 * 
+	 *
 	 * @param position
 	 *            The position to place the building.
 	 * @param type
@@ -437,6 +447,10 @@ public final class MainGrid implements Serializable {
 
 	public FlagsGrid getFlagsGrid() {
 		return flagsGrid;
+	}
+
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		partitionsGrid.initWithPlayerSettings(playerSettings);
 	}
 
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -926,7 +940,7 @@ public final class MainGrid implements Serializable {
 		public final void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
 				if (set) {
-					byte newValue = binaryConstructionMarkValues ? 0 : getConstructionMarkValue(x, y, flattenPositions);
+					byte newValue = binaryConstructionMarkValues ? 0 : calculateConstructionMarkValue(x, y, flattenPositions);
 					mapObjectsManager.setConstructionMarking(x, y, newValue);
 				} else {
 					mapObjectsManager.setConstructionMarking(x, y, (byte) -1);
@@ -961,23 +975,23 @@ public final class MainGrid implements Serializable {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstruction(currX, currY, buildingType.getGroundTypes(), partitionId)) {
+				if (!canUsePositionForConstruction(currX, currY, buildingType.getRequiredGroundTypeAt(currX, currY), partitionId)) {
 					return false;
 				}
 			}
-			return !buildingType.needsFlattenedGround() || getConstructionMarkValue(x, y, buildingArea) >= 0;
+			return !buildingType.needsFlattenedGround() || calculateConstructionMarkValue(x, y, buildingArea) >= 0;
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedBuildingTypes, short partitionId) {
+		public boolean canUsePositionForConstruction(int x, int y, Set<ELandscapeType> allowedGroundTypes, short partitionId) {
 			return isInBounds(x, y)
 					&& !flagsGrid.isProtected(x, y)
 					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
-					&& allowedBuildingTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
+					&& allowedGroundTypes.contains(landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
-		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		public byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			int sum = 0;
 
 			for (RelativePoint currPos : flattenPositions) {
@@ -1822,7 +1836,8 @@ public final class MainGrid implements Serializable {
 		public void positionClicked(short x, short y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
 					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
-					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y));
+					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y) + " landscapeType: "
+					+ landscapeGrid.getLandscapeTypeAt(x, y));
 		}
 
 		@Override
@@ -1871,9 +1886,8 @@ public final class MainGrid implements Serializable {
 	/**
 	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid
 	 * changes it's player.
-	 * 
+	 *
 	 * @author Andreas Eberle
-	 * 
 	 */
 	final class PlayerChangedListener implements IPlayerChangedListener {
 

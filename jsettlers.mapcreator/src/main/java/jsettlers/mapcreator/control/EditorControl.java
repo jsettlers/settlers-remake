@@ -59,8 +59,8 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
@@ -242,7 +242,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	 *            Ground to use for the new map
 	 */
 	public void createNewMap(MapFileHeader header, ELandscapeType ground) {
-		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayer(), ground));
+		loadMap(header, new MapData(header.getWidth(), header.getHeight(), header.getMaxPlayers(), ground));
 	}
 
 	/**
@@ -642,7 +642,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			@Override
 			public void applyNewHeader(MapFileHeader header) {
 				setHeader(header);
-				mapData.setMaxPlayers(header.getMaxPlayer());
+				mapData.setMaxPlayers(header.getMaxPlayers());
 				updatePlayerCombobox();
 				validator.reValidate();
 			}

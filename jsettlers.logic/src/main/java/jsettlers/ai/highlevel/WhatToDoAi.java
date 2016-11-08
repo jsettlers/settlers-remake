@@ -199,20 +199,14 @@ public class WhatToDoAi implements IWhatToDoAi {
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			if (aiStatistics.getBuildingAt(stoneCutterPosition).cannotWork()) {
 				int numberOfStoneCutters = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
-				if (numberOfStoneCutters == 1) {
-					ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId).getNearestPoint(stoneCutterPosition);
-					if (nearestStone != null) {
-						taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
-					} // else wait and check again (next interval maybe there is a new or occupied tower)
+
+				ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId)
+						.getNearestPoint(stoneCutterPosition, STONECUTTER.getWorkRadius() * MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR, null);
+				if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
+					taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
 				} else {
-					ShortPoint2D nearestStone = aiStatistics.getStonesForPlayer(playerId)
-							.getNearestPoint(stoneCutterPosition, STONECUTTER.getWorkradius() * MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR, null);
-					if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
-						taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
-					} else {
-						taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
-						break; // destroy only one stone cutter
-					}
+					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
+					break; // destroy only one stone cutter
 				}
 			}
 		}
@@ -246,8 +240,8 @@ public class WhatToDoAi implements IWhatToDoAi {
 					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition));
 				}
 			}
-			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK,
-					playerId)) {
+			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(
+					LUMBERJACK, playerId)) {
 				taskScheduler.scheduleTask(
 						new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
@@ -317,7 +311,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
+	private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
 		switch (targetBuilding) {
 		case IRONMINE:
 			return ratioFits(COALMINE, COAL_MINE_TO_IRONORE_MINE_RATIO, IRONMINE);

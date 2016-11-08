@@ -157,9 +157,13 @@ public class PlayerSlot {
 			return;
 		}
 
-		if (EPlayerType.HUMAN != (((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType())) {
-			setPlayerName(Labels.getString("player-name-" + getCivilisation().name() + "-" +
-					((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
+		if (EPlayerType.HUMAN != getPlayerType()) {
+			ECivilisation civilisation = getCivilisation();
+			if (civilisation != null) {
+				setPlayerName(Labels.getString("player-name-" + getCivilisation().name() + "-" + ((PlayerTypeUiWrapper) typeComboBox.getSelectedItem()).getPlayerType().name()));
+			} else {
+				setPlayerName(Labels.getString("player-name-random"));
+			}
 			setReady(true);
 		} else {
 			setReady(false);
@@ -198,7 +202,12 @@ public class PlayerSlot {
 	}
 
 	public void setTeam(byte team) {
+		setTeam(team, true);
+	}
+
+	public void setTeam(byte team, boolean enabled) {
 		teamComboBox.setSelectedIndex(team);
+		teamComboBox.setEnabled(enabled);
 	}
 
 	public void setAvailable(boolean available) {
@@ -249,22 +258,26 @@ public class PlayerSlot {
 		readyButton.setEnabled(isEnabled);
 	}
 
-	public void setCivilisation(ECivilisation civilisation) {
+	public void setCivilisation(ECivilisation civilisation, boolean enabled) {
 		for (int i = 0; i < civilisationComboBox.getItemCount(); i++) {
 			if (civilisationComboBox.getItemAt(i).getCivilisation() == civilisation) {
 				civilisationComboBox.setSelectedIndex(i);
-				return;
+				break;
 			}
 		}
+
+		civilisationComboBox.setEnabled(enabled);
 	}
 
-	public void setPlayerType(EPlayerType playerType) {
+	public void setPlayerType(EPlayerType playerType, boolean enabled) {
 		for (int i = 0; i < typeComboBox.getItemCount(); i++) {
 			if (typeComboBox.getItemAt(i).getPlayerType() == playerType) {
 				typeComboBox.setSelectedIndex(i);
 				break;
 			}
 		}
+
+		typeComboBox.setEnabled(enabled);
 		updateAiPlayerName();
 	}
 

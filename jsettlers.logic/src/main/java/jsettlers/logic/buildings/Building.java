@@ -203,7 +203,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			grid.getMapObjectsManager().removeMapObjectType(pos.x, pos.y, EMapObjectType.BUILDINGSITE_SIGN);
 		}
 
-		for (RelativePoint curr : type.getBuildmarks()) {
+		for (RelativePoint curr : type.getBuildMarks()) {
 			if (place) {
 				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, null);
 			} else {

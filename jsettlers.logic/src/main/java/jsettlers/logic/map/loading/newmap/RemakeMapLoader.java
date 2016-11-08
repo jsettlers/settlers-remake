@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -103,12 +103,12 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public int getMinPlayers() {
-		return header.getMinPlayer();
+		return header.getMinPlayers();
 	}
 
 	@Override
 	public int getMaxPlayers() {
-		return header.getMaxPlayer();
+		return header.getMaxPlayers();
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public short[] getImage() {
-		return header.getBgimage();
+		return header.getPreviewImage();
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		return loadMainGrid(playerSettings, EMapStartResources.HIGH_GOODS);
 	}
 
-		@Override
+	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 		IMapData mapData = getMapData();
@@ -157,7 +157,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 		if (playerSettings == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true, (byte) i);
+				playerSettings[i] = new PlayerSetting((byte) i);
 			}
 		}
 

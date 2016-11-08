@@ -116,7 +116,7 @@ public enum EBuildingJobType {
 	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
 	 * 
 	 * @see ESearchType
-	 * @see EBuildingType#getWorkradius()
+	 * @see EBuildingType#getWorkRadius()
 	 */
 	PRE_SEARCH,
 
@@ -134,7 +134,7 @@ public enum EBuildingJobType {
 	 * Fail: If the searched thing was not found.
 	 * 
 	 * @see ESearchType
-	 * @see EBuildingType#getWorkradius()
+	 * @see EBuildingType#getWorkRadius()
 	 */
 	PRE_SEARCH_IN_AREA,
 
@@ -213,7 +213,7 @@ public enum EBuildingJobType {
 	NOT_FULL,
 
 	/**
-	 * Looks at the water that has been searched. TODO: make it work for other stuff, like Stones.
+	 * Looks at the water/river that has been searched.
 	 */
 	LOOK_AT_SEARCHED,
 

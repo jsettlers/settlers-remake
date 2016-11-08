@@ -170,8 +170,8 @@ public class MapHeaderEditorPanel extends JPanel {
 		descriptionField.setText(header.getDescription());
 		width.setValue(Integer.valueOf(header.getWidth()));
 		height.setValue(Integer.valueOf(header.getHeight()));
-		minPlayer.setValue(Integer.valueOf(header.getMinPlayer()));
-		maxPlayer.setValue(Integer.valueOf(header.getMaxPlayer()));
+		minPlayer.setValue(Integer.valueOf(header.getMinPlayers()));
+		maxPlayer.setValue(Integer.valueOf(header.getMaxPlayers()));
 	}
 
 	/**
