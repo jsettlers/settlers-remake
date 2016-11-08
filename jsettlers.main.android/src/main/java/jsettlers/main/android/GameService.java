@@ -29,15 +29,12 @@ public class GameService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("TutorialsFace Music Player")
-                .setTicker("TutorialsFace Music Player")
-                .setContentText("My song")
-                .build();
-
-        startForeground(100, notification);
-
         return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -46,6 +43,14 @@ public class GameService extends Service {
     }
 
     public void startSinglePlayerGame(IMapDefinition mapDefinition) {
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentTitle("TutorialsFace Music Player")
+                .setTicker("TutorialsFace Music Player")
+                .setContentText("My song")
+                .build();
+
+        startForeground(100, notification);
+
         startingGame = new StartScreenConnector().startSingleplayerGame(mapDefinition);
     }
 

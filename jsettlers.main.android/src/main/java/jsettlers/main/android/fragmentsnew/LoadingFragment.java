@@ -37,6 +37,8 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 	private ProgressBar progressBar;
 	private TextView statusTextView;
 
+	private boolean bound = false;
+
 	public static LoadingFragment newInstance() {
 		return new LoadingFragment();
 	}
@@ -65,14 +67,15 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 			gameService.getStartingGame().setListener(null);
 		}
 
-
 		super.onDestroyView();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		getActivity().unbindService(serviceConnection);
+		if (bound) {
+			getActivity().unbindService(serviceConnection);
+		}
 	}
 
 	@Override
@@ -107,6 +110,7 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			GameService.GameBinder binder = (GameService.GameBinder) service;
 			gameService = binder.getService();
+			bound = true;
 
 			IStartingGame startingGame = gameService.getStartingGame();
 			startingGame.setListener(LoadingFragment.this);
@@ -114,6 +118,7 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
+			bound = false;
 		}
 	};
 

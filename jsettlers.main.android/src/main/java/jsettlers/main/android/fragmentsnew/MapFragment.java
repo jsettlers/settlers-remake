@@ -52,6 +52,12 @@ public class MapFragment extends Fragment {
 		return view;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		getActivity().unbindService(serviceConnection);
+	}
+
 	private void addMapViews() {
 		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
 
