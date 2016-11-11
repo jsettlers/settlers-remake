@@ -44,7 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.GameActivity" />
+        <activity
+            android:name=".activities.GameActivity"
+            android:launchMode="singleTask" />
 
         <service
             android:name=".GameService"

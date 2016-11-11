@@ -1,8 +1,12 @@
 package jsettlers.main.android;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -17,8 +21,14 @@ import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
+import jsettlers.main.android.activities.GameActivity;
+import jsettlers.main.android.navigation.Actions;
 
 public class GameService extends Service {
+    private static final String ACTION_PAUSE = "com.jsettlers.pause";
+    private static final String ACTION_SAVE = "com.jsettlers.save";
+    private static final String ACTION_QUIT = "com.jsettlers.quit";
+
     private static final int SOUND_THREADS = 6;
 
     private IStartingGame startingGame;
@@ -27,15 +37,36 @@ public class GameService extends Service {
 
     private GameBinder gameBinder = new GameBinder();
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case ACTION_PAUSE:
+                    pause();
+                    break;
+                case ACTION_SAVE:
+                    save();
+                    break;
+                case ACTION_QUIT:
+                    quit();
+                    break;
+            }
+        }
+    };
 
-        return START_NOT_STICKY;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_PAUSE);
+        intentFilter.addAction(ACTION_SAVE);
+        intentFilter.addAction(ACTION_QUIT);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -43,10 +74,10 @@ public class GameService extends Service {
         return gameBinder;
     }
 
-    public class GameBinder extends Binder {
-        public GameService getService() {
-            return GameService.this;
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     // GameService API
@@ -55,10 +86,21 @@ public class GameService extends Service {
     }
 
     public void startSinglePlayerGame(IMapDefinition mapDefinition) {
+        Intent gameActivityIntent = new Intent(this, GameActivity.class);
+        gameActivityIntent.setAction(Actions.RESUME_GAME);
+        PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(this, 0, gameActivityIntent, 0);
+
+        PendingIntent quitPendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_QUIT), 0);
+        PendingIntent savePendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_SAVE), 0);
+        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_PAUSE), 0);
+
         Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("TutorialsFace Music Player")
-                .setTicker("TutorialsFace Music Player")
-                .setContentText("My song")
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle("Settlers game in progress")
+                .setContentIntent(gameActivityPendingIntent)
+                .addAction(R.drawable.ic_quit, "Quit", quitPendingIntent)
+                .addAction(R.drawable.ic_save, "Save", savePendingIntent)
+                .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent)
                 .build();
 
         startForeground(100, notification);
@@ -91,5 +133,24 @@ public class GameService extends Service {
 
     public void unMute() {
         soundPlayer.setPaused(false);
+    }
+
+    public void save() {
+
+    }
+
+    public void pause() {
+    }
+
+    public void quit() {
+    }
+
+    /*
+    Binder
+     */
+    public class GameBinder extends Binder {
+        public GameService getService() {
+            return GameService.this;
+        }
     }
 }
