@@ -63,13 +63,6 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		navigator = (MainMenuNavigator) getActivity();
-
-		localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_QUIT);
-		intentFilter.addAction(ACTION_PAUSE);
-		intentFilter.addAction(ACTION_UNPAUSE);
-		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 	}
 
 	@Override
@@ -149,13 +142,13 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		super.onPause();
 		if (bound) {
 			getActivity().unbindService(serviceConnection);
+			localBroadcastManager.unregisterReceiver(broadcastReceiver);
 		}
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
@@ -208,8 +201,16 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
 			gameService = gameBinder.getService();
 
+			localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+			IntentFilter intentFilter = new IntentFilter();
+			intentFilter.addAction(ACTION_QUIT);
+			intentFilter.addAction(ACTION_PAUSE);
+			intentFilter.addAction(ACTION_UNPAUSE);
+			localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+
 			if (gameService.isGameInProgress()) {
 				resumeView.setVisibility(View.VISIBLE);
+				setPauseButtonText();
 			}
 
 			bound = true;
