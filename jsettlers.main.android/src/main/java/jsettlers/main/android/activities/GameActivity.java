@@ -15,27 +15,33 @@ import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
-import jsettlers.main.android.navigation.QuitListener;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider, QuitListener {//}, GameNavigator {
+import static jsettlers.main.android.GameService.ACTION_QUIT;
+
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
     private GameService gameService;
+
+    private LocalBroadcastManager localBroadcastManager;
 
     private boolean bound = false;
 
@@ -43,6 +49,11 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter(ACTION_QUIT);
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+
         bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
         if (savedInstanceState != null)
@@ -58,8 +69,8 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        localBroadcastManager.unregisterReceiver(broadcastReceiver);
         if (bound) {
-            gameService.setQuitListener(null);
             unbindService(serviceConnection);
         }
     }
@@ -150,20 +161,10 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         });
     }
 
-    /**
-     * QuitListener implementation
-     */
-    @Override
-    public void onQuit() {
-        finish();
-    }
-
 
 
     // Service has bound asynchronously, now we can use the service and tell fragments to do stuff that requires service access
     private void serviceReady() {
-        gameService.setQuitListener(this);
-
         if (!gameService.getStartingGame().isStartupFinished()) {
             gameService.getStartingGame().setListener(GameActivity.this);
         }
@@ -203,6 +204,17 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bound = false;
+        }
+    };
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case ACTION_QUIT:
+                    finish();
+                    break;
+            }
         }
     };
 

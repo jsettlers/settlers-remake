@@ -8,6 +8,7 @@ import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.utils.FragmentUtil;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -25,11 +25,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import static jsettlers.main.android.GameService.ACTION_QUIT;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
+
+	private GameService gameService;
 
 	private MainMenuNavigator navigator;
 	private boolean showDirectoryPicker = false;
@@ -62,11 +66,26 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		mainLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout_main);
 		resumeView = view.findViewById(R.id.card_view_resume);
 
-		View resumeButton = view.findViewById(R.id.button_resume);
-		resumeButton.setOnClickListener(new View.OnClickListener() {
+		resumeView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				navigator.resumeGame();
+			}
+		});
+
+		View pauseButton = view.findViewById(R.id.button_pause);
+		pauseButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				gameService.getGameMenu().pause();
+			}
+		});
+
+		View quitButton = view.findViewById(R.id.button_quit);
+		quitButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				gameService.getGameMenu().quit();
 			}
 		});
 
@@ -120,15 +139,6 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	@Override
-	public void onDirectorySelected() {
-		if (tryLoadResources()) {
-			mainLinearLayout.removeView(resourcesView);
-		} else {
-			throw new RuntimeException("Resources not found or not valid after directory chosen by user");
-		}
-	}
-
-	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		switch (requestCode) {
 		case REQUEST_CODE_PERMISSION_STORAGE:
@@ -136,6 +146,18 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 				showDirectoryPicker = true;
 			}
 			break;
+		}
+	}
+
+	/**
+	 * DirectoryPickerDialog.Listener implementation
+	 */
+	@Override
+	public void onDirectorySelected() {
+		if (tryLoadResources()) {
+			mainLinearLayout.removeView(resourcesView);
+		} else {
+			throw new RuntimeException("Resources not found or not valid after directory chosen by user");
 		}
 	}
 
@@ -156,18 +178,29 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
-			GameService gameService = gameBinder.getService();
-
-			bound = true;
+			gameService = gameBinder.getService();
 
 			if (gameService.isGameInProgress()) {
 				resumeView.setVisibility(View.VISIBLE);
 			}
+
+			bound = true;
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			bound = false;
+		}
+	};
+
+	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			switch (intent.getAction()) {
+				case ACTION_QUIT:
+					resumeView.setVisibility(View.GONE);
+					break;
+			}
 		}
 	};
 

@@ -15,7 +15,6 @@ import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.activities.GameActivity;
 import jsettlers.main.android.navigation.Actions;
-import jsettlers.main.android.navigation.QuitListener;
 import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Notification;
@@ -29,10 +28,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameService extends Service implements GameMenuProvider, IGameExitListener {
-    private static final String ACTION_PAUSE = "com.jsettlers.pause";
-    private static final String ACTION_SAVE = "com.jsettlers.save";
-    private static final String ACTION_QUIT = "com.jsettlers.quit";
+    public static final String ACTION_PAUSE = "com.jsettlers.pause";
+    public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
+    public static final String ACTION_SAVE = "com.jsettlers.save";
+    public static final String ACTION_QUIT = "com.jsettlers.quit";
 
     private static final int SOUND_THREADS = 6;
 
@@ -41,8 +44,6 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     private AndroidSoundPlayer soundPlayer;
 
     private GameMenu gameMenu;
-
-    private QuitListener quitListener;
 
     private GameBinder gameBinder = new GameBinder();
 
@@ -140,10 +141,6 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         return mapContent;
     }
 
-    public void setQuitListener(QuitListener quitListener) {
-        this.quitListener = quitListener;
-    }
-
     /**
      * GameMenuProvider implementation
      */
@@ -159,12 +156,9 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         stopForeground(true);
         stopSelf();
 
-        if (quitListener != null) {
-            quitListener.onQuit();
-            startingGame = null;
-            mapContent = null;
-            soundPlayer = null;
-        }
+        startingGame = null;
+        mapContent = null;
+        soundPlayer = null;
     }
 
     /**
