@@ -37,16 +37,21 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     private GameService gameService;
 
     private boolean bound = false;
-    private boolean firstLoad = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
-        firstLoad = savedInstanceState == null;
-
         bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+
+        if (savedInstanceState != null)
+            return;
+
+        if (getIntent().getAction() == Actions.RESUME_GAME) {
+            showMapFragment();
+        } else {
+            showLoadingFragment();
+        }
     }
 
     @Override
@@ -75,6 +80,22 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         if (!handled) {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * GameMenuProvider implementation
+     */
+    @Override
+    public GameMenu getGameMenu() {
+        return gameService.getGameMenu();
+    }
+
+    /**
+     * MapContentProvider implementation
+     */
+    @Override
+    public MapContent getMapContent() {
+        return gameService.getMapContent();
     }
 
     /**
@@ -119,17 +140,24 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
             @Override
             public void run() {
                 showMapFragment();
-                MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
-                mapFragment.addMapViews(gameService.getMapContent());
+                attachMapFragmentToGameIfLoaded();
             }
         });
     }
 
 
-    private void showMapFragment() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, MapFragment.newInstance(), TAG_FRAGMENT_MAP)
-                .commitNow();
+
+    // Service has bound asynchronously, now we can use the service and tell fragments to do stuff that requires service access
+    private void serviceReady() {
+        gameService.getStartingGame().setListener(GameActivity.this);
+        attachMapFragmentToGameIfLoaded();
+    }
+
+    private void attachMapFragmentToGameIfLoaded() {
+        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
+        if (mapFragment != null) {
+            mapFragment.attachToGame();
+        }
     }
 
     private void showLoadingFragment() {
@@ -138,21 +166,10 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
                 .commitNow();
     }
 
-    private void serviceBound() {
-        if (firstLoad) {
-            if (getIntent().getAction() == Actions.RESUME_GAME) {
-                showMapFragment();
-            } else {
-                showLoadingFragment();
-            }
-        }
-
-        gameService.getStartingGame().setListener(GameActivity.this);
-
-        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
-        if (mapFragment != null) {
-            mapFragment.gameReady(gameService.getMapContent());
-        }
+    private void showMapFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, MapFragment.newInstance(), TAG_FRAGMENT_MAP)
+                .commitNow();
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -161,14 +178,12 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
             GameService.GameBinder binder = (GameService.GameBinder) service;
             gameService = binder.getService();
 
+            serviceReady();
             bound = true;
-
-            serviceBound();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-
             bound = false;
         }
     };
@@ -178,15 +193,5 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     @Override
     public void hideMenu() {
 
-    }
-
-    @Override
-    public GameMenu getGameMenu() {
-        return gameService.getGameMenu();
-    }
-
-    @Override
-    public MapContent getMapContent() {
-        return gameService.getMapContent();
     }
 }
