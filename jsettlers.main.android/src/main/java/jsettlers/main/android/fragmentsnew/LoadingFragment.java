@@ -24,7 +24,6 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.navigation.GameNavigator;
-import jsettlers.main.android.providers.GameProvider;
 
 /**
  * A simple {@link Fragment} subclass.

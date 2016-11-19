@@ -1,6 +1,8 @@
 package jsettlers.main.android.dialogs;
 
+import jsettlers.main.android.Menus.GameMenu;
 import jsettlers.main.android.R;
+import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -15,13 +17,7 @@ import android.view.View;
  */
 
 public class GameMenuDialog extends DialogFragment {
-    private Listener listener;
-
-    public interface Listener {
-        void pause();
-        void save();
-        void quit();
-    }
+    GameMenu gameMenu;
 
     public static GameMenuDialog newInstance() {
         GameMenuDialog dialog = new GameMenuDialog();
@@ -31,7 +27,8 @@ public class GameMenuDialog extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listener = (Listener)getParentFragment();
+        GameMenuProvider gameMenuProvider = (GameMenuProvider)getParentFragment();
+        gameMenu = gameMenuProvider.getGameMenu();
     }
 
     @NonNull
@@ -42,21 +39,21 @@ public class GameMenuDialog extends DialogFragment {
         view.findViewById(R.id.button_pause).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.pause();
+                gameMenu.pause();
             }
         });
 
         view.findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.save();
+                gameMenu.save();
             }
         });
 
         view.findViewById(R.id.button_quit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.quit();
+                gameMenu.quit();
             }
         });
 

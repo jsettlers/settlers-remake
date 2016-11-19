@@ -4,13 +4,14 @@ import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-import jsettlers.common.menu.IStartingGame;
+import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.GameService;
+import jsettlers.main.android.Menus.GameMenu;
 import jsettlers.main.android.R;
 import jsettlers.main.android.dialogs.GameMenuDialog;
 import jsettlers.main.android.navigation.BackPressedListener;
-import jsettlers.main.android.providers.GameProvider;
+import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -26,8 +27,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements BackPressedListener, GameMenuDialog.Listener {
-	private GameService gameService;
+public class MapFragment extends Fragment implements BackPressedListener, GameMenuProvider {
+	private GameMenu gameMenu;
 
 	private boolean bound = false;
 
@@ -59,16 +60,16 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (gameService != null) {
-			gameService.unMute();
+		if (bound) {
+			gameMenu.unMute();
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (gameService != null) {
-			gameService.mute();
+		if (bound) {
+			gameMenu.mute();
 		}
 	}
 
@@ -86,35 +87,25 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	 */
 	@Override
 	public boolean onBackPressed() {
-		if (gameService != null) {
+		if (bound) {
 			GameMenuDialog.newInstance().show(getChildFragmentManager(), null);
 		}
 		return true;
 	}
 
 	/**
-	 * GameMenuDialog.Listener implementation
+	 * GameMenuProvider implementation
 	 */
 	@Override
-	public void pause() {
-
+	public GameMenu getGameMenu() {
+		return gameMenu;
 	}
 
-	@Override
-	public void save() {
-
-	}
-
-	@Override
-	public void quit() {
-
-	}
-
-	private void addMapViews() {
+	private void addMapViews(MapContent mapContent) {
 		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
 
 		Region goRegion = new Region(Region.POSITION_CENTER);
-		goRegion.setContent(gameService.getMapContent());
+		goRegion.setContent(mapContent);
 
 		Area goArea = new Area();
 		goArea.add(goRegion);
@@ -128,11 +119,12 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			GameService.GameBinder binder = (GameService.GameBinder) service;
-			gameService = binder.getService();
+			GameService gameService = binder.getService();
 
+			gameMenu = gameService.getGameMenu();
 			bound = true;
 
-			addMapViews();
+			addMapViews(gameService.getMapContent());
 		}
 
 		@Override

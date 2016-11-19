@@ -1,5 +1,21 @@
 package jsettlers.main.android;
 
+import go.graphics.android.AndroidSoundPlayer;
+
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.graphics.androidui.MobileControls;
+import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
+import jsettlers.graphics.androidui.menu.IFragmentHandler;
+import jsettlers.graphics.map.MapContent;
+import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.main.StartScreenConnector;
+import jsettlers.main.android.Menus.GameMenu;
+import jsettlers.main.android.activities.GameActivity;
+import jsettlers.main.android.navigation.Actions;
+import jsettlers.main.android.providers.GameMenuProvider;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,22 +27,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-import go.graphics.android.AndroidSoundPlayer;
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.androidui.MobileControls;
-import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
-import jsettlers.graphics.androidui.menu.IFragmentHandler;
-import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.activities.GameActivity;
-import jsettlers.main.android.navigation.Actions;
-
-public class GameService extends Service {
+public class GameService extends Service implements GameMenuProvider {
     private static final String ACTION_PAUSE = "com.jsettlers.pause";
     private static final String ACTION_SAVE = "com.jsettlers.save";
     private static final String ACTION_QUIT = "com.jsettlers.quit";
@@ -37,6 +38,8 @@ public class GameService extends Service {
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
 
+    private GameMenu gameMenu;
+
     private GameBinder gameBinder = new GameBinder();
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -44,13 +47,13 @@ public class GameService extends Service {
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case ACTION_PAUSE:
-                    pause();
+                    gameMenu.pause();
                     break;
                 case ACTION_SAVE:
-                    save();
+                    gameMenu.save();
                     break;
                 case ACTION_QUIT:
-                    quit();
+                    gameMenu.quit();
                     break;
             }
         }
@@ -82,7 +85,9 @@ public class GameService extends Service {
         unregisterReceiver(broadcastReceiver);
     }
 
-    // GameService API
+    /**
+     * GameService API
+     */
     public boolean isGameInProgress() {
         return startingGame != null || mapContent != null;
     }
@@ -122,6 +127,8 @@ public class GameService extends Service {
 
         // game.setGameExitListener(this);
 
+        gameMenu = new GameMenu(mapContent, soundPlayer);
+
         return mapContent.getInterfaceConnector();
     }
 
@@ -129,27 +136,16 @@ public class GameService extends Service {
         return mapContent;
     }
 
-    public void mute() {
-        soundPlayer.setPaused(true);
+    /**
+     * GameMenuProvider implementation
+     */
+    @Override
+    public GameMenu getGameMenu() {
+        return gameMenu;
     }
 
-    public void unMute() {
-        soundPlayer.setPaused(false);
-    }
-
-    public void save() {
-
-    }
-
-    public void pause() {
-        mapContent.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
-    }
-
-    public void quit() {
-    }
-
-    /*
-    Binder
+    /**
+     * Binder
      */
     public class GameBinder extends Binder {
         public GameService getService() {
