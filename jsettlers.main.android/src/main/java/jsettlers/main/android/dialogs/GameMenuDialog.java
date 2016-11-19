@@ -1,6 +1,6 @@
 package jsettlers.main.android.dialogs;
 
-import jsettlers.main.android.Menus.GameMenu;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.R;
 import jsettlers.main.android.providers.GameMenuProvider;
 

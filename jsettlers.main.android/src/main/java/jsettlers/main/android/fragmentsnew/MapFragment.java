@@ -8,7 +8,7 @@ import go.graphics.region.Region;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.Menus.GameMenu;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.dialogs.GameMenuDialog;
 import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.GameMenuProvider;

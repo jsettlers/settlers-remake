@@ -1,4 +1,4 @@
-package jsettlers.main.android.Menus;
+package jsettlers.main.android.menus;
 
 import android.content.Context;
 
