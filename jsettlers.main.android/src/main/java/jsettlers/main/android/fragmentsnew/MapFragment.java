@@ -8,6 +8,8 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.dialogs.GameMenuDialog;
+import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.GameProvider;
 
 import android.content.ComponentName;
@@ -24,7 +26,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements BackPressedListener, GameMenuDialog.Listener {
 	private GameService gameService;
 
 	private boolean bound = false;
@@ -76,6 +78,36 @@ public class MapFragment extends Fragment {
 		if (bound) {
 			getActivity().unbindService(serviceConnection);
 		}
+	}
+
+
+	/**
+	 * BackPressedListener implementation
+	 */
+	@Override
+	public boolean onBackPressed() {
+		if (gameService != null) {
+			GameMenuDialog.newInstance().show(getChildFragmentManager(), null);
+		}
+		return true;
+	}
+
+	/**
+	 * GameMenuDialog.Listener implementation
+	 */
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void save() {
+
+	}
+
+	@Override
+	public void quit() {
+
 	}
 
 	private void addMapViews() {

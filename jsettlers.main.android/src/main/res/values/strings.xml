@@ -69,6 +69,8 @@
 
     <string name="start_game">Start game</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="game_menu_title">Menu</string>
+    <string name="game_menu_quit">Quit</string>
+    <string name="game_menu_save">Save</string>
+    <string name="game_menu_pause">Pause</string>
 </resources>

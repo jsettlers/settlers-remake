@@ -15,6 +15,8 @@ import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
@@ -140,6 +142,7 @@ public class GameService extends Service {
     }
 
     public void pause() {
+        mapContent.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
     }
 
     public void quit() {
