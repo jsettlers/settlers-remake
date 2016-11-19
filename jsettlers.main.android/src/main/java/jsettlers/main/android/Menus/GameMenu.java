@@ -1,5 +1,7 @@
 package jsettlers.main.android.Menus;
 
+import android.content.Context;
+
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
@@ -13,6 +15,8 @@ public class GameMenu {
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
 
+    private boolean paused = false;
+
     public GameMenu(MapContent mapContent, AndroidSoundPlayer soundPlayer) {
         this.mapContent = mapContent;
         this.soundPlayer = soundPlayer;
@@ -25,6 +29,17 @@ public class GameMenu {
     public void pause() {
         mapContent.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
         mute();
+        paused = true;
+    }
+
+    public void unPause() {
+        mapContent.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
+        unMute();
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
     public void quit() {

@@ -73,4 +73,5 @@
     <string name="game_menu_quit">Quit</string>
     <string name="game_menu_save">Save</string>
     <string name="game_menu_pause">Pause</string>
+    <string name="game_menu_resume">Resume</string>
 </resources>
