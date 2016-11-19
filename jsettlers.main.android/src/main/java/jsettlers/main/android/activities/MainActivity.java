@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 			gameService.startSinglePlayerGame(getSelectedMap());
 			showGame();
+
+			unbindService(serviceConnection);
 		}
 
 		@Override

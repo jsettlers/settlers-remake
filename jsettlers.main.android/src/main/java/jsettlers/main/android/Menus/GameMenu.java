@@ -45,6 +45,7 @@ public class GameMenu {
     }
 
     public void quit() {
+        mapContent.fireAction(new Action(EActionType.EXIT));
     }
 
     public void mute() {

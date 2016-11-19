@@ -15,6 +15,7 @@ import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
+import jsettlers.main.android.navigation.QuitListener;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
@@ -30,7 +31,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider, QuitListener {//}, GameNavigator {
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
@@ -58,7 +59,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     protected void onDestroy() {
         super.onDestroy();
         if (bound) {
-            gameService.getStartingGame().setListener(null);
+            gameService.setQuitListener(null);
             unbindService(serviceConnection);
         }
     }
@@ -125,6 +126,8 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public void startFailed(final EGameError errorType, Exception exception) {
+        gameService.getStartingGame().setListener(null);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -136,6 +139,8 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public void startFinished() {
+        gameService.getStartingGame().setListener(null);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -145,11 +150,24 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         });
     }
 
+    /**
+     * QuitListener implementation
+     */
+    @Override
+    public void onQuit() {
+        finish();
+    }
+
 
 
     // Service has bound asynchronously, now we can use the service and tell fragments to do stuff that requires service access
     private void serviceReady() {
-        gameService.getStartingGame().setListener(GameActivity.this);
+        gameService.setQuitListener(this);
+
+        if (!gameService.getStartingGame().isStartupFinished()) {
+            gameService.getStartingGame().setListener(GameActivity.this);
+        }
+
         attachMapFragmentToGameIfLoaded();
     }
 

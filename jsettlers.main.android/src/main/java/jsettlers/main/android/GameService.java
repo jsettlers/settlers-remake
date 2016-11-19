@@ -2,6 +2,7 @@ package jsettlers.main.android;
 
 import go.graphics.android.AndroidSoundPlayer;
 
+import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
@@ -14,6 +15,7 @@ import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.activities.GameActivity;
 import jsettlers.main.android.navigation.Actions;
+import jsettlers.main.android.navigation.QuitListener;
 import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Notification;
@@ -27,7 +29,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-public class GameService extends Service implements GameMenuProvider {
+public class GameService extends Service implements GameMenuProvider, IGameExitListener {
     private static final String ACTION_PAUSE = "com.jsettlers.pause";
     private static final String ACTION_SAVE = "com.jsettlers.save";
     private static final String ACTION_QUIT = "com.jsettlers.quit";
@@ -39,6 +41,8 @@ public class GameService extends Service implements GameMenuProvider {
     private AndroidSoundPlayer soundPlayer;
 
     private GameMenu gameMenu;
+
+    private QuitListener quitListener;
 
     private GameBinder gameBinder = new GameBinder();
 
@@ -53,10 +57,7 @@ public class GameService extends Service implements GameMenuProvider {
                     gameMenu.save();
                     break;
                 case ACTION_QUIT:
-                    //stopForeground(true);
-                    //stopSelf();
-                    //mapContent.fireAction(new Action(EActionType.EXIT));
-                    //gameMenu.quit();
+                    gameMenu.quit();
                     break;
             }
         }
@@ -128,7 +129,7 @@ public class GameService extends Service implements GameMenuProvider {
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         mapContent = new MapContent(game, soundPlayer, new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
 
-        // game.setGameExitListener(this);
+        game.setGameExitListener(this);
 
         gameMenu = new GameMenu(getApplicationContext(), mapContent, soundPlayer);
 
@@ -139,12 +140,31 @@ public class GameService extends Service implements GameMenuProvider {
         return mapContent;
     }
 
+    public void setQuitListener(QuitListener quitListener) {
+        this.quitListener = quitListener;
+    }
+
     /**
      * GameMenuProvider implementation
      */
     @Override
     public GameMenu getGameMenu() {
         return gameMenu;
+    }
+
+
+
+    @Override
+    public void gameExited(IStartedGame game) {
+        stopForeground(true);
+        stopSelf();
+
+        if (quitListener != null) {
+            quitListener.onQuit();
+            startingGame = null;
+            mapContent = null;
+            soundPlayer = null;
+        }
     }
 
     /**
