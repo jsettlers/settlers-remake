@@ -12,12 +12,14 @@ import jsettlers.graphics.map.MapContent;
  */
 
 public class GameMenu {
+    private Context context;
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
 
     private boolean paused = false;
 
-    public GameMenu(MapContent mapContent, AndroidSoundPlayer soundPlayer) {
+    public GameMenu(Context context, MapContent mapContent, AndroidSoundPlayer soundPlayer) {
+        this.context = context;
         this.mapContent = mapContent;
         this.soundPlayer = soundPlayer;
     }

@@ -12,6 +12,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.dialogs.GameMenuDialog;
 import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.GameMenuProvider;
+import jsettlers.main.android.providers.MapContentProvider;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -47,6 +48,12 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	}
 
 	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_map, container, false);
 	}
@@ -54,7 +61,11 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+	//	getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+
+
+//		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
+//		addMapViews(mapContentProvider.getMapContent());
 	}
 
 	@Override
@@ -76,9 +87,9 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		if (bound) {
-			getActivity().unbindService(serviceConnection);
-		}
+//		if (bound) {
+//			getActivity().unbindService(serviceConnection);
+//		}
 	}
 
 
@@ -101,7 +112,16 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		return gameMenu;
 	}
 
-	private void addMapViews(MapContent mapContent) {
+	public void gameReady(MapContent mapContent) {
+		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
+		gameMenu = gameMenuProvider.getGameMenu();
+
+		addMapViews(mapContent);
+
+		bound = true;
+	}
+
+	public void addMapViews(MapContent mapContent) {
 		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
 
 		Region goRegion = new Region(Region.POSITION_CENTER);
@@ -115,21 +135,21 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		frameLayout.addView(goView);
 	}
 
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			GameService.GameBinder binder = (GameService.GameBinder) service;
-			GameService gameService = binder.getService();
-
-			gameMenu = gameService.getGameMenu();
-			bound = true;
-
-			addMapViews(gameService.getMapContent());
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			bound = false;
-		}
-	};
+//	private ServiceConnection serviceConnection = new ServiceConnection() {
+//		@Override
+//		public void onServiceConnected(ComponentName className, IBinder service) {
+//			GameService.GameBinder binder = (GameService.GameBinder) service;
+//			GameService gameService = binder.getService();
+//
+//			gameMenu = gameService.getGameMenu();
+//			bound = true;
+//
+//			addMapViews(gameService.getMapContent());
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName arg0) {
+//			bound = false;
+//		}
+//	};
 }

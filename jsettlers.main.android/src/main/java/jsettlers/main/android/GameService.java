@@ -5,6 +5,8 @@ import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
@@ -53,7 +55,10 @@ public class GameService extends Service implements GameMenuProvider {
                     gameMenu.save();
                     break;
                 case ACTION_QUIT:
-                    gameMenu.quit();
+                    //stopForeground(true);
+                    //stopSelf();
+                    //mapContent.fireAction(new Action(EActionType.EXIT));
+                    //gameMenu.quit();
                     break;
             }
         }
@@ -127,7 +132,7 @@ public class GameService extends Service implements GameMenuProvider {
 
         // game.setGameExitListener(this);
 
-        gameMenu = new GameMenu(mapContent, soundPlayer);
+        gameMenu = new GameMenu(getApplicationContext(), mapContent, soundPlayer);
 
         return mapContent.getInterfaceConnector();
     }

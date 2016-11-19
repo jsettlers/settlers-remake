@@ -1,35 +1,60 @@
 package jsettlers.main.android.activities;
 
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGameListener;
+import jsettlers.graphics.androidui.menu.IFragmentHandler;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.MapContent;
+import jsettlers.main.android.GameService;
+import jsettlers.main.android.Menus.GameMenu;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
-import jsettlers.main.android.navigation.GameNavigator;
+import jsettlers.main.android.providers.GameMenuProvider;
+import jsettlers.main.android.providers.MapContentProvider;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity implements GameNavigator {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+    private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
+
+    private GameService gameService;
+
+    private boolean bound = false;
+    private boolean firstLoad = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        if (savedInstanceState != null)
-            return;
+        firstLoad = savedInstanceState == null;
 
-        if (getIntent().getAction() == Actions.RESUME_GAME) {
-            showMap();
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frame_layout, LoadingFragment.newInstance(), TAG_FRAGMENT_LOADING)
-                    .commit();
+        bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bound) {
+            gameService.getStartingGame().setListener(null);
+            unbindService(serviceConnection);
         }
     }
 
@@ -53,13 +78,115 @@ public class GameActivity extends AppCompatActivity implements GameNavigator {
     }
 
     /**
-     * GameNavigator
-     * @return
+     * IStartingGameListener implementation
      */
     @Override
-    public void showMap() {
+    public void startProgressChanged(EProgressState state, final float progress) {
+        final String status = Labels.getProgress(state);
+        final LoadingFragment loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_LOADING);
+
+        if (loadingFragment == null)
+            return;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingFragment.progressChanged(status, (int) (progress * 100));
+            }
+        });
+    }
+
+    @Override
+    public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
+        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, this);
+        return mapInterfaceConnector;
+    }
+
+    @Override
+    public void startFailed(final EGameError errorType, Exception exception) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), errorType.toString(), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void startFinished() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMapFragment();
+                MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
+                mapFragment.addMapViews(gameService.getMapContent());
+            }
+        });
+    }
+
+
+    private void showMapFragment() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, MapFragment.newInstance())
-                .commit();
+                .replace(R.id.frame_layout, MapFragment.newInstance(), TAG_FRAGMENT_MAP)
+                .commitNow();
+    }
+
+    private void showLoadingFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.frame_layout, LoadingFragment.newInstance(), TAG_FRAGMENT_LOADING)
+                .commitNow();
+    }
+
+    private void serviceBound() {
+        if (firstLoad) {
+            if (getIntent().getAction() == Actions.RESUME_GAME) {
+                showMapFragment();
+            } else {
+                showLoadingFragment();
+            }
+        }
+
+        gameService.getStartingGame().setListener(GameActivity.this);
+
+        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
+        if (mapFragment != null) {
+            mapFragment.gameReady(gameService.getMapContent());
+        }
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            GameService.GameBinder binder = (GameService.GameBinder) service;
+            gameService = binder.getService();
+
+            bound = true;
+
+            serviceBound();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+
+            bound = false;
+        }
+    };
+
+
+
+    @Override
+    public void hideMenu() {
+
+    }
+
+    @Override
+    public GameMenu getGameMenu() {
+        return gameService.getGameMenu();
+    }
+
+    @Override
+    public MapContent getMapContent() {
+        return gameService.getMapContent();
     }
 }

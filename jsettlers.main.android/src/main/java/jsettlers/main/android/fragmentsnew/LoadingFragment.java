@@ -28,15 +28,15 @@ import jsettlers.main.android.navigation.GameNavigator;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoadingFragment extends Fragment implements IStartingGameListener, IFragmentHandler {
+public class LoadingFragment extends Fragment {//} implements IStartingGameListener, IFragmentHandler {
 
 	private GameService gameService;
-	private GameNavigator gameNavigator;
+	//private GameNavigator gameNavigator;
 
 	private ProgressBar progressBar;
 	private TextView statusTextView;
 
-	private boolean bound = false;
+	//private boolean bound = false;
 
 	public static LoadingFragment newInstance() {
 		return new LoadingFragment();
@@ -48,8 +48,8 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameNavigator = (GameNavigator)getActivity();
-		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+	//	gameNavigator = (GameNavigator)getActivity();
+	//	getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -60,69 +60,74 @@ public class LoadingFragment extends Fragment implements IStartingGameListener, 
 		return view;
 	}
 
-	@Override
-	public void onDestroyView() {
-		if (gameService != null) {
-			gameService.getStartingGame().setListener(null);
-		}
+//	@Override
+//	public void onDestroyView() {
+//		if (gameService != null) {
+//			gameService.getStartingGame().setListener(null);
+//		}
+//
+//		super.onDestroyView();
+//	}
+//
+//	@Override
+//	public void onDestroy() {
+//		super.onDestroy();
+//		if (bound) {
+//			getActivity().unbindService(serviceConnection);
+//		}
+//	}
 
-		super.onDestroyView();
+	public void progressChanged(String status, int progress) {
+		statusTextView.setText(status);
+		progressBar.setProgress(progress);
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if (bound) {
-			getActivity().unbindService(serviceConnection);
-		}
-	}
-
-	@Override
-	public void startProgressChanged(final EProgressState state, final float progress) {
-		final String status = Labels.getProgress(state);
-		getActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				statusTextView.setText(status);
-				progressBar.setProgress((int) (progress * 100));			
-			}
-		});
-	}
-
-	@Override
-	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-		IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, this);
-		gameNavigator.showMap();
-		return mapInterfaceConnector;
-	}
-
-	@Override
-	public void startFailed(EGameError errorType, Exception exception) {
-	}
-
-	@Override
-	public void startFinished() {
-	}
-
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			GameService.GameBinder binder = (GameService.GameBinder) service;
-			gameService = binder.getService();
-			bound = true;
-
-			IStartingGame startingGame = gameService.getStartingGame();
-			startingGame.setListener(LoadingFragment.this);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			bound = false;
-		}
-	};
-
-	@Override
-	public void hideMenu() {
-
-	}
+//	@Override
+//	public void startProgressChanged(final EProgressState state, final float progress) {
+//		final String status = Labels.getProgress(state);
+//		getActivity().runOnUiThread(new Runnable() {
+//			@Override
+//			public void run() {
+//				statusTextView.setText(status);
+//				progressBar.setProgress((int) (progress * 100));
+//			}
+//		});
+//	}
+//
+//	@Override
+//	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
+//		IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, this);
+//		gameNavigator.showMapFragment();
+//		return mapInterfaceConnector;
+//	}
+//
+//	@Override
+//	public void startFailed(EGameError errorType, Exception exception) {
+//	}
+//
+//	@Override
+//	public void startFinished() {
+//	}
+//
+//	private ServiceConnection serviceConnection = new ServiceConnection() {
+//		@Override
+//		public void onServiceConnected(ComponentName className, IBinder service) {
+//			GameService.GameBinder binder = (GameService.GameBinder) service;
+//			gameService = binder.getService();
+//			bound = true;
+//
+//			IStartingGame startingGame = gameService.getStartingGame();
+//			startingGame.setListener(LoadingFragment.this);
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName arg0) {
+//			bound = false;
+//		}
+//	};
+//
+//	@Override
+//	public void hideMenu() {
+//
+//	}
 }
