@@ -47,7 +47,7 @@ public class GameMenuDialog extends DialogFragment {
                     pauseButton.setText(R.string.game_menu_pause);
                 } else {
                     gameMenu.pause();
-                    pauseButton.setText(R.string.game_menu_resume);
+                    pauseButton.setText(R.string.game_menu_unpause);
                 }
             }
         });

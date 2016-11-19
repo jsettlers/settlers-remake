@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,13 +20,16 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_QUIT;
+import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,13 +39,16 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 
 	private GameService gameService;
 
+	private LocalBroadcastManager localBroadcastManager;
 	private MainMenuNavigator navigator;
+
 	private boolean showDirectoryPicker = false;
 	private boolean resourcesLoaded = false;
 
 	private LinearLayout mainLinearLayout;
 	private View resourcesView;
 	private View resumeView;
+	private Button pauseButton;
 
 	private boolean bound = false;
 
@@ -56,6 +63,13 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		navigator = (MainMenuNavigator) getActivity();
+
+		localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(ACTION_QUIT);
+		intentFilter.addAction(ACTION_PAUSE);
+		intentFilter.addAction(ACTION_UNPAUSE);
+		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 	}
 
 	@Override
@@ -65,6 +79,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 
 		mainLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout_main);
 		resumeView = view.findViewById(R.id.card_view_resume);
+		pauseButton = (Button) view.findViewById(R.id.button_pause);
 
 		resumeView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -73,11 +88,15 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			}
 		});
 
-		View pauseButton = view.findViewById(R.id.button_pause);
 		pauseButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				gameService.getGameMenu().pause();
+				if (gameService.getGameMenu().isPaused()) {
+					gameService.getGameMenu().unPause();
+				} else {
+					gameService.getGameMenu().pause();
+				}
+				setPauseButtonText();
 			}
 		});
 
@@ -134,8 +153,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+	public void onDestroy() {
+		super.onDestroy();
+		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
@@ -174,6 +194,14 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		}
 	}
 
+	private void setPauseButtonText() {
+		if (gameService.getGameMenu().isPaused()) {
+			pauseButton.setText(R.string.game_menu_unpause);
+		} else {
+			pauseButton.setText(R.string.game_menu_pause);
+		}
+	}
+
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -199,6 +227,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			switch (intent.getAction()) {
 				case ACTION_QUIT:
 					resumeView.setVisibility(View.GONE);
+					break;
+				case ACTION_PAUSE:
+					setPauseButtonText();
 					break;
 			}
 		}
