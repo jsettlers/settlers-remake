@@ -4,6 +4,7 @@ import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
@@ -77,6 +78,12 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public void onBackPressed() {
+        if (bound) {
+            if (!gameService.getStartingGame().isStartupFinished()) {
+                return; // Don't let the user back out of the loading screen
+            }
+        }
+
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         boolean handled = false;
 

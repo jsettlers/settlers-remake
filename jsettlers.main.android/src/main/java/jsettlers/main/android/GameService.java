@@ -1,5 +1,7 @@
 package jsettlers.main.android;
 
+import static jsettlers.main.android.menus.GameMenu.NOTIFICATION_ID;
+
 import go.graphics.android.AndroidSoundPlayer;
 
 import jsettlers.common.menu.IGameExitListener;
@@ -12,13 +14,9 @@ import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.activities.GameActivity;
 import jsettlers.main.android.menus.GameMenu;
-import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.providers.GameMenuProvider;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +24,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 public class GameService extends Service implements GameMenuProvider, IGameExitListener {
@@ -45,23 +42,6 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     private AndroidSoundPlayer soundPlayer;
     private GameMenu gameMenu;
 
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                case ACTION_PAUSE:
-                    gameMenu.pause();
-                    break;
-                case ACTION_SAVE:
-                    gameMenu.save();
-                    break;
-                case ACTION_QUIT:
-                    gameMenu.quit();
-                    break;
-            }
-        }
-    };
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -69,6 +49,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_PAUSE);
+        intentFilter.addAction(ACTION_UNPAUSE);
         intentFilter.addAction(ACTION_SAVE);
         intentFilter.addAction(ACTION_QUIT);
         registerReceiver(broadcastReceiver, intentFilter);
@@ -94,29 +75,10 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
      * GameService API
      */
     public boolean isGameInProgress() {
-        return startingGame != null || mapContent != null;
+        return mapContent != null;
     }
 
     public void startSinglePlayerGame(IMapDefinition mapDefinition) {
-        Intent gameActivityIntent = new Intent(this, GameActivity.class);
-        gameActivityIntent.setAction(Actions.RESUME_GAME);
-        PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(this, 0, gameActivityIntent, 0);
-
-        PendingIntent quitPendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_QUIT), 0);
-        PendingIntent savePendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_SAVE), 0);
-        PendingIntent pausePendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_PAUSE), 0);
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle("Settlers game in progress")
-                .setContentIntent(gameActivityPendingIntent)
-                .addAction(R.drawable.ic_quit, "Quit", quitPendingIntent)
-                .addAction(R.drawable.ic_save, "Save", savePendingIntent)
-                .addAction(R.drawable.ic_pause, "Pause", pausePendingIntent)
-                .build();
-
-        startForeground(100, notification);
-
         startingGame = new StartScreenConnector().startSingleplayerGame(mapDefinition);
     }
 
@@ -125,7 +87,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     }
 
     public MapInterfaceConnector gameStarted(IStartedGame game, IFragmentHandler fragmentHandler) {
-        // startingGame == null ??????
+        // startingGame = null ??????
 
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         mapContent = new MapContent(game, soundPlayer, new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
@@ -133,6 +95,8 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         game.setGameExitListener(this);
 
         gameMenu = new GameMenu(getApplicationContext(), mapContent, soundPlayer);
+
+        startForeground(NOTIFICATION_ID, gameMenu.createNotification());
 
         return mapContent.getInterfaceConnector();
     }
@@ -149,8 +113,9 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         return gameMenu;
     }
 
-
-
+    /**
+     * IGameExitedListener implementation
+     */
     @Override
     public void gameExited(IStartedGame game) {
         stopForeground(true);
@@ -172,4 +137,24 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
             return GameService.this;
         }
     }
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case ACTION_PAUSE:
+                    gameMenu.pause();
+                    break;
+                case ACTION_UNPAUSE:
+                    gameMenu.unPause();
+                    break;
+                case ACTION_SAVE:
+                    gameMenu.save();
+                    break;
+                case ACTION_QUIT:
+                    gameMenu.quit();
+                    break;
+            }
+        }
+    };
 }
