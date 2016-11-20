@@ -21,6 +21,7 @@ import jsettlers.main.android.navigation.Actions;
 
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_QUIT;
+import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
 import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.GameService.ACTION_SAVE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
@@ -89,10 +90,13 @@ public class GameMenu {
                 if (quitConfirmTimer != null) {
                     quitConfirmTimer = null;
                     notificationManager.notify(NOTIFICATION_ID, createNotification());
+                    localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CANCELLED));
                 }
             }
         }, 3000);
 
+        // Send a local broadcast so that any UI can update if necessary
+        localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT));
         notificationManager.notify(NOTIFICATION_ID, createNotification());
     }
 
@@ -100,6 +104,10 @@ public class GameMenu {
         // Trigger quit from here and callback in GameService broadcasts after quit is complete
         quitConfirmTimer = null;
         mapContent.fireAction(new Action(EActionType.EXIT));
+    }
+
+    public boolean canQuitConfirm() {
+        return quitConfirmTimer != null;
     }
 
     public void mute() {
@@ -111,19 +119,20 @@ public class GameMenu {
     }
 
     public Notification createNotification() {
-        NotificationBuilder notificationBuilder = new NotificationBuilder(context)
-                .addSaveButton();
-
-        if (isPaused()) {
-            notificationBuilder.addUnPauseButton();
-        } else {
-            notificationBuilder.addPauseButton();
-        }
+        NotificationBuilder notificationBuilder = new NotificationBuilder(context);
 
         if (quitConfirmTimer == null) {
             notificationBuilder.addQuitButton();
         } else {
             notificationBuilder.addQuitConfirmButton();
+        }
+
+        notificationBuilder.addSaveButton();
+
+        if (isPaused()) {
+            notificationBuilder.addUnPauseButton();
+        } else {
+            notificationBuilder.addPauseButton();
         }
 
         return notificationBuilder.build();

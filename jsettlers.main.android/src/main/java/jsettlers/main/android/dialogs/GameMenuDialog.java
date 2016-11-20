@@ -20,6 +20,9 @@ import android.view.View;
 import android.widget.Button;
 
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
+import static jsettlers.main.android.GameService.ACTION_QUIT;
+import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 /**
@@ -29,6 +32,8 @@ import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 public class GameMenuDialog extends DialogFragment {
     private GameMenu gameMenu;
     private Button pauseButton;
+    private Button quitButton;
+    private Button saveButton;
 
     private LocalBroadcastManager localBroadcastManager;
 
@@ -54,12 +59,17 @@ public class GameMenuDialog extends DialogFragment {
         }
 
         IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_QUIT);
+        intentFilter.addAction(ACTION_QUIT_CANCELLED);
         intentFilter.addAction(ACTION_PAUSE);
         intentFilter.addAction(ACTION_UNPAUSE);
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_game_menu, null);
         pauseButton = (Button) view.findViewById(R.id.button_pause);
+        quitButton = (Button) view.findViewById(R.id.button_quit);
+        saveButton = (Button) view.findViewById(R.id.button_save);
+
         setPauseButtonText();
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
@@ -74,17 +84,21 @@ public class GameMenuDialog extends DialogFragment {
             }
         });
 
-        view.findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
+        quitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gameMenu.save();
+                if (gameMenu.canQuitConfirm()) {
+                    gameMenu.quitConfirm();
+                } else {
+                    gameMenu.quit();
+                }
             }
         });
 
-        view.findViewById(R.id.button_quit).setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gameMenu.quit();
+                gameMenu.save();
             }
         });
 
@@ -104,6 +118,14 @@ public class GameMenuDialog extends DialogFragment {
         }
     }
 
+    private void setQuitConfirmButtonText() {
+        if (gameMenu.canQuitConfirm()) {
+            quitButton.setText(R.string.game_menu_quit_confirm);
+        } else {
+            quitButton.setText(R.string.game_menu_quit);
+        }
+    }
+
     private void setPauseButtonText() {
         if (gameMenu.isPaused()) {
             pauseButton.setText(R.string.game_menu_unpause);
@@ -115,7 +137,20 @@ public class GameMenuDialog extends DialogFragment {
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            setPauseButtonText();
+            switch (intent.getAction()) {
+                case ACTION_QUIT:
+                    setQuitConfirmButtonText();
+                    break;
+                case ACTION_QUIT_CANCELLED:
+                    setQuitConfirmButtonText();
+                    break;
+                case ACTION_PAUSE:
+                    setPauseButtonText();
+                    break;
+                case ACTION_UNPAUSE:
+                    setPauseButtonText();
+                    break;
+            }
         }
     };
 }

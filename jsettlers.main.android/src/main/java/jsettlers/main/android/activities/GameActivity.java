@@ -1,19 +1,22 @@
 package jsettlers.main.android.activities;
 
+import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
+
+import java.util.List;
+
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
-import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.GameMenuProvider;
@@ -32,10 +35,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import java.util.List;
-
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-
 public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -52,7 +51,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         setContentView(R.layout.activity_game);
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter intentFilter = new IntentFilter(ACTION_QUIT);
+        IntentFilter intentFilter = new IntentFilter(ACTION_QUIT_CONFIRM);
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
         bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
@@ -218,7 +217,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case ACTION_QUIT:
+                case ACTION_QUIT_CONFIRM:
                     finish();
                     break;
             }
