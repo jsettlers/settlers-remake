@@ -31,6 +31,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
     public static final String ACTION_SAVE = "com.jsettlers.save";
     public static final String ACTION_QUIT = "com.jsettlers.quit";
+    public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
 
     private static final int SOUND_THREADS = 6;
 
@@ -52,6 +53,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         intentFilter.addAction(ACTION_UNPAUSE);
         intentFilter.addAction(ACTION_SAVE);
         intentFilter.addAction(ACTION_QUIT);
+        intentFilter.addAction(ACTION_QUIT_CONFIRM);
         registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -153,6 +155,9 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
                     break;
                 case ACTION_QUIT:
                     gameMenu.quit();
+                    break;
+                case ACTION_QUIT_CONFIRM:
+                    gameMenu.quitConfirm();
                     break;
             }
         }

@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
@@ -18,6 +21,7 @@ import jsettlers.main.android.navigation.Actions;
 
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_QUIT;
+import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.GameService.ACTION_SAVE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
@@ -34,6 +38,7 @@ public class GameMenu {
 
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
+    private Timer quitConfirmTimer;
 
     private boolean paused = false;
 
@@ -76,7 +81,24 @@ public class GameMenu {
     }
 
     public void quit() {
+        quitConfirmTimer = new Timer();
+
+        quitConfirmTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (quitConfirmTimer != null) {
+                    quitConfirmTimer = null;
+                    notificationManager.notify(NOTIFICATION_ID, createNotification());
+                }
+            }
+        }, 3000);
+
+        notificationManager.notify(NOTIFICATION_ID, createNotification());
+    }
+
+    public void quitConfirm() {
         // Trigger quit from here and callback in GameService broadcasts after quit is complete
+        quitConfirmTimer = null;
         mapContent.fireAction(new Action(EActionType.EXIT));
     }
 
@@ -88,31 +110,76 @@ public class GameMenu {
         soundPlayer.setPaused(false);
     }
 
-
-
     public Notification createNotification() {
-        Intent gameActivityIntent = new Intent(context, GameActivity.class);
-        gameActivityIntent.setAction(Actions.RESUME_GAME);
-        PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
-
-        PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_QUIT), 0);
-        PendingIntent savePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_SAVE), 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle("Settlers game in progress")
-                .setContentIntent(gameActivityPendingIntent)
-                .addAction(R.drawable.ic_stop, "Quit", quitPendingIntent)
-                .addAction(R.drawable.ic_save, "Save", savePendingIntent);
+        NotificationBuilder notificationBuilder = new NotificationBuilder(context)
+                .addSaveButton();
 
         if (isPaused()) {
-            PendingIntent unPausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_UNPAUSE), 0);
-            builder.addAction(R.drawable.ic_play, "Unpause", unPausePendingIntent);
+            notificationBuilder.addUnPauseButton();
         } else {
-            PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_PAUSE), 0);
-            builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
+            notificationBuilder.addPauseButton();
         }
 
-        return builder.build();
+        if (quitConfirmTimer == null) {
+            notificationBuilder.addQuitButton();
+        } else {
+            notificationBuilder.addQuitConfirmButton();
+        }
+
+        return notificationBuilder.build();
+    }
+
+
+
+    public class NotificationBuilder {
+        private final Context context;
+        private final NotificationCompat.Builder builder;
+
+        public NotificationBuilder(Context context) {
+            this.context = context;
+
+            Intent gameActivityIntent = new Intent(context, GameActivity.class);
+            gameActivityIntent.setAction(Actions.RESUME_GAME);
+            PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
+
+            builder = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.drawable.icon)
+                    .setContentTitle("Settlers game in progress")
+                    .setContentIntent(gameActivityPendingIntent);
+        }
+
+        public NotificationBuilder addQuitButton() {
+            PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_QUIT), 0);
+            builder.addAction(R.drawable.ic_stop, "Quit", quitPendingIntent);
+            return this;
+        }
+
+        public NotificationBuilder addQuitConfirmButton() {
+            PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_QUIT_CONFIRM), 0);
+            builder.addAction(R.drawable.ic_stop, "Sure?", quitPendingIntent);
+            return this;
+        }
+
+        public NotificationBuilder addSaveButton() {
+            PendingIntent savePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_SAVE), 0);
+            builder.addAction(R.drawable.ic_save, "Save", savePendingIntent);
+            return this;
+        }
+
+        public NotificationBuilder addPauseButton() {
+            PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_PAUSE), 0);
+            builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
+            return this;
+        }
+
+        public NotificationBuilder addUnPauseButton() {
+            PendingIntent unPausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_UNPAUSE), 0);
+            builder.addAction(R.drawable.ic_play, "Unpause", unPausePendingIntent);
+            return this;
+        }
+
+        public Notification build() {
+            return builder.build();
+        }
     }
 }
