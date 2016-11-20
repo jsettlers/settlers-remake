@@ -32,15 +32,16 @@ public class GameMenuDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         GameMenuProvider gameMenuProvider = (GameMenuProvider)getParentFragment();
         gameMenu = gameMenuProvider.getGameMenu();
-
-        if (gameMenu == null) {
-            dismiss();
-        }
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (gameMenu == null) {
+            dismiss();
+            return new Dialog(getActivity());
+        }
+
         final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_game_menu, null);
         pauseButton = (Button) view.findViewById(R.id.button_pause);
         setPauseButtonText();
@@ -80,7 +81,7 @@ public class GameMenuDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (gameMenu.isPaused() && !getActivity().isFinishing()) {
+        if (gameMenu != null && gameMenu.isPaused() && isRemoving()) {
             gameMenu.unPause();
         }
     }
