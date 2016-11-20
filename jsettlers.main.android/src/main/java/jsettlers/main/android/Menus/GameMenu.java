@@ -37,24 +37,23 @@ public class GameMenu {
 
     }
 
+    // mute the game when pausing whether or not its currently visibile
     public void pause() {
         mapContent.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
         mute();
         paused = true;
 
-        // Send a local broadcast so that any UI can deal with it
-        Intent intent = new Intent(ACTION_PAUSE);
-        localBroadcastManager.sendBroadcast(intent);
+        // Send a local broadcast so that any UI can update if necessary
+        localBroadcastManager.sendBroadcast(new Intent(ACTION_PAUSE));
     }
 
+    // don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visibile.
     public void unPause() {
         mapContent.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
-        unMute();
         paused = false;
 
-        // Send a local broadcast so that any UI can deal with it
-        Intent intent = new Intent(ACTION_UNPAUSE);
-        localBroadcastManager.sendBroadcast(intent);
+        // Send a local broadcast so that any UI can update if necessary
+        localBroadcastManager.sendBroadcast(new Intent(ACTION_UNPAUSE));
     }
 
     public boolean isPaused() {
@@ -62,11 +61,8 @@ public class GameMenu {
     }
 
     public void quit() {
+        // Trigger quit from here and callback in GameService broadcasts after quit is complete
         mapContent.fireAction(new Action(EActionType.EXIT));
-
-        // Send a local broadcast so that any UI can deal with it
-        Intent intent = new Intent(ACTION_QUIT);
-        localBroadcastManager.sendBroadcast(intent);
     }
 
     public void mute() {

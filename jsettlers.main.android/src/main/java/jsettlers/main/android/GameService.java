@@ -12,8 +12,8 @@ import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.activities.GameActivity;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.providers.GameMenuProvider;
 
@@ -27,9 +27,7 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.support.v4.content.LocalBroadcastManager;
 
 public class GameService extends Service implements GameMenuProvider, IGameExitListener {
     public static final String ACTION_PAUSE = "com.jsettlers.pause";
@@ -39,13 +37,13 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
 
     private static final int SOUND_THREADS = 6;
 
+    private GameBinder gameBinder = new GameBinder();
+    private LocalBroadcastManager localBroadcastManager;
+
     private IStartingGame startingGame;
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
-
     private GameMenu gameMenu;
-
-    private GameBinder gameBinder = new GameBinder();
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -67,6 +65,8 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     @Override
     public void onCreate() {
         super.onCreate();
+        localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_PAUSE);
         intentFilter.addAction(ACTION_SAVE);
@@ -159,6 +159,9 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         startingGame = null;
         mapContent = null;
         soundPlayer = null;
+
+        // Send a local broadcast so that any UI can update if necessary
+        localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT));
     }
 
     /**

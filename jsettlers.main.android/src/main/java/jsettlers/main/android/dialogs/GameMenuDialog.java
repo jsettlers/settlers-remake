@@ -19,7 +19,8 @@ import android.widget.Button;
  */
 
 public class GameMenuDialog extends DialogFragment {
-    GameMenu gameMenu;
+    private GameMenu gameMenu;
+    private Button pauseButton;
 
     public static GameMenuDialog newInstance() {
         GameMenuDialog dialog = new GameMenuDialog();
@@ -31,24 +32,28 @@ public class GameMenuDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
         GameMenuProvider gameMenuProvider = (GameMenuProvider)getParentFragment();
         gameMenu = gameMenuProvider.getGameMenu();
+
+        if (gameMenu == null) {
+            dismiss();
+        }
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_game_menu, null);
+        final View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_game_menu, null);
+        pauseButton = (Button) view.findViewById(R.id.button_pause);
+        setPauseButtonText();
 
-        final Button pauseButton = (Button) view.findViewById(R.id.button_pause);
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (gameMenu.isPaused()) {
                     gameMenu.unPause();
-                    pauseButton.setText(R.string.game_menu_pause);
                 } else {
                     gameMenu.pause();
-                    pauseButton.setText(R.string.game_menu_unpause);
                 }
+                setPauseButtonText();
             }
         });
 
@@ -73,10 +78,18 @@ public class GameMenuDialog extends DialogFragment {
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        if (gameMenu.isPaused()) {
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (gameMenu.isPaused() && !getActivity().isFinishing()) {
             gameMenu.unPause();
+        }
+    }
+
+    private void setPauseButtonText() {
+        if (gameMenu.isPaused()) {
+            pauseButton.setText(R.string.game_menu_unpause);
+        } else {
+            pauseButton.setText(R.string.game_menu_pause);
         }
     }
 }

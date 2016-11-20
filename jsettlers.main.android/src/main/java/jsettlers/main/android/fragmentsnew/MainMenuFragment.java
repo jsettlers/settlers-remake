@@ -187,6 +187,15 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		}
 	}
 
+	private void setResumeViewState() {
+		if (gameService.isGameInProgress()) {
+			setPauseButtonText();
+			resumeView.setVisibility(View.VISIBLE);
+		} else {
+			resumeView.setVisibility(View.GONE);
+		}
+	}
+
 	private void setPauseButtonText() {
 		if (gameService.getGameMenu().isPaused()) {
 			pauseButton.setText(R.string.game_menu_unpause);
@@ -208,10 +217,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			intentFilter.addAction(ACTION_UNPAUSE);
 			localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
-			if (gameService.isGameInProgress()) {
-				resumeView.setVisibility(View.VISIBLE);
-				setPauseButtonText();
-			}
+			setResumeViewState();
 
 			bound = true;
 		}
@@ -227,9 +233,12 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
 				case ACTION_QUIT:
-					resumeView.setVisibility(View.GONE);
+					setResumeViewState();
 					break;
 				case ACTION_PAUSE:
+					setPauseButtonText();
+					break;
+				case ACTION_UNPAUSE:
 					setPauseButtonText();
 					break;
 			}
