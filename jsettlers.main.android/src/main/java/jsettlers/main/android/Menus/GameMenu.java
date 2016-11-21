@@ -140,7 +140,7 @@ public class GameMenu {
 
 
 
-    public class NotificationBuilder {
+    private class NotificationBuilder {
         private final Context context;
         private final NotificationCompat.Builder builder;
 

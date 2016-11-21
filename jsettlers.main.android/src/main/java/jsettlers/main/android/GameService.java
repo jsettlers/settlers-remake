@@ -127,6 +127,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         startingGame = null;
         mapContent = null;
         soundPlayer = null;
+        gameMenu = null;
 
         // Send a local broadcast so that any UI can update if necessary
         localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CONFIRM));

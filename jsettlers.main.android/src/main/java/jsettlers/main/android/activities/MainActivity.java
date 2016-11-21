@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	/**
-	 * GameStarter
+	 * GameStarter implementation
 	 */
 	@Override
 	public ChangingList<? extends IMapDefinition> getSinglePlayerMaps() {
