@@ -39,7 +39,7 @@ public class HostOfMultiplayerPlayerSlotFactory implements IPlayerSlotFactory {
 					EPlayerType.HUMAN,
 					EPlayerType.AI_VERY_HARD
 			});
-			playerSlot.setPlayerType(EPlayerType.AI_VERY_HARD);
+			playerSlot.setPlayerType(EPlayerType.AI_VERY_HARD, false);
 			playerSlot.setReadyButtonEnabled(false);
 			playerSlot.setReady(true);
 		}

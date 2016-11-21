@@ -16,15 +16,16 @@ package jsettlers.integration.ai;
 
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
-import jsettlers.common.map.MapLoadException;
-import jsettlers.testutils.TestUtils;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.input.PlayerState;
@@ -34,6 +35,7 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
+import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
 
 /**
@@ -66,19 +68,9 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void veryHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() throws MapLoadException {
-		PlayerSetting[] playerSettings = new PlayerSetting[12];
-		playerSettings[0] = new PlayerSetting(true, EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, (byte) 0);
-		playerSettings[1] = new PlayerSetting(false, (byte) -1);
-		playerSettings[2] = new PlayerSetting(false, (byte) -1);
-		playerSettings[3] = new PlayerSetting(false, (byte) -1);
-		playerSettings[4] = new PlayerSetting(false, (byte) -1);
-		playerSettings[5] = new PlayerSetting(false, (byte) -1);
-		playerSettings[6] = new PlayerSetting(false, (byte) -1);
-		playerSettings[7] = new PlayerSetting(false, (byte) -1);
-		playerSettings[8] = new PlayerSetting(false, (byte) -1);
-		playerSettings[9] = new PlayerSetting(false, (byte) -1);
-		playerSettings[10] = new PlayerSetting(false, (byte) -1);
-		playerSettings[11] = new PlayerSetting(false, (byte) -1);
+		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
+		playerSettings[0] = new PlayerSetting(EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, (byte) 0);
+
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
@@ -97,19 +89,9 @@ public class AiDifficultiesIT {
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
-		PlayerSetting[] playerSettings = new PlayerSetting[12];
-		playerSettings[0] = new PlayerSetting(false, (byte) -1);
-		playerSettings[1] = new PlayerSetting(false, (byte) -1);
-		playerSettings[2] = new PlayerSetting(true, expectedWinner, ECivilisation.ROMAN, (byte) 0);
-		playerSettings[3] = new PlayerSetting(false, (byte) -1);
-		playerSettings[4] = new PlayerSetting(false, (byte) -1);
-		playerSettings[5] = new PlayerSetting(false, (byte) -1);
-		playerSettings[6] = new PlayerSetting(false, (byte) -1);
-		playerSettings[7] = new PlayerSetting(false, (byte) -1);
-		playerSettings[8] = new PlayerSetting(true, expectedLooser, ECivilisation.ROMAN, (byte) 1);
-		playerSettings[9] = new PlayerSetting(false, (byte) -1);
-		playerSettings[10] = new PlayerSetting(false, (byte) -1);
-		playerSettings[11] = new PlayerSetting(false, (byte) -1);
+		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
+		playerSettings[2] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[8] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
@@ -154,8 +136,16 @@ public class AiDifficultiesIT {
 	}
 
 	private JSettlersGame.GameRunner createStartingGame(PlayerSetting[] playerSettings) throws MapLoadException {
+		byte playerId = 0;
+		for (byte i = 0; i < playerSettings.length; i++) {
+			if (playerSettings[i].isAvailable()) {
+				playerId = i;
+				break;
+			}
+		}
+
 		MapLoader mapCreator = MapUtils.getSpezialSumpf();
-		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), (byte) 0, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapCreator, 2L, new OfflineNetworkConnector(), playerId, playerSettings);
 		return (JSettlersGame.GameRunner) game.start();
 	}
 
@@ -164,4 +154,9 @@ public class AiDifficultiesIT {
 		fail(reason);
 	}
 
+	private PlayerSetting[] getDefaultPlayerSettings(int numberOfPlayers) {
+		PlayerSetting[] playerSettings = new PlayerSetting[numberOfPlayers];
+		Arrays.fill(playerSettings, 0, numberOfPlayers, new PlayerSetting());
+		return playerSettings;
+	}
 }

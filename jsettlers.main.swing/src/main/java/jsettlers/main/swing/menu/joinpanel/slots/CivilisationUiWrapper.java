@@ -25,23 +25,16 @@ import jsettlers.graphics.localization.Labels;
 public class CivilisationUiWrapper {
 
 	private final ECivilisation civilisation;
-	private final boolean isRandom;
 
+	/**
+	 * Create wrapper for random civilisation.
+	 */
 	public CivilisationUiWrapper() {
-		this(determineRandomCivilisation(), true);
+		this(null);
 	}
 
 	public CivilisationUiWrapper(ECivilisation civilisation) {
-		this(civilisation, false);
-	}
-
-	private CivilisationUiWrapper(ECivilisation civilisation, boolean isRandom) {
 		this.civilisation = civilisation;
-		this.isRandom = isRandom;
-	}
-
-	private static ECivilisation determineRandomCivilisation() {
-		return ECivilisation.values()[new Random().nextInt(ECivilisation.values().length)];
 	}
 
 	public ECivilisation getCivilisation() {
@@ -50,7 +43,7 @@ public class CivilisationUiWrapper {
 
 	@Override
 	public String toString() {
-		if (isRandom) {
+		if (civilisation == null) {
 			return Labels.getString("civilisation-random");
 		}
 		return Labels.getString("civilisation-" + civilisation.name());

@@ -64,7 +64,7 @@ abstract public class BestPlantingBuildingConstructionPositionFinder implements 
 	protected static RelativePoint[] calculateMyRelativeWorkAreaPoints(EBuildingType myBuildingType) {
 		List<RelativePoint> workAreaPoints = new ArrayList<RelativePoint>();
 		RelativePoint center = myBuildingType.getDefaultWorkcenter();
-		short workRadius = myBuildingType.getWorkradius();
+		short workRadius = myBuildingType.getWorkRadius();
 		for (short x = (short) -workRadius; x < workRadius; x++) {
 			for (short y = (short) -workRadius; y < workRadius; y++) {
 				if (Math.sqrt(x * x + y * y) <= workRadius) {

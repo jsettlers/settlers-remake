@@ -16,7 +16,6 @@ package jsettlers.ai.highlevel;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.army.ConfigurableGeneral;
-import jsettlers.ai.economy.AdaptableEconomyMinister;
 import jsettlers.ai.economy.BuildingListEconomyMinister;
 import jsettlers.ai.economy.EconomyMinister;
 import jsettlers.common.ai.EPlayerType;
@@ -50,13 +49,13 @@ public class WhatToDoAiFactory {
 			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
 		switch (type) {
 		case AI_VERY_EASY:
-			return new AdaptableEconomyMinister(aiStatistics, player);
+		    return new BuildingListEconomyMinister(aiStatistics, player, 1F / 8F, 1F / 4F, true);
 		case AI_EASY:
-			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F, 1F / 2F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F, 1F / 2F, false);
 		case AI_HARD:
-			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 2F, 3F / 4F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 2F, 3F / 4F, false);
 		default:
-			return new BuildingListEconomyMinister(aiStatistics, player, 1F, 1F);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F, 1F, false);
 		}
 	}
 

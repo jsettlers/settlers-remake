@@ -40,7 +40,7 @@ public class ValidatePlayer extends AbstractValidationTask {
 
 	@Override
 	public void doTest() {
-		int playerCount = header.getMaxPlayer();
+		int playerCount = header.getMaxPlayers();
 		addHeader("player.header", fix);
 
 		for (int x = 0; x < data.getWidth(); x++) {

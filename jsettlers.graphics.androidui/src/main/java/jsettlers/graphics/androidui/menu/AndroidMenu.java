@@ -32,7 +32,7 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 		this.putable = puttable;
 	}
 
-	protected Context getContext() {
+	public Context getContext() {
 		return putable.getContext();
 	}
 

@@ -221,8 +221,14 @@ public class JoinGamePanel extends BackgroundPanel {
 			long randomSeed = System.currentTimeMillis();
 			PlayerSetting[] playerSettings = playerSlots.stream()
 					.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getSlot() - otherPlayerSlot.getSlot())
-					.map(playerSlot -> new PlayerSetting(playerSlot.isAvailable(), playerSlot.getPlayerType(), playerSlot.getCivilisation(),
-							playerSlot.getTeam()))
+					.map(playerSlot -> {
+						if (playerSlot.isAvailable()) {
+							return new PlayerSetting(playerSlot.getPlayerType(), playerSlot.getCivilisation(),
+									playerSlot.getTeam());
+						} else {
+							return new PlayerSetting();
+						}
+					})
 					.toArray(PlayerSetting[]::new);
 			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerSlots.get(0).getSlot(), playerSettings);
 			IStartingGame startingGame = game.start();
@@ -273,7 +279,7 @@ public class JoinGamePanel extends BackgroundPanel {
 					});
 
 					onPlayersChanges(connector.getPlayers(), connector); // init the UI with the players
-				});
+					});
 			}
 		});
 
@@ -369,14 +375,16 @@ public class JoinGamePanel extends BackgroundPanel {
 				}
 			}
 			for (int i = players.size(); i < playerSlots.size(); i++) {
-				playerSlots.get(i).setPlayerType(EPlayerType.AI_VERY_HARD);
+				playerSlots.get(i).setPlayerType(EPlayerType.AI_VERY_HARD, false);
 			}
 			setCancelButtonActionListener(e -> {
 				joinMultiPlayerMap.abort();
 				settlersFrame.showMainMenu();
 			});
 		});
-	};
+	}
+
+	;
 
 	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
@@ -401,9 +409,27 @@ public class JoinGamePanel extends BackgroundPanel {
 			PlayerSlot playerSlot = playerSlotFactory.createPlayerSlot(i, this.mapLoader);
 			playerSlots.add(playerSlot);
 		}
+
+		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
 		for (byte i = 0; i < playerSlots.size(); i++) {
-			playerSlots.get(i).setSlot(i);
-			playerSlots.get(i).setTeam(i);
+			PlayerSlot playerSlot = playerSlots.get(i);
+			PlayerSetting playerSetting = playerSettings[i];
+
+			playerSlot.setSlot(i);
+
+			if (playerSetting.getTeamId() != null) {
+				playerSlot.setTeam(playerSetting.getTeamId(), false);
+			} else {
+				playerSlot.setTeam(i);
+			}
+
+			if (playerSetting.getCivilisation() != null) {
+				playerSlot.setCivilisation(playerSetting.getCivilisation(), false);
+			}
+
+			if (playerSetting.getPlayerType() != null) {
+				playerSlot.setPlayerType(playerSetting.getPlayerType(), false);
+			}
 		}
 	}
 

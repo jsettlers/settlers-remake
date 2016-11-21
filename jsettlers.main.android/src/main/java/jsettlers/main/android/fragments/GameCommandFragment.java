@@ -140,16 +140,16 @@ public class GameCommandFragment extends JsettlersFragment implements
 		return putable;
 	}
 
-	@Override
-	public void showMenuFragment(Fragment fragment) {
-		Activity activity = getActivity();
-		if (activity != null) {
-			FragmentTransaction transaction =
-					activity.getFragmentManager().beginTransaction();
-			transaction.replace(MY_ID, fragment, MY_TAG);
-			transaction.commit();
-		}
-	}
+//	@Override
+//	public void showMenuFragment(Fragment fragment) {
+//		Activity activity = getActivity();
+//		if (activity != null) {
+//			FragmentTransaction transaction =
+//					activity.getFragmentManager().beginTransaction();
+//			transaction.replace(MY_ID, fragment, MY_TAG);
+//			transaction.commit();
+//		}
+//	}
 
 	@Override
 	public void hideMenu() {
