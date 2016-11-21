@@ -78,6 +78,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		quitButton = (Button) view.findViewById(R.id.button_quit);
 		pauseButton = (Button) view.findViewById(R.id.button_pause);
 
+		// The resumeView getsupdated in setResumeViewState once the service is bound.
 		resumeView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -182,22 +183,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		}
 	}
 
-	private boolean tryLoadResources() {
-		resourcesLoaded = new ResourceLocationScanner(getActivity()).scanForResources();
-		return resourcesLoaded;
-	}
-
-	private void showDirectoryPicker() {
-		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
-		} else {
-			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
-		}
-	}
-
 	private void setResumeViewState() {
 		if (gameService.isGameInProgress()) {
 			setPauseButtonText();
+			setQuitConfirmButtonText();
 			resumeView.setVisibility(View.VISIBLE);
 		} else {
 			resumeView.setVisibility(View.GONE);
@@ -268,6 +257,19 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			}
 		}
 	};
+
+	private boolean tryLoadResources() {
+		resourcesLoaded = new ResourceLocationScanner(getActivity()).scanForResources();
+		return resourcesLoaded;
+	}
+
+	private void showDirectoryPicker() {
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
+		} else {
+			DirectoryPickerDialog.newInstance().show(getChildFragmentManager(), null);
+		}
+	}
 
 	private abstract class GameButtonClickListener implements View.OnClickListener {
 		@Override

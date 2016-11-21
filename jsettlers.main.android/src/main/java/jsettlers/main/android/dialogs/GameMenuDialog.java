@@ -1,13 +1,17 @@
 package jsettlers.main.android.dialogs;
 
-import jsettlers.main.android.menus.GameMenu;
+import static jsettlers.main.android.GameService.ACTION_PAUSE;
+import static jsettlers.main.android.GameService.ACTION_QUIT;
+import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
+
 import jsettlers.main.android.R;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -18,12 +22,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
-
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 /**
  * Created by tompr on 16/11/2016.
@@ -71,6 +69,7 @@ public class GameMenuDialog extends DialogFragment {
         saveButton = (Button) view.findViewById(R.id.button_save);
 
         setPauseButtonText();
+        setQuitButtonText();
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +117,7 @@ public class GameMenuDialog extends DialogFragment {
         }
     }
 
-    private void setQuitConfirmButtonText() {
+    private void setQuitButtonText() {
         if (gameMenu.canQuitConfirm()) {
             quitButton.setText(R.string.game_menu_quit_confirm);
         } else {
@@ -139,10 +138,10 @@ public class GameMenuDialog extends DialogFragment {
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case ACTION_QUIT:
-                    setQuitConfirmButtonText();
+                    setQuitButtonText();
                     break;
                 case ACTION_QUIT_CANCELLED:
-                    setQuitConfirmButtonText();
+                    setQuitButtonText();
                     break;
                 case ACTION_PAUSE:
                     setPauseButtonText();
