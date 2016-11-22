@@ -29,7 +29,9 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+
+            android:background="#cc000000">
 
             <Button
                 android:id="@+id/button_buildings_menu"
@@ -55,7 +57,7 @@
             android:id="@+id/container_menu"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
