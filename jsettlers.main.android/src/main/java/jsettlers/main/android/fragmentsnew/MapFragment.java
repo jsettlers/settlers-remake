@@ -15,8 +15,10 @@ import jsettlers.main.android.dialogs.GameMenuDialog;
 import jsettlers.main.android.fragmentsnew.menus.BuildingsMenuFragment;
 import jsettlers.main.android.fragmentsnew.menus.GoodsMenuFragment;
 import jsettlers.main.android.fragmentsnew.menus.SettlersMenuFragment;
+import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.BackPressedListener;
+import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
@@ -35,12 +37,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements BackPressedListener, GameMenuProvider {
+public class MapFragment extends Fragment implements BackPressedListener, GameMenuProvider, BuildingsMenuProvider {
 	private static final String TAG_FRAGMENT_GAME_MENU = "com.jsettlers.gamemenufragment";
 
 	private GameMenu gameMenu;
-	private LocalBroadcastManager localBroadcastManager;
+	private BuildingsMenu buildingsMenu;
 
+	private LocalBroadcastManager localBroadcastManager;
 	private BottomSheetBehavior bottomSheetBehavior;
 
 	private boolean isAttachedToGame = false;
@@ -110,7 +113,6 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	@Override
 	public void onStop() {
 		super.onStop();
-
 		localBroadcastManager.unregisterReceiver(mapVisibileBroadcastReceiver);
 
 		if (isAttachedToGame) {
@@ -140,30 +142,27 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		return gameMenu;
 	}
 
-	public void attachToGame() {
-		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
-		gameMenu = gameMenuProvider.getGameMenu();
-
-		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
-		addMapViews(mapContentProvider.getMapContent());
-
-		isAttachedToGame = true;
-
-		resumeView();
+	/**
+	 * BuildingsMenuProvider implementation
+	 */
+	@Override
+	public BuildingsMenu getBuildingsMenu() {
+		return buildingsMenu;
 	}
 
-	private void addMapViews(MapContent mapContent) {
-		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
+	public void attachToGame() {
+		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
+		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
 
-		Region goRegion = new Region(Region.POSITION_CENTER);
-		goRegion.setContent(mapContent);
+		MapContent mapContent = mapContentProvider.getMapContent();
 
-		Area goArea = new Area();
-		goArea.add(goRegion);
+		gameMenu = gameMenuProvider.getGameMenu();
+		buildingsMenu = new BuildingsMenu(mapContent);
 
-		GOSurfaceView goView = new GOSurfaceView(getActivity(), goArea);
-		goView.setContextDestroyedListener(contextDestroyedListener);
-		frameLayout.addView(goView);
+		addMapViews(mapContent);
+
+		isAttachedToGame = true;
+		resumeView();
 	}
 
 	/**
@@ -212,6 +211,20 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 
 	private void pauseView() {
 		gameMenu.mute();
+	}
+
+	private void addMapViews(MapContent mapContent) {
+		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
+
+		Region goRegion = new Region(Region.POSITION_CENTER);
+		goRegion.setContent(mapContent);
+
+		Area goArea = new Area();
+		goArea.add(goRegion);
+
+		GOSurfaceView goView = new GOSurfaceView(getActivity(), goArea);
+		goView.setContextDestroyedListener(contextDestroyedListener);
+		frameLayout.addView(goView);
 	}
 
 	private final BroadcastReceiver mapVisibileBroadcastReceiver = new BroadcastReceiver() {

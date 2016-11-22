@@ -16,6 +16,8 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import jsettlers.main.android.R;
+import jsettlers.main.android.menus.BuildingsMenu;
+import jsettlers.main.android.providers.BuildingsMenuProvider;
 
 /**
  * Created by tompr on 22/11/2016.
@@ -26,11 +28,15 @@ public class BuildingsMenuFragment extends Fragment {
         return new BuildingsMenuFragment();
     }
 
+    private BuildingsMenu buildingsMenu;
+
     private BuildingsAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
+        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
     }
 
     @Nullable
@@ -47,6 +53,11 @@ public class BuildingsMenuFragment extends Fragment {
 
         return view;
     }
+
+    private void buildingSelected(EBuildingType buildingType) {
+        buildingsMenu.showConstructionMarkers(buildingType);
+    }
+
 
 
     /**
@@ -70,8 +81,18 @@ public class BuildingsMenuFragment extends Fragment {
 
         @Override
         public BuildingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = layoutInflater.inflate(R.layout.item_building, parent, false);
-            BuildingViewHolder buildingViewHolder = new BuildingViewHolder(itemView);
+            final View itemView = layoutInflater.inflate(R.layout.item_building, parent, false);
+            final BuildingViewHolder buildingViewHolder = new BuildingViewHolder(itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = buildingViewHolder.getLayoutPosition();
+                    EBuildingType buildingType = buildingTypes.get(position);
+                    buildingSelected(buildingType);
+                }
+            });
+
             return buildingViewHolder;
         }
 
