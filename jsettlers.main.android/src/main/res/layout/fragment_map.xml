@@ -1,9 +1,62 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frame_layout"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragmentsnew.MapFragment">
+    android:fitsSystemWindows="true">
 
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragmentsnew.MapFragment" />
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="#aa000000"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:behavior_peekHeight="64dp"
+        app:behavior_hideable="true">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/button_buildings_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buildings" />
+
+            <Button
+                android:id="@+id/button_goods_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Goods" />
+
+            <Button
+                android:id="@+id/button_settlers_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settlers" />
+
+        </LinearLayout>
+        
+        <FrameLayout
+            android:id="@+id/container_menu"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
