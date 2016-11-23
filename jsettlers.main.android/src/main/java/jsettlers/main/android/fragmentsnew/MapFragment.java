@@ -21,6 +21,7 @@ import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
+import jsettlers.main.android.utils.FragmentUtil;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,7 +32,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.ActionMenuView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -64,6 +68,9 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+		ActionMenuView actionMenuView = (ActionMenuView) view.findViewById(R.id.action_menu_view);
+		getActivity().getMenuInflater().inflate(R.menu.game, actionMenuView.getMenu());
 
 		View bottomSheet = view.findViewById(R.id.bottom_sheet);
 		bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
