@@ -11,7 +11,8 @@ import go.graphics.region.Region;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.dialogs.GameMenuDialog;
+import jsettlers.main.android.dialogs.ConfirmDialog;
+import jsettlers.main.android.dialogs.PausedDialog;
 import jsettlers.main.android.fragmentsnew.menus.BuildingsMenuFragment;
 import jsettlers.main.android.fragmentsnew.menus.GoodsMenuFragment;
 import jsettlers.main.android.fragmentsnew.menus.SettlersMenuFragment;
@@ -21,7 +22,6 @@ import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
-import jsettlers.main.android.utils.FragmentUtil;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,19 +30,21 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.ActionMenuView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements BackPressedListener, GameMenuProvider, BuildingsMenuProvider {
-	private static final String TAG_FRAGMENT_GAME_MENU = "com.jsettlers.gamemenufragment";
+public class MapFragment extends Fragment implements BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider {
+	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
+
+	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
 	private GameMenu gameMenu;
 	private BuildingsMenu buildingsMenu;
@@ -71,6 +73,7 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 
 		ActionMenuView actionMenuView = (ActionMenuView) view.findViewById(R.id.action_menu_view);
 		getActivity().getMenuInflater().inflate(R.menu.game, actionMenuView.getMenu());
+		actionMenuView.setOnMenuItemClickListener(menuItemClickListener);
 
 		View bottomSheet = view.findViewById(R.id.bottom_sheet);
 		bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -81,7 +84,7 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		buildingsMenuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				showBuildMenu();
+				showBuildingsMenu();
 			}
 		});
 
@@ -102,6 +105,14 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		});
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		getChildFragmentManager().beginTransaction()
+				.add(R.id.container_menu, BuildingsMenuFragment.newInstance())
+				.commit();
 	}
 
 	@Override
@@ -137,8 +148,36 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	 */
 	@Override
 	public boolean onBackPressed() {
-		showGameMenu();
+		if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+			bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+			return true;
+		}
+
 		return true;
+	}
+
+	/**
+	 * ConfirmDialog.ConfirmListener implementation
+	 */
+	@Override
+	public void onConfirm(int requestCode) {
+		switch (requestCode) {
+			case REQUEST_CODE_CONFIRM_QUIT:
+				gameMenu.quitConfirm();
+				break;
+		}
+	}
+
+	/**
+	 * PausedDialog.Listener implementation
+	 */
+	@Override
+	public void onUnPause() {
+		if (isAttachedToGame) {
+			gameMenu.unPause();
+		} else {
+			showPausedMenu(); // Not ready to unpause so show the menu again
+		}
 	}
 
 	/**
@@ -175,13 +214,20 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	/**
 	 * Show menu methods
 	 */
-	private void showGameMenu() {
-		if (isAttachedToGame && getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_GAME_MENU) == null) {
-			GameMenuDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_GAME_MENU);
+	private void showPausedMenu() {
+		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU) == null) {
+			PausedDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_PAUSED_MENU);
 		}
 	}
 
-	private void showBuildMenu() {
+	private void dismissPausedMenu() {
+		DialogFragment pausedMenuFragment = (DialogFragment) getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU);
+		if (pausedMenuFragment != null) {
+			pausedMenuFragment.dismiss();
+		}
+	}
+
+	private void showBuildingsMenu() {
 		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
 		getChildFragmentManager().beginTransaction()
@@ -206,12 +252,36 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 	}
 
 
+	/**
+	 * GameMenu item click listener
+	 */
+	private final ActionMenuView.OnMenuItemClickListener menuItemClickListener = new ActionMenuView.OnMenuItemClickListener() {
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			switch (item.getItemId()) {
+				case R.id.menu_item_pause:
+					gameMenu.pause();
+					break;
+				case R.id.menu_item_save:
+					break;
+				case R.id.menu_item_quit:
+					new ConfirmDialog.Builder(REQUEST_CODE_CONFIRM_QUIT)
+							.setTitle(R.string.game_menu_quit)
+							.setConfirmButtonText(R.string.game_menu_quit)
+							.create()
+							.show(getChildFragmentManager(), null);
+					break;
+			}
+			return true;
+		}
+	};
 
 	//
 	private void resumeView() {
 		if (gameMenu.isPaused()) {
-			showGameMenu();
+			showPausedMenu();
 		} else {
+			dismissPausedMenu();
 			gameMenu.unMute();
 		}
 	}
@@ -239,10 +309,11 @@ public class MapFragment extends Fragment implements BackPressedListener, GameMe
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
 				case ACTION_PAUSE:
-					showGameMenu();
+					showPausedMenu();
 					break;
 				case ACTION_UNPAUSE:
 					gameMenu.unMute();
+					dismissPausedMenu();
 					break;
 			}
 		}
