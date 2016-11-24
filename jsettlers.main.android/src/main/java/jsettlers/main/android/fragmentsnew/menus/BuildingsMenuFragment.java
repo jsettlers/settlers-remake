@@ -41,8 +41,6 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         BottomSheetUtils.setupViewPager(viewPager);
-        CircleIndicator indicator = (CircleIndicator) view.findViewById(R.id.circle_indicator);
-        indicator.setViewPager(viewPager);
 
         return view;
     }
@@ -50,12 +48,13 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
         buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
 
         viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
 
+        CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
+        indicator.setViewPager(viewPager);
     }
 
     /**
