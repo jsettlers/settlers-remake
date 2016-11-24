@@ -112,6 +112,12 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	}
 
 	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		attachToGame();
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
 		IntentFilter intentFilter = new IntentFilter();
