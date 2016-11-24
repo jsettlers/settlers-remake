@@ -43,13 +43,15 @@ public class BuildingsCategoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
-        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
+        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
+
+
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
         List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);
 

@@ -49,6 +49,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
+	private MapContent mapContent;
 	private ControlsAdapter controls;
 	private GameMenu gameMenu;
 	private BuildingsMenu buildingsMenu;
@@ -56,7 +57,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	private LocalBroadcastManager localBroadcastManager;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
 
-	private boolean isAttachedToGame = false;
+	//private boolean isAttachedToGame = false;
 
 	public static MapFragment newInstance() {
 		return new MapFragment();
@@ -71,8 +72,25 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 	}
 
+
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
+		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
+		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
+
+		mapContent = mapContentProvider.getMapContent();
+		controls = controlsProvider.getControls();
+		gameMenu = gameMenuProvider.getGameMenu();
+		buildingsMenu = new BuildingsMenu(mapContent);
+
+
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
 
 		ActionMenuView actionMenuView = (ActionMenuView) view.findViewById(R.id.action_menu_view);
@@ -129,17 +147,17 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (isAttachedToGame) {
+		//if (isAttachedToGame) {
 			resumeView();
-		}
+		//}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (isAttachedToGame) {
+		//if (isAttachedToGame) {
 			pauseView();
-		}
+		//}
 	}
 
 	@Override
@@ -188,11 +206,12 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	 */
 	@Override
 	public void onUnPause() {
-		if (isAttachedToGame) {
-			gameMenu.unPause();
-		} else {
-			showPausedMenu(); // Not ready to unpause so show the menu again
-		}
+		gameMenu.unPause();
+//		if (isAttachedToGame) {
+//			gameMenu.unPause();
+//		} else {
+//			showPausedMenu(); // Not ready to unpause so show the menu again
+//		}
 	}
 
 	/**
@@ -212,21 +231,8 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	}
 
 	public void attachToGame() {
-		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
-		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
-		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
-
-		MapContent mapContent = mapContentProvider.getMapContent();
-
-		controls = controlsProvider.getControls();
-		gameMenu = gameMenuProvider.getGameMenu();
-		buildingsMenu = new BuildingsMenu(mapContent);
 
 		addMapViews(mapContent);
-
-		isAttachedToGame = true;
-
-		Fragment fragment = getChildFragmentManager().findFragmentById(R.id.container_menu);
 
 		resumeView();
 	}
