@@ -72,25 +72,8 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 	}
 
-
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
-		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
-		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
-
-		mapContent = mapContentProvider.getMapContent();
-		controls = controlsProvider.getControls();
-		gameMenu = gameMenuProvider.getGameMenu();
-		buildingsMenu = new BuildingsMenu(mapContent);
-
-
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
 
 		ActionMenuView actionMenuView = (ActionMenuView) view.findViewById(R.id.action_menu_view);
@@ -130,9 +113,19 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		attachToGame();
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
+		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
+		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
+
+		mapContent = mapContentProvider.getMapContent();
+		controls = controlsProvider.getControls();
+		gameMenu = gameMenuProvider.getGameMenu();
+		buildingsMenu = new BuildingsMenu(mapContent);
+
+		addMapViews(mapContent);
 	}
 
 	@Override
@@ -230,12 +223,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		return buildingsMenu;
 	}
 
-	public void attachToGame() {
-
-		addMapViews(mapContent);
-
-		resumeView();
-	}
 
 	/**
 	 * Show menu methods

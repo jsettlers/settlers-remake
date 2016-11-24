@@ -38,6 +38,7 @@ public class BuildingsCategoryFragment extends Fragment {
 
     private BuildingsMenu buildingsMenu;
 
+    private RecyclerView recyclerView;
     private BuildingsCategoryFragment.BuildingsAdapter adapter;
 
     @Override
@@ -48,22 +49,26 @@ public class BuildingsCategoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_buildings_category, container, false);
+
+        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
         buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
-
 
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
         List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);
 
-        View view = inflater.inflate(R.layout.fragment_buildings_category, container, false);
-
         adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTypes);
-        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
-
-        return view;
     }
 
     private void buildingSelected(EBuildingType buildingType) {

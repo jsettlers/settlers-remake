@@ -32,6 +32,8 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
 
     private BuildingsMenu buildingsMenu;
 
+    private ViewPager viewPager;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,19 +42,25 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
-        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
-
-
         View view = inflater.inflate(R.layout.fragment_menu_buildings, container, false);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         BottomSheetUtils.setupViewPager(viewPager);
         CircleIndicator indicator = (CircleIndicator) view.findViewById(R.id.circle_indicator);
         indicator.setViewPager(viewPager);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
+        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
+
+        viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
+
     }
 
     /**
