@@ -39,12 +39,6 @@ public class BuildingsCategoryFragment extends Fragment {
     private BuildingsMenu buildingsMenu;
 
     private RecyclerView recyclerView;
-    private BuildingsCategoryFragment.BuildingsAdapter adapter;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
@@ -67,14 +61,12 @@ public class BuildingsCategoryFragment extends Fragment {
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
         List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);
 
-        adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTypes);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(new BuildingsCategoryFragment.BuildingsAdapter(buildingTypes));
     }
 
     private void buildingSelected(EBuildingType buildingType) {
         buildingsMenu.showConstructionMarkers(buildingType);
     }
-
 
 
     /**

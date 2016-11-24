@@ -47,8 +47,6 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     private LocalBroadcastManager localBroadcastManager;
 
-    private boolean firstLoad = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +57,10 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
         if (savedInstanceState == null) {
-            firstLoad = true;
-
             getSupportFragmentManager().beginTransaction()
                     .add(new ServiceBinderFragment(), TAG_FRAGMENT_SERVICE_BINDER)
                     .commit();
         } else {
-            firstLoad = false;
-
             ServiceBinderFragment serviceBinderFragment = (ServiceBinderFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SERVICE_BINDER);
             gameService = serviceBinderFragment.getGameService();
         }
@@ -184,16 +178,14 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
 
 
-    // Service has bound asynchronously, now we can use the service and tell fragments to do stuff that requires service access
+    // Service has bound asynchronously, now we can use show the fragments which as soon as they are created will require objects from GameService such as MapContent
     private void serviceReady(GameService gameService) {
         this.gameService = gameService;
 
-        if (firstLoad) {
-            if (getIntent().getAction() == Actions.RESUME_GAME) {
-                showMapFragment();
-            } else {
-                showLoadingFragment();
-            }
+        if (getIntent().getAction() == Actions.RESUME_GAME) {
+            showMapFragment();
+        } else {
+            showLoadingFragment();
         }
 
         if (!gameService.getStartingGame().isStartupFinished()) {
@@ -235,14 +227,15 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setRetainInstance(true);
-            getContext().bindService(new Intent(getContext(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+            // bind using application context because this fragment lives longer than its parent activity, getActivity and getContext are insufficient
+            getContext().getApplicationContext().bindService(new Intent(getContext(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public void onDestroy() {
             super.onDestroy();
             if (bound) {
-                getContext().unbindService(serviceConnection);
+                getContext().getApplicationContext().unbindService(serviceConnection);
             }
         }
 

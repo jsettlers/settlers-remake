@@ -57,8 +57,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	private LocalBroadcastManager localBroadcastManager;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
 
-	//private boolean isAttachedToGame = false;
-
 	public static MapFragment newInstance() {
 		return new MapFragment();
 	}
@@ -134,34 +132,30 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ACTION_PAUSE);
 		intentFilter.addAction(ACTION_UNPAUSE);
-		localBroadcastManager.registerReceiver(mapVisibileBroadcastReceiver, intentFilter);
+		localBroadcastManager.registerReceiver(mapVisibleBroadcastReceiver, intentFilter);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		//if (isAttachedToGame) {
-			resumeView();
-		//}
+		if (gameMenu.isPaused()) {
+			showPausedMenu();
+		} else {
+			dismissPausedMenu();
+			gameMenu.unMute();
+		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		//if (isAttachedToGame) {
-			pauseView();
-		//}
+		gameMenu.mute();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		localBroadcastManager.unregisterReceiver(mapVisibileBroadcastReceiver);
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+		localBroadcastManager.unregisterReceiver(mapVisibleBroadcastReceiver);
 	}
 
 	/**
@@ -200,11 +194,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	@Override
 	public void onUnPause() {
 		gameMenu.unPause();
-//		if (isAttachedToGame) {
-//			gameMenu.unPause();
-//		} else {
-//			showPausedMenu(); // Not ready to unpause so show the menu again
-//		}
 	}
 
 	/**
@@ -289,20 +278,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		}
 	};
 
-	//
-	private void resumeView() {
-		if (gameMenu.isPaused()) {
-			showPausedMenu();
-		} else {
-			dismissPausedMenu();
-			gameMenu.unMute();
-		}
-	}
-
-	private void pauseView() {
-		gameMenu.mute();
-	}
-
 	private void addMapViews(MapContent mapContent) {
 		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
 
@@ -317,7 +292,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		frameLayout.addView(goView);
 	}
 
-	private final BroadcastReceiver mapVisibileBroadcastReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver mapVisibleBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {

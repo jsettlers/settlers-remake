@@ -34,11 +34,6 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
 
     private ViewPager viewPager;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,13 +60,16 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
 
     /**
      * BuildingsMenuProvider implementation
-     * @return
      */
     @Override
     public BuildingsMenu getBuildingsMenu() {
         return buildingsMenu;
     }
 
+
+    /**
+     * Adapter
+     */
     private class BuildingsPagerAdapter extends FragmentPagerAdapter {
 
         private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY, BUILDINGS_CATEGORY_SOCIAL };
