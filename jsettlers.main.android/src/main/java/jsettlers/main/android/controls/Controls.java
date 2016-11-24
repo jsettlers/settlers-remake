@@ -1,4 +1,4 @@
-package jsettlers.main.android;
+package jsettlers.main.android.controls;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
@@ -13,10 +13,10 @@ import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 
 /**
- * Created by tompr on 19/11/2016.
+ * Created by tompr on 21/11/2016.
  */
 
-public class DummyControls implements IControls {
+public class Controls implements IControls {
     @Override
     public void drawAt(GLDrawContext gl) {
 

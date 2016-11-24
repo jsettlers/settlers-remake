@@ -17,14 +17,12 @@ import jsettlers.main.android.utils.FragmentUtil;
 
 public class NewSinglePlayerFragment extends Fragment {
 	private GameStarter gameStarter;
-	//private MainMenuNavigator navigator;
 	private IMapDefinition map;
 
 	private View.OnClickListener startGameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			gameStarter.startGame();
-			//navigator.showGame();
 		}
 	};
 
@@ -38,9 +36,6 @@ public class NewSinglePlayerFragment extends Fragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameStarter = (GameStarter)getActivity();
-	//	navigator = (MainMenuNavigator)getActivity();
-		map = gameStarter.getSelectedMap();
 	}
 
 	@Override
@@ -48,13 +43,19 @@ public class NewSinglePlayerFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_new_single_player, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		TextView textViewName = (TextView)view.findViewById(R.id.text_view_name);
-		textViewName.setText(map.getMapName());
-
 		Button startGameButton = (Button)view.findViewById(R.id.button_start_game);
 		startGameButton.setOnClickListener(startGameClickListener);
 
 		return view;
 	}
 
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		gameStarter = (GameStarter)getActivity();
+		map = gameStarter.getSelectedMap();
+
+		TextView textViewName = (TextView)getView().findViewById(R.id.text_view_name);
+		textViewName.setText(map.getMapName());
+	}
 }

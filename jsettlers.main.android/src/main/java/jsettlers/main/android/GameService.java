@@ -13,7 +13,9 @@ import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.StartScreenConnector;
+import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.providers.GameMenuProvider;
 
@@ -26,7 +28,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class GameService extends Service implements GameMenuProvider, IGameExitListener {
+public class GameService extends Service implements IGameExitListener {
     public static final String ACTION_PAUSE = "com.jsettlers.pause";
     public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
     public static final String ACTION_SAVE = "com.jsettlers.save";
@@ -42,6 +44,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
     private IStartingGame startingGame;
     private MapContent mapContent;
     private AndroidSoundPlayer soundPlayer;
+    private ControlsAdapter controlsAdapter;
     private GameMenu gameMenu;
 
     @Override
@@ -93,7 +96,8 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         // startingGame = null ??????
 
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
-        mapContent = new MapContent(game, soundPlayer, new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
+        controlsAdapter = new ControlsAdapter();
+        mapContent = new MapContent(game, soundPlayer, controlsAdapter);// new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
 
         game.setGameExitListener(this);
 
@@ -108,10 +112,10 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         return mapContent;
     }
 
-    /**
-     * GameMenuProvider implementation
-     */
-    @Override
+    public ControlsAdapter getControls() {
+        return controlsAdapter;
+    }
+
     public GameMenu getGameMenu() {
         return gameMenu;
     }
@@ -128,6 +132,7 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         mapContent = null;
         soundPlayer = null;
         gameMenu = null;
+        controlsAdapter = null;
 
         // Send a local broadcast so that any UI can update if necessary
         localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CONFIRM));

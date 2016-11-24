@@ -14,11 +14,13 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
+import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
@@ -30,20 +32,20 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+    private static final String TAG_FRAGMENT_SERVICE_BINDER = "service_binder_fragment";
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
     private GameService gameService;
 
     private LocalBroadcastManager localBroadcastManager;
-
-    private boolean bound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +56,17 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         IntentFilter intentFilter = new IntentFilter(ACTION_QUIT_CONFIRM);
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
-        bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-
-        if (savedInstanceState != null)
-            return;
-
-        if (getIntent().getAction() == Actions.RESUME_GAME) {
-            showMapFragment();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(new ServiceBinderFragment(), TAG_FRAGMENT_SERVICE_BINDER)
+                    .commit();
         } else {
-            showLoadingFragment();
+            ServiceBinderFragment serviceBinderFragment = (ServiceBinderFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SERVICE_BINDER);
+            gameService = serviceBinderFragment.getGameService();
+
+            if (!gameService.getStartingGame().isStartupFinished()) {
+                gameService.getStartingGame().setListener(GameActivity.this);
+            }
         }
     }
 
@@ -70,14 +74,14 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     protected void onDestroy() {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
-        if (bound) {
-            unbindService(serviceConnection);
+        if (gameService != null && gameService.getStartingGame() != null) {
+            gameService.getStartingGame().setListener(null);
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (bound) {
+        if (gameService != null) {
             if (!gameService.getStartingGame().isStartupFinished()) {
                 return; // Don't let the user back out of the loading screen
             }
@@ -98,6 +102,14 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         if (!handled) {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * ControlsProvider imeplementation
+     */
+    @Override
+    public ControlsAdapter getControls() {
+        return gameService.getControls();
     }
 
     /**
@@ -137,7 +149,12 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, this);
+        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, new IFragmentHandler() {
+            @Override
+            public void hideMenu() {
+
+            }
+        });
         return mapInterfaceConnector;
     }
 
@@ -162,26 +179,24 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
             @Override
             public void run() {
                 showMapFragment();
-                attachMapFragmentToGameIfLoaded();
             }
         });
     }
 
 
 
-    // Service has bound asynchronously, now we can use the service and tell fragments to do stuff that requires service access
-    private void serviceReady() {
-        if (!gameService.getStartingGame().isStartupFinished()) {
-            gameService.getStartingGame().setListener(GameActivity.this);
+    // Service has bound asynchronously, now we can use show the fragments which as soon as they are created will require objects from GameService such as MapContent
+    private void serviceReady(GameService gameService) {
+        this.gameService = gameService;
+
+        if (getIntent().getAction() == Actions.RESUME_GAME) {
+            showMapFragment();
+        } else {
+            showLoadingFragment();
         }
 
-        attachMapFragmentToGameIfLoaded();
-    }
-
-    private void attachMapFragmentToGameIfLoaded() {
-        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
-        if (mapFragment != null) {
-            mapFragment.attachToGame();
+        if (!gameService.getStartingGame().isStartupFinished()) {
+            gameService.getStartingGame().setListener(GameActivity.this);
         }
     }
 
@@ -197,22 +212,6 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
                 .commitNow();
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            GameService.GameBinder binder = (GameService.GameBinder) service;
-            gameService = binder.getService();
-
-            serviceReady();
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            bound = false;
-        }
-    };
-
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -226,8 +225,47 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
 
 
-    @Override
-    public void hideMenu() {
+    public static class ServiceBinderFragment extends Fragment {
+        private GameService gameService;
 
+        private boolean bound = false;
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+            // bind using application context because this fragment lives longer than its parent activity, getActivity and getContext are insufficient
+            getContext().getApplicationContext().bindService(new Intent(getContext(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            if (bound) {
+                getContext().getApplicationContext().unbindService(serviceConnection);
+            }
+        }
+
+        public GameService getGameService() {
+            return gameService;
+        }
+
+        private ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                GameService.GameBinder binder = (GameService.GameBinder) service;
+                gameService = binder.getService();
+
+                GameActivity gameActivity = (GameActivity) getActivity();
+                gameActivity.serviceReady(gameService);
+
+                bound = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName arg0) {
+                bound = false;
+            }
+        };
     }
 }

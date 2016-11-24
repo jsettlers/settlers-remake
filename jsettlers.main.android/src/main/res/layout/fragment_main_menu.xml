@@ -30,6 +30,7 @@
                 android:layout_margin="8dp"
                 android:visibility="gone"
                 android:background="@color/primary"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:theme="@style/CardTheme">
 
                 <LinearLayout
