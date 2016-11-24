@@ -3,6 +3,7 @@ package jsettlers.main.android.fragmentsnew;
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
@@ -53,7 +54,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	private BuildingsMenu buildingsMenu;
 
 	private LocalBroadcastManager localBroadcastManager;
-	private BottomSheetBehavior bottomSheetBehavior;
+	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
 
 	private boolean isAttachedToGame = false;
 
@@ -79,7 +80,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		actionMenuView.setOnMenuItemClickListener(menuItemClickListener);
 
 		View bottomSheet = view.findViewById(R.id.bottom_sheet);
-		bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+		bottomSheetBehavior = ViewPagerBottomSheetBehavior.from(bottomSheet);
 		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 		bottomSheetBehavior.setHideable(false);
 
@@ -108,14 +109,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		});
 
 		return view;
-	}
-
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		getChildFragmentManager().beginTransaction()
-				.add(R.id.container_menu, BuildingsMenuFragment.newInstance())
-				.commit();
 	}
 
 	@Override
@@ -226,6 +219,9 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		addMapViews(mapContent);
 
 		isAttachedToGame = true;
+
+		Fragment fragment = getChildFragmentManager().findFragmentById(R.id.container_menu);
+
 		resumeView();
 	}
 

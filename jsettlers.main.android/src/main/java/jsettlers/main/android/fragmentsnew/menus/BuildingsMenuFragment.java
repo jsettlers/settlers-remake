@@ -3,34 +3,34 @@ package jsettlers.main.android.fragmentsnew.menus;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import java.util.Arrays;
-import java.util.List;
-
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
+import biz.laenger.android.vpbs.BottomSheetUtils;
 import jsettlers.main.android.R;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.providers.BuildingsMenuProvider;
+import me.relex.circleindicator.CircleIndicator;
+
+import static jsettlers.main.android.menus.BuildingsMenu.BUILDINGS_CATEGORY_FOOD;
+import static jsettlers.main.android.menus.BuildingsMenu.BUILDINGS_CATEGORY_MILITARY;
+import static jsettlers.main.android.menus.BuildingsMenu.BUILDINGS_CATEGORY_NORMAL;
+import static jsettlers.main.android.menus.BuildingsMenu.BUILDINGS_CATEGORY_SOCIAL;
 
 /**
  * Created by tompr on 22/11/2016.
  */
 
-public class BuildingsMenuFragment extends Fragment {
+public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProvider {
     public static BuildingsMenuFragment newInstance() {
         return new BuildingsMenuFragment();
     }
 
     private BuildingsMenu buildingsMenu;
-
-    private BuildingsAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,75 +44,41 @@ public class BuildingsMenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu_buildings, container, false);
 
-        List<EBuildingType> buildingTypes = Arrays.asList(BuildingBuildContent.normalBuildings);
-        adapter = new BuildingsAdapter(buildingTypes);
-        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
+        BottomSheetUtils.setupViewPager(viewPager);
+        CircleIndicator indicator = (CircleIndicator) view.findViewById(R.id.circle_indicator);
+        indicator.setViewPager(viewPager);
 
         return view;
     }
 
-    private void buildingSelected(EBuildingType buildingType) {
-        buildingsMenu.showConstructionMarkers(buildingType);
-    }
-
-
-
     /**
-     * Adapter
+     * BuildingsMenuProvider implementation
+     * @return
      */
-    private class BuildingsAdapter extends RecyclerView.Adapter<BuildingViewHolder> {
-        private List<EBuildingType> buildingTypes;
-
-        private LayoutInflater layoutInflater;
-
-        public BuildingsAdapter(List<EBuildingType> buildingTypes) {
-            this.buildingTypes = buildingTypes;
-
-            layoutInflater = getActivity().getLayoutInflater();
-        }
-
-        @Override
-        public int getItemCount() {
-            return buildingTypes.size();
-        }
-
-        @Override
-        public BuildingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final View itemView = layoutInflater.inflate(R.layout.item_building, parent, false);
-            final BuildingViewHolder buildingViewHolder = new BuildingViewHolder(itemView);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = buildingViewHolder.getLayoutPosition();
-                    EBuildingType buildingType = buildingTypes.get(position);
-                    buildingSelected(buildingType);
-                }
-            });
-
-            return buildingViewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(BuildingViewHolder holder, int position) {
-            EBuildingType buildingType = buildingTypes.get(position);
-            holder.setBuildingName(buildingType.name());
-        }
+    @Override
+    public BuildingsMenu getBuildingsMenu() {
+        return buildingsMenu;
     }
 
-    private class BuildingViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+    private class BuildingsPagerAdapter extends FragmentPagerAdapter {
 
-        public BuildingViewHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.text_view);
+        private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY, BUILDINGS_CATEGORY_SOCIAL };
+
+        public BuildingsPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        public void setBuildingName(String name) {
-            textView.setText(name);
+        @Override
+        public int getCount() {
+            return buildingsCategories.length;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            int buildingsCategory = buildingsCategories[position];
+            return BuildingsCategoryFragment.newInstance(buildingsCategory);
         }
     }
 }

@@ -34,8 +34,8 @@ public class ControlsAdapter implements IControls {
     private IAction taskAction;
 
     /**
-     * The action is already happening in the game, here we just store it if it's part of a task. Finish the current task if it's run to completion.
-     * Or cancel the current task if the user has started some other task. (finishing and cancelling both currently use endTask())
+     * The action is being sent to the game, here we just store it if it's part of a task. Depending on what's active and what's coming in
+     * we may need to start a new task, update the current task or end the current task.
      */
     @Override
     public void action(IAction action) {
@@ -43,11 +43,15 @@ public class ControlsAdapter implements IControls {
             case SHOW_CONSTRUCTION_MARK:
                 ShowConstructionMarksAction showConstructionMarksAction = (ShowConstructionMarksAction) action;
                 if (showConstructionMarksAction.getBuildingType() != null) { // null means dismissing the construction markers, so is not awaiting further actions
-                    startTask(action);
+                    if (taskAction != null && taskAction.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
+                        updateTask(action);
+                    } else {
+                        startTask(action);
+                    }
                 }
                 break;
             case MOVE_TO:
-                // MOVE_TO will already be active in this case so don't need to do anything.
+                updateTask(action);
                 break;
             case SET_WORK_AREA:
             case SELECT_POINT:
@@ -59,6 +63,10 @@ public class ControlsAdapter implements IControls {
         }
     }
 
+    /**
+     *
+     * Replace the action based on the current task. E.g SELECT_POINT may be choosing a build location or moving soldiers depending on the current task
+     */
     @Override
     public IAction replaceAction(IAction action) {
         if(taskAction != null) {
@@ -138,6 +146,10 @@ public class ControlsAdapter implements IControls {
 
     private void startTask(IAction action) {
         endTask();
+        taskAction = action;
+    }
+
+    private void updateTask(IAction action) {
         taskAction = action;
     }
 
