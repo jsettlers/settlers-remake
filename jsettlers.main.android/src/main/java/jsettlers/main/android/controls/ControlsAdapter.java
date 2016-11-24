@@ -25,48 +25,49 @@ import jsettlers.graphics.map.controls.IControls;
 public class ControlsAdapter implements IControls {
     private ActionFireable actionFireable;
 
-    private IAction activeAction;
+    //
+    // So
+    /**
+     * A task is something that requires multiple steps. E.g. show constructions markers, then choose build location.
+     * If an action is part of a task then store it so we know how to react when the next action comes in.
+     */
+    private IAction taskAction;
 
+    /**
+     * The action is already happening in the game, here we just store it if it's part of a task. Finish the current task if it's run to completion.
+     * Or cancel the current task if the user has started some other task. (finishing and cancelling both currently use endTask())
+     */
     @Override
     public void action(IAction action) {
         switch (action.getActionType()) {
             case SHOW_CONSTRUCTION_MARK:
                 ShowConstructionMarksAction showConstructionMarksAction = (ShowConstructionMarksAction) action;
                 if (showConstructionMarksAction.getBuildingType() != null) { // null means dismissing the construction markers, so is not awaiting further actions
-                    activeAction = action;
+                    startTask(action);
                 }
                 break;
             case MOVE_TO:
-                activeAction = action;
+                // MOVE_TO will already be active in this case so don't need to do anything.
                 break;
             case SET_WORK_AREA:
-                activeAction = null;
-                break;
             case SELECT_POINT:
-                activeAction = null;
-                break;
             case SELECT_AREA:
-                activeAction = null;
-                break;
             case BUILD:
-                actionFireable.fireAction(new ShowConstructionMarksAction(null));
-                activeAction = null;
-                break;
             case ABORT:
-                activeAction = null;
+                endTask();
                 break;
         }
     }
 
     @Override
     public IAction replaceAction(IAction action) {
-        if(activeAction != null) {
+        if(taskAction != null) {
             if (action.getActionType() == EActionType.SELECT_POINT ) {
                 PointAction pointAction = (PointAction) action;
 
-                switch (activeAction.getActionType()) {
+                switch (taskAction.getActionType()) {
                     case SHOW_CONSTRUCTION_MARK:
-                        ShowConstructionMarksAction showConstructionMarksAction = (ShowConstructionMarksAction) activeAction;
+                        ShowConstructionMarksAction showConstructionMarksAction = (ShowConstructionMarksAction) taskAction;
                         return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
                     case MOVE_TO:
                         return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
@@ -81,7 +82,7 @@ public class ControlsAdapter implements IControls {
     public void displaySelection(ISelectionSet selection) {
         //TODO tell the UI what type of selection this is so we can update the Settlers menu
         if (selection != null && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
-            activeAction = new Action(EActionType.MOVE_TO);
+            startTask(new Action(EActionType.MOVE_TO));
         }
     }
 
@@ -131,18 +132,23 @@ public class ControlsAdapter implements IControls {
     public void stop() {
     }
 
-    public boolean isActionPending() {
-        return activeAction != null;
+    public boolean isTaskActive() {
+        return taskAction != null;
     }
 
-    public void cancelPendingAction() {
-        if(activeAction != null) {
-            switch (activeAction.getActionType()) {
+    private void startTask(IAction action) {
+        endTask();
+        taskAction = action;
+    }
+
+    public void endTask() {
+        if(taskAction != null) {
+            switch (taskAction.getActionType()) {
                 case SHOW_CONSTRUCTION_MARK:
                     actionFireable.fireAction(new ShowConstructionMarksAction(null));
             }
 
-            activeAction = null;
+            taskAction = null;
         }
     }
 }

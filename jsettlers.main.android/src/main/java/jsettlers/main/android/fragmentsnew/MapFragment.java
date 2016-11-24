@@ -159,8 +159,8 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	 */
 	@Override
 	public boolean onBackPressed() {
-		if (controls.isActionPending()) {
-			controls.cancelPendingAction();
+		if (controls.isTaskActive()) {
+			controls.endTask();
 			return true;
 		}
 
