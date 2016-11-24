@@ -158,6 +158,10 @@ public class ControlsAdapter implements IControls {
             switch (taskAction.getActionType()) {
                 case SHOW_CONSTRUCTION_MARK:
                     actionFireable.fireAction(new ShowConstructionMarksAction(null));
+                    break;
+                case MOVE_TO:
+                    //TODO would be nice to deselect the settlers when this happens or it looks like nothing happened
+                    break;
             }
 
             taskAction = null;

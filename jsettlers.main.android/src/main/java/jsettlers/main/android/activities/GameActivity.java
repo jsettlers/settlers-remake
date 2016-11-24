@@ -63,6 +63,10 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         } else {
             ServiceBinderFragment serviceBinderFragment = (ServiceBinderFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_SERVICE_BINDER);
             gameService = serviceBinderFragment.getGameService();
+
+            if (!gameService.getStartingGame().isStartupFinished()) {
+                gameService.getStartingGame().setListener(GameActivity.this);
+            }
         }
     }
 
@@ -70,6 +74,9 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     protected void onDestroy() {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
+        if (gameService != null && gameService.getStartingGame() != null) {
+            gameService.getStartingGame().setListener(null);
+        }
     }
 
     @Override
