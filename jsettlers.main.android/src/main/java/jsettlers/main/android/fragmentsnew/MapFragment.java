@@ -11,6 +11,7 @@ import go.graphics.region.Region;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.dialogs.ConfirmDialog;
 import jsettlers.main.android.dialogs.PausedDialog;
 import jsettlers.main.android.fragmentsnew.menus.BuildingsMenuFragment;
@@ -20,6 +21,7 @@ import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.BackPressedListener;
 import jsettlers.main.android.providers.BuildingsMenuProvider;
+import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
@@ -46,6 +48,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
+	private ControlsAdapter controls;
 	private GameMenu gameMenu;
 	private BuildingsMenu buildingsMenu;
 
@@ -122,9 +125,21 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		intentFilter.addAction(ACTION_PAUSE);
 		intentFilter.addAction(ACTION_UNPAUSE);
 		localBroadcastManager.registerReceiver(mapVisibileBroadcastReceiver, intentFilter);
+	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
 		if (isAttachedToGame) {
 			resumeView();
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (isAttachedToGame) {
+			pauseView();
 		}
 	}
 
@@ -132,10 +147,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	public void onStop() {
 		super.onStop();
 		localBroadcastManager.unregisterReceiver(mapVisibileBroadcastReceiver);
-
-		if (isAttachedToGame) {
-			pauseView();
-		}
 	}
 
 	@Override
@@ -148,6 +159,11 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	 */
 	@Override
 	public boolean onBackPressed() {
+		if (controls.isActionPending()) {
+			controls.cancelPendingAction();
+			return true;
+		}
+
 		if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
 			bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 			return true;
@@ -199,9 +215,11 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	public void attachToGame() {
 		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
 		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
+		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
 
 		MapContent mapContent = mapContentProvider.getMapContent();
 
+		controls = controlsProvider.getControls();
 		gameMenu = gameMenuProvider.getGameMenu();
 		buildingsMenu = new BuildingsMenu(mapContent);
 

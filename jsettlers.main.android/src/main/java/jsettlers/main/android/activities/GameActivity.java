@@ -14,11 +14,13 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.fragmentsnew.LoadingFragment;
 import jsettlers.main.android.fragmentsnew.MapFragment;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.Actions;
 import jsettlers.main.android.navigation.BackPressedListener;
+import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
@@ -35,7 +37,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, IFragmentHandler, ControlsProvider, GameMenuProvider, MapContentProvider {//}, GameNavigator {
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
@@ -98,6 +100,14 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         if (!handled) {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * ControlsProvider imeplementation
+     */
+    @Override
+    public ControlsAdapter getControls() {
+        return gameService.getControls();
     }
 
     /**

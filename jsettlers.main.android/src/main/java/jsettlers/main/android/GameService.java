@@ -28,7 +28,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class GameService extends Service implements GameMenuProvider, IGameExitListener {
+public class GameService extends Service implements IGameExitListener {
     public static final String ACTION_PAUSE = "com.jsettlers.pause";
     public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
     public static final String ACTION_SAVE = "com.jsettlers.save";
@@ -112,14 +112,10 @@ public class GameService extends Service implements GameMenuProvider, IGameExitL
         return mapContent;
     }
 
-    public void setControls(IControls controls) {
-        controlsAdapter.setControls(controls);
+    public ControlsAdapter getControls() {
+        return controlsAdapter;
     }
 
-    /**
-     * GameMenuProvider implementation
-     */
-    @Override
     public GameMenu getGameMenu() {
         return gameMenu;
     }
