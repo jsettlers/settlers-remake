@@ -124,6 +124,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		buildingsMenu = new BuildingsMenu(mapContent);
 
 		addMapViews(mapContent);
+		addBuildsingMenuFragment();
 	}
 
 	@Override
@@ -231,7 +232,10 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 	private void showBuildingsMenu() {
 		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		addBuildsingMenuFragment();
+	}
 
+	private void addBuildsingMenuFragment() {
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, BuildingsMenuFragment.newInstance())
 				.commit();

@@ -9,4 +9,5 @@
 
     <dimen name="menu_bar_peek_height">56dp</dimen>
     <dimen name="menu_bar_full_height">300dp</dimen>
+    <dimen name="menu_bar_width">-1px</dimen>   <!-- -1 = match_parent -->
 </resources>
