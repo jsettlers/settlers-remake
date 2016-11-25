@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator, GameStarter {
 	private static final String TAG_MAP_PICKER = "map_picker";
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		getSupportFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
 
 		if (savedInstanceState != null)
 			return;
@@ -39,6 +41,16 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.frame_layout, MainMenuFragment.newInstance())
 				.commit();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				getSupportFragmentManager().popBackStack();
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -126,4 +138,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		public void onServiceDisconnected(ComponentName arg0) {
 		}
 	};
+
+	private void onBackStackChanged() {
+		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;
+		getSupportActionBar().setDisplayHomeAsUpEnabled(!isAtRootOfBackStack);
+	}
 }
