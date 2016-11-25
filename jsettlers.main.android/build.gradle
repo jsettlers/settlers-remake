@@ -7,6 +7,8 @@ android {
         applicationId "jsettlers.main.android"
         minSdkVersion 15
         targetSdkVersion 25
+        versionCode 1
+        versionName '0.0.1'
     }
     buildTypes {
         release {
