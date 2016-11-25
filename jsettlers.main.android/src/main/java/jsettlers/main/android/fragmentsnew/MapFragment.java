@@ -49,6 +49,8 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
+	private static final String SAVE_BOTTOM_SHEET_STATE = "save_bottom_sheet_state";
+
 	private MapContent mapContent;
 	private ControlsAdapter controls;
 	private GameMenu gameMenu;
@@ -124,7 +126,10 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		buildingsMenu = new BuildingsMenu(mapContent);
 
 		addMapViews(mapContent);
-		addBuildsingMenuFragment();
+
+		if (savedInstanceState == null) {
+			addBuildsingMenuFragment();
+		}
 	}
 
 	@Override
@@ -157,6 +162,21 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	public void onStop() {
 		super.onStop();
 		localBroadcastManager.unregisterReceiver(mapVisibleBroadcastReceiver);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(SAVE_BOTTOM_SHEET_STATE, bottomSheetBehavior.getState());
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+		if (savedInstanceState != null) {
+			int bottomSheetState = savedInstanceState.getInt(SAVE_BOTTOM_SHEET_STATE);
+			bottomSheetBehavior.setState(bottomSheetState);
+		}
 	}
 
 	/**
