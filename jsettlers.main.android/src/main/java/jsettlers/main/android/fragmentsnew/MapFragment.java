@@ -51,7 +51,6 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 	private static final String SAVE_BOTTOM_SHEET_STATE = "save_bottom_sheet_state";
 
-	private MapContent mapContent;
 	private ControlsAdapter controls;
 	private GameMenu gameMenu;
 	private BuildingsMenu buildingsMenu;
@@ -86,28 +85,13 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		bottomSheetBehavior.setHideable(false);
 
 		View buildingsMenuButton = view.findViewById(R.id.button_buildings_menu);
-		buildingsMenuButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				showBuildingsMenu();
-			}
-		});
+		buildingsMenuButton.setOnClickListener(view1 -> showBuildingsMenu());
 
 		View goodsMenuButton = view.findViewById(R.id.button_goods_menu);
-		goodsMenuButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				showGoodsMenu();
-			}
-		});
+		goodsMenuButton.setOnClickListener(view12 -> showGoodsMenu());
 
 		View settlersMenuButton = view.findViewById(R.id.button_settlers_menu);
-		settlersMenuButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				showSettlersMenu();
-			}
-		});
+		settlersMenuButton.setOnClickListener(view13 -> showSettlersMenu());
 
 		return view;
 	}
@@ -120,7 +104,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
 		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
 
-		mapContent = mapContentProvider.getMapContent();
+		MapContent mapContent = mapContentProvider.getMapContent();
 		controls = controlsProvider.getControls();
 		gameMenu = gameMenuProvider.getGameMenu();
 		buildingsMenu = new BuildingsMenu(mapContent);
@@ -331,10 +315,5 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 		}
 	};
 
-	private IContextDestroyedListener contextDestroyedListener = new IContextDestroyedListener() {
-		@Override
-		public void glContextDestroyed() {
-			ImageProvider.getInstance().invalidateAll();
-		}
-	};
+	private IContextDestroyedListener contextDestroyedListener = () -> ImageProvider.getInstance().invalidateAll();
 }
