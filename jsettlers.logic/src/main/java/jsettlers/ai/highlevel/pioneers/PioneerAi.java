@@ -19,7 +19,7 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.ai.highlevel.pioneers.target.AbstractPioneerTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.ConnectPartitionsTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.FishTargetFinder;
-import jsettlers.ai.highlevel.pioneers.target.LumberJackTargetFinder;
+import jsettlers.ai.highlevel.pioneers.target.TreesForLumberJackTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.MineTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.NearStonesTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.RiverTargetFinder;
@@ -45,7 +45,7 @@ public class PioneerAi {
 		this.playerId = playerId;
 		this.searchDistance = aiStatistics.getMainGrid().getWidth() / 2;
 		this.lastResourceTarget = aiStatistics.getPositionOfPartition(playerId);
-		targetFinders[0] = new LumberJackTargetFinder(aiStatistics, playerId, searchDistance, 10);
+		targetFinders[0] = new TreesForLumberJackTargetFinder(aiStatistics, playerId, searchDistance, 10);
 		targetFinders[1] = new NearStonesTargetFinder(aiStatistics, playerId, searchDistance);
 		targetFinders[2] = new StoneCutterTargetFinder(aiStatistics, playerId, searchDistance, 6);
 		targetFinders[3] = new ConnectPartitionsTargetFinder(aiStatistics, playerId, searchDistance);
