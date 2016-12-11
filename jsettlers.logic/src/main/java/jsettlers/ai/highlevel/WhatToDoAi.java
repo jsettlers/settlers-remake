@@ -442,18 +442,19 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 		if (!resourcePioneers.isFull()) {
 			fill(resourcePioneers);
-			setNewTargetForResourcePioneers();
-		} else {
-			setNewTargetForResourcePioneers();
-			if (!broadenerPioneers.isFull()) {
-				fill(broadenerPioneers);
-			}
-			if (broadenerPioneers.isNotEmpty()) {
-				PioneerGroup pioneersWithNoAction = broadenerPioneers.getPioneersWithNoAction();
-				ShortPoint2D broadenTarget = pioneerAi.findBroadenTarget();
-				if (broadenTarget != null) {
-					taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenTarget, pioneersWithNoAction.getPioneerIds()));
-				}
+		} else if (!broadenerPioneers.isFull()) {
+			fill(broadenerPioneers);
+		}
+		setNewTargetForResourcePioneers();
+		setNewTargetForBroadenerPioneers();
+	}
+
+	private void setNewTargetForBroadenerPioneers() {
+		if (broadenerPioneers.isNotEmpty()) {
+			PioneerGroup pioneersWithNoAction = broadenerPioneers.getPioneersWithNoAction();
+			ShortPoint2D broadenTarget = pioneerAi.findBroadenTarget();
+			if (broadenTarget != null) {
+				taskScheduler.scheduleTask(new MoveToGuiTask(playerId, broadenTarget, pioneersWithNoAction.getPioneerIds()));
 			}
 		}
 	}
