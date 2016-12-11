@@ -240,10 +240,10 @@ public class AiStatistics {
 							}
 						}
 						aiMapInformation.resourceAndGrassCount[fishMapInformationPlayerId][resourceType.ordinal]++;
-						if (fishMapInformationPlayerId != aiMapInformation.resourceAndGrassCount.length - 1) {
-							playerStatistics[fishMapInformationPlayerId].resourceCount[resourceType.ordinal]++;
-						} else {
+						if (fishMapInformationPlayerId == aiMapInformation.resourceAndGrassCount.length - 1) {
 							resourceCountInDefaultPartition[resourceType.ordinal]++;
+						} else {
+							playerStatistics[fishMapInformationPlayerId].resourceCount[resourceType.ordinal]++;
 						}
 					}
 				}
