@@ -8,6 +8,8 @@ android {
         applicationId "jsettlers.main.android"
         minSdkVersion 15
         targetSdkVersion 24
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -53,6 +55,9 @@ dependencies {
     compile project(':jsettlers.common')
     compile project(':jsettlers.network')
 
-    testCompile project(':jsettlers.testutils')
-    testCompile 'junit:junit:4.12'
+    androidTestCompile project(':jsettlers.testutils')
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    androidTestCompile 'com.android.support:support-annotations:25.1.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
 }

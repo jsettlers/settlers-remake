@@ -4,6 +4,9 @@ sudo: true
 jdk:
   - oraclejdk8
 
+
+
+
 android:
   components:
     # Those two lines allow us to use any build tools version.
@@ -12,6 +15,10 @@ android:
 
     - build-tools-25.0.2
     - android-15
+
+    - extra-google-m2repository
+    - extra-android-m2repository
+
 
 before_install:
   - mkdir -p $HOME/.gradle/caches/
