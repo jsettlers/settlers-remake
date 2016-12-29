@@ -21,8 +21,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.player.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
@@ -39,9 +39,11 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
  */
 public class BuildingListEconomyMinister implements EconomyMinister {
 
-	private static final EBuildingType[] RUSH_DEFENCE_BUILDINGS = {
-			LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE };
-	private static final Collection<EBuildingType> BUILDING_INDUSTRY;
+
+	private static final Collection<EBuildingType> RUSH_DEFENCE_BUILDINGS =
+			EnumSet.of(LUMBERJACK, SAWMILL, STONECUTTER, IRONMELT, WEAPONSMITH, BARRACK, SMALL_LIVINGHOUSE, COALMINE, IRONMINE, MEDIUM_LIVINGHOUSE);
+	private static final Collection<EBuildingType> BUILDING_INDUSTRY =
+			EnumSet.of(LUMBERJACK, FORESTER, SAWMILL, STONECUTTER);
 	private int[] mapBuildingCounts;
 	private final List<EBuildingType> buildingsToBuild;
 	private int numberOfMidGameStoneCutters = 0;
@@ -53,20 +55,15 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	private boolean isHighGoodsGame;
 	private boolean isMiddleGoodsGame;
 
-	static {
-		EBuildingType[] buildingIndustry = {LUMBERJACK, FORESTER, SAWMILL, STONECUTTER};
-		BUILDING_INDUSTRY = Arrays.asList(buildingIndustry);
-	}
-
 	/**
-	 *  @param weaponSmithFactor
+	 * @param weaponSmithFactor
 	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
 	 *            weapon smiths build on the map and shifts the point of time when the weapon smiths are build.
 	 * @param buildingIndustryFactor
-	 * 			 influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount
-	 * 			 of building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
+	 *            influences the power of the AI. Use 1 for full power. Use < 1 for weaker AIs. The factor is used to determine the maximum amount of
+	 *            building industry buildings. If the AI e.g. builds less lumberjacks it is slower.
 	 * @param limitByWeakestEnemy
-	 *          when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
+	 *            when set limits the AI in all amounts of buildings by the average building count of all alive enemies.
 	 */
 	public BuildingListEconomyMinister(
 			AiStatistics aiStatistics, Player player, float weaponSmithFactor, float buildingIndustryFactor, boolean limitByWeakestEnemy) {
@@ -124,14 +121,11 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 		int maxSize = Math.max(foodBuildings.size(), Math.max(buildingMaterialBuildings.size(), weaponsBuildings.size()));
 		for (int i = 0; i < maxSize; i++) {
 			if (weaponsBuildingsRatio > foodBuildingsRatio && weaponsBuildingsRatio > buildingMaterialBuildingRatio) {
-				mergeAndAddNextItems(
-						weaponsBuildings, foodBuildings, foodBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
+				mergeAndAddNextItems(weaponsBuildings, foodBuildings, foodBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
 			} else if (buildingMaterialBuildingRatio > foodBuildingsRatio && buildingMaterialBuildingRatio > weaponsBuildingsRatio) {
-				mergeAndAddNextItems(
-						buildingMaterialBuildings, weaponsBuildings, weaponsBuildingsRatio, foodBuildings, foodBuildingsRatio);
+				mergeAndAddNextItems(buildingMaterialBuildings, weaponsBuildings, weaponsBuildingsRatio, foodBuildings, foodBuildingsRatio);
 			} else {
-				mergeAndAddNextItems(
-						foodBuildings, weaponsBuildings, weaponsBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
+				mergeAndAddNextItems(foodBuildings, weaponsBuildings, weaponsBuildingsRatio, buildingMaterialBuildings, buildingMaterialBuildingRatio);
 			}
 		}
 
@@ -189,6 +183,12 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			weaponsBuildings.add(WEAPONSMITH);
 			if (i % 3 == 0)
 				weaponsBuildings.add(BARRACK);
+			if (i == 2)
+				weaponsBuildings.add(TOWER);
+			if (i == 6)
+				weaponsBuildings.add(BIG_TOWER);
+			if (i == 16)
+				weaponsBuildings.add(CASTLE);
 			if (i == 3)
 				addGoldBuildings(weaponsBuildings);
 		}
@@ -217,14 +217,18 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	protected void addIfPossible(EBuildingType buildingType) {
-		float factor = 1F;
-		if (BUILDING_INDUSTRY.contains(buildingType)) {
-			factor = buildingIndustryFactor;
-		}
-		double currentCount = currentCountOf(buildingType);
-		if (currentCount < Math.ceil(mapBuildingCounts[buildingType.ordinal]*factor)
-				&& currentCount < maximumAllowedCount(buildingType)) {
+		if (buildingType.isMilitaryBuilding()) {
 			buildingsToBuild.add(buildingType);
+		} else {
+			float factor = 1F;
+			if (BUILDING_INDUSTRY.contains(buildingType)) {
+				factor = buildingIndustryFactor;
+			}
+			double currentCount = currentCountOf(buildingType);
+			if (currentCount < Math.ceil(mapBuildingCounts[buildingType.ordinal] * factor)
+					&& currentCount < maximumAllowedCount(buildingType)) {
+				buildingsToBuild.add(buildingType);
+			}
 		}
 	}
 
@@ -291,7 +295,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			buildingsToBuild.add(TOWER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -314,7 +317,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(FORESTER);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(STONECUTTER);
-			buildingsToBuild.add(TOWER);
+			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(SAWMILL);
 			addIfPossible(LUMBERJACK);
@@ -339,7 +342,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 			addIfPossible(STONECUTTER);
 			addIfPossible(LUMBERJACK);
 			addIfPossible(FORESTER);
-			buildingsToBuild.add(TOWER);
+			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			buildingsToBuild.add(MEDIUM_LIVINGHOUSE);
 			addIfPossible(IRONMELT);
 			addIfPossible(TOOLSMITH);
@@ -429,8 +432,8 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	private List<EBuildingType> prefixBuildingsToBuildWithRushDefence() {
-		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.length + buildingsToBuild.size());
-		allBuildingsToBuild.addAll(Arrays.asList(RUSH_DEFENCE_BUILDINGS));
+		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.size() + buildingsToBuild.size());
+		allBuildingsToBuild.addAll(RUSH_DEFENCE_BUILDINGS);
 		allBuildingsToBuild.addAll(buildingsToBuild);
 		return allBuildingsToBuild;
 	}
@@ -438,11 +441,6 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	@Override
 	public int getMidGameNumberOfStoneCutters() {
 		return numberOfMidGameStoneCutters;
-	}
-
-	@Override
-	public boolean automaticTowersEnabled() {
-		return aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId) >= 2;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,17 +14,42 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.List;
+
 /**
- * This is the low level KI. It is called by the high level KI which decites what to build. The purpose of this low level KI is, to determine WHERE to
- * build.
- *
  * @author codingberlin
  */
-public interface IBestConstructionPositionFinder {
+public class BorderDefenceConstructionPositionFinder implements IBestConstructionPositionFinder {
+	private final List<ShortPoint2D> threatenedBorders;
 
-	ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId);
+	public BorderDefenceConstructionPositionFinder(List<ShortPoint2D> threatenedBorders) {
+		this.threatenedBorders = threatenedBorders;
+	}
+
+	@Override
+	public ShortPoint2D findBestConstructionPosition(
+			final AiStatistics aiStatistics, final AbstractConstructionMarkableMap constructionMap, final byte playerId) {
+		AiPositions landToBuildOn = aiStatistics.getLandForPlayer(playerId);
+		for (ShortPoint2D threatenedBorder : threatenedBorders) {
+			ShortPoint2D constructionPosition = landToBuildOn.getNearestPoint(threatenedBorder, CommonConstants.TOWER_RADIUS, new AiPositionFilter() {
+				@Override
+				public boolean contains(int x, int y) {
+					return constructionMap.canConstructAt((short) x, (short) y, EBuildingType.TOWER, playerId)
+							&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(new ShortPoint2D(x, y), playerId, EBuildingType.TOWER);
+				}
+			});
+			if (constructionPosition != null) {
+				return constructionPosition;
+			}
+		}
+		return null;
+	}
 }

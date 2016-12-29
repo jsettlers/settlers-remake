@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,28 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.economy;
+package jsettlers.ai.highlevel.pioneers.target;
 
-import jsettlers.ai.highlevel.AiMapInformation;
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.common.buildings.EBuildingType;
-
-import java.util.List;
 
 /**
  * @author codingberlin
  */
-public interface EconomyMinister {
+public class SameBlockedPartitionLikePlayerFilter implements AiPositions.AiPositionFilter {
 
-	int getNumberOfParallelConstructionSites();
+	private final AiStatistics aiStatistics;
+	private final byte playerId;
 
-	List<EBuildingType> getBuildingsToBuild();
+	public SameBlockedPartitionLikePlayerFilter(AiStatistics aiStatistics, byte playerId) {
+		this.aiStatistics = aiStatistics;
+		this.playerId = playerId;
+	}
 
-	int getMidGameNumberOfStoneCutters();
-
-	boolean automaticLivingHousesEnabled();
-
-	void update();
-
-	boolean isEndGame();
+	@Override
+	public boolean contains(int x, int y) {
+		return aiStatistics.hasPlayersBlockedPartition(playerId, x, y);
+	}
 }

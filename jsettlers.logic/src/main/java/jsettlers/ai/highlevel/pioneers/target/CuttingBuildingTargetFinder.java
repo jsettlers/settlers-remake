@@ -1,54 +1,53 @@
 /*******************************************************************************
- * Copyright (c) 2015
- *
+ * Copyright (c) 2016
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.construction;
+package jsettlers.ai.highlevel.pioneers.target;
 
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 
-import java.util.Collection;
-
 /**
- * Builds the military building right next to one other tower
- *
  * @author codingberlin
  */
-public class BestMilitaryConstructionPositionFinder implements IBestConstructionPositionFinder {
+public abstract class CuttingBuildingTargetFinder extends AbstractPioneerTargetFinder {
 
-	private final EBuildingType buildingType;
+	protected final EBuildingType buildingType;
+	protected final int cuttableObjectsPerBuilding;
+	protected final EMapObjectType cuttableObjectType;
 
-	public BestMilitaryConstructionPositionFinder(EBuildingType buildingType) {
+	public CuttingBuildingTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance, EBuildingType buildingType,
+			int cuttableObjectsPerBuilding, EMapObjectType cuttableObjectType) {
+		super(aiStatistics, playerId, searchDistance);
 		this.buildingType = buildingType;
+		this.cuttableObjectsPerBuilding = cuttableObjectsPerBuilding;
+		this.cuttableObjectType = cuttableObjectType;
 	}
 
-	@Override
-	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, final byte playerId) {
-		Collection<ShortPoint2D> towerPositions = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId);
-		if (towerPositions.isEmpty()) {
+	protected ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center, int cuttableObjectsCount) {
+		int buildingCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) + 1;
+		if (cuttableObjectsCount > buildingCount * cuttableObjectsPerBuilding)
 			return null;
-		}
 
-		final AbstractConstructionMarkableMap constructionGrid = aiStatistics.getMainGrid().getConstructionMarksGrid();
-		return aiStatistics.getLandForPlayer(playerId).getNearestPoint(towerPositions.iterator().next(), Integer.MAX_VALUE,
-				new AiPositions.AiPositionFilter() {
-					@Override
-					public boolean contains(int x, int y) {
-						return constructionGrid.canConstructAt((short) x, (short) y, buildingType, playerId);
-					}
-				});
+		ShortPoint2D nearestCuttableObject = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(
+				center, cuttableObjectType, searchDistance, new SameBlockedPartitionLikePlayerFilter(aiStatistics, playerId));
+		if (nearestCuttableObject == null)
+			return null;
+
+		return playerBorder.getNearestPoint(nearestCuttableObject, CommonConstants.TOWER_RADIUS);
 	}
 }
