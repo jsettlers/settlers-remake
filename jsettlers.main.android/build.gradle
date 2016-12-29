@@ -2,15 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 15
-    buildToolsVersion "24.0.3"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "jsettlers.main.android"
         minSdkVersion 15
         targetSdkVersion 24
-        jackOptions {
-            enabled true
-        }
     }
 
     buildTypes {
@@ -41,6 +38,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        pickFirst '**'
+    }
 }
 
 dependencies {
@@ -51,4 +52,7 @@ dependencies {
     compile project(':jsettlers.logic')
     compile project(':jsettlers.common')
     compile project(':jsettlers.network')
+
+    testCompile project(':jsettlers.testutils')
+    testCompile 'junit:junit:4.12'
 }

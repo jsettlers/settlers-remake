@@ -1,5 +1,6 @@
 apply plugin: 'application'
 
+
 startScripts {
     applicationName = "MapCreator"
 }
@@ -11,6 +12,8 @@ jar {
         attributes 'Main-Class': mainClassName
     }
 }
+
+
 
 task releaseJar(type: Jar) {
     baseName = 'MapCreator'

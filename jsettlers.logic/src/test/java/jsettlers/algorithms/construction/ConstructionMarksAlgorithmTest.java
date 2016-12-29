@@ -19,14 +19,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 import java.util.Set;
 
+import org.junit.Test;
+
 import jsettlers.common.buildings.BuildingAreaBitSet;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.jsettlers.common.buildings.BuildingAreaUtils;
-
-import org.junit.Test;
 
 /**
  * Test for class {@link NewConstructionMarksAlgorithm}.

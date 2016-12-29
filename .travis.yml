@@ -10,7 +10,7 @@ android:
     - tools
     - platform-tools
 
-    - build-tools-24.0.3
+    - build-tools-25.0.2
     - android-15
 
 before_install:
@@ -38,12 +38,12 @@ env:
   - TARGET=":jsettlers.main.android:build"
 
   # Run single test targets
-  - TARGET=":jsettlers.logic:test:unitTest"
-  - TARGET=":jsettlers.common:test:test"
+  - TARGET=":jsettlers.logic:unitTest"
+  - TARGET=":jsettlers.common:test"
   - TARGET=":jsettlers.network:test --info"
-  - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
-  - TARGET=":jsettlers.logic:test:autoReplayIT"
-  - TARGET=":jsettlers.logic:test:replayValidationIT"
+  - TARGET=":jsettlers.logic:aiDifficultiesIT"
+  - TARGET=":jsettlers.logic:autoReplayIT"
+  - TARGET=":jsettlers.logic:replayValidationIT"
   
   - TARGET="release deployToGithub"
 
