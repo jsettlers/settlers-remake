@@ -59,13 +59,21 @@ before_install:
   - sudo service riak stop || true
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
-  - $NO_EMULATOR || echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-  - $NO_EMULATOR || emulator -avd test -no-audio -no-window &
+  - $NO_EMULATOR || echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI --sdcard 200M
+  - $NO_EMULATOR || emulator -avd test -no-skin -no-audio -no-window &
 
-  
+
 before_script:
   - $NO_EMULATOR || android-wait-for-emulator
   - $NO_EMULATOR || adb shell input keyevent 82 &
 
 
 script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
