@@ -48,8 +48,6 @@ before_install:
   - mkdir -p $HOME/.gradle/caches/
   - mkdir -p $HOME/.gradle/wrapper/
 
-
-before_script:
   - sudo service postgresql stop || true
   - sudo service mysql stop || true
   - sudo service memcached stop || true
@@ -63,6 +61,9 @@ before_script:
   - sudo service x11-common stop || true
   - $NO_EMULATOR || echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
   - $NO_EMULATOR || emulator -avd test -no-audio -no-window &
+
+  
+before_script:
   - $NO_EMULATOR || android-wait-for-emulator
   - $NO_EMULATOR || adb shell input keyevent 82 &
 
