@@ -213,7 +213,7 @@ public enum EBuildingJobType {
 	NOT_FULL,
 
 	/**
-	 * Looks at the water that has been searched. TODO: make it work for other stuff, like Stones.
+	 * Looks at the water/river that has been searched.
 	 */
 	LOOK_AT_SEARCHED,
 

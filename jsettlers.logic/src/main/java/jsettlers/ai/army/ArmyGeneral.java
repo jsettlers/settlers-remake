@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.ai.army;
 
+import java.util.Set;
+
 /**
  * The army general can command the troops of the computer player.
  * The idea behind different army generals is, that easy, middle and strong players
@@ -26,11 +28,11 @@ public interface ArmyGeneral {
 	/**
 	 * Let move troops to defeat or attack
 	 */
-	void commandTroops();
+	void commandTroops(Set<Integer> soldiersWithOrders);
 
 	/**
 	 * - upgrades soldiers
-	 * - enable and disable recrution (not implemented yet)
+	 * - enable and disable recruitment (not implemented yet)
 	 * - choose the weapons to produce (not implemented yet)
 	 */
 	void levyUnits();

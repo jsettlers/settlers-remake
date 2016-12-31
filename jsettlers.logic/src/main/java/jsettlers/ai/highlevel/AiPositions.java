@@ -1,10 +1,10 @@
 package jsettlers.ai.highlevel;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * This is a set of points on the map. It is optimized for range queries.
@@ -27,7 +27,22 @@ public class AiPositions implements IMapArea {
 	 *
 	 */
 	public interface AiPositionFilter {
-		public boolean contains(int x, int y);
+		boolean contains(int x, int y);
+	}
+
+	public static class CombinedAiPositionFilter implements AiPositionFilter {
+		private AiPositionFilter firstFilter;
+		private AiPositionFilter secondFilter;
+
+		public CombinedAiPositionFilter(AiPositionFilter firstFilter, AiPositionFilter secondFilter) {
+			this.firstFilter = firstFilter;
+			this.secondFilter = secondFilter;
+		}
+
+		@Override
+		public boolean contains(int x, int y) {
+			return firstFilter.contains(x, y) && secondFilter.contains(x, y);
+		}
 	}
 
 	/**
@@ -99,6 +114,16 @@ public class AiPositions implements IMapArea {
 		sorted = false;
 	}
 
+	public void addAllNoCollision(AiPositions otherAiPositions) {
+		int newSize = size + otherAiPositions.size;
+		if (newSize > points.length) {
+			resizeTo(newSize * 2);
+		}
+		System.arraycopy(otherAiPositions.points, 0, points, size, otherAiPositions.size);
+		size = newSize;
+		sorted = false;
+	}
+
 	public void remove(int x, int y) {
 		ensureSorted();
 		int index = indexOf(x, y);
@@ -160,7 +185,12 @@ public class AiPositions implements IMapArea {
 		points = new int[MIN_SIZE];
 	}
 
+	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance) {
+		return getNearestPoint(center, maxDistance, null);
+	}
+
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
+		ensureSorted();
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
 		if (median >= size) {
@@ -197,12 +227,20 @@ public class AiPositions implements IMapArea {
 		return resY >= 0 ? new ShortPoint2D(resX, resY) : null;
 	}
 
+	public ShortPoint2D get(int index) {
+		return new ShortPoint2D(unpackX(points[index]), unpackY(points[index]));
+	}
+
 	private int findClosestIndex(int x, int y) {
 		return Math.abs(indexOf(x, y));
 	}
 
 	public int size() {
 		return size;
+	}
+
+	public boolean isEmpty() {
+		return size <= 0;
 	}
 
 	@Override

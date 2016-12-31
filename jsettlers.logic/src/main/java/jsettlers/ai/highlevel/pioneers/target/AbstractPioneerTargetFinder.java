@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,28 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.economy;
+package jsettlers.ai.highlevel.pioneers.target;
 
-import jsettlers.ai.highlevel.AiMapInformation;
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.common.buildings.EBuildingType;
-
-import java.util.List;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * @author codingberlin
  */
-public interface EconomyMinister {
+public abstract class AbstractPioneerTargetFinder {
 
-	int getNumberOfParallelConstructionSites();
+	protected final AiStatistics aiStatistics;
+	protected final byte playerId;
+	protected final int searchDistance;
 
-	List<EBuildingType> getBuildingsToBuild();
+	public AbstractPioneerTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
+		this.aiStatistics = aiStatistics;
+		this.playerId = playerId;
+		this.searchDistance = searchDistance;
+	}
 
-	int getMidGameNumberOfStoneCutters();
-
-	boolean automaticLivingHousesEnabled();
-
-	void update();
-
-	boolean isEndGame();
+	public abstract ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center);
 }

@@ -50,7 +50,18 @@ public class RelativePoint implements Serializable {
 	 * @return
 	 */
 	public final ShortPoint2D calculatePoint(ShortPoint2D start) {
-		return new ShortPoint2D((short) (start.x + dx), (short) (start.y + dy));
+		return calculatePoint(start.x, start.y);
+	}
+
+	/**
+	 * calculates the point on the grid from the given start coordinates.
+	 *
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public final ShortPoint2D calculatePoint(int x, int y) {
+		return new ShortPoint2D(x + dx, y + dy);
 	}
 
 	public final int calculateX(int x) {
