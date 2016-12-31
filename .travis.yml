@@ -54,7 +54,7 @@ before_script:
   - $NO_EMULATOR || adb shell input keyevent 82 &
 
 
-script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' travis_wait ./gradlew $TARGET
 
 
 before_cache:

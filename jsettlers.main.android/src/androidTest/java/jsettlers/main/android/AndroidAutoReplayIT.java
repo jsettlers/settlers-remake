@@ -52,6 +52,6 @@ public class AndroidAutoReplayIT extends InstrumentationTestCase {
 	@Test
 	public void testIfReplayWorks() throws MapLoadException, IOException, ClassNotFoundException {
 		AutoReplaySetting setting = AutoReplaySetting.getDefaultSettings().iterator().next();
-		MapLoader[] saveGames = ReplayUtils.replayAndCreateSavegames(setting.getReplayFile(), new int[] { 10 });
+		MapLoader[] saveGames = ReplayUtils.replayAndCreateSavegames(setting.getReplayFile(), new int[] { 3 });
 	}
 }
