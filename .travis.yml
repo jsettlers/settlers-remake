@@ -6,7 +6,7 @@ jdk:
 
 env:
   global:
-     - ANDROID_TARGET=android-15
+     - ANDROID_TARGET=android-22
      - ANDROID_ABI=armeabi-v7a
 
   matrix:
@@ -45,20 +45,6 @@ android:
 
 
 before_install:
-  - mkdir -p $HOME/.gradle/caches/
-  - mkdir -p $HOME/.gradle/wrapper/
-
-  - sudo service postgresql stop || true
-  - sudo service mysql stop || true
-  - sudo service memcached stop || true
-  - sudo service bootlogd stop || true
-  - sudo service elasticsearch stop || true
-  - sudo service mongodb stop || true
-  - sudo service neo4j stop || true
-  - sudo service cassandra stop || true
-  - sudo service riak stop || true
-  - sudo service rsync stop || true
-  - sudo service x11-common stop || true
   - $NO_EMULATOR || echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI --sdcard 200M
   - $NO_EMULATOR || emulator -avd test -no-skin -no-audio -no-window &
 
@@ -73,7 +59,9 @@ script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGE
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
     - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
     - $HOME/.gradle/wrapper/
