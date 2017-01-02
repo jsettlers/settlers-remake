@@ -45,7 +45,7 @@ android:
 
 
 before_install:
-  - $NO_EMULATOR || adb logcat &
+  - $NO_EMULATOR || adb logcat -f ~/logcat.log &
   - $NO_EMULATOR || echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI --sdcard 200M
   - $NO_EMULATOR || emulator -avd test -no-skin -no-audio -no-window &
 
@@ -56,6 +56,11 @@ before_script:
 
 
 script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+
+
+after_failure:
+  - $NO_EMULATOR || cat ~/logcat.log
+
 
 
 before_cache:
