@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -19,8 +19,6 @@ import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-
-import java.io.File;
 
 import jsettlers.common.menu.FakeMapGame;
 import jsettlers.common.menu.IGameExitListener;
@@ -39,18 +37,29 @@ import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
 import jsettlers.main.android.resources.scanner.FileChoserFragment;
 import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
-import android.app.Activity;
+
+import android.Manifest.permission;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public class JsettlersActivity extends Activity implements IGameExitListener {
+public class JsettlersActivity extends AppCompatActivity implements IGameExitListener {
 
 	private static final int SOUND_THREADS = 6;
+	private static final int INITIAL_REQUEST_PERMISSIONS_CODE = 1;
+	private static final String[] REQUIRED_PERMISSIONS = new String[] { permission.ACCESS_NETWORK_STATE, permission.ACCESS_WIFI_STATE,
+			permission.INTERNET, permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE };
+
 	private GOSurfaceView goView;
 	private Region goRegion;
 	private AndroidSoundPlayer soundPlayer;
@@ -67,31 +76,36 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		keepScreenOn();
 		setContentView(R.layout.base);
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
-		imageLookupFixed();
+
+		if (checkPermissions()) {
+			checkOriginalSettlersFiles();
+		}
 	}
 
-	public void imageLookupFixed() {
+	public void checkOriginalSettlersFiles() {
 		if (loadImageLookups()) {
 			start();
 		} else {
 			// Display search dialog.
-			showFragment(FileChoserFragment.forDirectory(new File("/")));
+			showFragment(FileChoserFragment.forDirectory(Environment.getExternalStorageDirectory()));
 		}
 	}
 
 	private void start() {
-		goRegion = new Region(Region.POSITION_CENTER);
-		Area goArea = new Area();
-		goArea.add(goRegion);
-		goView = new GOSurfaceView(this, goArea);
-		((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
-		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
+		if (checkPermissions()) {
+			goRegion = new Region(Region.POSITION_CENTER);
+			Area goArea = new Area();
+			goArea.add(goRegion);
+			goView = new GOSurfaceView(this, goArea);
+			((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
+			soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
-		showStartScreen();
+			showStartScreen();
 
-		showBgMap();
-		if (goViewResumeMissing) {
-			goViewResume();
+			showBgMap();
+			if (goViewResumeMissing) {
+				goViewResume();
+			}
 		}
 	}
 
@@ -258,5 +272,40 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	@Override
 	public void gameExited(IStartedGame game) {
 		showStartScreen();
+	}
+
+	private boolean checkPermissions() {
+		boolean allPermissionsGranted = areAllPermissionsGranted();
+		if (!allPermissionsGranted) {
+			ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, INITIAL_REQUEST_PERMISSIONS_CODE);
+		}
+		return allPermissionsGranted;
+	}
+
+	private boolean areAllPermissionsGranted() {
+		for (String permission : REQUIRED_PERMISSIONS) {
+			if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		switch (requestCode) {
+		case INITIAL_REQUEST_PERMISSIONS_CODE:
+			for (int permission : grantResults) {
+				if (permission != PackageManager.PERMISSION_GRANTED) {
+					checkPermissions();
+					return;
+				}
+			}
+
+			checkOriginalSettlersFiles();
+			break;
+		default:
+			break;
+		}
 	}
 }
