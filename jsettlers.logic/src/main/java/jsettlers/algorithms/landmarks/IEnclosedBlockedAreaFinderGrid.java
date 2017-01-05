@@ -22,7 +22,7 @@ package jsettlers.algorithms.landmarks;
  */
 public interface IEnclosedBlockedAreaFinderGrid {
 
-	public boolean isBlocked(int x, int y);
+	public boolean isPioneerBlocked(int x, int y);
 
 	public short getPartitionAt(int x, int y);
 

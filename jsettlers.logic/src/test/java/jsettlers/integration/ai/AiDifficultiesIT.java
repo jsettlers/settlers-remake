@@ -76,7 +76,7 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
-		MatchConstants.clock().fastForwardTo(85 * MINUTES);
+		MatchConstants.clock().fastForwardTo(86 * MINUTES);
 
 		ReplayUtils.awaitShutdown(startedGame);
 

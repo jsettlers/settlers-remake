@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,28 +23,29 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Thread to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of
- * the lake.
+ * Algorithm to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area
+ * of the lake.
  * 
  * @author Andreas Eberle
  * 
  */
 public final class EnclosedBlockedAreaFinderAlgorithm {
 
-	public static final void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D startPos) {
+	public static final void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, ShortPoint2D startPos) {
 		final short startX = startPos.x;
 		final short startY = startPos.y;
 
-		if (grid.isBlocked(startX, startY)) {
+		if (grid.isPioneerBlocked(startX, startY)) {
 			return;
 		}
 
-		short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
+		final IContainingProvider containingProvider = grid::isPioneerBlocked;
+		final short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
 
 		for (EDirection currDir : EDirection.VALUES) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);
 
-			if (grid.isBlocked(currPos.x, currPos.y)) {
+			if (grid.isPioneerBlocked(currPos.x, currPos.y)) {
 				if (needsRelabel(grid, containingProvider, currPos, startPartition)) {
 					relabel(grid, containingProvider, currPos, startPartition);
 				}
@@ -54,12 +55,9 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 
 	private static void relabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos,
 			final short newPartition) {
-		IAreaVisitor visitor = new IAreaVisitor() {
-			@Override
-			public boolean visit(int x, int y) {
-				grid.setPartitionAt(x, y, newPartition);
-				return true;
-			}
+		IAreaVisitor visitor = (x, y) -> {
+			grid.setPartitionAt(x, y, newPartition);
+			return true;
 		};
 		AreaTraversingAlgorithm.traverseArea(containingProvider, visitor, blockedStartPos, grid.getWidth(), grid.getHeight());
 	}
@@ -74,11 +72,7 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 	 */
 	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider,
 			ShortPoint2D blockedStartPos, final short partition) {
-		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new IBorderVisitor() {
-			@Override
-			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
-				return grid.getPartitionAt((short) outsideX, (short) outsideY) == partition;
-			}
-		}, true);
+		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos,
+				(insideX, insideY, outsideX, outsideY) -> grid.getPartitionAt((short) outsideX, (short) outsideY) == partition, true);
 	}
 }

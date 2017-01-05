@@ -59,10 +59,10 @@ public class PartitionsCalculatorAlgorithmTest {
 	//
 	// value = algo.getPartitionAt(x, y) + 1;
 	//
-	// // boolean isBlocked = blockingProvider.isBlocked(x, y);
-	// boolean isBlocked = false;
+	// // boolean isPioneerBlocked = blockingProvider.isPioneerBlocked(x, y);
+	// boolean isPioneerBlocked = false;
 	//
-	// return isBlocked ? Color.BLACK.getABGR() : Color
+	// return isPioneerBlocked ? Color.BLACK.getABGR() : Color
 	// .getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 	// }
 	// });
