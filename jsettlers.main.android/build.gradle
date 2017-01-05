@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 15
+    compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "jsettlers.main.android"
-        minSdkVersion 15
-        targetSdkVersion 24
+        minSdkVersion 16
+        targetSdkVersion 25
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
