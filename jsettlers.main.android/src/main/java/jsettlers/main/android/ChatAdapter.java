@@ -100,12 +100,9 @@ public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 	private final ArrayList<ChatMessage> messages = new ArrayList<ChatMessage>();
 	private final BlockingQueue<ChatMessage> incomming = new LinkedBlockingQueue<ChatMessage>();
 	private final Handler handler;
-	private final Runnable dataSetChangedNotifier = new Runnable() {
-		@Override
-		public void run() {
-			incomming.drainTo(messages);
-			notifyDataSetChanged();
-		}
+	private final Runnable dataSetChangedNotifier = () -> {
+		incomming.drainTo(messages);
+		notifyDataSetChanged();
 	};
 	private final LayoutInflater inflater;
 
