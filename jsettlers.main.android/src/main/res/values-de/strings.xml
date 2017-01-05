@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Jsettlers</string>
+    <string name="app_name">JSettlers</string>
     <string name="please_wait">Bitte warten</string>
     
     <string name="f12_string">Vorspielen</string>
