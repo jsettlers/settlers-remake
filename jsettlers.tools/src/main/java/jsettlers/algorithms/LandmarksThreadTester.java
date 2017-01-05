@@ -102,12 +102,7 @@ public class LandmarksThreadTester {
 	private static void setPartition(int x, int y, int partition) {
 		map.setPartitionAt((short) x, (short) y, (short) partition);
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, new IContainingProvider() {
-			@Override
-			public boolean contains(int x, int y) {
-				return map.blocked[x][y];
-			}
-		}, pos);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, pos);
 	}
 
 	// private static void printMap(Map map) {
@@ -115,7 +110,7 @@ public class LandmarksThreadTester {
 	// printSpaces(y * 10);
 	// for (short x = 0; x < WIDTH; x++) {
 	// System.out.print(" (" + x + "|" + y + ")");
-	// if (map.isBlocked(x, y)) {
+	// if (map.isPioneerBlocked(x, y)) {
 	// System.out.print("b");
 	// } else {
 	// System.out.print(" ");
@@ -147,7 +142,7 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public boolean isBlocked(int x, int y) {
+		public boolean isPioneerBlocked(int x, int y) {
 			return blocked[x][y];
 		}
 
@@ -192,7 +187,7 @@ public class LandmarksThreadTester {
 
 		@Override
 		public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
-			return Color.getARGB(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
+			return Color.getARGB(isPioneerBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
 		}
 
 		@Override
