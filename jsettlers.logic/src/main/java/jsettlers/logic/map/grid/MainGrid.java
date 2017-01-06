@@ -47,6 +47,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.logging.NanoStopWatch;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
@@ -74,6 +75,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
+import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiInputGrid;
@@ -432,7 +434,7 @@ public final class MainGrid implements Serializable {
 			return;
 		}
 
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid,  position);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, position);
 
 		Movable movable = movableGrid.getMovableAt(position.x, position.y);
 		if (movable != null) {
@@ -905,7 +907,7 @@ public final class MainGrid implements Serializable {
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
 		public final boolean isPioneerBlocked(int x, int y) {
-			return MainGrid.this.isInBounds(x, y) &&( flagsGrid.isPioneerBlocked(x, y))&& landscapeGrid.getBlockedPartitionAt(x, y) > 0;
+			return MainGrid.this.isInBounds(x, y) && (flagsGrid.isPioneerBlocked(x, y)) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
 		}
 
 		@Override
@@ -1375,31 +1377,22 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
-			HexGridArea area = new HexGridArea(x, y, (short) 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS);
-			HexGridAreaIterator iter = area.iterator();
-			int dx = 0, dy = 0;
+			MutablePoint2D vector = new MutablePoint2D();
 
-			while (iter.hasNext()) {
-				short radius = iter.getRadiusOfNext();
-				ShortPoint2D curr = iter.next();
-				short currX = curr.x;
-				short currY = curr.y;
-
+			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, (currX, currY, radius) -> {
 				int factor;
-
 				if (!MainGrid.this.isInBounds(currX, currY)) {
 					factor = radius == 1 ? 6 : 2;
 				} else if (!movableGrid.hasNoMovableAt(currX, currY)) {
 					factor = Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS - radius + 1;
 				} else {
-					continue;
+					return;
 				}
+				vector.x += (x - currX) * factor;
+				vector.y += (y - currY) * factor;
+			});
 
-				dx += (x - currX) * factor;
-				dy += (y - currY) * factor;
-			}
-
-			return new ShortPoint2D(dx, dy);
+			return vector.toShortPoint2D();
 		}
 
 		@Override
