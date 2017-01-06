@@ -14,12 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.objects.growing;
 
+import java8.util.Optional;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
+
+import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
 
 /**
  * This is a Corn on the map.
@@ -37,7 +41,7 @@ public final class Corn extends GrowingObject {
 	/**
 	 * Creates a new Corn.
 	 * 
-	 * @param grid
+	 * @param pos
 	 */
 	public Corn(ShortPoint2D pos) {
 		super(pos, EMapObjectType.CORN_GROWING);
@@ -66,34 +70,29 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handlePlacement(x, y, mapObjectsManager, grid);
-
-		for (ShortPoint2D curr : getEarthArea(x, y)) {
-			grid.setLandscape(curr.x, curr.y, ELandscapeType.EARTH);
-		}
+		iterateEarthArea(x, y, visitor((currX, currY, radius) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH)));
 	}
 
 	@Override
 	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handleRemove(x, y, mapObjectsManager, grid);
-
-		for (ShortPoint2D curr : getEarthArea(x, y)) {
-			makePositionGrassIfPossible(curr.x, curr.y, mapObjectsManager, grid);
-		}
+		iterateEarthArea(x, y, (visitor((currX, currY, radius) -> makePositionGrassIfPossible(currX, currY, grid))));
 	}
 
-	private void makePositionGrassIfPossible(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
-		for (ShortPoint2D pos : getEarthArea(x, y)) {
-			if (grid.hasMapObjectType(pos.x, pos.y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
-				return; // return if there is a map object in the area holding this position earth
+	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
+		Optional<Boolean> isBlocked = iterateEarthArea(x, y, (currX, currY, radius) -> {
+			if (grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
+				return Optional.of(true); // return true if there is a map object in the area that enforces this position to remain earth
 			}
+			return Optional.empty();
+		});
+
+		if (!isBlocked.isPresent()) {
+			grid.setLandscape(x, y, ELandscapeType.GRASS);
 		}
-
-		// no other corn keeps this position as earth => make it grass
-		grid.setLandscape(x, y, ELandscapeType.GRASS);
 	}
 
-	private static HexGridArea getEarthArea(int x, int y) {
-		return new HexGridArea(x, y, 0, 1);
+	private static <T> Optional<T> iterateEarthArea(int x, int y, ICoordinateWithRadiusVisitor<T> visitor) {
+		return HexGridArea.iterate(x, y, 0, 1, visitor);
 	}
-
 }
