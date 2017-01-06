@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import java8.util.Optional;
 import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -121,13 +122,13 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public boolean isHexAreaOfType(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
-		Boolean iterationResult = HexGridArea.iterate(x, y, minRadius, maxRadius, (currX, currY, radius) -> {
+		Optional<Boolean> iterationResult = HexGridArea.iterate(x, y, minRadius, maxRadius, (currX, currY, radius) -> {
 			if (!isLandscapeOf(currX, currY, landscapeTypes)) {
-				return Boolean.FALSE;
+				return Optional.of(false);
 			}
-			return null;
+			return Optional.empty();
 		});
-		return iterationResult == null || iterationResult;
+		return !iterationResult.isPresent();
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 *
 	 * @param x
 	 * @param y
-	 * @return The amount of resources, where 0 is no resources and {@link Byte.MAX_VALUE} means full resources.
+	 * @return The amount of resources, where 0 is no resources and @link Byte.MAX_VALUE means full resources.
 	 */
 	public final byte getResourceAmountAt(int x, int y) {
 		return resourceAmount[x + y * width];
@@ -300,10 +301,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	/**
 	 * This method activates the unflattening process. This causes a flattened position to be turned into grass after a while.
 	 *
-	 * @param x
-	 *            X coordinate of the position.
-	 * @param y
-	 *            Y coordinate of the position.
+	 * @param x X coordinate of the position.
+	 * @param y Y coordinate of the position.
 	 */
 	private void activateUnflattening(int x, int y) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);

@@ -17,6 +17,7 @@ package jsettlers.common.map.shapes;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import java8.util.Optional;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
@@ -141,14 +142,14 @@ public final class HexGridArea implements IMapArea {
 		}
 	}
 
-	public <T> T iterate(ICoordinateWithRadiusVisitor<T> visitor) {
+	public <T> Optional<T> iterate(ICoordinateWithRadiusVisitor<T> visitor) {
 		return iterate(cX, cY, startRadius, maxRadius, visitor);
 	}
 
-	public static <T> T iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusVisitor<T> visitor) {
+	public static <T> Optional<T> iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusVisitor<T> visitor) {
 		if (startRadius == 0) {
-			T result = visitor.visit(cX, cY, 0);
-			if (result != null) {
+			Optional<T> result = visitor.visit(cX, cY, 0);
+			if (result.isPresent()) {
 				return result;
 			}
 		}
@@ -162,8 +163,8 @@ public final class HexGridArea implements IMapArea {
 					x += DIRECTION_INCREASE_X[direction];
 					y += DIRECTION_INCREASE_Y[direction];
 
-					T result = visitor.visit(x, y, radius);
-					if (result != null) {
+					Optional<T> result = visitor.visit(x, y, radius);
+					if (result.isPresent()) {
 						return result;
 					}
 				}
@@ -171,6 +172,6 @@ public final class HexGridArea implements IMapArea {
 			y--; // go to next radius / go one NORTH_EAST
 		}
 
-		return null;
+		return Optional.empty();
 	}
 }

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.utils;
 
+import java8.util.Optional;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusConsumer;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
 
@@ -25,7 +26,7 @@ public class VisitorConsumerUtils {
 	public static <T> ICoordinateWithRadiusVisitor<T> visitor(ICoordinateWithRadiusConsumer consumer) {
 		return (x, y, radius) -> {
 			consumer.consume(x, y, radius);
-			return null;
+			return Optional.empty();
 		};
 	}
 
@@ -34,7 +35,7 @@ public class VisitorConsumerUtils {
 			if (0 <= x && x < width && 0 <= y && y < height) {
 				return consumer.visit(x, y, radius);
 			}
-			return null;
+			return Optional.empty();
 		};
 	}
 }

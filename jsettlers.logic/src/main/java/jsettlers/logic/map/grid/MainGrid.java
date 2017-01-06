@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -1345,7 +1346,7 @@ public final class MainGrid implements Serializable {
 					maxSearchRadius), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
 				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, maxSearchRadius,
-						Constants.TOWER_SEARCH_RADIUS), isBowman, true);
+						Constants.TOWER_SEARCH_RADIUS), false, true);
 			}
 
 			return enemy;
@@ -1359,11 +1360,11 @@ public final class MainGrid implements Serializable {
 				}
 
 				if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
-					return currAttackable;
+					return Optional.of(currAttackable);
 				} else {
-					return null;
+					return Optional.empty();
 				}
-			}));
+			})).orElseGet(() -> null);
 		}
 
 		@Override

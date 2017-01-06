@@ -14,9 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.utils.interfaces;
 
+import java8.util.Optional;
+
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
 public interface ICoordinateWithRadiusVisitor<T> {
-	T visit(int x, int y, int radius);
+	Optional<T> visit(int x, int y, int radius);
 }

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java8.util.Optional;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.debug.DebugImagesHelper;
@@ -122,17 +123,18 @@ public class HexGridAreaTest {
 		Object expectedResultObject = new Object();
 		int[] counter = new int[1];
 
-		Object actualResultObject = HexGridArea.iterate(10, 10, 3, 10, (x, y, radius) -> {
+		Optional<Object> actualResultObject = HexGridArea.iterate(10, 10, 3, 10, (x, y, radius) -> {
 			counter[0]++;
 			if (counter[0] == expectedVisits) {
-				return expectedResultObject;
+				return Optional.of(expectedResultObject);
 			} else {
-				return null;
+				return Optional.empty();
 			}
 		});
 
 		assertEquals(expectedVisits, counter[0]);
-		assertSame(expectedResultObject, actualResultObject);
+		assertTrue(actualResultObject.isPresent());
+		assertSame(expectedResultObject, actualResultObject.get());
 	}
 
 	@Test
@@ -182,7 +184,7 @@ public class HexGridAreaTest {
 
 		int[] count = new int[1];
 
-		Object iterationResult = HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, visitor((x, y, radius) -> {
+		Optional<Object> iterationResult = HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, visitor((x, y, radius) -> {
 			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
 			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
 				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
@@ -193,7 +195,7 @@ public class HexGridAreaTest {
 			count[0]++;
 		}));
 
-		assertNull(iterationResult);
+		assertFalse(iterationResult.isPresent());
 		assertEquals(expectedCount, count[0]);
 	}
 }
