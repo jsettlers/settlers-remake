@@ -17,6 +17,7 @@ package jsettlers.common.map.shapes;
 import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -181,7 +182,7 @@ public class HexGridAreaTest {
 
 		int[] count = new int[1];
 
-		HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, visitor((x, y, radius) -> {
+		Object iterationResult = HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, visitor((x, y, radius) -> {
 			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
 			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
 				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
@@ -192,6 +193,7 @@ public class HexGridAreaTest {
 			count[0]++;
 		}));
 
+		assertNull(iterationResult);
 		assertEquals(expectedCount, count[0]);
 	}
 }

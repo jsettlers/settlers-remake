@@ -1352,23 +1352,18 @@ public final class MainGrid implements Serializable {
 		}
 
 		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
-			for (ShortPoint2D curr : area) {
-				short x = curr.x;
-				short y = curr.y;
-
-				if (0 <= x && x < width && 0 <= y && y < height) {
-					IAttackable currAttackable = movableGrid.getMovableAt(x, y);
-					if (includeTowers && !isBowman && currAttackable == null) {
-						currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
-					}
-
-					if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
-						return currAttackable;
-					}
+			return area.iterate(VisitorConsumerUtils.filterBounds(width, height, (x, y, radius) -> {
+				IAttackable currAttackable = movableGrid.getMovableAt(x, y);
+				if (includeTowers && !isBowman && currAttackable == null) {
+					currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 				}
-			}
 
-			return null;
+				if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
+					return currAttackable;
+				} else {
+					return null;
+				}
+			}));
 		}
 
 		@Override
