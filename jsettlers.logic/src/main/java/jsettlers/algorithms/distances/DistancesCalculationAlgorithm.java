@@ -1,0 +1,83 @@
+/*******************************************************************************
+ * Copyright (c) 2017
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
+package jsettlers.algorithms.distances;
+
+import java.util.BitSet;
+
+import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.utils.debug.DebugImagesHelper;
+import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
+
+/**
+ * Created by Andreas Eberle on 06.01.2017.
+ */
+public class DistancesCalculationAlgorithm {
+
+	public static BitSet calculatePositionsInDistance(int width, int height, IBooleanCoordinateValueProvider provider, int maxDistance) {
+		int area = width * height;
+		BitSet inDistance = new BitSet(area);
+		BitSet next = new BitSet(area);
+		int distance = 0;
+
+		setupInitial(width, height, provider, inDistance, next);
+
+		while (true) {
+			DebugImagesHelper.writeDebugImageBoolean("inDistance" + distance, width, height, (x, y) -> inDistance.get(x + y * width));
+
+			++distance;
+			if (distance > maxDistance) {
+				break;
+			}
+
+			next.andNot(inDistance);
+			BitSet current = next;
+			if (current.isEmpty()) {
+				break;
+			}
+
+			BitSet neighbors = new BitSet(area);
+			for (int index = current.nextSetBit(0); index >= 0; index = current.nextSetBit(index + 1)) {
+				int x = index % width;
+				int y = index / width;
+
+				MapNeighboursArea.iterate(x, y, (neighborX, neighborY) -> { // set neighbors for next run
+							if (0 <= neighborX && neighborX < width && 0 <= neighborY && neighborY < height) {
+								neighbors.set(width * neighborY + neighborX);
+							}
+						});
+			}
+
+			next = neighbors;
+			inDistance.or(current);
+		}
+		return inDistance;
+	}
+
+	private static void setupInitial(int width, int height, IBooleanCoordinateValueProvider provider, BitSet done, BitSet next) {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (provider.getValue(x, y)) {
+					done.set(width * y + x); // set as done
+
+					MapNeighboursArea.iterate(x, y, (neighborX, neighborY) -> { // set neighbors for next run
+								if (0 <= neighborX && neighborX < width && 0 <= neighborY && neighborY < height) {
+									next.set(width * neighborY + neighborX);
+								}
+							});
+				}
+			}
+		}
+	}
+}
