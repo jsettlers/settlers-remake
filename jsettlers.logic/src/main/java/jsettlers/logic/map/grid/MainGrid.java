@@ -650,7 +650,7 @@ public final class MainGrid implements Serializable {
 					&& !hasProtectedNeighbor(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
-					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+					&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
 		private final boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
@@ -660,7 +660,7 @@ public final class MainGrid implements Serializable {
 		private boolean isWinePlantable(int x, int y) {
 			if (!flagsGrid.isProtected(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
+					&& landscapeGrid.isHexAreaOfType(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
 
 				EDirection direction = getDirectionOfMaximumHeightDifference(x, y, 2);
 				if (direction != null) { // if minimum height difference has been found

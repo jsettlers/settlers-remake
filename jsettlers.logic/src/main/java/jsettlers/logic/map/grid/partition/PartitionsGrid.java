@@ -36,7 +36,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MutableInt;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.ISerializablePredicate;

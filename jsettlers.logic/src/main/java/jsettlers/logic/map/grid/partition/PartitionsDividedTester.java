@@ -18,7 +18,7 @@ import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MutableInt;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 
 /**

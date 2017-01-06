@@ -43,20 +43,24 @@ public final class HexGridArea implements IMapArea {
 	/**
 	 * Hexagon area from including {@link #startRadius} to including {@link #maxRadius}
 	 *
-	 * @param cX
+	 * @param centerX
 	 *            center x
-	 * @param cY
+	 * @param centerY
 	 *            center y
 	 * @param startRadius
 	 *            inclusive inner radius
 	 * @param maxRadius
 	 *            inclusive outer radius
 	 */
-	public HexGridArea(int cX, int cY, int startRadius, int maxRadius) {
-		this.cX = (short) cX;
-		this.cY = (short) cY;
+	public HexGridArea(int centerX, int centerY, int startRadius, int maxRadius) {
+		this.cX = (short) centerX;
+		this.cY = (short) centerY;
 		this.startRadius = (short) startRadius;
 		this.maxRadius = (short) maxRadius;
+	}
+
+	public HexGridArea(int centerX, int centerY, int radius) {
+		this(centerX, centerY, radius, radius);
 	}
 
 	@Override

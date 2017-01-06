@@ -30,7 +30,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
-import jsettlers.common.utils.MutableInt;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.common.utils.Tuple;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,17 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.movable;
 
+import static jsettlers.common.utils.VisitorConsumerUtils.filterBounds;
+import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.mutables.MutableBoolean;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.landscape.IWalkableGround;
@@ -105,31 +107,27 @@ public final class MovableGrid implements Serializable {
 	 */
 	public void informMovables(Movable movable, short x, short y, boolean informFullArea) {
 		// inform all movables of the given movable
-		IMapArea area;
+		HexGridArea area;
 		if (informFullArea) {
 			area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 		} else {
-			area = new HexBorderArea(x, y, (short) (Constants.SOLDIER_SEARCH_RADIUS - 1));
+			area = new HexGridArea(x, y, Constants.SOLDIER_SEARCH_RADIUS - 1);
 		}
 
-		boolean foundOne = false;
+		MutableBoolean foundOne = new MutableBoolean();
 		byte movablePlayer = movable.getPlayerId();
 
-		for (ShortPoint2D curr : area) {
-			short currX = curr.x;
-			short currY = curr.y;
-			if (0 <= currX && currX < width && 0 <= currY && currY < height) {
-				Movable currMovable = getMovableAt(currX, currY);
-				if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
-					currMovable.informAboutAttackable(movable);
+		area.iterate(filterBounds(width, height, visitor((currX, currY, radius) -> {
+			Movable currMovable = getMovableAt(currX, currY);
+			if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
+				currMovable.informAboutAttackable(movable);
 
-					if (!foundOne) { // the first found movable is the one closest to the given movable.
-						movable.informAboutAttackable(currMovable);
-						foundOne = true;
-					}
+				if (!foundOne.value) { // the first found movable is the one closest to the given movable.
+					movable.informAboutAttackable(currMovable);
+					foundOne.value = true;
 				}
 			}
-		}
+		})));
 	}
 
 	// FIXME @Andreas Eberle replace player everywhere by an object with team and player and move this method to the new class
