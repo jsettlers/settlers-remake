@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -19,14 +19,22 @@ import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusConsumer;
 
 /**
  * Represents a hexagon on the grid.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class HexGridArea implements IMapArea {
+
+	private static final int MAX_DIRECTIONS_IDX = EDirection.NUMBER_OF_DIRECTIONS - 1;
+	private static final byte[] DIRECTION_INCREASE_X = { EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX,
+			EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX, EDirection.EAST.gridDeltaX };
+	private static final byte[] DIRECTION_INCREASE_Y = { EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY,
+			EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY, EDirection.EAST.gridDeltaY };
+
 	private static final long serialVersionUID = -2218632675269689379L;
 	final short cX;
 	final short cY;
@@ -35,7 +43,7 @@ public final class HexGridArea implements IMapArea {
 
 	/**
 	 * Hexagon area from including {@link #startRadius} to including {@link #maxRadius}
-	 * 
+	 *
 	 * @param cX
 	 *            center x
 	 * @param cY
@@ -64,12 +72,6 @@ public final class HexGridArea implements IMapArea {
 
 	public static final class HexGridAreaIterator implements Iterator<ShortPoint2D>, Serializable {
 		private static final long serialVersionUID = -8760653162789299782L;
-
-		private static final byte[] directionIncreaseX = { EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX,
-				EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX, EDirection.EAST.gridDeltaX };
-		private static final byte[] directionIncreaseY = { EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY,
-				EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY, EDirection.EAST.gridDeltaY };
-		private static final int MAX_DIRECTIONS_IDX = EDirection.NUMBER_OF_DIRECTIONS - 1;
 
 		private final HexGridArea hexGridArea;
 		private short radius;
@@ -112,8 +114,8 @@ public final class HexGridArea implements IMapArea {
 				direction++;
 
 				if (direction >= EDirection.NUMBER_OF_DIRECTIONS) {
-					x += directionIncreaseX[MAX_DIRECTIONS_IDX];
-					y += directionIncreaseY[MAX_DIRECTIONS_IDX];
+					x += DIRECTION_INCREASE_X[MAX_DIRECTIONS_IDX];
+					y += DIRECTION_INCREASE_Y[MAX_DIRECTIONS_IDX];
 
 					direction = 0;
 					length = 1;
@@ -124,8 +126,8 @@ public final class HexGridArea implements IMapArea {
 			}
 			length++;
 
-			x += directionIncreaseX[direction];
-			y += directionIncreaseY[direction];
+			x += DIRECTION_INCREASE_X[direction];
+			y += DIRECTION_INCREASE_Y[direction];
 
 			return result;
 		}
@@ -133,6 +135,27 @@ public final class HexGridArea implements IMapArea {
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("not implemented!");
+		}
+	}
+
+	public static void iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusConsumer consumer) {
+		if (startRadius == 0) {
+			consumer.consume(cX, cY, 0);
+		}
+
+		int x = cX;
+		int y = cY - startRadius; // radius * NORTH_EAST
+
+		for (int radius = startRadius; radius <= maxRadius; radius++) {
+			for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+				for (int step = 0; step < radius; step++) {
+					x += DIRECTION_INCREASE_X[direction];
+					y += DIRECTION_INCREASE_Y[direction];
+
+					consumer.consume(x, y, radius);
+				}
+			}
+			y--; // go to next radius / go one NORTH_EAST
 		}
 	}
 }

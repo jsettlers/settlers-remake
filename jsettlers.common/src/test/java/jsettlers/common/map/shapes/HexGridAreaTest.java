@@ -20,10 +20,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.debug.DebugImagesHelper;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.BitSet;
+
 public class HexGridAreaTest {
+
+	@BeforeClass
+	public static void setup() {
+		// DebugImagesHelper.DEBUG_IMAGES_ENABLED = true;
+		DebugImagesHelper.setupDebugging();
+	}
 
 	@Test
 	public void testSinglePoint() {
@@ -89,5 +99,77 @@ public class HexGridAreaTest {
 		}
 
 		assertEquals(expectedCount, count);
+	}
+
+	@Test
+	public void testIterateSinglePoint() {
+		int[] counter = new int[1];
+		HexGridArea.iterate(10, 10, 0, 0, (x, y, radius) -> {
+			counter[0]++;
+			assertEquals(new ShortPoint2D(10, 10), new ShortPoint2D(x, y));
+		});
+
+		assertEquals(1, counter[0]);
+	}
+
+	@Test
+	public void testIterateCircleRadius1() {
+		ShortPoint2D center = new ShortPoint2D(10, 10);
+		int startRadius = 1;
+		int maxRadius = 1;
+		int expectedCount = 6;
+
+		assertPositionsIterate(center, startRadius, maxRadius, expectedCount);
+	}
+
+	@Test
+	public void testIterateCircleRadius1To2() {
+		ShortPoint2D center = new ShortPoint2D(10, 10);
+		int startRadius = 1;
+		int maxRadius = 2;
+		int expectedCount = 6 + 12;
+
+		assertPositionsIterate(center, startRadius, maxRadius, expectedCount);
+	}
+
+	@Test
+	public void testIterateRadius0To2() {
+		ShortPoint2D center = new ShortPoint2D(10, 10);
+		int startRadius = 0;
+		int maxRadius = 2;
+		int expectedCount = 1 + 6 + 12;
+
+		assertPositionsIterate(center, startRadius, maxRadius, expectedCount);
+	}
+
+	@Test
+	public void testIterateRadius4To6() {
+		ShortPoint2D center = new ShortPoint2D(10, 10);
+		int startRadius = 4;
+		int maxRadius = 6;
+		int expectedCount = 4 * 6 + 5 * 6 + 6 * 6;
+
+		assertPositionsIterate(center, startRadius, maxRadius, expectedCount);
+	}
+
+	private void assertPositionsIterate(ShortPoint2D center, int startRadius, int maxRadius, int expectedCount) {
+		int width = center.x + maxRadius + 1;
+		int height = center.y + maxRadius + 1;
+		BitSet positions = new BitSet(width * height);
+
+		int[] count = new int[1];
+
+		HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, (x, y, radius) -> {
+			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
+			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
+				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
+						+ ")");
+			}
+			positions.set(x + y * width);
+			DebugImagesHelper.writeDebugImageBoolean("count-" + count[0], width, height, (imageX, imageY) -> positions.get(imageX + imageY * width));
+			count[0]++;
+		});
+
+		assertEquals(expectedCount, count[0]);
 	}
 }
