@@ -67,7 +67,7 @@ public final class DebugImagesHelper {
 		}
 	}
 
-	public static BufferedImage createDebugImage(int width, int height, ICoordinateValueProvider<Color> colorProvider) {
+	private static BufferedImage createDebugImage(int width, int height, ICoordinateValueProvider<Color> colorProvider) {
 		BufferedImage image = new BufferedImage(width + height, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics graphics = image.getGraphics();
 		graphics.clearRect(0, 0, width, height);

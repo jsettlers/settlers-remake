@@ -56,7 +56,7 @@ public class TestUtils {
 
 	public static synchronized void setupResourceManager() {
 		try {
-			SwingResourceLoader.setup(new OptionableProperties().set("maps", "../maps"));
+			SwingResourceLoader.setup(new OptionableProperties());
 		} catch (SwingResourceLoader.ResourceSetupException e) {
 			throw new RuntimeException("Config file not found!", e);
 		}

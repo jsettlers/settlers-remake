@@ -57,7 +57,7 @@ public class SwingResourceLoader {
 		ResourceManager.setProvider(new SwingResourceProvider(resources));
 
 		// Setup map load paths
-		setupMapListFactory(options, settlersFolderInfo);
+		setupMapListFactory(options.getProperty("maps"), settlersFolderInfo.mapsFolder);
 	}
 
 	private static SettlersFolderInfo getPathOfOriginalSettlers(OptionableProperties options) throws ResourceSetupException {
@@ -67,23 +67,22 @@ public class SwingResourceLoader {
 		}
 
 		SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(originalGamePath);
-		if(!settlersFolderInfo.isValidSettlersFolder()){
+		if (!settlersFolderInfo.isValidSettlersFolder()) {
 			throw new ResourceSetupException("Path to original Settlers III installation not valid.");
 		}
 
 		return settlersFolderInfo;
 	}
 
-	private static void setupMapListFactory(OptionableProperties options, SettlersFolderInfo settlersFolderInfo) {
+	public static void setupMapListFactory(String additionalMaps, File originalMapsFolder) {
 		DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
 		loadDefaultMapFolders(mapListFactory);
 
 		// now add original maps
-		if(settlersFolderInfo.mapsFolder != null 	){
-			mapListFactory.addMapDirectory(settlersFolderInfo.mapsFolder.getAbsolutePath(), false);
+		if (originalMapsFolder != null) {
+			mapListFactory.addMapDirectory(originalMapsFolder.getAbsolutePath(), false);
 		}
 
-		String additionalMaps = options.getProperty("maps");
 		if (additionalMaps != null) {
 			mapListFactory.addMapDirectory(additionalMaps, false);
 		}

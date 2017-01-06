@@ -31,6 +31,7 @@ import jsettlers.common.utils.debug.DebugImagesHelper;
 import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.testutils.TestUtils;
 
 /**
@@ -41,9 +42,9 @@ public class DistanceCalculationAlgorithmTest {
 
 	@BeforeClass
 	public static void setupTest() {
-//		DebugImagesHelper.DEBUG_IMAGES_ENABLED = true;
+		// DebugImagesHelper.DEBUG_IMAGES_ENABLED = true;
 
-		TestUtils.setupResourceManager();
+		SwingResourceLoader.setupMapListFactory("../maps", null);
 		DebugImagesHelper.setupDebugging();
 	}
 

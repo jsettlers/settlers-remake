@@ -119,9 +119,4 @@ public class OptionableProperties extends Properties {
 			return new File(getAppHome(), "config.prp");
 		}
 	}
-
-	public OptionableProperties set(String key, String value) {
-		super.setProperty(key, value);
-		return this;
-	}
 }
