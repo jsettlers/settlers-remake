@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -14,10 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
+import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.debug.DebugImagesHelper;
@@ -104,12 +107,31 @@ public class HexGridAreaTest {
 	@Test
 	public void testIterateSinglePoint() {
 		int[] counter = new int[1];
-		HexGridArea.iterate(10, 10, 0, 0, (x, y, radius) -> {
+		HexGridArea.iterate(10, 10, 0, 0, visitor((x, y, radius) -> {
 			counter[0]++;
 			assertEquals(new ShortPoint2D(10, 10), new ShortPoint2D(x, y));
-		});
+		}));
 
 		assertEquals(1, counter[0]);
+	}
+
+	@Test
+	public void testIterateStopsAfterResult() {
+		int expectedVisits = 5;
+		Object expectedResultObject = new Object();
+		int[] counter = new int[1];
+
+		Object actualResultObject = HexGridArea.iterate(10, 10, 3, 10, (x, y, radius) -> {
+			counter[0]++;
+			if (counter[0] == expectedVisits) {
+				return expectedResultObject;
+			} else {
+				return null;
+			}
+		});
+
+		assertEquals(expectedVisits, counter[0]);
+		assertSame(expectedResultObject, actualResultObject);
 	}
 
 	@Test
@@ -159,7 +181,7 @@ public class HexGridAreaTest {
 
 		int[] count = new int[1];
 
-		HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, (x, y, radius) -> {
+		HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, visitor((x, y, radius) -> {
 			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
 			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
 				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
@@ -168,7 +190,7 @@ public class HexGridAreaTest {
 			positions.set(x + y * width);
 			DebugImagesHelper.writeDebugImageBoolean("count-" + count[0], width, height, (imageX, imageY) -> positions.get(imageX + imageY * width));
 			count[0]++;
-		});
+		}));
 
 		assertEquals(expectedCount, count[0]);
 	}

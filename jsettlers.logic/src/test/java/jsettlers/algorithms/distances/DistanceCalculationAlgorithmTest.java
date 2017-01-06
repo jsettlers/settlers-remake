@@ -26,13 +26,12 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.VisitorConsumerUtils;
 import jsettlers.common.utils.debug.DebugImagesHelper;
 import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.testutils.TestUtils;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
@@ -58,13 +57,13 @@ public class DistanceCalculationAlgorithmTest {
 		int testDistance = FISHER.getWorkRadius();
 
 		MilliStopWatch stopWatch = new MilliStopWatch();
-		BitSet actual = DistancesCalculationAlgorithm.calculatePositionsInDistance(width, height, (x, y) -> mapData.getLandscape(x, y).isWater, testDistance);
+		BitSet actual = DistancesCalculationAlgorithm.calculatePositionsInDistance(width, height, (x, y) -> mapData.getLandscape(x, y).isWater,
+				testDistance);
 		stopWatch.stop("calculatePositionsInDistance");
 
 		stopWatch.restart();
 		BitSet expected = calculatePositionsInDistanceTrivial(width, height, (x, y) -> mapData.getLandscape(x, y).isWater, testDistance);
 		stopWatch.stop("calculatePositionsInDistance");
-
 
 		DebugImagesHelper.writeDebugImageBoolean("actual", width, height, (x, y) -> actual.get(x + y * width));
 		DebugImagesHelper.writeDebugImageBoolean("expected", width, height, (x, y) -> expected.get(x + y * width));
@@ -81,11 +80,11 @@ public class DistanceCalculationAlgorithmTest {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (provider.getValue(x, y)) {
-					for (ShortPoint2D position : new HexGridArea(x, y, 0, maxDistance)) {
-						if (0 <= position.x && position.x < width && 0 <= position.y && position.y < height) {
-							inDistance.set(position.y * width + position.x);
-						}
-					}
+					HexGridArea.iterate(x, y, 0, maxDistance,
+							VisitorConsumerUtils.filterBounds(width, height, (currX, currY, radius) -> {
+								inDistance.set(currY * width + currX);
+								return null;
+							}));
 				}
 			}
 		}

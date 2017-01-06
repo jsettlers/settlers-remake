@@ -47,7 +47,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.logging.NanoStopWatch;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
@@ -61,7 +60,6 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapLine;
@@ -78,6 +76,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.VisitorConsumerUtils;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
@@ -115,6 +114,8 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
+
+import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -1379,7 +1380,7 @@ public final class MainGrid implements Serializable {
 		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
 			MutablePoint2D vector = new MutablePoint2D();
 
-			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, (currX, currY, radius) -> {
+			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, visitor((currX, currY, radius) -> {
 				int factor;
 				if (!MainGrid.this.isInBounds(currX, currY)) {
 					factor = radius == 1 ? 6 : 2;
@@ -1390,7 +1391,7 @@ public final class MainGrid implements Serializable {
 				}
 				vector.x += (x - currX) * factor;
 				vector.y += (y - currY) * factor;
-			});
+			}));
 
 			return vector.toShortPoint2D();
 		}

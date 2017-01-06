@@ -19,13 +19,12 @@ import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusConsumer;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
 
 /**
  * Represents a hexagon on the grid.
  *
  * @author Andreas Eberle
- *
  */
 public final class HexGridArea implements IMapArea {
 
@@ -138,9 +137,16 @@ public final class HexGridArea implements IMapArea {
 		}
 	}
 
-	public static void iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusConsumer consumer) {
+	public <T> T iterate(ICoordinateWithRadiusVisitor<T> visitor) {
+		return iterate(cX, cY, startRadius, maxRadius, visitor);
+	}
+
+	public static <T> T iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusVisitor<T> visitor) {
 		if (startRadius == 0) {
-			consumer.consume(cX, cY, 0);
+			T result = visitor.visit(cX, cY, 0);
+			if (result != null) {
+				return result;
+			}
 		}
 
 		int x = cX;
@@ -152,10 +158,15 @@ public final class HexGridArea implements IMapArea {
 					x += DIRECTION_INCREASE_X[direction];
 					y += DIRECTION_INCREASE_Y[direction];
 
-					consumer.consume(x, y, radius);
+					T result = visitor.visit(x, y, radius);
+					if (result != null) {
+						return result;
+					}
 				}
 			}
 			y--; // go to next radius / go one NORTH_EAST
 		}
+
+		return null;
 	}
 }
