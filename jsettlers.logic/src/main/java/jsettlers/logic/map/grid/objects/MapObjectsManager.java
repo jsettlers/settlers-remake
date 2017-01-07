@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,7 +21,6 @@ import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -52,6 +51,8 @@ import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
+
+import java8.util.Optional;
 
 /**
  * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.
@@ -275,7 +276,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	 *            Attacked position.
 	 * @param shooterPos
 	 *            Position of the shooter.
-	 * @param shooterPlayer
+	 * @param shooterPlayerId
 	 *            The player of the shooter.
 	 * @param hitStrength
 	 *            Strength of the hit.
@@ -381,7 +382,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 	}
 
-	public boolean pushMaterial(short x, short y, EMaterialType materialType) {
+	public boolean pushMaterial(int x, int y, EMaterialType materialType) {
 		assert materialType != null : "material type can never be null here";
 
 		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
@@ -400,18 +401,14 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 	}
 
-	public ShortPoint2D pushMaterialForced(short x, short y, EMaterialType materialType) {
-		IMapArea mapArea = new HexGridArea(x, y, 0, 200);
-
-		for (ShortPoint2D position : mapArea) {
-			short currX = position.x;
-			short currY = position.y;
+	public ShortPoint2D pushMaterialForced(int x, int y, EMaterialType materialType) {
+		return HexGridArea.iterate(x, y, 0, 200, (currX, currY, radius) -> {
 			if (grid.isInBounds(currX, currY) && canForcePushMaterial(currX, currY, materialType)) {
 				pushMaterial(currX, currY, materialType);
-				return position;
+				return Optional.of(new ShortPoint2D(currX, currY));
 			}
-		}
-		return null;
+			return Optional.empty();
+		}).orElseGet(() -> null);
 	}
 
 	/**
@@ -422,7 +419,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	 * @param materialType
 	 * @return
 	 */
-	private boolean canForcePushMaterial(short x, short y, EMaterialType materialType) {
+	private boolean canForcePushMaterial(int x, int y, EMaterialType materialType) {
 		if (grid.isBlocked(x, y)) {
 			return false;
 		}
@@ -513,7 +510,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return popMaterialTypeAt(x, y, null);
 	}
 
-	private StackMapObject getStackAtPosition(short x, short y, EMaterialType materialType) {
+	private StackMapObject getStackAtPosition(int x, int y, EMaterialType materialType) {
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
 
 		while (stackObject != null && stackObject.getMaterialType() != materialType && materialType != null) { // find correct stack

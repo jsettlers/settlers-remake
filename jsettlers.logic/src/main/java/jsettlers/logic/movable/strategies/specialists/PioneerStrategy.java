@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.specialists;
 
+import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
@@ -87,22 +89,22 @@ public final class PioneerStrategy extends MovableStrategy {
 		}
 	}
 
-	private final EDirection getCloseForeignTile() {
-		EDirection bestNeighbourDir = null;
-		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
+	private EDirection getCloseForeignTile() {
+		EDirection[] bestNeighbourDir = new EDirection[1];
+		double[] bestNeighbourDistance = new double[] { Double.MAX_VALUE }; // distance from start point
 
 		ShortPoint2D position = movable.getPos();
-		for (ShortPoint2D satelitePos : new HexGridArea(position.x, position.y, 1, 6)) {
-
-			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
-				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
-				if (distance < bestNeighbourDistance) {
-					bestNeighbourDistance = distance;
-					bestNeighbourDir = EDirection.getApproxDirection(position, satelitePos);
+		HexGridArea.iterate(position.x, position.y, 1, 6, visitor(((currX, currY, radius) -> {
+			ShortPoint2D currPosition = new ShortPoint2D(currX, currY);
+			if (super.isValidPosition(currPosition) && canWorkOnPos(currPosition)) {
+				double distance = Math.hypot(currX - centerPos.x, currY - centerPos.y);
+				if (distance < bestNeighbourDistance[0]) {
+					bestNeighbourDistance[0] = distance;
+					bestNeighbourDir[0] = EDirection.getApproxDirection(position, currPosition);
 				}
 			}
-		}
-		return bestNeighbourDir;
+		})));
+		return bestNeighbourDir[0];
 	}
 
 	private void executeAction(ShortPoint2D pos) {
