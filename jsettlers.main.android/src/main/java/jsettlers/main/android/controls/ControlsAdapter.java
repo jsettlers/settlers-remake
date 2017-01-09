@@ -24,6 +24,7 @@ import jsettlers.graphics.map.controls.IControls;
 
 public class ControlsAdapter implements IControls {
     private ActionFireable actionFireable;
+    private ControlsListener controlsListener;
 
     //
     // So
@@ -91,6 +92,10 @@ public class ControlsAdapter implements IControls {
         //TODO tell the UI what type of selection this is so we can update the Settlers menu
         if (selection != null && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
             startTask(new Action(EActionType.MOVE_TO));
+        }
+
+        if (controlsListener != null) {
+            controlsListener.selectionChanged(selection);
         }
     }
 
@@ -166,5 +171,9 @@ public class ControlsAdapter implements IControls {
 
             taskAction = null;
         }
+    }
+
+    public void setControlsListener(ControlsListener controlsListener) {
+        this.controlsListener = controlsListener;
     }
 }

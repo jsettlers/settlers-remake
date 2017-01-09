@@ -9,10 +9,12 @@ import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.ControlsListener;
 import jsettlers.main.android.dialogs.ConfirmDialog;
 import jsettlers.main.android.dialogs.PausedDialog;
 import jsettlers.main.android.fragmentsnew.menus.BuildingsMenuFragment;
@@ -37,6 +39,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.ActionMenuView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +47,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider {
+public class MapFragment extends Fragment implements ControlsListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider {
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
@@ -106,6 +109,7 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 
 		MapContent mapContent = mapContentProvider.getMapContent();
 		controls = controlsProvider.getControls();
+		controls.setControlsListener(this);
 		gameMenu = gameMenuProvider.getGameMenu();
 		buildingsMenu = new BuildingsMenu(mapContent);
 
@@ -146,6 +150,12 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	public void onStop() {
 		super.onStop();
 		localBroadcastManager.unregisterReceiver(mapVisibleBroadcastReceiver);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		controls.setControlsListener(null);
 	}
 
 	@Override
@@ -216,6 +226,14 @@ public class MapFragment extends Fragment implements BackPressedListener, Paused
 	public BuildingsMenu getBuildingsMenu() {
 		return buildingsMenu;
 	}
+
+	/**
+	 * ControlsListener implementation
+     */
+	@Override
+	public void selectionChanged(ISelectionSet selection) {
+        Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
+    }
 
 
 	/**
