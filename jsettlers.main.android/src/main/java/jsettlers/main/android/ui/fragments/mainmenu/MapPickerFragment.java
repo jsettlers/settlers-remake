@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragments;
+package jsettlers.main.android.ui.fragments.mainmenu;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.main.android.R;
-import jsettlers.main.android.navigation.MainMenuNavigator;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 

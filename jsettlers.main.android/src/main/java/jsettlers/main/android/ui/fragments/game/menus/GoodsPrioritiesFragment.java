@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragments.menus;
+package jsettlers.main.android.ui.fragments.game.menus;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

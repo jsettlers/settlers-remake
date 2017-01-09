@@ -1,15 +1,15 @@
-package jsettlers.main.android.activities;
+package jsettlers.main.android.ui.activities;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
-import jsettlers.main.android.fragments.MainMenuFragment;
-import jsettlers.main.android.fragments.MapPickerFragment;
-import jsettlers.main.android.fragments.NewSinglePlayerFragment;
-import jsettlers.main.android.navigation.Actions;
-import jsettlers.main.android.navigation.MainMenuNavigator;
+import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.MapPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerFragment;
+import jsettlers.main.android.ui.navigation.Actions;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 
 import android.content.ComponentName;

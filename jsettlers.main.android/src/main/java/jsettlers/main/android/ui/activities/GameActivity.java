@@ -1,4 +1,4 @@
-package jsettlers.main.android.activities;
+package jsettlers.main.android.ui.activities;
 
 import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
 
@@ -15,11 +15,11 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.fragments.LoadingFragment;
-import jsettlers.main.android.fragments.MapFragment;
+import jsettlers.main.android.ui.fragments.game.LoadingFragment;
+import jsettlers.main.android.ui.fragments.game.MapFragment;
 import jsettlers.main.android.menus.GameMenu;
-import jsettlers.main.android.navigation.Actions;
-import jsettlers.main.android.navigation.BackPressedListener;
+import jsettlers.main.android.ui.navigation.Actions;
+import jsettlers.main.android.ui.navigation.BackPressedListener;
 import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
@@ -38,7 +38,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, GameMenuProvider, MapContentProvider {//}, GameNavigator {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, GameMenuProvider, MapContentProvider {
     private static final String TAG_FRAGMENT_SERVICE_BINDER = "service_binder_fragment";
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";

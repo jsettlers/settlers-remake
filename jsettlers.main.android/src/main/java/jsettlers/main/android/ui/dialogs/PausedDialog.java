@@ -1,4 +1,4 @@
-package jsettlers.main.android.dialogs;
+package jsettlers.main.android.ui.dialogs;
 
 import jsettlers.main.android.R;
 

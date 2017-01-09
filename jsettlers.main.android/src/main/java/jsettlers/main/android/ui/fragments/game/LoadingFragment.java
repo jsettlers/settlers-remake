@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragments;
+package jsettlers.main.android.ui.fragments.game;
 
 import jsettlers.main.android.R;
 

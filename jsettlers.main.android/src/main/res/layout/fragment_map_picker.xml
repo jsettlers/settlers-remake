@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="jsettlers.main.android.fragments.MapPickerFragment">
+    tools:context=".ui.fragments.mainmenu.MapPickerFragment">
 
     <include layout="@layout/include_app_bar" />
 

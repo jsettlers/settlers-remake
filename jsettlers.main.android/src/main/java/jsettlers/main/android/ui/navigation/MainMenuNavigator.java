@@ -1,4 +1,4 @@
-package jsettlers.main.android.navigation;
+package jsettlers.main.android.ui.navigation;
 
 /**
  * Created by tingl on 27/05/2016.

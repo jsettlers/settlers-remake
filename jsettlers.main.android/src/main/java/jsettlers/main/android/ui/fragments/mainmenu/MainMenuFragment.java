@@ -1,9 +1,9 @@
-package jsettlers.main.android.fragments;
+package jsettlers.main.android.ui.fragments.mainmenu;
 
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
-import jsettlers.main.android.dialogs.DirectoryPickerDialog;
-import jsettlers.main.android.navigation.MainMenuNavigator;
+import jsettlers.main.android.ui.dialogs.DirectoryPickerDialog;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.utils.FragmentUtil;
 

@@ -16,8 +16,8 @@ import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.R;
-import jsettlers.main.android.activities.GameActivity;
-import jsettlers.main.android.navigation.Actions;
+import jsettlers.main.android.ui.activities.GameActivity;
+import jsettlers.main.android.ui.navigation.Actions;
 
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_QUIT;
