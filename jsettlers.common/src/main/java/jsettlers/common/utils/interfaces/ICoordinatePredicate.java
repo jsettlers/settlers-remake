@@ -17,6 +17,6 @@ package jsettlers.common.utils.interfaces;
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public interface IBooleanCoordinateValueProvider {
-	boolean getValue(int x, int y);
+public interface ICoordinatePredicate {
+	boolean test(int x, int y);
 }

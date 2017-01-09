@@ -29,7 +29,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.utils.VisitorConsumerUtils;
 import jsettlers.common.utils.debug.DebugImagesHelper;
-import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
+import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.swing.resources.SwingResourceLoader;
@@ -75,12 +75,12 @@ public class DistanceCalculationAlgorithmTest {
 		assertTrue("there exists a difference between actual and expected", expected.isEmpty());
 	}
 
-	private BitSet calculatePositionsInDistanceTrivial(int width, int height, IBooleanCoordinateValueProvider provider, int maxDistance) {
+	private BitSet calculatePositionsInDistanceTrivial(int width, int height, ICoordinatePredicate provider, int maxDistance) {
 		BitSet inDistance = new BitSet();
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				if (provider.getValue(x, y)) {
+				if (provider.test(x, y)) {
 					HexGridArea.iterate(x, y, 0, maxDistance,
 							VisitorConsumerUtils.filterBounds(width, height, (currX, currY, radius) -> {
 								inDistance.set(currY * width + currX);

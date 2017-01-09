@@ -22,8 +22,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import jsettlers.common.Color;
-import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
+import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 import jsettlers.common.utils.interfaces.ICoordinateValueProvider;
+
+import static java8.util.J8Arrays.stream;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
@@ -42,16 +44,15 @@ public final class DebugImagesHelper {
 	}
 
 	private static void deleteRecursive(File file) {
-		if (file.isDirectory()) {
-			for (File child : file.listFiles()) {
-				deleteRecursive(child);
-			}
+		File[] children = file.listFiles();
+		if (children != null) {
+			stream(children).forEach(DebugImagesHelper::deleteRecursive);
 		}
 		file.delete();
 	}
 
-	public static void writeDebugImageBoolean(String suffix, int width, int height, IBooleanCoordinateValueProvider provider) {
-		writeDebugImage(suffix, width, height, (x, y) -> provider.getValue(x, y) ? Color.BLUE : Color.RED);
+	public static void writeDebugImageBoolean(String suffix, int width, int height, ICoordinatePredicate provider) {
+		writeDebugImage(suffix, width, height, (x, y) -> provider.test(x, y) ? Color.BLUE : Color.RED);
 	}
 
 	public static void writeDebugImage(String suffix, int width, int height, ICoordinateValueProvider<Color> colorProvider) {

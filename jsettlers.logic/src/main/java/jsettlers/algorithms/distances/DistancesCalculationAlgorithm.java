@@ -17,30 +17,22 @@ package jsettlers.algorithms.distances;
 import java.util.BitSet;
 
 import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.utils.debug.DebugImagesHelper;
-import jsettlers.common.utils.interfaces.IBooleanCoordinateValueProvider;
+import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
 public class DistancesCalculationAlgorithm {
 
-	public static BitSet calculatePositionsInDistance(int width, int height, IBooleanCoordinateValueProvider provider, int maxDistance) {
+	public static BitSet calculatePositionsInDistance(int width, int height, ICoordinatePredicate provider, int maxDistance) {
 		int area = width * height;
 		BitSet inDistance = new BitSet(area);
 		BitSet next = new BitSet(area);
-		int distance = 0;
 
 		setupInitial(width, height, provider, inDistance, next);
+//		DebugImagesHelper.writeDebugImageBoolean("inDistance-" + 0, width, height, (x, y) -> inDistance.get(x + y * width));
 
-		while (true) {
-			DebugImagesHelper.writeDebugImageBoolean("inDistance" + distance, width, height, (x, y) -> inDistance.get(x + y * width));
-
-			++distance;
-			if (distance > maxDistance) {
-				break;
-			}
-
+		for (int distance = 1; distance <= maxDistance; distance++) {
 			next.andNot(inDistance);
 			BitSet current = next;
 			if (current.isEmpty()) {
@@ -61,14 +53,16 @@ public class DistancesCalculationAlgorithm {
 
 			next = neighbors;
 			inDistance.or(current);
+
+			// DebugImagesHelper.writeDebugImageBoolean("inDistance-" + distance, width, height, (x, y) -> inDistance.get(x + y * width));
 		}
 		return inDistance;
 	}
 
-	private static void setupInitial(int width, int height, IBooleanCoordinateValueProvider provider, BitSet done, BitSet next) {
+	private static void setupInitial(int width, int height, ICoordinatePredicate provider, BitSet done, BitSet next) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				if (provider.getValue(x, y)) {
+				if (provider.test(x, y)) {
 					done.set(width * y + x); // set as done
 
 					MapNeighboursArea.iterate(x, y, (neighborX, neighborY) -> { // set neighbors for next run
