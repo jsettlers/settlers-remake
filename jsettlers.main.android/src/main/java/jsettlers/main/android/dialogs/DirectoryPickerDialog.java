@@ -3,6 +3,7 @@ package jsettlers.main.android.dialogs;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -25,8 +26,8 @@ import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
  */
 public class DirectoryPickerDialog extends DialogFragment {
 
-    private ArrayAdapter<String> directoryAdapter;
-    private Stack<String> directoryStack;
+    private ArrayAdapter<File> directoryAdapter;
+    private Stack<File> directoryStack;
 
     public  interface Listener {
         void onDirectorySelected();
@@ -42,7 +43,7 @@ public class DirectoryPickerDialog extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         directoryStack = new Stack<>();
-        directoryStack.push("/");
+        directoryStack.push(Environment.getExternalStorageDirectory());
         directoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
         updateList();
     }
@@ -57,8 +58,9 @@ public class DirectoryPickerDialog extends DialogFragment {
                 if (position == 0) {
                     directoryStack.pop();
                 } else {
-                    String format = directoryStack.size() == 1 ? "%s%s" : "%s/%s";
-                    directoryStack.push(String.format(format, directoryStack.peek(), directoryAdapter.getItem(position)));
+//                    String format = directoryStack.size() == 1 ? "%s%s" : "%s/%s";
+//                    directoryStack.push(String.format(format, directoryStack.peek(), directoryAdapter.getItem(position)));
+                    directoryStack.push(directoryAdapter.getItem(position));
                 }
                 updateList();
                 setButtonState();
@@ -71,7 +73,7 @@ public class DirectoryPickerDialog extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new ResourceLocationScanner(getActivity()).setExternalDirectory(directoryStack.peek());
+                        new ResourceLocationScanner(getActivity()).setExternalDirectory(directoryStack.peek().getAbsolutePath());
                         Listener listener = (Listener)getParentFragment();
                         listener.onDirectorySelected();
                     }
@@ -87,7 +89,7 @@ public class DirectoryPickerDialog extends DialogFragment {
 
     private void setButtonState() {
         AlertDialog dialog = (AlertDialog)getDialog();
-        List<File> paths = Collections.singletonList(new File(directoryStack.peek()));
+        List<File> paths = Collections.singletonList(directoryStack.peek());
         boolean hasGameFiles = ResourceLocationScanner.hasImagesOnPath(paths);
         Button button = dialog.getButton(Dialog.BUTTON_POSITIVE);
         button.setEnabled(hasGameFiles);
@@ -99,11 +101,11 @@ public class DirectoryPickerDialog extends DialogFragment {
     }
 
     private class DirectoryScanner extends Thread {
-        private ArrayAdapter<String> directories;
-        private String base;
+        private ArrayAdapter<File> directories;
+        private File base;
         private Handler handler;
 
-        public DirectoryScanner(String base, ArrayAdapter<String> directories) {
+        public DirectoryScanner(File base, ArrayAdapter<File> directories) {
             super("DirectoryScanner");
             this.base = base;
             this.directories = directories;
@@ -112,7 +114,7 @@ public class DirectoryPickerDialog extends DialogFragment {
 
         @Override
         public void run() {
-            File dir = new File(base);
+            File dir = base;
             final File[] files = dir.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
@@ -122,11 +124,11 @@ public class DirectoryPickerDialog extends DialogFragment {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    directories.add("..");
+                    directories.add(directoryStack.peek().getParentFile());
 
                     if (files != null && files.length > 0) {
                         for (File f : files) {
-                            directories.add(f.getName());
+                            directories.add(f);
                         }
                     } else {
                         // TODO: Display an empty direcotry message.
