@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import go.graphics.UIPoint;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.map.ScreenPosition;
 import jsettlers.graphics.map.controls.original.panel.content.AnimateablePosition;
@@ -104,7 +105,7 @@ public class NavigationView extends View {
 		float relativeY = (y - centerY) / centerY;
 
 		// now constraint
-		double len = Math.hypot(relativeX, relativeY);
+		double len = MathUtils.hypot(relativeX, relativeY);
 		if (len > 1) {
 			relativeX /= len;
 			relativeY /= len;

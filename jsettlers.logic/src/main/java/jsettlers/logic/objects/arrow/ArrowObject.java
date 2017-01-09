@@ -18,6 +18,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.objects.ProgressingSoundableObject;
 
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
@@ -42,7 +43,7 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 		this.hitStrength = hitStrength;
 		this.shooterPlayerId = shooterPlayerId;
 
-		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(shooterPos.x - targetPos.x, shooterPos.y - targetPos.y)));
+		super.setDuration((float) (SECONDS_PER_TILE * MathUtils.hypot(shooterPos.x - targetPos.x, shooterPos.y - targetPos.y)));
 	}
 
 	@Override

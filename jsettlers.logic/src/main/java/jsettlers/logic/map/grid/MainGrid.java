@@ -755,8 +755,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1364,7 +1364,7 @@ public final class MainGrid implements Serializable {
 				} else {
 					return Optional.empty();
 				}
-			})).orElseGet(() -> null);
+			})).orElse(null);
 		}
 
 		@Override

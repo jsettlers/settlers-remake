@@ -408,7 +408,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 				return Optional.of(new ShortPoint2D(currX, currY));
 			}
 			return Optional.empty();
-		}).orElseGet(() -> null);
+		}).orElse(null);
 	}
 
 	/**

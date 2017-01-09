@@ -16,6 +16,7 @@ package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 
 /**
  * This is a line that ends in two circles.
@@ -40,7 +41,7 @@ public class CircleLine {
 
 		int nx = endx - startx;
 		int ny = endy - starty;
-		this.length = Math.hypot(nx, ny);
+		this.length = MathUtils.hypot(nx, ny);
 		// vector pointing in the direction of the line
 		this.directionx = nx / length;
 		this.directiony = ny / length;
