@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew.menus;
+package jsettlers.main.android.fragments.menus;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

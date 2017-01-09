@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew;
+package jsettlers.main.android.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 

@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew;
+package jsettlers.main.android.fragments;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew.menus;
+package jsettlers.main.android.fragments.menus;
 
 import biz.laenger.android.vpbs.BottomSheetUtils;
 import jsettlers.main.android.R;

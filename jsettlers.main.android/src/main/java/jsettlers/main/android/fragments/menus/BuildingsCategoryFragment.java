@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew.menus;
+package jsettlers.main.android.fragments.menus;
 
 import java.util.List;
 
@@ -12,13 +12,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * Created by tompr on 24/11/2016.

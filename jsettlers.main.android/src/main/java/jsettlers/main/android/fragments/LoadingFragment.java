@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew;
+package jsettlers.main.android.fragments;
 
 import jsettlers.main.android.R;
 

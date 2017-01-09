@@ -1,4 +1,4 @@
-package jsettlers.main.android.fragmentsnew;
+package jsettlers.main.android.fragments;
 
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
@@ -17,9 +17,9 @@ import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.ControlsListener;
 import jsettlers.main.android.dialogs.ConfirmDialog;
 import jsettlers.main.android.dialogs.PausedDialog;
-import jsettlers.main.android.fragmentsnew.menus.BuildingsMenuFragment;
-import jsettlers.main.android.fragmentsnew.menus.GoodsMenuFragment;
-import jsettlers.main.android.fragmentsnew.menus.SettlersMenuFragment;
+import jsettlers.main.android.fragments.menus.BuildingsMenuFragment;
+import jsettlers.main.android.fragments.menus.GoodsMenuFragment;
+import jsettlers.main.android.fragments.menus.SettlersMenuFragment;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.navigation.BackPressedListener;
