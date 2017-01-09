@@ -18,6 +18,7 @@ import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -107,7 +108,7 @@ public final class GeologistStrategy extends MovableStrategy {
 
 		for (ShortPoint2D satelitePos : new HexBorderArea(movable.getPos(), (short) 2)) {
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
-				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
+				double distance = ShortPoint2D.getOnGridDist(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
 					bestNeighbourPos = satelitePos;
