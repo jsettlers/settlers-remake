@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.game.menus;
+package jsettlers.main.android.ui.fragments.game.menus.selection;
 
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.main.android.controls.ControlsAdapter;
@@ -13,7 +13,7 @@ import android.support.v4.app.Fragment;
  * Created by tompr on 10/01/2017.
  */
 
-public abstract class SelectionMenuFragment extends Fragment {
+public abstract class SelectionFragment extends Fragment {
 
     private ISelectionSet selectionSet;
     private ControlsAdapter controlsAdapter;

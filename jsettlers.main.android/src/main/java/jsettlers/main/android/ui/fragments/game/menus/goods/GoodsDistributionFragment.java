@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.game.menus;
+package jsettlers.main.android.ui.fragments.game.menus.goods;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,15 +13,15 @@ import jsettlers.main.android.R;
  * Created by tompr on 24/11/2016.
  */
 
-public class GoodsQuantitiesFragment extends Fragment {
-    public static GoodsQuantitiesFragment newInstance() {
-        return new GoodsQuantitiesFragment();
+public class GoodsDistributionFragment extends Fragment {
+    public static GoodsDistributionFragment newInstance() {
+        return new GoodsDistributionFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_goods_quantities, container, false);
+        View view = inflater.inflate(R.layout.fragment_goods_distribution, container, false);
         return view;
     }
 }

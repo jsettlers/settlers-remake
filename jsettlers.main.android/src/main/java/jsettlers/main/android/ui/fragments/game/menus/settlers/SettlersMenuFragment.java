@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.game.menus;
+package jsettlers.main.android.ui.fragments.game.menus.settlers;
 
 import jsettlers.main.android.R;
 
