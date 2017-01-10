@@ -21,6 +21,6 @@ public class SettlersMenuFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_menu_settlers, container, false);
+        return inflater.inflate(R.layout.menu_settlers, container, false);
     }
 }

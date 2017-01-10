@@ -37,7 +37,7 @@ public class BuildingsMenuFragment extends Fragment implements BuildingsMenuProv
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_menu_buildings, container, false);
+        View view = inflater.inflate(R.layout.menu_buildings, container, false);
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         BottomSheetUtils.setupViewPager(viewPager);
