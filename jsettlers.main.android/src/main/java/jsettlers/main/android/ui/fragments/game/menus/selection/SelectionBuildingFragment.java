@@ -4,6 +4,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.SelectionFeature;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.TitleFeature;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,7 +25,7 @@ public class SelectionBuildingFragment extends SelectionFragment {
     private IBuilding building;
     private BuildingState buildingState;
 
-    private LinkedList
+    private final LinkedList<SelectionFeature> features = new LinkedList<>();
 
     private ViewGroup rootView;
 
@@ -52,6 +54,21 @@ public class SelectionBuildingFragment extends SelectionFragment {
         } else if (buildingState.isTrading()) {
         } else {
             layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
+        }
+
+        features.add(new TitleFeature(building, getControls(), getView()));
+
+        for (SelectionFeature feature : features) {
+            feature.initialize(buildingState, getControls());
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        for (SelectionFeature feature : features) {
+            feature.finish();
         }
     }
 }

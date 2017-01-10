@@ -298,9 +298,11 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
         switch (selection.getSelectionType()) {
             case BUILDING:
-                getChildFragmentManager().beginTransaction()
-                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
-                        .commit();
+				if (selection.getSize() == 1) {
+					getChildFragmentManager().beginTransaction()
+							.replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
+							.commit();
+				}
                 break;
             default:
                 Log.d("Settlers", "No selection menu for selection type " + selection.getSelectionType().name());
