@@ -5,6 +5,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:id="@+id/image_view_priority"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/image_view_work_area"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/image_view_destroy"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/text_view_name"
         android:text="TextView"
@@ -14,5 +44,5 @@
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="64dp" />
 </LinearLayout>

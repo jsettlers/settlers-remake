@@ -4,8 +4,11 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.PriorityFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.TitleFeature;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.WorkAreaFeature;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,6 +60,9 @@ public class SelectionBuildingFragment extends SelectionFragment {
         }
 
         features.add(new TitleFeature(building, getControls(), getView()));
+        features.add(new PriorityFeature(building, getControls(), getView()));
+        features.add(new WorkAreaFeature(building, getControls(), getView()));
+        features.add(new DestroyFeature(building, getControls(), getView()));
 
         for (SelectionFeature feature : features) {
             feature.initialize(buildingState, getControls());

@@ -244,9 +244,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private ISelectionSet selection;
 	@Override
 	public void selectionChanged(ISelectionSet selection) {
-		this.selection = selection;
-        showSelectionMenu();
-        Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
+        if (selection.getSize() > 0) {
+            this.selection = selection;
+            showSelectionMenu();
+            Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
+        } else {
+            this.selection = null;
+        }
     }
 
 
@@ -298,11 +302,9 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
         switch (selection.getSelectionType()) {
             case BUILDING:
-				if (selection.getSize() == 1) {
-					getChildFragmentManager().beginTransaction()
-							.replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
-							.commit();
-				}
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
+                        .commit();
                 break;
             default:
                 Log.d("Settlers", "No selection menu for selection type " + selection.getSelectionType().name());
