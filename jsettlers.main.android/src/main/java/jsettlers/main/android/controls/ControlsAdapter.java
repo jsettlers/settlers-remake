@@ -1,10 +1,13 @@
 package jsettlers.main.android.controls;
 
+import java.util.LinkedList;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
@@ -26,8 +29,9 @@ public class ControlsAdapter implements IControls {
     private ActionFireable actionFireable;
     private ControlsListener controlsListener;
 
-    //
-    // So
+    private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
+
+
     /**
      * A task is something that requires multiple steps. E.g. show constructions markers, then choose build location.
      * If an action is part of a task then store it so we know how to react when the next action comes in.
@@ -61,6 +65,12 @@ public class ControlsAdapter implements IControls {
             case ABORT:
                 endTask();
                 break;
+        }
+
+        synchronized (actionListeners) {
+            for (ActionListener listener : actionListeners) {
+                listener.actionFired(action);
+            }
         }
     }
 
@@ -175,5 +185,17 @@ public class ControlsAdapter implements IControls {
 
     public void setControlsListener(ControlsListener controlsListener) {
         this.controlsListener = controlsListener;
+    }
+
+    public void addActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.add(actionListener);
+        }
+    }
+
+    public void removeActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.remove(actionListener);
+        }
     }
 }

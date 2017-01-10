@@ -9,16 +9,20 @@ import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.ControlsListener;
+import jsettlers.main.android.providers.SelectionProvider;
 import jsettlers.main.android.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.ui.dialogs.PausedDialog;
 import jsettlers.main.android.ui.fragments.game.menus.BuildingsMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.GoodsMenuFragment;
+import jsettlers.main.android.ui.fragments.game.menus.SelectionBuildingFragment;
+import jsettlers.main.android.ui.fragments.game.menus.SelectionMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.SettlersMenuFragment;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
@@ -47,7 +51,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements ControlsListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider {
+public class MapFragment extends Fragment implements ControlsListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider, SelectionProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
@@ -227,11 +231,22 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 		return buildingsMenu;
 	}
 
-	/**
+    /**
+     * SelectionProvider implementation
+     */
+    @Override
+    public ISelectionSet getCurrentSelection() {
+        return selection;
+    }
+
+    /**
 	 * ControlsListener implementation
      */
+	private ISelectionSet selection;
 	@Override
 	public void selectionChanged(ISelectionSet selection) {
+		this.selection = selection;
+        showSelectionMenu();
         Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
     }
 
@@ -277,6 +292,21 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, SettlersMenuFragment.newInstance())
 				.commit();
+	}
+
+	private void showSelectionMenu() {
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        switch (selection.getSelectionType()) {
+            case BUILDING:
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
+                        .commit();
+                break;
+            default:
+                Log.d("Settlers", "No selection menu for selection type " + selection.getSelectionType().name());
+                break;
+        }
 	}
 
 
