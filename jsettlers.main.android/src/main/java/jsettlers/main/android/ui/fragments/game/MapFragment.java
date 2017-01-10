@@ -9,20 +9,18 @@ import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
-import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.controls.ControlsListener;
+import jsettlers.main.android.controls.SelectionListener;
 import jsettlers.main.android.providers.SelectionProvider;
 import jsettlers.main.android.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.ui.dialogs.PausedDialog;
 import jsettlers.main.android.ui.fragments.game.menus.BuildingsMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.GoodsMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.SelectionBuildingFragment;
-import jsettlers.main.android.ui.fragments.game.menus.SelectionMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.SettlersMenuFragment;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
@@ -51,7 +49,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements ControlsListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider, SelectionProvider{
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider, SelectionProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
@@ -111,12 +109,13 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
 		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
 
-		MapContent mapContent = mapContentProvider.getMapContent();
 		controls = controlsProvider.getControls();
-		controls.setControlsListener(this);
 		gameMenu = gameMenuProvider.getGameMenu();
-		buildingsMenu = new BuildingsMenu(mapContent);
+		buildingsMenu = new BuildingsMenu(controls);
 
+        controls.setSelectionListener(this);
+
+        MapContent mapContent = mapContentProvider.getMapContent();
 		addMapViews(mapContent);
 
 		if (savedInstanceState == null) {
@@ -159,7 +158,7 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		controls.setControlsListener(null);
+		controls.setSelectionListener(null);
 	}
 
 	@Override
@@ -240,7 +239,7 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
     }
 
     /**
-	 * ControlsListener implementation
+	 * SelectionListener implementation
      */
 	private ISelectionSet selection;
 	@Override

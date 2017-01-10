@@ -5,6 +5,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
@@ -19,15 +20,15 @@ public class BuildingsMenu {
     public static final int BUILDINGS_CATEGORY_MILITARY = 30;
     public static final int BUILDINGS_CATEGORY_SOCIAL = 40;
 
-    private MapContent mapContent;
+    private ActionFireable actionFireable;
 
-    public BuildingsMenu(MapContent mapContent) {
-        this.mapContent = mapContent;
+    public BuildingsMenu(ActionFireable actionFireable) {
+        this.actionFireable = actionFireable;
     }
 
     public void showConstructionMarkers(EBuildingType buildingType) {
         Action action = new ShowConstructionMarksAction(buildingType);
-        mapContent.fireAction(action);
+        actionFireable.fireAction(action);
     }
 
     public List<EBuildingType> getBuildingTypesForCategory(int category) {

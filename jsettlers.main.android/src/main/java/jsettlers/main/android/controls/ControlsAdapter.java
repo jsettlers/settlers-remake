@@ -7,7 +7,6 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.position.ShortPoint2D;
@@ -25,9 +24,9 @@ import jsettlers.graphics.map.controls.IControls;
  * Created by tompr on 21/11/2016.
  */
 
-public class ControlsAdapter implements IControls {
+public class ControlsAdapter implements IControls, ActionFireable {
     private ActionFireable actionFireable;
-    private ControlsListener controlsListener;
+    private SelectionListener selectionListener;
 
     private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
 
@@ -104,8 +103,8 @@ public class ControlsAdapter implements IControls {
             startTask(new Action(EActionType.MOVE_TO));
         }
 
-        if (controlsListener != null) {
-            controlsListener.selectionChanged(selection);
+        if (selectionListener != null) {
+            selectionListener.selectionChanged(selection);
         }
     }
 
@@ -183,8 +182,8 @@ public class ControlsAdapter implements IControls {
         }
     }
 
-    public void setControlsListener(ControlsListener controlsListener) {
-        this.controlsListener = controlsListener;
+    public void setSelectionListener(SelectionListener selectionListener) {
+        this.selectionListener = selectionListener;
     }
 
     public void addActionListener(ActionListener actionListener) {
@@ -197,5 +196,13 @@ public class ControlsAdapter implements IControls {
         synchronized (actionListeners) {
             actionListeners.remove(actionListener);
         }
+    }
+
+    /**
+     * ActionFireable implementation
+     */
+    @Override
+    public void fireAction(IAction action) {
+        actionFireable.fireAction(action);
     }
 }
