@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java8.util.Optional;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 
 /**
  * Represents a hexagon on the grid.
@@ -142,13 +142,13 @@ public final class HexGridArea implements IMapArea {
 		}
 	}
 
-	public <T> Optional<T> iterate(ICoordinateWithRadiusVisitor<T> visitor) {
+	public <T> Optional<T> iterate(ICoordinateWithRadiusFunction<Optional<T>> visitor) {
 		return iterate(cX, cY, startRadius, maxRadius, visitor);
 	}
 
-	public static <T> Optional<T> iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusVisitor<T> visitor) {
+	public static <T> Optional<T> iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusFunction<Optional<T>> visitor) {
 		if (startRadius == 0) {
-			Optional<T> result = visitor.visit(cX, cY, 0);
+			Optional<T> result = visitor.apply(cX, cY, 0);
 			if (result.isPresent()) {
 				return result;
 			}
@@ -163,7 +163,7 @@ public final class HexGridArea implements IMapArea {
 					x += DIRECTION_INCREASE_X[direction];
 					y += DIRECTION_INCREASE_Y[direction];
 
-					Optional<T> result = visitor.visit(x, y, radius);
+					Optional<T> result = visitor.apply(x, y, radius);
 					if (result.isPresent()) {
 						return result;
 					}

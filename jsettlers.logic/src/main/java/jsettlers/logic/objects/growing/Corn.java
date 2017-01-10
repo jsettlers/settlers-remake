@@ -19,7 +19,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 
@@ -82,7 +82,7 @@ public final class Corn extends GrowingObject {
 	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
 		Optional<Boolean> isBlocked = iterateEarthArea(x, y, (currX, currY, radius) -> {
 			if (grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
-				return Optional.of(true); // return true if there is a map object in the area that enforces this position to remain earth
+				return Optional.of(Boolean.TRUE); // return true if there is a map object in the area that enforces this position to remain earth
 			}
 			return Optional.empty();
 		});
@@ -92,7 +92,7 @@ public final class Corn extends GrowingObject {
 		}
 	}
 
-	private static <T> Optional<T> iterateEarthArea(int x, int y, ICoordinateWithRadiusVisitor<T> visitor) {
+	private static <T> Optional<T> iterateEarthArea(int x, int y, ICoordinateWithRadiusFunction<Optional<T>> visitor) {
 		return HexGridArea.iterate(x, y, 0, 1, visitor);
 	}
 }

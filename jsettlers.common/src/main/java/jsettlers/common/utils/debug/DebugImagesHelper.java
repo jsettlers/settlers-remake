@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
 
 import jsettlers.common.Color;
 import jsettlers.common.utils.interfaces.ICoordinatePredicate;
-import jsettlers.common.utils.interfaces.ICoordinateValueProvider;
+import jsettlers.common.utils.interfaces.ICoordinateFunction;
 
 import static java8.util.J8Arrays.stream;
 
@@ -55,20 +55,20 @@ public final class DebugImagesHelper {
 		writeDebugImage(suffix, width, height, (x, y) -> provider.test(x, y) ? Color.BLUE : Color.RED);
 	}
 
-	public static void writeDebugImage(String suffix, int width, int height, ICoordinateValueProvider<Color> colorProvider) {
+	public static void writeDebugImage(String suffix, int width, int height, ICoordinateFunction<Color> colorFunction) {
 		if (!DEBUG_IMAGES_ENABLED) {
 			return;
 		}
 
 		try {
-			BufferedImage debugImage = createDebugImage(width, height, colorProvider);
+			BufferedImage debugImage = createDebugImage(width, height, colorFunction);
 			ImageIO.write(debugImage, "png", new File(DEBUG_PATH, System.nanoTime() + "-" + suffix + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static BufferedImage createDebugImage(int width, int height, ICoordinateValueProvider<Color> colorProvider) {
+	private static BufferedImage createDebugImage(int width, int height, ICoordinateFunction<Color> colorFunction) {
 		BufferedImage image = new BufferedImage(width + height, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics graphics = image.getGraphics();
 		graphics.clearRect(0, 0, width, height);
@@ -76,7 +76,7 @@ public final class DebugImagesHelper {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int imageX = x + (height - 1 - y);
-				image.setRGB(imageX, y, colorProvider.getValue(x, y).getARGB());
+				image.setRGB(imageX, y, colorFunction.apply(x, y).getARGB());
 			}
 		}
 

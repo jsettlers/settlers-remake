@@ -17,6 +17,6 @@ package jsettlers.common.utils.interfaces;
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public interface ICoordinateValueProvider<T> {
-	T getValue(int x, int y);
+public interface ICoordinateWithRadiusFunction<T> {
+	T apply(int x, int y, int radius);
 }

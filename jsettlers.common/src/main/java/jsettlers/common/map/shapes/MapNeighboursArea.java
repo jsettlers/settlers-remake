@@ -72,7 +72,7 @@ public class MapNeighboursArea implements IMapArea {
 
 	public static void iterate(int x, int y, ICoordinateConsumer consumer) {
 		for (EDirection direction : EDirection.VALUES) {
-			consumer.consume(x + direction.gridDeltaX, y + direction.gridDeltaY);
+			consumer.accept(x + direction.gridDeltaX, y + direction.gridDeltaY);
 		}
 	}
 }

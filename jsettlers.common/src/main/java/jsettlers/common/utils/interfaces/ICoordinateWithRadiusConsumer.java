@@ -18,5 +18,5 @@ package jsettlers.common.utils.interfaces;
  * Created by Andreas Eberle on 06.01.2017.
  */
 public interface ICoordinateWithRadiusConsumer {
-	void consume(int x, int y, int radius);
+	void accept(int x, int y, int radius);
 }

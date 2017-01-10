@@ -16,24 +16,25 @@ package jsettlers.common.utils;
 
 import java8.util.Optional;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusConsumer;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusVisitor;
+import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
 public class VisitorConsumerUtils {
 
-	public static <T> ICoordinateWithRadiusVisitor<T> visitor(ICoordinateWithRadiusConsumer consumer) {
+	public static <T> ICoordinateWithRadiusFunction<Optional<T>> visitor(ICoordinateWithRadiusConsumer consumer) {
 		return (x, y, radius) -> {
-			consumer.consume(x, y, radius);
+			consumer.accept(x, y, radius);
 			return Optional.empty();
 		};
 	}
 
-	public static <T> ICoordinateWithRadiusVisitor<T> filterBounds(int width, int height, ICoordinateWithRadiusVisitor<T> consumer) {
+	public static <T> ICoordinateWithRadiusFunction<Optional<T>> filterBounds(int width, int height,
+			ICoordinateWithRadiusFunction<Optional<T>> consumer) {
 		return (x, y, radius) -> {
 			if (0 <= x && x < width && 0 <= y && y < height) {
-				return consumer.visit(x, y, radius);
+				return consumer.apply(x, y, radius);
 			}
 			return Optional.empty();
 		};
