@@ -52,6 +52,7 @@ import android.widget.FrameLayout;
 
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, MenuNavigator, BuildingsMenuProvider, SelectionProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
+	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
@@ -248,9 +249,11 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
         if (selection.getSize() > 0) {
             this.selection = selection;
             showSelectionMenu();
-            Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
         } else {
             this.selection = null;
+			if (removeSelectionMenu()) {
+				dismissMenu();
+			}
         }
     }
 
@@ -268,6 +271,20 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+	@Override
+	public boolean removeSelectionMenu() {
+		Fragment fragment = getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_SELECTION_MENU);
+		if (fragment != null) {
+			getChildFragmentManager().beginTransaction().remove(fragment).commit();
+			return true;
+		}
+		return false;
+	}
+
+	private void showMenu() {
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+	}
+
 	private void showPausedMenu() {
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU) == null) {
 			PausedDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_PAUSED_MENU);
@@ -282,7 +299,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void showBuildingsMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 		addBuildsingMenuFragment();
 	}
 
@@ -293,7 +310,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void showGoodsMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, GoodsMenuFragment.newInstance())
@@ -301,7 +318,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void showSettlersMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, SettlersMenuFragment.newInstance())
@@ -309,12 +326,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void showSelectionMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 
         switch (selection.getSelectionType()) {
             case BUILDING:
                 getChildFragmentManager().beginTransaction()
-                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance())
+                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
                         .commit();
                 break;
             default:

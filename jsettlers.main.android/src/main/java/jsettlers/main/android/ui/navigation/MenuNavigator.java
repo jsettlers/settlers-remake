@@ -7,4 +7,5 @@ package jsettlers.main.android.ui.navigation;
 public interface MenuNavigator {
     boolean isMenuOpen();
     void dismissMenu();
+    boolean removeSelectionMenu();
 }

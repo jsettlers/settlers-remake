@@ -60,7 +60,8 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
                         @Override
                         public void onClick(View view) {
                             getControls().fireAction(new Action(EActionType.DESTROY));
-                            dismiss();
+                            getMenuNavigator().dismissMenu();
+                            getMenuNavigator().removeSelectionMenu();
                         }
                     })
                     .show();

@@ -6,10 +6,13 @@ import android.widget.ImageView;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -17,7 +20,7 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
  * Created by tompr on 10/01/2017.
  */
 
-public class PriorityFeature extends SelectionFeature {
+public class PriorityFeature extends SelectionFeature implements ActionListener {
     private static final String stoppedImage = "original_3_GUI_192";
     private static final String lowImage = "original_3_GUI_195";
     private static final String highImage = "original_3_GUI_378";
@@ -42,15 +45,29 @@ public class PriorityFeature extends SelectionFeature {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    EPriority nextPriority = getNextPriority();
-                    setImageForPriority(nextPriority);
-                    controls.fireAction(new SetBuildingPriorityAction(nextPriority));
+                    controls.fireAction(new SetBuildingPriorityAction(getNextPriority()));
                 }
             });
         }
+
+        getControls().addActionListener(this);
     }
 
-    public EPriority getNextPriority() {
+    @Override
+    public void finish() {
+        super.finish();
+        getControls().removeActionListener(this);
+    }
+
+    @Override
+    public void actionFired(IAction action) {
+        if (action.getActionType() == EActionType.SET_BUILDING_PRIORITY) {
+            SetBuildingPriorityAction priorityAction = (SetBuildingPriorityAction) action;
+            setImageForPriority(priorityAction.getNewPriority());
+        }
+    }
+
+    private EPriority getNextPriority() {
         EPriority[] supported = getBuildingState().getSupportedPriorities();
         EPriority current = getBuilding().getPriority();
 
@@ -71,11 +88,11 @@ public class PriorityFeature extends SelectionFeature {
     private ImageLink getImageLink(EPriority priority) {
         switch (priority) {
             case STOPPED:
-                return ImageLink.fromName("original_3_GUI_192", 0);
+                return ImageLink.fromName(stoppedImage, 0);
             case LOW:
-                return ImageLink.fromName("original_3_GUI_195", 0);
+                return ImageLink.fromName(lowImage, 0);
             case HIGH:
-                return ImageLink.fromName("original_3_GUI_378", 0);
+                return ImageLink.fromName(highImage, 0);
             default:
                 throw new RuntimeException("Image not found for priority " + priority.name());
         }

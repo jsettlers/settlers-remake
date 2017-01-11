@@ -57,6 +57,9 @@ public class ControlsAdapter implements IControls, ActionFireable {
             case MOVE_TO:
                 updateTask(action);
                 break;
+            case ASK_SET_WORK_AREA:
+                startTask(action);
+                break;
             case SET_WORK_AREA:
             case SELECT_POINT:
             case SELECT_AREA:
@@ -89,6 +92,8 @@ public class ControlsAdapter implements IControls, ActionFireable {
                         return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
                     case MOVE_TO:
                         return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
+                    case ASK_SET_WORK_AREA:
+                        return new PointAction(EActionType.SET_WORK_AREA, pointAction.getPosition());
                 }
             }
         }

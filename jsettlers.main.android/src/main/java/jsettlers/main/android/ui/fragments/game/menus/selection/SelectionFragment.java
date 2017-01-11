@@ -1,6 +1,8 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.action.Action;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.SelectionProvider;
@@ -27,6 +29,12 @@ public abstract class SelectionFragment extends Fragment {
 
         ControlsProvider controlsProvider = (ControlsProvider) getActivity();
         controlsAdapter = controlsProvider.getControls();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getControls().fireAction(new Action(EActionType.DESELECT));
     }
 
     protected ISelectionSet getSelection() {

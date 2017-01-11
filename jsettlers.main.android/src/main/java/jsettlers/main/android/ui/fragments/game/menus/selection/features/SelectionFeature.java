@@ -35,16 +35,16 @@ public abstract class SelectionFeature {
 
     }
 
-    protected void dismiss() {
-        menuNavigator.dismissMenu();
-    }
-
     protected IBuilding getBuilding() {
         return building;
     }
 
     protected ControlsAdapter getControls() {
         return controls;
+    }
+
+    public MenuNavigator getMenuNavigator() {
+        return menuNavigator;
     }
 
     protected View getView() {
