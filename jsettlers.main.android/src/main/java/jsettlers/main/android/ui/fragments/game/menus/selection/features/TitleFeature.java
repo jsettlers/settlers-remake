@@ -10,6 +10,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 10/01/2017.
@@ -17,8 +18,8 @@ import jsettlers.main.android.controls.ControlsAdapter;
 
 public class TitleFeature extends SelectionFeature {
 
-    public TitleFeature(IBuilding building, ControlsAdapter controls, View view) {
-        super(building, controls, view);
+    public TitleFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
+        super(building, controls, menuNavigator, view);
     }
 
     @Override

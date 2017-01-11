@@ -11,6 +11,7 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 10/01/2017.
@@ -23,8 +24,8 @@ public class PriorityFeature extends SelectionFeature {
 
     private ImageView imageView;
 
-    public PriorityFeature(IBuilding building, ControlsAdapter controls, View view) {
-        super(building, controls, view);
+    public PriorityFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
+        super(building, controls, menuNavigator, view);
     }
 
     @Override

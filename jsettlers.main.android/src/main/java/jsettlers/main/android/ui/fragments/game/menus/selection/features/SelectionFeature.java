@@ -1,10 +1,11 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection.features;
 
-import android.view.View;
-
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
+
+import android.view.View;
 
 /**
  * Created by tompr on 10/01/2017.
@@ -14,13 +15,15 @@ public abstract class SelectionFeature {
 
     private final IBuilding building;
     private final ControlsAdapter controls;
+    private final MenuNavigator menuNavigator;
     private final View view;
 
     private BuildingState buildingState;
 
-    public SelectionFeature(IBuilding building, ControlsAdapter controls, View view) {
+    public SelectionFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         this.building = building;
         this.controls = controls;
+        this.menuNavigator = menuNavigator;
         this.view = view;
     }
 
@@ -32,6 +35,10 @@ public abstract class SelectionFeature {
 
     }
 
+    protected void dismiss() {
+        menuNavigator.dismissMenu();
+    }
+
     protected IBuilding getBuilding() {
         return building;
     }
@@ -40,7 +47,7 @@ public abstract class SelectionFeature {
         return controls;
     }
 
-    public View getView() {
+    protected View getView() {
         return view;
     }
 

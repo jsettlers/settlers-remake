@@ -9,6 +9,7 @@ import jsettlers.main.android.ui.fragments.game.menus.selection.features.Priorit
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.TitleFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.WorkAreaFeature;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -59,10 +60,12 @@ public class SelectionBuildingFragment extends SelectionFragment {
             layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
         }
 
-        features.add(new TitleFeature(building, getControls(), getView()));
-        features.add(new PriorityFeature(building, getControls(), getView()));
-        features.add(new WorkAreaFeature(building, getControls(), getView()));
-        features.add(new DestroyFeature(building, getControls(), getView()));
+        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
+
+        features.add(new TitleFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new PriorityFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new WorkAreaFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new DestroyFeature(building, getControls(), menuNavigator, getView()));
 
         for (SelectionFeature feature : features) {
             feature.initialize(buildingState, getControls());

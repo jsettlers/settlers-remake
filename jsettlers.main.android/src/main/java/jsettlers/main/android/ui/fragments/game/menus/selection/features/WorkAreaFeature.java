@@ -9,14 +9,16 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 11/01/2017.
  */
 
 public class WorkAreaFeature extends SelectionFeature {
-    public WorkAreaFeature(IBuilding building, ControlsAdapter controls, View view) {
-        super(building, controls, view);
+
+    public WorkAreaFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
+        super(building, controls, menuNavigator, view);
     }
 
     @Override

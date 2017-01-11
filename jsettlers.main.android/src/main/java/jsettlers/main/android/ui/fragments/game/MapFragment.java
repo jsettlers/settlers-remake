@@ -29,6 +29,7 @@ import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -49,7 +50,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider, SelectionProvider{
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, MenuNavigator, BuildingsMenuProvider, SelectionProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
@@ -186,8 +187,8 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			return true;
 		}
 
-		if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-			bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+		if (isMenuOpen()) {
+            dismissMenu();
 			return true;
 		}
 
@@ -255,8 +256,18 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
 
 	/**
-	 * Show menu methods
+	 * Menu methods
 	 */
+    @Override
+    public boolean isMenuOpen() {
+        return bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED;
+    }
+
+    @Override
+    public void dismissMenu() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
 	private void showPausedMenu() {
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU) == null) {
 			PausedDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_PAUSED_MENU);
