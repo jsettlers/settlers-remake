@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 
 public abstract class SelectionFragment extends Fragment {
 
+    private SelectionProvider selectionProvider;
     private ISelectionSet selectionSet;
     private ControlsAdapter controlsAdapter;
 
@@ -24,7 +25,7 @@ public abstract class SelectionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SelectionProvider selectionProvider = (SelectionProvider) getParentFragment();
+        selectionProvider = (SelectionProvider) getParentFragment();
         selectionSet = selectionProvider.getCurrentSelection();
 
         ControlsProvider controlsProvider = (ControlsProvider) getActivity();
@@ -34,7 +35,11 @@ public abstract class SelectionFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getControls().fireAction(new Action(EActionType.DESELECT));
+        // If the selection hasn't changed when the selection menu fragment is destroyed then the user has started using some other menu and we should deselect
+        // If the selection has changed then we don't want to overwrite it.
+        if (selectionSet == selectionProvider.getCurrentSelection()) {
+            getControls().fireAction(new Action(EActionType.DESELECT));
+        }
     }
 
     protected ISelectionSet getSelection() {
