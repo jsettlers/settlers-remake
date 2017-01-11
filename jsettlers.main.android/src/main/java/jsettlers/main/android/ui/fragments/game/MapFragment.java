@@ -9,7 +9,9 @@ import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
@@ -359,6 +361,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 							.setConfirmButtonText(R.string.game_menu_quit)
 							.create()
 							.show(getChildFragmentManager(), null);
+					break;
+				case R.id.menu_item_faster:
+					controls.fireAction(new Action(EActionType.SPEED_FASTER));
+					break;
+				case R.id.menu_item_slower:
+					controls.fireAction(new Action(EActionType.SPEED_SLOWER));
 					break;
 			}
 			return true;

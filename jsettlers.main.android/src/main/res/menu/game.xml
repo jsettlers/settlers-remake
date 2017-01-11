@@ -16,4 +16,14 @@
         android:title="@string/game_menu_quit"
         android:orderInCategory="30"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_faster"
+        android:title="Faster"
+        android:orderInCategory="40"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_slower"
+        android:title="Slower"
+        android:orderInCategory="40"
+        app:showAsAction="never" />
 </menu>

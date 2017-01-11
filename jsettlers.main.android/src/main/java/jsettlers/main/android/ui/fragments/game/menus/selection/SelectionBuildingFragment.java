@@ -2,10 +2,12 @@ package jsettlers.main.android.ui.fragments.game.menus.selection;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.material.EPriority;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.ConstructionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.PriorityFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.TitleFeature;
@@ -50,9 +52,8 @@ public class SelectionBuildingFragment extends SelectionFragment {
         super.onActivityCreated(savedInstanceState);
         building = (IBuilding) getSelection().get(0);
         buildingState = new BuildingState(building);
-
+        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-
 
         if (buildingState.isOccupied()) {
         } else if (buildingState.isStock()) {
@@ -61,12 +62,19 @@ public class SelectionBuildingFragment extends SelectionFragment {
             layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
         }
 
-        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
 
         features.add(new TitleFeature(building, getControls(), menuNavigator, getView()));
-        features.add(new PriorityFeature(building, getControls(), menuNavigator, getView()));
-        features.add(new WorkAreaFeature(building, getControls(), menuNavigator, getView()));
         features.add(new DestroyFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
+
+        //TODO have the priority feature disable itself when construction finishes if there is not production priorty for building
+        if (buildingState.getSupportedPriorities().length > 1) {
+            features.add(new PriorityFeature(building, getControls(), menuNavigator, getView()));
+        }
+
+        if (building.getBuildingType().getWorkRadius() > 0) {
+            features.add(new WorkAreaFeature(building, getControls(), menuNavigator, getView()));
+        }
 
         if (buildingState.isConstruction()) {
             features.add(new ConstructionFeature(building, getControls(), menuNavigator, getView()));

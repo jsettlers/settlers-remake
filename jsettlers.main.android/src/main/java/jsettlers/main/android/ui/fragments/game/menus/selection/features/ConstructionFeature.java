@@ -74,6 +74,7 @@ public class ConstructionFeature extends SelectionFeature implements DrawListene
                         update();
                     } else {
                         constructionLayout.setVisibility(View.INVISIBLE);
+                        getControls().removeDrawListener(ConstructionFeature.this);
                     }
                 }
             });
@@ -81,13 +82,13 @@ public class ConstructionFeature extends SelectionFeature implements DrawListene
     }
 
     private void update() {
-        for (IBuildingMaterial buildingMaterial : getBuilding ().getMaterials()) {
-            switch (buildingMaterial.getMaterialType()) {
+        for (BuildingState.StackState materialStackState : getBuildingState().getStackStates()) {
+            switch (materialStackState.getType()) {
                 case PLANK:
-                    planksTextView.setText(buildingMaterial.getMaterialCount() + " needed");
+                    planksTextView.setText(materialStackState.getCount() + " needed");
                     break;
                 case STONE:
-                    stoneTextView.setText(buildingMaterial.getMaterialCount() + " needed");
+                    stoneTextView.setText(materialStackState.getCount() + " needed");
                     break;
             }
         }

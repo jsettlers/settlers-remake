@@ -65,9 +65,19 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/layout_materials"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_construction"
             android:layout_width="match_parent"
             android:layout_height="@dimen/menu_button_size"
+            android:orientation="horizontal"
             android:visibility="invisible">
 
             <ImageView
