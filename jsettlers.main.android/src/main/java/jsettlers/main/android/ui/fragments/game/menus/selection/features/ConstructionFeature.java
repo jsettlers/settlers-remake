@@ -7,17 +7,24 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by tompr on 11/01/2017.
  */
 
-public class ConstructionFeature extends SelectionFeature {
+public class ConstructionFeature extends SelectionFeature implements DrawListener {
+    private LinearLayout constructionLayout;
+    private TextView planksTextView;
+    private TextView stoneTextView;
+
     public ConstructionFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         super(building, controls, menuNavigator, view);
     }
@@ -26,7 +33,9 @@ public class ConstructionFeature extends SelectionFeature {
     public void initialize(BuildingState buildingState, ControlsAdapter controls) {
         super.initialize(buildingState, controls);
 
-        LinearLayout constructionLayout = (LinearLayout) getView().findViewById(R.id.layout_construction);
+        constructionLayout = (LinearLayout) getView().findViewById(R.id.layout_construction);
+        planksTextView = (TextView) getView().findViewById(R.id.text_view_required_planks);
+        stoneTextView = (TextView) getView().findViewById(R.id.text_view_required_stone);
         ImageView planksImageView = (ImageView) getView().findViewById(R.id.image_view_required_planks);
         ImageView stoneImageView = (ImageView) getView().findViewById(R.id.image_view_required_stone);
 
@@ -39,6 +48,46 @@ public class ConstructionFeature extends SelectionFeature {
                     break;
                 case STONE:
                     OriginalImageProvider.get(EMaterialType.STONE).setAsImage(stoneImageView);
+                    break;
+            }
+        }
+
+        update();
+        getControls().addDrawListener(this);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        getControls().removeDrawListener(this);
+    }
+
+    @Override
+    public void draw() {
+        if (!getBuildingState().isStillInState(getBuilding())) {
+            setBuildingState(new BuildingState(getBuilding()));
+
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    if (getBuildingState().isConstruction()) {
+                        update();
+                    } else {
+                        constructionLayout.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
+        }
+    }
+
+    private void update() {
+        for (IBuildingMaterial buildingMaterial : getBuilding ().getMaterials()) {
+            switch (buildingMaterial.getMaterialType()) {
+                case PLANK:
+                    planksTextView.setText(buildingMaterial.getMaterialCount() + " needed");
+                    break;
+                case STONE:
+                    stoneTextView.setText(buildingMaterial.getMaterialCount() + " needed");
                     break;
             }
         }

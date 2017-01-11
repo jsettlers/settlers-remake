@@ -43,7 +43,7 @@ public abstract class SelectionFeature {
         return controls;
     }
 
-    public MenuNavigator getMenuNavigator() {
+    protected MenuNavigator getMenuNavigator() {
         return menuNavigator;
     }
 
@@ -53,5 +53,9 @@ public abstract class SelectionFeature {
 
     protected BuildingState getBuildingState() {
         return buildingState;
+    }
+
+    protected void setBuildingState(BuildingState buildingState) {
+        this.buildingState = buildingState;
     }
 }

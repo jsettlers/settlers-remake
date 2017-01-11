@@ -1,5 +1,7 @@
 package jsettlers.main.android.controls;
 
+import android.util.Log;
+
 import java.util.LinkedList;
 
 import go.graphics.GLDrawContext;
@@ -29,6 +31,7 @@ public class ControlsAdapter implements IControls, ActionFireable {
     private SelectionListener selectionListener;
 
     private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
+    private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
 
 
     /**
@@ -115,6 +118,11 @@ public class ControlsAdapter implements IControls, ActionFireable {
 
     @Override
     public void drawAt(GLDrawContext gl) {
+        synchronized (drawListeners) {
+            for (DrawListener listener : drawListeners) {
+                listener.draw();
+            }
+        }
     }
 
     @Override
@@ -200,6 +208,18 @@ public class ControlsAdapter implements IControls, ActionFireable {
     public void removeActionListener(ActionListener actionListener) {
         synchronized (actionListeners) {
             actionListeners.remove(actionListener);
+        }
+    }
+
+    public void addDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.add(drawListener);
+        }
+    }
+
+    public void removeDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.remove(drawListener);
         }
     }
 

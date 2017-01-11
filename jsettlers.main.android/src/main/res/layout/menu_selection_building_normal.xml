@@ -78,6 +78,7 @@
                 android:scaleType="fitEnd" />
 
             <TextView
+                android:id="@+id/text_view_required_planks"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -93,6 +94,7 @@
                 android:scaleType="fitEnd" />
 
             <TextView
+                android:id="@+id/text_view_required_stone"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
