@@ -82,7 +82,13 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
 
     private void setImageForPriority(EPriority priority) {
         ImageLink imageLink = getImageLink(priority);
-        OriginalImageProvider.get(imageLink).setAsImage(imageView);
+
+        getView().post(new Runnable() {
+            @Override
+            public void run() {
+                OriginalImageProvider.get(imageLink).setAsImage(imageView);
+            }
+        });
     }
 
     private ImageLink getImageLink(EPriority priority) {
