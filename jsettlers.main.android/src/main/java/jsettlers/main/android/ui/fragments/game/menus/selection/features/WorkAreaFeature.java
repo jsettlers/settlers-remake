@@ -53,7 +53,6 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
         super.finish();
         getControls().removeActionListener(this);
         dismissSnackbar();
-
     }
 
     @Override
