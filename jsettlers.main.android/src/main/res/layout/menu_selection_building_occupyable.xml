@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <jsettlers.main.android.ui.customviews.InGameButton
+            android:id="@+id/image_view_priority"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="TextView" />
+
+        <jsettlers.main.android.ui.customviews.InGameButton
+            android:id="@+id/image_view_destroy"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="64dp" />
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_maximum_soldiers"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_add_swordsman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_add_bowman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_add_pikeman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/menu_button_size">
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_minimum_soldiers"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_remove_swordsman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_remove_bowman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <jsettlers.main.android.ui.customviews.InGameButton
+                    android:id="@+id/image_view_remove_pikeman"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/layout_construction"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/menu_button_size"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:visibility="invisible">-->
+
+        <!--<ImageView-->
+        <!--android:id="@+id/image_view_required_planks"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="fitEnd" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/text_view_required_planks"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:paddingLeft="8dp"-->
+        <!--android:text="test" />-->
+
+        <!--<ImageView-->
+        <!--android:id="@+id/image_view_required_stone"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="fitEnd" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/text_view_required_stone"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:paddingLeft="8dp"-->
+        <!--android:text="test" />-->
+
+        <!--</LinearLayout>-->
+
+    </FrameLayout>
+
+
+</LinearLayout>

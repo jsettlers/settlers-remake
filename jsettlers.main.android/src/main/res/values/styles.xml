@@ -18,10 +18,10 @@
 
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="colorButtonNormal">@color/primaryDark</item>
+    </style>
 
     <!--</style>-->
 
     <!--<style name="PrimaryButton" parent="Widget.AppCompat.Button">-->
         <!--<item name="android:textColor">@android:color/white</item>-->
-    </style>
 </resources>

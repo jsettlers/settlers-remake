@@ -31,6 +31,10 @@ public class OriginalImageProvider {
 		return INSTANCE.create(material.getIcon());
 	}
 
+	public static ImageReference get(String imageName) {
+		return INSTANCE.create(ImageLink.fromName(imageName, 0));
+	}
+
 	public static ImageReference get(ImageLink imageLink) {
 		return INSTANCE.create(imageLink);
 	}

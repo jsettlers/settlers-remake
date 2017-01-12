@@ -10,7 +10,6 @@ import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;

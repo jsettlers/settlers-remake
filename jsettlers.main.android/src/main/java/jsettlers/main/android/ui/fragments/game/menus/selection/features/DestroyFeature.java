@@ -14,6 +14,7 @@ import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
@@ -21,6 +22,7 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
  */
 
 public class DestroyFeature extends SelectionFeature implements ActionListener {
+    private static final String imageDestroy = "original_3_GUI_198";
 
     public DestroyFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         super(building, controls, menuNavigator, view);
@@ -29,13 +31,13 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
     @Override
     public void initialize(BuildingState buildingState, ControlsAdapter controls) {
         super.initialize(buildingState, controls);
-        ImageView imageView = (ImageView) getView().findViewById(R.id.image_view_destroy);
-        imageView.setVisibility(View.VISIBLE);
+        InGameButton destroyButton = (InGameButton) getView().findViewById(R.id.image_view_destroy);
+        destroyButton.setVisibility(View.VISIBLE);
 
-        ImageLink imageLink = ImageLink.fromName("original_3_GUI_198", 0);
-        OriginalImageProvider.get(imageLink).setAsImage(imageView);
+        ImageLink imageLink = ImageLink.fromName(imageDestroy, 0);
+        OriginalImageProvider.get(imageLink).setAsImage(destroyButton.getImageView());
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        destroyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getControls().fireAction(new Action(EActionType.ASK_DESTROY));

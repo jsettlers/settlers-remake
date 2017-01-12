@@ -8,6 +8,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.ConstructionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.MaterialsFeature;
+import jsettlers.main.android.ui.fragments.game.menus.selection.features.OccupiedFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.PriorityFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.TitleFeature;
@@ -55,17 +56,21 @@ public class SelectionBuildingFragment extends SelectionFragment {
         MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
-        if (buildingState.isOccupied()) {
-        } else if (buildingState.isStock()) {
-        } else if (buildingState.isTrading()) {
+        if (building instanceof IBuilding.IOccupied) {
+            layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
+            features.add(new OccupiedFeature(building, getControls(), menuNavigator, getView()));
+
+
+//        } else if (building instanceof IBuilding.IStock) {
+//        } else if (building instanceof IBuilding.ITrading) {
         } else {
             layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
+            features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
         }
 
 
         features.add(new TitleFeature(building, getControls(), menuNavigator, getView()));
         features.add(new DestroyFeature(building, getControls(), menuNavigator, getView()));
-        features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
 
         //TODO have the priority feature disable itself when construction finishes if there is not production priorty for building
         if (buildingState.getSupportedPriorities().length > 1) {
