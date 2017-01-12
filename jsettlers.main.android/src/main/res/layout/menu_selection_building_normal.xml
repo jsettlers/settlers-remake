@@ -8,30 +8,27 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/menu_button_size">
+        android:layout_height="wrap_content">
 
-        <ImageView
+        <jsettlers.main.android.ui.customviews.InGameButton
             android:id="@+id/image_view_priority"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:scaleType="fitCenter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:visibility="invisible" />
 
-        <ImageView
+        <jsettlers.main.android.ui.customviews.InGameButton
             android:id="@+id/image_view_work_area"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:scaleType="fitCenter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:visibility="invisible" />
 
-        <ImageView
+        <jsettlers.main.android.ui.customviews.InGameButton
             android:id="@+id/image_view_destroy"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:scaleType="fitCenter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:visibility="invisible" />
 
     </LinearLayout>
@@ -76,7 +73,7 @@
         <LinearLayout
             android:id="@+id/layout_construction"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/menu_button_size"
+            android:layout_height="@dimen/menu_tile_size"
             android:orientation="horizontal"
             android:visibility="invisible">
 

@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="@dimen/menu_button_size"
-        android:layout_height="@dimen/menu_button_size"
+        android:layout_width="@dimen/menu_tile_size"
+        android:layout_height="@dimen/menu_tile_size"
         android:scaleType="fitCenter"/>
 
     <TextView

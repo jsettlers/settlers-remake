@@ -14,6 +14,7 @@ import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
@@ -32,13 +33,13 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
     @Override
     public void initialize(BuildingState buildingState, ControlsAdapter controls) {
         super.initialize(buildingState, controls);
-        ImageView imageView = (ImageView) getView().findViewById(R.id.image_view_work_area);
-        imageView.setVisibility(View.VISIBLE);
+        InGameButton workAreaButton = (InGameButton) getView().findViewById(R.id.image_view_work_area);
+        workAreaButton.setVisibility(View.VISIBLE);
 
         ImageLink imageLink = ImageLink.fromName(image, 0);
-        OriginalImageProvider.get(imageLink).setAsImage(imageView);
+        OriginalImageProvider.get(imageLink).setAsImage(workAreaButton.getImageView());
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        workAreaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getControls().fireAction(new Action(EActionType.ASK_SET_WORK_AREA));

@@ -368,6 +368,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 				case R.id.menu_item_slower:
 					controls.fireAction(new Action(EActionType.SPEED_SLOWER));
 					break;
+				case R.id.menu_item_fastest:
+					controls.fireAction(new Action(EActionType.SPEED_FAST));
+					break;
+				case R.id.menu_item_skip:
+					controls.fireAction(new Action(EActionType.FAST_FORWARD));
+					break;
 			}
 			return true;
 		}

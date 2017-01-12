@@ -1,7 +1,6 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection.features;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
@@ -14,6 +13,7 @@ import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 /**
@@ -25,7 +25,7 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
     private static final String lowImage = "original_3_GUI_195";
     private static final String highImage = "original_3_GUI_378";
 
-    private ImageView imageView;
+    private InGameButton priorityButton;
 
     public PriorityFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         super(building, controls, menuNavigator, view);
@@ -37,12 +37,12 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
 
         EPriority[] supportedPriorities = getBuildingState().getSupportedPriorities();
         if (supportedPriorities.length > 1) {
-            imageView = (ImageView) getView().findViewById(R.id.image_view_priority);
-            imageView.setVisibility(View.VISIBLE);
+            priorityButton = (InGameButton) getView().findViewById(R.id.image_view_priority);
+            priorityButton.setVisibility(View.VISIBLE);
 
             setImageForPriority(getBuilding().getPriority());
 
-            imageView.setOnClickListener(new View.OnClickListener() {
+            priorityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     controls.fireAction(new SetBuildingPriorityAction(getNextPriority()));
@@ -86,7 +86,7 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
         getView().post(new Runnable() {
             @Override
             public void run() {
-                OriginalImageProvider.get(imageLink).setAsImage(imageView);
+                OriginalImageProvider.get(imageLink).setAsImage(priorityButton.getImageView());
             }
         });
     }
