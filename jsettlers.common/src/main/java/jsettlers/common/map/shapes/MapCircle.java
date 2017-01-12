@@ -14,10 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java8.util.Optional;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.interfaces.ICoordinateFunction;
+
+import java8.util.Optional;
 
 /**
  * This class represents a circular area of the map.
@@ -34,8 +35,8 @@ public final class MapCircle implements IMapArea {
 	private static final long serialVersionUID = 1L;
 
 	private final float radius;
-	private final short cy;
-	private final short cx;
+	private final short centerX;
+	private final short centerY;
 
 	/**
 	 * Factor so that d((0,0), (1,1)) is almost 1.
@@ -46,9 +47,9 @@ public final class MapCircle implements IMapArea {
 		this(pos.x, pos.y, radius);
 	}
 
-	public MapCircle(int cx, int cy, float radius) {
-		this.cx = (short) cx;
-		this.cy = (short) cy;
+	public MapCircle(int centerX, int centerY, float radius) {
+		this.centerX = (short) centerX;
+		this.centerY = (short) centerY;
 		this.radius = radius;
 	}
 
@@ -77,8 +78,8 @@ public final class MapCircle implements IMapArea {
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
-		int dx = x - cx;
-		int dy = y - cy;
+		int dx = x - centerX;
+		int dy = y - centerY;
 		return getSquaredDistance(dx, dy);
 	}
 
@@ -142,16 +143,16 @@ public final class MapCircle implements IMapArea {
 		return radius;
 	}
 
-	public final short getCenterY() {
-		return cy;
+	public final short getCenterX() {
+		return centerX;
 	}
 
-	public final short getCenterX() {
-		return cx;
+	public final short getCenterY() {
+		return centerY;
 	}
 
 	public ShortPoint2D getCenter() {
-		return new ShortPoint2D(cx, cy);
+		return new ShortPoint2D(centerX, centerY);
 	}
 
 	/**
@@ -163,12 +164,13 @@ public final class MapCircle implements IMapArea {
 		short yRadius = (short) (radius / MapCircle.Y_SCALE + 1); // +1 to make sure all positions are in
 		short halfLineWidth = (short) (radius * 1.2f);
 
-		return new SRectangle((short) (cx - halfLineWidth), (short) (cy - yRadius), (short) (cx + halfLineWidth), (short) (cy + yRadius));
+		return new SRectangle((short) (centerX - halfLineWidth), (short) (centerY - yRadius), (short) (centerX + halfLineWidth),
+				(short) (centerY + yRadius));
 	}
 
 	// @Override
 	public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> consumer) {
-		return iterate(cx, cy, radius, consumer);
+		return iterate(centerX, centerY, radius, consumer);
 	}
 
 	public static <T> Optional<T> iterate(ShortPoint2D center, float radius, ICoordinateFunction<Optional<T>> consumer) {
