@@ -14,13 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.objects.growing;
 
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 
@@ -71,29 +69,33 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handlePlacement(x, y, mapObjectsManager, grid);
-		iterateEarthArea(x, y, toFunction((currX, currY, radius) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH)));
+		getEarthAreaStream(x, y).forEach((currX, currY) -> {
+			grid.setLandscape(currX, currY, ELandscapeType.EARTH);
+		});
 	}
 
 	@Override
 	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handleRemove(x, y, mapObjectsManager, grid);
-		iterateEarthArea(x, y, (toFunction((currX, currY, radius) -> makePositionGrassIfPossible(currX, currY, grid))));
+		getEarthAreaStream(x, y).forEach((currX, currY) -> {
+			makePositionGrassIfPossible(currX, currY, grid);
+		});
 	}
 
 	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
-		Optional<Boolean> isBlocked = iterateEarthArea(x, y, (currX, currY, radius) -> {
-			if (grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
-				return Optional.of(Boolean.TRUE); // return true if there is a map object in the area that enforces this position to remain earth
-			}
-			return Optional.empty();
-		});
+		Optional<Boolean> isBlocked = getEarthAreaStream(x, y)
+				.filter((currX, currY) -> grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT,
+						EMapObjectType.CORN_DEAD))
+				.forEach((currX, currY) -> {
+					return Optional.of(Boolean.TRUE); // return true if there is a map object in the area that enforces this position to remain earth
+					});
 
 		if (!isBlocked.isPresent()) {
 			grid.setLandscape(x, y, ELandscapeType.GRASS);
 		}
 	}
 
-	private static <T> Optional<T> iterateEarthArea(int x, int y, ICoordinateWithRadiusFunction<Optional<T>> visitor) {
-		return HexGridArea.iterate(x, y, 0, 1, visitor);
+	private static CoordinateStream getEarthAreaStream(int x, int y) {
+		return HexGridArea.stream(x, y, 0, 1);
 	}
 }

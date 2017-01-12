@@ -16,6 +16,7 @@ package jsettlers.common.map.shapes;
 
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.interfaces.ICoordinateFunction;
 
 import java8.util.Optional;
@@ -71,10 +72,8 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the distance of map coordinates to the center.
 	 *
-	 * @param x
-	 *            The x coordinate.
-	 * @param y
-	 *            The y coordinate
+	 * @param x The x coordinate.
+	 * @param y The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
@@ -112,8 +111,7 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the half width of a line, roundend.
 	 *
-	 * @param relativeY
-	 *            The x coordinate of the line relative to the center
+	 * @param relativeY The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected final float getHalfLineWidth(int relativeY) {
@@ -169,38 +167,43 @@ public final class MapCircle implements IMapArea {
 	}
 
 	// @Override
-	public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> consumer) {
-		return iterate(centerX, centerY, radius, consumer);
+	public CoordinateStream stream() {
+		return stream(centerX, centerY, radius);
 	}
 
-	public static <T> Optional<T> iterate(ShortPoint2D center, float radius, ICoordinateFunction<Optional<T>> consumer) {
-		return iterate(center.x, center.y, radius, consumer);
+	public static CoordinateStream stream(ShortPoint2D center, float radius) {
+		return stream(center.x, center.y, radius);
 	}
 
-	public static <T> Optional<T> iterate(int centerX, int centerY, float radius, ICoordinateFunction<Optional<T>> consumer) {
-		int currentYOffset = -(int) (radius / MapCircle.Y_SCALE);
-		float currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
-		float currentXOffset = -currentHalfLineWidth;
+	public static CoordinateStream stream(int centerX, int centerY, float radius) {
+		return new CoordinateStream() {
+			@Override
+			public <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function) {
+				int currentYOffset = -(int) (radius / MapCircle.Y_SCALE);
+				float currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
+				float currentXOffset = -currentHalfLineWidth;
 
-		int maxInternalY = (int) Math.ceil(radius / MapCircle.Y_SCALE);
+				int maxInternalY = (int) Math.ceil(radius / MapCircle.Y_SCALE);
 
-		while (currentYOffset < maxInternalY) {
-			int x = (int) Math.ceil(.5f * currentYOffset + currentXOffset) + centerX;
-			int y = currentYOffset + centerY;
+				while (currentYOffset < maxInternalY) {
+					int x = (int) Math.ceil(.5f * currentYOffset + currentXOffset) + centerX;
+					int y = currentYOffset + centerY;
 
-			Optional<T> result = consumer.apply(x, y);
-			if (result.isPresent()) {
-				return result;
+					Optional<T> result = function.apply(x, y);
+					if (result.isPresent()) {
+						return result;
+					}
+
+					currentXOffset++;
+					if (currentXOffset > currentHalfLineWidth) {
+						// next line
+						currentYOffset++;
+						currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
+						currentXOffset = -currentHalfLineWidth;
+					}
+				}
+				return Optional.empty();
 			}
-
-			currentXOffset++;
-			if (currentXOffset > currentHalfLineWidth) {
-				// next line
-				currentYOffset++;
-				currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
-				currentXOffset = -currentHalfLineWidth;
-			}
-		}
-		return Optional.empty();
+		};
 	}
 }

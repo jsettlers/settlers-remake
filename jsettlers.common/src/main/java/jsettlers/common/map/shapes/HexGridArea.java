@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java8.util.Optional;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.interfaces.ICoordinateFunction;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 
@@ -143,41 +144,42 @@ public final class HexGridArea implements IMapArea {
 		}
 	}
 
-//	@Override
-	public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> consumer) {
-		return iterate((x, y, radius) -> consumer.apply(x, y));
+	// @Override
+	public CoordinateStream stream() {
+		return stream(cX, cY, startRadius, maxRadius);
 	}
 
-	public <T> Optional<T> iterate(ICoordinateWithRadiusFunction<Optional<T>> visitor) {
-		return iterate(cX, cY, startRadius, maxRadius, visitor);
-	}
-
-	public static <T> Optional<T> iterate(int cX, int cY, int startRadius, int maxRadius, ICoordinateWithRadiusFunction<Optional<T>> visitor) {
-		if (startRadius == 0) {
-			Optional<T> result = visitor.apply(cX, cY, 0);
-			if (result.isPresent()) {
-				return result;
-			}
-		}
-
-		int x = cX;
-		int y = cY - startRadius; // radius * NORTH_EAST
-
-		for (int radius = startRadius; radius <= maxRadius; radius++) {
-			for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
-				for (int step = 0; step < radius; step++) {
-					x += DIRECTION_INCREASE_X[direction];
-					y += DIRECTION_INCREASE_Y[direction];
-
-					Optional<T> result = visitor.apply(x, y, radius);
+	public static CoordinateStream stream(int cX, int cY, int startRadius, int maxRadius) {
+		return new CoordinateStream() {
+			@Override
+			public <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function) {
+				if (startRadius == 0) {
+					Optional<T> result = function.apply(cX, cY);
 					if (result.isPresent()) {
 						return result;
 					}
 				}
-			}
-			y--; // go to next radius / go one NORTH_EAST
-		}
 
-		return Optional.empty();
+				int x = cX;
+				int y = cY - startRadius; // radius * NORTH_EAST
+
+				for (int radius = startRadius; radius <= maxRadius; radius++) {
+					for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+						for (int step = 0; step < radius; step++) {
+							x += DIRECTION_INCREASE_X[direction];
+							y += DIRECTION_INCREASE_Y[direction];
+
+							Optional<T> result = function.apply(x, y);
+							if (result.isPresent()) {
+								return result;
+							}
+						}
+					}
+					y--; // go to next radius / go one NORTH_EAST
+				}
+
+				return Optional.empty();
+			}
+		};
 	}
 }

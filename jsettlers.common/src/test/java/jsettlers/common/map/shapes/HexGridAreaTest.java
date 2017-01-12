@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -109,10 +108,10 @@ public class HexGridAreaTest {
 	@Test
 	public void testIterateSinglePoint() {
 		int[] counter = new int[1];
-		HexGridArea.iterate(10, 10, 0, 0, toFunction((x, y, radius) -> {
+		HexGridArea.stream(10, 10, 0, 0).forEach((x, y) -> {
 			counter[0]++;
 			assertEquals(new ShortPoint2D(10, 10), new ShortPoint2D(x, y));
-		}));
+		});
 
 		assertEquals(1, counter[0]);
 	}
@@ -123,7 +122,7 @@ public class HexGridAreaTest {
 		Object expectedResultObject = new Object();
 		int[] counter = new int[1];
 
-		Optional<Object> actualResultObject = HexGridArea.iterate(10, 10, 3, 10, (x, y, radius) -> {
+		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).forEach((x, y) -> {
 			counter[0]++;
 			if (counter[0] == expectedVisits) {
 				return Optional.of(expectedResultObject);
@@ -184,7 +183,7 @@ public class HexGridAreaTest {
 
 		int[] count = new int[1];
 
-		Optional<Object> iterationResult = HexGridArea.iterate(center.x, center.y, startRadius, maxRadius, toFunction((x, y, radius) -> {
+		HexGridArea.stream(center.x, center.y, startRadius, maxRadius).forEach((x, y) -> {
 			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
 			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
 				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
@@ -193,9 +192,8 @@ public class HexGridAreaTest {
 			positions.set(x + y * width);
 			DebugImagesHelper.writeDebugImageBoolean("count-" + count[0], width, height, (imageX, imageY) -> positions.get(imageX + imageY * width));
 			count[0]++;
-		}));
+		});
 
-		assertFalse(iterationResult.isPresent());
 		assertEquals(expectedCount, count[0]);
 	}
 }

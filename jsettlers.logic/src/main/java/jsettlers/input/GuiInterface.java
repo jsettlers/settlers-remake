@@ -17,7 +17,6 @@ package jsettlers.input;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,8 +78,6 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -639,12 +636,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		final List<ISelectable> selected = new LinkedList<>();
 
-		MapCircle.iterate(actionPosition, SELECT_BY_TYPE_RADIUS, toFunction((x, y) -> {
+		MapCircle.stream(actionPosition, SELECT_BY_TYPE_RADIUS).forEach((x, y) -> {
 			final IGuiMovable movable = grid.getMovable(x, y);
 			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
 				selected.add(movable);
 			}
-		}));
+		});
 
 		setSelection(new SelectionSet(selected));
 	}

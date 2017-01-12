@@ -31,7 +31,7 @@ public class RelativeToRealPointIterable implements Iterable<ShortPoint2D> {
 	 * Create a new {@link RelativeToRealPointIterable}.
 	 * 
 	 * @param relativePositions
-	 *            The positions to iterate over
+	 *            The positions to forEach over
 	 * @param relationPosition
 	 *            The reference point to use.
 	 */

@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.CoordinateStreamingUtils;
 
 public class MapCircleTest {
 
@@ -48,11 +47,11 @@ public class MapCircleTest {
 
 			MapCircleIterator iterator = circle.iterator();
 
-			circle.iterate(CoordinateStreamingUtils.toFunction((x, y) -> {
+			circle.stream().forEach((x, y) -> {
 				assertTrue(iterator.hasNext());
 				ShortPoint2D expected = iterator.next();
 				assertEquals(expected, new ShortPoint2D(x, y));
-			}));
+			});
 
 			assertFalse(iterator.hasNext());
 		}

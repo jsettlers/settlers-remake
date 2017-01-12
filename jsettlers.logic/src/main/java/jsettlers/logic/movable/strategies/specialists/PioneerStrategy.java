@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.specialists;
 
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
-
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -94,16 +92,16 @@ public final class PioneerStrategy extends MovableStrategy {
 		double[] bestNeighbourDistance = new double[] { Double.MAX_VALUE }; // distance from start point
 
 		ShortPoint2D position = movable.getPos();
-		HexGridArea.iterate(position.x, position.y, 1, 6, toFunction(((sateliteX, sateliteY, radius) -> {
-			ShortPoint2D currPosition = new ShortPoint2D(sateliteX, sateliteY);
-			if (super.isValidPosition(currPosition) && canWorkOnPos(currPosition)) {
-				double distance = ShortPoint2D.getOnGridDist(sateliteX - centerPos.x, sateliteY - centerPos.y);
-				if (distance < bestNeighbourDistance[0]) {
-					bestNeighbourDistance[0] = distance;
-					bestNeighbourDir[0] = EDirection.getApproxDirection(position, currPosition);
+		HexGridArea.stream(position.x, position.y, 1, 6).forEach((satelliteX, satelliteY) -> {
+			ShortPoint2D currPosition = new ShortPoint2D(satelliteX, satelliteY);
+			if (super.isValidPosition(currPosition) && canWorkOnPos(currPosition)) { // FIXME replace with filters
+					double distance = ShortPoint2D.getOnGridDist(satelliteX - centerPos.x, satelliteY - centerPos.y);
+					if (distance < bestNeighbourDistance[0]) {
+						bestNeighbourDistance[0] = distance;
+						bestNeighbourDir[0] = EDirection.getApproxDirection(position, currPosition);
+					}
 				}
-			}
-		})));
+			});
 		return bestNeighbourDir[0];
 	}
 

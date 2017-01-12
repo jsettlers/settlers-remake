@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -78,7 +76,6 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.CoordinateStreamingUtils;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
@@ -1354,7 +1351,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
-			return area.iterate(CoordinateStreamingUtils.filterBounds(width, height, (x, y, radius) -> {
+			return area.stream().filterBounds(width, height).forEach((x, y) -> {
 				IAttackable currAttackable = movableGrid.getMovableAt(x, y);
 				if (includeTowers && !isBowman && currAttackable == null) {
 					currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
@@ -1365,7 +1362,7 @@ public final class MainGrid implements Serializable {
 				} else {
 					return Optional.empty();
 				}
-			})).orElse(null);
+			}).orElse(null);
 		}
 
 		@Override
@@ -1377,7 +1374,9 @@ public final class MainGrid implements Serializable {
 		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
 			MutablePoint2D vector = new MutablePoint2D();
 
-			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, toFunction((currX, currY, radius) -> {
+			HexGridArea.stream(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS).forEach((currX, currY) -> {
+				int radius = ShortPoint2D.getOnGridDist(currX - x, currY - y);
+
 				int factor;
 				if (!MainGrid.this.isInBounds(currX, currY)) {
 					factor = radius == 1 ? 6 : 2;
@@ -1388,7 +1387,7 @@ public final class MainGrid implements Serializable {
 				}
 				vector.x += (x - currX) * factor;
 				vector.y += (y - currY) * factor;
-			}));
+			});
 
 			return vector.toShortPoint2D();
 		}

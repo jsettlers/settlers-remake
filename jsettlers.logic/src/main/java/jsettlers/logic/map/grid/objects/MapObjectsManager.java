@@ -402,13 +402,13 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	public ShortPoint2D pushMaterialForced(int x, int y, EMaterialType materialType) {
-		return HexGridArea.iterate(x, y, 0, 200, (currX, currY, radius) -> {
-			if (grid.isInBounds(currX, currY) && canForcePushMaterial(currX, currY, materialType)) {
-				pushMaterial(currX, currY, materialType);
-				return Optional.of(new ShortPoint2D(currX, currY));
-			}
-			return Optional.empty();
-		}).orElse(null);
+		return HexGridArea.stream(x, y, 0, 200)
+				.filterBounds(grid.getWidth(), grid.getHeight())
+				.filter((currX, currY) -> canForcePushMaterial(currX, currY, materialType))
+				.forEach((currX, currY) -> {
+					pushMaterial(currX, currY, materialType);
+					return Optional.of(new ShortPoint2D(currX, currY));
+				}).orElse(null);
 	}
 
 	/**

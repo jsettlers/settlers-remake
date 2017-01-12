@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.movable;
 
-import static jsettlers.common.utils.CoordinateStreamingUtils.filterBounds;
-import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -117,7 +114,7 @@ public final class MovableGrid implements Serializable {
 		MutableBoolean foundOne = new MutableBoolean();
 		byte movablePlayer = movable.getPlayerId();
 
-		area.iterate(filterBounds(width, height, toFunction((currX, currY, radius) -> {
+		area.stream().filterBounds(width, height).forEach((currX, currY) -> {
 			Movable currMovable = getMovableAt(currX, currY);
 			if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
 				currMovable.informAboutAttackable(movable);
@@ -127,7 +124,7 @@ public final class MovableGrid implements Serializable {
 					foundOne.value = true;
 				}
 			}
-		})));
+		});
 	}
 
 	// FIXME @Andreas Eberle replace player everywhere by an object with team and player and move this method to the new class

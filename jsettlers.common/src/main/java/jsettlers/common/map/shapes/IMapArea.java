@@ -17,7 +17,10 @@ package jsettlers.common.map.shapes;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import java8.util.Optional;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.interfaces.ICoordinateConsumer;
+import jsettlers.common.utils.interfaces.ICoordinateFunction;
 
 /**
  * This defines an area on the map of a given shape.
@@ -46,4 +49,6 @@ public interface IMapArea extends Iterable<ShortPoint2D>, Serializable {
 	 */
 	@Override
 	public Iterator<ShortPoint2D> iterator();
+
+//	<T> Optional<T> forEach(ICoordinateFunction<Optional<T>> consumer);
 }

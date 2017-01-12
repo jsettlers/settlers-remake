@@ -122,12 +122,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public boolean isHexAreaOfType(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
-		Optional<Boolean> iterationResult = HexGridArea.iterate(x, y, minRadius, maxRadius, (currX, currY, radius) -> {
-			if (!isLandscapeOf(currX, currY, landscapeTypes)) {
-				return Optional.of(false);
-			}
-			return Optional.empty();
-		});
+		Optional<Boolean> iterationResult = HexGridArea.stream(x, y, minRadius, maxRadius).forEach(
+				(currX, currY) -> !isLandscapeOf(currX, currY, landscapeTypes) ? Optional.of(false) : Optional.empty());
 		return !iterationResult.isPresent();
 	}
 
@@ -301,8 +297,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	/**
 	 * This method activates the unflattening process. This causes a flattened position to be turned into grass after a while.
 	 *
-	 * @param x X coordinate of the position.
-	 * @param y Y coordinate of the position.
+	 * @param x
+	 *            X coordinate of the position.
+	 * @param y
+	 *            Y coordinate of the position.
 	 */
 	private void activateUnflattening(int x, int y) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);
