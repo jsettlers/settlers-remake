@@ -5,6 +5,7 @@ import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
+import android.content.Context;
 import android.view.View;
 
 /**
@@ -49,6 +50,10 @@ public abstract class SelectionFeature {
 
     protected View getView() {
         return view;
+    }
+
+    protected Context getContext() {
+        return getView().getContext();
     }
 
     protected BuildingState getBuildingState() {

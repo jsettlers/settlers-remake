@@ -7,7 +7,6 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
-import jsettlers.logic.buildings.Building;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.DrawListener;
@@ -78,7 +77,7 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
                 textView.setText(materialStackState.getCount() + "");
 
             } else {
-                View materialItemView = layoutInflater.inflate(R.layout.item_material, materialsLayout, false);
+                View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
                 ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view);
                 TextView textView = (TextView) materialItemView.findViewById(R.id.text_view);
 
