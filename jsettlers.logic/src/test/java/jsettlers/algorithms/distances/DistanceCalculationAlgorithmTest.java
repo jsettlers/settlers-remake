@@ -27,7 +27,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.utils.VisitorConsumerUtils;
+import jsettlers.common.utils.CoordinateStreamingUtils;
 import jsettlers.common.utils.debug.DebugImagesHelper;
 import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 import jsettlers.logic.map.loading.MapLoader;
@@ -82,7 +82,7 @@ public class DistanceCalculationAlgorithmTest {
 			for (int y = 0; y < height; y++) {
 				if (provider.test(x, y)) {
 					HexGridArea.iterate(x, y, 0, maxDistance,
-							VisitorConsumerUtils.filterBounds(width, height, (currX, currY, radius) -> {
+							CoordinateStreamingUtils.filterBounds(width, height, (currX, currY, radius) -> {
 								inDistance.set(currY * width + currX);
 								return Optional.empty();
 							}));

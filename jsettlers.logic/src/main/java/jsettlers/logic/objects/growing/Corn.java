@@ -14,7 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.objects.growing;
 
-import java8.util.Optional;
+import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
+
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -23,7 +24,7 @@ import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 
-import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+import java8.util.Optional;
 
 /**
  * This is a Corn on the map.
@@ -70,13 +71,13 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handlePlacement(x, y, mapObjectsManager, grid);
-		iterateEarthArea(x, y, visitor((currX, currY, radius) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH)));
+		iterateEarthArea(x, y, toFunction((currX, currY, radius) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH)));
 	}
 
 	@Override
 	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handleRemove(x, y, mapObjectsManager, grid);
-		iterateEarthArea(x, y, (visitor((currX, currY, radius) -> makePositionGrassIfPossible(currX, currY, grid))));
+		iterateEarthArea(x, y, (toFunction((currX, currY, radius) -> makePositionGrassIfPossible(currX, currY, grid))));
 	}
 
 	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {

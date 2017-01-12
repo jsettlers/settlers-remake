@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.movable;
 
-import static jsettlers.common.utils.VisitorConsumerUtils.filterBounds;
-import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+import static jsettlers.common.utils.CoordinateStreamingUtils.filterBounds;
+import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -117,7 +117,7 @@ public final class MovableGrid implements Serializable {
 		MutableBoolean foundOne = new MutableBoolean();
 		byte movablePlayer = movable.getPlayerId();
 
-		area.iterate(filterBounds(width, height, visitor((currX, currY, radius) -> {
+		area.iterate(filterBounds(width, height, toFunction((currX, currY, radius) -> {
 			Movable currMovable = getMovableAt(currX, currY);
 			if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
 				currMovable.informAboutAttackable(movable);

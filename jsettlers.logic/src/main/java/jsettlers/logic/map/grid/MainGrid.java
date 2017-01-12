@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
+import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +25,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -77,7 +78,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.VisitorConsumerUtils;
+import jsettlers.common.utils.CoordinateStreamingUtils;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
@@ -116,7 +117,7 @@ import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 
-import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+import java8.util.Optional;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -755,8 +756,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1353,7 +1354,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
-			return area.iterate(VisitorConsumerUtils.filterBounds(width, height, (x, y, radius) -> {
+			return area.iterate(CoordinateStreamingUtils.filterBounds(width, height, (x, y, radius) -> {
 				IAttackable currAttackable = movableGrid.getMovableAt(x, y);
 				if (includeTowers && !isBowman && currAttackable == null) {
 					currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
@@ -1376,7 +1377,7 @@ public final class MainGrid implements Serializable {
 		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
 			MutablePoint2D vector = new MutablePoint2D();
 
-			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, visitor((currX, currY, radius) -> {
+			HexGridArea.iterate(x, y, 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS, toFunction((currX, currY, radius) -> {
 				int factor;
 				if (!MainGrid.this.isInBounds(currX, currY)) {
 					factor = radius == 1 ? 6 : 2;
@@ -1739,7 +1740,7 @@ public final class MainGrid implements Serializable {
 
 	final class GuiInputGrid implements IGuiInputGrid {
 		@Override
-		public final Movable getMovable(short x, short y) {
+		public final Movable getMovable(int x, int y) {
 			return movableGrid.getMovableAt(x, y);
 		}
 

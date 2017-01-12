@@ -17,6 +17,7 @@ package jsettlers.input;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,6 +80,8 @@ import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
+import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
+
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
  *
@@ -124,7 +127,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}, 1000, 1000);
 
 		Player player = grid.getPlayer(playerId);
-		if(player != null ){
+		if (player != null) {
 			player.setMessenger(connector);
 		}
 		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, this.playerId));
@@ -350,10 +353,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			requestSoldiers(EChangeTowerSoldierTaskType.ONE, null);
 			break;
 		case SOLDIERS_LESS:
-			requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction)action).getSoldierType());
+			requestSoldiers(EChangeTowerSoldierTaskType.LESS, ((SoldierAction) action).getSoldierType());
 			break;
 		case SOLDIERS_MORE:
-			requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction)action).getSoldierType());
+			requestSoldiers(EChangeTowerSoldierTaskType.MORE, ((SoldierAction) action).getSoldierType());
 			break;
 
 		case ABORT:
@@ -368,11 +371,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-
-
 	private void requestSoldiers(EChangeTowerSoldierTaskType taskType, ESoldierType soldierType) {
 		ISelectable selectable = currentSelection.getSingle();
-		if(selectable instanceof OccupyingBuilding) {
+		if (selectable instanceof OccupyingBuilding) {
 			OccupyingBuilding building = ((OccupyingBuilding) selectable);
 			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPos(), taskType, soldierType));
 		}
@@ -638,12 +639,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		final List<ISelectable> selected = new LinkedList<>();
 
-		for (final ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
-			final IGuiMovable movable = grid.getMovable(pos.x, pos.y);
+		MapCircle.iterate(actionPosition, SELECT_BY_TYPE_RADIUS, toFunction((x, y) -> {
+			final IGuiMovable movable = grid.getMovable(x, y);
 			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
 				selected.add(movable);
 			}
-		}
+		}));
 
 		setSelection(new SelectionSet(selected));
 	}

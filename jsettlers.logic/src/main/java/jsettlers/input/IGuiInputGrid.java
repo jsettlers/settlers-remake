@@ -44,7 +44,7 @@ public interface IGuiInputGrid {
 
 	void resetDebugColors();
 
-	IGuiMovable getMovable(short x, short y);
+	IGuiMovable getMovable(int x, int y);
 
 	/**
 	 * Gets a position where the building can be constructed some points around pos.
@@ -55,7 +55,7 @@ public interface IGuiInputGrid {
 	 *            The type of the building
 	 * @param player
 	 *            The player that wants to construct the building.
-	 * @param useNeighborPositionsForConstruction
+	 * @param useNeighbors
 	 *            If this is true, not only the given position is checked, if it can be used to construct a building, but also the neighbors.<br>
 	 *            If this is false, only the given position will be checked.
 	 * @return <code>null</code> if no position was found, the position otherwise.

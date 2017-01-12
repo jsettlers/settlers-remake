@@ -15,15 +15,24 @@
 package jsettlers.common.utils;
 
 import java8.util.Optional;
+import jsettlers.common.utils.interfaces.ICoordinateConsumer;
+import jsettlers.common.utils.interfaces.ICoordinateFunction;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusConsumer;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public class VisitorConsumerUtils {
+public class CoordinateStreamingUtils {
 
-	public static <T> ICoordinateWithRadiusFunction<Optional<T>> visitor(ICoordinateWithRadiusConsumer consumer) {
+	public static <T> ICoordinateFunction<Optional<T>> toFunction(ICoordinateConsumer consumer) {
+		return (x, y) -> {
+			consumer.accept(x, y);
+			return Optional.empty();
+		};
+	}
+
+	public static <T> ICoordinateWithRadiusFunction<Optional<T>> toFunction(ICoordinateWithRadiusConsumer consumer) {
 		return (x, y, radius) -> {
 			consumer.accept(x, y, radius);
 			return Optional.empty();

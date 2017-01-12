@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2015
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -14,8 +14,10 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
+import java8.util.Optional;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.interfaces.ICoordinateFunction;
 
 /**
  * This class represents a circular area of the map.
@@ -25,7 +27,7 @@ import jsettlers.common.position.ShortPoint2D;
  * Geometry calculations (a is the constant {@link MapCircle#Y_SCALE}:
  * <p>
  * <img src="doc-files/MapCircle-1.png">
- * 
+ *
  * @author michael
  */
 public final class MapCircle implements IMapArea {
@@ -67,7 +69,7 @@ public final class MapCircle implements IMapArea {
 
 	/**
 	 * Gets the distance of map coordinates to the center.
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate.
 	 * @param y
@@ -82,7 +84,7 @@ public final class MapCircle implements IMapArea {
 
 	/**
 	 * Gives the squared distance for given delta x and delta y
-	 * 
+	 *
 	 * @param dx
 	 * @param dy
 	 * @return
@@ -108,14 +110,18 @@ public final class MapCircle implements IMapArea {
 
 	/**
 	 * Gets the half width of a line, roundend.
-	 * 
-	 * @param relativey
+	 *
+	 * @param relativeY
 	 *            The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
-	protected final float getHalfLineWidth(int relativey) {
-		double maximum = Math.sqrt(radius * radius - relativey * MapCircle.Y_SCALE * relativey * MapCircle.Y_SCALE);
-		if (relativey % 2 == 0) {
+	protected final float getHalfLineWidth(int relativeY) {
+		return calculateHalfLineWidth(radius, relativeY);
+	}
+
+	private static float calculateHalfLineWidth(float radius, int relativeY) {
+		double maximum = Math.sqrt(radius * radius - relativeY * MapCircle.Y_SCALE * relativeY * MapCircle.Y_SCALE);
+		if (relativeY % 2 == 0) {
 			// round to tiles.
 			return (float) Math.floor(maximum);
 		} else {
@@ -150,7 +156,7 @@ public final class MapCircle implements IMapArea {
 
 	/**
 	 * Calculates the outer borders of this map circle. That means that all positions of this circle are inside the returned rectangle.
-	 * 
+	 *
 	 * @return
 	 */
 	public SRectangle getBorders() {
@@ -160,4 +166,39 @@ public final class MapCircle implements IMapArea {
 		return new SRectangle((short) (cx - halfLineWidth), (short) (cy - yRadius), (short) (cx + halfLineWidth), (short) (cy + yRadius));
 	}
 
+	// @Override
+	public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> consumer) {
+		return iterate(cx, cy, radius, consumer);
+	}
+
+	public static <T> Optional<T> iterate(ShortPoint2D center, float radius, ICoordinateFunction<Optional<T>> consumer) {
+		return iterate(center.x, center.y, radius, consumer);
+	}
+
+	public static <T> Optional<T> iterate(int centerX, int centerY, float radius, ICoordinateFunction<Optional<T>> consumer) {
+		int currentYOffset = -(int) (radius / MapCircle.Y_SCALE);
+		float currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
+		float currentXOffset = -currentHalfLineWidth;
+
+		int maxInternalY = (int) Math.ceil(radius / MapCircle.Y_SCALE);
+
+		while (currentYOffset < maxInternalY) {
+			int x = (int) Math.ceil(.5f * currentYOffset + currentXOffset) + centerX;
+			int y = currentYOffset + centerY;
+
+			Optional<T> result = consumer.apply(x, y);
+			if (result.isPresent()) {
+				return result;
+			}
+
+			currentXOffset++;
+			if (currentXOffset > currentHalfLineWidth) {
+				// next line
+				currentYOffset++;
+				currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
+				currentXOffset = -currentHalfLineWidth;
+			}
+		}
+		return Optional.empty();
+	}
 }

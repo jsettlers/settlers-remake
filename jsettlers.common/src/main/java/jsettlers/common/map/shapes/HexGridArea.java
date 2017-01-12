@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java8.util.Optional;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.interfaces.ICoordinateFunction;
 import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 
 /**
@@ -140,6 +141,11 @@ public final class HexGridArea implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException("not implemented!");
 		}
+	}
+
+//	@Override
+	public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> consumer) {
+		return iterate((x, y, radius) -> consumer.apply(x, y));
 	}
 
 	public <T> Optional<T> iterate(ICoordinateWithRadiusFunction<Optional<T>> visitor) {

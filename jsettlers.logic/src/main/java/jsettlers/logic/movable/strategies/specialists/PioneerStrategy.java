@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.specialists;
 
-import static jsettlers.common.utils.VisitorConsumerUtils.visitor;
+import static jsettlers.common.utils.CoordinateStreamingUtils.toFunction;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
@@ -94,7 +94,7 @@ public final class PioneerStrategy extends MovableStrategy {
 		double[] bestNeighbourDistance = new double[] { Double.MAX_VALUE }; // distance from start point
 
 		ShortPoint2D position = movable.getPos();
-		HexGridArea.iterate(position.x, position.y, 1, 6, visitor(((sateliteX, sateliteY, radius) -> {
+		HexGridArea.iterate(position.x, position.y, 1, 6, toFunction(((sateliteX, sateliteY, radius) -> {
 			ShortPoint2D currPosition = new ShortPoint2D(sateliteX, sateliteY);
 			if (super.isValidPosition(currPosition) && canWorkOnPos(currPosition)) {
 				double distance = ShortPoint2D.getOnGridDist(sateliteX - centerPos.x, sateliteY - centerPos.y);
