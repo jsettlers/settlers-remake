@@ -1,9 +1,5 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection.features;
 
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.widget.ImageView;
-
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.menu.action.EActionType;
@@ -16,6 +12,9 @@ import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
+
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 /**
  * Created by tompr on 10/01/2017.

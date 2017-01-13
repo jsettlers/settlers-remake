@@ -1,11 +1,8 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.material.EPriority;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
-import jsettlers.main.android.ui.fragments.game.menus.selection.features.ConstructionFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.OccupiedFeature;
