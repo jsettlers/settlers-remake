@@ -1351,7 +1351,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
-			return area.stream().filterBounds(width, height).forEach((x, y) -> {
+			return area.stream().filterBounds(width, height).iterate((x, y) -> {
 				IAttackable currAttackable = movableGrid.getMovableAt(x, y);
 				if (includeTowers && !isBowman && currAttackable == null) {
 					currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);

@@ -15,8 +15,8 @@ public abstract class CoordinateStream {
 	public CoordinateStream filter(ICoordinatePredicate predicate) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function) {
-				return CoordinateStream.this.forEach((x, y) -> predicate.test(x, y) ? function.apply(x, y) : Optional.empty());
+			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
+				return CoordinateStream.this.iterate((x, y) -> predicate.test(x, y) ? function.apply(x, y) : Optional.empty());
 			}
 		};
 	}
@@ -38,13 +38,13 @@ public abstract class CoordinateStream {
 	 * @return
 	 */
 	public CoordinateStream filterBounds(int xStart, int yStart, int xEnd, int yEnd) {
-		return filter((x, y) -> 0 <= x && x < xEnd && 0 <= y && y < yEnd);
+		return filter((x, y) -> xStart <= x && x < xEnd && yStart <= y && y < yEnd);
 	}
 
-	public abstract <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function);
+	public abstract <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function);
 
 	public void forEach(ICoordinateConsumer consumer) {
-		forEach((x, y) -> {
+		iterate((x, y) -> {
 			consumer.accept(x, y);
 			return Optional.empty();
 		});

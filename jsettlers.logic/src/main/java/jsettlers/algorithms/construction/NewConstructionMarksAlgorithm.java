@@ -65,7 +65,7 @@ public final class NewConstructionMarksAlgorithm {
 		final int buildingAreaWidth = buildingArea.width;
 		final int buildingAreaHeight = buildingArea.height;
 
-		// forEach over the positions in the mapArea with the offset from the buildingArea
+		// iterate over the positions in the mapArea with the offset from the buildingArea
 		for (int line = 0; line < mapArea.getHeight(); line++) {
 			final int y = mapArea.getLineY(line);
 			final int xLineOffset = mapArea.getMinX();

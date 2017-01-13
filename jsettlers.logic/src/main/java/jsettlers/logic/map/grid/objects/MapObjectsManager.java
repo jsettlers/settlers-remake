@@ -405,7 +405,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return HexGridArea.stream(x, y, 0, 200)
 				.filterBounds(grid.getWidth(), grid.getHeight())
 				.filter((currX, currY) -> canForcePushMaterial(currX, currY, materialType))
-				.forEach((currX, currY) -> {
+				.iterate((currX, currY) -> {
 					pushMaterial(currX, currY, materialType);
 					return Optional.of(new ShortPoint2D(currX, currY));
 				}).orElse(null);

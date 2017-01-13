@@ -122,7 +122,7 @@ public class HexGridAreaTest {
 		Object expectedResultObject = new Object();
 		int[] counter = new int[1];
 
-		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).forEach((x, y) -> {
+		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).iterate((x, y) -> {
 			counter[0]++;
 			if (counter[0] == expectedVisits) {
 				return Optional.of(expectedResultObject);

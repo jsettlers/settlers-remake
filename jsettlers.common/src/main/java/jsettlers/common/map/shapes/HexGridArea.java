@@ -152,7 +152,7 @@ public final class HexGridArea implements IMapArea {
 	public static CoordinateStream stream(int cX, int cY, int startRadius, int maxRadius) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function) {
+			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
 				if (startRadius == 0) {
 					Optional<T> result = function.apply(cX, cY);
 					if (result.isPresent()) {

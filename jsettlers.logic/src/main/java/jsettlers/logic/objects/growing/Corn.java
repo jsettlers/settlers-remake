@@ -69,26 +69,21 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handlePlacement(x, y, mapObjectsManager, grid);
-		getEarthAreaStream(x, y).forEach((currX, currY) -> {
-			grid.setLandscape(currX, currY, ELandscapeType.EARTH);
-		});
+		getEarthAreaStream(x, y).forEach((currX, currY) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH));
 	}
 
 	@Override
 	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handleRemove(x, y, mapObjectsManager, grid);
-		getEarthAreaStream(x, y).forEach((currX, currY) -> {
-			makePositionGrassIfPossible(currX, currY, grid);
-		});
+		getEarthAreaStream(x, y).forEach((currX, currY) -> makePositionGrassIfPossible(currX, currY, grid));
 	}
 
 	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
 		Optional<Boolean> isBlocked = getEarthAreaStream(x, y)
-				.filter((currX, currY) -> grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT,
-						EMapObjectType.CORN_DEAD))
-				.forEach((currX, currY) -> {
+				.filter((currX, currY) -> grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD))
+				.iterate((currX, currY) -> {
 					return Optional.of(Boolean.TRUE); // return true if there is a map object in the area that enforces this position to remain earth
-					});
+				});
 
 		if (!isBlocked.isPresent()) {
 			grid.setLandscape(x, y, ELandscapeType.GRASS);

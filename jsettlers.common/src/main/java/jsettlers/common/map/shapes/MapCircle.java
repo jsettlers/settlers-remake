@@ -178,7 +178,7 @@ public final class MapCircle implements IMapArea {
 	public static CoordinateStream stream(int centerX, int centerY, float radius) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> forEach(ICoordinateFunction<Optional<T>> function) {
+			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
 				int currentYOffset = -(int) (radius / MapCircle.Y_SCALE);
 				float currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
 				float currentXOffset = -currentHalfLineWidth;

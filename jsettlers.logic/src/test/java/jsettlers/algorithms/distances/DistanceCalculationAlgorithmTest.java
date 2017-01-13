@@ -82,7 +82,7 @@ public class DistanceCalculationAlgorithmTest {
 				if (provider.test(x, y)) {
 					HexGridArea.stream(x, y, 0, maxDistance)
 							.filterBounds(width, height)
-							.forEach((currX, currY) -> {
+							.iterate((currX, currY) -> {
 								inDistance.set(currY * width + currX);
 								return Optional.empty();
 							});
