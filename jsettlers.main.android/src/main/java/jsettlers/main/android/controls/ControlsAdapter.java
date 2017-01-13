@@ -1,5 +1,9 @@
 package jsettlers.main.android.controls;
 
+import android.util.Log;
+
+import java.util.LinkedList;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
@@ -22,12 +26,14 @@ import jsettlers.graphics.map.controls.IControls;
  * Created by tompr on 21/11/2016.
  */
 
-public class ControlsAdapter implements IControls {
+public class ControlsAdapter implements IControls, ActionFireable {
     private ActionFireable actionFireable;
-    private ControlsListener controlsListener;
+    private SelectionListener selectionListener;
 
-    //
-    // So
+    private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
+    private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
+
+
     /**
      * A task is something that requires multiple steps. E.g. show constructions markers, then choose build location.
      * If an action is part of a task then store it so we know how to react when the next action comes in.
@@ -54,6 +60,9 @@ public class ControlsAdapter implements IControls {
             case MOVE_TO:
                 updateTask(action);
                 break;
+            case ASK_SET_WORK_AREA:
+                startTask(action);
+                break;
             case SET_WORK_AREA:
             case SELECT_POINT:
             case SELECT_AREA:
@@ -61,6 +70,12 @@ public class ControlsAdapter implements IControls {
             case ABORT:
                 endTask();
                 break;
+        }
+
+        synchronized (actionListeners) {
+            for (ActionListener listener : actionListeners) {
+                listener.actionFired(action);
+            }
         }
     }
 
@@ -80,6 +95,8 @@ public class ControlsAdapter implements IControls {
                         return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
                     case MOVE_TO:
                         return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
+                    case ASK_SET_WORK_AREA:
+                        return new PointAction(EActionType.SET_WORK_AREA, pointAction.getPosition());
                 }
             }
         }
@@ -87,20 +104,34 @@ public class ControlsAdapter implements IControls {
         return action;
     }
 
+    /**
+     * The controls send out null for nothing selected.
+     */
     @Override
     public void displaySelection(ISelectionSet selection) {
-        //TODO tell the UI what type of selection this is so we can update the Settlers menu
-        if (selection != null && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
-            startTask(new Action(EActionType.MOVE_TO));
+        if (selection != null && selection.getSize() > 0) {
+            this.selection = selection;
+
+            if (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS) {
+                startTask(new Action(EActionType.MOVE_TO));
+            }
+        } else {
+            this.selection = null;
         }
 
-        if (controlsListener != null) {
-            controlsListener.selectionChanged(selection);
+        if (selectionListener != null) {
+            selectionListener.selectionChanged(this.selection);
         }
+
     }
 
     @Override
     public void drawAt(GLDrawContext gl) {
+        synchronized (drawListeners) {
+            for (DrawListener listener : drawListeners) {
+                listener.draw();
+            }
+        }
     }
 
     @Override
@@ -145,6 +176,11 @@ public class ControlsAdapter implements IControls {
     public void stop() {
     }
 
+    private ISelectionSet selection;
+    public ISelectionSet getSelection() {
+        return selection;
+    }
+
     public boolean isTaskActive() {
         return taskAction != null;
     }
@@ -173,7 +209,39 @@ public class ControlsAdapter implements IControls {
         }
     }
 
-    public void setControlsListener(ControlsListener controlsListener) {
-        this.controlsListener = controlsListener;
+    public void setSelectionListener(SelectionListener selectionListener) {
+        this.selectionListener = selectionListener;
+    }
+
+    public void addActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.add(actionListener);
+        }
+    }
+
+    public void removeActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.remove(actionListener);
+        }
+    }
+
+    public void addDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.add(drawListener);
+        }
+    }
+
+    public void removeDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.remove(drawListener);
+        }
+    }
+
+    /**
+     * ActionFireable implementation
+     */
+    @Override
+    public void fireAction(IAction action) {
+        actionFireable.fireAction(action);
     }
 }

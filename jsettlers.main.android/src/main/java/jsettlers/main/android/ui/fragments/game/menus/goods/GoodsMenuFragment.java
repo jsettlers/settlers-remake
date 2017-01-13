@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.game.menus;
+package jsettlers.main.android.ui.fragments.game.menus.goods;
 
 import biz.laenger.android.vpbs.BottomSheetUtils;
 import jsettlers.main.android.R;
@@ -28,7 +28,7 @@ public class GoodsMenuFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_menu_goods, container, false);
+        View view = inflater.inflate(R.layout.menu_goods, container, false);
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         BottomSheetUtils.setupViewPager(viewPager);

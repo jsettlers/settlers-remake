@@ -9,17 +9,21 @@ import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.controls.ControlsListener;
+import jsettlers.main.android.controls.SelectionListener;
+import jsettlers.main.android.providers.SelectionProvider;
 import jsettlers.main.android.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.ui.dialogs.PausedDialog;
-import jsettlers.main.android.ui.fragments.game.menus.BuildingsMenuFragment;
-import jsettlers.main.android.ui.fragments.game.menus.GoodsMenuFragment;
-import jsettlers.main.android.ui.fragments.game.menus.SettlersMenuFragment;
+import jsettlers.main.android.ui.fragments.game.menus.buildings.BuildingsMenuFragment;
+import jsettlers.main.android.ui.fragments.game.menus.goods.GoodsMenuFragment;
+import jsettlers.main.android.ui.fragments.game.menus.selection.SelectionBuildingFragment;
+import jsettlers.main.android.ui.fragments.game.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
@@ -27,6 +31,7 @@ import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.ControlsProvider;
 import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,8 +52,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements ControlsListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, BuildingsMenuProvider {
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, MenuNavigator, BuildingsMenuProvider, SelectionProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
+	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
@@ -107,12 +113,13 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 		GameMenuProvider gameMenuProvider = (GameMenuProvider) getActivity();
 		ControlsProvider controlsProvider = (ControlsProvider) getActivity();
 
-		MapContent mapContent = mapContentProvider.getMapContent();
 		controls = controlsProvider.getControls();
-		controls.setControlsListener(this);
 		gameMenu = gameMenuProvider.getGameMenu();
-		buildingsMenu = new BuildingsMenu(mapContent);
+		buildingsMenu = new BuildingsMenu(controls);
 
+        controls.setSelectionListener(this);
+
+        MapContent mapContent = mapContentProvider.getMapContent();
 		addMapViews(mapContent);
 
 		if (savedInstanceState == null) {
@@ -155,7 +162,7 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		controls.setControlsListener(null);
+		controls.setSelectionListener(null);
 	}
 
 	@Override
@@ -183,8 +190,8 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 			return true;
 		}
 
-		if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-			bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+		if (isMenuOpen()) {
+            dismissMenu();
 			return true;
 		}
 
@@ -227,18 +234,56 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 		return buildingsMenu;
 	}
 
-	/**
-	 * ControlsListener implementation
+    /**
+     * SelectionProvider implementation
+     */
+    @Override
+    public ISelectionSet getCurrentSelection() {
+        return controls.getSelection();
+    }
+
+    /**
+	 * SelectionListener implementation
      */
 	@Override
 	public void selectionChanged(ISelectionSet selection) {
-        Log.d("Settlers", "Selection changed " + selection.getSelectionType().name());
+        if (selection != null) {
+            showSelectionMenu();
+        } else {
+			if (removeSelectionMenu()) {
+				dismissMenu();
+			}
+        }
     }
 
 
 	/**
-	 * Show menu methods
+	 * Menu methods
 	 */
+    @Override
+    public boolean isMenuOpen() {
+        return bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED;
+    }
+
+    @Override
+    public void dismissMenu() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+	@Override
+	public boolean removeSelectionMenu() {
+		Fragment fragment = getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_SELECTION_MENU);
+		if (fragment != null) {
+			getChildFragmentManager().beginTransaction().remove(fragment).commit();
+			return true;
+		}
+		return false;
+	}
+
+	private void showMenu() {
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+	}
+
 	private void showPausedMenu() {
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_PAUSED_MENU) == null) {
 			PausedDialog.newInstance().show(getChildFragmentManager(), TAG_FRAGMENT_PAUSED_MENU);
@@ -253,7 +298,7 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 	}
 
 	private void showBuildingsMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 		addBuildsingMenuFragment();
 	}
 
@@ -264,7 +309,7 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 	}
 
 	private void showGoodsMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, GoodsMenuFragment.newInstance())
@@ -272,11 +317,26 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 	}
 
 	private void showSettlersMenu() {
-		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+		showMenu();
 
 		getChildFragmentManager().beginTransaction()
 				.replace(R.id.container_menu, SettlersMenuFragment.newInstance())
 				.commit();
+	}
+
+	private void showSelectionMenu() {
+		showMenu();
+
+        switch (controls.getSelection().getSelectionType()) {
+            case BUILDING:
+                getChildFragmentManager().beginTransaction()
+                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+                        .commit();
+                break;
+            default:
+                Log.d("Settlers", "No selection menu for selection type " + controls.getSelection().getSelectionType().name());
+                break;
+        }
 	}
 
 
@@ -298,6 +358,18 @@ public class MapFragment extends Fragment implements ControlsListener, BackPress
 							.setConfirmButtonText(R.string.game_menu_quit)
 							.create()
 							.show(getChildFragmentManager(), null);
+					break;
+				case R.id.menu_item_faster:
+					controls.fireAction(new Action(EActionType.SPEED_FASTER));
+					break;
+				case R.id.menu_item_slower:
+					controls.fireAction(new Action(EActionType.SPEED_SLOWER));
+					break;
+				case R.id.menu_item_fastest:
+					controls.fireAction(new Action(EActionType.SPEED_FAST));
+					break;
+				case R.id.menu_item_skip:
+					controls.fireAction(new Action(EActionType.FAST_FORWARD));
 					break;
 			}
 			return true;

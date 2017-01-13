@@ -204,8 +204,8 @@ public class AndroidTextDrawer implements TextDrawer {
 		renderer.setText(string);
 
 		int firstLine = findLineToUse();
-		System.out.println("string cache miss for " + string +
-				", allocating new line: " + firstLine);
+//		System.out.println("string cache miss for " + string +
+//				", allocating new line: " + firstLine);
 		int lastLine = firstLine;
 
 		for (int x = 0; x < width; x += TEXTURE_WIDTH) {
