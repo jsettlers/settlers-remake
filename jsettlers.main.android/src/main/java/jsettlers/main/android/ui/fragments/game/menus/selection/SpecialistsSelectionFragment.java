@@ -13,9 +13,12 @@ import android.widget.TextView;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionClickListener;
 
 /**
  * Created by tompr on 13/01/2017.
@@ -47,6 +50,14 @@ public class SpecialistsSelectionFragment extends SelectionFragment {
         super.onActivityCreated(savedInstanceState);
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         LinearLayout specialistsLayout = (LinearLayout) getView().findViewById(R.id.layout_specialists);
+
+        View convertCarriersButton = getView().findViewById(R.id.button_convert_carriers);
+        View workHereButton = getView().findViewById(R.id.button_work_here);
+        View haltButton = getView().findViewById(R.id.button_halt);
+
+        convertCarriersButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.BEARER, Short.MAX_VALUE)));
+        workHereButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.START_WORKING));
+        haltButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.STOP_WORKING));
 
         for (EMovableType movableType : specialistTypes) {
             int count = getSelection().getMovableCount(movableType);
