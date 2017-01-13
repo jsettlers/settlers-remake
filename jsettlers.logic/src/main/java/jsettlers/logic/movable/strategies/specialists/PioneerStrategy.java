@@ -92,21 +92,24 @@ public final class PioneerStrategy extends MovableStrategy {
 		double[] bestNeighbourDistance = new double[] { Double.MAX_VALUE }; // distance from start point
 
 		ShortPoint2D position = movable.getPos();
-		HexGridArea.stream(position.x, position.y, 1, 6).forEach((satelliteX, satelliteY) -> {
-			ShortPoint2D currPosition = new ShortPoint2D(satelliteX, satelliteY);
-			if (super.isValidPosition(currPosition) && canWorkOnPos(currPosition)) { // FIXME replace with filters
-					double distance = ShortPoint2D.getOnGridDist(satelliteX - centerPos.x, satelliteY - centerPos.y);
+		HexGridArea.stream(position.x, position.y, 1, 6)
+				.filter((x, y) -> super.isValidPosition(x, y) && canWorkOnPos(x, y))
+				.forEach((x, y) -> {
+					double distance = ShortPoint2D.getOnGridDist(x - centerPos.x, y - centerPos.y);
 					if (distance < bestNeighbourDistance[0]) {
 						bestNeighbourDistance[0] = distance;
-						bestNeighbourDir[0] = EDirection.getApproxDirection(position, currPosition);
+						bestNeighbourDir[0] = EDirection.getApproxDirection(position.x, position.y, x, y);
 					}
-				}
-			});
+				});
 		return bestNeighbourDir[0];
 	}
 
 	private void executeAction(ShortPoint2D pos) {
 		super.getGrid().changePlayerAt(pos, movable.getPlayer());
+	}
+
+	private boolean canWorkOnPos(int x, int y) {
+		return super.fitsSearchType(x, y, ESearchType.UNENFORCED_FOREIGN_GROUND);
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {

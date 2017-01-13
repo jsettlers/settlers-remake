@@ -157,7 +157,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isInBounds(short x, short y) {
+		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
 		}
 
@@ -226,7 +226,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isBlocked(short x, short y) {
+		public boolean isBlocked(int x, int y) {
 			return false;
 		}
 
@@ -314,24 +314,23 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
-			short x = position.x, y = position.y;
+		public boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 			return isInBounds(x, y) && !isBlocked(x, y)
 					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override
-		public boolean isProtected(short x, short y) {
+		public boolean isProtected(int x, int y) {
 			return false;
 		}
 
 		@Override
-		public boolean isBlockedOrProtected(short x, short y) {
+		public boolean isBlockedOrProtected(int x, int y) {
 			return isBlocked(x, y) || isProtected(x, y);
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
+		public boolean fitsSearchType(IPathCalculatable pathCalculateable, int x, int y, ESearchType searchType) {
 			return false;
 		}
 
@@ -400,7 +399,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
-			return isValidPosition(pathCalculatable, nextPos);
+			return isValidPosition(pathCalculatable, nextPos.x, nextPos.y);
 		}
 
 		@Override

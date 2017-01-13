@@ -88,16 +88,18 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Checks if the given position fits the given search type.
-	 * 
+	 *
 	 * @param pathCalculateable
 	 *            path requester
-	 * @param position
-	 *            position to check the given {@link ESearchType}.
+	 * @param x
+	 *            x coordinate of position to check the given {@link ESearchType}.
+	 * @param y
+	 *            y coordinate of position to check the given {@link ESearchType}.
 	 * @param searchType
 	 *            search type to be checked
 	 * @return true if the search type fits the given position.
 	 */
-	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D position, ESearchType searchType);
+	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, int x, int y, ESearchType searchType);
 
 	/**
 	 * 
@@ -169,7 +171,8 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	/**
 	 * Changes the height of the given position towards the given targetHeight and changes the landscape type to {@link ELandscapeType}.FLATTENED
 	 * 
-	 * @param position
+	 * @param x
+	 * @param y
 	 * @param targetHeight
 	 */
 	public abstract void changeHeightTowards(short x, short y, byte targetHeight);

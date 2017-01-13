@@ -617,7 +617,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return true;
 		}
 		case GO_IF_ALLOWED_AND_FREE:
-			if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+			if ((grid.isValidPosition(this, targetPosition.x, targetPosition.y) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
 				initGoingSingleStep(targetPosition);
 				setState(EMovableState.GOING_SINGLE_STEP);
 				return true;
@@ -687,10 +687,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	final void enableNothingToDoAction(boolean enable) {
 		this.enableNothingToDo = enable;
-	}
-
-	final boolean isValidPosition(ShortPoint2D position) {
-		return grid.isValidPosition(this, position);
 	}
 
 	void abortPath() {

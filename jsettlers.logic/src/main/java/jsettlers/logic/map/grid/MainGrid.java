@@ -1063,17 +1063,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isBlocked(short x, short y) {
+		public final boolean isBlocked(int x, int y) {
 			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
-		public final boolean isProtected(short x, short y) {
+		public final boolean isProtected(int x, int y) {
 			return flagsGrid.isProtected(x, y);
 		}
 
 		@Override
-		public final boolean isBlockedOrProtected(short x, short y) {
+		public final boolean isBlockedOrProtected(int x, int y) {
 			return isBlocked(x, y) || isProtected(x, y);
 		}
 
@@ -1312,18 +1312,18 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isInBounds(short x, short y) {
+		public boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
-			return pathfinderGrid.fitsSearchType(position.x, position.y, searchType, pathCalculable);
+		public boolean fitsSearchType(IPathCalculatable pathCalculable, int x, int y, ESearchType searchType) {
+			return pathfinderGrid.fitsSearchType(x, y, searchType, pathCalculable);
 		}
 
 		@Override
 		public final boolean executeSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
-			if (fitsSearchType(pathCalculable, position, searchType)) {
+			if (fitsSearchType(pathCalculable, position.x, position.y, searchType)) {
 				return mapObjectsManager.executeSearchType(position, searchType);
 			} else {
 				return false;
@@ -1398,13 +1398,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
-			return MainGrid.this.isValidPosition(pathCalculatable, position.x, position.y);
+		public boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
+			return MainGrid.this.isValidPosition(pathCalculatable, x, y);
 		}
 
 		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
-			return isValidPosition(pathCalculatable, nextPos) && (!pathCalculatable.needsPlayersGround()
+			return isValidPosition(pathCalculatable, nextPos.x, nextPos.y) && (!pathCalculatable.needsPlayersGround()
 					|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
 		}
 
