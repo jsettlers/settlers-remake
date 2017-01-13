@@ -65,51 +65,9 @@
             android:id="@+id/layout_materials"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal" />
 
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_construction"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/menu_tile_size"
-            android:orientation="horizontal"
-            android:visibility="invisible">
-
-            <ImageView
-                android:id="@+id/image_view_required_planks"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:scaleType="fitEnd" />
-
-            <TextView
-                android:id="@+id/text_view_required_planks"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:text="test" />
-
-            <ImageView
-                android:id="@+id/image_view_required_stone"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:scaleType="fitEnd" />
-
-            <TextView
-                android:id="@+id/text_view_required_stone"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:text="test" />
-
-        </LinearLayout>
+        <include layout="@layout/include_selection_building_construction" />
         
     </FrameLayout>
 

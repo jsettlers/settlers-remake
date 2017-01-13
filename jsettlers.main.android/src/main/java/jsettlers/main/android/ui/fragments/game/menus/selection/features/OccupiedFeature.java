@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -27,7 +29,7 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
  * Created by tompr on 12/01/2017.
  */
 
-public class OccupiedFeature extends SelectionFeature {
+public class OccupiedFeature extends SelectionFeature implements DrawListener {
     private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
     private static final OriginalImageLink SOILDER_COMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
 
@@ -49,6 +51,7 @@ public class OccupiedFeature extends SelectionFeature {
     private InGameButton removeBowmanButton;
     private InGameButton removePikemanButton;
 
+    private TableLayout controlsLayout;
     private LinearLayout infantryLayout;
     private LinearLayout bowmenLayout;
 
@@ -75,6 +78,7 @@ public class OccupiedFeature extends SelectionFeature {
         removeBowmanButton = (InGameButton) getView().findViewById(R.id.image_view_remove_bowman);
         removePikemanButton = (InGameButton) getView().findViewById(R.id.image_view_remove_pikeman);
 
+        controlsLayout = (TableLayout) getView().findViewById(R.id.layout_occupier_controls);
         infantryLayout = (LinearLayout) getView().findViewById(R.id.layout_infantry);
         bowmenLayout = (LinearLayout) getView().findViewById(R.id.layout_bowmen);
 
@@ -95,15 +99,39 @@ public class OccupiedFeature extends SelectionFeature {
         waitingLayoutParams.weight = 1;
         waitingLayoutParams.height = getContext().getResources().getDimensionPixelSize(R.dimen.menu_tile_waiting_height);
 
-        addOccupiers(infantryLayout, getBuildingState().getOccupiers(ESoldierClass.INFANTRY));
-        addOccupiers(bowmenLayout, getBuildingState().getOccupiers(ESoldierClass.BOWMAN));
+        update();
+        getControls().addDrawListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
+        getControls().removeDrawListener(this);
     }
 
+    @Override
+    public void draw() {
+        if (!getBuildingState().isStillInState(getBuilding())) {
+            setBuildingState(new BuildingState(getBuilding()));
+
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    update();
+                }
+            });
+        }
+    }
+
+    private void update() {
+        if (getBuildingState().isOccupied()) {
+            controlsLayout.setVisibility(View.VISIBLE);
+            infantryLayout.removeAllViews();
+            bowmenLayout.removeAllViews();
+            addOccupiers(infantryLayout, getBuildingState().getOccupiers(ESoldierClass.INFANTRY));
+            addOccupiers(bowmenLayout, getBuildingState().getOccupiers(ESoldierClass.BOWMAN));
+        }
+    }
 
     private void addOccupiers(LinearLayout container, List<BuildingState.OccupierState> occupierStates) {
         for (BuildingState.OccupierState occupierState : occupierStates) {
