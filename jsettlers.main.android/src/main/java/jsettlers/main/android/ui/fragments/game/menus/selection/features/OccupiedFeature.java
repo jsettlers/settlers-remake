@@ -16,7 +16,9 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.images.ImageLinkFactory;
@@ -45,20 +47,24 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
     private static final String imageRemoveBowman = "original_3_GUI_30";
     private static final String imageRemovePikeman = "original_3_GUI_33";
 
+    private final ActionControls actionControls;
+    private final DrawControls drawControls;
+
     private TableLayout controlsLayout;
     private LinearLayout infantryLayout;
     private LinearLayout bowmenLayout;
-
     private LinearLayout.LayoutParams occupiedLayoutParams;
     private LinearLayout.LayoutParams waitingLayoutParams;
 
-    public OccupiedFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        super(building, controls, menuNavigator, view);
+    public OccupiedFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls, DrawControls drawControls) {
+        super(view, building, menuNavigator);
+        this.actionControls = actionControls;
+        this.drawControls = drawControls;
     }
 
     @Override
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-        super.initialize(buildingState, controls);
+    public void initialize(BuildingState buildingState) {
+        super.initialize(buildingState);
 
         InGameButton maximumSoldiersButton = (InGameButton) getView().findViewById(R.id.image_view_maximum_soldiers);
         InGameButton addSwordsmanButton = (InGameButton) getView().findViewById(R.id.image_view_add_swordsman);
@@ -90,24 +96,24 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
         waitingLayoutParams.weight = 1;
         waitingLayoutParams.height = getContext().getResources().getDimensionPixelSize(R.dimen.menu_tile_waiting_height);
 
-        maximumSoldiersButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.SOLDIERS_ALL));
-        addSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.SWORDSMAN));
-        addBowmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.BOWMAN));
-        addPikemanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.PIKEMAN));
+        maximumSoldiersButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.SOLDIERS_ALL));
+        addSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_MORE, ESoldierType.SWORDSMAN));
+        addBowmanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_MORE, ESoldierType.BOWMAN));
+        addPikemanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_MORE, ESoldierType.PIKEMAN));
 
-        minimumSolidersButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.SOLDIERS_ONE));
-        removeSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.SWORDSMAN));
-        removeBowmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.BOWMAN));
-        removePikemanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
+        minimumSolidersButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.SOLDIERS_ONE));
+        removeSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_LESS, ESoldierType.SWORDSMAN));
+        removeBowmanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_LESS, ESoldierType.BOWMAN));
+        removePikemanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
 
         update();
-        getControls().addDrawListener(this);
+        drawControls.addDrawListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
-        getControls().removeDrawListener(this);
+        drawControls.removeDrawListener(this);
     }
 
     @Override

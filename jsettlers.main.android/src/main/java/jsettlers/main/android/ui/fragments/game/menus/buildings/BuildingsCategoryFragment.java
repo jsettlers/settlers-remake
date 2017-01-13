@@ -6,7 +6,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.menus.BuildingsMenu;
-import jsettlers.main.android.providers.BuildingsMenuProvider;
 import jsettlers.main.android.providers.ControlsProvider;
 
 import android.os.Bundle;
@@ -55,8 +54,7 @@ public class BuildingsCategoryFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
-        buildingsMenu = ((ControlsProvider)getActivity()).getControls().getBuildingsMenu();// buildingsMenuProvider.getBuildingsMenu();
+        buildingsMenu = ((ControlsProvider)getActivity()).getControls().getBuildingsMenu();
 
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
         List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);

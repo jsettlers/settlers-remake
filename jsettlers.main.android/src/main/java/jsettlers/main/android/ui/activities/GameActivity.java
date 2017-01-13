@@ -9,21 +9,23 @@ import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGameListener;
-import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.providers.SelectionProvider;
+import jsettlers.main.android.controls.SelectionControls;
+import jsettlers.main.android.menus.BuildingsMenu;
+import jsettlers.main.android.controls.MenuProvider;
+import jsettlers.main.android.menus.SettlersSoldiersMenu;
+import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.ui.fragments.game.LoadingFragment;
 import jsettlers.main.android.ui.fragments.game.MapFragment;
 import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
 import jsettlers.main.android.providers.ControlsProvider;
-import jsettlers.main.android.providers.GameMenuProvider;
 import jsettlers.main.android.providers.MapContentProvider;
 
 import android.content.BroadcastReceiver;
@@ -40,7 +42,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, GameMenuProvider, SelectionProvider, MapContentProvider {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, MapContentProvider {
     private static final String TAG_FRAGMENT_SERVICE_BINDER = "service_binder_fragment";
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -106,28 +108,13 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         }
     }
 
+
     /**
-     * ControlsProvider imeplementation
+     * ControlsProvider implementation
      */
     @Override
     public ControlsAdapter getControls() {
         return gameService.getControls();
-    }
-
-    /**
-     * SelectionProvider implementation
-     */
-    @Override
-    public ISelectionSet getCurrentSelection() {
-        return getControls().getSelection();
-    }
-
-    /**
-     * GameMenuProvider implementation
-     */
-    @Override
-    public GameMenu getGameMenu() {
-        return gameService.getGameMenu();
     }
 
     /**

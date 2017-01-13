@@ -3,6 +3,9 @@ package jsettlers.main.android.ui.fragments.game.menus.selection;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.controls.ControlsResolver;
+import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.OccupiedFeature;
@@ -50,12 +53,15 @@ public class BuildingSelectionFragment extends SelectionFragment {
         super.onActivityCreated(savedInstanceState);
         building = (IBuilding) getSelection().get(0);
         buildingState = new BuildingState(building);
-        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
+
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
+        ActionControls actionControls = ControlsResolver.getActionControls(getActivity());
+        DrawControls drawControls = ControlsResolver.getDrawControls(getActivity());
 
         if (building instanceof IBuilding.IOccupied) {
             layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
-            features.add(new OccupiedFeature(building, getControls(), menuNavigator, getView()));
+            features.add(new OccupiedFeature(getView(), building, menuNavigator, actionControls, drawControls));
 
 
 //        } else if (building instanceof IBuilding.IStock) {
@@ -65,20 +71,20 @@ public class BuildingSelectionFragment extends SelectionFragment {
         }
 
 
-        features.add(new TitleFeature(building, getControls(), menuNavigator, getView()));
-        features.add(new DestroyFeature(building, getControls(), menuNavigator, getView()));
-        features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new TitleFeature(getView(), building, menuNavigator, drawControls));
+        features.add(new DestroyFeature(getView(), building, menuNavigator, actionControls));
+        features.add(new MaterialsFeature(getView(), building, menuNavigator, drawControls));
 
         if (buildingState.getSupportedPriorities().length > 1) {
-            features.add(new PriorityFeature(building, getControls(), menuNavigator, getView()));
+            features.add(new PriorityFeature(getView(), building, menuNavigator, actionControls, drawControls));
         }
 
         if (building.getBuildingType().getWorkRadius() > 0) {
-            features.add(new WorkAreaFeature(building, getControls(), menuNavigator, getView()));
+            features.add(new WorkAreaFeature(getView(), building, menuNavigator, actionControls));
         }
 
         for (SelectionFeature feature : features) {
-            feature.initialize(buildingState, getControls());
+            feature.initialize(buildingState);
         }
     }
 

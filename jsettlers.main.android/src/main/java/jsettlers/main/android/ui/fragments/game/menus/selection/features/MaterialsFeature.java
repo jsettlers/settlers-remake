@@ -5,6 +5,7 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -19,18 +20,21 @@ import android.widget.TextView;
  */
 
 public class MaterialsFeature extends SelectionFeature implements DrawListener {
+    private final DrawControls drawControls;
+
     private LayoutInflater layoutInflater;
     private LinearLayout materialsLayout;
 
     private boolean hasPostConstructionMaterials = true;
 
-    public MaterialsFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        super(building, controls, menuNavigator, view);
+    public MaterialsFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls) {
+        super(view, building, menuNavigator);
+        this.drawControls = drawControls;
     }
 
     @Override
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-        super.initialize(buildingState, controls);
+    public void initialize(BuildingState buildingState) {
+        super.initialize(buildingState);
         layoutInflater = LayoutInflater.from(getView().getContext());
         materialsLayout = (LinearLayout) getView().findViewById(R.id.layout_materials);
 
@@ -42,13 +46,13 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
             update();
         }
 
-        getControls().addDrawListener(this);
+        drawControls.addDrawListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
-        getControls().removeDrawListener(this);
+        drawControls.removeDrawListener(this);
     }
 
     @Override

@@ -8,16 +8,12 @@ import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.graphics.androidui.MobileControls;
-import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.menus.GameMenu;
-import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -93,15 +89,12 @@ public class GameService extends Service implements IGameExitListener {
     }
 
     public MapInterfaceConnector gameStarted(IStartedGame game, IFragmentHandler fragmentHandler) {
-        // startingGame = null ??????
-
-        soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
-        controlsAdapter = new ControlsAdapter(game.getInGamePlayer());
-        mapContent = new MapContent(game, soundPlayer, controlsAdapter);// new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
-
         game.setGameExitListener(this);
 
-        gameMenu = new GameMenu(getApplicationContext(), mapContent, soundPlayer);
+        soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
+        controlsAdapter = new ControlsAdapter(getApplicationContext(), soundPlayer, game.getInGamePlayer());
+        mapContent = new MapContent(game, soundPlayer, controlsAdapter);
+        gameMenu = controlsAdapter.getGameMenu();
 
         startForeground(NOTIFICATION_ID, gameMenu.createNotification());
 

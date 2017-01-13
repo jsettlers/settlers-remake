@@ -14,22 +14,19 @@ import android.view.View;
 
 public abstract class SelectionFeature {
 
-    private final IBuilding building;
-    private final ControlsAdapter controls;
-    private final MenuNavigator menuNavigator;
     private final View view;
+    private final IBuilding building;
+    private final MenuNavigator menuNavigator;
 
     private BuildingState buildingState;
-    private boolean hasNewState;
 
-    public SelectionFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        this.building = building;
-        this.controls = controls;
-        this.menuNavigator = menuNavigator;
+    public SelectionFeature(View view, IBuilding building, MenuNavigator menuNavigator) {
         this.view = view;
+        this.building = building;
+        this.menuNavigator = menuNavigator;
     }
 
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
+    public void initialize(BuildingState buildingState) {
         this.buildingState = buildingState;
     }
 
@@ -47,10 +44,6 @@ public abstract class SelectionFeature {
 
     protected IBuilding getBuilding() {
         return building;
-    }
-
-    protected ControlsAdapter getControls() {
-        return controls;
     }
 
     protected MenuNavigator getMenuNavigator() {

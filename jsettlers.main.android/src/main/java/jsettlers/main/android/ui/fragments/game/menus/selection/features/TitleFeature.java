@@ -6,6 +6,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -18,15 +19,18 @@ import android.widget.TextView;
  */
 
 public class TitleFeature extends SelectionFeature implements DrawListener {
+	private final DrawControls drawControls;
+
 	private TextView nameTextView;
 
-	public TitleFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-		super(building, controls, menuNavigator, view);
+	public TitleFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls) {
+		super(view, building, menuNavigator);
+		this.drawControls = drawControls;
 	}
 
 	@Override
-	public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-		super.initialize(buildingState, controls);
+	public void initialize(BuildingState buildingState) {
+		super.initialize(buildingState);
 
 		nameTextView = (TextView) getView().findViewById(R.id.text_view_building_name);
 		ImageView imageView = (ImageView) getView().findViewById(R.id.image_view_building);
@@ -34,7 +38,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 		String name = Labels.getName(getBuilding().getBuildingType());
 		if (getBuildingState().isConstruction()) {
 			name = Labels.getString("building-build-in-progress", name);
-			getControls().addDrawListener(this);
+			drawControls.addDrawListener(this);
 		}
 
 		nameTextView.setText(name);
@@ -44,7 +48,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 	@Override
 	public void finish() {
 		super.finish();
-		getControls().removeDrawListener(this);
+		drawControls.removeDrawListener(this);
 	}
 
 	@Override
@@ -57,7 +61,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 					if (!getBuildingState().isConstruction()) {
 						String name = Labels.getName(getBuilding().getBuildingType());
 						nameTextView.setText(name);
-						getControls().removeDrawListener(TitleFeature.this);
+						drawControls.removeDrawListener(TitleFeature.this);
 					}
 				}
 			});

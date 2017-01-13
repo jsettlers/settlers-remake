@@ -3,9 +3,9 @@ package jsettlers.main.android.ui.fragments.game.menus.selection;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
-import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.providers.ControlsProvider;
-import jsettlers.main.android.providers.SelectionProvider;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.controls.ControlsResolver;
+import jsettlers.main.android.controls.SelectionControls;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,20 +16,18 @@ import android.support.v4.app.Fragment;
  */
 
 public abstract class SelectionFragment extends Fragment {
+    private ActionControls actionControls;
+    private SelectionControls selectionControls;
 
-    private SelectionProvider selectionProvider;
-    private ISelectionSet selectionSet;
-    private ControlsAdapter controlsAdapter;
+    private ISelectionSet selection;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        actionControls = ControlsResolver.getActionControls(getActivity());
+        selectionControls = ControlsResolver.getSelectionControls(getActivity());
 
-        selectionProvider = (SelectionProvider) getActivity();
-        selectionSet = selectionProvider.getCurrentSelection();
-
-        ControlsProvider controlsProvider = (ControlsProvider) getActivity();
-        controlsAdapter = controlsProvider.getControls();
+        selection = selectionControls.getCurrentSelection();
     }
 
     @Override
@@ -37,16 +35,12 @@ public abstract class SelectionFragment extends Fragment {
         super.onDestroy();
         // If the selection hasn't changed when the selection menu is dismissed by the user then the user has started using some other menu and we should deselect. Check isRemoving to confirm its not just a rotation.
         // If the selection has changed then we don't want to overwrite it.
-        if (selectionSet == selectionProvider.getCurrentSelection() && isRemoving()) {
-            getControls().fireAction(new Action(EActionType.DESELECT));
+        if (selection == selectionControls.getCurrentSelection() && isRemoving()) {
+            actionControls.fireAction(new Action(EActionType.DESELECT));
         }
     }
 
-    protected ISelectionSet getSelection() {
-        return selectionSet;
-    }
-
-    protected ControlsAdapter getControls() {
-        return controlsAdapter;
+    public ISelectionSet getSelection() {
+        return selection;
     }
 }

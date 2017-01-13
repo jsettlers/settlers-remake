@@ -15,6 +15,8 @@ import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.ui.images.ImageLinkFactory;
 
 /**
@@ -22,6 +24,7 @@ import jsettlers.main.android.ui.images.ImageLinkFactory;
  */
 
 public class CarriersSelectionFragment extends SelectionFragment {
+    private ActionControls actionControls;
 
     public static CarriersSelectionFragment newInstance() {
         return new CarriersSelectionFragment();
@@ -46,6 +49,7 @@ public class CarriersSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        actionControls = ControlsResolver.getActionControls(getActivity());
 
         View convertOnePioneerButton = getView().findViewById(R.id.button_convert_one_pioneer);
         View convertAllPioneerButton = getView().findViewById(R.id.button_convert_all_pioneer);
@@ -54,11 +58,11 @@ public class CarriersSelectionFragment extends SelectionFragment {
         View convertOneThiefButton = getView().findViewById(R.id.button_convert_one_thief);
         View convertAllThiefButton = getView().findViewById(R.id.button_convert_all_thief);
 
-        convertOnePioneerButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.PIONEER, (short) 1)));
-        convertAllPioneerButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.PIONEER, Short.MAX_VALUE)));
-        convertOneGeologistButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.GEOLOGIST, (short) 1)));
-        convertAllGeologistButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.GEOLOGIST, Short.MAX_VALUE)));
-        convertOneThiefButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.THIEF, (short) 1)));
-        convertAllThiefButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.THIEF, Short.MAX_VALUE)));
+        convertOnePioneerButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.PIONEER, (short) 1)));
+        convertAllPioneerButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.PIONEER, Short.MAX_VALUE)));
+        convertOneGeologistButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.GEOLOGIST, (short) 1)));
+        convertAllGeologistButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.GEOLOGIST, Short.MAX_VALUE)));
+        convertOneThiefButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.THIEF, (short) 1)));
+        convertAllThiefButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.THIEF, Short.MAX_VALUE)));
     }
 }

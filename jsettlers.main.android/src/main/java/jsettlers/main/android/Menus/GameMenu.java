@@ -43,9 +43,9 @@ public class GameMenu {
 
     private boolean paused = false;
 
-    public GameMenu(Context context, ActionFireable mapContent, AndroidSoundPlayer soundPlayer) {
+    public GameMenu(Context context, ActionFireable actionFireable, AndroidSoundPlayer soundPlayer) {
         this.context = context;
-        this.actionFireable = mapContent;
+        this.actionFireable = actionFireable;
         this.soundPlayer = soundPlayer;
 
         localBroadcastManager = LocalBroadcastManager.getInstance(context);

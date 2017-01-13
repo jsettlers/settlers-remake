@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import go.graphics.android.AndroidSoundPlayer;
 import go.graphics.event.mouse.GODrawEvent;
 
 import jsettlers.common.map.shapes.MapRectangle;
@@ -21,21 +22,26 @@ import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.android.menus.BuildingsMenu;
-import jsettlers.main.android.menus.MenuProvider;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.menus.SettlersSoldiersMenu;
+
+import android.content.Context;
 
 /**
  * Created by tompr on 21/11/2016.
  */
 
-public class ControlsAdapter implements IControls, ActionFireable, MenuProvider {
+public class ControlsAdapter implements IControls, ActionControls, DrawControls, SelectionControls, TaskControls, MenuProvider {
+    private final Context context;
+    private final AndroidSoundPlayer soundPlayer;
     private final IInGamePlayer player;
 
-    private ActionFireable actionFireable;
-    private SelectionListener selectionListener;
-
+    private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
     private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
     private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
+
+    private ActionFireable actionFireable;
+    private ISelectionSet selection;
 
 
     /**
@@ -44,7 +50,9 @@ public class ControlsAdapter implements IControls, ActionFireable, MenuProvider 
      */
     private IAction taskAction;
 
-    public ControlsAdapter(IInGamePlayer player) {
+    public ControlsAdapter(Context context, AndroidSoundPlayer soundPlayer, IInGamePlayer player) {
+        this.context = context;
+        this.soundPlayer = soundPlayer;
         this.player = player;
     }
 
@@ -127,10 +135,11 @@ public class ControlsAdapter implements IControls, ActionFireable, MenuProvider 
             this.selection = null;
         }
 
-        if (selectionListener != null) {
-            selectionListener.selectionChanged(this.selection);
+        synchronized (selectionListeners) {
+            for (SelectionListener listener : selectionListeners) {
+                listener.selectionChanged(this.selection);
+            }
         }
-
     }
 
     @Override
@@ -184,24 +193,79 @@ public class ControlsAdapter implements IControls, ActionFireable, MenuProvider 
     public void stop() {
     }
 
-    private ISelectionSet selection;
-    public ISelectionSet getSelection() {
+
+
+    /**
+     * ActionControls implementation
+     */
+    @Override
+    public void fireAction(IAction action) {
+        actionFireable.fireAction(action);
+    }
+
+    @Override
+    public void addActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.add(actionListener);
+        }
+    }
+
+    @Override
+    public void removeActionListener(ActionListener actionListener) {
+        synchronized (actionListeners) {
+            actionListeners.remove(actionListener);
+        }
+    }
+
+    /**
+     * DrawControls implementation
+     */
+    @Override
+    public void addDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.add(drawListener);
+        }
+    }
+
+    @Override
+    public void removeDrawListener(DrawListener drawListener) {
+        synchronized (drawListeners) {
+            drawListeners.remove(drawListener);
+        }
+    }
+
+    /**
+     * SelectionControls implementation
+     */
+    @Override
+    public ISelectionSet getCurrentSelection() {
         return selection;
     }
 
+    @Override
+    public void addSelectionListener(SelectionListener selectionListener) {
+        synchronized (selectionListeners) {
+            selectionListeners.add(selectionListener);
+        }
+    }
+
+    @Override
+    public void removeSelectionListener(SelectionListener selectionListener) {
+        synchronized (selectionListeners) {
+            selectionListeners.remove(selectionListener);
+        }
+    }
+
+    /**
+     * TaskControls implementation
+     * @return
+     */
+    @Override
     public boolean isTaskActive() {
         return taskAction != null;
     }
 
-    private void startTask(IAction action) {
-        endTask();
-        taskAction = action;
-    }
-
-    private void updateTask(IAction action) {
-        taskAction = action;
-    }
-
+    @Override
     public void endTask() {
         if(taskAction != null) {
             switch (taskAction.getActionType()) {
@@ -217,46 +281,28 @@ public class ControlsAdapter implements IControls, ActionFireable, MenuProvider 
         }
     }
 
-    public void setSelectionListener(SelectionListener selectionListener) {
-        this.selectionListener = selectionListener;
+    private void startTask(IAction action) {
+        endTask();
+        taskAction = action;
     }
 
-    public void addActionListener(ActionListener actionListener) {
-        synchronized (actionListeners) {
-            actionListeners.add(actionListener);
-        }
-    }
-
-    public void removeActionListener(ActionListener actionListener) {
-        synchronized (actionListeners) {
-            actionListeners.remove(actionListener);
-        }
-    }
-
-    public void addDrawListener(DrawListener drawListener) {
-        synchronized (drawListeners) {
-            drawListeners.add(drawListener);
-        }
-    }
-
-    public void removeDrawListener(DrawListener drawListener) {
-        synchronized (drawListeners) {
-            drawListeners.remove(drawListener);
-        }
-    }
-
-    /**
-     * ActionFireable implementation
-     */
-    @Override
-    public void fireAction(IAction action) {
-        actionFireable.fireAction(action);
+    private void updateTask(IAction action) {
+        taskAction = action;
     }
 
 
     /**
      * MenuProvider implementation
      */
+    private GameMenu gameMenu;
+    @Override
+    public GameMenu getGameMenu() {
+        if (gameMenu == null) {
+            gameMenu = new GameMenu(context, actionFireable, soundPlayer);
+        }
+        return gameMenu;
+    }
+
     @Override
     public BuildingsMenu getBuildingsMenu() {
         return new BuildingsMenu(this);
