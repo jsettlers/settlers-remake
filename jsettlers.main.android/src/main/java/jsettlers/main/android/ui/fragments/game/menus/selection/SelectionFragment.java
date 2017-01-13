@@ -25,7 +25,7 @@ public abstract class SelectionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        selectionProvider = (SelectionProvider) getParentFragment();
+        selectionProvider = (SelectionProvider) getActivity();
         selectionSet = selectionProvider.getCurrentSelection();
 
         ControlsProvider controlsProvider = (ControlsProvider) getActivity();

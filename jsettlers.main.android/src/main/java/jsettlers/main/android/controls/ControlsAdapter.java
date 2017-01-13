@@ -1,7 +1,5 @@
 package jsettlers.main.android.controls;
 
-import android.util.Log;
-
 import java.util.LinkedList;
 
 import go.graphics.GLDrawContext;
@@ -11,6 +9,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
+import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
@@ -21,12 +20,17 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
+import jsettlers.main.android.menus.BuildingsMenu;
+import jsettlers.main.android.menus.MenuProvider;
+import jsettlers.main.android.menus.SettlersSoldiersMenu;
 
 /**
  * Created by tompr on 21/11/2016.
  */
 
-public class ControlsAdapter implements IControls, ActionFireable {
+public class ControlsAdapter implements IControls, ActionFireable, MenuProvider {
+    private final IInGamePlayer player;
+
     private ActionFireable actionFireable;
     private SelectionListener selectionListener;
 
@@ -39,6 +43,10 @@ public class ControlsAdapter implements IControls, ActionFireable {
      * If an action is part of a task then store it so we know how to react when the next action comes in.
      */
     private IAction taskAction;
+
+    public ControlsAdapter(IInGamePlayer player) {
+        this.player = player;
+    }
 
     /**
      * The action is being sent to the game, here we just store it if it's part of a task. Depending on what's active and what's coming in
@@ -243,5 +251,19 @@ public class ControlsAdapter implements IControls, ActionFireable {
     @Override
     public void fireAction(IAction action) {
         actionFireable.fireAction(action);
+    }
+
+
+    /**
+     * MenuProvider implementation
+     */
+    @Override
+    public BuildingsMenu getBuildingsMenu() {
+        return new BuildingsMenu(this);
+    }
+
+    @Override
+    public SettlersSoldiersMenu getSettlersSoldiersMenu() {
+        return new SettlersSoldiersMenu(this);
     }
 }

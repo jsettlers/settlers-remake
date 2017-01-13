@@ -19,4 +19,6 @@
 
     <dimen name="menu_tile_waiting_height">28dp</dimen>
     <dimen name="menu_tile_occupied_height">52dp</dimen>
+    <dimen name="menu_tile_divine_promotion_width">64dp</dimen>
+    <dimen name="menu_tile_divine_promotion_height">48dp</dimen>
 </resources>

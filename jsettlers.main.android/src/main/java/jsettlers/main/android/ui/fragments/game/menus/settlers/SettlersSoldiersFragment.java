@@ -1,6 +1,9 @@
 package jsettlers.main.android.ui.fragments.game.menus.settlers;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.menus.SettlersSoldiersMenu;
+import jsettlers.main.android.providers.ControlsProvider;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +17,8 @@ import android.view.ViewGroup;
  */
 
 public class SettlersSoldiersFragment extends Fragment {
+    private SettlersSoldiersMenu settlersSoldiersMenu;
+
     public static SettlersSoldiersFragment newInstance() {
         return new SettlersSoldiersFragment();
     }
@@ -23,5 +28,12 @@ public class SettlersSoldiersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.menu_settlers_soldiers, container, false);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ControlsAdapter controls = ((ControlsProvider)getActivity()).getControls();
+        settlersSoldiersMenu = new SettlersSoldiersMenu(controls);
     }
 }

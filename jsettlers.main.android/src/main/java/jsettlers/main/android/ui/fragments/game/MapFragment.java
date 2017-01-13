@@ -55,7 +55,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
-public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, MenuNavigator, BuildingsMenuProvider, SelectionProvider{
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, GameMenuProvider, MenuNavigator, BuildingsMenuProvider{
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 
@@ -236,14 +236,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	public BuildingsMenu getBuildingsMenu() {
 		return buildingsMenu;
 	}
-
-    /**
-     * SelectionProvider implementation
-     */
-    @Override
-    public ISelectionSet getCurrentSelection() {
-        return controls.getSelection();
-    }
 
     /**
 	 * SelectionListener implementation

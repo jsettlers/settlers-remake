@@ -96,7 +96,7 @@ public class GameService extends Service implements IGameExitListener {
         // startingGame = null ??????
 
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
-        controlsAdapter = new ControlsAdapter();
+        controlsAdapter = new ControlsAdapter(game.getInGamePlayer());
         mapContent = new MapContent(game, soundPlayer, controlsAdapter);// new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
 
         game.setGameExitListener(this);

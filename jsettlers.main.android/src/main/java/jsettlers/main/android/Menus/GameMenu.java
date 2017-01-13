@@ -14,7 +14,7 @@ import java.util.TimerTask;
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.map.MapContent;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.activities.GameActivity;
 import jsettlers.main.android.ui.navigation.Actions;
@@ -37,15 +37,15 @@ public class GameMenu {
     private LocalBroadcastManager localBroadcastManager;
     private NotificationManager notificationManager;
 
-    private MapContent mapContent;
+    private ActionFireable actionFireable;
     private AndroidSoundPlayer soundPlayer;
     private Timer quitConfirmTimer;
 
     private boolean paused = false;
 
-    public GameMenu(Context context, MapContent mapContent, AndroidSoundPlayer soundPlayer) {
+    public GameMenu(Context context, ActionFireable mapContent, AndroidSoundPlayer soundPlayer) {
         this.context = context;
-        this.mapContent = mapContent;
+        this.actionFireable = mapContent;
         this.soundPlayer = soundPlayer;
 
         localBroadcastManager = LocalBroadcastManager.getInstance(context);
@@ -58,7 +58,7 @@ public class GameMenu {
 
     // mute the game when pausing whether or not its currently visibile
     public void pause() {
-        mapContent.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
+        actionFireable.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
         mute();
         paused = true;
 
@@ -69,7 +69,7 @@ public class GameMenu {
 
     // don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visibile.
     public void unPause() {
-        mapContent.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
+        actionFireable.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
         paused = false;
 
         // Send a local broadcast so that any UI can update if necessary
@@ -103,7 +103,7 @@ public class GameMenu {
     public void quitConfirm() {
         // Trigger quit from here and callback in GameService broadcasts after quit is complete
         quitConfirmTimer = null;
-        mapContent.fireAction(new Action(EActionType.EXIT));
+        actionFireable.fireAction(new Action(EActionType.EXIT));
     }
 
     public boolean canQuitConfirm() {
