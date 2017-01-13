@@ -21,6 +21,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -41,13 +43,31 @@ public class MapCircleTest {
 	}
 
 	@Test
-	public void testIterate() {
-		for (int i = 1; i < 40; i++) {
+	public void testStream() {
+		for (int i = 0; i < 40; i++) {
 			MapCircle circle = new MapCircle(new ShortPoint2D(100, 100), i);
 
 			MapCircleIterator iterator = circle.iterator();
 
 			circle.stream().forEach((x, y) -> {
+				assertTrue(iterator.hasNext());
+				ShortPoint2D expected = iterator.next();
+				assertEquals(expected, new ShortPoint2D(x, y));
+			});
+
+			assertFalse(iterator.hasNext());
+		}
+	}
+
+	@Test
+	public void testBorderStream() {
+		for (int i = 0; i < 40; i++) {
+			MapCircle circle = new MapCircle(new ShortPoint2D(100, 100), i);
+			MapCircleBorder border = new MapCircleBorder(circle);
+
+			Iterator<ShortPoint2D> iterator = border.iterator();
+
+			circle.streamBorder().forEach((x, y) -> {
 				assertTrue(iterator.hasNext());
 				ShortPoint2D expected = iterator.next();
 				assertEquals(expected, new ShortPoint2D(x, y));

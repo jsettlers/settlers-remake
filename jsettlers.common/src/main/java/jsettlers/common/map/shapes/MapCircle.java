@@ -20,6 +20,7 @@ import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.interfaces.ICoordinateFunction;
 
 import java8.util.Optional;
+import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 
 /**
  * This class represents a circular area of the map.
@@ -72,8 +73,10 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the distance of map coordinates to the center.
 	 *
-	 * @param x The x coordinate.
-	 * @param y The y coordinate
+	 * @param x
+	 *            The x coordinate.
+	 * @param y
+	 *            The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
@@ -111,7 +114,8 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the half width of a line, roundend.
 	 *
-	 * @param relativeY The x coordinate of the line relative to the center
+	 * @param relativeY
+	 *            The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected final float getHalfLineWidth(int relativeY) {
@@ -204,6 +208,25 @@ public final class MapCircle implements IMapArea {
 				}
 				return Optional.empty();
 			}
+		};
+	}
+
+	public CoordinateStream streamBorder() {
+		return streamBorder(centerX, centerY, radius);
+	}
+
+	public static CoordinateStream streamBorder(int centerX, int centerY, float radius) {
+		return stream(centerX, centerY, radius).filter(getBorderPredicate(centerX, centerY, radius));
+	}
+
+	private static ICoordinatePredicate getBorderPredicate(int centerX, int centerY, float radius) {
+		return (x, y) -> {
+			float prevLineWidth = calculateHalfLineWidth(radius, y - centerY - 1);
+			float nextLineWidth = calculateHalfLineWidth(radius, y - centerY + 1);
+			float xDistToCenter = Math.abs(-x - .5f * (centerY - y) + centerX);
+
+			// DO NOT INLINE ! (NOT) important because of potential NAN of line width
+			return !(xDistToCenter < prevLineWidth && xDistToCenter < nextLineWidth);
 		};
 	}
 }

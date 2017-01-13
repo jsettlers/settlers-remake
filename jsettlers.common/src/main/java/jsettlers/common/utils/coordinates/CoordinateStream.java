@@ -9,7 +9,6 @@ import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 /**
  * Created by Andreas Eberle on 12.01.2017.
  */
-
 public abstract class CoordinateStream {
 
 	public CoordinateStream filter(ICoordinatePredicate predicate) {

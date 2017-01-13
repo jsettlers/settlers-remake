@@ -15,6 +15,7 @@
 package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
+import java.util.concurrent.SynchronousQueue;
 
 import jsettlers.common.position.ShortPoint2D;
 
@@ -64,7 +65,10 @@ public class MapCircleBorder implements IMapArea {
 		float prevLineWidth = baseCircle.getHalfLineWidth(line - baseCircle.getCenterY() - 1);
 		float nextLineWidth = baseCircle.getHalfLineWidth(line - baseCircle.getCenterY() + 1);
 		float xDistToCenter = Math.abs(-point.x - .5f * (baseCircle.getCenterY() - line) + baseCircle.getCenterX());
-		return xDistToCenter < prevLineWidth && xDistToCenter < nextLineWidth;
+
+		boolean result =  xDistToCenter < prevLineWidth && xDistToCenter < nextLineWidth;
+		System.out.println("old: "+point+": "+!result);
+		return result;
 	}
 
 }

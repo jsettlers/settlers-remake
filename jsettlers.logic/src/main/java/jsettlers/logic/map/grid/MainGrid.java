@@ -1638,17 +1638,14 @@ public final class MainGrid implements Serializable {
 		public void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw) {
 			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
 
-			for (ShortPoint2D pos : getCircle(workAreaCenter, radius)) {
-				addOrRemoveMarkObject(buildingPartition, draw, pos, 1.0f);
-			}
-			for (ShortPoint2D pos : getCircle(workAreaCenter, .75f * radius)) {
-				addOrRemoveMarkObject(buildingPartition, draw, pos, 0.66f);
-			}
-			for (ShortPoint2D pos : getCircle(workAreaCenter, .5f * radius)) {
-				addOrRemoveMarkObject(buildingPartition, draw, pos, 0.33f);
-			}
-			for (ShortPoint2D pos : getCircle(workAreaCenter, .25f * radius)) {
-				addOrRemoveMarkObject(buildingPartition, draw, pos, 0f);
+			final int numCircles = 4;
+
+			for (int circle = 1; circle <= 4; circle++) {
+				float circleRadius = radius * circle / (float) numCircles;
+				float mapObjectProgress = (circle - 1) / (float) (numCircles - 1);
+
+				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius).forEach(
+						(x, y) -> addOrRemoveMarkObject(buildingPartition, draw, new ShortPoint2D(x, y), mapObjectProgress));
 			}
 		}
 
@@ -1683,12 +1680,6 @@ public final class MainGrid implements Serializable {
 			} else {
 				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
 			}
-		}
-
-		private MapShapeFilter getCircle(ShortPoint2D center, float radius) {
-			MapCircle baseCircle = new MapCircle(center, radius);
-			MapCircleBorder border = new MapCircleBorder(baseCircle);
-			return new MapShapeFilter(border, width, height);
 		}
 
 		@Override
