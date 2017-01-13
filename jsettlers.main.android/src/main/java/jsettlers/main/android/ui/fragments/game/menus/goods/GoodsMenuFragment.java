@@ -1,8 +1,6 @@
 package jsettlers.main.android.ui.fragments.game.menus.goods;
 
-import biz.laenger.android.vpbs.BottomSheetUtils;
 import jsettlers.main.android.R;
-import me.relex.circleindicator.CircleIndicator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,21 +12,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import biz.laenger.android.vpbs.BottomSheetUtils;
+import me.relex.circleindicator.CircleIndicator;
+
 /**
  * Created by tompr on 22/11/2016.
  */
 
 public class GoodsMenuFragment extends Fragment {
+    private ViewPager viewPager;
+
     public static GoodsMenuFragment newInstance() {
         return new GoodsMenuFragment();
     }
 
-    private ViewPager viewPager;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.menu_goods, container, false);
+        View view = inflater.inflate(R.layout.menu_view_pager, container, false);
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
         BottomSheetUtils.setupViewPager(viewPager);
@@ -39,10 +40,8 @@ public class GoodsMenuFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        BuildingsMenuProvider buildingsMenuProvider = (BuildingsMenuProvider)getParentFragment();
-//        buildingsMenu = buildingsMenuProvider.getBuildingsMenu();
 
-        viewPager.setAdapter(new GoodsMenuFragment.GoodsPagerAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(new GoodsPagerAdapter(getChildFragmentManager()));
 
         CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
         indicator.setViewPager(viewPager);
@@ -53,8 +52,7 @@ public class GoodsMenuFragment extends Fragment {
      * Adapter
      */
     private class GoodsPagerAdapter extends FragmentPagerAdapter {
-
-        public GoodsPagerAdapter(FragmentManager fm) {
+        private GoodsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
