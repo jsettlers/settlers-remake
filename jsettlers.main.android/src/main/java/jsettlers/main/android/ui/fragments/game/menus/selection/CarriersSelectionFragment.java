@@ -8,21 +8,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.ui.images.ImageLinkFactory;
 
 /**
  * Created by tompr on 13/01/2017.
  */
 
 public class CarriersSelectionFragment extends SelectionFragment {
-    private final OriginalImageLink imagePioneer = new OriginalImageLink(EImageLinkType.GUI, 14, 204, 0);
-    private final OriginalImageLink imageGeologist = new OriginalImageLink(EImageLinkType.GUI, 14, 186, 0);
-    private final OriginalImageLink imageThief = new OriginalImageLink(EImageLinkType.GUI, 14, 183, 0);
 
     public static CarriersSelectionFragment newInstance() {
         return new CarriersSelectionFragment();
@@ -37,9 +36,9 @@ public class CarriersSelectionFragment extends SelectionFragment {
         ImageView geologistImageView = (ImageView) view.findViewById(R.id.image_view_geologist);
         ImageView thiefImageView = (ImageView) view.findViewById(R.id.image_view_thief);
 
-        OriginalImageProvider.get(imagePioneer).setAsImage(pioneerImageView);
-        OriginalImageProvider.get(imageGeologist).setAsImage(geologistImageView);
-        OriginalImageProvider.get(imageThief).setAsImage(thiefImageView);
+        OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.PIONEER)).setAsImage(pioneerImageView);
+        OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.GEOLOGIST)).setAsImage(geologistImageView);
+        OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.THIEF)).setAsImage(thiefImageView);
 
         return view;
     }

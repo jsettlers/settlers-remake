@@ -19,15 +19,13 @@ import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.ui.images.ImageLinkFactory;
 
 /**
  * Created by tompr on 13/01/2017.
  */
 
 public class SpecialistsSelectionFragment extends SelectionFragment {
-    private final OriginalImageLink imagePioneer = new OriginalImageLink(EImageLinkType.GUI, 14, 204, 0);
-    private final OriginalImageLink imageGeologist = new OriginalImageLink(EImageLinkType.GUI, 14, 186, 0);
-    private final OriginalImageLink imageThief = new OriginalImageLink(EImageLinkType.GUI, 14, 183, 0);
 
     private static final EMovableType[] specialistTypes = new EMovableType[] {
             EMovableType.PIONEER,
@@ -67,24 +65,11 @@ public class SpecialistsSelectionFragment extends SelectionFragment {
                 ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
                 TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
 
-                OriginalImageProvider.get(getImageLink(movableType)).setAsImage(imageView);
+                OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
                 textView.setText(count + "");
 
                 specialistsLayout.addView(view);
             }
-        }
-    }
-
-    private ImageLink getImageLink(EMovableType movableType) {
-        switch (movableType) {
-            case PIONEER:
-                return imagePioneer;
-            case GEOLOGIST:
-                return imageGeologist;
-            case THIEF:
-                return imageThief;
-            default:
-                throw new RuntimeException("SpecialistsSelectionFragment cant find image for: " + movableType.name());
         }
     }
 }

@@ -55,16 +55,24 @@
 
     <!-- Selection Menus -->
 
+    <!-- Common -->
+    <string name="halt">Halt</string>
+    <string name="kill">Kill</string>
+
     <!-- Carriers Selection -->
     <string name="convert_all">Convert all</string>
     <string name="convert_one">Convert one</string>
 
     <!-- Specialists Selection -->
     <string name="convert_to_carriers">Convert to carriers</string>
-    <string name="halt">Halt</string>
     <string name="work_here">Work here</string>
 
+    <!-- Soldiers Selection -->
+    <string name="confirm_kill">Kill soldiers?</string>
+    <string name="yes">Yes</string>
 
+
+    <!-- Other -->
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 

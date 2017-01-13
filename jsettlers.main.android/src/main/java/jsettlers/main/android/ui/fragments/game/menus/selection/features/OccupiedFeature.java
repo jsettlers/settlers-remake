@@ -19,6 +19,7 @@ import jsettlers.main.android.controls.ActionClickListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
+import jsettlers.main.android.ui.images.ImageLinkFactory;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.view.LayoutInflater;
@@ -142,37 +143,11 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
                 OriginalImageProvider.get(SOILDER_COMING).setAsImage(occupierImageView);
                 occupierImageView.setLayoutParams(waitingLayoutParams);
             } else {
-                OriginalImageProvider.get(getIconFor(occupierState.getMovable())).setAsImage(occupierImageView);
+                OriginalImageProvider.get(ImageLinkFactory.get(occupierState.getMovable().getMovableType())).setAsImage(occupierImageView);
                 occupierImageView.setLayoutParams(occupiedLayoutParams);
             }
 
             container.addView(occupierImageView);
-        }
-    }
-
-    private static OriginalImageLink getIconFor(IMovable movable) {
-        switch (movable.getMovableType()) {
-            case SWORDSMAN_L1:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 207, 0);
-            case SWORDSMAN_L2:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
-            case SWORDSMAN_L3:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
-            case PIKEMAN_L1:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
-            case PIKEMAN_L2:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
-            case PIKEMAN_L3:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
-            case BOWMAN_L1:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
-            case BOWMAN_L2:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
-            case BOWMAN_L3:
-                return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
-            default:
-                System.err.println("A unknown image was requested for gui. " + "Type=" + movable.getMovableType());
-                return new OriginalImageLink(EImageLinkType.GUI, 24, 213, 0);
         }
     }
 
