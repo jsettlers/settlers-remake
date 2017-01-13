@@ -12,6 +12,7 @@ import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,6 +29,8 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
     private LayoutInflater layoutInflater;
     private LinearLayout materialsLayout;
 
+    private boolean hasPostConstructionMaterials = true;
+
     public MaterialsFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         super(building, controls, menuNavigator, view);
     }
@@ -38,7 +41,12 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
         layoutInflater = LayoutInflater.from(getView().getContext());
         materialsLayout = (LinearLayout) getView().findViewById(R.id.layout_materials);
 
-        if (!getBuildingState().isConstruction()) {
+        if (getBuilding() instanceof IBuilding.IOccupied || getBuilding() instanceof IBuilding.IStock || getBuilding() instanceof IBuilding.ITrading) {
+            hasPostConstructionMaterials = false;
+        }
+
+
+        if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
             update();
         }
 
@@ -60,7 +68,7 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
             getView().post(new Runnable() {
                 @Override
                 public void run() {
-                    if (!getBuildingState().isConstruction()) {
+                    if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
                         update();
                     }
                 }
@@ -70,26 +78,43 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 
     private void update() {
         materialsLayout.setVisibility(View.VISIBLE);
+        materialsLayout.removeAllViews();
 
         for (BuildingState.StackState materialStackState : getBuildingState().getStackStates()) {
-            if (map.containsKey(materialStackState.getType())) {
-                TextView textView = map.get(materialStackState.getType());
-                textView.setText(materialStackState.getCount() + "");
 
+            View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
+            ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view);
+            TextView textView = (TextView) materialItemView.findViewById(R.id.text_view);
+
+            Log.e("Seeterls", "updating " + materialStackState.getType().name() + " " + materialStackState.getCount());
+            textView.setText(materialStackState.getCount() + "");
+            OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
+        //    map.put(materialStackState.getType(), textView);
+
+            if (materialStackState.isOffering()) {
+                materialsLayout.addView(materialItemView);
             } else {
-                View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
-                ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view);
-                TextView textView = (TextView) materialItemView.findViewById(R.id.text_view);
-
-                OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
-                map.put(materialStackState.getType(), textView);
-
-                if (materialStackState.isOffering()) {
-                    materialsLayout.addView(materialItemView);
-                } else {
-                    materialsLayout.addView(materialItemView, 0);
-                }
+                materialsLayout.addView(materialItemView, 0);
             }
+
+//            if (map.containsKey(materialStackState.getType())) {
+//                TextView textView = map.get(materialStackState.getType());
+//                textView.setText(materialStackState.getCount() + "");
+//
+//            } else {
+//                View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
+//                ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view);
+//                TextView textView = (TextView) materialItemView.findViewById(R.id.text_view);
+//
+//                OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
+//                map.put(materialStackState.getType(), textView);
+//
+//                if (materialStackState.isOffering()) {
+//                    materialsLayout.addView(materialItemView);
+//                } else {
+//                    materialsLayout.addView(materialItemView, 0);
+//                }
+//            }
         }
     }
 }

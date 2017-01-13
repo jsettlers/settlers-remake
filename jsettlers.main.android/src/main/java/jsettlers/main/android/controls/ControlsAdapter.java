@@ -104,16 +104,25 @@ public class ControlsAdapter implements IControls, ActionFireable {
         return action;
     }
 
+    /**
+     * The controls send out null for nothing selected.
+     */
     @Override
     public void displaySelection(ISelectionSet selection) {
-        //TODO tell the UI what type of selection this is so we can update the Settlers menu
-        if (selection != null && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
-            startTask(new Action(EActionType.MOVE_TO));
+        if (selection != null && selection.getSize() > 0) {
+            this.selection = selection;
+
+            if (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS) {
+                startTask(new Action(EActionType.MOVE_TO));
+            }
+        } else {
+            this.selection = null;
         }
 
         if (selectionListener != null) {
-            selectionListener.selectionChanged(selection);
+            selectionListener.selectionChanged(this.selection);
         }
+
     }
 
     @Override
@@ -165,6 +174,11 @@ public class ControlsAdapter implements IControls, ActionFireable {
 
     @Override
     public void stop() {
+    }
+
+    private ISelectionSet selection;
+    public ISelectionSet getSelection() {
+        return selection;
     }
 
     public boolean isTaskActive() {

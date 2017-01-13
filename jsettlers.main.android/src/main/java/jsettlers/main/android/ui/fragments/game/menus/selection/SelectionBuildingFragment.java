@@ -65,12 +65,13 @@ public class SelectionBuildingFragment extends SelectionFragment {
 //        } else if (building instanceof IBuilding.ITrading) {
         } else {
             layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
-            features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
+        //    features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
         }
 
 
         features.add(new TitleFeature(building, getControls(), menuNavigator, getView()));
         features.add(new DestroyFeature(building, getControls(), menuNavigator, getView()));
+        features.add(new MaterialsFeature(building, getControls(), menuNavigator, getView()));
 
         //TODO have the priority feature disable itself when construction finishes if there is not production priorty for building
         if (buildingState.getSupportedPriorities().length > 1) {
@@ -81,9 +82,9 @@ public class SelectionBuildingFragment extends SelectionFragment {
             features.add(new WorkAreaFeature(building, getControls(), menuNavigator, getView()));
         }
 
-        if (buildingState.isConstruction()) {
-            features.add(new ConstructionFeature(building, getControls(), menuNavigator, getView()));
-        }
+//        if (buildingState.isConstruction()) {
+//            features.add(new ConstructionFeature(building, getControls(), menuNavigator, getView()));
+//        }
 
         for (SelectionFeature feature : features) {
             feature.initialize(buildingState, getControls());

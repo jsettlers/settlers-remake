@@ -35,9 +35,9 @@ public abstract class SelectionFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // If the selection hasn't changed when the selection menu fragment is destroyed then the user has started using some other menu and we should deselect
+        // If the selection hasn't changed when the selection menu is dismissed by the user then the user has started using some other menu and we should deselect. Check isRemoving to confirm its not just a rotation.
         // If the selection has changed then we don't want to overwrite it.
-        if (selectionSet == selectionProvider.getCurrentSelection()) {
+        if (selectionSet == selectionProvider.getCurrentSelection() && isRemoving()) {
             getControls().fireAction(new Action(EActionType.DESELECT));
         }
     }

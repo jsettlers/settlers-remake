@@ -239,20 +239,17 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
      */
     @Override
     public ISelectionSet getCurrentSelection() {
-        return selection;
+        return controls.getSelection();
     }
 
     /**
 	 * SelectionListener implementation
      */
-	private ISelectionSet selection;
 	@Override
 	public void selectionChanged(ISelectionSet selection) {
-        if (selection.getSize() > 0) {
-            this.selection = selection;
+        if (selection != null) {
             showSelectionMenu();
         } else {
-            this.selection = null;
 			if (removeSelectionMenu()) {
 				dismissMenu();
 			}
@@ -330,14 +327,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private void showSelectionMenu() {
 		showMenu();
 
-        switch (selection.getSelectionType()) {
+        switch (controls.getSelection().getSelectionType()) {
             case BUILDING:
                 getChildFragmentManager().beginTransaction()
                         .replace(R.id.container_menu, SelectionBuildingFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
                         .commit();
                 break;
             default:
-                Log.d("Settlers", "No selection menu for selection type " + selection.getSelectionType().name());
+                Log.d("Settlers", "No selection menu for selection type " + controls.getSelection().getSelectionType().name());
                 break;
         }
 	}
