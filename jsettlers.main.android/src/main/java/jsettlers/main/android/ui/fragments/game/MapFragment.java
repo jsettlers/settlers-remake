@@ -22,7 +22,8 @@ import jsettlers.main.android.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.ui.dialogs.PausedDialog;
 import jsettlers.main.android.ui.fragments.game.menus.buildings.BuildingsMenuFragment;
 import jsettlers.main.android.ui.fragments.game.menus.goods.GoodsMenuFragment;
-import jsettlers.main.android.ui.fragments.game.menus.selection.SelectionBuildingFragment;
+import jsettlers.main.android.ui.fragments.game.menus.selection.BuildingSelectionFragment;
+import jsettlers.main.android.ui.fragments.game.menus.selection.CarriersSelectionFragment;
 import jsettlers.main.android.ui.fragments.game.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
@@ -330,9 +331,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
         switch (controls.getSelection().getSelectionType()) {
             case BUILDING:
                 getChildFragmentManager().beginTransaction()
-                        .replace(R.id.container_menu, SelectionBuildingFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+                        .replace(R.id.container_menu, BuildingSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
                         .commit();
                 break;
+			case PEOPLE:
+				getChildFragmentManager().beginTransaction()
+						.replace(R.id.container_menu, CarriersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+						.commit();
+				break;
             default:
                 Log.d("Settlers", "No selection menu for selection type " + controls.getSelection().getSelectionType().name());
                 break;

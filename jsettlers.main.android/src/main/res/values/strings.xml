@@ -52,6 +52,14 @@
     <string name="filechoser_message">Where are the Gfx and Snd folders?</string>
 
     <!-- New stuff -->
+
+    <!-- Selection Menus -->
+
+    <!-- Carriers Selection -->
+    <string name="convert_all">Convert all</string>
+    <string name="convert_one">Convert one</string>
+
+
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 
