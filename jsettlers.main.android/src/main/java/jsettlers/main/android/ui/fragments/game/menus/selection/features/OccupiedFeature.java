@@ -10,10 +10,12 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionClickListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
@@ -87,14 +89,15 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
         waitingLayoutParams.weight = 1;
         waitingLayoutParams.height = getContext().getResources().getDimensionPixelSize(R.dimen.menu_tile_waiting_height);
 
-        maximumSoldiersButton.setOnClickListener(new AllSoldiersClickListener(EActionType.SOLDIERS_ALL));
-        addSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_MORE, ESoldierType.SWORDSMAN));
-        addBowmanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_MORE, ESoldierType.BOWMAN));
-        addPikemanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_MORE, ESoldierType.PIKEMAN));
-        minimumSolidersButton.setOnClickListener(new AllSoldiersClickListener(EActionType.SOLDIERS_ONE));
-        removeSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_LESS, ESoldierType.SWORDSMAN));
-        removeBowmanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_LESS, ESoldierType.BOWMAN));
-        removePikemanButton.setOnClickListener(new SingleSoldierClickListener(EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
+        maximumSoldiersButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.SOLDIERS_ALL));
+        addSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.SWORDSMAN));
+        addBowmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.BOWMAN));
+        addPikemanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_MORE, ESoldierType.PIKEMAN));
+
+        minimumSolidersButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.SOLDIERS_ONE));
+        removeSwordsmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.SWORDSMAN));
+        removeBowmanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.BOWMAN));
+        removePikemanButton.setOnClickListener(new SingleSoldierClickListener(getControls(), EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
 
         update();
         getControls().addDrawListener(this);
@@ -173,31 +176,9 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
         }
     }
 
-    private class AllSoldiersClickListener implements View.OnClickListener {
-        private EActionType actionType;
-
-        private AllSoldiersClickListener(EActionType actionType) {
-            this.actionType = actionType;
-        }
-
-        @Override
-        public void onClick(View view) {
-            getControls().fireAction(new Action(actionType));
-        }
-    }
-
-    private class SingleSoldierClickListener implements View.OnClickListener {
-        private EActionType actionType;
-        private ESoldierType soldierType;
-
-        private SingleSoldierClickListener(EActionType actionType, ESoldierType soldierType) {
-            this.actionType = actionType;
-            this.soldierType = soldierType;
-        }
-
-        @Override
-        public void onClick(View view) {
-            getControls().fireAction(new SoldierAction(actionType, soldierType));
+    private class SingleSoldierClickListener extends ActionClickListener {
+        private SingleSoldierClickListener(ActionFireable actionFireable, EActionType actionType, ESoldierType soldierType) {
+            super(actionFireable, new SoldierAction(actionType, soldierType));
         }
     }
 }

@@ -1,106 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:columnCount="3">
 
-    <android.support.v7.widget.GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:columnCount="3">
-
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_one_pioneer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_one"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
-        <FrameLayout
-            app:layout_rowWeight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/image_view_pioneer"
-                android:src="@drawable/building_destroy"
-                android:layout_width="@dimen/menu_tile_occupied_height"
-                android:layout_height="@dimen/menu_tile_occupied_height"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter" />
-        </FrameLayout>
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_all_pioneer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_all"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
+    <Button
+        android:id="@+id/button_convert_one_pioneer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_one"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_rowWeight="1">
+        <ImageView
+            android:id="@+id/image_view_pioneer"
+            android:layout_width="@dimen/menu_tile_occupied_height"
+            android:layout_height="@dimen/menu_tile_occupied_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/building_destroy" />
+    </FrameLayout>
+    <Button
+        android:id="@+id/button_convert_all_pioneer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_all"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
 
 
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_one_geologist"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_one"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
-        <FrameLayout
-            app:layout_rowWeight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/image_view_geologist"
-                android:src="@drawable/building_destroy"
-                android:layout_width="@dimen/menu_tile_occupied_height"
-                android:layout_height="@dimen/menu_tile_occupied_height"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter" />
-        </FrameLayout>
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_all_geologist"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_all"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
+    <Button
+        android:id="@+id/button_convert_one_geologist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_one"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_rowWeight="1">
+        <ImageView
+            android:id="@+id/image_view_geologist"
+            android:layout_width="@dimen/menu_tile_occupied_height"
+            android:layout_height="@dimen/menu_tile_occupied_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/building_destroy" />
+    </FrameLayout>
+    <Button
+        android:id="@+id/button_convert_all_geologist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_all"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
 
 
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_one_thief"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_one"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
-        <FrameLayout
-            app:layout_rowWeight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/image_view_thief"
-                android:src="@drawable/building_destroy"
-                android:layout_width="@dimen/menu_tile_occupied_height"
-                android:layout_height="@dimen/menu_tile_occupied_height"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter" />
-        </FrameLayout>
-        <Button
-            app:layout_columnWeight="1"
-            android:id="@+id/button_convert_all_thief"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/convert_all"
-            android:layout_margin="8dp"
-            app:layout_gravity="center_vertical" />
+    <Button
+        android:id="@+id/button_convert_one_thief"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_one"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_rowWeight="1">
+        <ImageView
+            android:id="@+id/image_view_thief"
+            android:layout_width="@dimen/menu_tile_occupied_height"
+            android:layout_height="@dimen/menu_tile_occupied_height"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/building_destroy" />
+    </FrameLayout>
+    <Button
+        android:id="@+id/button_convert_all_thief"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/convert_all"
+        app:layout_columnWeight="1"
+        app:layout_gravity="center_vertical" />
 
 
-
-    </android.support.v7.widget.GridLayout>
-</LinearLayout>
+</android.support.v7.widget.GridLayout>
