@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * Created by tompr on 10/01/2017.
  */
 
-public class SelectionBuildingFragment extends SelectionFragment {
+public class BuildingSelectionFragment extends SelectionFragment {
 
     private IBuilding building;
     private BuildingState buildingState;
@@ -34,8 +34,8 @@ public class SelectionBuildingFragment extends SelectionFragment {
 
     private ViewGroup rootView;
 
-    public static SelectionBuildingFragment newInstance() {
-        return new SelectionBuildingFragment();
+    public static BuildingSelectionFragment newInstance() {
+        return new BuildingSelectionFragment();
     }
 
     @Nullable

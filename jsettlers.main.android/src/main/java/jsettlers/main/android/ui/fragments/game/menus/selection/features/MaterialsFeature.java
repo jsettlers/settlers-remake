@@ -75,8 +75,8 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
         for (BuildingState.StackState materialStackState : getBuildingState().getStackStates()) {
 
             View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
-            ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view);
-            TextView textView = (TextView) materialItemView.findViewById(R.id.text_view);
+            ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view_material);
+            TextView textView = (TextView) materialItemView.findViewById(R.id.text_view_material_count);
 
             textView.setText(materialStackState.getCount() + "");
             OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
