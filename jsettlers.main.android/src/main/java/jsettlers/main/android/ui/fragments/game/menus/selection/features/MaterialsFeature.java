@@ -54,9 +54,7 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
     @Override
     public void draw() {
         //TODO would be more efficient to compare the stacks rather than the entire building state to avoid unnecessary work
-        if (!getBuildingState().isStillInState(getBuilding())) {
-            setBuildingState(new BuildingState(getBuilding()));
-
+        if (hasNewState()) {
             getView().post(new Runnable() {
                 @Override
                 public void run() {

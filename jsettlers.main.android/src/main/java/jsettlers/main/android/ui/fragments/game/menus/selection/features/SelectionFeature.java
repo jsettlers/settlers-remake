@@ -20,6 +20,7 @@ public abstract class SelectionFeature {
     private final View view;
 
     private BuildingState buildingState;
+    private boolean hasNewState;
 
     public SelectionFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
         this.building = building;
@@ -34,6 +35,14 @@ public abstract class SelectionFeature {
 
     public void finish() {
 
+    }
+
+    public boolean hasNewState() {
+        if (!getBuildingState().isStillInState(getBuilding())) {
+            buildingState = new BuildingState(getBuilding());
+            return true;
+        }
+        return false;
     }
 
     protected IBuilding getBuilding() {
@@ -58,9 +67,5 @@ public abstract class SelectionFeature {
 
     protected BuildingState getBuildingState() {
         return buildingState;
-    }
-
-    protected void setBuildingState(BuildingState buildingState) {
-        this.buildingState = buildingState;
     }
 }

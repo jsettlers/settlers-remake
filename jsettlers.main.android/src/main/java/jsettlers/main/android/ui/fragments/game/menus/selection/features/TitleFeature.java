@@ -49,8 +49,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 
 	@Override
 	public void draw() {
-		if (!getBuildingState().isStillInState(getBuilding())) {
-			setBuildingState(new BuildingState(getBuilding()));
+		if (hasNewState()) {
 
 			getView().post(new Runnable() {
 				@Override

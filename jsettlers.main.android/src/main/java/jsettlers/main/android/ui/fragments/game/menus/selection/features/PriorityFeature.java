@@ -13,6 +13,7 @@ import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -20,7 +21,7 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
  * Created by tompr on 10/01/2017.
  */
 
-public class PriorityFeature extends SelectionFeature implements ActionListener {
+public class PriorityFeature extends SelectionFeature implements ActionListener, DrawListener {
     private static final String stoppedImage = "original_3_GUI_192";
     private static final String lowImage = "original_3_GUI_195";
     private static final String highImage = "original_3_GUI_378";
@@ -51,12 +52,14 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
         }
 
         getControls().addActionListener(this);
+        getControls().addDrawListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
         getControls().removeActionListener(this);
+        getControls().removeDrawListener(this);
     }
 
     @Override
@@ -64,6 +67,20 @@ public class PriorityFeature extends SelectionFeature implements ActionListener 
         if (action.getActionType() == EActionType.SET_BUILDING_PRIORITY) {
             SetBuildingPriorityAction priorityAction = (SetBuildingPriorityAction) action;
             setImageForPriority(priorityAction.getNewPriority());
+        }
+    }
+
+    @Override
+    public void draw() {
+        if (hasNewState()) {
+            if (getBuildingState().getSupportedPriorities().length <= 1) {
+                getView().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        priorityButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
         }
     }
 
