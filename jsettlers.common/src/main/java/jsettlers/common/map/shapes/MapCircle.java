@@ -17,9 +17,9 @@ package jsettlers.common.map.shapes;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
-import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
-import jsettlers.common.utils.interfaces.ICoordinatePredicate;
+import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 
 /**
  * This class represents a circular area of the map.

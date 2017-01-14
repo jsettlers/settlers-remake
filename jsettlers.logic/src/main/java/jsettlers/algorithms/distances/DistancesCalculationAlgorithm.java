@@ -17,7 +17,7 @@ package jsettlers.algorithms.distances;
 import java.util.BitSet;
 
 import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.utils.interfaces.ICoordinatePredicate;
+import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.

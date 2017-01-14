@@ -20,7 +20,7 @@ import java.util.Iterator;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
-import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
 /**
  * Represents a hexagon on the grid.

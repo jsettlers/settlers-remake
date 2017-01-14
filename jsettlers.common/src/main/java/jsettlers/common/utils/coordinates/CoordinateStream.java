@@ -16,10 +16,6 @@ package jsettlers.common.utils.coordinates;
 
 import java8.util.Optional;
 
-import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
-import jsettlers.common.utils.interfaces.ICoordinateConsumer;
-import jsettlers.common.utils.interfaces.ICoordinateFunction;
-import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
 

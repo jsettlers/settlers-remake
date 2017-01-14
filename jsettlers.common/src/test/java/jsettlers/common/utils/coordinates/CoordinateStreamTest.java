@@ -2,7 +2,6 @@ package jsettlers.common.utils.coordinates;
 
 import org.junit.Test;
 
-import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
 import jsettlers.common.utils.mutables.MutableInt;
 
 import static org.junit.Assert.assertEquals;

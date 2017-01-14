@@ -22,8 +22,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import jsettlers.common.Color;
-import jsettlers.common.utils.interfaces.ICoordinatePredicate;
-import jsettlers.common.utils.interfaces.ICoordinateFunction;
+import jsettlers.common.utils.coordinates.ICoordinatePredicate;
+import jsettlers.common.utils.coordinates.ICoordinateFunction;
 
 import static java8.util.J8Arrays.stream;
 

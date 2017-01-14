@@ -17,7 +17,7 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.utils.interfaces.ICoordinateConsumer;
+import jsettlers.common.utils.coordinates.ICoordinateConsumer;
 import jsettlers.common.position.ShortPoint2D;
 
 public class MapNeighboursArea implements IMapArea {

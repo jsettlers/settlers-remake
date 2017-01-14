@@ -27,7 +27,7 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.utils.debug.DebugImagesHelper;
-import jsettlers.common.utils.interfaces.ICoordinatePredicate;
+import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.swing.resources.SwingResourceLoader;

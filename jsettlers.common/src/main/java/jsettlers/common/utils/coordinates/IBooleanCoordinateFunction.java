@@ -12,11 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.utils.interfaces;
+package jsettlers.common.utils.coordinates;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public interface ICoordinateConsumer {
-	void accept(int x, int y);
+public interface IBooleanCoordinateFunction {
+
+	boolean apply(int x, int y);
 }

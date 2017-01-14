@@ -28,6 +28,7 @@ import org.junit.Test;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.debug.DebugImagesHelper;
+import jsettlers.common.utils.mutables.MutableInt;
 
 import java8.util.Optional;
 
@@ -107,31 +108,31 @@ public class HexGridAreaTest {
 
 	@Test
 	public void testIterateSinglePoint() {
-		int[] counter = new int[1];
+		MutableInt counter = new MutableInt(0);
 		HexGridArea.stream(10, 10, 0, 0).forEach((x, y) -> {
-			counter[0]++;
+			counter.value++;
 			assertEquals(new ShortPoint2D(10, 10), new ShortPoint2D(x, y));
 		});
 
-		assertEquals(1, counter[0]);
+		assertEquals(1, counter.value);
 	}
 
 	@Test
 	public void testIterateForResultStopsAfterResult() {
 		int expectedVisits = 5;
 		Object expectedResultObject = new Object();
-		int[] counter = new int[1];
+		MutableInt counter = new MutableInt(0);
 
 		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).iterateForResult((x, y) -> {
-			counter[0]++;
-			if (counter[0] == expectedVisits) {
+			counter.value++;
+			if (counter.value == expectedVisits) {
 				return Optional.of(expectedResultObject);
 			} else {
 				return Optional.empty();
 			}
 		});
 
-		assertEquals(expectedVisits, counter[0]);
+		assertEquals(expectedVisits, counter.value);
 		assertTrue(actualResultObject.isPresent());
 		assertSame(expectedResultObject, actualResultObject.get());
 	}
@@ -139,15 +140,15 @@ public class HexGridAreaTest {
 	@Test
 	public void testIterateStopsAfterFalse() {
 		int expectedVisits = 5;
-		int[] counter = new int[1];
+		MutableInt counter = new MutableInt(0);
 
-		boolean wasStopped = HexGridArea.stream(10, 10, 3, 10).iterate((x, y) -> {
-			counter[0]++;
-			return counter[0] != expectedVisits;
+		boolean wasNotStopped = HexGridArea.stream(10, 10, 3, 10).iterate((x, y) -> {
+			counter.value++;
+			return counter.value != expectedVisits;
 		});
 
-		assertEquals(expectedVisits, counter[0]);
-		assertTrue(wasStopped);
+		assertEquals(expectedVisits, counter.value);
+		assertFalse(wasNotStopped);
 	}
 
 	@Test
@@ -195,19 +196,22 @@ public class HexGridAreaTest {
 		int height = center.y + maxRadius + 1;
 		BitSet positions = new BitSet(width * height);
 
-		int[] count = new int[1];
+		MutableInt counter = new MutableInt(0);
 
-		HexGridArea.stream(center.x, center.y, startRadius, maxRadius).forEach((x, y) -> {
-			int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
-			if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
-				fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: (" + x + "|" + y
-						+ ")");
-			}
-			positions.set(x + y * width);
-			DebugImagesHelper.writeDebugImageBoolean("count-" + count[0], width, height, (imageX, imageY) -> positions.get(imageX + imageY * width));
-			count[0]++;
-		});
+		HexGridArea.stream(center.x, center.y, startRadius, maxRadius)
+				.forEach((x, y) -> {
+					int onGridDist = center.getOnGridDistTo(new ShortPoint2D(x, y));
+					if (!(startRadius <= onGridDist && onGridDist <= maxRadius)) {
+						fail("onGridDist: " + onGridDist + "   not in the expected range of [" + startRadius + "|" + maxRadius + "]   pos: ("
+								+ x + "|" + y
+								+ ")");
+					}
+					positions.set(x + y * width);
+					DebugImagesHelper.writeDebugImageBoolean("count-" + counter.value, width, height,
+							(imageX, imageY) -> positions.get(imageX + imageY * width));
+					counter.value++;
+				});
 
-		assertEquals(expectedCount, count[0]);
+		assertEquals(expectedCount, counter.value);
 	}
 }
