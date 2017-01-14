@@ -32,13 +32,13 @@ import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 public class GameMenu {
     public static final int NOTIFICATION_ID = 100;
+    private final Context context;
+    private final ActionFireable actionFireable;
+    private final AndroidSoundPlayer soundPlayer;
 
-    private Context context;
-    private LocalBroadcastManager localBroadcastManager;
-    private NotificationManager notificationManager;
+    private final LocalBroadcastManager localBroadcastManager;
+    private final NotificationManager notificationManager;
 
-    private ActionFireable actionFireable;
-    private AndroidSoundPlayer soundPlayer;
     private Timer quitConfirmTimer;
 
     private boolean paused = false;

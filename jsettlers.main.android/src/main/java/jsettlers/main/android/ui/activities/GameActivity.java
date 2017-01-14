@@ -38,16 +38,16 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
+    private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
     private GameService gameService;
 
-    private LocalBroadcastManager localBroadcastManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        localBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter(ACTION_QUIT_CONFIRM);
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
 
@@ -115,15 +115,15 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
      */
     @Override
     public void startProgressChanged(EProgressState state, final float progress) {
-        final String status = Labels.getProgress(state);
-        final LoadingFragment loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_LOADING);
-
-        if (loadingFragment == null)
-            return;
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                final String status = Labels.getProgress(state);
+                final LoadingFragment loadingFragment = (LoadingFragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_LOADING);
+
+                if (loadingFragment == null)
+                    return;
+
                 loadingFragment.progressChanged(status, (int) (progress * 100));
             }
         });
