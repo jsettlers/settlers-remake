@@ -60,4 +60,8 @@ public class MutablePoint2D {
 		result = 31 * result + y;
 		return result;
 	}
+
+	public ShortPoint2D createShortPoint2D() {
+		return new ShortPoint2D(x, y);
+	}
 }

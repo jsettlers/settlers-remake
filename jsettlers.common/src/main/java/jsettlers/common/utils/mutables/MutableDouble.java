@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,34 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.position;
+package jsettlers.common.utils.mutables;
 
-import static org.junit.Assert.assertEquals;
+public class MutableDouble {
+	public double value;
 
-import org.junit.Test;
-
-import jsettlers.common.map.shapes.HexGridArea;
-
-public class ShortPoint2DTest {
-
-	@Test
-	public void testGetOnGridDist() {
-		ShortPoint2D center = new ShortPoint2D(100, 100);
-
-		for (int radius = 1; radius < 30; radius++) {
-			int expectedRadius = radius;
-			HexGridArea.streamBorder(center.x,center.y, radius).forEach((x,y)->{
-				assertEquals(expectedRadius, center.getOnGridDistTo(x,y));
-			});
-		}
+	public MutableDouble() {
 	}
 
-	@Test
-	public void singleGetOnGridDistTest() {
-		ShortPoint2D center = new ShortPoint2D(100, 100);
-		ShortPoint2D pos = new ShortPoint2D(98, 99);
-
-		assertEquals(2, center.getOnGridDistTo(pos));
-		assertEquals(2, pos.getOnGridDistTo(center));
+	public MutableDouble(double value) {
+		this.value = value;
 	}
 }

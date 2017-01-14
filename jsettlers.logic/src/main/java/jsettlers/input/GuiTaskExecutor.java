@@ -14,16 +14,13 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
@@ -51,7 +48,9 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  *
@@ -315,7 +314,6 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 						movableOptional.ifPresent(movable -> {
 							movable.moveTo(new ShortPoint2D(x, y));
-							System.out.println("(" + x + "|" + y + ")");
 							numberOfSendMovables.value++;
 						});
 					});
