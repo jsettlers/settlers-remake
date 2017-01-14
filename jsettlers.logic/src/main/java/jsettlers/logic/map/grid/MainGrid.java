@@ -1834,13 +1834,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public short getBlockedPartition(ShortPoint2D position) {
-			return landscapeGrid.getBlockedPartitionAt(position.x, position.y);
+		public short getBlockedPartition(int x, int y) {
+			return landscapeGrid.getBlockedPartitionAt(x, y);
 		}
 
 		@Override
-		public boolean isBlocked(ShortPoint2D position) {
-			return flagsGrid.isBlocked(position.x, position.y);
+		public boolean isBlocked(int x, int y) {
+			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -14,16 +14,20 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
@@ -46,6 +50,8 @@ import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  *
@@ -196,19 +202,19 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		ShortPoint2D buildingPosition = soldierTask.getBuildingPos();
 		OccupyingBuilding occupyingBuilding = (OccupyingBuilding) grid.getBuildingAt(buildingPosition.x, buildingPosition.y);
 
-		switch(soldierTask.getTaskType()) {
-			case FULL:
-				occupyingBuilding.requestSoldiers();
-				break;
-			case MORE:
-				occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
-				break;
-			case ONE:
-				occupyingBuilding.releaseSoldiers();
-				break;
-			case LESS:
-				occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
-				break;
+		switch (soldierTask.getTaskType()) {
+		case FULL:
+			occupyingBuilding.requestSoldiers();
+			break;
+		case MORE:
+			occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
+			break;
+		case ONE:
+			occupyingBuilding.releaseSoldiers();
+			break;
+		case LESS:
+			occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
+			break;
 		}
 	}
 
@@ -230,11 +236,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			}
 			playerStates[playerId] = new PlayerState(this.playerId, guiInterface.getUIState(), grid.getFogOfWar());
 			grid.save(playerStates);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -286,56 +288,59 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		if (movableIds.size() == 1) {
 			Movable currMovable = Movable.getMovableByID(movableIds.get(0));
-			if (currMovable != null)
+			if (currMovable != null) {
 				currMovable.moveTo(targetPosition);
-		} else if (!movableIds.isEmpty()) {
-			short radius = 1;
-			short ringsWithoutSuccessCtr = 0; // used to stop the loop
-			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
-
-			LinkedList<Movable> movables = new LinkedList<>();
-			for (Integer currMovableId : movableIds) {
-				Movable currMovable = Movable.getMovableByID(currMovableId);
-				if (currMovable != null) {
-					movables.add(currMovable);
-				}
 			}
+		} else if (!movableIds.isEmpty()) {
+			sendMovablesNew(targetPosition, movableIds);
+		}
+	}
 
-			while (!movables.isEmpty()) {
-				ShortPoint2D currTargetPos;
+	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds) {
+		System.out.println("new");
+		List<Movable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
+		if (movables.isEmpty()) {
+			return;
+		}
 
-				do {
-					posIterator.next();
-					if (!posIterator.hasNext()) {
-						ringsWithoutSuccessCtr++;
-						if (ringsWithoutSuccessCtr > 5) {
-							return; // the rest of the movables can't be sent to the target.
-						}
+		for (int radius = 1, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= 5 && !movables.isEmpty(); radius++) {
+			MutableInt numberOfSendMovables = new MutableInt(0);
 
-						radius++;
-						posIterator = new HexBorderArea(targetPosition, radius).iterator();
-					}
+			HexGridArea
+					.streamBorder(targetPosition.x, targetPosition.y, radius)
+					.filterBounds(grid.getWidth(), grid.getHeight())
+					.getEvery(2)
+					.forEach((x, y) -> {
+						Optional<Movable> movableOptional = removeMovableThatCanMoveTo(movables, x, y);
 
-					currTargetPos = posIterator.next();
+						movableOptional.ifPresent(movable -> {
+							movable.moveTo(new ShortPoint2D(x, y));
+							System.out.println("(" + x + "|" + y + ")");
+							numberOfSendMovables.value++;
+						});
+					});
 
-					// test all movables for this position.
-					for (Iterator<Movable> iterator = movables.iterator(); iterator.hasNext();) {
-						Movable movable = iterator.next();
-						if (canMoveTo(movable, currTargetPos)) {
-							ringsWithoutSuccessCtr = 0;
-							movable.moveTo(currTargetPos);
-							iterator.remove();
-							break;
-						}
-					}
-				} while (true);
+			if (numberOfSendMovables.value > 0) {
+				ringsWithoutSuccessCtr = 0;
+			} else {
+				ringsWithoutSuccessCtr++;
 			}
 		}
 	}
 
-	private boolean canMoveTo(Movable movable, ShortPoint2D potentialTargetPos) {
-		return grid.isInBounds(potentialTargetPos) && !grid.isBlocked(potentialTargetPos)
-				&& grid.getBlockedPartition(movable.getPos()) == grid.getBlockedPartition(potentialTargetPos);
+	private Optional<Movable> removeMovableThatCanMoveTo(List<Movable> movables, int x, int y) {
+		for (Iterator<Movable> iterator = movables.iterator(); iterator.hasNext();) {
+			Movable movable = iterator.next();
+			if (canMoveTo(movable, x, y)) {
+				iterator.remove();
+				return Optional.of(movable);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private boolean canMoveTo(Movable movable, int x, int y) {
+		return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
 	}
 
 	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {
@@ -345,5 +350,4 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			building.setWorkAreaCenter(pos);
 		}
 	}
-
 }
