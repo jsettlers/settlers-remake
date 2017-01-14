@@ -23,6 +23,7 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableBoolean;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.constants.Constants;
@@ -104,17 +105,17 @@ public final class MovableGrid implements Serializable {
 	 */
 	public void informMovables(Movable movable, short x, short y, boolean informFullArea) {
 		// inform all movables of the given movable
-		HexGridArea area;
+		CoordinateStream area;
 		if (informFullArea) {
-			area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+			area = HexGridArea.stream(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 		} else {
-			area = new HexGridArea(x, y, Constants.SOLDIER_SEARCH_RADIUS - 1);
+			area = HexGridArea.streamBorder(x, y, Constants.SOLDIER_SEARCH_RADIUS - 1);
 		}
 
 		MutableBoolean foundOne = new MutableBoolean();
 		byte movablePlayer = movable.getPlayerId();
 
-		area.stream().filterBounds(width, height).forEach((currX, currY) -> {
+		area.filterBounds(width, height).forEach((currX, currY) -> {
 			Movable currMovable = getMovableAt(currX, currY);
 			if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
 				currMovable.informAboutAttackable(movable);

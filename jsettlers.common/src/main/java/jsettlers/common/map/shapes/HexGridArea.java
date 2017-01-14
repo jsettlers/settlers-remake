@@ -32,10 +32,10 @@ import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
 public final class HexGridArea implements IMapArea {
 
 	private static final int MAX_DIRECTIONS_IDX = EDirection.NUMBER_OF_DIRECTIONS - 1;
-	private static final byte[] DIRECTION_INCREASE_X = { EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX,
-			EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX, EDirection.EAST.gridDeltaX };
-	private static final byte[] DIRECTION_INCREASE_Y = { EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY,
-			EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY, EDirection.EAST.gridDeltaY };
+	private static final byte[] DIRECTION_INCREASE_X = {EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX,
+			EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX, EDirection.EAST.gridDeltaX};
+	private static final byte[] DIRECTION_INCREASE_Y = {EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY,
+			EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY, EDirection.EAST.gridDeltaY};
 
 	private static final long serialVersionUID = -2218632675269689379L;
 	final short cX;
@@ -46,14 +46,10 @@ public final class HexGridArea implements IMapArea {
 	/**
 	 * Hexagon area from including {@link #startRadius} to including {@link #maxRadius}
 	 *
-	 * @param centerX
-	 *            center x
-	 * @param centerY
-	 *            center y
-	 * @param startRadius
-	 *            inclusive inner radius
-	 * @param maxRadius
-	 *            inclusive outer radius
+	 * @param centerX     center x
+	 * @param centerY     center y
+	 * @param startRadius inclusive inner radius
+	 * @param maxRadius   inclusive outer radius
 	 */
 	public HexGridArea(int centerX, int centerY, int startRadius, int maxRadius) {
 		this.cX = (short) centerX;
@@ -63,8 +59,13 @@ public final class HexGridArea implements IMapArea {
 	}
 
 	public HexGridArea(int centerX, int centerY, int radius) {
-		this(centerX, centerY, radius, radius);
+		this(centerX, centerY, 0, radius);
 	}
+
+	public HexGridArea(ShortPoint2D center, int radius) {
+		this(center.x, center.y, radius);
+	}
+
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
@@ -181,5 +182,13 @@ public final class HexGridArea implements IMapArea {
 				return Optional.empty();
 			}
 		};
+	}
+
+	public CoordinateStream streamBorder() {
+		return streamBorder(cX, cY, maxRadius);
+	}
+
+	public static CoordinateStream streamBorder(short centerX, short centerY, int radius) {
+		return stream(centerX, centerY, radius, radius);
 	}
 }

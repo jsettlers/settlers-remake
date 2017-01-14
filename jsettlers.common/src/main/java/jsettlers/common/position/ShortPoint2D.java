@@ -90,6 +90,22 @@ public class ShortPoint2D implements Serializable {
 	}
 
 	/**
+	 * Gets the number of tiles a movable must at least walk to get from this to the other position.
+	 *
+	 * @param x
+	 *            x coordinate of the other position.
+	 * @param y
+	 *            y coordinate of the other position.
+	 * 
+	 * @return The distance a movable needs to walk to get from this to the other position.
+	 */
+	public int getOnGridDistTo(int x, int y) {
+		final int dx = this.x - x;
+		final int dy = this.y - y;
+		return getOnGridDist(dx, dy);
+	}
+
+	/**
 	 * Gets the number of tiles a movable must at least walk to get from (0|0) to (dx|dy).
 	 * 
 	 * @param dx
