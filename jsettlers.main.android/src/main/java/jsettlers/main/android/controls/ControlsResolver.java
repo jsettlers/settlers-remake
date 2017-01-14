@@ -25,7 +25,7 @@ public class ControlsResolver {
         return getControls(activity);
     }
 
-    public static MenuProvider getMenuProvider(Activity activity) {
+    public static MenuFactory getMenuFactory(Activity activity) {
         return getControls(activity);
     }
 

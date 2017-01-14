@@ -93,7 +93,7 @@ public class GameService extends Service implements IGameExitListener {
 
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         controlsAdapter = new ControlsAdapter(getApplicationContext(), soundPlayer, game.getInGamePlayer());
-        mapContent = new MapContent(game, soundPlayer, controlsAdapter);
+        mapContent = new MapContent(game, soundPlayer, controlsAdapter.getControls());
         gameMenu = controlsAdapter.getGameMenu();
 
         startForeground(NOTIFICATION_ID, gameMenu.createNotification());

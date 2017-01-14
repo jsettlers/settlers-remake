@@ -111,7 +111,7 @@ public class MapFragment extends Fragment implements /* make a selection provide
 		actionControls = ControlsResolver.getActionControls(getActivity());
 		selectionControls = ControlsResolver.getSelectionControls(getActivity());
 		taskControls = ControlsResolver.getTaskControls(getActivity());
-		gameMenu = ControlsResolver.getMenuProvider(getActivity()).getGameMenu();
+		gameMenu = ControlsResolver.getMenuFactory(getActivity()).getGameMenu();
 
 		selectionControls.addSelectionListener(this);
 
