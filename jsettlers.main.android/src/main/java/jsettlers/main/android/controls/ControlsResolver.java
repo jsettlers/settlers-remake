@@ -33,6 +33,6 @@ public class ControlsResolver {
 
 
     private static ControlsAdapter getControls(Activity activity) {
-        return ((ControlsProvider)activity).getControls();
+        return ((ControlsProvider)activity).getControlsAdapter();
     }
 }

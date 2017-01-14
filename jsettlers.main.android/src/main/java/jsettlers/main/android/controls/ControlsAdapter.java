@@ -4,9 +4,11 @@ import java.util.LinkedList;
 
 import go.graphics.android.AndroidSoundPlayer;
 
+import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.android.menus.BuildingsMenu;
 import jsettlers.main.android.menus.GameMenu;
@@ -19,10 +21,13 @@ import android.content.Context;
  */
 
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, MenuFactory {
+    private static final int SOUND_THREADS = 6;
+
     private final Context context;
     private final AndroidSoundPlayer soundPlayer;
     private final IInGamePlayer player;
     private final AndroidControls androidControls;
+    private final MapContent mapContent;
     private final GameMenu gameMenu;
 
     private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
@@ -31,18 +36,23 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
     private ISelectionSet selection;
 
-    public ControlsAdapter(Context context, AndroidSoundPlayer soundPlayer, IInGamePlayer player) {
+    public ControlsAdapter(Context context, IStartedGame game) {
         this.context = context;
-        this.soundPlayer = soundPlayer;
-        this.player = player;
+        this.player = game.getInGamePlayer();
 
+        soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         androidControls = new AndroidControls(this);
+        mapContent = new MapContent(game, soundPlayer, androidControls);
         gameMenu = new GameMenu(context, androidControls, soundPlayer);
     }
 
-        public IControls getControls() {
+    public IControls getControls() {
             return androidControls;
         }
+
+    public MapContent getMapContent() {
+        return mapContent;
+    }
 
     public void onAction(IAction action) {
         synchronized (actionListeners) {

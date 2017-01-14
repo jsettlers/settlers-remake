@@ -7,5 +7,5 @@ import jsettlers.main.android.controls.ControlsAdapter;
  */
 
 public interface ControlsProvider {
-    ControlsAdapter getControls();
+    ControlsAdapter getControlsAdapter();
 }

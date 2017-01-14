@@ -107,8 +107,8 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
      * ControlsProvider implementation
      */
     @Override
-    public ControlsAdapter getControls() {
-        return gameService.getControls();
+    public ControlsAdapter getControlsAdapter() {
+        return gameService.getControlsAdapter();
     }
 
     /**
@@ -116,7 +116,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
      */
     @Override
     public MapContent getMapContent() {
-        return gameService.getMapContent();
+        return getControlsAdapter().getMapContent();
     }
 
 
