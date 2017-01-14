@@ -81,12 +81,12 @@ public class GameService extends Service implements IGameExitListener {
         return startingGame;
     }
 
-    public MapInterfaceConnector gameStarted(IStartedGame game, IFragmentHandler fragmentHandler) {
+    public MapInterfaceConnector gameStarted(IStartedGame game) {
         game.setGameExitListener(this);
 
         controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
         gameMenu = controlsAdapter.getGameMenu();
-        
+
         startForeground(NOTIFICATION_ID, gameMenu.createNotification());
 
         return controlsAdapter.getMapContent().getInterfaceConnector();

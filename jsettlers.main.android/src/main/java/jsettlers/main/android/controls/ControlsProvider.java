@@ -1,6 +1,4 @@
-package jsettlers.main.android.providers;
-
-import jsettlers.main.android.controls.ControlsAdapter;
+package jsettlers.main.android.controls;
 
 /**
  * Created by tompr on 23/11/2016.

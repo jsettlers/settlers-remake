@@ -9,9 +9,7 @@ import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGameListener;
-import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
@@ -19,8 +17,7 @@ import jsettlers.main.android.ui.fragments.game.LoadingFragment;
 import jsettlers.main.android.ui.fragments.game.MapFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
-import jsettlers.main.android.providers.ControlsProvider;
-import jsettlers.main.android.providers.MapContentProvider;
+import jsettlers.main.android.controls.ControlsProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -36,7 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, MapContentProvider {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider {
     private static final String TAG_FRAGMENT_SERVICE_BINDER = "service_binder_fragment";
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -111,14 +108,6 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         return gameService.getControlsAdapter();
     }
 
-    /**
-     * MapContentProvider implementation
-     */
-    @Override
-    public MapContent getMapContent() {
-        return getControlsAdapter().getMapContent();
-    }
-
 
 
     /**
@@ -142,12 +131,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, new IFragmentHandler() {
-            @Override
-            public void hideMenu() {
-
-            }
-        });
+        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game);
         return mapInterfaceConnector;
     }
 

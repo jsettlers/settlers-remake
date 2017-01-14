@@ -1,6 +1,6 @@
 package jsettlers.main.android.controls;
 
-import jsettlers.main.android.providers.ControlsProvider;
+import jsettlers.graphics.map.MapContent;
 
 import android.app.Activity;
 
@@ -23,6 +23,10 @@ public class ControlsResolver {
 
     public static TaskControls getTaskControls(Activity activity) {
         return getControls(activity);
+    }
+
+    public static MapContent getMapContent(Activity activity) {
+        return getControls(activity).getMapContent();
     }
 
     public static MenuFactory getMenuFactory(Activity activity) {

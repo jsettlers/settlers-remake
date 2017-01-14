@@ -31,7 +31,6 @@ import jsettlers.main.android.ui.fragments.game.menus.selection.SoldiersSelectio
 import jsettlers.main.android.ui.fragments.game.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.ui.fragments.game.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
-import jsettlers.main.android.providers.MapContentProvider;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.content.BroadcastReceiver;
@@ -115,8 +114,8 @@ public class MapFragment extends Fragment implements /* make a selection provide
 
 		selectionControls.addSelectionListener(this);
 
-		MapContentProvider mapContentProvider = (MapContentProvider) getActivity();
-		addMapViews(mapContentProvider.getMapContent());
+		MapContent mapContent = ControlsResolver.getMapContent(getActivity());
+		addMapViews(mapContent);
 
 		if (savedInstanceState == null) {
 			addBuildsingMenuFragment();
