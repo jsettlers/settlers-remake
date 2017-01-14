@@ -13,11 +13,11 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.ControlsProvider;
 import jsettlers.main.android.ui.fragments.game.LoadingFragment;
 import jsettlers.main.android.ui.fragments.game.MapFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
-import jsettlers.main.android.controls.ControlsProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -131,8 +131,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game);
-        return mapInterfaceConnector;
+        return gameService.gameStarted(game);
     }
 
     @Override
@@ -166,7 +165,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     private void serviceReady(GameService gameService) {
         this.gameService = gameService;
 
-        if (getIntent().getAction() == Actions.RESUME_GAME) {
+        if (Actions.RESUME_GAME.equals(getIntent().getAction())) {
             showMapFragment();
         } else {
             showLoadingFragment();

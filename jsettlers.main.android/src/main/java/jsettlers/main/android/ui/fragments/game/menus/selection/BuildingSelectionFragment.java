@@ -51,6 +51,10 @@ public class BuildingSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getSelection().getSize() == 0) {
+            return;
+        }
+
         building = (IBuilding) getSelection().get(0);
         buildingState = new BuildingState(building);
 

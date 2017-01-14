@@ -3,9 +3,11 @@ package jsettlers.main.android.ui.fragments.game.menus.selection;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.input.SelectionSet;
 import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.controls.SelectionControls;
+import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +30,14 @@ public abstract class SelectionFragment extends Fragment {
         selectionControls = ControlsResolver.getSelectionControls(getActivity());
 
         selection = selectionControls.getCurrentSelection();
+
+        // It shouldnt be possible for the selection to be null because the selection menu is only launched due to selection. Noticed it happen when doing loads of minute skips though.
+        if (selection == null) {
+            MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
+            menuNavigator.removeSelectionMenu();
+            menuNavigator.dismissMenu();
+            return;
+        }
     }
 
     @Override
@@ -41,6 +51,9 @@ public abstract class SelectionFragment extends Fragment {
     }
 
     public ISelectionSet getSelection() {
-        return selection;
+        if (selection == null)
+            return new SelectionSet();  // if its null return a dummy set to stop the subclasses from null reference crashing, menu dismiss has already been triggered.
+        else
+            return selection;
     }
 }

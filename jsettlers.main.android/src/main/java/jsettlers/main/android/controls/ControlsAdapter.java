@@ -175,6 +175,6 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
     @Override
     public SettlersSoldiersMenu getSettlersSoldiersMenu() {
-        return new SettlersSoldiersMenu(this);
+        return new SettlersSoldiersMenu(this, player);
     }
 }
