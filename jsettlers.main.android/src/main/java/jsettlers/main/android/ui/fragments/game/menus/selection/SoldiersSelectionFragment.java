@@ -6,6 +6,8 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.ui.images.ImageLinkFactory;
 
 import android.os.Bundle;
@@ -36,6 +38,8 @@ public class SoldiersSelectionFragment extends SelectionFragment {
             EMovableType.BOWMAN_L3,
     };
 
+    private ActionControls actionControls;
+
     private LinearLayout soldiers1Layout;
     private LinearLayout soldiers2Layout;
     private LinearLayout soldiers3Layout;
@@ -53,6 +57,8 @@ public class SoldiersSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        actionControls = ControlsResolver.getActionControls(getActivity());
+
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         soldiers1Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_1);
         soldiers2Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_2);
@@ -62,7 +68,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
         View haltButton = getView().findViewById(R.id.button_halt);
 
         killButton.setOnClickListener(killClickListener);
-        haltButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.STOP_WORKING));
+        haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
 
         for (EMovableType movableType : soldierTypes) {
             int count = getSelection().getMovableCount(movableType);
@@ -118,7 +124,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
                     .setAction(R.string.yes, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getControls().fireAction(new Action(EActionType.DESTROY));
+                            actionControls.fireAction(new Action(EActionType.DESTROY));
                         }
                     })
                     .show();

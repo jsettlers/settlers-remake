@@ -11,8 +11,10 @@ import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.controls.DrawListener;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
@@ -25,16 +27,20 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
     private static final String stoppedImage = "original_3_GUI_192";
     private static final String lowImage = "original_3_GUI_195";
     private static final String highImage = "original_3_GUI_378";
+    private final ActionControls actionControls;
+    private final DrawControls drawControls;
 
     private InGameButton priorityButton;
 
-    public PriorityFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        super(building, controls, menuNavigator, view);
+    public PriorityFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls, DrawControls drawControls) {
+        super(view, building, menuNavigator);
+        this.actionControls = actionControls;
+        this.drawControls = drawControls;
     }
 
     @Override
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-        super.initialize(buildingState, controls);
+    public void initialize(BuildingState buildingState) {
+        super.initialize(buildingState);
 
         EPriority[] supportedPriorities = getBuildingState().getSupportedPriorities();
         if (supportedPriorities.length > 1) {
@@ -46,20 +52,20 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
             priorityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    controls.fireAction(new SetBuildingPriorityAction(getNextPriority()));
+                    actionControls.fireAction(new SetBuildingPriorityAction(getNextPriority()));
                 }
             });
         }
 
-        getControls().addActionListener(this);
-        getControls().addDrawListener(this);
+        actionControls.addActionListener(this);
+        drawControls.addDrawListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
-        getControls().removeActionListener(this);
-        getControls().removeDrawListener(this);
+        actionControls.removeActionListener(this);
+        drawControls.removeDrawListener(this);
     }
 
     @Override

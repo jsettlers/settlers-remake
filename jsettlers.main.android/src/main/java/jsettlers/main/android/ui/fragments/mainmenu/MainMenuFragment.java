@@ -2,6 +2,7 @@ package jsettlers.main.android.ui.fragments.mainmenu;
 
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
@@ -40,6 +41,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private GameService gameService;
+	private GameMenu gameMenu;
 
 	private LocalBroadcastManager localBroadcastManager;
 	private MainMenuNavigator navigator;
@@ -89,10 +91,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		quitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (gameService.getGameMenu().canQuitConfirm()) {
-					gameService.getGameMenu().quitConfirm();
+				if (gameMenu.canQuitConfirm()) {
+					gameMenu.quitConfirm();
 				} else {
-					gameService.getGameMenu().quit();
+					gameMenu.quit();
 				}
 			}
 		});
@@ -100,10 +102,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		pauseButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (gameService.getGameMenu().isPaused()) {
-					gameService.getGameMenu().unPause();
+				if (gameMenu.isPaused()) {
+					gameMenu.unPause();
 				} else {
-					gameService.getGameMenu().pause();
+					gameMenu.pause();
 				}
 				setPauseButtonText();
 			}
@@ -194,7 +196,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private void setQuitConfirmButtonText() {
-		if (gameService.getGameMenu().canQuitConfirm()) {
+		if (gameMenu.canQuitConfirm()) {
 			quitButton.setText(R.string.game_menu_quit_confirm);
 		} else {
 			quitButton.setText(R.string.game_menu_quit);
@@ -202,7 +204,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private void setPauseButtonText() {
-		if (gameService.getGameMenu().isPaused()) {
+		if (gameMenu.isPaused()) {
 			pauseButton.setText(R.string.game_menu_unpause);
 		} else {
 			pauseButton.setText(R.string.game_menu_pause);
@@ -214,6 +216,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
 			gameService = gameBinder.getService();
+			if (gameService.isGameInProgress()) {
+				gameMenu = gameService.getControlsAdapter().getGameMenu();
+			}
 
 			localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
 			IntentFilter intentFilter = new IntentFilter();

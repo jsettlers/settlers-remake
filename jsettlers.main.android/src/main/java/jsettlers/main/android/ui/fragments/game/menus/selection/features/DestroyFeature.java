@@ -8,6 +8,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.ui.customviews.InGameButton;
@@ -23,13 +24,16 @@ import android.view.View;
 public class DestroyFeature extends SelectionFeature implements ActionListener {
     private static final String imageDestroy = "original_3_GUI_198";
 
-    public DestroyFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        super(building, controls, menuNavigator, view);
+    private final ActionControls actionControls;
+
+    public DestroyFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls) {
+        super(view, building, menuNavigator);
+        this.actionControls = actionControls;
     }
 
     @Override
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-        super.initialize(buildingState, controls);
+    public void initialize(BuildingState buildingState) {
+        super.initialize(buildingState);
         InGameButton destroyButton = (InGameButton) getView().findViewById(R.id.image_view_destroy);
         destroyButton.setVisibility(View.VISIBLE);
 
@@ -39,17 +43,17 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
         destroyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getControls().fireAction(new Action(EActionType.ASK_DESTROY));
+                actionControls.fireAction(new Action(EActionType.ASK_DESTROY));
             }
         });
 
-        getControls().addActionListener(this);
+        actionControls.addActionListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
-        getControls().removeActionListener(this);
+        actionControls.removeActionListener(this);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
                     .setAction("Yes", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            getControls().fireAction(new Action(EActionType.DESTROY));
+                            actionControls.fireAction(new Action(EActionType.DESTROY));
                             getMenuNavigator().dismissMenu();
                             getMenuNavigator().removeSelectionMenu();
                         }

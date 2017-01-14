@@ -1,5 +1,15 @@
 package jsettlers.main.android.ui.fragments.game.menus.selection;
 
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.graphics.action.ConvertAction;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
+import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionClickListener;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.controls.ControlsResolver;
+import jsettlers.main.android.ui.images.ImageLinkFactory;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,28 +20,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
-import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionClickListener;
-import jsettlers.main.android.ui.images.ImageLinkFactory;
-
 /**
  * Created by tompr on 13/01/2017.
  */
 
 public class SpecialistsSelectionFragment extends SelectionFragment {
-
     private static final EMovableType[] specialistTypes = new EMovableType[] {
             EMovableType.PIONEER,
             EMovableType.THIEF,
             EMovableType.GEOLOGIST,
     };
+
+    private ActionControls actionControls;
 
     public static Fragment newInstance() {
         return new SpecialistsSelectionFragment();
@@ -46,6 +46,8 @@ public class SpecialistsSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        actionControls = ControlsResolver.getActionControls(getActivity());
+
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         LinearLayout specialistsLayout = (LinearLayout) getView().findViewById(R.id.layout_specialists);
 
@@ -53,9 +55,9 @@ public class SpecialistsSelectionFragment extends SelectionFragment {
         View workHereButton = getView().findViewById(R.id.button_work_here);
         View haltButton = getView().findViewById(R.id.button_halt);
 
-        convertCarriersButton.setOnClickListener(new ActionClickListener(getControls(), new ConvertAction(EMovableType.BEARER, Short.MAX_VALUE)));
-        workHereButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.START_WORKING));
-        haltButton.setOnClickListener(new ActionClickListener(getControls(), EActionType.STOP_WORKING));
+        convertCarriersButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.BEARER, Short.MAX_VALUE)));
+        workHereButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.START_WORKING));
+        haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
 
         for (EMovableType movableType : specialistTypes) {
             int count = getSelection().getMovableCount(movableType);

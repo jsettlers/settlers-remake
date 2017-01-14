@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingBottom="40dp">
+
+    <TextView
+        android:id="@+id/text_view_soldier_strength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"/>
+
+    <TextView
+        android:id="@+id/text_view_soldier_promotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/image_view_promotion_swordsmen"
+            android:layout_width="@dimen/menu_tile_divine_promotion_width"
+            android:layout_height="@dimen/menu_tile_divine_promotion_height"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <ImageView
+            android:id="@+id/image_view_promotion_bowmen"
+            android:layout_width="@dimen/menu_tile_divine_promotion_width"
+            android:layout_height="@dimen/menu_tile_divine_promotion_height"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <ImageView
+            android:id="@+id/image_view_promotion_pikemen"
+            android:layout_width="@dimen/menu_tile_divine_promotion_width"
+            android:layout_height="@dimen/menu_tile_divine_promotion_height"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
+</LinearLayout>

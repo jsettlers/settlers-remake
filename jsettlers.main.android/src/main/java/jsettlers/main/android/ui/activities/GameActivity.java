@@ -9,20 +9,15 @@ import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGameListener;
-import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.ControlsProvider;
 import jsettlers.main.android.ui.fragments.game.LoadingFragment;
 import jsettlers.main.android.ui.fragments.game.MapFragment;
-import jsettlers.main.android.menus.GameMenu;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.BackPressedListener;
-import jsettlers.main.android.providers.ControlsProvider;
-import jsettlers.main.android.providers.GameMenuProvider;
-import jsettlers.main.android.providers.MapContentProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -38,7 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider, GameMenuProvider, MapContentProvider {
+public class GameActivity extends AppCompatActivity implements IStartingGameListener, ControlsProvider {
     private static final String TAG_FRAGMENT_SERVICE_BINDER = "service_binder_fragment";
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -104,29 +99,16 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
         }
     }
 
-    /**
-     * ControlsProvider imeplementation
-     */
-    @Override
-    public ControlsAdapter getControls() {
-        return gameService.getControls();
-    }
 
     /**
-     * GameMenuProvider implementation
+     * ControlsProvider implementation
      */
     @Override
-    public GameMenu getGameMenu() {
-        return gameService.getGameMenu();
+    public ControlsAdapter getControlsAdapter() {
+        return gameService.getControlsAdapter();
     }
 
-    /**
-     * MapContentProvider implementation
-     */
-    @Override
-    public MapContent getMapContent() {
-        return gameService.getMapContent();
-    }
+
 
     /**
      * IStartingGameListener implementation
@@ -149,13 +131,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
 
     @Override
     public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-        IMapInterfaceConnector mapInterfaceConnector = gameService.gameStarted(game, new IFragmentHandler() {
-            @Override
-            public void hideMenu() {
-
-            }
-        });
-        return mapInterfaceConnector;
+        return gameService.gameStarted(game);
     }
 
     @Override
@@ -189,7 +165,7 @@ public class GameActivity extends AppCompatActivity implements IStartingGameList
     private void serviceReady(GameService gameService) {
         this.gameService = gameService;
 
-        if (getIntent().getAction() == Actions.RESUME_GAME) {
+        if (Actions.RESUME_GAME.equals(getIntent().getAction())) {
             showMapFragment();
         } else {
             showLoadingFragment();

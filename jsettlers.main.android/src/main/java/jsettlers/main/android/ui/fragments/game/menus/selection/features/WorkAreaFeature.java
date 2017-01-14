@@ -12,6 +12,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.ui.customviews.InGameButton;
@@ -23,16 +24,18 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 public class WorkAreaFeature extends SelectionFeature implements ActionListener {
     private static final String image = "original_3_GUI_201";
+    private final ActionControls actionControls;
 
     private Snackbar snackbar;
 
-    public WorkAreaFeature(IBuilding building, ControlsAdapter controls, MenuNavigator menuNavigator, View view) {
-        super(building, controls, menuNavigator, view);
+    public WorkAreaFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls) {
+        super(view, building, menuNavigator);
+        this.actionControls = actionControls;
     }
 
     @Override
-    public void initialize(BuildingState buildingState, ControlsAdapter controls) {
-        super.initialize(buildingState, controls);
+    public void initialize(BuildingState buildingState) {
+        super.initialize(buildingState);
         InGameButton workAreaButton = (InGameButton) getView().findViewById(R.id.image_view_work_area);
         workAreaButton.setVisibility(View.VISIBLE);
 
@@ -42,17 +45,17 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
         workAreaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getControls().fireAction(new Action(EActionType.ASK_SET_WORK_AREA));
+                actionControls.fireAction(new Action(EActionType.ASK_SET_WORK_AREA));
             }
         });
 
-        getControls().addActionListener(this);
+        actionControls.addActionListener(this);
     }
 
     @Override
     public void finish() {
         super.finish();
-        getControls().removeActionListener(this);
+        actionControls.removeActionListener(this);
         dismissSnackbar();
     }
 
@@ -65,7 +68,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
                         .setAction("Cancel", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                getControls().fireAction(new Action(EActionType.ABORT));
+                                actionControls.fireAction(new Action(EActionType.ABORT));
                             }
                         });
                 snackbar.show();

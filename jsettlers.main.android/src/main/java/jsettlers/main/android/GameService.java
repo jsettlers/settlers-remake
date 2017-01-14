@@ -2,22 +2,15 @@ package jsettlers.main.android;
 
 import static jsettlers.main.android.menus.GameMenu.NOTIFICATION_ID;
 
-import go.graphics.android.AndroidSoundPlayer;
-
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.graphics.androidui.MobileControls;
-import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.menus.GameMenu;
-import jsettlers.main.android.providers.GameMenuProvider;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -36,14 +29,10 @@ public class GameService extends Service implements IGameExitListener {
     public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
     public static final String ACTION_QUIT_CANCELLED = "com.jsettlers.quitcancelled";
 
-    private static final int SOUND_THREADS = 6;
-
     private GameBinder gameBinder = new GameBinder();
     private LocalBroadcastManager localBroadcastManager;
 
     private IStartingGame startingGame;
-    private MapContent mapContent;
-    private AndroidSoundPlayer soundPlayer;
     private ControlsAdapter controlsAdapter;
     private GameMenu gameMenu;
 
@@ -81,7 +70,7 @@ public class GameService extends Service implements IGameExitListener {
      * GameService API
      */
     public boolean isGameInProgress() {
-        return mapContent != null;
+        return controlsAdapter != null;
     }
 
     public void startSinglePlayerGame(IMapDefinition mapDefinition) {
@@ -92,32 +81,19 @@ public class GameService extends Service implements IGameExitListener {
         return startingGame;
     }
 
-    public MapInterfaceConnector gameStarted(IStartedGame game, IFragmentHandler fragmentHandler) {
-        // startingGame = null ??????
-
-        soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
-        controlsAdapter = new ControlsAdapter();
-        mapContent = new MapContent(game, soundPlayer, controlsAdapter);// new MobileControls(new AndroidMenuPutable(this, fragmentHandler)));
-
+    public MapInterfaceConnector gameStarted(IStartedGame game) {
         game.setGameExitListener(this);
 
-        gameMenu = new GameMenu(getApplicationContext(), mapContent, soundPlayer);
+        controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
+        gameMenu = controlsAdapter.getGameMenu();
 
         startForeground(NOTIFICATION_ID, gameMenu.createNotification());
 
-        return mapContent.getInterfaceConnector();
+        return controlsAdapter.getMapContent().getInterfaceConnector();
     }
 
-    public MapContent getMapContent() {
-        return mapContent;
-    }
-
-    public ControlsAdapter getControls() {
+    public ControlsAdapter getControlsAdapter() {
         return controlsAdapter;
-    }
-
-    public GameMenu getGameMenu() {
-        return gameMenu;
     }
 
     /**
@@ -129,9 +105,6 @@ public class GameService extends Service implements IGameExitListener {
         stopSelf();
 
         startingGame = null;
-        mapContent = null;
-        soundPlayer = null;
-        gameMenu = null;
         controlsAdapter = null;
 
         // Send a local broadcast so that any UI can update if necessary
