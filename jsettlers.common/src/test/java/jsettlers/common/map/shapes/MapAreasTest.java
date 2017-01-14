@@ -20,14 +20,10 @@ package jsettlers.common.map.shapes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapCircleBorder;
-import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.Parallelogram;
-import jsettlers.common.position.ShortPoint2D;
 
 import org.junit.Test;
+
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * @author michael
@@ -83,12 +79,6 @@ public class MapAreasTest {
 				(short) (TEST_WIDTH / 2));
 		testShapeIterator(rect3);
 
-	}
-
-	@Test
-	public void testCircleBorder() {
-		MapCircle baseCircle = new MapCircle((short) (TEST_WIDTH / 2), (short) (TEST_WIDTH / 2), TEST_WIDTH / 4);
-		testShapeIterator(new MapCircleBorder(baseCircle));
 	}
 
 	@Test

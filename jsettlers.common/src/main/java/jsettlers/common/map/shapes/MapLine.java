@@ -59,7 +59,6 @@ public class MapLine implements IMapArea {
 	public MapLine(ShortPoint2D start, ShortPoint2D end) {
 		this.start = start;
 		this.end = end;
-
 	}
 
 	@Override

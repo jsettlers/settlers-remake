@@ -63,4 +63,10 @@ public abstract class CoordinateStream {
 		MutableInt counter = new MutableInt(0);
 		return filter((x, y) -> counter.value++ >= numberOfSkips);
 	}
+
+	public int count() {
+		MutableInt counter = new MutableInt(0);
+		forEach((x, y) -> counter.value++);
+		return counter.value;
+	}
 }

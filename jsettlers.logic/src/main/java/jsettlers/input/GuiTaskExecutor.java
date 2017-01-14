@@ -296,7 +296,6 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds) {
-		System.out.println("new");
 		List<Movable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
 		if (movables.isEmpty()) {
 			return;

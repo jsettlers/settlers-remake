@@ -61,19 +61,18 @@ public class MapCircleTest {
 
 	@Test
 	public void testBorderStream() {
-		for (int i = 0; i < 40; i++) {
+		for (int i = 1; i < 40; i++) {
 			MapCircle circle = new MapCircle(new ShortPoint2D(100, 100), i);
-			MapCircleBorder border = new MapCircleBorder(circle);
-
-			Iterator<ShortPoint2D> iterator = border.iterator();
+			MapCircle oneSmallerCircle = new MapCircle(new ShortPoint2D(100, 100), i - 1);
 
 			circle.streamBorder().forEach((x, y) -> {
-				assertTrue(iterator.hasNext());
-				ShortPoint2D expected = iterator.next();
-				assertEquals(expected, new ShortPoint2D(x, y));
+				assertTrue(circle.contains(x, y));
+				assertTrue(!oneSmallerCircle.contains(x, y));
 			});
 
-			assertFalse(iterator.hasNext());
+			int maxCount = circle.stream().count() - oneSmallerCircle.stream().count();
+			int actualCount = circle.streamBorder().count();
+			assertTrue(actualCount <= maxCount);
 		}
 	}
 }
