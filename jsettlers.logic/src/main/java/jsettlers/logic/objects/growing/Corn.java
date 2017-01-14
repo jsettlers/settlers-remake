@@ -79,13 +79,11 @@ public final class Corn extends GrowingObject {
 	}
 
 	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
-		Optional<Boolean> isBlocked = getEarthAreaStream(x, y)
+		boolean isFree = getEarthAreaStream(x, y)
 				.filter((currX, currY) -> grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD))
-				.iterate((currX, currY) -> {
-					return Optional.of(Boolean.TRUE); // return true if there is a map object in the area that enforces this position to remain earth
-				});
+				.isEmpty();
 
-		if (!isBlocked.isPresent()) {
+		if (isFree) {
 			grid.setLandscape(x, y, ELandscapeType.GRASS);
 		}
 	}

@@ -2,8 +2,7 @@ package jsettlers.common.utils.coordinates;
 
 import org.junit.Test;
 
-import java8.util.Optional;
-import jsettlers.common.utils.interfaces.ICoordinateFunction;
+import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
 import jsettlers.common.utils.mutables.MutableInt;
 
 import static org.junit.Assert.assertEquals;
@@ -75,16 +74,16 @@ public class CoordinateStreamTest {
 	private CoordinateStream streamForArray(final int[] coordinatesFlat) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
+			public boolean iterate(IBooleanCoordinateFunction function) {
 				for (int i = 0; i < coordinatesFlat.length / 2; i++) {
 					int x = coordinatesFlat[2 * i];
 					int y = coordinatesFlat[2 * i + 1];
-					Optional<T> result = function.apply(x, y);
-					if (result.isPresent()) {
+					boolean result = function.apply(x, y);
+					if (!result) {
 						return result;
 					}
 				}
-				return Optional.empty();
+				return true;
 			}
 		};
 	}

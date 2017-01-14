@@ -122,9 +122,11 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public boolean isHexAreaOfType(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
-		Optional<Boolean> iterationResult = HexGridArea.stream(x, y, minRadius, maxRadius).iterate(
-				(currX, currY) -> !isLandscapeOf(currX, currY, landscapeTypes) ? Optional.of(false) : Optional.empty());
-		return !iterationResult.isPresent();
+		boolean isOfType = HexGridArea
+				.stream(x, y, minRadius, maxRadius)
+				.filter((currX, currY) -> !isLandscapeOf(currX, currY, landscapeTypes))
+				.isEmpty();
+		return isOfType;
 	}
 
 	@Override

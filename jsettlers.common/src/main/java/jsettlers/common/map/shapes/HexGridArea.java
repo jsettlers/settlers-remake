@@ -17,12 +17,10 @@ package jsettlers.common.map.shapes;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import java8.util.Optional;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
-import jsettlers.common.utils.interfaces.ICoordinateFunction;
-import jsettlers.common.utils.interfaces.ICoordinateWithRadiusFunction;
+import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
 
 /**
  * Represents a hexagon on the grid.
@@ -111,10 +109,6 @@ public final class HexGridArea implements IMapArea {
 			return radius <= hexGridArea.maxRadius;
 		}
 
-		public short getRadiusOfNext() {
-			return radius;
-		}
-
 		@Override
 		public ShortPoint2D next() {
 			ShortPoint2D result = new ShortPoint2D(x, y);
@@ -156,10 +150,10 @@ public final class HexGridArea implements IMapArea {
 	public static CoordinateStream stream(int cX, int cY, int startRadius, int maxRadius) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
+			public boolean iterate(IBooleanCoordinateFunction function) {
 				if (startRadius == 0) {
-					Optional<T> result = function.apply(cX, cY);
-					if (result.isPresent()) {
+					boolean result = function.apply(cX, cY);
+					if (!result) {
 						return result;
 					}
 				}
@@ -173,8 +167,8 @@ public final class HexGridArea implements IMapArea {
 							x += DIRECTION_INCREASE_X[direction];
 							y += DIRECTION_INCREASE_Y[direction];
 
-							Optional<T> result = function.apply(x, y);
-							if (result.isPresent()) {
+							boolean result = function.apply(x, y);
+							if (!result) {
 								return result;
 							}
 						}
@@ -182,7 +176,7 @@ public final class HexGridArea implements IMapArea {
 					y--; // go to next radius / go one NORTH_EAST
 				}
 
-				return Optional.empty();
+				return true;
 			}
 		};
 	}

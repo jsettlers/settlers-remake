@@ -22,7 +22,6 @@ import java.util.BitSet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java8.util.Optional;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
@@ -82,10 +81,7 @@ public class DistanceCalculationAlgorithmTest {
 				if (provider.test(x, y)) {
 					HexGridArea.stream(x, y, 0, maxDistance)
 							.filterBounds(width, height)
-							.iterate((currX, currY) -> {
-								inDistance.set(currY * width + currX);
-								return Optional.empty();
-							});
+							.forEach((currX, currY) -> inDistance.set(currY * width + currX));
 				}
 			}
 		}

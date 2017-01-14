@@ -17,9 +17,8 @@ package jsettlers.common.map.shapes;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
-import jsettlers.common.utils.interfaces.ICoordinateFunction;
+import jsettlers.common.utils.interfaces.IBooleanCoordinateFunction;
 
-import java8.util.Optional;
 import jsettlers.common.utils.interfaces.ICoordinatePredicate;
 
 /**
@@ -182,7 +181,7 @@ public final class MapCircle implements IMapArea {
 	public static CoordinateStream stream(int centerX, int centerY, float radius) {
 		return new CoordinateStream() {
 			@Override
-			public <T> Optional<T> iterate(ICoordinateFunction<Optional<T>> function) {
+			public boolean iterate(IBooleanCoordinateFunction function) {
 				int currentYOffset = -(int) (radius / MapCircle.Y_SCALE);
 				float currentHalfLineWidth = calculateHalfLineWidth(radius, currentYOffset);
 				float currentXOffset = -currentHalfLineWidth;
@@ -193,8 +192,8 @@ public final class MapCircle implements IMapArea {
 					int x = (int) Math.ceil(.5f * currentYOffset + currentXOffset) + centerX;
 					int y = currentYOffset + centerY;
 
-					Optional<T> result = function.apply(x, y);
-					if (result.isPresent()) {
+					boolean result = function.apply(x, y);
+					if (!result) {
 						return result;
 					}
 
@@ -206,7 +205,7 @@ public final class MapCircle implements IMapArea {
 						currentXOffset = -currentHalfLineWidth;
 					}
 				}
-				return Optional.empty();
+				return true;
 			}
 		};
 	}

@@ -117,12 +117,12 @@ public class HexGridAreaTest {
 	}
 
 	@Test
-	public void testIterateStopsAfterResult() {
+	public void testIterateForResultStopsAfterResult() {
 		int expectedVisits = 5;
 		Object expectedResultObject = new Object();
 		int[] counter = new int[1];
 
-		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).iterate((x, y) -> {
+		Optional<Object> actualResultObject = HexGridArea.stream(10, 10, 3, 10).iterateForResult((x, y) -> {
 			counter[0]++;
 			if (counter[0] == expectedVisits) {
 				return Optional.of(expectedResultObject);
@@ -134,6 +134,20 @@ public class HexGridAreaTest {
 		assertEquals(expectedVisits, counter[0]);
 		assertTrue(actualResultObject.isPresent());
 		assertSame(expectedResultObject, actualResultObject.get());
+	}
+
+	@Test
+	public void testIterateStopsAfterFalse() {
+		int expectedVisits = 5;
+		int[] counter = new int[1];
+
+		boolean wasStopped = HexGridArea.stream(10, 10, 3, 10).iterate((x, y) -> {
+			counter[0]++;
+			return counter[0] != expectedVisits;
+		});
+
+		assertEquals(expectedVisits, counter[0]);
+		assertTrue(wasStopped);
 	}
 
 	@Test
