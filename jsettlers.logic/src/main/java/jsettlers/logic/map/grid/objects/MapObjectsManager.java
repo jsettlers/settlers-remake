@@ -292,8 +292,8 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		addMapObject(pos, new StandardMapObject(objectType, blocking, player != null ? player.playerId : -1));
 	}
 
-	public void addBuildingWorkAreaObject(ShortPoint2D pos, float radius) {
-		addMapObject(pos, new BuildingWorkAreaMarkObject(radius));
+	public void addBuildingWorkAreaObject(int x, int y, float radius) {
+		addMapObject(x, y, new BuildingWorkAreaMarkObject(radius));
 	}
 
 	public void addWineBowl(ShortPoint2D pos, IStackSizeSupplier wineStack) {

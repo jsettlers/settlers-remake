@@ -63,7 +63,6 @@ import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapLine;
 import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -1650,23 +1649,25 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void drawTradingPathLine(ShortPoint2D start, ShortPoint2D[] waypoints, boolean draw) {
-			ShortPoint2D last = start;
+			ShortPoint2D lastWaypoint = start;
 			float progress = 0;
-			for (ShortPoint2D wp : waypoints) {
-				progress += 1f / (waypoints.length - 1);
-				if (wp == null) {
+			for (ShortPoint2D currentWaypoint : waypoints) {
+				if (currentWaypoint == null) {
 					continue;
 				}
-				MapLine baseLine = new MapLine(last, wp);
-				MapShapeFilter line = new MapShapeFilter(baseLine, width, height);
-				for (ShortPoint2D pos : line) {
-					if (draw) {
-						mapObjectsManager.addBuildingWorkAreaObject(pos, progress);
-					} else {
-						mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
-					}
-				}
-				last = wp;
+
+				float fixedProgress = progress;
+				MapLine.stream(lastWaypoint, currentWaypoint)
+						.filterBounds(width, height)
+						.forEach((x, y) -> {
+							if (draw) {
+								mapObjectsManager.addBuildingWorkAreaObject(x, y, fixedProgress);
+							} else {
+								mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
+							}
+						});
+				lastWaypoint = currentWaypoint;
+				progress += 1f / (waypoints.length - 1);
 			}
 		}
 
@@ -1674,7 +1675,7 @@ public final class MainGrid implements Serializable {
 			if (draw) {
 				// Only place an object if the position is the same as the one of the building.
 				if (partitionsGrid.getPartitionIdAt(pos.x, pos.y) == buildingPartition) {
-					mapObjectsManager.addBuildingWorkAreaObject(pos, progress);
+					mapObjectsManager.addBuildingWorkAreaObject(pos.x, pos.y, progress);
 				}
 			} else {
 				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);

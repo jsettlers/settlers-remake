@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -18,10 +18,12 @@ import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
 /**
  * This is a line on a map.
- * 
+ *
  * @author Michael Zangl
  */
 public class MapLine implements IMapArea {
@@ -74,5 +76,37 @@ public class MapLine implements IMapArea {
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return new LineIterator();
+	}
+
+	public CoordinateStream stream() {
+		return stream(start, end);
+	}
+
+	public static CoordinateStream stream(ShortPoint2D start, ShortPoint2D end) {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				boolean result = function.apply(start.x, start.y);
+				if (!result) {
+					return false;
+				}
+
+				int currX = start.x;
+				int currY = start.y;
+
+				while (!end.equals(currX, currY)) {
+					EDirection dir = EDirection.getApproxDirection(currX, currY, end.x, end.y);
+					currX += dir.gridDeltaX;
+					currY += dir.gridDeltaY;
+
+					result = function.apply(currX, currY);
+					if (!result) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		};
 	}
 }
