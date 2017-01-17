@@ -15,6 +15,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ActionListener;
 import jsettlers.main.android.controls.ControlsAdapter;
+import jsettlers.main.android.controls.TaskControls;
 import jsettlers.main.android.ui.customviews.InGameButton;
 import jsettlers.main.android.ui.navigation.MenuNavigator;
 
@@ -26,12 +27,14 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
     private static final String image = "original_3_GUI_201";
 
     private final ActionControls actionControls;
+    private final TaskControls taskControls;
 
     private Snackbar snackbar;
 
-    public WorkAreaFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls) {
+    public WorkAreaFeature(View view, IBuilding building, MenuNavigator menuNavigator, ActionControls actionControls, TaskControls taskControls) {
         super(view, building, menuNavigator);
         this.actionControls = actionControls;
+        this.taskControls = taskControls;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
                         .setAction("Cancel", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                actionControls.fireAction(new Action(EActionType.ABORT));
+                                taskControls.endTask();
                             }
                         });
                 snackbar.show();

@@ -8,6 +8,7 @@ import jsettlers.common.selectable.ISelectionSet;
 
 public interface SelectionControls {
     ISelectionSet getCurrentSelection();
+    void deselect();
     void addSelectionListener(SelectionListener selectionListener);
     void removeSelectionListener(SelectionListener selectionListener);
 }

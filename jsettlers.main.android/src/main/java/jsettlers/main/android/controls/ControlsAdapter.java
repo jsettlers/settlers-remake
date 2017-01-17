@@ -134,6 +134,13 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
     }
 
     @Override
+    public void deselect() {
+        if (selection != null) {
+            fireAction(new Action(EActionType.DESELECT));
+        }
+    }
+
+    @Override
     public void addSelectionListener(SelectionListener selectionListener) {
         synchronized (selectionListeners) {
             selectionListeners.add(selectionListener);

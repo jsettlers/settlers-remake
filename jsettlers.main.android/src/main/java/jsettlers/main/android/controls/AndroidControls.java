@@ -26,6 +26,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
     private final ControlsAdapter controlsAdapter;
 
     private ActionFireable actionFireable;
+
     private ISelectionSet selection;
 
 
@@ -63,8 +64,6 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
                 startTask(action);
                 break;
             case SET_WORK_AREA:
-            case SELECT_POINT:
-            case SELECT_AREA:
             case BUILD:
             case ABORT:
                 endTask();
@@ -80,19 +79,21 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
      */
     @Override
     public IAction replaceAction(IAction action) {
-        if(taskAction != null) {
-            if (action.getActionType() == EActionType.SELECT_POINT ) {
-                PointAction pointAction = (PointAction) action;
+        if (action.getActionType() == EActionType.SELECT_POINT ) {
+            PointAction pointAction = (PointAction) action;
 
+            if(taskAction != null) {
                 switch (taskAction.getActionType()) {
                     case SHOW_CONSTRUCTION_MARK:
                         ShowConstructionMarksAction showConstructionMarksAction = (ShowConstructionMarksAction) taskAction;
                         return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
-                    case MOVE_TO:
-                        return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
                     case ASK_SET_WORK_AREA:
                         return new PointAction(EActionType.SET_WORK_AREA, pointAction.getPosition());
                 }
+            }
+
+            if (selection != null && selection.getSize() > 0 && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
+                return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
             }
         }
 
@@ -102,13 +103,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
     @Override
     public void displaySelection(ISelectionSet selection) {
         this.selection = selection;
-
-        if (selection != null && selection.getSize() > 0) {
-            if (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS) {
-                startTask(new Action(EActionType.MOVE_TO));
-            }
-        }
-
+        endTask();
         controlsAdapter.onSelection(selection);
     }
 
@@ -174,7 +169,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
      */
     @Override
     public boolean isTaskActive() {
-        return taskAction != null;
+        return taskAction != null && taskAction.getActionType() != EActionType.MOVE_TO;
     }
 
     @Override
@@ -182,10 +177,10 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
         if(taskAction != null) {
             switch (taskAction.getActionType()) {
                 case SHOW_CONSTRUCTION_MARK:
-                    actionFireable.fireAction(new ShowConstructionMarksAction(null));
+                    fireAction(new ShowConstructionMarksAction(null));
                     break;
-                case MOVE_TO:
-                    actionFireable.fireAction(new Action(EActionType.DESELECT));
+                default:
+                    fireAction(new Action(EActionType.ABORT));
                     break;
             }
 

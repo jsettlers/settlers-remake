@@ -17,7 +17,6 @@ import android.support.v4.app.Fragment;
 
 public abstract class SelectionFragment extends Fragment {
     private SelectionControls selectionControls;
-    private TaskControls taskControls;
 
     private ISelectionSet selection;
 
@@ -25,7 +24,6 @@ public abstract class SelectionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         selectionControls = ControlsResolver.getSelectionControls(getActivity());
-        taskControls = ControlsResolver.getTaskControls(getActivity());
 
         selection = selectionControls.getCurrentSelection();
 
@@ -44,7 +42,7 @@ public abstract class SelectionFragment extends Fragment {
         // If the selection hasn't changed when the selection menu is dismissed by the user then the user has started using some other menu and we should deselect by calling endTask(). Check isRemoving to confirm its not just a rotation.
         // If the selection has changed then we don't want to overwrite it.
         if (selection == selectionControls.getCurrentSelection() && isRemoving()) {
-            taskControls.endTask();
+            selectionControls.deselect();
         }
     }
 

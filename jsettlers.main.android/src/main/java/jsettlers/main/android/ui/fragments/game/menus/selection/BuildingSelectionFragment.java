@@ -6,6 +6,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.controls.DrawControls;
+import jsettlers.main.android.controls.TaskControls;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.DestroyFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.ui.fragments.game.menus.selection.features.OccupiedFeature;
@@ -65,6 +66,7 @@ public class BuildingSelectionFragment extends SelectionFragment {
         MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
         ActionControls actionControls = ControlsResolver.getActionControls(getActivity());
         DrawControls drawControls = ControlsResolver.getDrawControls(getActivity());
+        TaskControls taskControls = ControlsResolver.getTaskControls(getActivity());
 
         if (building instanceof IBuilding.IOccupied) {
             layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
@@ -87,7 +89,7 @@ public class BuildingSelectionFragment extends SelectionFragment {
         }
 
         if (building.getBuildingType().getWorkRadius() > 0) {
-            features.add(new WorkAreaFeature(getView(), building, menuNavigator, actionControls));
+            features.add(new WorkAreaFeature(getView(), building, menuNavigator, actionControls, taskControls));
         }
 
         for (SelectionFeature feature : features) {
