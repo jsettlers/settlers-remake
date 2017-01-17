@@ -20,7 +20,7 @@ public class BuildingsMenu {
     public static final int BUILDINGS_CATEGORY_MILITARY = 30;
     public static final int BUILDINGS_CATEGORY_SOCIAL = 40;
 
-    private ActionFireable actionFireable;
+    private final ActionFireable actionFireable;
 
     public BuildingsMenu(ActionFireable actionFireable) {
         this.actionFireable = actionFireable;

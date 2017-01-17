@@ -14,8 +14,8 @@ import java.util.TimerTask;
 import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ActionFireable;
 import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
 import jsettlers.main.android.ui.activities.GameActivity;
 import jsettlers.main.android.ui.navigation.Actions;
 
@@ -27,13 +27,12 @@ import static jsettlers.main.android.GameService.ACTION_SAVE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 /**
- * Created by tompr on 19/11/2016.
+ * GameMenu is a singleton within the scope of a started game
  */
-
 public class GameMenu {
     public static final int NOTIFICATION_ID = 100;
     private final Context context;
-    private final ActionFireable actionFireable;
+    private final ActionControls actionControls;
     private final AndroidSoundPlayer soundPlayer;
 
     private final LocalBroadcastManager localBroadcastManager;
@@ -43,10 +42,10 @@ public class GameMenu {
 
     private boolean paused = false;
 
-    public GameMenu(Context context, ActionFireable actionFireable, AndroidSoundPlayer soundPlayer) {
+    public GameMenu(Context context, AndroidSoundPlayer soundPlayer, ActionControls actionFireable) {
         this.context = context;
-        this.actionFireable = actionFireable;
         this.soundPlayer = soundPlayer;
+        this.actionControls = actionFireable;
 
         localBroadcastManager = LocalBroadcastManager.getInstance(context);
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -58,7 +57,7 @@ public class GameMenu {
 
     // mute the game when pausing whether or not its currently visibile
     public void pause() {
-        actionFireable.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
+        actionControls.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
         mute();
         paused = true;
 
@@ -69,7 +68,7 @@ public class GameMenu {
 
     // don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visibile.
     public void unPause() {
-        actionFireable.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
+        actionControls.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
         paused = false;
 
         // Send a local broadcast so that any UI can update if necessary
@@ -103,7 +102,7 @@ public class GameMenu {
     public void quitConfirm() {
         // Trigger quit from here and callback in GameService broadcasts after quit is complete
         quitConfirmTimer = null;
-        actionFireable.fireAction(new Action(EActionType.EXIT));
+        actionControls.fireAction(new Action(EActionType.EXIT));
     }
 
     public boolean canQuitConfirm() {

@@ -5,9 +5,11 @@ import java.util.LinkedList;
 import go.graphics.android.AndroidSoundPlayer;
 
 import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.android.menus.BuildingsMenu;
@@ -129,6 +131,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
     @Override
     public ISelectionSet getCurrentSelection() {
         return selection;
+    }
+
+    @Override
+    public void deselect() {
+        fireAction(new Action(EActionType.DESELECT));
     }
 
     @Override

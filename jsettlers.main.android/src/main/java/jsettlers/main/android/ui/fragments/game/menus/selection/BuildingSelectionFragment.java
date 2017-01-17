@@ -25,9 +25,12 @@ import android.widget.FrameLayout;
 import java.util.LinkedList;
 
 /**
- * Created by tompr on 10/01/2017.
+ * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance.
+ * So the buildings menu is made up of composable "features" which are a bit like mini fragments with a very
+ * simple lifecycle consisting of just initialize() and finish()
+ *
+ * This class just decides which features a building has and calls the lifecycle methods
  */
-
 public class BuildingSelectionFragment extends SelectionFragment {
 
     private IBuilding building;

@@ -24,6 +24,7 @@ import jsettlers.main.android.ui.navigation.MenuNavigator;
 
 public class WorkAreaFeature extends SelectionFeature implements ActionListener {
     private static final String image = "original_3_GUI_201";
+
     private final ActionControls actionControls;
 
     private Snackbar snackbar;
