@@ -3,7 +3,6 @@ package jsettlers.main.android.ui.fragments.game;
 import static jsettlers.main.android.GameService.ACTION_PAUSE;
 import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
-import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
@@ -50,6 +49,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
 
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
@@ -180,11 +181,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	 */
 	@Override
 	public boolean onBackPressed() {
-		if (selectionControls.getCurrentSelection() == null) {
-			selectionControls.deselect();
-			return true;
-		}
-
 		if (taskControls.isTaskActive()) {
 			taskControls.endTask();
 			return true;

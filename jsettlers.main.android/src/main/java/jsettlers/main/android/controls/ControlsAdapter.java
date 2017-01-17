@@ -45,7 +45,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
         soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
         androidControls = new AndroidControls(this);
         mapContent = new MapContent(game, soundPlayer, androidControls);
-        gameMenu = new GameMenu(context, androidControls, soundPlayer);
+        gameMenu = new GameMenu(context, soundPlayer, this);
     }
 
     public IControls getControls() {
@@ -131,11 +131,6 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
     @Override
     public ISelectionSet getCurrentSelection() {
         return selection;
-    }
-
-    @Override
-    public void deselect() {
-        fireAction(new Action(EActionType.DESELECT));
     }
 
     @Override

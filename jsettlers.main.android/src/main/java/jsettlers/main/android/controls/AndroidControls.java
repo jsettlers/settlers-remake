@@ -185,7 +185,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
                     actionFireable.fireAction(new ShowConstructionMarksAction(null));
                     break;
                 case MOVE_TO:
-                    //TODO would be nice to deselect the settlers when this happens or it looks like nothing happened
+                    actionFireable.fireAction(new Action(EActionType.DESELECT));
                     break;
             }
 
