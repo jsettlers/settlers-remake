@@ -14,12 +14,24 @@
  *******************************************************************************/
 package jsettlers.main.android;
 
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 import jsettlers.common.Color;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import android.graphics.Bitmap;
 
 public class PreviewImageConverter {
-	public static Bitmap toBitmap(short[] data) {
+	public static Single<Bitmap> toBitmap(short[] data) {
+		return Single.create(new SingleOnSubscribe<Bitmap>() {
+			@Override
+			public void subscribe(SingleEmitter<Bitmap> e) throws Exception {
+				e.onSuccess(convert(data));
+			}
+		});
+	}
+
+	private static Bitmap convert(short[] data) {
 		if (data == null) {
 			Bitmap b =
 					Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);

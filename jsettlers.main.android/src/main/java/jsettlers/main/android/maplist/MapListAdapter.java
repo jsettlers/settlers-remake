@@ -103,7 +103,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements IChanging
 
 		ImageView image = (ImageView) view.findViewById(R.id.mapitem_icon);
 		short[] bitmap = getImage(item);
-		image.setImageBitmap(PreviewImageConverter.toBitmap(bitmap));
+		//image.setImageBitmap(PreviewImageConverter.toBitmap(bitmap));
 		return view;
 	}
 

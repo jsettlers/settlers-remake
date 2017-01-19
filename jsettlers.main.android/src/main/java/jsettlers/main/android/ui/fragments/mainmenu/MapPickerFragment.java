@@ -2,14 +2,21 @@ package jsettlers.main.android.ui.fragments.mainmenu;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
+import jsettlers.main.android.utils.NoChangeItemAnimator;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +24,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,7 +53,7 @@ public class MapPickerFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		GameStarter gameStarter = (GameStarter) getActivity();
 		adapter = new MapAdapter(gameStarter.getSinglePlayerMaps());
-		navigator = (MainMenuNavigator)getActivity();
+		navigator = (MainMenuNavigator) getActivity();
 
 		if (savedInstanceState != null) {
 			String mapId = savedInstanceState.getString(STATE_MAP_ID);
@@ -66,6 +76,8 @@ public class MapPickerFragment extends Fragment {
 		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+		recyclerView.setItemAnimator(new NoChangeItemAnimator());
 		recyclerView.setAdapter(adapter);
 
 		return view;
@@ -93,7 +105,6 @@ public class MapPickerFragment extends Fragment {
 		selectedMap = map;
 		navigator.showNewSinglePlayerSetup();
 	}
-
 
 	/**
 	 * RecyclerView Adapter for displaying list of maps
@@ -134,7 +145,7 @@ public class MapPickerFragment extends Fragment {
 		@Override
 		public void onBindViewHolder(MapHolder holder, int position) {
 			IMapDefinition map = maps.get(position);
-			holder.getNameTextView().setText(map.getMapName());
+			holder.bind(map);
 		}
 
 		@Override
@@ -159,15 +170,42 @@ public class MapPickerFragment extends Fragment {
 	}
 
 	private class MapHolder extends RecyclerView.ViewHolder {
-		TextView nameTextView;
+		final TextView nameTextView;
+		final TextView playerCountTextView;
+		final ImageView mapPreviewImageView;
+
+		Disposable subscription;
 
 		public MapHolder(View itemView) {
 			super(itemView);
 			nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+			playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
+			mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
 		}
 
-		public TextView getNameTextView() {
-			return nameTextView;
+		public void bind(IMapDefinition mapDefinition) {
+			mapPreviewImageView.setImageDrawable(null);
+			nameTextView.setText(mapDefinition.getMapName());
+			playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
+
+			if (subscription != null) {
+				subscription.dispose();
+			}
+
+			subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage())
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribeWith(new DisposableSingleObserver<Bitmap>() {
+						@Override
+						public void onSuccess(Bitmap bitmap) {
+							mapPreviewImageView.setImageBitmap(bitmap);
+						}
+
+						@Override
+						public void onError(Throwable e) {
+							mapPreviewImageView.setImageDrawable(null);
+						}
+					});
 		}
 	}
 }
