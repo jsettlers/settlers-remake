@@ -77,6 +77,10 @@ public class GameService extends Service implements IGameExitListener {
         startingGame = new StartScreenConnector().startSingleplayerGame(mapDefinition);
     }
 
+    public void loadSinglePlayerGame(IMapDefinition mapDefinition) {
+        startingGame = new StartScreenConnector().loadSingleplayerGame(mapDefinition);
+    }
+
     public IStartingGame getStartingGame() {
         return startingGame;
     }

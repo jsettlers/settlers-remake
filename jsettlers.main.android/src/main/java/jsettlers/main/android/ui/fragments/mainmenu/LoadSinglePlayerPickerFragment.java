@@ -9,19 +9,19 @@ import jsettlers.common.utils.collections.ChangingList;
  * Created by tompr on 19/01/2017.
  */
 
-public class NewSinglePlayerPickerFragment extends MapPickerFragment {
+public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
     public static Fragment newInstance() {
-        return new NewSinglePlayerPickerFragment();
+        return new LoadSinglePlayerPickerFragment();
     }
 
     @Override
     protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreenConnector().getSingleplayerMaps();
+        return getGameStarter().getStartScreenConnector().getStoredSingleplayerGames();
     }
 
     @Override
     protected void mapSelected(IMapDefinition map) {
         super.mapSelected(map);
-        getNavigator().showNewSinglePlayerSetup();
+        getGameStarter().loadSinglePlayerGame();
     }
 }

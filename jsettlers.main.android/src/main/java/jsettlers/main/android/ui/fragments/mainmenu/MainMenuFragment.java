@@ -125,11 +125,19 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			});
 		}
 
-		Button newSingleGameButton = (Button) view.findViewById(R.id.button_new_single_game);
-		newSingleGameButton.setOnClickListener(new GameButtonClickListener() {
+		Button newSinglePlayerGameButton = (Button) view.findViewById(R.id.button_new_single_player_game);
+		newSinglePlayerGameButton.setOnClickListener(new GameButtonClickListener() {
 			@Override
 			protected void doAction() {
-				navigator.showNewSinglePlayerMapPicker();
+				navigator.showNewSinglePlayerPicker();
+			}
+		});
+
+		Button loadSinglePlayerGameButton = (Button) view.findViewById(R.id.button_load_single_player_game);
+		loadSinglePlayerGameButton.setOnClickListener(new GameButtonClickListener() {
+			@Override
+			protected void doAction() {
+				navigator.showLoadSinglePlayerPicker();
 			}
 		});
 
