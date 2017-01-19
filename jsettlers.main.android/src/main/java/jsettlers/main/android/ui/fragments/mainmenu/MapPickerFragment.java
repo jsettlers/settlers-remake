@@ -32,18 +32,15 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapPickerFragment extends Fragment {
+public abstract class MapPickerFragment extends Fragment {
 	private static final String STATE_MAP_ID = "map_id";
 
 	private MapAdapter adapter;
 	private IMapDefinition selectedMap;
 	private MainMenuNavigator navigator;
+	private GameStarter gameStarter;
 
 	private RecyclerView recyclerView;
-
-	public static MapPickerFragment newInstance() {
-		return new MapPickerFragment();
-	}
 
 	public MapPickerFragment() {
 	}
@@ -51,8 +48,8 @@ public class MapPickerFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		GameStarter gameStarter = (GameStarter) getActivity();
-		adapter = new MapAdapter(gameStarter.getSinglePlayerMaps());
+		gameStarter = (GameStarter) getActivity();
+		adapter = new MapAdapter(getMaps());
 		navigator = (MainMenuNavigator) getActivity();
 
 		if (savedInstanceState != null) {
@@ -101,9 +98,19 @@ public class MapPickerFragment extends Fragment {
 		return selectedMap;
 	}
 
-	private void mapSelected(IMapDefinition map) {
+	protected GameStarter getGameStarter() {
+		return gameStarter;
+	}
+
+	protected MainMenuNavigator getNavigator() {
+		return navigator;
+	}
+
+	protected abstract ChangingList<? extends IMapDefinition> getMaps();
+
+	protected void mapSelected(IMapDefinition map) {
 		selectedMap = map;
-		navigator.showNewSinglePlayerSetup();
+	//	navigator.showNewSinglePlayerSetup();
 	}
 
 	/**

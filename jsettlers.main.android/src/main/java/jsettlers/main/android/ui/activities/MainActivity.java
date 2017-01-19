@@ -8,6 +8,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MapPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showNewSinglePlayerMapPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, MapPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
 				.addToBackStack(null)
 				.commit();
 	}
@@ -102,15 +103,15 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showGame() {
-		Intent intent = new Intent(this, GameActivity.class);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
-	}
-
-	@Override
 	public void resumeGame() {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setAction(Actions.RESUME_GAME);
+		startActivityForResult(intent, REQUEST_CODE_GAME);
+	}
+
+
+	private void showGame() {
+		Intent intent = new Intent(this, GameActivity.class);
 		startActivityForResult(intent, REQUEST_CODE_GAME);
 	}
 
