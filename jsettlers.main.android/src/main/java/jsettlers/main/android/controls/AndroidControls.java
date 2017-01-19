@@ -57,9 +57,6 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
                     }
                 }
                 break;
-            case MOVE_TO:
-                updateTask(action);
-                break;
             case ASK_SET_WORK_AREA:
                 startTask(action);
                 break;
@@ -74,8 +71,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
     }
 
     /**
-     *
-     * Replace the action based on the current task. E.g SELECT_POINT may be choosing a build location or moving soldiers depending on the current task
+     * Replace the action based on the current task/selection. E.g SELECT_POINT may be choosing a build location or moving soldiers depending on what's current
      */
     @Override
     public IAction replaceAction(IAction action) {
