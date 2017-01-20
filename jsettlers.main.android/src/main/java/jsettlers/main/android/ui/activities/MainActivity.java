@@ -75,30 +75,30 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		return startScreenConnector;
 	}
 
-	@Override
-	public IMapDefinition getSelectedMap() {
-		MapPickerFragment mapPickerFragment = (MapPickerFragment) getSupportFragmentManager().findFragmentByTag(TAG_MAP_PICKER);
-		return mapPickerFragment.getSelectedMap();
-	}
+//	@Override
+//	public IMapDefinition getSelectedMap() {
+//		MapPickerFragment mapPickerFragment = (MapPickerFragment) getSupportFragmentManager().findFragmentByTag(TAG_MAP_PICKER);
+//		return mapPickerFragment.getSelectedMap();
+//	}
 
 	@Override
-	public void startSinglePlayerGame() {
+	public void startSinglePlayerGame(IMapDefinition mapDefinition) {
 		startService(new Intent(this, GameService.class));
 		bindService(new Intent(this, GameService.class), new StartGameConnection() {
 			@Override
 			protected void startGame(GameService gameService) {
-				gameService.startSinglePlayerGame(getSelectedMap());
+				gameService.startSinglePlayerGame(mapDefinition);
 			}
 		}, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
-	public void loadSinglePlayerGame() {
+	public void loadSinglePlayerGame(IMapDefinition mapDefinition) {
 		startService(new Intent(this, GameService.class));
 		bindService(new Intent(this, GameService.class), new StartGameConnection() {
 			@Override
 			protected void startGame(GameService gameService) {
-				gameService.loadSinglePlayerGame(getSelectedMap());
+				gameService.loadSinglePlayerGame(mapDefinition);
 			}
 		}, Context.BIND_AUTO_CREATE);
 	}
@@ -123,9 +123,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewSinglePlayerSetup() {
+	public void showNewSinglePlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerFragment.newInstance())
+				.replace(R.id.frame_layout, NewSinglePlayerFragment.newInstance(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}

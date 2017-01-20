@@ -56,6 +56,7 @@ public abstract class MapPickerFragment extends Fragment {
 		adapter = new MapAdapter(getMaps());
 		navigator = (MainMenuNavigator) getActivity();
 
+		//TODO dont need to save current map anymore
 		if (savedInstanceState != null) {
 			String mapId = savedInstanceState.getString(STATE_MAP_ID);
 			if (mapId != null) {

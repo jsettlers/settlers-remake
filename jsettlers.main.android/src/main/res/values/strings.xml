@@ -53,8 +53,8 @@
 
     <!-- New stuff -->
 
+    <!-- In Game -->
     <!-- Selection Menus -->
-
     <!-- Common -->
     <string name="halt">Halt</string>
     <string name="kill">Kill</string>
@@ -70,6 +70,14 @@
     <!-- Soldiers Selection -->
     <string name="confirm_kill">Kill soldiers?</string>
     <string name="yes">Yes</string>
+
+
+
+    <!-- Main Menus -->
+    <!-- game config -->
+    <string name="number_of_players">Players</string>
+
+
 
 
     <!-- Other -->
@@ -101,4 +109,6 @@
     <string name="game_menu_unpause">Unpause</string>
     <string name="game_menu_paused">Paused</string>
     <string name="game_menu_saved">JSettlers game saved</string>
+    <string name="start_resources">Resources</string>
+    <string name="peacetime">Peacetime</string>
 </resources>

@@ -10,7 +10,7 @@ import jsettlers.main.StartScreenConnector;
 public interface GameStarter {
     StartScreenConnector getStartScreenConnector();
     // ChangingList<? extends IMapDefinition> getSinglePlayerMaps();
-    IMapDefinition getSelectedMap();
-    void startSinglePlayerGame();
-    void loadSinglePlayerGame();
+    //IMapDefinition getSelectedMap();
+    void startSinglePlayerGame(IMapDefinition mapDefinition);
+    void loadSinglePlayerGame(IMapDefinition mapDefinition);
 }

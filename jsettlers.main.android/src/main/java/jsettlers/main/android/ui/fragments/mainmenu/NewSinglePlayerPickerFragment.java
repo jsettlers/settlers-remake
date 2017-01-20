@@ -22,6 +22,6 @@ public class NewSinglePlayerPickerFragment extends MapPickerFragment {
     @Override
     protected void mapSelected(IMapDefinition map) {
         super.mapSelected(map);
-        getNavigator().showNewSinglePlayerSetup();
+        getNavigator().showNewSinglePlayerSetup(map);
     }
 }
