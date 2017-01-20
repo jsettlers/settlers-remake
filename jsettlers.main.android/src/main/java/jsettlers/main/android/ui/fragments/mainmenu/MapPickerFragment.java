@@ -36,10 +36,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MapPickerFragment extends Fragment {
-	private static final String STATE_MAP_ID = "map_id";
-
 	private MapAdapter adapter;
-	private IMapDefinition selectedMap;
 	private MainMenuNavigator navigator;
 	private GameStarter gameStarter;
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
@@ -55,19 +52,6 @@ public abstract class MapPickerFragment extends Fragment {
 		gameStarter = (GameStarter) getActivity();
 		adapter = new MapAdapter(getMaps());
 		navigator = (MainMenuNavigator) getActivity();
-
-		//TODO dont need to save current map anymore
-		if (savedInstanceState != null) {
-			String mapId = savedInstanceState.getString(STATE_MAP_ID);
-			if (mapId != null) {
-				for (IMapDefinition map : adapter.getMaps()) {
-					if (map.getMapId().equals(mapId)) {
-						selectedMap = map;
-						break;
-					}
-				}
-			}
-		}
 	}
 
 	@Override
@@ -86,21 +70,9 @@ public abstract class MapPickerFragment extends Fragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (selectedMap != null) {
-			outState.putString(STATE_MAP_ID, selectedMap.getMapId());
-		}
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		adapter.onDestroy();
-	}
-
-	public IMapDefinition getSelectedMap() {
-		return selectedMap;
 	}
 
 	protected GameStarter getGameStarter() {
@@ -113,9 +85,7 @@ public abstract class MapPickerFragment extends Fragment {
 
 	protected abstract ChangingList<? extends IMapDefinition> getMaps();
 
-	protected void mapSelected(IMapDefinition map) {
-		selectedMap = map;
-	}
+	protected abstract void mapSelected(IMapDefinition map);
 
 	protected boolean showMapDates() {
 		return false;

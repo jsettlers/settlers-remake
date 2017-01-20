@@ -21,7 +21,6 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 
     @Override
     protected void mapSelected(IMapDefinition map) {
-        super.mapSelected(map);
         getGameStarter().loadSinglePlayerGame(map);
     }
 

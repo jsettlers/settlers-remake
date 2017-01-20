@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class NewSinglePlayerFragment extends Fragment {
+public class NewSinglePlayerSetupFragment extends Fragment {
 	private static final String ARG_MAP_ID = "mapid";
 
 	private GameStarter gameStarter;
@@ -41,7 +41,7 @@ public class NewSinglePlayerFragment extends Fragment {
 		Bundle bundle = new Bundle();
 		bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
 
-		Fragment fragment = new NewSinglePlayerFragment();
+		Fragment fragment = new NewSinglePlayerSetupFragment();
 		fragment.setArguments(bundle);
 
 		return fragment;
@@ -54,7 +54,7 @@ public class NewSinglePlayerFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_single_player, container, false);
+		View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
 		FragmentUtil.setActionBar(this, view);
 
 		mapNameTextView = (TextView) view.findViewById(R.id.text_view_name);
@@ -68,16 +68,7 @@ public class NewSinglePlayerFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		gameStarter = (GameStarter) getActivity();
-
-		String mapId = getArguments().getString(ARG_MAP_ID);
-		if (mapId != null) {
-			for (IMapDefinition map : gameStarter.getStartScreenConnector().getSingleplayerMaps().getItems()) {
-				if (map.getMapId().equals(mapId)) {
-					this.map = map;
-					break;
-				}
-			}
-		}
+		map = getMap(gameStarter, getArguments().getString(ARG_MAP_ID));
 
 		ArrayAdapter<String> numberOfPlayersAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, new String[] { "on dsf sdf sdf sd e" , "two" });
 		numberOfPlayersAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -103,6 +94,17 @@ public class NewSinglePlayerFragment extends Fragment {
 						mapPreviewImageView.setImageDrawable(null);
 					}
 				});
+	}
+
+	private static IMapDefinition getMap(GameStarter gameStarter, String mapId) {
+		if (mapId != null) {
+			for (IMapDefinition map : gameStarter.getStartScreenConnector().getSingleplayerMaps().getItems()) {
+				if (map.getMapId().equals(mapId)) {
+					return map;
+				}
+			}
+		}
+		throw new RuntimeException("Couldn't get selected map.");
 	}
 
 	@Override
