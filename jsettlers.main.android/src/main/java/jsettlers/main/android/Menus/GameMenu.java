@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,7 +53,8 @@ public class GameMenu {
     }
 
     public void save() {
-
+        actionControls.fireAction(new Action(EActionType.SAVE));
+        Toast.makeText(context, R.string.game_menu_saved, Toast.LENGTH_SHORT).show();
     }
 
     // mute the game when pausing whether or not its currently visibile

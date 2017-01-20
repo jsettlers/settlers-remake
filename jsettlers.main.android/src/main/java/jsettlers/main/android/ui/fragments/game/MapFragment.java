@@ -345,6 +345,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 					gameMenu.pause();
 					break;
 				case R.id.menu_item_save:
+					gameMenu.save();
 					break;
 				case R.id.menu_item_quit:
 					new ConfirmDialog.Builder(REQUEST_CODE_CONFIRM_QUIT)

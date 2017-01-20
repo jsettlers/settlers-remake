@@ -100,4 +100,5 @@
     <string name="game_menu_pause">Pause</string>
     <string name="game_menu_unpause">Unpause</string>
     <string name="game_menu_paused">Paused</string>
+    <string name="game_menu_saved">JSettlers game saved</string>
 </resources>

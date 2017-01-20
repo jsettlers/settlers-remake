@@ -24,4 +24,9 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
         super.mapSelected(map);
         getGameStarter().loadSinglePlayerGame();
     }
+
+    @Override
+    protected boolean showMapDates() {
+        return true;
+    }
 }

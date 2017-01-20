@@ -1,6 +1,8 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -9,6 +11,7 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
@@ -39,6 +42,7 @@ public abstract class MapPickerFragment extends Fragment {
 	private IMapDefinition selectedMap;
 	private MainMenuNavigator navigator;
 	private GameStarter gameStarter;
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
 
 	private RecyclerView recyclerView;
 
@@ -110,7 +114,10 @@ public abstract class MapPickerFragment extends Fragment {
 
 	protected void mapSelected(IMapDefinition map) {
 		selectedMap = map;
-	//	navigator.showNewSinglePlayerSetup();
+	}
+
+	protected boolean showMapDates() {
+		return false;
 	}
 
 	/**
@@ -178,6 +185,7 @@ public abstract class MapPickerFragment extends Fragment {
 
 	private class MapHolder extends RecyclerView.ViewHolder {
 		final TextView nameTextView;
+		final TextView dateTextView;
 		final TextView playerCountTextView;
 		final ImageView mapPreviewImageView;
 
@@ -186,14 +194,23 @@ public abstract class MapPickerFragment extends Fragment {
 		public MapHolder(View itemView) {
 			super(itemView);
 			nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+			dateTextView = (TextView) itemView.findViewById(R.id.text_view_date);
 			playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
 			mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
+
+			if (showMapDates()) {
+				dateTextView.setVisibility(View.VISIBLE);
+			}
 		}
 
 		public void bind(IMapDefinition mapDefinition) {
 			mapPreviewImageView.setImageDrawable(null);
 			nameTextView.setText(mapDefinition.getMapName());
 			playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
+
+			if (showMapDates()) {
+				dateTextView.setText(dateFormat.format(mapDefinition.getCreationDate()));
+			}
 
 			if (subscription != null) {
 				subscription.dispose();
