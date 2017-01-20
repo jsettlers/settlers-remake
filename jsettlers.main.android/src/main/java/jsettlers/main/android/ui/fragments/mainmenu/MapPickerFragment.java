@@ -1,6 +1,8 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -9,6 +11,7 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
@@ -32,18 +35,16 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapPickerFragment extends Fragment {
+public abstract class MapPickerFragment extends Fragment {
 	private static final String STATE_MAP_ID = "map_id";
 
 	private MapAdapter adapter;
 	private IMapDefinition selectedMap;
 	private MainMenuNavigator navigator;
+	private GameStarter gameStarter;
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
 
 	private RecyclerView recyclerView;
-
-	public static MapPickerFragment newInstance() {
-		return new MapPickerFragment();
-	}
 
 	public MapPickerFragment() {
 	}
@@ -51,8 +52,8 @@ public class MapPickerFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		GameStarter gameStarter = (GameStarter) getActivity();
-		adapter = new MapAdapter(gameStarter.getSinglePlayerMaps());
+		gameStarter = (GameStarter) getActivity();
+		adapter = new MapAdapter(getMaps());
 		navigator = (MainMenuNavigator) getActivity();
 
 		if (savedInstanceState != null) {
@@ -101,9 +102,22 @@ public class MapPickerFragment extends Fragment {
 		return selectedMap;
 	}
 
-	private void mapSelected(IMapDefinition map) {
+	protected GameStarter getGameStarter() {
+		return gameStarter;
+	}
+
+	protected MainMenuNavigator getNavigator() {
+		return navigator;
+	}
+
+	protected abstract ChangingList<? extends IMapDefinition> getMaps();
+
+	protected void mapSelected(IMapDefinition map) {
 		selectedMap = map;
-		navigator.showNewSinglePlayerSetup();
+	}
+
+	protected boolean showMapDates() {
+		return false;
 	}
 
 	/**
@@ -171,6 +185,7 @@ public class MapPickerFragment extends Fragment {
 
 	private class MapHolder extends RecyclerView.ViewHolder {
 		final TextView nameTextView;
+		final TextView dateTextView;
 		final TextView playerCountTextView;
 		final ImageView mapPreviewImageView;
 
@@ -179,14 +194,23 @@ public class MapPickerFragment extends Fragment {
 		public MapHolder(View itemView) {
 			super(itemView);
 			nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+			dateTextView = (TextView) itemView.findViewById(R.id.text_view_date);
 			playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
 			mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
+
+			if (showMapDates()) {
+				dateTextView.setVisibility(View.VISIBLE);
+			}
 		}
 
 		public void bind(IMapDefinition mapDefinition) {
 			mapPreviewImageView.setImageDrawable(null);
 			nameTextView.setText(mapDefinition.getMapName());
 			playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
+
+			if (showMapDates()) {
+				dateTextView.setText(dateFormat.format(mapDefinition.getCreationDate()));
+			}
 
 			if (subscription != null) {
 				subscription.dispose();

@@ -14,12 +14,22 @@
         android:layout_width="72dp"
         android:layout_height="72dp"/>
 
-    <TextView
-        android:id="@+id/text_view_name"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginLeft="16dp"/>
+        android:layout_marginLeft="16dp">
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/text_view_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/text_view_player_count"

@@ -5,9 +5,11 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.ui.fragments.mainmenu.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MapPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.providers.GameStarter;
@@ -66,8 +68,11 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	 * GameStarter implementation
 	 */
 	@Override
-	public ChangingList<? extends IMapDefinition> getSinglePlayerMaps() {
-		return getStartScreenConnector().getSingleplayerMaps();
+	public StartScreenConnector getStartScreenConnector() {
+		if (startScreenConnector == null) {
+			startScreenConnector = new StartScreenConnector();
+		}
+		return startScreenConnector;
 	}
 
 	@Override
@@ -77,18 +82,42 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void startGame() {
+	public void startSinglePlayerGame() {
 		startService(new Intent(this, GameService.class));
-		bindService(new Intent(this, GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(this, GameService.class), new StartGameConnection() {
+			@Override
+			protected void startGame(GameService gameService) {
+				gameService.startSinglePlayerGame(getSelectedMap());
+			}
+		}, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void loadSinglePlayerGame() {
+		startService(new Intent(this, GameService.class));
+		bindService(new Intent(this, GameService.class), new StartGameConnection() {
+			@Override
+			protected void startGame(GameService gameService) {
+				gameService.loadSinglePlayerGame(getSelectedMap());
+			}
+		}, Context.BIND_AUTO_CREATE);
 	}
 
 	/**
 	 * MainMenu Navigation
 	 */
 	@Override
-	public void showNewSinglePlayerMapPicker() {
+	public void showNewSinglePlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, MapPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showLoadSinglePlayerPicker() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, LoadSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
 				.addToBackStack(null)
 				.commit();
 	}
@@ -102,44 +131,42 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showGame() {
-		Intent intent = new Intent(this, GameActivity.class);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
-	}
-
-	@Override
 	public void resumeGame() {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setAction(Actions.RESUME_GAME);
 		startActivityForResult(intent, REQUEST_CODE_GAME);
 	}
 
-	private StartScreenConnector getStartScreenConnector() {
-		if (startScreenConnector == null) {
-			startScreenConnector = new StartScreenConnector();
-		}
-		return startScreenConnector;
+	private void showGame() {
+		Intent intent = new Intent(this, GameActivity.class);
+		startActivityForResult(intent, REQUEST_CODE_GAME);
 	}
 
-	private ServiceConnection serviceConnection = new ServiceConnection() {
+
+
+
+	
+	private void onBackStackChanged() {
+		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;
+		getSupportActionBar().setDisplayHomeAsUpEnabled(!isAtRootOfBackStack);
+	}
+
+	private abstract class StartGameConnection implements ServiceConnection {
+		protected abstract void startGame(GameService gameService);
+
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
 			GameService gameService = gameBinder.getService();
 
-			gameService.startSinglePlayerGame(getSelectedMap());
+			startGame(gameService);
 			showGame();
 
-			unbindService(serviceConnection);
+			unbindService(this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 		}
-	};
-
-	private void onBackStackChanged() {
-		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;
-		getSupportActionBar().setDisplayHomeAsUpEnabled(!isAtRootOfBackStack);
 	}
 }

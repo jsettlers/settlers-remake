@@ -21,7 +21,7 @@ public class NewSinglePlayerFragment extends Fragment {
 	private View.OnClickListener startGameClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			gameStarter.startGame();
+			gameStarter.startSinglePlayerGame();
 		}
 	};
 
