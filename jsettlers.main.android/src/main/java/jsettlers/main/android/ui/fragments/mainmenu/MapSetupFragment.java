@@ -19,7 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
-import jsettlers.main.android.menus.mainmenu.NewSinglePlayerSetupMenu;
+import jsettlers.main.android.menus.mainmenu.MapSetupMenu;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 
@@ -27,10 +27,10 @@ import jsettlers.main.android.utils.FragmentUtil;
  * Created by tompr on 21/01/2017.
  */
 
-public class MapSetupFragment extends Fragment {
+public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragment {
     private static final String ARG_MAP_ID = "mapid";
 
-    private NewSinglePlayerSetupMenu menu;
+    private TMenu menu;
 
     private Disposable mapPreviewSubscription;
 
@@ -54,7 +54,6 @@ public class MapSetupFragment extends Fragment {
     public static Fragment createNewMultiPlayerSetupFragment(IMapDefinition mapDefinition) {
         Bundle bundle = new Bundle();
         bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
-
         Fragment fragment = new NewMultiPlayerSetupFragment();
         fragment.setArguments(bundle);
 
@@ -85,7 +84,7 @@ public class MapSetupFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         GameStarter gameStarter = (GameStarter) getActivity();
         String mapId = getArguments().getString(ARG_MAP_ID);
-        menu = new NewSinglePlayerSetupMenu(gameStarter, mapId);
+        menu = createMenu(gameStarter, mapId);// new MapSetupMenu(gameStarter, mapId);
 
         //mapNameTextView.setText(menu.getMapName());
         startGameButton.setOnClickListener(view -> menu.startGame());
@@ -122,6 +121,12 @@ public class MapSetupFragment extends Fragment {
         if (mapPreviewSubscription != null) {
             mapPreviewSubscription.dispose();
         }
+    }
+
+    protected abstract TMenu createMenu(GameStarter gameStarter, String mapId);
+
+    protected TMenu getMenu() {
+        return menu;
     }
 
     private <T> void setSpinnerAdapter(Spinner spinner, T[] items) {
