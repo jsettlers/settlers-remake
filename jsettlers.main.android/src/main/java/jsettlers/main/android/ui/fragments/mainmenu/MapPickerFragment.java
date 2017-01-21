@@ -135,6 +135,8 @@ public abstract class MapPickerFragment extends Fragment {
 
 		@Override
 		public void listChanged(ChangingList<? extends IMapDefinition> list) {
+			//TODO use diffutil to animate changes
+
 			// final List<IMapDefinition> newList = new ArrayList<>(list.getItems());
 			// Collections.sort(newList, getDefaultComparator());
 			maps = list.getItems();

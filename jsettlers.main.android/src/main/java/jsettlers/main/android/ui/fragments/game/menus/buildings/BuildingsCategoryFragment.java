@@ -6,7 +6,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsResolver;
-import jsettlers.main.android.menus.BuildingsMenu;
+import jsettlers.main.android.menus.game.BuildingsMenu;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

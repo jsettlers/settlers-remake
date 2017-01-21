@@ -3,9 +3,11 @@ package jsettlers.main.android.ui.fragments.mainmenu;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
+import jsettlers.main.android.menus.mainmenu.NewSinglePlayerSetupMenu;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,8 +29,10 @@ import io.reactivex.schedulers.Schedulers;
 public class NewSinglePlayerSetupFragment extends Fragment {
 	private static final String ARG_MAP_ID = "mapid";
 
-	private GameStarter gameStarter;
-	private IMapDefinition map;
+//	private GameStarter gameStarter;
+//	private IMapDefinition map;
+
+	private NewSinglePlayerSetupMenu menu;
 
 	private Disposable mapPreviewSubscription;
 
@@ -67,20 +71,18 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		gameStarter = (GameStarter) getActivity();
-		map = getMap(gameStarter, getArguments().getString(ARG_MAP_ID));
+		GameStarter gameStarter = (GameStarter) getActivity();
+		String mapId = getArguments().getString(ARG_MAP_ID);
+		menu = new NewSinglePlayerSetupMenu(gameStarter, mapId);
 
-		ArrayAdapter<String> numberOfPlayersAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, new String[] { "on dsf sdf sdf sd e" , "two" });
+		mapNameTextView.setText(menu.getMapName());
+		startGameButton.setOnClickListener(view -> menu.startGame());
+
+		ArrayAdapter<Integer> numberOfPlayersAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, menu.getAllowedPlayerCounts());
 		numberOfPlayersAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		numberOfPlayersSpinner.setAdapter(numberOfPlayersAdapter);
 
-		mapNameTextView.setText(map.getMapName());
-
-
-
-		startGameButton.setOnClickListener(startGameClickListener);
-
-		mapPreviewSubscription = PreviewImageConverter.toBitmap(map.getImage())
+		mapPreviewSubscription = PreviewImageConverter.toBitmap(menu.getMapImage())
 				.subscribeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribeWith(new DisposableSingleObserver<Bitmap>() {
@@ -96,16 +98,7 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 				});
 	}
 
-	private static IMapDefinition getMap(GameStarter gameStarter, String mapId) {
-		if (mapId != null) {
-			for (IMapDefinition map : gameStarter.getStartScreenConnector().getSingleplayerMaps().getItems()) {
-				if (map.getMapId().equals(mapId)) {
-					return map;
-				}
-			}
-		}
-		throw new RuntimeException("Couldn't get selected map.");
-	}
+
 
 	@Override
 	public void onDestroyView() {
@@ -114,11 +107,4 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 			mapPreviewSubscription.dispose();
 		}
 	}
-
-	private View.OnClickListener startGameClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			gameStarter.startSinglePlayerGame(map);
-		}
-	};
 }

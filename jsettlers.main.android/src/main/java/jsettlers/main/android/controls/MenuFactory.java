@@ -1,8 +1,8 @@
 package jsettlers.main.android.controls;
 
-import jsettlers.main.android.menus.BuildingsMenu;
-import jsettlers.main.android.menus.GameMenu;
-import jsettlers.main.android.menus.SettlersSoldiersMenu;
+import jsettlers.main.android.menus.game.BuildingsMenu;
+import jsettlers.main.android.menus.game.GameMenu;
+import jsettlers.main.android.menus.game.SettlersSoldiersMenu;
 
 /**
  * Created by tompr on 13/01/2017.

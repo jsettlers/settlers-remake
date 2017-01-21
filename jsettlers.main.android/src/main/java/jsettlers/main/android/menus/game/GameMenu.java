@@ -1,4 +1,4 @@
-package jsettlers.main.android.menus;
+package jsettlers.main.android.menus.game;
 
 import android.app.Notification;
 import android.app.NotificationManager;

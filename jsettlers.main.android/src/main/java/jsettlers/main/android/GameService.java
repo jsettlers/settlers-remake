@@ -1,16 +1,15 @@
 package jsettlers.main.android;
 
-import static jsettlers.main.android.menus.GameMenu.NOTIFICATION_ID;
+import static jsettlers.main.android.menus.game.GameMenu.NOTIFICATION_ID;
 
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.menus.GameMenu;
+import jsettlers.main.android.menus.game.GameMenu;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
