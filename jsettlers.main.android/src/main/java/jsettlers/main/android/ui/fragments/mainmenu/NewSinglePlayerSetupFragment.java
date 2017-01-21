@@ -7,7 +7,6 @@ import jsettlers.main.android.menus.mainmenu.NewSinglePlayerSetupMenu;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.utils.FragmentUtil;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,9 +28,6 @@ import io.reactivex.schedulers.Schedulers;
 public class NewSinglePlayerSetupFragment extends Fragment {
 	private static final String ARG_MAP_ID = "mapid";
 
-//	private GameStarter gameStarter;
-//	private IMapDefinition map;
-
 	private NewSinglePlayerSetupMenu menu;
 
 	private Disposable mapPreviewSubscription;
@@ -39,6 +35,8 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 	private TextView mapNameTextView;
 	private ImageView mapPreviewImageView;
 	private Spinner numberOfPlayersSpinner;
+	private Spinner startResourcesSpinner;
+	private Spinner peacetimeSpinner;
 	private Button startGameButton;
 
 	public static Fragment newInstance(IMapDefinition mapDefinition) {
@@ -61,9 +59,11 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		mapNameTextView = (TextView) view.findViewById(R.id.text_view_name);
+		mapNameTextView = (TextView) view.findViewById(R.id.text_view_map_name);
 		mapPreviewImageView = (ImageView) view.findViewById(R.id.image_view_map_preview);
 		numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
+		startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
+		peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
 		startGameButton = (Button) view.findViewById(R.id.button_start_game);
 		return view;
 	}
@@ -78,9 +78,9 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 		mapNameTextView.setText(menu.getMapName());
 		startGameButton.setOnClickListener(view -> menu.startGame());
 
-		ArrayAdapter<Integer> numberOfPlayersAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, menu.getAllowedPlayerCounts());
-		numberOfPlayersAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		numberOfPlayersSpinner.setAdapter(numberOfPlayersAdapter);
+		setSpinnerAdapter(numberOfPlayersSpinner, menu.getAllowedPlayerCounts());
+		setSpinnerAdapter(startResourcesSpinner, menu.getStartResourcesOptions());
+		setSpinnerAdapter(peacetimeSpinner, menu.getPeaceTimeOptions());
 
 		mapPreviewSubscription = PreviewImageConverter.toBitmap(menu.getMapImage())
 				.subscribeOn(Schedulers.io())
@@ -98,13 +98,17 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 				});
 	}
 
-
-
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		if (mapPreviewSubscription != null) {
 			mapPreviewSubscription.dispose();
 		}
+	}
+
+	private <T> void setSpinnerAdapter(Spinner spinner, T[] items) {
+		ArrayAdapter<T> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, items);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
 	}
 }

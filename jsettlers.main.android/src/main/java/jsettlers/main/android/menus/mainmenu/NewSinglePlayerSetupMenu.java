@@ -2,6 +2,7 @@ package jsettlers.main.android.menus.mainmenu;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.providers.GameStarter;
 
@@ -18,8 +19,6 @@ public class NewSinglePlayerSetupMenu {
         this.gameStarter = gameStarter;
         this.startScreenConnector = gameStarter.getStartScreenConnector();
         this.mapDefinition = getMap(startScreenConnector.getSingleplayerMaps(), mapId);
-
-
     }
 
     public String getMapName() {
@@ -30,6 +29,7 @@ public class NewSinglePlayerSetupMenu {
         return mapDefinition.getImage();
     }
 
+    //TODO return wrapper object with suitable toString()
     public Integer[] getAllowedPlayerCounts() {
         int maxPlayers = mapDefinition.getMaxPlayers();
         int minPlayers = mapDefinition.getMinPlayers();
@@ -42,6 +42,16 @@ public class NewSinglePlayerSetupMenu {
         }
 
         return allowedPlayerCounts;
+    }
+
+    //TODO return wrapper object with suitable toString()
+    public EMapStartResources[] getStartResourcesOptions() {
+        return EMapStartResources.values();
+    }
+
+    //TODO return wrapper object with suitable toString()
+    public String[] getPeaceTimeOptions() {
+        return new String[] { "Without" };
     }
 
     public void startGame() {
