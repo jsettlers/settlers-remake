@@ -81,6 +81,9 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         changingJoinableGames.removeListener(this);
     }
 
+    /**
+     * ChangingListListener implementation
+     */
     @Override
     public void listChanged(ChangingList<? extends IJoinableGame> list) {
         getView().post(() -> adapter.setItems(list.getItems()));
