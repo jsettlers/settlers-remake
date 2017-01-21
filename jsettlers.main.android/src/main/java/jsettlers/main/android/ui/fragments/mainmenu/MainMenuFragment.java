@@ -144,6 +144,14 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			}
 		});
 
+		Button joinMultiPlayerGameButton = (Button) view.findViewById(R.id.button_join_multi_player_game);
+		joinMultiPlayerGameButton.setOnClickListener(new GameButtonClickListener() {
+			@Override
+			protected void doAction() {
+				navigator.showJoinMultiPlayerPicker();
+			}
+		});
+
 		return view;
 	}
 

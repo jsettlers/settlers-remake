@@ -4,6 +4,7 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
+import jsettlers.main.android.ui.fragments.mainmenu.JoinMultiPlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MapSetupFragment;
@@ -139,11 +140,15 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
+	public void showJoinMultiPlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, MapSetupFragment.createNewMultiPlayerSetupFragment(mapDefinition))
+				.replace(R.id.frame_layout, JoinMultiPlayerPickerFragment.create())
 				.addToBackStack(null)
 				.commit();
+	}
+
+	@Override
+	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
 	}
 
 	@Override

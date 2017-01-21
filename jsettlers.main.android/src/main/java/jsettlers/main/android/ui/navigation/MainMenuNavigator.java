@@ -11,8 +11,8 @@ public interface MainMenuNavigator {
     void showNewSinglePlayerSetup(IMapDefinition mapDefinition);
 
     void showNewMultiPlayerPicker();
+    void showJoinMultiPlayerPicker();
     void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
 
     void resumeGame();
-
 }

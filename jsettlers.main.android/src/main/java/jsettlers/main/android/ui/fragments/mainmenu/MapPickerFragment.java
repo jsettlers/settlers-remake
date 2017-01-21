@@ -21,6 +21,7 @@ import jsettlers.main.android.utils.NoChangeItemAnimator;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,6 +55,7 @@ public abstract class MapPickerFragment extends Fragment {
 		navigator = (MainMenuNavigator) getActivity();
 	}
 
+	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
