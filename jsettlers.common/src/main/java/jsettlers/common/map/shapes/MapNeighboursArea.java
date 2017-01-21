@@ -17,6 +17,8 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.common.utils.coordinates.ICoordinateConsumer;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -74,5 +76,27 @@ public class MapNeighboursArea implements IMapArea {
 		for (EDirection direction : EDirection.VALUES) {
 			consumer.accept(x + direction.gridDeltaX, y + direction.gridDeltaY);
 		}
+	}
+
+	public CoordinateStream stream() {
+		return stream(x, y);
+	}
+
+	private static CoordinateStream stream(int centerX, int centerY) {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (EDirection direction : EDirection.values()) {
+					int x = direction.gridDeltaX + centerX;
+					int y = direction.gridDeltaY + centerY;
+
+					boolean result = function.apply(x, y);
+					if (!result) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
 	}
 }
