@@ -1,24 +1,25 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
-import jsettlers.main.android.GameService;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
+
 import jsettlers.main.android.R;
-import jsettlers.main.android.menus.game.GameMenu;
 import jsettlers.main.android.providers.GameManager;
+import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
-import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.utils.FragmentUtil;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -28,12 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
 
 /**
  * A simple {@link Fragment} subclass.

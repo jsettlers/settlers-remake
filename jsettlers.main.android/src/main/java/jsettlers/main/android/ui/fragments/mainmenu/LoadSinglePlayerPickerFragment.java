@@ -1,18 +1,28 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 
 /**
  * Created by tompr on 19/01/2017.
  */
 
 public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
+    private MainMenuNavigator navigator;
+
     public static Fragment newInstance() {
         return new LoadSinglePlayerPickerFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        navigator = (MainMenuNavigator) getActivity();
     }
 
     @Override
@@ -29,6 +39,7 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
     @Override
     protected void mapSelected(IMapDefinition map) {
         getGameStarter().loadSinglePlayerGame(map);
+        navigator.showGame();
     }
 
     @Override

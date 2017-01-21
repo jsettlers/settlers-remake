@@ -1,10 +1,10 @@
 package jsettlers.main.android;
 
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.GameService.ACTION_SAVE;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_SAVE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
 
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IMapDefinition;
