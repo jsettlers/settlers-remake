@@ -9,6 +9,10 @@ public interface MainMenuNavigator {
     void showNewSinglePlayerPicker();
     void showLoadSinglePlayerPicker();
     void showNewSinglePlayerSetup(IMapDefinition mapDefinition);
-//    void showGame();
+
+    void showNewMultiPlayerPicker();
+    void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
+
     void resumeGame();
+
 }

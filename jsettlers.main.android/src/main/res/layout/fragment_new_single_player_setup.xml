@@ -35,8 +35,7 @@
                 <TextView
                     android:id="@+id/text_view_map_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <android.support.v7.widget.GridLayout

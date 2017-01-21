@@ -117,12 +117,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			mainLinearLayout.addView(resourcesView, 0);
 
 			Button button = (Button) resourcesView.findViewById(R.id.button_resources);
-			button.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					showDirectoryPicker();
-				}
-			});
+			button.setOnClickListener(v -> showDirectoryPicker());
 		}
 
 		Button newSinglePlayerGameButton = (Button) view.findViewById(R.id.button_new_single_player_game);
@@ -138,6 +133,14 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			@Override
 			protected void doAction() {
 				navigator.showLoadSinglePlayerPicker();
+			}
+		});
+
+		Button newMultiPlayerGameButton = (Button) view.findViewById(R.id.button_new_multi_player_game);
+		newMultiPlayerGameButton.setOnClickListener(new GameButtonClickListener() {
+			@Override
+			protected void doAction() {
+				navigator.showNewMultiPlayerPicker();
 			}
 		});
 

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.main.android.R;
 
 /**
  * Created by tompr on 19/01/2017.
@@ -12,6 +13,12 @@ import jsettlers.common.utils.collections.ChangingList;
 public class NewSinglePlayerPickerFragment extends MapPickerFragment {
     public static Fragment newInstance() {
         return new NewSinglePlayerPickerFragment();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(R.string.new_single_player_game);
     }
 
     @Override

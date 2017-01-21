@@ -74,8 +74,15 @@
 
 
     <!-- Main Menus -->
+    <!-- Map picker -->
+    <string name="new_single_player_game">New Single Player Game</string>
+    <string name="new_multi_player_game">New Multi Player Game</string>
+    <string name="load_single_player_game">Load Single Player Game</string>
+
     <!-- game config -->
     <string name="number_of_players">Players</string>
+    <string name="start_resources">Resources</string>
+    <string name="peacetime">Peacetime</string>
 
 
 
@@ -109,6 +116,4 @@
     <string name="game_menu_unpause">Unpause</string>
     <string name="game_menu_paused">Paused</string>
     <string name="game_menu_saved">JSettlers game saved</string>
-    <string name="start_resources">Resources</string>
-    <string name="peacetime">Peacetime</string>
 </resources>

@@ -6,6 +6,7 @@ import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.fragments.mainmenu.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.NewMultiPlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerSetupFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.navigation.Actions;
@@ -18,12 +19,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator, GameStarter {
-	private static final String TAG_MAP_PICKER = "map_picker";
 	private static final int REQUEST_CODE_GAME = 10;
 
 	private StartScreenConnector startScreenConnector;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		getSupportFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
+		getSupportFragmentManager().addOnBackStackChangedListener(this::setUpButton);
 
 		if (savedInstanceState != null)
 			return;
@@ -40,6 +41,12 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.frame_layout, MainMenuFragment.newInstance())
 				.commit();
+	}
+
+	@Override
+	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		setUpButton();
 	}
 
 	@Override
@@ -101,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showNewSinglePlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
 	}
@@ -109,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showLoadSinglePlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, LoadSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, LoadSinglePlayerPickerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
 	}
@@ -120,6 +127,19 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.newInstance(mapDefinition))
 				.addToBackStack(null)
 				.commit();
+	}
+
+	@Override
+	public void showNewMultiPlayerPicker() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, NewMultiPlayerPickerFragment.newInstance())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
+
 	}
 
 	@Override
@@ -138,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 
 	
-	private void onBackStackChanged() {
+	private void setUpButton() {
 		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;
 		getSupportActionBar().setDisplayHomeAsUpEnabled(!isAtRootOfBackStack);
 	}

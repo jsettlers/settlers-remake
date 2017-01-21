@@ -7,32 +7,27 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
 
 /**
- * Created by tompr on 19/01/2017.
+ * Created by tompr on 21/01/2017.
  */
 
-public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
+public class NewMultiPlayerPickerFragment extends MapPickerFragment {
     public static Fragment newInstance() {
-        return new LoadSinglePlayerPickerFragment();
+        return new NewMultiPlayerPickerFragment();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(R.string.load_single_player_game);
+        getActivity().setTitle(R.string.new_multi_player_game);
     }
 
     @Override
     protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreenConnector().getStoredSingleplayerGames();
+        return getGameStarter().getStartScreenConnector().getMultiplayerMaps();
     }
 
     @Override
     protected void mapSelected(IMapDefinition map) {
-        getGameStarter().loadSinglePlayerGame(map);
-    }
-
-    @Override
-    protected boolean showMapDates() {
-        return true;
+        getNavigator().showNewMultiPlayerSetup(map);
     }
 }
