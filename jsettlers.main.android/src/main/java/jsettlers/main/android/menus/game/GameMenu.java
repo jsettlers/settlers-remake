@@ -102,7 +102,7 @@ public class GameMenu {
     }
 
     public void quitConfirm() {
-        // Trigger quit from here and callback in GameService broadcasts after quit is complete
+        // Trigger quit from here and callback in MainApplication broadcasts after quit is complete
         quitConfirmTimer = null;
         actionControls.fireAction(new Action(EActionType.EXIT));
     }

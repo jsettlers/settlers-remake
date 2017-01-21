@@ -1,5 +1,19 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
+import java.util.List;
+
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.Player;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.main.android.AndroidPreferences;
+import jsettlers.main.android.R;
+import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.utils.FragmentUtil;
+import jsettlers.main.android.utils.NoChangeItemAnimator;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,20 +25,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
-import java.util.List;
-
 import io.reactivex.disposables.Disposable;
-import jsettlers.common.menu.IJoinableGame;
-import jsettlers.common.menu.Player;
-import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.main.android.AndroidPreferences;
-import jsettlers.main.android.R;
-import jsettlers.main.android.providers.GameStarter;
-import jsettlers.main.android.utils.FragmentUtil;
-import jsettlers.main.android.utils.NoChangeItemAnimator;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -44,7 +45,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gameStarter = (GameStarter) getActivity();
+        gameStarter = (GameStarter) getActivity().getApplication();
     }
 
     @Nullable

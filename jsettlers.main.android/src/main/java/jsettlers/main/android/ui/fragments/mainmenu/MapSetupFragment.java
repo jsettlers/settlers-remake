@@ -1,5 +1,13 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
+import jsettlers.common.menu.IMapDefinition;
+import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.R;
+import jsettlers.main.android.menus.mainmenu.MapSetupMenu;
+import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
+import jsettlers.main.android.utils.FragmentUtil;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,12 +24,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.main.android.PreviewImageConverter;
-import jsettlers.main.android.R;
-import jsettlers.main.android.menus.mainmenu.MapSetupMenu;
-import jsettlers.main.android.providers.GameStarter;
-import jsettlers.main.android.utils.FragmentUtil;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -31,6 +33,7 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     private static final String ARG_MAP_ID = "mapid";
 
     private TMenu menu;
+    private MainMenuNavigator navigator;
 
     private Disposable mapPreviewSubscription;
 
@@ -82,12 +85,16 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        GameStarter gameStarter = (GameStarter) getActivity();
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
         String mapId = getArguments().getString(ARG_MAP_ID);
         menu = createMenu(gameStarter, mapId);// new MapSetupMenu(gameStarter, mapId);
+        navigator = (MainMenuNavigator) getActivity();
 
         //mapNameTextView.setText(menu.getMapName());
-        startGameButton.setOnClickListener(view -> menu.startGame());
+        startGameButton.setOnClickListener(view -> {
+            menu.startGame();
+            navigator.showGame();
+        });
 
         setSpinnerAdapter(numberOfPlayersSpinner, menu.getAllowedPlayerCounts());
         setSpinnerAdapter(startResourcesSpinner, menu.getStartResourcesOptions());

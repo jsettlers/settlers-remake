@@ -52,7 +52,7 @@ public abstract class MapPickerFragment extends Fragment implements IChangingLis
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameStarter = (GameStarter) getActivity();
+		gameStarter = (GameStarter) getActivity().getApplication();
 		navigator = (MainMenuNavigator) getActivity();
 	}
 
