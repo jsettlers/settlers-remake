@@ -32,7 +32,7 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 
 	private Disposable mapPreviewSubscription;
 
-	private TextView mapNameTextView;
+	//private TextView mapNameTextView;
 	private ImageView mapPreviewImageView;
 	private Spinner numberOfPlayersSpinner;
 	private Spinner startResourcesSpinner;
@@ -59,7 +59,7 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		mapNameTextView = (TextView) view.findViewById(R.id.text_view_map_name);
+		//mapNameTextView = (TextView) view.findViewById(R.id.text_view_map_name);
 		mapPreviewImageView = (ImageView) view.findViewById(R.id.image_view_map_preview);
 		numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
 		startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
@@ -75,7 +75,7 @@ public class NewSinglePlayerSetupFragment extends Fragment {
 		String mapId = getArguments().getString(ARG_MAP_ID);
 		menu = new NewSinglePlayerSetupMenu(gameStarter, mapId);
 
-		mapNameTextView.setText(menu.getMapName());
+		//mapNameTextView.setText(menu.getMapName());
 		startGameButton.setOnClickListener(view -> menu.startGame());
 
 		setSpinnerAdapter(numberOfPlayersSpinner, menu.getAllowedPlayerCounts());
