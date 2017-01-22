@@ -15,6 +15,8 @@ import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.main.android.AndroidPreferences;
 import jsettlers.main.android.R;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
 
@@ -35,8 +37,9 @@ import io.reactivex.disposables.Disposable;
  * Created by tompr on 21/01/2017.
  */
 
-public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame>, IJoiningGameListener {
+public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame> {
     private GameStarter gameStarter;
+    private MainMenuNavigator navigator;
     private ChangingList<IJoinableGame> changingJoinableGames;
 
 	private JoinableGamesAdapter adapter;
@@ -51,6 +54,8 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gameStarter = (GameStarter) getActivity().getApplication();
+        navigator = (MainMenuNavigator) getActivity();
+
         changingJoinableGames = gameStarter.getMultiPlayerConnector().getJoinableMultiplayerGames();
         changingJoinableGames.setListener(this);
 
@@ -87,27 +92,12 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         getView().post(() -> adapter.setItems(list.getItems()));
     }
 
+
+
     private void joinableGameSelected(IJoinableGame joinableGame) {
         gameStarter.joinMultiPlayerGame(joinableGame);
-    }
 
-
-    /**
-     * IJoiningGameListener imeplementation
-     */
-    @Override
-    public void joinProgressChanged(EProgressState state, float progress) {
-
-    }
-
-    @Override
-    public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-
-    }
-
-
-    private void showProgress() {
-
+        JoiningGameProgressDialog.create().show(getChildFragmentManager(), null);
     }
 
 
