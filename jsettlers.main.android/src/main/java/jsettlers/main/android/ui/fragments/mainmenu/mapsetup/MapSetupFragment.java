@@ -64,9 +64,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
         startGameButton = (Button) view.findViewById(R.id.button_start_game);
 
-        startGameButton.setOnClickListener(v -> {
-            presenter.startGame();
-        });
+        startGameButton.setOnClickListener(v -> presenter.startGame());
 
         setSpinnerAdapter(numberOfPlayersSpinner, presenter.getAllowedPlayerCounts());
         setSpinnerAdapter(startResourcesSpinner, presenter.getStartResourcesOptions());

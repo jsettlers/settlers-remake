@@ -102,24 +102,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:padding="4dp"
+        android:clipToPadding="false"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
-        <LinearLayout
-            android:id="@+id/linear_layout_main"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="CardViews for each player with player options..." />
-
-        </LinearLayout>
-    </ScrollView>
 </LinearLayout>

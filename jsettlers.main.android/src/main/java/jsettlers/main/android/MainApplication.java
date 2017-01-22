@@ -17,6 +17,7 @@ import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.menus.game.GameMenu;
@@ -76,7 +77,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
 			AndroidPreferences androidPreferences = new AndroidPreferences(this);
-			Player player = new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
+			Player player = SettingsManager.getInstance().getPlayer();// new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
 			multiplayerConnector = getStartScreen().getMultiplayerConnector(androidPreferences.getServer(), player);
 		}
 		return multiplayerConnector;
