@@ -4,20 +4,13 @@ import java.util.List;
 
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
-import jsettlers.common.menu.EProgressState;
-import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IJoiningGame;
-import jsettlers.common.menu.IJoiningGameListener;
-import jsettlers.common.menu.IMultiplayerConnector;
-import jsettlers.common.menu.Player;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.main.android.AndroidPreferences;
 import jsettlers.main.android.R;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.dialogs.JoiningGameProgressDialog;
-import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
 
@@ -40,7 +33,6 @@ import io.reactivex.disposables.Disposable;
 
 public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame> {
     private GameStarter gameStarter;
-    private MainMenuNavigator navigator;
     private ChangingList<IJoinableGame> changingJoinableGames;
 
 	private JoinableGamesAdapter adapter;
@@ -55,7 +47,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gameStarter = (GameStarter) getActivity().getApplication();
-        navigator = (MainMenuNavigator) getActivity();
 
         changingJoinableGames = gameStarter.getMultiPlayerConnector().getJoinableMultiplayerGames();
         changingJoinableGames.setListener(this);
@@ -85,6 +76,15 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         changingJoinableGames.removeListener(this);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isRemoving()) {
+            closeJoiningGame();
+            gameStarter.closeMultiPlayerConnector();
+        }
+    }
+
     /**
      * ChangingListListener implementation
      */
@@ -96,10 +96,19 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
 
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
+        closeJoiningGame();
+
         IJoiningGame joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
         gameStarter.setJoiningGame(joiningGame);
 
         JoiningGameProgressDialog.create().show(getChildFragmentManager(), null);
+    }
+
+    private void closeJoiningGame() {
+        if (gameStarter.getJoiningGame() != null) {
+            gameStarter.getJoiningGame().abort();
+            gameStarter.setJoiningGame(null);
+        }
     }
 
 

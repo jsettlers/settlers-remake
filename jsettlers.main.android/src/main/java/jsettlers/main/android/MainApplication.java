@@ -70,6 +70,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		return startScreen;
 	}
 
+
 	@Override
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
@@ -78,6 +79,14 @@ public class MainApplication extends Application implements GameStarter, GameMan
 			multiplayerConnector = getStartScreen().getMultiplayerConnector(androidPreferences.getServer(), player);
 		}
 		return multiplayerConnector;
+	}
+
+	@Override
+	public void closeMultiPlayerConnector() {
+		if (multiplayerConnector != null) {
+			multiplayerConnector.shutdown();
+			multiplayerConnector = null;
+		}
 	}
 
 	@Override

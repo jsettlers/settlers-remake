@@ -2,8 +2,10 @@ package jsettlers.main.android.ui.fragments.mainmenu;
 
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.main.android.R;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
+import jsettlers.main.android.utils.FragmentUtil;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,15 +45,15 @@ public class JoinMultiPlayerSetupFragment extends Fragment implements IMultiplay
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        LinearLayout linearLayout = new LinearLayout(getActivity());
-        CheckBox checkBox = new CheckBox(getActivity());
+        View view = inflater.inflate(R.layout.fragment_join_multi_player_setup, container, false);
+        FragmentUtil.setActionBar(this, view);
 
+        CheckBox checkBox = (CheckBox) view.findViewById(R.id.check_box);
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             gameStarter.getJoinPhaseMultiplayerConnector().setReady(b);
         });
 
-        linearLayout.addView(checkBox);
-        return linearLayout;
+        return view;
     }
 
     @Override
@@ -59,6 +61,15 @@ public class JoinMultiPlayerSetupFragment extends Fragment implements IMultiplay
         super.onDestroyView();
         if (gameStarter.getJoinPhaseMultiplayerConnector() != null) {
             gameStarter.getJoinPhaseMultiplayerConnector().setMultiplayerListener(this);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isRemoving() && gameStarter.getJoinPhaseMultiplayerConnector() != null) {
+            gameStarter.getJoinPhaseMultiplayerConnector().abort();
+            gameStarter.setJoinPhaseMultiPlayerConnector(null);
         }
     }
 

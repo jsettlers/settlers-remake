@@ -158,12 +158,13 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	@Override
 	public void onResume() {
 		super.onResume();
+		getActivity().setTitle(R.string.app_name);
+
 		// Work around for IllegalStateException when trying to show dialog from onPermissionResult. Meant to be fixed in v24 support library
 		if (showDirectoryPicker) {
 			showDirectoryPicker();
 			showDirectoryPicker = false;
 		}
-
 
 		if (gameManager.isGameInProgress()) {
 			IntentFilter intentFilter = new IntentFilter();

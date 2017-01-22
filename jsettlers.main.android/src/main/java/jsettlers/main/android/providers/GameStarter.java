@@ -14,7 +14,9 @@ import jsettlers.common.menu.IStartingGame;
 
 public interface GameStarter {
     IStartScreen getStartScreen();
+
     IMultiplayerConnector getMultiPlayerConnector();
+    void closeMultiPlayerConnector();
 
     IStartingGame getStartingGame();
     void setStartingGame(IStartingGame startingGame);

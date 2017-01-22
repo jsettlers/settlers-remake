@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGameListener;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 
@@ -20,6 +21,8 @@ import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 public class JoiningGameProgressDialog extends DialogFragment implements IJoiningGameListener {
     private GameStarter gameStarter;
     private MainMenuNavigator navigator;
+
+    private ProgressDialog progressDialog;
 
     public static DialogFragment create() {
         return new JoiningGameProgressDialog();
@@ -35,9 +38,8 @@ public class JoiningGameProgressDialog extends DialogFragment implements IJoinin
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new ProgressDialog.Builder(getActivity())
-                .setTitle("join progress")
-                .create();
+        progressDialog = new ProgressDialog(getActivity());
+        return progressDialog;
     }
 
     @Override
@@ -63,19 +65,20 @@ public class JoiningGameProgressDialog extends DialogFragment implements IJoinin
      */
     @Override
     public void joinProgressChanged(EProgressState state, float progress) {
+        String stateString = Labels.getProgress(state);
+        int progressPercentage = (int) (progress * 100);
+
+        getActivity().runOnUiThread(() -> {
+            progressDialog.setMessage(stateString);
+            progressDialog.setProgress(progressPercentage);
+        });
 
     }
 
     @Override
     public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-        getActivity().runOnUiThread(() -> {
-            gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-            dismiss();
-            navigator.showJoinMultiPlayerSetup();
-        });
-    }
-
-    private void showProgress() {
-
+        gameStarter.setJoinPhaseMultiPlayerConnector(connector);
+        dismiss();
+        navigator.showJoinMultiPlayerSetup();
     }
 }

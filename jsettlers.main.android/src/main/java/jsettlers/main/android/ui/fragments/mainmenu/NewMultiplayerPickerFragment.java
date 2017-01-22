@@ -22,6 +22,14 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (isRemoving()) {
+            getGameStarter().closeMultiPlayerConnector();
+        }
+    }
+
+    @Override
     protected ChangingList<? extends IMapDefinition> getMaps() {
         return getGameStarter().getStartScreen().getMultiplayerMaps();
     }
