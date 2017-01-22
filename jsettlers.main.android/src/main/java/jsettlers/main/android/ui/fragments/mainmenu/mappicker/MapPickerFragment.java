@@ -48,7 +48,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 
 	private RecyclerView recyclerView;
 
-	private boolean isSaving;
+	private boolean isSaving = false;
 
 	public MapPickerFragment() {
 	}

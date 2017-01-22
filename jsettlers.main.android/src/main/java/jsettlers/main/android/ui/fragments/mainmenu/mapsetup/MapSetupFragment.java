@@ -24,14 +24,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import jsettlers.main.android.views.MapSetupView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 
-public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragment {
-    private static final String ARG_MAP_ID = "mapid";
-
+public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragment implements MapSetupView {
     private TMenu menu;
     private MainMenuNavigator navigator;
 
@@ -44,19 +43,20 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     private Spinner peacetimeSpinner;
     private Button startGameButton;
 
-    public static Fragment createNewSinglePlayerSetupFragment(IMapDefinition mapDefinition) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
+    private boolean isSaving = false;
 
-        Fragment fragment = new NewSinglePlayerSetupFragment();
-        fragment.setArguments(bundle);
 
-        return fragment;
+    protected abstract TMenu getPresenter();
+
+    protected TMenu getMenu() {
+        return menu;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        menu = getPresenter();
+        navigator = (MainMenuNavigator) getActivity();
     }
 
     @Override
@@ -70,21 +70,9 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
         startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
         peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
         startGameButton = (Button) view.findViewById(R.id.button_start_game);
-        return view;
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-
-        menu = createMenu(gameStarter);// new MapSetupMenu(gameStarter, mapId);
-        navigator = (MainMenuNavigator) getActivity();
-
-        //mapNameTextView.setText(menu.getMapName());
-        startGameButton.setOnClickListener(view -> {
+        startGameButton.setOnClickListener(v -> {
             menu.startGame();
-            navigator.showGame();
         });
 
         setSpinnerAdapter(numberOfPlayersSpinner, menu.getAllowedPlayerCounts());
@@ -105,6 +93,8 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
                         mapPreviewImageView.setImageDrawable(null);
                     }
                 });
+
+        return view;
     }
 
     @Override
@@ -114,17 +104,26 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        isSaving = true;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        menu.dispose();
         if (mapPreviewSubscription != null) {
             mapPreviewSubscription.dispose();
         }
     }
 
-    protected abstract TMenu createMenu(GameStarter gameStarter);
-
-    protected TMenu getMenu() {
-        return menu;
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (isRemoving() && !isSaving) {
+            menu.abort();
+        }
     }
 
     private <T> void setSpinnerAdapter(Spinner spinner, T[] items) {

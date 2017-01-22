@@ -23,6 +23,6 @@ public class NewSinglePlayerPickerPresenter extends MapPickerPresenter {
     @Override
     public void itemSelected(IMapDefinition mapDefinition) {
         gameStarter.setMapDefinition(mapDefinition);
-        navigator.showNewSinglePlayerSetup(mapDefinition);
+        navigator.showNewSinglePlayerSetup();
     }
 }

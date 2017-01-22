@@ -6,22 +6,29 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.views.MapSetupView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 
 public abstract class MapSetupMenu {
+    private final MapSetupView view;
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
-    public MapSetupMenu(GameStarter gameStarter) {
+    public MapSetupMenu(MapSetupView view, GameStarter gameStarter) {
+        this.view = view;
         this.gameStarter = gameStarter;
         this.mapDefinition = gameStarter.getMapDefinition();
     }
 
-    public void dispose() {
 
+    public void abort() {
+        gameStarter.setMapDefinition(null);
+    }
+
+    public void dispose() {
     }
 
     public String getMapName() {

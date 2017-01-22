@@ -11,35 +11,13 @@ import jsettlers.main.android.views.NewMultiPlayerSetupView;
  */
 
 public class NewMultiPlayerSetupFragment extends MapSetupFragment<NewMultiPlayerSetupMenu> implements NewMultiPlayerSetupView {
-
     public static Fragment create() {
         return new NewMultiPlayerSetupFragment();
     }
 
     @Override
-    protected NewMultiPlayerSetupMenu createMenu(GameStarter gameStarter) {
+    protected NewMultiPlayerSetupMenu getPresenter() {
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
         return new NewMultiPlayerSetupMenu(this, gameStarter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (isRemoving()) {
-            getMenu().dispose();
-        }
-    }
-
-
-    /**
-     * NewMultiPlayerSetupView implementation
-     */
-    @Override
-    public void setJoiningProgress(String stateString, int progressPercentage) {
-//        JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
-//        if (joiningProgressDialog == null) {
-//            JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
-//        } else {
-//            joiningProgressDialog.setProgress(stateString, progressPercentage);
-//        }
     }
 }

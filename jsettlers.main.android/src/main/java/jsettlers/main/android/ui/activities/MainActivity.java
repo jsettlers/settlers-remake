@@ -1,15 +1,14 @@
 package jsettlers.main.android.ui.activities;
 
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.ui.fragments.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.JoinMultiPlayerSetupFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.mappicker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.MapSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewMultiPlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.JoinMultiPlayerSetupFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.NewMultiPlayerSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.NewSinglePlayerSetupFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 
@@ -83,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewSinglePlayerSetup(IMapDefinition mapDefinition) {
+	public void showNewSinglePlayerSetup() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, MapSetupFragment.createNewSinglePlayerSetupFragment(mapDefinition))
+				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create())
 				.addToBackStack(null)
 				.commit();
 	}
