@@ -1,6 +1,7 @@
 package jsettlers.main.android.menus.mainmenu;
 
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.StartScreenConnector;
@@ -12,13 +13,11 @@ import jsettlers.main.android.providers.GameStarter;
 
 public abstract class MapSetupMenu {
     private final GameStarter gameStarter;
-    private final StartScreenConnector startScreenConnector;
     private final IMapDefinition mapDefinition;
 
     public MapSetupMenu(GameStarter gameStarter, IMapDefinition mapDefinition) {
         this.gameStarter = gameStarter;
         this.mapDefinition = mapDefinition;
-        this.startScreenConnector = gameStarter.getStartScreenConnector();
     }
 
     public String getMapName() {

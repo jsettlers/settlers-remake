@@ -23,7 +23,7 @@ public class NewSinglePlayerPickerFragment extends MapPickerFragment {
 
     @Override
     protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreenConnector().getSingleplayerMaps();
+        return getGameStarter().getStartScreen().getSingleplayerMaps();
     }
 
     @Override

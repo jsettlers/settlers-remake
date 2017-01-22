@@ -7,9 +7,14 @@ import static jsettlers.main.android.menus.game.GameMenu.ACTION_SAVE;
 import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
 
 import jsettlers.common.menu.IGameExitListener;
+import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.menu.Player;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
@@ -26,8 +31,10 @@ import android.support.v4.content.LocalBroadcastManager;
 
 
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {
-	private StartScreenConnector startScreenConnector;
+	private IStartScreen startScreen;
+	private IMultiplayerConnector multiplayerConnector;
 	private IStartingGame startingGame;
+	private IJoiningGame joiningGame;
 
 	private ControlsAdapter controlsAdapter;
 
@@ -54,26 +61,58 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	/**
 	 * GameStarter implementation
 	 */
-	@Override
-	public StartScreenConnector getStartScreenConnector() {
-		if (startScreenConnector == null) {
-			startScreenConnector = new StartScreenConnector();
+	public IStartScreen getStartScreen() {
+		if (startScreen == null) {
+			startScreen = new StartScreenConnector();
 		}
-		return startScreenConnector;
+		return startScreen;
+	}
+
+	@Override
+	public IMultiplayerConnector getMultiPlayerConnector() {
+		if (multiplayerConnector == null) {
+			AndroidPreferences androidPreferences = new AndroidPreferences(this);
+			Player player = new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
+			multiplayerConnector = getStartScreen().getMultiplayerConnector(androidPreferences.getServer(), player);
+		}
+		return multiplayerConnector;
 	}
 
 	@Override
 	public void startSinglePlayerGame(IMapDefinition mapDefinition) {
-		startingGame = new StartScreenConnector().startSingleplayerGame(mapDefinition);
+		startingGame = getStartScreen().startSingleplayerGame(mapDefinition);
 	}
 
 	@Override
 	public void loadSinglePlayerGame(IMapDefinition mapDefinition) {
-		startingGame = new StartScreenConnector().loadSingleplayerGame(mapDefinition);
+		startingGame = getStartScreen().loadSingleplayerGame(mapDefinition);
 	}
 
+	@Override
+	public void joinMultiPlayerGame(IJoinableGame joinableGame) {
+		joiningGame = getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
+	}
 
+	@Override
+	public IStartingGame getStartingGame() {
+		return startingGame;
+	}
 
+	@Override
+	public IJoiningGame getJoiningGame() {
+		return joiningGame;
+	}
+
+	@Override
+	public MapInterfaceConnector gameStarted(IStartedGame game) {
+		controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
+
+		startService(new Intent(this, GameService.class));
+
+		game.setGameExitListener(this);
+
+		return controlsAdapter.getMapContent().getInterfaceConnector();
+	}
 
 	/**
 	 * GameManager implementation
@@ -91,22 +130,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	@Override
 	public boolean isGameInProgress() {
 		return controlsAdapter != null;
-	}
-
-	@Override
-	public IStartingGame getStartingGame() {
-		return startingGame;
-	}
-
-	@Override
-	public MapInterfaceConnector gameStarted(IStartedGame game) {
-		controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
-
-		startService(new Intent(this, GameService.class));
-
-		game.setGameExitListener(this);
-
-		return controlsAdapter.getMapContent().getInterfaceConnector();
 	}
 
 

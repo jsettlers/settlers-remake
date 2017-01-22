@@ -7,7 +7,7 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.R;
-import jsettlers.main.android.providers.GameManager;
+import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.GameNavigator;
 
 import android.os.Bundle;
@@ -24,7 +24,7 @@ import android.widget.Toast;
  * A simple {@link Fragment} subclass.
  */
 public class LoadingFragment extends Fragment implements IStartingGameListener {
-	private GameManager gameManager;
+	private GameStarter gameStarter;
 	private GameNavigator navigator;
 
 	private ProgressBar progressBar;
@@ -37,7 +37,7 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameManager = (GameManager) getActivity().getApplication();
+		gameStarter = (GameStarter) getActivity().getApplication();
 		navigator = (GameNavigator) getActivity();
 	}
 
@@ -53,17 +53,17 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (gameManager.getStartingGame().isStartupFinished()) {
+		if (gameStarter.getStartingGame().isStartupFinished()) {
 			navigator.showMap();
 		} else {
-			gameManager.getStartingGame().setListener(this);
+			gameStarter.getStartingGame().setListener(this);
 		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		gameManager.getStartingGame().setListener(null);
+		gameStarter.getStartingGame().setListener(null);
 	}
 
 
@@ -83,12 +83,12 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 
 	@Override
 	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
-		return gameManager.gameStarted(game);
+		return gameStarter.gameStarted(game);
 	}
 
 	@Override
 	public void startFailed(final EGameError errorType, Exception exception) {
-		gameManager.getStartingGame().setListener(null);
+		gameStarter.getStartingGame().setListener(null);
 
 		getActivity().runOnUiThread(() -> {
             Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
@@ -98,6 +98,6 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 
 	@Override
 	public void startFinished() {
-		gameManager.getStartingGame().setListener(null);
+		gameStarter.getStartingGame().setListener(null);
 		getActivity().runOnUiThread(() -> navigator.showMap());
 	}}

@@ -23,7 +23,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment {
 
     @Override
     protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreenConnector().getMultiplayerMaps();
+        return getGameStarter().getStartScreen().getMultiplayerMaps();
     }
 
     @Override

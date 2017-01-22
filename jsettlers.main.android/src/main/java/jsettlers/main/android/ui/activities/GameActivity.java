@@ -8,6 +8,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsAdapter;
 import jsettlers.main.android.controls.ControlsProvider;
 import jsettlers.main.android.providers.GameManager;
+import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.fragments.game.LoadingFragment;
 import jsettlers.main.android.ui.fragments.game.MapFragment;
 import jsettlers.main.android.ui.navigation.Actions;
@@ -27,6 +28,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Co
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
+    private GameStarter gameStarter;
     private GameManager gameManager;
 
     private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -34,6 +36,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Co
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        gameStarter = (GameStarter) getApplication();
         gameManager = (GameManager) getApplication();
 
         setContentView(R.layout.activity_game);
@@ -59,7 +62,7 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Co
 
     @Override
     public void onBackPressed() {
-        if (!gameManager.getStartingGame().isStartupFinished()) {
+        if (!gameStarter.getStartingGame().isStartupFinished()) {
             return; // Don't let the user back out of the loading screen
         }
 

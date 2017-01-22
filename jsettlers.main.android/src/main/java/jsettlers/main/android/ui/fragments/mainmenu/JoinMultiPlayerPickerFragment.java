@@ -4,7 +4,11 @@ import java.util.List;
 
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IJoiningGameListener;
+import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.Player;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
@@ -31,9 +35,10 @@ import io.reactivex.disposables.Disposable;
  * Created by tompr on 21/01/2017.
  */
 
-public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame> {
+public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame>, IJoiningGameListener {
     private GameStarter gameStarter;
     private ChangingList<IJoinableGame> changingJoinableGames;
+
 	private JoinableGamesAdapter adapter;
 
     private RecyclerView recyclerView;
@@ -46,6 +51,10 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gameStarter = (GameStarter) getActivity().getApplication();
+        changingJoinableGames = gameStarter.getMultiPlayerConnector().getJoinableMultiplayerGames();
+        changingJoinableGames.setListener(this);
+
+        adapter = new JoinableGamesAdapter(changingJoinableGames.getItems());
     }
 
     @Nullable
@@ -54,26 +63,14 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
         FragmentUtil.setActionBar(this, view);
 
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        AndroidPreferences androidPreferences = new AndroidPreferences(getActivity());
-        Player player = new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
-        changingJoinableGames = gameStarter.getStartScreenConnector().getMultiplayerConnector(androidPreferences.getServer(), player).getJoinableMultiplayerGames();
-        changingJoinableGames.setListener(this);
-
-        adapter = new JoinableGamesAdapter(changingJoinableGames.getItems());
-
-        recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
         recyclerView.setItemAnimator(new NoChangeItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        return view;
     }
 
     @Override
@@ -91,8 +88,27 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     }
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
+        gameStarter.joinMultiPlayerGame(joinableGame);
     }
 
+
+    /**
+     * IJoiningGameListener imeplementation
+     */
+    @Override
+    public void joinProgressChanged(EProgressState state, float progress) {
+
+    }
+
+    @Override
+    public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+
+    }
+
+
+    private void showProgress() {
+
+    }
 
 
     /**
