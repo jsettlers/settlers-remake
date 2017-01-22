@@ -170,9 +170,6 @@ public final class PartitionCalculatorAlgorithm {
 						partitions[northEastPartition] = newPartition;
 						partitionsGrid[index] = newPartition;
 
-						if (westPartition == BLOCKED_PARTITION || northEastPartition == BLOCKED_PARTITION) {
-							System.out.println();
-						}
 					} else if (partition != -1) { // just set the value.
 						partitionsGrid[index] = partitions[partition];
 

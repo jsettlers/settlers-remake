@@ -42,7 +42,6 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
@@ -56,7 +55,7 @@ import jsettlers.logic.player.Team;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsGrid implements Serializable, IBlockingChangedListener {
+public final class PartitionsGrid implements Serializable {
 	private static final long serialVersionUID = 8919380724171427679L;
 
 	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 3000;
@@ -83,11 +82,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
-	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IPartitionsGridBlockingProvider blockingProvider) {
+	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IBlockingProvider blockingProvider) {
 		this.width = width;
 		this.height = height;
 		this.blockingProvider = blockingProvider;
-		blockingProvider.registerBlockingChangedListener(this);
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
@@ -270,7 +268,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * 
 	 * @param towerPosition
 	 * @param newPlayerId
-	 * @param groundArea
 	 * @return
 	 */
 	public Iterable<ShortPoint2D> changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId) {
@@ -302,6 +299,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// recalculate the tower counter for the ground area
 		recalculateTowerCounter(tower, tower.groundArea);
+
 		return tower.area;
 	}
 
@@ -326,8 +324,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * Recalculates the tower counter for the given area. <br>
 	 * NOTE: The given area must completely belong to the given player!
 	 * 
+	 * @param tower
 	 * @param area
-	 * @param playerId
 	 */
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
 		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius);
@@ -416,7 +414,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * Occupies the given area for the given playerId.
 	 * 
 	 * @param playerId
-	 * @param filteredInfluencingArea
+	 * @param influencingArea
 	 * @param borders
 	 */
 	private void occupyAreaByTower(final byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
@@ -606,8 +604,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		assert biggerPartition != smallerPartition : "the partitions can not be the same!";
 
-		// System.out.println("merging partitions: " + biggerPartition + " and " + smallerPartition);
-
 		Partition biggerPartitionObject = partitionObjects[biggerPartition];
 		Partition smallerPartitionObject = partitionObjects[smallerPartition];
 
@@ -758,42 +754,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		if (getPartitionAt(x, y) != partitionObjects[newPartition]) {
 			byte playerId = changePartitionUncheckedAt(x, y, newPartition);
 			notifyPlayerChangedListener(x, y, playerId);
-		}
-	}
-
-	@Override
-	public void blockingChanged(int x, int y, boolean newBlockingValue) {
-		if (newBlockingValue) {// if the value changed to blocking, ignore it
-			return;
-		}
-
-		int idx = x + y * width;
-		short currPartition = partitions[idx];
-
-		// if the position has a player
-		if (currPartition != NO_PLAYER_PARTITION_ID) {
-			// create a new partition for the given position and add the position to the partition
-			byte playerId = partitionObjects[currPartition].playerId;
-			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(x, y, newPartition);
-
-			// check all neighbors for merges
-			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-				int currNeighborX = x + EDirection.VALUES[i].gridDeltaX;
-				int currNeighborY = y + EDirection.VALUES[i].gridDeltaY;
-
-				// if the neighbor is not blocked (if it is blocked, we can not merge)
-				if (!blockingProvider.isBlocked(currNeighborX, currNeighborY)) {
-
-					short neighborPartition = partitions[currNeighborX + currNeighborY * width];
-					byte neighborPlayer = partitionObjects[neighborPartition].playerId;
-
-					// if the position and the neighbor are from the same player, then merge the partitions
-					if (playerId == neighborPlayer && partitionObjects[newPartition] != partitionObjects[neighborPartition]) {
-						mergePartitions(newPartition, neighborPartition);
-					}
-				}
-			}
 		}
 	}
 

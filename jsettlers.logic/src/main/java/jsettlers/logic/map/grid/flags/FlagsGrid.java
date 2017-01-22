@@ -14,14 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.flags;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.logic.map.grid.partition.IPartitionsGridBlockingProvider;
 
 /**
  * Grid that's storing the blocked information for fast access.
@@ -29,7 +25,7 @@ import jsettlers.logic.map.grid.partition.IPartitionsGridBlockingProvider;
  * @author Andreas Eberle
  *
  */
-public final class FlagsGrid implements Serializable, IBlockingProvider, IPartitionsGridBlockingProvider, IProtectedProvider {
+public final class FlagsGrid implements Serializable, IBlockingProvider, IProtectedProvider {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
@@ -38,7 +34,6 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
 
-	private IBlockingChangedListener blockingChangedListener = null;
 	private IProtectedChangedListener protectedChangedListener = null;
 
 	public FlagsGrid(final short width, final short height) {
@@ -83,15 +78,12 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	 */
 	public void setBlockedAndProtected(int x, int y, boolean newBlocked, boolean newProtected) {
 		final int idx = x + y * width;
-		boolean oldBlocked = this.blockedGrid.get(idx);
 		boolean oldProtected = this.protectedGrid.get(idx);
 
-		if (blockingChangedListener != null && oldBlocked != newBlocked) {
-			this.blockedGrid.set(idx, newBlocked);
-			this.blockingChangedListener.blockingChanged(x, y, newBlocked);
-		}
+		this.blockedGrid.set(idx, newBlocked);
+		this.protectedGrid.set(idx, newProtected);
+
 		if (protectedChangedListener != null && oldProtected != newProtected) {
-			this.protectedGrid.set(idx, newProtected);
 			this.protectedChangedListener.protectedChanged(x, y, newProtected);
 		}
 	}
@@ -120,11 +112,6 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	public boolean isPioneerBlocked(int x, int y) {
 		int index = x + y * width;
 		return blockedGrid.get(index) || protectedGrid.get(index);
-	}
-
-	@Override
-	public void registerBlockingChangedListener(IBlockingChangedListener listener) {
-		this.blockingChangedListener = listener;
 	}
 
 	@Override

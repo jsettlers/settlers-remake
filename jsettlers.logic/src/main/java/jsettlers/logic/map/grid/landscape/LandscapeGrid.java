@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-import java8.util.Optional;
+import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -36,7 +36,7 @@ import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListen
  *
  * @author Andreas Eberle
  */
-public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener {
+public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener,	IBlockingProvider {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	/**
@@ -280,6 +280,11 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public short getBlockedPartitionAt(int x, int y) {
 		return this.blockedPartitions[x + y * width];
+	}
+
+	@Override
+	public boolean isBlocked(int x, int y) {
+		return getBlockedPartitionAt(x, y) == 0;
 	}
 
 	public IPreviewImageDataSupplier getPreviewImageDataSupplier() {
