@@ -4,16 +4,21 @@ import java.util.List;
 
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.dialogs.JoiningGameProgressDialog;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -68,6 +73,12 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         recyclerView.setAdapter(adapter);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(R.string.join_multi_player_game);
     }
 
     @Override
@@ -155,6 +166,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
 
     private class JoinableGameHolder extends RecyclerView.ViewHolder {
         final TextView nameTextView;
+        final TextView playerCountTextView;
         final ImageView mapPreviewImageView;
 
         Disposable subscription;
@@ -162,11 +174,32 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
         public JoinableGameHolder(View itemView) {
             super(itemView);
             nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+            playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
             mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
         }
 
         public void bind(IJoinableGame joinableGame) {
             nameTextView.setText(joinableGame.getName());
+            playerCountTextView.setText(joinableGame.getMap().getMinPlayers() + "-" + joinableGame.getMap().getMaxPlayers());
+
+            if (subscription != null) {
+                subscription.dispose();
+            }
+
+            subscription = PreviewImageConverter.toBitmap(joinableGame.getMap().getImage())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<Bitmap>() {
+                        @Override
+                        public void onSuccess(Bitmap bitmap) {
+                            mapPreviewImageView.setImageBitmap(bitmap);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            mapPreviewImageView.setImageDrawable(null);
+                        }
+                    });
         }
     }
 }
