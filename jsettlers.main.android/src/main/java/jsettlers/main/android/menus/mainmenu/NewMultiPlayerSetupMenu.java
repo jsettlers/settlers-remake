@@ -19,8 +19,8 @@ public class NewMultiPlayerSetupMenu extends MapSetupMenu implements IJoiningGam
 
     private IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector;
 
-    public NewMultiPlayerSetupMenu(NewMultiPlayerSetupView view, GameStarter gameStarter, String mapId) {
-        super(gameStarter, findMap(gameStarter.getStartScreen().getMultiplayerMaps(), mapId));
+    public NewMultiPlayerSetupMenu(NewMultiPlayerSetupView view, GameStarter gameStarter) {
+        super(gameStarter);
         this.view = view;
 
         joiningGame = getGameStarter().getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {

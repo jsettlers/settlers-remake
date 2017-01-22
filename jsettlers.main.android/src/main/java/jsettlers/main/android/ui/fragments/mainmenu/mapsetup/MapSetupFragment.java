@@ -54,15 +54,6 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
         return fragment;
     }
 
-    public static Fragment createNewMultiPlayerSetupFragment(IMapDefinition mapDefinition) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
-        Fragment fragment = new NewMultiPlayerSetupFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,8 +77,8 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        String mapId = getArguments().getString(ARG_MAP_ID);
-        menu = createMenu(gameStarter, mapId);// new MapSetupMenu(gameStarter, mapId);
+
+        menu = createMenu(gameStarter);// new MapSetupMenu(gameStarter, mapId);
         navigator = (MainMenuNavigator) getActivity();
 
         //mapNameTextView.setText(menu.getMapName());
@@ -130,7 +121,7 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
         }
     }
 
-    protected abstract TMenu createMenu(GameStarter gameStarter, String mapId);
+    protected abstract TMenu createMenu(GameStarter gameStarter);
 
     protected TMenu getMenu() {
         return menu;

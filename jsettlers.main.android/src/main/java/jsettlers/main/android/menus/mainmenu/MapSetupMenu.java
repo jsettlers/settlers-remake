@@ -15,9 +15,9 @@ public abstract class MapSetupMenu {
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
-    public MapSetupMenu(GameStarter gameStarter, IMapDefinition mapDefinition) {
+    public MapSetupMenu(GameStarter gameStarter) {
         this.gameStarter = gameStarter;
-        this.mapDefinition = mapDefinition;
+        this.mapDefinition = gameStarter.getMapDefinition();
     }
 
     public void dispose() {
@@ -59,14 +59,7 @@ public abstract class MapSetupMenu {
 
     public abstract void startGame();
 
-    protected static IMapDefinition findMap(ChangingList<? extends IMapDefinition> maps, String mapId) {
-        for (IMapDefinition map : maps.getItems()) {
-            if (map.getMapId().equals(mapId)) {
-                return map;
-            }
-        }
-        throw new RuntimeException("Couldn't get selected map.");
-    }
+
 
 
     /**

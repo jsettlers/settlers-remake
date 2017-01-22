@@ -8,8 +8,8 @@ import jsettlers.main.android.providers.GameStarter;
  */
 
 public class NewSinglePlayerSetupMenu extends MapSetupMenu {
-    public NewSinglePlayerSetupMenu(GameStarter gameStarter, String mapId) {
-        super(gameStarter, findMap(gameStarter.getStartScreen().getSingleplayerMaps(), mapId));
+    public NewSinglePlayerSetupMenu(GameStarter gameStarter) {
+        super(gameStarter);
     }
 
     @Override

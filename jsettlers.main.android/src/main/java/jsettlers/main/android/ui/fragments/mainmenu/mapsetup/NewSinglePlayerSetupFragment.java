@@ -6,7 +6,7 @@ import jsettlers.main.android.providers.GameStarter;
 
 public class NewSinglePlayerSetupFragment extends MapSetupFragment {
     @Override
-    protected MapSetupMenu createMenu(GameStarter gameStarter, String mapId) {
-        return new NewSinglePlayerSetupMenu(gameStarter, mapId);
+    protected MapSetupMenu createMenu(GameStarter gameStarter) {
+        return new NewSinglePlayerSetupMenu(gameStarter);
     }
 }

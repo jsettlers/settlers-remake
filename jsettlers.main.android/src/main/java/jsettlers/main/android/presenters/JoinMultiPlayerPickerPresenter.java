@@ -95,10 +95,9 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
     public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
         joiningGame.setListener(null);
         gameStarter.setJoiningGame(null);
+        view.dismissJoiningProgress();
 
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-
-        view.dismissJoiningProgress();
         navigator.showJoinMultiPlayerSetup();
     }
 

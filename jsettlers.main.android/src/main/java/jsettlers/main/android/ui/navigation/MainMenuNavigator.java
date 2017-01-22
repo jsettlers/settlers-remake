@@ -13,7 +13,7 @@ public interface MainMenuNavigator {
 
     void showNewMultiPlayerPicker();
     void showJoinMultiPlayerPicker();
-    void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
+    void showNewMultiPlayerSetup();
     void showJoinMultiPlayerSetup();
 
     void showGame();

@@ -1,5 +1,7 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
+import android.support.v4.app.Fragment;
+
 import jsettlers.main.android.menus.mainmenu.NewMultiPlayerSetupMenu;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.views.NewMultiPlayerSetupView;
@@ -9,11 +11,14 @@ import jsettlers.main.android.views.NewMultiPlayerSetupView;
  */
 
 public class NewMultiPlayerSetupFragment extends MapSetupFragment<NewMultiPlayerSetupMenu> implements NewMultiPlayerSetupView {
-    private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
+
+    public static Fragment create() {
+        return new NewMultiPlayerSetupFragment();
+    }
 
     @Override
-    protected NewMultiPlayerSetupMenu createMenu(GameStarter gameStarter, String mapId) {
-        return new NewMultiPlayerSetupMenu(this, gameStarter, mapId);
+    protected NewMultiPlayerSetupMenu createMenu(GameStarter gameStarter) {
+        return new NewMultiPlayerSetupMenu(this, gameStarter);
     }
 
     @Override
