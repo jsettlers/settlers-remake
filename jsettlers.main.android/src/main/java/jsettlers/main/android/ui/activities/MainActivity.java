@@ -2,13 +2,13 @@ package jsettlers.main.android.ui.activities;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.ui.fragments.mainmenu.JoinMultiPlayerPickerFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.JoinMultiPlayerSetupFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.LoadSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.JoinMultiPlayerSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.MapSetupFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.NewMultiPlayerPickerFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.MapSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewMultiPlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 

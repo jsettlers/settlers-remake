@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.mainmenu;
+package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IStartingGame;
@@ -14,8 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 
 /**
  * Created by tompr on 22/01/2017.

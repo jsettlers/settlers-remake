@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.mainmenu;
+package jsettlers.main.android.ui.fragments.mainmenu.mappicker;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

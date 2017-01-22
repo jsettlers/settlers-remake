@@ -1,4 +1,4 @@
-package jsettlers.main.android.ui.fragments.mainmenu;
+package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
 import jsettlers.main.android.menus.mainmenu.MapSetupMenu;
 import jsettlers.main.android.menus.mainmenu.NewMultiPlayerSetupMenu;
