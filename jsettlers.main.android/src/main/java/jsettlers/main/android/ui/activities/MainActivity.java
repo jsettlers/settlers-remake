@@ -1,5 +1,6 @@
 package jsettlers.main.android.ui.activities;
 
+import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.fragments.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
@@ -107,9 +108,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showJoinMultiPlayerSetup() {
+	public void showJoinMultiPlayerSetup(IJoinableGame joinableGame) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create())
+				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create(joinableGame))
 				.addToBackStack(null)
 				.commit();
 	}

@@ -8,13 +8,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
-import jsettlers.common.menu.IJoiningGame;
-import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
+import jsettlers.main.android.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.providers.GameStarter;
-import jsettlers.main.android.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
 
@@ -31,14 +29,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.reactivex.disposables.Disposable;
+import jsettlers.main.android.views.JoinMultiPlayerPickerView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 
-public class JoinMultiPlayerPickerFragment extends Fragment implements IChangingListListener<IJoinableGame> {
-    private GameStarter gameStarter;
-    private ChangingList<IJoinableGame> changingJoinableGames;
+public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
+    private JoinMultiPlayerPickerPresenter presenter;
 
 	private JoinableGamesAdapter adapter;
 
@@ -51,12 +49,11 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gameStarter = (GameStarter) getActivity().getApplication();
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
+        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
 
-        changingJoinableGames = gameStarter.getMultiPlayerConnector().getJoinableMultiplayerGames();
-        changingJoinableGames.setListener(this);
-
-        adapter = new JoinableGamesAdapter(changingJoinableGames.getItems());
+        presenter = new JoinMultiPlayerPickerPresenter(this, gameStarter, navigator);
+        adapter = new JoinableGamesAdapter(presenter.getJoinableGames());
     }
 
     @Nullable
@@ -84,43 +81,26 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        changingJoinableGames.removeListener(this);
+        presenter.dispose();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (isRemoving()) {
-            closeJoiningGame();
-            gameStarter.closeMultiPlayerConnector();
-        }
-    }
 
     /**
-     * ChangingListListener implementation
+     * JoinMultiPlayerPickerView implementation
+     * @param joinableGames
      */
     @Override
-    public void listChanged(ChangingList<? extends IJoinableGame> list) {
-        getView().post(() -> adapter.setItems(list.getItems()));
+    public void joinableGamesChanged(List<? extends IJoinableGame> joinableGames) {
+        getView().post(() -> adapter.setItems(joinableGames));
+
     }
 
 
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
-        closeJoiningGame();
-
-        IJoiningGame joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
-        gameStarter.setJoiningGame(joiningGame);
-
-        JoiningGameProgressDialog.create().show(getChildFragmentManager(), null);
+        presenter.joinableGameSelected(joinableGame);
     }
 
-    private void closeJoiningGame() {
-        if (gameStarter.getJoiningGame() != null) {
-            gameStarter.getJoiningGame().abort();
-            gameStarter.setJoiningGame(null);
-        }
-    }
 
 
     /**

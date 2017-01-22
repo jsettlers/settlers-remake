@@ -1,5 +1,6 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
+import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.main.android.R;
@@ -20,11 +21,19 @@ import android.widget.CheckBox;
  */
 
 public class JoinMultiPlayerSetupFragment extends Fragment implements IMultiplayerListener {
+    private static final String ARG_JOINABLE_GAME_ID = "joinablegameid";
+
     private GameStarter gameStarter;
     private MainMenuNavigator navigator;
 
-    public static Fragment create() {
-        return new JoinMultiPlayerSetupFragment();
+    public static Fragment create(IJoinableGame joinableGame) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_JOINABLE_GAME_ID, joinableGame.getId());
+
+        Fragment fragment = new JoinMultiPlayerSetupFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     @Override

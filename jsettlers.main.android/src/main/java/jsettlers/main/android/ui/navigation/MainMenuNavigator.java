@@ -1,5 +1,6 @@
 package jsettlers.main.android.ui.navigation;
 
+import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMapDefinition;
 
 /**
@@ -13,7 +14,7 @@ public interface MainMenuNavigator {
     void showNewMultiPlayerPicker();
     void showJoinMultiPlayerPicker();
     void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
-    void showJoinMultiPlayerSetup();
+    void showJoinMultiPlayerSetup(IJoinableGame joinableGame);
 
     void showGame();
     void resumeGame();

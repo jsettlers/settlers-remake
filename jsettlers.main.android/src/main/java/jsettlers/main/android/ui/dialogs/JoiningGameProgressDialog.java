@@ -79,6 +79,6 @@ public class JoiningGameProgressDialog extends DialogFragment implements IJoinin
     public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
         dismiss();
-        navigator.showJoinMultiPlayerSetup();
+    //    navigator.showJoinMultiPlayerSetup();
     }
 }
