@@ -2,8 +2,9 @@ package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
 import android.support.v4.app.Fragment;
 
-import jsettlers.main.android.presenters.NewMultiPlayerSetupPrenter;
+import jsettlers.main.android.presenters.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.views.NewMultiPlayerSetupView;
 
 /**
@@ -16,8 +17,9 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
     }
 
     @Override
-    protected NewMultiPlayerSetupPrenter getPresenter() {
+    protected NewMultiPlayerSetupPresenter getPresenter() {
         GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        return new NewMultiPlayerSetupPrenter(this, gameStarter);
+        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
+        return new NewMultiPlayerSetupPresenter(this, gameStarter, navigator);
     }
 }
