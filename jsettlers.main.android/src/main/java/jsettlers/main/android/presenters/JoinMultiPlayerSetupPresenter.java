@@ -1,10 +1,8 @@
 package jsettlers.main.android.presenters;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.views.JoinMultiPlayerSetupView;
@@ -25,18 +23,18 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
         this.gameStarter = gameStarter;
         this.navigator = navigator;
 
-        //IJoinableGame joinableGame = findJoinableGame(gameStarter.getMultiPlayerConnector().getJoinableMultiplayerGames(), joinableGameId);
-
         connector = gameStarter.getJoinPhaseMultiplayerConnector();
         if (connector == null) {
-            // pop
+            //TODO pop
         } else {
             connector.setMultiplayerListener(this);
         }
     }
 
     public void setReady(boolean ready) {
-        connector.setReady(ready);
+        if (connector != null) {
+            connector.setReady(ready);
+        }
     }
 
     public void abort() {
@@ -58,22 +56,15 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
      */
     @Override
     public void gameAborted() {
-
+        //TODO pop
     }
 
     @Override
     public void gameIsStarting(IStartingGame game) {
+        connector = null;
+        gameStarter.setJoinPhaseMultiPlayerConnector(null);
+
         gameStarter.setStartingGame(game);
         navigator.showGame();
-    }
-
-
-    protected static IJoinableGame findJoinableGame(ChangingList<? extends IJoinableGame> joinableGames, String joinableGameId) {
-        for (IJoinableGame joinableGame : joinableGames.getItems()) {
-            if (joinableGame.getId().equals(joinableGameId)) {
-                return joinableGame;
-            }
-        }
-        throw new RuntimeException("Couldn't find joinable game.");
     }
 }

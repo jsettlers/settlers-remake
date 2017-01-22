@@ -5,6 +5,10 @@ import android.support.v4.app.Fragment;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
+import jsettlers.main.android.presenters.MapPickerPresenter;
+import jsettlers.main.android.presenters.NewSinglePlayerPickerPresenter;
+import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 
 /**
  * Created by tompr on 19/01/2017.
@@ -16,18 +20,16 @@ public class NewSinglePlayerPickerFragment extends MapPickerFragment {
     }
 
     @Override
+    protected MapPickerPresenter getPresenter() {
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
+        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
+
+        return new NewSinglePlayerPickerPresenter(this, gameStarter, navigator);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.new_single_player_game);
-    }
-
-    @Override
-    protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreen().getSingleplayerMaps();
-    }
-
-    @Override
-    protected void mapSelected(IMapDefinition map) {
-        getNavigator().showNewSinglePlayerSetup(map);
     }
 }

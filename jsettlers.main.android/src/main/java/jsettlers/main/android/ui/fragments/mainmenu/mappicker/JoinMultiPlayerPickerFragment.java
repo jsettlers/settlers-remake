@@ -12,7 +12,7 @@ import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.providers.GameStarter;
-import jsettlers.main.android.ui.dialogs.NewJoiningGameProgressDialog;
+import jsettlers.main.android.ui.dialogs.JoiningGameProgressDialog;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
@@ -115,9 +115,9 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
     @Override
     public void setJoiningProgress(String stateString, int progressPercentage) {
-        NewJoiningGameProgressDialog joiningProgressDialog = (NewJoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
         if (joiningProgressDialog == null) {
-            NewJoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
+            JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
         } else {
             joiningProgressDialog.setProgress(stateString, progressPercentage);
         }
@@ -125,7 +125,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
     @Override
     public void dismissJoiningProgress() {
-        NewJoiningGameProgressDialog joiningProgressDialog = (NewJoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
         if (joiningProgressDialog != null) {
             joiningProgressDialog.dismiss();
         }

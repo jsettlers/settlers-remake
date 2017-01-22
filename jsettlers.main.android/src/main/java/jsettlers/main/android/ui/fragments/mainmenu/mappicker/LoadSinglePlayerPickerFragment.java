@@ -7,6 +7,10 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
+import jsettlers.main.android.presenters.LoadSinglePlayerPickerPresenter;
+import jsettlers.main.android.presenters.MapPickerPresenter;
+import jsettlers.main.android.presenters.NewMultiPlayerPickerPresenter;
+import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 
 /**
@@ -21,6 +25,14 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
     }
 
     @Override
+    protected MapPickerPresenter getPresenter() {
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
+        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
+
+        return new LoadSinglePlayerPickerPresenter(this, gameStarter, navigator);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         navigator = (MainMenuNavigator) getActivity();
@@ -30,18 +42,6 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.load_single_player_game);
-    }
-
-    @Override
-    protected ChangingList<? extends IMapDefinition> getMaps() {
-        return getGameStarter().getStartScreen().getStoredSingleplayerGames();
-    }
-
-    @Override
-    protected void mapSelected(IMapDefinition mapDefinition) {
-        IStartingGame startingGame = getGameStarter().getStartScreen().loadSingleplayerGame(mapDefinition);
-        getGameStarter().setStartingGame(startingGame);
-        navigator.showGame();
     }
 
     @Override
