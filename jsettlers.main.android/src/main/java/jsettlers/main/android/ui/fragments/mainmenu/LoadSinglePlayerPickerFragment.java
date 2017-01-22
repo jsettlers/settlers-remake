@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
@@ -37,8 +38,9 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
     }
 
     @Override
-    protected void mapSelected(IMapDefinition map) {
-        getGameStarter().loadSinglePlayerGame(map);
+    protected void mapSelected(IMapDefinition mapDefinition) {
+        IStartingGame startingGame = getGameStarter().getStartScreen().loadSingleplayerGame(mapDefinition);
+        getGameStarter().setStartingGame(startingGame);
         navigator.showGame();
     }
 

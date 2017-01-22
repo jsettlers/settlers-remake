@@ -81,13 +81,13 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	}
 
 	@Override
-	public IJoinPhaseMultiplayerGameConnector getJoinPhaseMultiplayerConnector() {
-		return joinPhaseMultiplayerGameConnector;
+	public IStartingGame getStartingGame() {
+		return startingGame;
 	}
 
 	@Override
-	public IStartingGame getStartingGame() {
-		return startingGame;
+	public void setStartingGame(IStartingGame startingGame) {
+		this.startingGame = startingGame;
 	}
 
 	@Override
@@ -96,29 +96,17 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	}
 
 	@Override
-	public void setStartingGame(IStartingGame startingGame) {
-		this.startingGame = startingGame;
-	}
-
-	// maybe move this into relevant screen
-	@Override
-	public void startSinglePlayerGame(IMapDefinition mapDefinition) {
-		startingGame = getStartScreen().startSingleplayerGame(mapDefinition);
-	}
-
-	// maybe move this into relevant screen
-	@Override
-	public void loadSinglePlayerGame(IMapDefinition mapDefinition) {
-		startingGame = getStartScreen().loadSingleplayerGame(mapDefinition);
+	public void setJoiningGame(IJoiningGame joiningGame) {
+		this.joiningGame = joiningGame;
 	}
 
 	@Override
-	public void joinMultiPlayerGame(IJoinableGame joinableGame) {
-		joiningGame = getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
+	public IJoinPhaseMultiplayerGameConnector getJoinPhaseMultiplayerConnector() {
+		return joinPhaseMultiplayerGameConnector;
 	}
 
 	@Override
-	public void gameJoined(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector) {
+	public void setJoinPhaseMultiPlayerConnector(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector) {
 		this.joinPhaseMultiplayerGameConnector = joinPhaseMultiplayerGameConnector;
 	}
 

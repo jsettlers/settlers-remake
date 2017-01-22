@@ -1,5 +1,6 @@
 package jsettlers.main.android.menus.mainmenu;
 
+import jsettlers.common.menu.IStartingGame;
 import jsettlers.main.android.providers.GameStarter;
 
 /**
@@ -13,6 +14,7 @@ public class NewSinglePlayerSetupMenu extends MapSetupMenu {
 
     @Override
     public void startGame() {
-        getGameStarter().startSinglePlayerGame(getMapDefinition());
+        IStartingGame startingGame = getGameStarter().getStartScreen().startSingleplayerGame(getMapDefinition());
+        getGameStarter().setStartingGame(startingGame);
     }
 }

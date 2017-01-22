@@ -7,6 +7,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.Player;
@@ -95,7 +96,8 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements IChanging
 
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
-        gameStarter.joinMultiPlayerGame(joinableGame);
+        IJoiningGame joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
+        gameStarter.setJoiningGame(joiningGame);
 
         JoiningGameProgressDialog.create().show(getChildFragmentManager(), null);
     }

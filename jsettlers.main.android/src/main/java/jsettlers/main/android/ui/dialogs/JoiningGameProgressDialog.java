@@ -69,7 +69,7 @@ public class JoiningGameProgressDialog extends DialogFragment implements IJoinin
     @Override
     public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
         getActivity().runOnUiThread(() -> {
-            gameStarter.gameJoined(connector);
+            gameStarter.setJoinPhaseMultiPlayerConnector(connector);
             dismiss();
             navigator.showJoinMultiPlayerSetup();
         });
