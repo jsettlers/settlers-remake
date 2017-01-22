@@ -20,6 +20,10 @@ public abstract class MapSetupMenu {
         this.mapDefinition = mapDefinition;
     }
 
+    public void dispose() {
+
+    }
+
     public String getMapName() {
         return mapDefinition.getMapName();
     }

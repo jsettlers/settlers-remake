@@ -2,7 +2,9 @@ package jsettlers.main.android.ui.fragments.mainmenu.mappicker;
 
 import android.support.v4.app.Fragment;
 
+import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.R;
 
