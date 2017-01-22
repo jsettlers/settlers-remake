@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.BitSet;
 
 import jsettlers.TestToolUtils;
+import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -37,7 +38,6 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
@@ -49,7 +49,8 @@ public class PartitionsGridTestingWnd {
 
 	private final BitSet blockedGrid = new BitSet(WIDTH * HEIGHT);
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException,
+			SwingResourceLoader.ResourceSetupException {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
 
 		// open the window
@@ -75,17 +76,7 @@ public class PartitionsGridTestingWnd {
 
 	private PartitionsGridTestingWnd() {
 		this.grid = new PartitionsGrid(WIDTH, HEIGHT, PlayerSetting.createDefaultSettings((byte) 0, (byte) 10),
-				new IPartitionsGridBlockingProvider() {
-
-					@Override
-					public boolean isBlocked(int x, int y) {
-						return blockedGrid.get(x + y * WIDTH);
-					}
-
-					@Override
-					public void registerBlockingChangedListener(IBlockingChangedListener listener) {
-					}
-				});
+				(x, y) -> blockedGrid.get(x + y * WIDTH));
 	}
 
 	private void startTest() {

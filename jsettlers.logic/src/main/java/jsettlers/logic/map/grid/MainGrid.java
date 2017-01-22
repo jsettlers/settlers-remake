@@ -153,7 +153,6 @@ public final class MainGrid implements Serializable {
 		this.height = height;
 
 		this.flagsGrid = new FlagsGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, flagsGrid);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
@@ -161,6 +160,7 @@ public final class MainGrid implements Serializable {
 		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
+		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, landscapeGrid);
 		this.buildingsGrid = new BuildingsGrid();
 
 		initAdditional();
@@ -432,7 +432,7 @@ public final class MainGrid implements Serializable {
 			return;
 		}
 
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid,  position);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, position);
 
 		Movable movable = movableGrid.getMovableAt(position.x, position.y);
 		if (movable != null) {
@@ -904,8 +904,9 @@ public final class MainGrid implements Serializable {
 
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
-		public final boolean isPioneerBlocked(int x, int y) {
-			return MainGrid.this.isInBounds(x, y) &&( flagsGrid.isPioneerBlocked(x, y))&& landscapeGrid.getBlockedPartitionAt(x, y) > 0;
+		public final boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
+			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0
+					&& !partitionsGrid.isEnforcedByTower(x, y);
 		}
 
 		@Override
