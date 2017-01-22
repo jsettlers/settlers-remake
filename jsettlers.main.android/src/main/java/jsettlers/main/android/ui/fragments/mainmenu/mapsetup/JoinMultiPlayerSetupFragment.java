@@ -1,12 +1,12 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
 import jsettlers.common.menu.IJoinableGame;
-import jsettlers.common.menu.IMultiplayerListener;
-import jsettlers.common.menu.IStartingGame;
 import jsettlers.main.android.R;
+import jsettlers.main.android.presenters.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
+import jsettlers.main.android.views.JoinMultiPlayerSetupView;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,33 +20,22 @@ import android.widget.CheckBox;
  * Created by tompr on 22/01/2017.
  */
 
-public class JoinMultiPlayerSetupFragment extends Fragment implements IMultiplayerListener {
-    private static final String ARG_JOINABLE_GAME_ID = "joinablegameid";
+public class JoinMultiPlayerSetupFragment extends Fragment implements JoinMultiPlayerSetupView {
+    private JoinMultiPlayerSetupPresenter presenter;
 
-    private GameStarter gameStarter;
-    private MainMenuNavigator navigator;
+    private boolean isSaving = false;
 
-    public static Fragment create(IJoinableGame joinableGame) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_JOINABLE_GAME_ID, joinableGame.getId());
-
-        Fragment fragment = new JoinMultiPlayerSetupFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
+    public static Fragment create() {
+        return new JoinMultiPlayerSetupFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gameStarter = (GameStarter) getActivity().getApplication();
-        navigator = (MainMenuNavigator) getActivity();
+        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
+        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
 
-        if (gameStarter.getJoinPhaseMultiplayerConnector() == null) {
-            getActivity().getSupportFragmentManager().popBackStack();
-        } else {
-            gameStarter.getJoinPhaseMultiplayerConnector().setMultiplayerListener(this);
-        }
+        presenter = new JoinMultiPlayerSetupPresenter(this, gameStarter, navigator);
     }
 
     @Nullable
@@ -57,40 +46,29 @@ public class JoinMultiPlayerSetupFragment extends Fragment implements IMultiplay
 
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.check_box);
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            gameStarter.getJoinPhaseMultiplayerConnector().setReady(b);
+            presenter.setReady(b);
         });
 
         return view;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        isSaving = true;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (gameStarter.getJoinPhaseMultiplayerConnector() != null) {
-            gameStarter.getJoinPhaseMultiplayerConnector().setMultiplayerListener(this);
+        presenter.dispose();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (isRemoving() && !isSaving) {
+            presenter.abort();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (isRemoving() && gameStarter.getJoinPhaseMultiplayerConnector() != null) {
-            gameStarter.getJoinPhaseMultiplayerConnector().abort();
-            gameStarter.setJoinPhaseMultiPlayerConnector(null);
-        }
-    }
-
-    /**
-     * IMultiplayerListener implementation
-     */
-    @Override
-    public void gameIsStarting(IStartingGame game) {
-        gameStarter.setStartingGame(game);
-        navigator.showGame();
-    }
-
-    @Override
-    public void gameAborted() {
-
     }
 }

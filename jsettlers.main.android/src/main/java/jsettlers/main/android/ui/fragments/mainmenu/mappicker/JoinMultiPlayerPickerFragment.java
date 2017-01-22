@@ -12,6 +12,7 @@ import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.dialogs.NewJoiningGameProgressDialog;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
@@ -36,11 +37,15 @@ import jsettlers.main.android.views.JoinMultiPlayerPickerView;
  */
 
 public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
+    private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
+
     private JoinMultiPlayerPickerPresenter presenter;
 
 	private JoinableGamesAdapter adapter;
 
     private RecyclerView recyclerView;
+
+    private boolean isSaving = false;
 
     public static JoinMultiPlayerPickerFragment create() {
         return new JoinMultiPlayerPickerFragment();
@@ -79,11 +84,24 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        isSaving = true;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         presenter.dispose();
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (isRemoving() && !isSaving) {
+            presenter.abort();
+        }
+    }
 
     /**
      * JoinMultiPlayerPickerView implementation
@@ -95,6 +113,23 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
     }
 
+    @Override
+    public void setJoiningProgress(String stateString, int progressPercentage) {
+        NewJoiningGameProgressDialog joiningProgressDialog = (NewJoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        if (joiningProgressDialog == null) {
+            NewJoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
+        } else {
+            joiningProgressDialog.setProgress(stateString, progressPercentage);
+        }
+    }
+
+    @Override
+    public void dismissJoiningProgress() {
+        NewJoiningGameProgressDialog joiningProgressDialog = (NewJoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        if (joiningProgressDialog != null) {
+            joiningProgressDialog.dismiss();
+        }
+    }
 
 
     private void joinableGameSelected(IJoinableGame joinableGame) {

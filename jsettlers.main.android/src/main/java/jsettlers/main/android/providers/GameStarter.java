@@ -2,6 +2,7 @@ package jsettlers.main.android.providers;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartScreen;
@@ -17,6 +18,9 @@ public interface GameStarter {
 
     IMultiplayerConnector getMultiPlayerConnector();
     void closeMultiPlayerConnector();
+
+    IMapDefinition getMapDefinition();
+    void setMapDefinition(IMapDefinition mapDefinition);
 
     IStartingGame getStartingGame();
     void setStartingGame(IStartingGame startingGame);

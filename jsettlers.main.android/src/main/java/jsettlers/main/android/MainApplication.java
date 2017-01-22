@@ -35,6 +35,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	private IStartScreen startScreen;
 	private IMultiplayerConnector multiplayerConnector;
 	private IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector;
+	private IMapDefinition mapDefinition;
 	private IStartingGame startingGame;
 	private IJoiningGame joiningGame;
 
@@ -87,6 +88,16 @@ public class MainApplication extends Application implements GameStarter, GameMan
 			multiplayerConnector.shutdown();
 			multiplayerConnector = null;
 		}
+	}
+
+	@Override
+	public IMapDefinition getMapDefinition() {
+		return mapDefinition;
+	}
+
+	@Override
+	public void setMapDefinition(IMapDefinition mapDefinition) {
+		this.mapDefinition = mapDefinition;
 	}
 
 	@Override
