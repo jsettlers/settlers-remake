@@ -1,4 +1,4 @@
-package jsettlers.main.android.menus.mainmenu;
+package jsettlers.main.android.presenters;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartScreen;
@@ -12,12 +12,12 @@ import jsettlers.main.android.views.MapSetupView;
  * Created by tompr on 21/01/2017.
  */
 
-public abstract class MapSetupMenu {
+public abstract class MapSetupPresenter {
     private final MapSetupView view;
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
-    public MapSetupMenu(MapSetupView view, GameStarter gameStarter) {
+    public MapSetupPresenter(MapSetupView view, GameStarter gameStarter) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.mapDefinition = gameStarter.getMapDefinition();

@@ -1,10 +1,8 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
-import jsettlers.main.android.menus.mainmenu.MapSetupMenu;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.presenters.MapSetupPresenter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 
@@ -30,8 +28,8 @@ import jsettlers.main.android.views.MapSetupView;
  * Created by tompr on 21/01/2017.
  */
 
-public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragment implements MapSetupView {
-    private TMenu menu;
+public abstract class MapSetupFragment extends Fragment implements MapSetupView {
+    private MapSetupPresenter presenter;
     private MainMenuNavigator navigator;
 
     private Disposable mapPreviewSubscription;
@@ -45,17 +43,12 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
 
     private boolean isSaving = false;
 
-
-    protected abstract TMenu getPresenter();
-
-    protected TMenu getMenu() {
-        return menu;
-    }
+    protected abstract MapSetupPresenter getPresenter();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        menu = getPresenter();
+        presenter = getPresenter();
         navigator = (MainMenuNavigator) getActivity();
     }
 
@@ -72,14 +65,14 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
         startGameButton = (Button) view.findViewById(R.id.button_start_game);
 
         startGameButton.setOnClickListener(v -> {
-            menu.startGame();
+            presenter.startGame();
         });
 
-        setSpinnerAdapter(numberOfPlayersSpinner, menu.getAllowedPlayerCounts());
-        setSpinnerAdapter(startResourcesSpinner, menu.getStartResourcesOptions());
-        setSpinnerAdapter(peacetimeSpinner, menu.getPeaceTimeOptions());
+        setSpinnerAdapter(numberOfPlayersSpinner, presenter.getAllowedPlayerCounts());
+        setSpinnerAdapter(startResourcesSpinner, presenter.getStartResourcesOptions());
+        setSpinnerAdapter(peacetimeSpinner, presenter.getPeaceTimeOptions());
 
-        mapPreviewSubscription = PreviewImageConverter.toBitmap(menu.getMapImage())
+        mapPreviewSubscription = PreviewImageConverter.toBitmap(presenter.getMapImage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<Bitmap>() {
@@ -100,7 +93,7 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(menu.getMapName());
+        getActivity().setTitle(presenter.getMapName());
     }
 
     @Override
@@ -112,7 +105,7 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        menu.dispose();
+        presenter.dispose();
         if (mapPreviewSubscription != null) {
             mapPreviewSubscription.dispose();
         }
@@ -122,7 +115,7 @@ public abstract class MapSetupFragment<TMenu extends MapSetupMenu> extends Fragm
     public void onDetach() {
         super.onDetach();
         if (isRemoving() && !isSaving) {
-            menu.abort();
+            presenter.abort();
         }
     }
 

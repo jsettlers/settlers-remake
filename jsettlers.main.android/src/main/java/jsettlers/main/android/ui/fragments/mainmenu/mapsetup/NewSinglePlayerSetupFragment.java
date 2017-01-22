@@ -1,6 +1,6 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
-import jsettlers.main.android.menus.mainmenu.NewSinglePlayerSetupMenu;
+import jsettlers.main.android.presenters.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.views.NewSinglePlayerSetupView;
 
@@ -13,8 +13,8 @@ public class NewSinglePlayerSetupFragment extends MapSetupFragment implements Ne
     }
 
     @Override
-    protected NewSinglePlayerSetupMenu getPresenter() {
+    protected NewSinglePlayerSetupPresenter getPresenter() {
         GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        return new NewSinglePlayerSetupMenu(this, gameStarter);
+        return new NewSinglePlayerSetupPresenter(this, gameStarter);
     }
 }
