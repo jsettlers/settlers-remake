@@ -55,7 +55,7 @@ public class NewMultiPlayerSetupPresenter extends MapSetupPresenter implements I
     }
 
     @Override
-    public void abort() {
+    public void viewFinished() {
         connector.abort();
         gameStarter.setJoinPhaseMultiPlayerConnector(null);
     }

@@ -100,7 +100,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	public void onDetach() {
 		super.onDetach();
 		if (isRemoving() && !isSaving) {
-			getPresenter().abort();
+			getPresenter().viewFinished();
 		}
 	}
 

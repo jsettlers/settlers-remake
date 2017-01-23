@@ -32,15 +32,20 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
         connector.setReady(ready);
     }
 
-    public void abort() {
-        connector.abort();
-        gameStarter.setJoinPhaseMultiPlayerConnector(null);
+    public void viewFinished() {
+        if (gameStarter.getStartingGame() == null) {
+            abort();
+        }
     }
 
     public void dispose() {
         connector.setMultiplayerListener(null);
     }
 
+    private void abort() {
+        connector.abort();
+        gameStarter.setJoinPhaseMultiPlayerConnector(null);
+    }
 
     /**
      * IMultiplayerListener implementation

@@ -57,12 +57,10 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         gameStarter.setJoiningGame(joiningGame);
     }
 
-    public void abort() {
-        if (joiningGame != null) {
-            joiningGame.abort();
+    public void viewFinished() {
+        if (gameStarter.getStartingGame() == null) {
+            abort();
         }
-        gameStarter.setJoiningGame(null);
-        gameStarter.setMapDefinition(null);
     }
 
     public void dispose() {
@@ -70,6 +68,14 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         if (joiningGame != null) {
             joiningGame.setListener(null);
         }
+    }
+
+    private void abort() {
+        if (joiningGame != null) {
+            joiningGame.abort();
+        }
+        gameStarter.setJoiningGame(null);
+        gameStarter.setMapDefinition(null);
     }
 
     /**

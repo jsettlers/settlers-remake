@@ -31,7 +31,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 
     @Override
     public void itemSelected(IMapDefinition mapDefinition) {
-        abort();
+        cancelJoining();
         gameStarter.setMapDefinition(mapDefinition);
 
         joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
@@ -57,20 +57,24 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     }
 
     @Override
-    public void abort() {
+    protected void abort() {
         super.abort();
-        if (joiningGame != null) {
-            joiningGame.abort();
-        }
-
-        gameStarter.setJoiningGame(null);
-        gameStarter.setMapDefinition(null);
+        cancelJoining();
     }
 
     public void dispose() {
         if (joiningGame != null) {
             joiningGame.setListener(null);
         }
+    }
+
+    private void cancelJoining() {
+        if (joiningGame != null) {
+            joiningGame.abort();
+        }
+
+        gameStarter.setJoiningGame(null);
+        gameStarter.setMapDefinition(null);
     }
 
     /**

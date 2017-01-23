@@ -24,11 +24,17 @@ public abstract class MapSetupPresenter {
     }
 
 
-    public void abort() {
-        gameStarter.setMapDefinition(null);
+    public void viewFinished() {
+        if (gameStarter.getStartingGame() == null) {
+            abort();
+        }
     }
 
     public void dispose() {
+    }
+
+    protected void abort() {
+        gameStarter.setMapDefinition(null);
     }
 
     public String getMapName() {

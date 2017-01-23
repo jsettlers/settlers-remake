@@ -1,6 +1,5 @@
 package jsettlers.main.android.ui.fragments.mainmenu.mapsetup;
 
-import jsettlers.common.menu.IJoinableGame;
 import jsettlers.main.android.R;
 import jsettlers.main.android.presenters.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.providers.GameStarter;
@@ -68,7 +67,7 @@ public class JoinMultiPlayerSetupFragment extends Fragment implements JoinMultiP
     public void onDetach() {
         super.onDetach();
         if (isRemoving() && !isSaving) {
-            presenter.abort();
+            presenter.viewFinished();
         }
     }
 }

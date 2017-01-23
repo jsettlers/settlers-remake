@@ -113,7 +113,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     public void onDetach() {
         super.onDetach();
         if (isRemoving() && !isSaving) {
-            presenter.abort();
+            presenter.viewFinished();
         }
     }
 

@@ -1,14 +1,10 @@
 package jsettlers.main.android.presenters;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
-import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.providers.GameStarter;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.views.MapPickerView;
@@ -32,6 +28,20 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
         changingMaps.setListener(this);
     }
 
+    public void viewFinished() {
+        if (gameStarter.getStartingGame() == null) {
+            abort();
+        }
+    }
+
+    protected void abort() {
+    }
+
+    public void dispose() {
+        changingMaps.removeListener(this);
+    }
+
+
 
     protected ChangingList<? extends IMapDefinition> getMaps() {
         return changingMaps;
@@ -41,13 +51,6 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
 
     public List<? extends IMapDefinition> getItems() {
         return changingMaps.getItems();
-    }
-
-    public void abort() {
-    }
-
-    public void dispose() {
-        changingMaps.removeListener(this);
     }
 
     /**

@@ -99,7 +99,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     public void onDetach() {
         super.onDetach();
         if (isRemoving() && !isSaving) {
-            presenter.abort();
+            presenter.viewFinished();
         }
     }
 
