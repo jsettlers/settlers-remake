@@ -1,10 +1,12 @@
 package jsettlers.ai.highlevel;
 
-import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.position.ShortPoint2D;
-
 import java.util.Arrays;
 import java.util.Iterator;
+
+import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
 /**
  * This is a set of points on the map. It is optimized for range queries.
@@ -52,7 +54,7 @@ public class AiPositions implements IMapArea {
 	 *
 	 */
 	public interface PositionRater {
-		public static final int RATE_INVALID = Integer.MAX_VALUE;
+		int RATE_INVALID = Integer.MAX_VALUE;
 
 		/**
 		 * Rates a given position.
@@ -63,7 +65,7 @@ public class AiPositions implements IMapArea {
 		 *            The best rating found so far, you can return {@link #RATE_INVALID} if yours is worse.
 		 * @return The rating or {@link #RATE_INVALID} if this position is not possible.
 		 */
-		public abstract int rate(int x, int y, int currentBestRating);
+		int rate(int x, int y, int currentBestRating);
 	}
 
 	private class PositionsIterator implements Iterator<ShortPoint2D> {
@@ -85,7 +87,6 @@ public class AiPositions implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-
 	}
 
 	private boolean sorted = false;
@@ -278,5 +279,23 @@ public class AiPositions implements IMapArea {
 		}
 
 		return currentBest;
+	}
+
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (int i = 0; i < size; i++) {
+					int packedCoordinate = points[i];
+					int x = unpackX(packedCoordinate);
+					int y = unpackY(packedCoordinate);
+
+					if (!function.apply(x, y)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
 	}
 }

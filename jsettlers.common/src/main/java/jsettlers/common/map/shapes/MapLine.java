@@ -78,6 +78,7 @@ public class MapLine implements IMapArea {
 		return new LineIterator();
 	}
 
+	@Override
 	public CoordinateStream stream() {
 		return stream(start, end);
 	}
@@ -86,8 +87,7 @@ public class MapLine implements IMapArea {
 		return new CoordinateStream() {
 			@Override
 			public boolean iterate(IBooleanCoordinateFunction function) {
-				boolean result = function.apply(start.x, start.y);
-				if (!result) {
+				if (!function.apply(start.x, start.y)) {
 					return false;
 				}
 
@@ -99,8 +99,7 @@ public class MapLine implements IMapArea {
 					currX += dir.gridDeltaX;
 					currY += dir.gridDeltaY;
 
-					result = function.apply(currX, currY);
-					if (!result) {
+					if (!function.apply(currX, currY)) {
 						return false;
 					}
 				}

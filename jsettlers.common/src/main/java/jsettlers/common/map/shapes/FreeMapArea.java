@@ -21,6 +21,8 @@ import java.util.List;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
 /**
  * This class gives a fast lookup (in O(1)) for contains if a MapArea is given by a list of n positions.<br>
@@ -228,6 +230,20 @@ public final class FreeMapArea implements IMapArea {
 			iterator.remove();
 			freeMapArea.setPosition(currPos, false);
 		}
+	}
 
+	@Override
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (ShortPoint2D position : positions) {
+					if (!function.apply(position.x, position.y)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
 	}
 }

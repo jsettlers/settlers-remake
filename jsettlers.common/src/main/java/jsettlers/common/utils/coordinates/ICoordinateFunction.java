@@ -14,9 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.utils.coordinates;
 
+import java.io.Serializable;
+
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public interface ICoordinateFunction<T> {
+public interface ICoordinateFunction<T> extends Serializable {
 	T apply(int x, int y);
 }

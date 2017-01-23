@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.utils.coordinates;
 
+import java.io.Serializable;
+
 import java8.util.Optional;
 
 import jsettlers.common.utils.mutables.Mutable;
@@ -22,7 +24,7 @@ import jsettlers.common.utils.mutables.MutableInt;
 /**
  * Created by Andreas Eberle on 12.01.2017.
  */
-public abstract class CoordinateStream {
+public abstract class CoordinateStream implements Serializable {
 
 	public <T> Optional<T> iterateForResult(ICoordinateFunction<Optional<T>> function) {
 		Mutable<Optional<T>> result = new Mutable<>(Optional.empty());
@@ -39,8 +41,9 @@ public abstract class CoordinateStream {
 	}
 
 	/**
-	 * @param function Function called for every value of the stream. If the function returns <code>true</code> the iteration is continued. If it returns
-	 *                 <code>false</code> the iteration is stopped.
+	 * @param function
+	 *            Function called for every value of the stream. If the function returns <code>true</code> the iteration is continued. If it returns
+	 *            <code>false</code> the iteration is stopped.
 	 * @return <code>true</code> if the iteration has not been aborted (the function never returned <code>false</code>)
 	 */
 	public abstract boolean iterate(IBooleanCoordinateFunction function);
@@ -59,10 +62,14 @@ public abstract class CoordinateStream {
 	}
 
 	/**
-	 * @param xStart inclusive
-	 * @param yStart inclusive
-	 * @param xEnd   exclusive
-	 * @param yEnd   exclusive
+	 * @param xStart
+	 *            inclusive
+	 * @param yStart
+	 *            inclusive
+	 * @param xEnd
+	 *            exclusive
+	 * @param yEnd
+	 *            exclusive
 	 * @return
 	 */
 	public CoordinateStream filterBounds(int xStart, int yStart, int xEnd, int yEnd) {

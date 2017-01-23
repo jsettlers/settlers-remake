@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 
 /**
  * This defines an area on the map of a given shape.
@@ -45,7 +46,7 @@ public interface IMapArea extends Iterable<ShortPoint2D>, Serializable {
 	 * @return An Iterator over the area in the shape.
 	 */
 	@Override
-	public Iterator<ShortPoint2D> iterator();
+	Iterator<ShortPoint2D> iterator();
 
-//	<T> Optional<T> forEach(ICoordinateFunction<Optional<T>> consumer);
+	CoordinateStream stream();
 }

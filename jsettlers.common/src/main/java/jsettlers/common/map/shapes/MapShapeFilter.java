@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 
 /**
  * This filter creates the union of an other shape with the map.
@@ -110,4 +111,8 @@ public class MapShapeFilter implements IMapArea {
 		}
 	}
 
+	@Override
+	public CoordinateStream stream() {
+		return base.stream().filterBounds(width, height);
+	}
 }

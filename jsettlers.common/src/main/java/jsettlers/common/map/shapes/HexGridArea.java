@@ -142,7 +142,7 @@ public final class HexGridArea implements IMapArea {
 		}
 	}
 
-	// @Override
+	@Override
 	public CoordinateStream stream() {
 		return stream(cX, cY, startRadius, maxRadius);
 	}
@@ -152,9 +152,8 @@ public final class HexGridArea implements IMapArea {
 			@Override
 			public boolean iterate(IBooleanCoordinateFunction function) {
 				if (startRadius == 0) {
-					boolean result = function.apply(cX, cY);
-					if (!result) {
-						return result;
+					if (!function.apply(cX, cY)) {
+						return false;
 					}
 				}
 
@@ -167,9 +166,8 @@ public final class HexGridArea implements IMapArea {
 							x += DIRECTION_INCREASE_X[direction];
 							y += DIRECTION_INCREASE_Y[direction];
 
-							boolean result = function.apply(x, y);
-							if (!result) {
-								return result;
+							if (!function.apply(x, y)) {
+								return false;
 							}
 						}
 					}

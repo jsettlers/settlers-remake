@@ -20,6 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.common.utils.collections.IteratorFilter.FilteredIterator;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 
 /**
  * This extension of {@link IteratorFilter} is specialized for the usage with {@link IMapArea}s. It allows to use the contains method on the filtered
@@ -31,7 +32,7 @@ import jsettlers.common.utils.collections.IteratorFilter.FilteredIterator;
 public class FilteredMapArea implements IMapArea {
 	private static final long serialVersionUID = -5136044315417473251L;
 	private final IMapArea iterable;
-	private final ISerializablePredicate<ShortPoint2D> predicate;
+	private final ISerializablePredicate<ShortPoint2D> predicate; // FIXME replace with ICoordinatePredicate
 
 	public FilteredMapArea(IMapArea iterable, ISerializablePredicate<ShortPoint2D> predicate) {
 		this.iterable = iterable;
@@ -40,11 +41,16 @@ public class FilteredMapArea implements IMapArea {
 
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
-		return new FilteredIterator<ShortPoint2D>(iterable.iterator(), predicate);
+		return new FilteredIterator<>(iterable.iterator(), predicate);
 	}
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
 		return predicate.evaluate(position) && iterable.contains(position);
+	}
+
+	@Override
+	public CoordinateStream stream() {
+		return iterable.stream().filter((x, y) -> predicate.evaluate(new ShortPoint2D(x, y)));
 	}
 }

@@ -78,6 +78,7 @@ public class MapNeighboursArea implements IMapArea {
 		}
 	}
 
+	@Override
 	public CoordinateStream stream() {
 		return stream(x, y);
 	}
@@ -90,8 +91,7 @@ public class MapNeighboursArea implements IMapArea {
 					int x = direction.gridDeltaX + centerX;
 					int y = direction.gridDeltaY + centerY;
 
-					boolean result = function.apply(x, y);
-					if (!result) {
+					if (!function.apply(x, y)) {
 						return false;
 					}
 				}

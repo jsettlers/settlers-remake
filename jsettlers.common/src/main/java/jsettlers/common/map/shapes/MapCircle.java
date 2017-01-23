@@ -72,10 +72,8 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the distance of map coordinates to the center.
 	 *
-	 * @param x
-	 *            The x coordinate.
-	 * @param y
-	 *            The y coordinate
+	 * @param x The x coordinate.
+	 * @param y The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
@@ -113,8 +111,7 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the half width of a line, roundend.
 	 *
-	 * @param relativeY
-	 *            The x coordinate of the line relative to the center
+	 * @param relativeY The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected final float getHalfLineWidth(int relativeY) {
@@ -169,7 +166,7 @@ public final class MapCircle implements IMapArea {
 				(short) (centerY + yRadius));
 	}
 
-	// @Override
+	@Override
 	public CoordinateStream stream() {
 		return stream(centerX, centerY, radius);
 	}
@@ -192,9 +189,8 @@ public final class MapCircle implements IMapArea {
 					int x = (int) Math.ceil(.5f * currentYOffset + currentXOffset) + centerX;
 					int y = currentYOffset + centerY;
 
-					boolean result = function.apply(x, y);
-					if (!result) {
-						return result;
+					if (!function.apply(x, y)) {
+						return false;
 					}
 
 					currentXOffset++;

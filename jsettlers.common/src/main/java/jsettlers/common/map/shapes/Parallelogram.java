@@ -18,6 +18,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 
 /**
  * This is a parallelogram on the map.
@@ -51,20 +53,6 @@ public class Parallelogram implements IMapArea {
 		this.miny = miny;
 		this.maxx = maxx;
 		this.maxy = maxy;
-	}
-
-	/**
-	 * Creates a shape that contains only one pixel.
-	 * 
-	 * @param minx
-	 * @param miny
-	 */
-	public Parallelogram(short minx, short miny) {
-		this.minx = minx;
-		this.maxx = minx;
-		this.miny = miny;
-		this.maxy = miny;
-
 	}
 
 	@Override
@@ -118,5 +106,22 @@ public class Parallelogram implements IMapArea {
 			trim = 2;
 		}
 		return str.substring(0, str.length() - trim) + "}";
+	}
+
+	@Override
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (int y = miny; y <= maxy; y++) {
+					for (int x = minx; x <= maxx; x++) {
+						if (!function.apply(x, y)) {
+							return false;
+						}
+					}
+				}
+				return true;
+			}
+		};
 	}
 }
