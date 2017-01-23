@@ -1,10 +1,10 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
-import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.utils.FragmentUtil;
+import jsettlers.main.android.core.ui.FragmentUtil;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import jsettlers.main.android.views.MapSetupView;
+import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
  * Created by tompr on 21/01/2017.

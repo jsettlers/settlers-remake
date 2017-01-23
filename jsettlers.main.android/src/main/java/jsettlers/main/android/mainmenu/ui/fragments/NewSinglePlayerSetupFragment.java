@@ -1,9 +1,9 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.NewSinglePlayerSetupView;
+import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.support.v4.app.Fragment;
 

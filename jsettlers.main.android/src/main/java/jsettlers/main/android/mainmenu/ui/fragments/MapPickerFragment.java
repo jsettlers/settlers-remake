@@ -8,11 +8,11 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
-import jsettlers.main.android.utils.FragmentUtil;
-import jsettlers.main.android.utils.NoChangeItemAnimator;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import jsettlers.main.android.views.MapPickerView;
+import jsettlers.main.android.mainmenu.views.MapPickerView;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -3,10 +3,10 @@ package jsettlers.main.android.mainmenu.ui.fragments;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerPickerPresenter;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.NewMultiPlayerPickerView;
+import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 
 import android.support.v4.app.Fragment;
 

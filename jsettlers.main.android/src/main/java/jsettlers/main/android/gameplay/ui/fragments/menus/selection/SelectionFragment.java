@@ -2,8 +2,8 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.input.SelectionSet;
-import jsettlers.main.android.controls.ControlsResolver;
-import jsettlers.main.android.controls.SelectionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.SelectionControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 import android.os.Bundle;

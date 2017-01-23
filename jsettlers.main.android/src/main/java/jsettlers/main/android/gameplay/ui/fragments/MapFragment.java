@@ -1,7 +1,7 @@
 package jsettlers.main.android.gameplay.ui.fragments;
 
-import static jsettlers.main.android.controls.GameMenu.ACTION_PAUSE;
-import static jsettlers.main.android.controls.GameMenu.ACTION_UNPAUSE;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
 
 import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
@@ -14,13 +14,13 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionControls;
-import jsettlers.main.android.controls.ControlsResolver;
-import jsettlers.main.android.controls.SelectionControls;
-import jsettlers.main.android.controls.SelectionListener;
-import jsettlers.main.android.controls.TaskControls;
-import jsettlers.main.android.controls.GameMenu;
-import jsettlers.main.android.shared.ui.dialogs.ConfirmDialog;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.SelectionControls;
+import jsettlers.main.android.core.controls.SelectionListener;
+import jsettlers.main.android.core.controls.TaskControls;
+import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.gameplay.ui.dialogs.PausedDialog;
 import jsettlers.main.android.gameplay.ui.fragments.menus.buildings.BuildingsMenuFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.goods.GoodsMenuFragment;
@@ -29,7 +29,7 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.CarriersSele
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
-import jsettlers.main.android.shared.navigation.BackPressedListener;
+import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 import android.content.BroadcastReceiver;

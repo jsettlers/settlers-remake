@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 
 /**
  * Created by tingl on 27/05/2016.

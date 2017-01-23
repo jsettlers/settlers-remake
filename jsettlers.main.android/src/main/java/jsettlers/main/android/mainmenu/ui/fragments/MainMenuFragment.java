@@ -1,17 +1,17 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
-import static jsettlers.main.android.controls.GameMenu.ACTION_PAUSE;
-import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT;
-import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.controls.GameMenu.ACTION_UNPAUSE;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.providers.GameManager;
-import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
+import jsettlers.main.android.core.GameManager;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.utils.FragmentUtil;
+import jsettlers.main.android.core.ui.FragmentUtil;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;

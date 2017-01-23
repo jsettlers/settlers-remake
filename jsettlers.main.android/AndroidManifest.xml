@@ -29,7 +29,7 @@
             android:launchMode="singleTask" />
 
         <service
-            android:name=".GameService"
+            android:name=".core.GameService"
             android:enabled="true"
             android:exported="false" />
     </application>

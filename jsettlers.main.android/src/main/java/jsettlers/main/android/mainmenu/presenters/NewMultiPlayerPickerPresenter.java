@@ -7,9 +7,9 @@ import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.NewMultiPlayerPickerView;
+import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 
 /**
  * Created by tompr on 22/01/2017.

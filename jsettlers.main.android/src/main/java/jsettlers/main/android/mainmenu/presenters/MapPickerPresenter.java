@@ -5,9 +5,9 @@ import java.util.List;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.MapPickerView;
+import jsettlers.main.android.mainmenu.views.MapPickerView;
 
 /**
  * Created by tompr on 22/01/2017.

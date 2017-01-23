@@ -4,8 +4,8 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.DrawControls;
-import jsettlers.main.android.controls.DrawListener;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 import android.view.LayoutInflater;

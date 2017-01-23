@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.LoadSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 /**

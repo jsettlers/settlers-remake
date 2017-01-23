@@ -11,9 +11,9 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionControls;
-import jsettlers.main.android.controls.ActionListener;
-import jsettlers.main.android.controls.TaskControls;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ActionListener;
+import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 

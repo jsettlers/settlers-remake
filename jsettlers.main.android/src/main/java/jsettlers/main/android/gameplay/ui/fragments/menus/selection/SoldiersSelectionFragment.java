@@ -5,9 +5,9 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionClickListener;
-import jsettlers.main.android.controls.ActionControls;
-import jsettlers.main.android.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.ActionClickListener;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
 
 import android.os.Bundle;

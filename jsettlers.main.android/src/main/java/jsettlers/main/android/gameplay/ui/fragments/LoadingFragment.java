@@ -7,7 +7,7 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGameListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.R;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.gameplay.navigation.GameNavigator;
 
 import android.os.Bundle;

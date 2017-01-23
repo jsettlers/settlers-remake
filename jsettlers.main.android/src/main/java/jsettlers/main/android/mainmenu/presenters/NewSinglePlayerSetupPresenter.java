@@ -2,9 +2,9 @@ package jsettlers.main.android.mainmenu.presenters;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.NewSinglePlayerSetupView;
+import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 /**
  * Created by tompr on 21/01/2017.

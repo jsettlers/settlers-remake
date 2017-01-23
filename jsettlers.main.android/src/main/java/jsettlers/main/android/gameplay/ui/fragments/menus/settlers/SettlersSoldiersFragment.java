@@ -3,9 +3,9 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.settlers;
 import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ControlsResolver;
-import jsettlers.main.android.controls.DrawControls;
-import jsettlers.main.android.controls.DrawListener;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
 
 import android.os.Bundle;

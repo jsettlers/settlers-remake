@@ -3,9 +3,9 @@ package jsettlers.main.android.mainmenu.presenters;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.JoinMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 
 /**
  * Created by tompr on 22/01/2017.

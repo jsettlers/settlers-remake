@@ -16,9 +16,9 @@ import java.util.List;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.views.NewMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
  * Created by tompr on 21/01/2017.

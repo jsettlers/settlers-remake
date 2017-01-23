@@ -8,14 +8,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
-import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.utils.FragmentUtil;
-import jsettlers.main.android.utils.NoChangeItemAnimator;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.reactivex.disposables.Disposable;
-import jsettlers.main.android.views.JoinMultiPlayerPickerView;
+import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 
 /**
  * Created by tompr on 21/01/2017.

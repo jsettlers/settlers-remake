@@ -1,18 +1,18 @@
 package jsettlers.main.android.gameplay.ui.activities;
 
-import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 
 import java.util.List;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.controls.ControlsProvider;
-import jsettlers.main.android.providers.GameManager;
-import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.core.controls.ControlsAdapter;
+import jsettlers.main.android.core.controls.ControlsProvider;
+import jsettlers.main.android.core.GameManager;
+import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.gameplay.ui.fragments.LoadingFragment;
 import jsettlers.main.android.gameplay.ui.fragments.MapFragment;
 import jsettlers.main.android.mainmenu.navigation.Actions;
-import jsettlers.main.android.shared.navigation.BackPressedListener;
+import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.gameplay.navigation.GameNavigator;
 
 import android.content.BroadcastReceiver;

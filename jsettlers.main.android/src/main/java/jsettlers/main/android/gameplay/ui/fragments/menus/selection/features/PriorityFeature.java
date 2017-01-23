@@ -11,10 +11,10 @@ import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionControls;
-import jsettlers.main.android.controls.ActionListener;
-import jsettlers.main.android.controls.DrawControls;
-import jsettlers.main.android.controls.DrawListener;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ActionListener;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 

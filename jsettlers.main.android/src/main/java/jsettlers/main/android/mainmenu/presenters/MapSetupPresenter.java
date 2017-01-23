@@ -1,12 +1,9 @@
 package jsettlers.main.android.mainmenu.presenters;
 
 import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.menu.IStartScreen;
-import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.EMapStartResources;
-import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.providers.GameStarter;
-import jsettlers.main.android.views.MapSetupView;
+import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
  * Created by tompr on 21/01/2017.
