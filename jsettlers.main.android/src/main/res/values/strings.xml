@@ -53,8 +53,8 @@
 
     <!-- New stuff -->
 
+    <!-- In Game -->
     <!-- Selection Menus -->
-
     <!-- Common -->
     <string name="halt">Halt</string>
     <string name="kill">Kill</string>
@@ -70,6 +70,22 @@
     <!-- Soldiers Selection -->
     <string name="confirm_kill">Kill soldiers?</string>
     <string name="yes">Yes</string>
+
+
+
+    <!-- Main Menus -->
+    <!-- Map picker -->
+    <string name="new_single_player_game">New Single Player Game</string>
+    <string name="new_multi_player_game">New Multi Player Game</string>
+    <string name="load_single_player_game">Load Single Player Game</string>
+    <string name="join_multi_player_game">Join Multi Player Game</string>
+
+    <!-- game config -->
+    <string name="number_of_players">Players</string>
+    <string name="start_resources">Resources</string>
+    <string name="peacetime">Peacetime</string>
+
+
 
 
     <!-- Other -->

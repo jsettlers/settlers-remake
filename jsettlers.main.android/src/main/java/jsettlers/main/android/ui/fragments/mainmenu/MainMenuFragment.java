@@ -1,23 +1,25 @@
 package jsettlers.main.android.ui.fragments.mainmenu;
 
-import jsettlers.main.android.GameService;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
+
 import jsettlers.main.android.R;
-import jsettlers.main.android.menus.GameMenu;
+import jsettlers.main.android.providers.GameManager;
+import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
-import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.utils.FragmentUtil;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -28,20 +30,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
-	private GameService gameService;
-	private GameMenu gameMenu;
+
+	private GameManager gameManager;
+//	private GameService gameService;
+//	private GameMenu gameMenu;
 
 	private LocalBroadcastManager localBroadcastManager;
 	private MainMenuNavigator navigator;
@@ -67,7 +65,9 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		gameManager = (GameManager) getActivity().getApplication();
 		navigator = (MainMenuNavigator) getActivity();
+		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 	}
 
 	@Override
@@ -91,10 +91,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		quitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (gameMenu.canQuitConfirm()) {
-					gameMenu.quitConfirm();
+				if (gameManager.getGameMenu().canQuitConfirm()) {
+					gameManager.getGameMenu().quitConfirm();
 				} else {
-					gameMenu.quit();
+					gameManager.getGameMenu().quit();
 				}
 			}
 		});
@@ -102,10 +102,10 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 		pauseButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (gameMenu.isPaused()) {
-					gameMenu.unPause();
+				if (gameManager.getGameMenu().isPaused()) {
+					gameManager.getGameMenu().unPause();
 				} else {
-					gameMenu.pause();
+					gameManager.getGameMenu().pause();
 				}
 				setPauseButtonText();
 			}
@@ -117,12 +117,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			mainLinearLayout.addView(resourcesView, 0);
 
 			Button button = (Button) resourcesView.findViewById(R.id.button_resources);
-			button.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					showDirectoryPicker();
-				}
-			});
+			button.setOnClickListener(v -> showDirectoryPicker());
 		}
 
 		Button newSinglePlayerGameButton = (Button) view.findViewById(R.id.button_new_single_player_game);
@@ -141,28 +136,53 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 			}
 		});
 
+		Button newMultiPlayerGameButton = (Button) view.findViewById(R.id.button_new_multi_player_game);
+		newMultiPlayerGameButton.setOnClickListener(new GameButtonClickListener() {
+			@Override
+			protected void doAction() {
+				navigator.showNewMultiPlayerPicker();
+			}
+		});
+
+		Button joinMultiPlayerGameButton = (Button) view.findViewById(R.id.button_join_multi_player_game);
+		joinMultiPlayerGameButton.setOnClickListener(new GameButtonClickListener() {
+			@Override
+			protected void doAction() {
+				navigator.showJoinMultiPlayerPicker();
+			}
+		});
+
 		return view;
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		getActivity().setTitle(R.string.app_name);
+
 		// Work around for IllegalStateException when trying to show dialog from onPermissionResult. Meant to be fixed in v24 support library
 		if (showDirectoryPicker) {
 			showDirectoryPicker();
 			showDirectoryPicker = false;
 		}
 
-		getActivity().bindService(new Intent(getActivity(), GameService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+		if (gameManager.isGameInProgress()) {
+			IntentFilter intentFilter = new IntentFilter();
+			intentFilter.addAction(ACTION_QUIT);
+			intentFilter.addAction(ACTION_QUIT_CONFIRM);
+			intentFilter.addAction(ACTION_QUIT_CANCELLED);
+			intentFilter.addAction(ACTION_PAUSE);
+			intentFilter.addAction(ACTION_UNPAUSE);
+			localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+		}
+
+		setResumeViewState();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (bound) {
-			getActivity().unbindService(serviceConnection);
-			localBroadcastManager.unregisterReceiver(broadcastReceiver);
-		}
+		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
@@ -194,7 +214,7 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private void setResumeViewState() {
-		if (gameService.isGameInProgress()) {
+		if (gameManager.isGameInProgress()) {
 			setPauseButtonText();
 			setQuitConfirmButtonText();
 			resumeView.setVisibility(View.VISIBLE);
@@ -204,7 +224,8 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private void setQuitConfirmButtonText() {
-		if (gameMenu.canQuitConfirm()) {
+
+		if (gameManager.getGameMenu().canQuitConfirm()) {
 			quitButton.setText(R.string.game_menu_quit_confirm);
 		} else {
 			quitButton.setText(R.string.game_menu_quit);
@@ -212,41 +233,41 @@ public class MainMenuFragment extends Fragment implements DirectoryPickerDialog.
 	}
 
 	private void setPauseButtonText() {
-		if (gameMenu.isPaused()) {
+		if (gameManager.getGameMenu().isPaused()) {
 			pauseButton.setText(R.string.game_menu_unpause);
 		} else {
 			pauseButton.setText(R.string.game_menu_pause);
 		}
 	}
 
-	private ServiceConnection serviceConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
-			gameService = gameBinder.getService();
-			if (gameService.isGameInProgress()) {
-				gameMenu = gameService.getControlsAdapter().getGameMenu();
-			}
-
-			localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-			IntentFilter intentFilter = new IntentFilter();
-			intentFilter.addAction(ACTION_QUIT);
-			intentFilter.addAction(ACTION_QUIT_CONFIRM);
-			intentFilter.addAction(ACTION_QUIT_CANCELLED);
-			intentFilter.addAction(ACTION_PAUSE);
-			intentFilter.addAction(ACTION_UNPAUSE);
-			localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
-			setResumeViewState();
-
-			bound = true;
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			bound = false;
-		}
-	};
+//	private ServiceConnection serviceConnection = new ServiceConnection() {
+//		@Override
+//		public void onServiceConnected(ComponentName className, IBinder binder) {
+//			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
+//			gameService = gameBinder.getService();
+//			if (gameService.isGameInProgress()) {
+//				gameMenu = gameService.getControlsAdapter().getGameMenu();
+//			}
+//
+//			localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
+//			IntentFilter intentFilter = new IntentFilter();
+//			intentFilter.addAction(ACTION_QUIT);
+//			intentFilter.addAction(ACTION_QUIT_CONFIRM);
+//			intentFilter.addAction(ACTION_QUIT_CANCELLED);
+//			intentFilter.addAction(ACTION_PAUSE);
+//			intentFilter.addAction(ACTION_UNPAUSE);
+//			localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+//
+//			setResumeViewState();
+//
+//			bound = true;
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName arg0) {
+//			bound = false;
+//		}
+//	};
 
 	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 		@Override

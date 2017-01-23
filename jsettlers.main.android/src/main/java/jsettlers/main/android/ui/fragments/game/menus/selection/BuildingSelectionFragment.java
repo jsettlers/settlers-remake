@@ -28,7 +28,7 @@ import java.util.LinkedList;
 /**
  * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance.
  * So the buildings menu is made up of composable "features" which are a bit like mini fragments with a very
- * simple lifecycle consisting of just initialize() and finish()
+ * simple lifecycle consisting of just initialize() and viewFinished()
  *
  * This class just decides which features a building has and calls the lifecycle methods
  */

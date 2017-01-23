@@ -17,14 +17,16 @@ package jsettlers.main.android;
 import java.util.UUID;
 
 import jsettlers.common.CommonConstants;
+
+import android.content.Context;
 import android.content.SharedPreferences;
 
 public class AndroidPreferences {
 
 	private final SharedPreferences preferences;
 
-	public AndroidPreferences(SharedPreferences preferences) {
-		this.preferences = preferences;
+	public AndroidPreferences(Context context) {
+		this.preferences = context.getSharedPreferences("prefs", 0);
 	}
 
 	public boolean hasMissingMultiplayerPreferences() {

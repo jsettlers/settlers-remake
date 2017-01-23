@@ -1,4 +1,4 @@
-package jsettlers.main.android.menus;
+package jsettlers.main.android.menus.game;
 
 import java.util.Arrays;
 import java.util.List;

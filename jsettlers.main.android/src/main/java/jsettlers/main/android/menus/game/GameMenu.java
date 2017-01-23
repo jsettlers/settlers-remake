@@ -1,4 +1,16 @@
-package jsettlers.main.android.menus;
+package jsettlers.main.android.menus.game;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import go.graphics.android.AndroidSoundPlayer;
+
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.graphics.action.Action;
+import jsettlers.main.android.R;
+import jsettlers.main.android.controls.ActionControls;
+import jsettlers.main.android.ui.activities.GameActivity;
+import jsettlers.main.android.ui.navigation.Actions;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,28 +21,17 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import go.graphics.android.AndroidSoundPlayer;
-import jsettlers.common.menu.action.EActionType;
-import jsettlers.graphics.action.Action;
-import jsettlers.main.android.R;
-import jsettlers.main.android.controls.ActionControls;
-import jsettlers.main.android.ui.activities.GameActivity;
-import jsettlers.main.android.ui.navigation.Actions;
-
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_QUIT;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CANCELLED;
-import static jsettlers.main.android.GameService.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.GameService.ACTION_SAVE;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
-
 /**
  * GameMenu is a singleton within the scope of a started game
  */
 public class GameMenu {
+    public static final String ACTION_PAUSE = "com.jsettlers.pause";
+    public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
+    public static final String ACTION_SAVE = "com.jsettlers.save";
+    public static final String ACTION_QUIT = "com.jsettlers.quit";
+    public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
+    public static final String ACTION_QUIT_CANCELLED = "com.jsettlers.quitcancelled";
+
     public static final int NOTIFICATION_ID = 100;
     private final Context context;
     private final ActionControls actionControls;
@@ -102,7 +103,7 @@ public class GameMenu {
     }
 
     public void quitConfirm() {
-        // Trigger quit from here and callback in GameService broadcasts after quit is complete
+        // Trigger quit from here and callback in MainApplication broadcasts after quit is complete
         quitConfirmTimer = null;
         actionControls.fireAction(new Action(EActionType.EXIT));
     }

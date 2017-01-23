@@ -6,7 +6,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.controls.DrawControls;
 import jsettlers.main.android.controls.DrawListener;
-import jsettlers.main.android.menus.SettlersSoldiersMenu;
+import jsettlers.main.android.menus.game.SettlersSoldiersMenu;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -1,6 +1,14 @@
 package jsettlers.main.android.ui.fragments.game;
 
+import jsettlers.common.menu.EGameError;
+import jsettlers.common.menu.EProgressState;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGameListener;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.R;
+import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.GameNavigator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,34 +18,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoadingFragment extends Fragment {
-	private static final String SAVE_STATUS = "save_status";
-	private static final String SAVE_PROGRESS = "save_progress";
+public class LoadingFragment extends Fragment implements IStartingGameListener {
+	private GameStarter gameStarter;
+	private GameNavigator navigator;
 
 	private ProgressBar progressBar;
 	private TextView statusTextView;
-
-	private String status;
-	private int progress;
 
 	public static LoadingFragment newInstance() {
 		return new LoadingFragment();
 	}
 
-	public LoadingFragment() {
-	}
-
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (savedInstanceState != null) {
-			status = savedInstanceState.getString(SAVE_STATUS);
-			progress = savedInstanceState.getInt(SAVE_PROGRESS);
-		}
+		gameStarter = (GameStarter) getActivity().getApplication();
+		navigator = (GameNavigator) getActivity();
 	}
 
 	@Override
@@ -51,27 +52,52 @@ public class LoadingFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		setProgress();
-	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString(SAVE_STATUS, status);
-		outState.putInt(SAVE_PROGRESS, progress);
-	}
-
-	public void progressChanged(String status, int progress) {
-		this.status = status;
-		this.progress = progress;
-
-		if (this.getView() != null) {
-			setProgress();
+		if (gameStarter.getStartingGame().isStartupFinished()) {
+			navigator.showMap();
+		} else {
+			gameStarter.getStartingGame().setListener(this);
 		}
 	}
 
-	private void setProgress() {
-		statusTextView.setText(status);
-		progressBar.setProgress(progress);
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		gameStarter.getStartingGame().setListener(null);
 	}
-}
+
+
+	/**
+	 * IStartingGameListener implementation
+	 */
+	@Override
+	public void startProgressChanged(final EProgressState state, final float progress) {
+		String stateString = Labels.getProgress(state);
+		int progressPercentage = (int) (progress * 100);
+
+		getActivity().runOnUiThread(() -> {
+			statusTextView.setText(stateString);
+			progressBar.setProgress(progressPercentage);
+		});
+	}
+
+	@Override
+	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
+		return gameStarter.gameStarted(game);
+	}
+
+	@Override
+	public void startFailed(final EGameError errorType, Exception exception) {
+		gameStarter.getStartingGame().setListener(null);
+
+		getActivity().runOnUiThread(() -> {
+            Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
+            getActivity().finish();
+        });
+	}
+
+	@Override
+	public void startFinished() {
+		gameStarter.getStartingGame().setListener(null);
+		getActivity().runOnUiThread(() -> navigator.showMap());
+	}}

@@ -1,4 +1,4 @@
-package jsettlers.main.android.menus;
+package jsettlers.main.android.menus.game;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;

@@ -1,40 +1,31 @@
 package jsettlers.main.android.ui.activities;
 
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.GameService;
 import jsettlers.main.android.R;
-import jsettlers.main.android.ui.fragments.mainmenu.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.ui.fragments.mainmenu.MainMenuFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.MapPickerFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerFragment;
-import jsettlers.main.android.ui.fragments.mainmenu.NewSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.JoinMultiPlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.LoadSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewMultiPlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mappicker.NewSinglePlayerPickerFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.JoinMultiPlayerSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.NewMultiPlayerSetupFragment;
+import jsettlers.main.android.ui.fragments.mainmenu.mapsetup.NewSinglePlayerSetupFragment;
 import jsettlers.main.android.ui.navigation.Actions;
 import jsettlers.main.android.ui.navigation.MainMenuNavigator;
-import jsettlers.main.android.providers.GameStarter;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements MainMenuNavigator, GameStarter {
-	private static final String TAG_MAP_PICKER = "map_picker";
-	private static final int REQUEST_CODE_GAME = 10;
-
-	private StartScreenConnector startScreenConnector;
+public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		getSupportFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
+		getSupportFragmentManager().addOnBackStackChangedListener(this::setUpButton);
 
 		if (savedInstanceState != null)
 			return;
@@ -45,62 +36,19 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
+	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		setUpButton();
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case android.R.id.home:
-				getSupportFragmentManager().popBackStack();
-				return true;
+		case android.R.id.home:
+			getSupportFragmentManager().popBackStack();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case REQUEST_CODE_GAME:
-			getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-			break;
-		}
-	}
-
-	/**
-	 * GameStarter implementation
-	 */
-	@Override
-	public StartScreenConnector getStartScreenConnector() {
-		if (startScreenConnector == null) {
-			startScreenConnector = new StartScreenConnector();
-		}
-		return startScreenConnector;
-	}
-
-	@Override
-	public IMapDefinition getSelectedMap() {
-		MapPickerFragment mapPickerFragment = (MapPickerFragment) getSupportFragmentManager().findFragmentByTag(TAG_MAP_PICKER);
-		return mapPickerFragment.getSelectedMap();
-	}
-
-	@Override
-	public void startSinglePlayerGame() {
-		startService(new Intent(this, GameService.class));
-		bindService(new Intent(this, GameService.class), new StartGameConnection() {
-			@Override
-			protected void startGame(GameService gameService) {
-				gameService.startSinglePlayerGame(getSelectedMap());
-			}
-		}, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void loadSinglePlayerGame() {
-		startService(new Intent(this, GameService.class));
-		bindService(new Intent(this, GameService.class), new StartGameConnection() {
-			@Override
-			protected void startGame(GameService gameService) {
-				gameService.loadSinglePlayerGame(getSelectedMap());
-			}
-		}, Context.BIND_AUTO_CREATE);
 	}
 
 	/**
@@ -109,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showNewSinglePlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, NewSinglePlayerPickerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
 	}
@@ -117,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showLoadSinglePlayerPicker() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, LoadSinglePlayerPickerFragment.newInstance(), TAG_MAP_PICKER)
+				.replace(R.id.frame_layout, LoadSinglePlayerPickerFragment.newInstance())
 				.addToBackStack(null)
 				.commit();
 	}
@@ -125,7 +73,39 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	@Override
 	public void showNewSinglePlayerSetup() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerFragment.newInstance())
+				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showNewMultiPlayerPicker() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, NewMultiPlayerPickerFragment.newInstance())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showJoinMultiPlayerPicker() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, JoinMultiPlayerPickerFragment.create())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showJoinMultiPlayerSetup() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create())
+				.addToBackStack(null)
+				.commit();
+	}
+
+	@Override
+	public void showNewMultiPlayerSetup() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create())
 				.addToBackStack(null)
 				.commit();
 	}
@@ -134,39 +114,21 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	public void resumeGame() {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setAction(Actions.RESUME_GAME);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
+		startActivity(intent);
+		finish();
 	}
 
-	private void showGame() {
+	@Override
+	public void showGame() {
 		Intent intent = new Intent(this, GameActivity.class);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
+		startActivity(intent);
+		finish();
 	}
 
 
 
-
-	
-	private void onBackStackChanged() {
+	private void setUpButton() {
 		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;
 		getSupportActionBar().setDisplayHomeAsUpEnabled(!isAtRootOfBackStack);
-	}
-
-	private abstract class StartGameConnection implements ServiceConnection {
-		protected abstract void startGame(GameService gameService);
-
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			GameService.GameBinder gameBinder = (GameService.GameBinder) binder;
-			GameService gameService = gameBinder.getService();
-
-			startGame(gameService);
-			showGame();
-
-			unbindService(this);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-		}
 	}
 }

@@ -1,26 +1,26 @@
-package jsettlers.main.android.ui.fragments.mainmenu;
+package jsettlers.main.android.ui.fragments.mainmenu.mappicker;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
-import jsettlers.main.android.ui.navigation.MainMenuNavigator;
+import jsettlers.main.android.presenters.MapPickerPresenter;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.utils.FragmentUtil;
 import jsettlers.main.android.utils.NoChangeItemAnimator;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,92 +30,91 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+import jsettlers.main.android.views.MapPickerView;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class MapPickerFragment extends Fragment {
-	private static final String STATE_MAP_ID = "map_id";
-
-	private MapAdapter adapter;
-	private IMapDefinition selectedMap;
-	private MainMenuNavigator navigator;
-	private GameStarter gameStarter;
+public abstract class MapPickerFragment extends Fragment implements MapPickerView {
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
 
+	private MapPickerPresenter presenter;
+
+	private MapAdapter adapter;
+
 	private RecyclerView recyclerView;
+
+	private boolean isSaving = false;
 
 	public MapPickerFragment() {
 	}
 
+	protected abstract MapPickerPresenter getPresenter();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		gameStarter = (GameStarter) getActivity();
-		adapter = new MapAdapter(getMaps());
-		navigator = (MainMenuNavigator) getActivity();
-
-		if (savedInstanceState != null) {
-			String mapId = savedInstanceState.getString(STATE_MAP_ID);
-			if (mapId != null) {
-				for (IMapDefinition map : adapter.getMaps()) {
-					if (map.getMapId().equals(mapId)) {
-						selectedMap = map;
-						break;
-					}
-				}
-			}
-		}
+		presenter = getPresenter();
 	}
 
+	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
 		FragmentUtil.setActionBar(this, view);
 
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+		return view;
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		adapter = new MapAdapter(presenter.getItems());
+
+		recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 		recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
 		recyclerView.setItemAnimator(new NoChangeItemAnimator());
 		recyclerView.setAdapter(adapter);
-
-		return view;
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (selectedMap != null) {
-			outState.putString(STATE_MAP_ID, selectedMap.getMapId());
-		}
+		isSaving = true;
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		adapter.onDestroy();
+	public void onDestroyView() {
+		super.onDestroyView();
+		presenter.dispose();
 	}
 
-	public IMapDefinition getSelectedMap() {
-		return selectedMap;
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		if (isRemoving() && !isSaving) {
+			getPresenter().viewFinished();
+		}
 	}
 
-	protected GameStarter getGameStarter() {
-		return gameStarter;
+	/**
+	 * MapPickerView implementation
+     */
+	@Override
+	public void setItems(List<? extends IMapDefinition> items) {
+		getView().post(() -> adapter.setItems(items));
 	}
 
-	protected MainMenuNavigator getNavigator() {
-		return navigator;
-	}
-
-	protected abstract ChangingList<? extends IMapDefinition> getMaps();
-
-	protected void mapSelected(IMapDefinition map) {
-		selectedMap = map;
-	}
-
+	/**
+	 * Subclass related methods
+     */
 	protected boolean showMapDates() {
 		return false;
 	}
@@ -123,8 +122,7 @@ public abstract class MapPickerFragment extends Fragment {
 	/**
 	 * RecyclerView Adapter for displaying list of maps
 	 */
-	private class MapAdapter extends RecyclerView.Adapter<MapHolder> implements IChangingListListener<IMapDefinition> {
-		private ChangingList<? extends IMapDefinition> changingMaps;
+	private class MapAdapter extends RecyclerView.Adapter<MapHolder> {
 		private List<? extends IMapDefinition> maps;
 
 		private View.OnClickListener itemClickListener = new View.OnClickListener() {
@@ -133,14 +131,12 @@ public abstract class MapPickerFragment extends Fragment {
 				RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(v);
 				int position = viewHolder.getAdapterPosition();
 				IMapDefinition map = maps.get(position);
-				mapSelected(map);
+				presenter.itemSelected(map);
 			}
 		};
 
-		public MapAdapter(ChangingList<? extends IMapDefinition> changingMaps) {
-			this.maps = changingMaps.getItems();
-			this.changingMaps = changingMaps;
-			this.changingMaps.setListener(this);
+		public MapAdapter(List<? extends IMapDefinition> maps) {
+			this.maps = maps;
 		}
 
 		@Override
@@ -162,25 +158,10 @@ public abstract class MapPickerFragment extends Fragment {
 			holder.bind(map);
 		}
 
-		@Override
-		public void listChanged(ChangingList<? extends IMapDefinition> list) {
-			// final List<IMapDefinition> newList = new ArrayList<>(list.getItems());
-			// Collections.sort(newList, getDefaultComparator());
-			maps = list.getItems();
+		void setItems(List<? extends IMapDefinition> maps) {
+			this.maps = maps;
 			notifyDataSetChanged();
 		}
-
-		public void onDestroy() {
-			changingMaps.removeListener(this);
-		}
-
-		public List<? extends IMapDefinition> getMaps() {
-			return maps;
-		}
-
-		// private Comparator<IMapDefinition> getDefaultComparator() {
-		// return IMapDefinition.MAP_NAME_COMPARATOR;
-		// }
 	}
 
 	private class MapHolder extends RecyclerView.ViewHolder {

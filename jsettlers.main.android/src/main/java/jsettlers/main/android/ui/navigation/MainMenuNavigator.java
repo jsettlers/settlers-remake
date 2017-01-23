@@ -7,6 +7,12 @@ public interface MainMenuNavigator {
     void showNewSinglePlayerPicker();
     void showLoadSinglePlayerPicker();
     void showNewSinglePlayerSetup();
-//    void showGame();
+
+    void showNewMultiPlayerPicker();
+    void showJoinMultiPlayerPicker();
+    void showNewMultiPlayerSetup();
+    void showJoinMultiPlayerSetup();
+
+    void showGame();
     void resumeGame();
 }

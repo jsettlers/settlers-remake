@@ -1,7 +1,7 @@
 package jsettlers.main.android.ui.fragments.game;
 
-import static jsettlers.main.android.GameService.ACTION_PAUSE;
-import static jsettlers.main.android.GameService.ACTION_UNPAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
 
 import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;
@@ -19,7 +19,7 @@ import jsettlers.main.android.controls.ControlsResolver;
 import jsettlers.main.android.controls.SelectionControls;
 import jsettlers.main.android.controls.SelectionListener;
 import jsettlers.main.android.controls.TaskControls;
-import jsettlers.main.android.menus.GameMenu;
+import jsettlers.main.android.menus.game.GameMenu;
 import jsettlers.main.android.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.ui.dialogs.PausedDialog;
 import jsettlers.main.android.ui.fragments.game.menus.buildings.BuildingsMenuFragment;

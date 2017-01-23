@@ -1,16 +1,35 @@
 package jsettlers.main.android.providers;
 
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.main.StartScreenConnector;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartScreen;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
 
 /**
- * Created by tingl on 27/05/2016.
+ * Created by tompr on 21/01/2017.
  */
+
 public interface GameStarter {
-    StartScreenConnector getStartScreenConnector();
-    // ChangingList<? extends IMapDefinition> getSinglePlayerMaps();
-    IMapDefinition getSelectedMap();
-    void startSinglePlayerGame();
-    void loadSinglePlayerGame();
+    IStartScreen getStartScreen();
+
+    IMultiplayerConnector getMultiPlayerConnector();
+    void closeMultiPlayerConnector();
+
+    IMapDefinition getMapDefinition();
+    void setMapDefinition(IMapDefinition mapDefinition);
+
+    IStartingGame getStartingGame();
+    void setStartingGame(IStartingGame startingGame);
+
+    IJoiningGame getJoiningGame();
+    void setJoiningGame(IJoiningGame joiningGame);
+
+    IJoinPhaseMultiplayerGameConnector getJoinPhaseMultiplayerConnector();
+    void setJoinPhaseMultiPlayerConnector(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector);
+
+    IMapInterfaceConnector gameStarted(IStartedGame game);
 }
