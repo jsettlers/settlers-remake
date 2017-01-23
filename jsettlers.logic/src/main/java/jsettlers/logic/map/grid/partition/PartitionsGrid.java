@@ -18,7 +18,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
@@ -27,20 +33,19 @@ import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.FilteredMapArea;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
@@ -225,14 +230,7 @@ public final class PartitionsGrid implements Serializable {
 	 *            The ground area of the tower.
 	 */
 	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea, FreeMapArea groundArea) {
-		IMapArea filteredArea = new FilteredMapArea(influencingArea, new ISerializablePredicate<ShortPoint2D>() {
-			private static final long serialVersionUID = -6460916149912865762L;
-
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				return 0 <= pos.x && pos.x < width && 0 <= pos.y && pos.y < height;
-			}
-		});
+		IMapArea filteredArea = new MapShapeFilter(influencingArea, width, height);
 
 		PartitionOccupyingTower tower = new PartitionOccupyingTower(playerId, influencingArea.getCenter(), groundArea, filteredArea,
 				influencingArea.getBorders(), (int) influencingArea.getRadius());

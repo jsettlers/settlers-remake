@@ -53,22 +53,23 @@ public class MapShapeFilter implements IMapArea {
 	 */
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		if (inMap(position)) {
-			return base.contains(position);
-		} else {
-			return false;
-		}
+		return inMap(position) && base.contains(position);
 	}
 
-	private boolean inMap(ShortPoint2D position) {
+	boolean inMap(ShortPoint2D position) {
 		int x = position.x;
 		int y = position.y;
-		return x >= 0 && x < width && y >= 0 && y < height;
+		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return new FilteredIterator();
+	}
+
+	@Override
+	public CoordinateStream stream() {
+		return base.stream().filterBounds(width, height);
 	}
 
 	private class FilteredIterator implements Iterator<ShortPoint2D> {
@@ -109,10 +110,5 @@ public class MapShapeFilter implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-	}
-
-	@Override
-	public CoordinateStream stream() {
-		return base.stream().filterBounds(width, height);
 	}
 }
