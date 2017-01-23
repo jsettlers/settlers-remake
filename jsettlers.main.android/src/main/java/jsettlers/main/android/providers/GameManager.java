@@ -1,7 +1,7 @@
 package jsettlers.main.android.providers;
 
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.menus.game.GameMenu;
+import jsettlers.main.android.controls.GameMenu;
 
 /**
  * Created by tompr on 21/01/2017.

@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
-        <jsettlers.main.android.ui.customviews.InGameButton
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_priority"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
             android:gravity="center_horizontal"
             android:text="TextView" />
 
-        <jsettlers.main.android.ui.customviews.InGameButton
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_destroy"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -82,25 +82,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_maximum_soldiers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_add_swordsman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_add_bowman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_add_pikeman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -112,25 +112,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/menu_button_size">
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_minimum_soldiers"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_remove_swordsman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_remove_bowman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <jsettlers.main.android.ui.customviews.InGameButton
+                <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_remove_pikeman"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

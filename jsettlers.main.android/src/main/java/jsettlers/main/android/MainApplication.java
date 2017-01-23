@@ -1,14 +1,13 @@
 package jsettlers.main.android;
 
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_PAUSE;
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT;
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_SAVE;
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_UNPAUSE;
+import static jsettlers.main.android.controls.GameMenu.ACTION_PAUSE;
+import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT;
+import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.controls.GameMenu.ACTION_SAVE;
+import static jsettlers.main.android.controls.GameMenu.ACTION_UNPAUSE;
 
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMapInterfaceConnector;
@@ -20,7 +19,7 @@ import jsettlers.common.menu.Player;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.controls.ControlsAdapter;
-import jsettlers.main.android.menus.game.GameMenu;
+import jsettlers.main.android.controls.GameMenu;
 import jsettlers.main.android.providers.GameManager;
 import jsettlers.main.android.providers.GameStarter;
 

@@ -12,9 +12,8 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.main.android.menus.game.BuildingsMenu;
-import jsettlers.main.android.menus.game.GameMenu;
-import jsettlers.main.android.menus.game.SettlersSoldiersMenu;
+import jsettlers.main.android.gameplay.presenters.BuildingsMenu;
+import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
 
 import android.content.Context;
 

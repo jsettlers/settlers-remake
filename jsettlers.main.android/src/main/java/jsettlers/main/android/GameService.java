@@ -1,7 +1,7 @@
 package jsettlers.main.android;
 
-import static jsettlers.main.android.menus.game.GameMenu.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.menus.game.GameMenu.NOTIFICATION_ID;
+import static jsettlers.main.android.controls.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.controls.GameMenu.NOTIFICATION_ID;
 
 import jsettlers.main.android.providers.GameManager;
 
