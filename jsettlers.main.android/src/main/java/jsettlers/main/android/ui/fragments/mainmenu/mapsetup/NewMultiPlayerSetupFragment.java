@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,6 +118,7 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
 
             String playerId = multiplayerPlayer.getId();
             String myId = presenter.getMyPlayerId();
+            Log.d("Settlers", playerId + "-----------" + myId);
             boolean isMe = multiplayerPlayer.getId().equals(presenter.getMyPlayerId());
             readySwitch.setEnabled(isMe);
         }

@@ -25,30 +25,20 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
 
         //TODO why would connector be null? cant remember why i wrote it this way
         connector = gameStarter.getJoinPhaseMultiplayerConnector();
-        if (connector == null) {
-            //TODO pop
-        } else {
-            connector.setMultiplayerListener(this);
-        }
+        connector.setMultiplayerListener(this);
     }
 
     public void setReady(boolean ready) {
-        if (connector != null) {
-            connector.setReady(ready);
-        }
+        connector.setReady(ready);
     }
 
     public void abort() {
-        if (connector != null) {
-            connector.abort();
-            gameStarter.setJoinPhaseMultiPlayerConnector(null);
-        }
+        connector.abort();
+        gameStarter.setJoinPhaseMultiPlayerConnector(null);
     }
 
     public void dispose() {
-        if (connector != null) {
-            connector.setMultiplayerListener(null);
-        }
+        connector.setMultiplayerListener(null);
     }
 
 
@@ -62,9 +52,7 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
 
     @Override
     public void gameIsStarting(IStartingGame game) {
-        connector = null;
         gameStarter.setJoinPhaseMultiPlayerConnector(null);
-
         gameStarter.setStartingGame(game);
         navigator.showGame();
     }

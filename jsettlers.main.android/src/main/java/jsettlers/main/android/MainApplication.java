@@ -166,8 +166,15 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	 */
 	@Override
 	public void gameExited(IStartedGame game) {
-		startingGame = null;
 		controlsAdapter = null;
+		startingGame = null;
+		mapDefinition = null;
+		joiningGame = null;
+		joinPhaseMultiplayerGameConnector = null;
+
+		if (multiplayerConnector != null) {
+			closeMultiPlayerConnector();
+		}
 
 		// Send a local broadcast so that any UI can update if necessary and the service can stop itself
 		localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CONFIRM));

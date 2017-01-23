@@ -62,6 +62,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
         if (joiningGame != null) {
             joiningGame.abort();
         }
+
         gameStarter.setJoiningGame(null);
         gameStarter.setMapDefinition(null);
     }

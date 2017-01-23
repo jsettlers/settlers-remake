@@ -20,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
-	private static final int REQUEST_CODE_GAME = 10;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +49,6 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-			case REQUEST_CODE_GAME:
-				getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-				break;
-		}
 	}
 
 	/**
@@ -125,13 +114,15 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	public void resumeGame() {
 		Intent intent = new Intent(this, GameActivity.class);
 		intent.setAction(Actions.RESUME_GAME);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
+		startActivity(intent);
+		finish();
 	}
 
 	@Override
 	public void showGame() {
 		Intent intent = new Intent(this, GameActivity.class);
-		startActivityForResult(intent, REQUEST_CODE_GAME);
+		startActivity(intent);
+		finish();
 	}
 
 

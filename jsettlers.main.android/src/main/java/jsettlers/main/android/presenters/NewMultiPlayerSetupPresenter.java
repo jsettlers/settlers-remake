@@ -79,7 +79,6 @@ public class NewMultiPlayerSetupPresenter extends MapSetupPresenter implements I
     @Override
     public void gameIsStarting(IStartingGame game) {
         gameStarter.setJoinPhaseMultiPlayerConnector(null);
-
         gameStarter.setStartingGame(game);
         navigator.showGame();
     }

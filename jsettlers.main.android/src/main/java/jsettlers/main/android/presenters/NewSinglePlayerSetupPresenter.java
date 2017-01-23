@@ -1,9 +1,9 @@
 package jsettlers.main.android.presenters;
 
-import jsettlers.common.menu.ILoadableMapPlayer;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.main.android.providers.GameStarter;
+import jsettlers.main.android.ui.navigation.MainMenuNavigator;
 import jsettlers.main.android.views.NewSinglePlayerSetupView;
 
 /**
@@ -11,8 +11,11 @@ import jsettlers.main.android.views.NewSinglePlayerSetupView;
  */
 
 public class NewSinglePlayerSetupPresenter extends MapSetupPresenter {
-    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, GameStarter gameStarter) {
+    private final MainMenuNavigator navigator;
+
+    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, GameStarter gameStarter, MainMenuNavigator navigator) {
         super(view, gameStarter);
+        this.navigator = navigator;
 
         IMapDefinition mapDefinition = gameStarter.getMapDefinition();
     }
@@ -21,5 +24,6 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenter {
     public void startGame() {
         IStartingGame startingGame = getGameStarter().getStartScreen().startSingleplayerGame(getMapDefinition());
         getGameStarter().setStartingGame(startingGame);
+        navigator.showGame();
     }
 }
