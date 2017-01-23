@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/SettlersTheme">
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".mainmenu.ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,11 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.GameActivity"
+            android:name=".gameplay.ui.activities.GameActivity"
             android:launchMode="singleTask" />
 
         <service
-            android:name=".GameService"
+            android:name=".core.GameService"
             android:enabled="true"
             android:exported="false" />
     </application>

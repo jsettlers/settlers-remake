@@ -12,4 +12,13 @@
     <dimen name="menu_bar_peek_height">56dp</dimen>
     <dimen name="menu_bar_full_height">300dp</dimen>
     <dimen name="menu_bar_width">-1px</dimen>   <!-- -1 = match_parent -->
+
+    <!-- In Game dimens -->
+    <dimen name="menu_button_size">56dp</dimen>
+    <dimen name="menu_tile_size">40dp</dimen>
+
+    <dimen name="menu_tile_waiting_height">28dp</dimen>
+    <dimen name="menu_tile_occupied_height">52dp</dimen>
+    <dimen name="menu_tile_divine_promotion_width">64dp</dimen>
+    <dimen name="menu_tile_divine_promotion_height">48dp</dimen>
 </resources>

@@ -24,11 +24,19 @@ public class OriginalImageProvider {
 	private final LinkedBlockingQueue<ImageReference> toLoad = new LinkedBlockingQueue<ImageReference>();
 
 	public static ImageReference get(EBuildingType building) {
-		return INSTANCE.get(building.getGuiImage());
+		return INSTANCE.create(building.getGuiImage());
 	}
 
 	public static ImageReference get(EMaterialType material) {
-		return INSTANCE.get(material.getIcon());
+		return INSTANCE.create(material.getIcon());
+	}
+
+	public static ImageReference get(String imageName) {
+		return INSTANCE.create(ImageLink.fromName(imageName, 0));
+	}
+
+	public static ImageReference get(ImageLink imageLink) {
+		return INSTANCE.create(imageLink);
 	}
 
 	/**
@@ -38,7 +46,7 @@ public class OriginalImageProvider {
 	 *            The image to get
 	 * @return The reference to the image that will be loaded.
 	 */
-	private ImageReference get(ImageLink image) {
+	private ImageReference create(ImageLink image) {
 		String name = image.getName();
 		ImageReference cached = cachedImages.get(name);
 		if (cached != null) {
