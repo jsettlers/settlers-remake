@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,38 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition;
+package jsettlers.ai.highlevel.pioneers.target;
 
-import jsettlers.algorithms.partitions.IBlockingProvider;
-import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This is an extended {@link IBlockingProvider}. Implementors of this interface also need to supply the possibility to register a listener for
- * changes of the blocking state.
- * 
- * @author Andreas Eberle
- * 
+ * @author codingberlin
  */
-public interface IPartitionsGridBlockingProvider extends IBlockingProvider {
-	/**
-	 * This is a default implementation of the {@link IPartitionsGridBlockingProvider} interface. It's {@link #isBlocked(int, int)} method always
-	 * returns false and the {@link #registerBlockingChangedListener(IBlockingChangedListener)} ignores every listener.
-	 */
-	public static final IPartitionsGridBlockingProvider DEFAULT_IMPLEMENTATION = new IPartitionsGridBlockingProvider() {
-		@Override
-		public boolean isBlocked(int x, int y) {
-			return false;
-		}
+public abstract class AbstractPioneerTargetFinder {
 
-		@Override
-		public void registerBlockingChangedListener(IBlockingChangedListener listener) {
-		}
-	};
+	protected final AiStatistics aiStatistics;
+	protected final byte playerId;
+	protected final int searchDistance;
 
-	/**
-	 * Registers the given listener. (Only one listener can be registered).
-	 * 
-	 * @param listener
-	 */
-	void registerBlockingChangedListener(IBlockingChangedListener listener);
+	public AbstractPioneerTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
+		this.aiStatistics = aiStatistics;
+		this.playerId = playerId;
+		this.searchDistance = searchDistance;
+	}
+
+	public abstract ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center);
 }

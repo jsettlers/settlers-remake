@@ -4,6 +4,7 @@ gradle.ext.projectsWithExtraTest = []
 
 include ':go.graphics'
 include ':go.graphics.swing'
+include ':go.graphics.android'
 include ':jsettlers.buildingcreator'
 include ':jsettlers.common'
 include ':jsettlers.graphics'
@@ -31,11 +32,4 @@ if (System.env.ANDROID_HOME || androidFile.isFile() && androidFile.text.matches(
 }
 
 rootProject.name = 'settlers-remake'
-// This will loop through the object descriptors
-rootProject.children.each { p ->
-	if (new File(p.dir, 'test.gradle').isFile()) {
-		gradle.ext.projectsWithExtraTest += [ p.path ];
-		def tp = createProjectDescriptor(p, 'test', new File(p.dir, 'testRoot'))
-		tp.buildFileName = '../test.gradle'
-	}
-}
+

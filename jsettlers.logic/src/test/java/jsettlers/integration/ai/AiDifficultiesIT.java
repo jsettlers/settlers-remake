@@ -44,6 +44,8 @@ import jsettlers.testutils.map.MapUtils;
 public class AiDifficultiesIT {
 	public static final int MINUTES = 1000 * 60;
 	public static final int JUMP_FORWARD = 2 * MINUTES;
+	private static final String LOW_PERFORMANCE_FAILURE_MESSAGE =
+			"%s's %s is higher than %d. It was %d\nSome code change caused the AI to have a worse runtime performance.";
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
@@ -58,7 +60,7 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void hardShouldConquerEasy() throws MapLoadException {
-		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 100 * MINUTES);
+		holdBattleBetween(EPlayerType.AI_HARD, EPlayerType.AI_EASY, 130 * MINUTES);
 	}
 
 	@Test
@@ -74,24 +76,26 @@ public class AiDifficultiesIT {
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
-		MatchConstants.clock().fastForwardTo(85 * MINUTES);
+		MatchConstants.clock().fastForwardTo(86 * MINUTES);
 
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 700;
+		short expectedMinimalProducedSoldiers = 1000;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "
 					+ "soldiers were produced. Some code changes make the AI weaker.");
 		}
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 2500);
-		ensureRuntimePerformance("tp update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 200, 2500);
+		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 100, 2500);
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
+		int expectedWinnerSlotId = 7;
+		int expectedLooserSlotId = 9;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
-		playerSettings[2] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
-		playerSettings[8] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
+		playerSettings[expectedWinnerSlotId] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[expectedLooserSlotId] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
@@ -102,36 +106,39 @@ public class AiDifficultiesIT {
 			targetGameTime += JUMP_FORWARD;
 			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
-			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 2) == 0) {
+			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) expectedWinnerSlotId) == 0) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
 				MapLoader savegame = MapUtils.saveMainGrid(
-						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) 2, null), new PlayerState((byte) 8, null) });
+						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte)
+								expectedLooserSlotId, null) });
 				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
 						+ "the maximumTimeToWin.", startedGame);
 			}
-		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) 8) > 0);
+		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) expectedLooserSlotId) > 0);
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
 		ReplayUtils.awaitShutdown(startedGame);
 
-		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 50, 3000);
-		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 50, 2500);
+		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 200, 3000);
+		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 100, 2500);
 	}
 
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
 		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
-			fail(description + "'s median is higher than " + median + ". It was " + stopWatch.getMedian() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
+			String medianText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian());
+			System.out.println(medianText);
+			fail(medianText);
 		}
 		if (stopWatch.getMax() > max) {
-			fail(description + "'s max is higher than " + max + ". It was " + stopWatch.getMax() + ".\nSomething in the code changed which "
-					+ "caused the AI to have a worse runtime performance.");
+			String maxText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax());
+			System.out.println(maxText);
+			fail(maxText);
 		}
 	}
 

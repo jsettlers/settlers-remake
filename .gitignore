@@ -1,6 +1,6 @@
 # Gradle build files
 local.properties
-/.gradle
+.gradle
 /build
 /*/build
 /jsettlers.graphics/layoutbuilder/build/
@@ -13,9 +13,9 @@ local.properties
 /*/testRoot
 
 # IDE files
-/.idea
-/.metadata
-/.recommenders
+.idea
+.metadata
+.recommenders
 *.iml
 /settlers.ipr
 /settlers.iws
@@ -25,6 +25,8 @@ local.properties
 .settings
 bin
 gen
-/release
-/save
-/logs
+
+# JSettlers folders
+release
+save
+logs

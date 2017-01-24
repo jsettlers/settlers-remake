@@ -19,7 +19,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import jsettlers.testutils.TestUtils;
+
+import org.junit.Test;
+
+import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -29,16 +32,13 @@ import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.player.PlayerSetting;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public class PartitionsGridTest {
 
 	private static final short WIDTH = 200;
 	private static final short HEIGHT = 200;
 
 	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, PlayerSetting.createDefaultSettings((byte) 0, (byte) 10),
-			IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
+			IBlockingProvider.DEFAULT_IMPLEMENTATION);
 
 	@Test
 	public void testMergeNoArea() {

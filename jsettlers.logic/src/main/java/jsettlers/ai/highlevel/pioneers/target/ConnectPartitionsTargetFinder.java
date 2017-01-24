@@ -1,44 +1,46 @@
 /*******************************************************************************
  * Copyright (c) 2016
- * <p/>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * <p/>
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * <p/>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.jsettlers.common.buildings;
+package jsettlers.ai.highlevel.pioneers.target;
 
-import java.util.ArrayList;
-
-import jsettlers.common.position.RelativePoint;
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Created by Andreas Eberle on 25.04.2016.
+ * @author codingberlin
  */
-public final class BuildingAreaUtils {
-    private BuildingAreaUtils() { // Utility class.
-    }
+public class ConnectPartitionsTargetFinder extends AbstractPioneerTargetFinder {
 
-    public static RelativePoint[] createRelativePoints(boolean[][] blockedMap) {
-        ArrayList<RelativePoint> positions = new ArrayList<RelativePoint>();
+	public ConnectPartitionsTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
+		super(aiStatistics, playerId, searchDistance);
+	}
 
-        int xOffset = blockedMap[0].length / 2;
-        int yOffset = blockedMap.length / 2;
+	@Override
+	public ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center) {
+		AiPositions otherPartitionBorder = aiStatistics.getOtherPartitionBorderOf(playerId);
+		if (otherPartitionBorder.isEmpty()) {
+			return null;
+		}
 
-        for (int y = 0; y < blockedMap.length; y++) {
-            for (int x = 0; x < blockedMap[y].length; x++) {
-                if (blockedMap[y][x]) {
-                    positions.add(new RelativePoint(x - xOffset, y - yOffset));
-                }
-            }
-        }
+		ShortPoint2D nearestOtherPartitionBorderPoint = otherPartitionBorder.getNearestPoint(
+				center, aiStatistics.getMainGrid().getWidth(), new SameBlockedPartitionLikePlayerFilter(aiStatistics, playerId));
+		if (nearestOtherPartitionBorderPoint == null) {
+			return null;
+		}
 
-        return positions.toArray(new RelativePoint[positions.size()]);
-    }
+		int searchDistance = nearestOtherPartitionBorderPoint.getOnGridDistTo(center) + 10;
+		return playerBorder.getNearestPoint(nearestOtherPartitionBorderPoint, searchDistance);
+	}
 }

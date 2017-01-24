@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,6 +17,8 @@ package jsettlers.ai.highlevel;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
+
+import java.util.BitSet;
 
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
@@ -42,8 +44,6 @@ import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATI
  * space to be build on the map. If not it reduces the number of smiths unless it hits a threshold. Then it reduces the number of gold smith,
  * winegrowers and big temples to a minimum set of this buildings. If again this are too much buildings. It keeps reducing smiths.
  *
- * TODO: add information where to find the resources and how far they are to let AI use pioneers instead of towers
- *
  * @author codingberlin
  */
 public class AiMapInformation {
@@ -60,9 +60,11 @@ public class AiMapInformation {
 	// max 10 fisher to prevent AI from building only fishermen which on the one hand looks very unnatural and on the other hand is unproductive in
 	// the late game caused by over fishing.
 	public long[][] resourceAndGrassCount;
+	public final BitSet wasFishNearByAtGameStart;
 
 	public AiMapInformation(PartitionsGrid partitionsGrid) {
 		resourceAndGrassCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
+		wasFishNearByAtGameStart = new BitSet(partitionsGrid.getWidth() * partitionsGrid.getHeight());
 	}
 
 	public void clear() {

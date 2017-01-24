@@ -22,6 +22,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.replay.ReplayUtils;
+import jsettlers.main.replay.ReplayUtils.IReplayStreamProvider;
 import jsettlers.testutils.map.MapUtils;
 
 /**
@@ -33,7 +34,7 @@ public class AutoReplaySetting {
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
 				new AutoReplaySetting("fullproduction", 10, 20, 40, 90, 150)
-				);
+		);
 	}
 
 	private final String typeName;
@@ -64,7 +65,7 @@ public class AutoReplaySetting {
 		return getTypeName() + "/replay.log";
 	}
 
-	ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
+	public IReplayStreamProvider getReplayFile() throws MapLoadException {
 		return MapUtils.createReplayForResource(getClass(), getReplayName(), getMap());
 	}
 
@@ -85,5 +86,16 @@ public class AutoReplaySetting {
 				"typeName='" + typeName + '\'' +
 				", timeMinutes=" + Arrays.toString(timeMinutes) +
 				'}';
+	}
+
+
+	public void compareSaveGamesAndDelete(MapLoader[] actualSaveGames) throws MapLoadException, IOException, ClassNotFoundException {
+		for (int i = 0; i < actualSaveGames.length; i++) {
+			MapLoader actualSaveGame = actualSaveGames[i];
+			MapLoader expectedSaveGame = getReferenceSavegame(i);
+
+			MapUtils.compareMapFiles(expectedSaveGame, actualSaveGame);
+			actualSaveGame.getListedMap().delete();
+		}
 	}
 }

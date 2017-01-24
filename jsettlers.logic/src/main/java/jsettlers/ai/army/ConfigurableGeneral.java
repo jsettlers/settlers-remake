@@ -16,6 +16,7 @@ package jsettlers.ai.army;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiStatistics;
@@ -66,16 +67,16 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	@Override
-	public void commandTroops() {
+	public void commandTroops(Set<Integer> soldiersWithOrders) {
 		Situation situation = calculateSituation(player.playerId);
 		if (aiStatistics.getEnemiesInTownOf(player.playerId).size() > 0) {
-			defend(situation);
+			defend(situation, soldiersWithOrders);
 		} else if (enemiesAreAlive()) {
 			byte weakestEnemyId = getWeakestEnemy();
 			Situation enemySituation = calculateSituation(weakestEnemyId);
 			boolean infantryWouldDie = wouldInfantryDie(enemySituation);
 			if (attackIsPossible(situation, enemySituation, infantryWouldDie)) {
-				attack(situation, infantryWouldDie);
+				attack(situation, infantryWouldDie, soldiersWithOrders);
 			}
 		}
 	}
@@ -182,26 +183,26 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		return false;
 	}
 
-	private void defend(Situation situation) {
+	private void defend(Situation situation, Set<Integer> soldiersWithOrders) {
 		List<ShortPoint2D> allMyTroops = new Vector<ShortPoint2D>();
 		allMyTroops.addAll(situation.bowmenPositions);
 		allMyTroops.addAll(situation.pikemenPositions);
 		allMyTroops.addAll(situation.swordsmenPositions);
-		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(player.playerId).iterator().next());
+		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(player.playerId).iterator().next(), soldiersWithOrders);
 	}
 
-	private void attack(Situation situation, boolean infantryWouldDie) {
+	private void attack(Situation situation, boolean infantryWouldDie, Set<Integer> soldiersWithOrders) {
 		byte enemyId = getWeakestEnemy();
 		ShortPoint2D targetDoor = getTargetEnemyDoorToAttack(enemyId);
 		if (infantryWouldDie) {
-			sendTroopsTo(situation.bowmenPositions, targetDoor);
+			sendTroopsTo(situation.bowmenPositions, targetDoor, soldiersWithOrders);
 		} else {
 			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.pikemenPositions.size() + situation
 					.swordsmenPositions.size());
 			soldiers.addAll(situation.bowmenPositions);
 			soldiers.addAll(situation.pikemenPositions);
 			soldiers.addAll(situation.swordsmenPositions);
-			sendTroopsTo(soldiers, targetDoor);
+			sendTroopsTo(soldiers, targetDoor, soldiersWithOrders);
 		}
 	}
 
@@ -228,10 +229,13 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		return weakestEnemyId;
 	}
 
-	private void sendTroopsTo(List<ShortPoint2D> attackerPositions, ShortPoint2D target) {
+	private void sendTroopsTo(List<ShortPoint2D> attackerPositions, ShortPoint2D target, Set<Integer> soldiersWithOrders) {
 		List<Integer> attackerIds = new Vector<Integer>();
 		for (ShortPoint2D attackerPosition : attackerPositions) {
-			attackerIds.add(movableGrid.getMovableAt(attackerPosition.x, attackerPosition.y).getID());
+			int movableId = movableGrid.getMovableAt(attackerPosition.x, attackerPosition.y).getID();
+			if (!soldiersWithOrders.contains(movableId)) {
+				attackerIds.add(movableId);
+			}
 		}
 
 		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds));
