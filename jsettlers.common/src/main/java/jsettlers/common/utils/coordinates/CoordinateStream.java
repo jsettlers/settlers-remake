@@ -20,6 +20,7 @@ import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,6 +107,12 @@ public abstract class CoordinateStream implements Serializable {
 
 	public boolean isEmpty() {
 		return iterate((x, y) -> false);
+	}
+
+	public List<ShortPoint2D> toList() {
+		List<ShortPoint2D> result = new ArrayList<>();
+		forEach((x, y) -> result.add(new ShortPoint2D(x, y)));
+		return result;
 	}
 
 	public boolean contains(int searchedX, int searchedY) {

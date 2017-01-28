@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
+import java8.util.Lists;
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -47,6 +48,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * This class handles the partitions of the map.
@@ -320,29 +323,15 @@ public final class PartitionsGrid implements Serializable {
 	 * @param area
 	 */
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
-		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius);
 
-		for (ShortPoint2D curr : area) {
-			towers[curr.x + curr.y * width] = 0;
-		}
+		area.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
-		for (Tuple<Integer, PartitionOccupyingTower> currTower : towersInRange) {
-			if (currTower.e2.playerId == tower.playerId) {
-				final IMapArea currArea = currTower.e2.area;
-
-				// define the positions that need to get their towers count increased.
-				IteratorFilter<ShortPoint2D> increasePositions = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
-					@Override
-					public boolean evaluate(ShortPoint2D position) {
-						return currArea.contains(position);
-					}
-				});
-
-				for (ShortPoint2D curr : increasePositions) {
-					towers[curr.x + curr.y * width]++;
-				}
-			}
-		}
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius,
+				currTower -> currTower.playerId == tower.playerId);
+		stream(towersInRange)
+				.forEach(currTower -> area.stream()
+						.filter(currTower.e2.area::contains)
+						.forEach((x, y) -> towers[x + y * width]++));
 	}
 
 	/**
@@ -351,34 +340,24 @@ public final class PartitionsGrid implements Serializable {
 	 * @param tower
 	 */
 	private void checkOtherTowersInArea(PartitionOccupyingTower tower) {
-		// get the positions that may change their owner.
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				final int idx = pos.x + pos.y * width;
-				return towers[idx] <= 0;
-			}
-		};
-		// save the free positions in the list because the list must not change during the otherTowers loop
-		ArrayList<ShortPoint2D> freedPositions = new IteratorFilter<ShortPoint2D>(tower.area, predicate).toList();
+		// Get the positions that may change their owner (tower counter <= 0)
+		// Save these positions in the list because the list must not change during the loop over the other towers
+		List<ShortPoint2D> freedPositions = tower.area.stream().filter((x, y) -> towers[x + y * width] <= 0).toList();
 
+		// if at least one position may change the player
 		// check if other towers occupy the area
-		if (!freedPositions.isEmpty()) { // if at least one position may change the player
+		if (!freedPositions.isEmpty()) {
 			List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position,
-					tower.radius);
+					tower.radius, currTower -> currTower.playerId != tower.playerId);
+
 			// sort the towers by their distance to the removed tower
-			Collections.sort(towersInRange, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
+			Lists.sort(towersInRange, Tuple.getE1Comparator());
 
 			for (Tuple<Integer, PartitionOccupyingTower> curr : towersInRange) {
-				if (curr.e2.playerId == tower.playerId) {
-					continue; // only work on towers of other players.
-				}
-
 				final PartitionOccupyingTower currTower = curr.e2;
-
 				final IMapArea currArea = currTower.area;
 
-				IteratorFilter<ShortPoint2D> area = new IteratorFilter<ShortPoint2D>(freedPositions, new IPredicate<ShortPoint2D>() {
+				IteratorFilter<ShortPoint2D> area = new IteratorFilter<>(freedPositions, new IPredicate<ShortPoint2D>() {
 					@Override
 					public boolean evaluate(ShortPoint2D object) {
 						return currArea.contains(object);
@@ -390,12 +369,8 @@ public final class PartitionsGrid implements Serializable {
 				PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 				final FreeMapArea groundArea = currTower.groundArea;
 				ShortPoint2D upperLeftGroundAreaPosition = groundArea.getUpperLeftPosition();
-				BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
-					@Override
-					public boolean contains(int x, int y) {
-						return groundArea.contains(x, y);
-					}
-				}, upperLeftGroundAreaPosition, borderVisitor, true);
+
+				BorderTraversingAlgorithm.traverseBorder(groundArea::contains, upperLeftGroundAreaPosition, borderVisitor, true);
 				checkMergesAndDividesOnPartitionsList(currTower.playerId,
 						getPartitionIdAt(upperLeftGroundAreaPosition.x, upperLeftGroundAreaPosition.y), borderVisitor.getPartitionsList());
 			}
