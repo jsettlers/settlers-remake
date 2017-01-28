@@ -14,11 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import java.util.Iterator;
-
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
-
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -32,6 +29,8 @@ import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
+
+import java.util.Iterator;
 
 /**
  * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
@@ -366,7 +365,8 @@ public final class MapDrawContext implements IGLProvider {
 			return contains(point.x, point.y);
 		}
 
-		boolean contains(int x, int y) {
+		@Override
+		public boolean contains(int x, int y) {
 			int height = getHeight(x, y);
 			float viewX = converter.getViewX(x, y, height);
 			float viewY = converter.getViewY(x, y, height);

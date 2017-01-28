@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * This filter creates the union of an other shape with the map.
@@ -54,6 +54,11 @@ public class MapShapeFilter implements IMapArea {
 	@Override
 	public boolean contains(ShortPoint2D position) {
 		return inMap(position) && base.contains(position);
+	}
+
+	@Override
+	public boolean contains(int x, int y) {
+		return 0 <= x && x < width && 0 <= y && y < height && base.contains(x, y);
 	}
 
 	boolean inMap(ShortPoint2D position) {

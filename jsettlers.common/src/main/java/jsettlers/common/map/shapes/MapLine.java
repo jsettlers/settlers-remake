@@ -14,12 +14,12 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.util.Iterator;
 
 /**
  * This is a line on a map.
@@ -71,6 +71,11 @@ public class MapLine implements IMapArea {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean contains(int x, int y) {
+		return stream().contains(x, y);
 	}
 
 	@Override

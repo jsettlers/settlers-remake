@@ -14,12 +14,12 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.buffers;
 
-import java.util.Iterator;
-
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.util.Iterator;
 
 /**
  * This class represents a two dimensional array, used as helper class for editing tools
@@ -42,8 +42,11 @@ public class ByteMapArea implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		short y = position.y;
-		short x = position.x;
+		return contains(position.y, position.x);
+	}
+
+	@Override
+	public boolean contains(int y, int x) {
 		return x >= 0 && y >= 0 && x < status.length && y < status[x].length && status[x][y] > Byte.MAX_VALUE / 2;
 	}
 

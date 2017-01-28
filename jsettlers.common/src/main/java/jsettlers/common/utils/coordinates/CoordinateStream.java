@@ -14,12 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.utils.coordinates;
 
-import java.io.Serializable;
-
 import java8.util.Optional;
-
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Andreas Eberle on 12.01.2017.
@@ -105,5 +106,23 @@ public abstract class CoordinateStream implements Serializable {
 
 	public boolean isEmpty() {
 		return iterate((x, y) -> false);
+	}
+
+	public boolean contains(int searchedX, int searchedY) {
+		return !iterate((x, y) -> !(x == searchedX && y == searchedY));
+	}
+
+	public static CoordinateStream fromList(final List<ShortPoint2D> positions) {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (ShortPoint2D position : positions) {
+					if (!function.apply(position.x, position.y)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
 	}
 }

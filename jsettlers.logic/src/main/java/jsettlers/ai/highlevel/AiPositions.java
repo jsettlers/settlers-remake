@@ -1,12 +1,12 @@
 package jsettlers.ai.highlevel;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * This is a set of points on the map. It is optimized for range queries.
@@ -143,7 +143,8 @@ public class AiPositions implements IMapArea {
 		return contains(position.x, position.y);
 	}
 
-	private boolean contains(int x, int y) {
+	@Override
+	public boolean contains(int x, int y) {
 		ensureSorted();
 		return indexOf(x, y) >= 0;
 	}

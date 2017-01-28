@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.common.utils.coordinates.ICoordinateConsumer;
-import jsettlers.common.position.ShortPoint2D;
+
+import java.util.Iterator;
 
 public class MapNeighboursArea implements IMapArea {
 	private static final long serialVersionUID = -6205409596340280969L;
@@ -40,12 +40,12 @@ public class MapNeighboursArea implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		for (ShortPoint2D pos : this) {
-			if (pos.equals(position)) {
-				return true;
-			}
-		}
-		return false;
+		return contains(position.x, position.y);
+	}
+
+	@Override
+	public boolean contains(int x, int y) {
+		return EDirection.getDirection(x - this.x, y - this.y) != null;
 	}
 
 	@Override

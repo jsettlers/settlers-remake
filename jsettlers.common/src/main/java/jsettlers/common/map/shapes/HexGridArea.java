@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * Represents a hexagon on the grid.
@@ -70,6 +70,11 @@ public final class HexGridArea implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
+		throw new UnsupportedOperationException("not implemented yet");
+	}
+
+	@Override
+	public boolean contains(int x, int y) {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 

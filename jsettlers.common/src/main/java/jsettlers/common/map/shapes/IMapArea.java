@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * This defines an area on the map of a given shape.
@@ -37,6 +37,8 @@ public interface IMapArea extends Iterable<ShortPoint2D>, Serializable {
 	 *            The position.
 	 */
 	boolean contains(ShortPoint2D position);
+
+	boolean contains(int x, int y);
 
 	/**
 	 * Gets an iterator for the shape that returns all tiles that are contained by this shape.

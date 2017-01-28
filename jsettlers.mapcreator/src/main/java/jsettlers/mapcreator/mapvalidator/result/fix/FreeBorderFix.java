@@ -14,19 +14,16 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.result.fix;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
-import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.mapcreator.localization.EditorLabels;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Delete invalid resources
@@ -89,22 +86,17 @@ public class FreeBorderFix extends AbstractFix implements IMapArea {
 	}
 
 	@Override
+	public boolean contains(int x, int y) {
+		return stream().contains(x, y);
+	}
+
+	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return points.iterator();
 	}
 
 	@Override
 	public CoordinateStream stream() {
-		return new CoordinateStream() {
-			@Override
-			public boolean iterate(IBooleanCoordinateFunction function) {
-				for (ShortPoint2D point : points) {
-					if (!function.apply(point.x, point.y)) {
-						return false;
-					}
-				}
-				return true;
-			}
-		};
+		return CoordinateStream.fromList(points);
 	}
 }
