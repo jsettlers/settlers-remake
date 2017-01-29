@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -100,9 +100,7 @@ public class ShortPoint2D implements Serializable {
 	 * @return The distance a movable needs to walk to get from this to the other position.
 	 */
 	public int getOnGridDistTo(int x, int y) {
-		final int dx = this.x - x;
-		final int dy = this.y - y;
-		return getOnGridDist(dx, dy);
+		return getOnGridDist(this.x - x, this.y - y);
 	}
 
 	/**

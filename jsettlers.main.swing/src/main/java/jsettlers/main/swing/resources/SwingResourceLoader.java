@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.swing.resources;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -25,6 +21,9 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import jsettlers.main.swing.resources.SettlersFolderChecker.SettlersFolderInfo;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.

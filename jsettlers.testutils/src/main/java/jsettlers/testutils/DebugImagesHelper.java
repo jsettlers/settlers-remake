@@ -12,18 +12,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.utils.debug;
+package jsettlers.testutils;
 
-import java.awt.Graphics;
+import jsettlers.common.Color;
+import jsettlers.common.utils.coordinates.ICoordinateFunction;
+import jsettlers.common.utils.coordinates.ICoordinatePredicate;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import jsettlers.common.Color;
-import jsettlers.common.utils.coordinates.ICoordinatePredicate;
-import jsettlers.common.utils.coordinates.ICoordinateFunction;
 
 import static java8.util.J8Arrays.stream;
 

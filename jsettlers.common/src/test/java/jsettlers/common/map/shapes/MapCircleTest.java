@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,17 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.junit.Test;
-
-import java.util.Iterator;
-
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class MapCircleTest {
 

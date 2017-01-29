@@ -26,7 +26,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.utils.debug.DebugImagesHelper;
+import jsettlers.testutils.DebugImagesHelper;
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;

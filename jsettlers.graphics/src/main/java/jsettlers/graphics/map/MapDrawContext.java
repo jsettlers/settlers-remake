@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -199,29 +199,28 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * @param screenx
+	 * @param screenX
 	 *            The x coordinate in draw space
-	 * @param screeny
+	 * @param screenY
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ShortPoint2D getPositionUnder(float screenx, float screeny) {
-		ShortPoint2D currentPoint = converter.getMap(screenx, screeny);
-		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
+	public ShortPoint2D getPositionUnder(float screenX, float screenY) {
+		ShortPoint2D currentPoint = converter.getMap(screenX, screenY);
+		UIPoint desiredOnScreen = new UIPoint(screenX, screenY);
 
-		UIPoint onscreen = converter.getView(currentPoint.x, currentPoint.y,
-				getHeight(currentPoint.x, currentPoint.y));
-		double currentbest = onscreen.distance(desiredOnScreen);
+		UIPoint onScreen = converter.getView(currentPoint.x, currentPoint.y, getHeight(currentPoint.x, currentPoint.y));
+		double currentBest = onScreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
 		do {
 			couldBeImproved = false;
 
 			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
-				onscreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
-				double newDistance = onscreen.distance(desiredOnScreen);
-				if (newDistance < currentbest) {
-					currentbest = newDistance;
+				onScreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
+				double newDistance = onScreen.distance(desiredOnScreen);
+				if (newDistance < currentBest) {
+					currentBest = newDistance;
 					currentPoint = p;
 					couldBeImproved = true;
 				}
