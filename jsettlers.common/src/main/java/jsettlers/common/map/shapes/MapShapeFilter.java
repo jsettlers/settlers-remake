@@ -15,10 +15,10 @@
 package jsettlers.common.map.shapes;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * This filter creates the union of an other shape with the map.
@@ -69,51 +69,11 @@ public class MapShapeFilter implements IMapArea {
 
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
-		return new FilteredIterator();
+		return new IteratorFilter.FilteredIterator<>(base.iterator(), this::inMap);
 	}
 
 	@Override
 	public CoordinateStream stream() {
 		return base.stream().filterBounds(width, height);
-	}
-
-	private class FilteredIterator implements Iterator<ShortPoint2D> {
-		private ShortPoint2D next;
-		private Iterator<ShortPoint2D> iterator;
-
-		public FilteredIterator() {
-			iterator = base.iterator();
-			searchNext();
-		}
-
-		private void searchNext() {
-			do {
-				if (iterator.hasNext()) {
-					next = iterator.next();
-				} else {
-					next = null;
-				}
-			} while (next != null && !inMap(next));
-		}
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			if (next == null) {
-				throw new NoSuchElementException();
-			}
-			ShortPoint2D result = next;
-			searchNext();
-			return result;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
 	}
 }
