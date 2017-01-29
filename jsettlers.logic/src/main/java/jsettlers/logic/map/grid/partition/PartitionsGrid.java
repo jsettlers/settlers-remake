@@ -32,8 +32,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
-import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
@@ -250,7 +249,7 @@ public final class PartitionsGrid implements Serializable {
 		}
 
 		// reduce the tower counter
-		changeTowerCounter(tower.playerId, tower.area, -1);
+		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
 
 		checkOtherTowersInArea(tower);
 
@@ -289,7 +288,7 @@ public final class PartitionsGrid implements Serializable {
 		}
 
 		// occupy the area for the new player
-		occupyAreaByTower(tower.playerId, tower.area, tower.areaBorders);
+		occupyAreaByTower(tower.playerId, tower.area.stream(), tower.areaBorders);
 		occupyingTowers.add(tower);
 
 		// recalculate the tower counter for the ground area
@@ -342,7 +341,7 @@ public final class PartitionsGrid implements Serializable {
 	private void checkOtherTowersInArea(PartitionOccupyingTower tower) {
 		// Get the positions that may change their owner (tower counter <= 0)
 		// Save these positions in the list because the list must not change during the loop over the other towers
-		List<ShortPoint2D> freedPositions = tower.area.stream().filter((x, y) -> towers[x + y * width] <= 0).toList();
+		CoordinateStream freedPositions = tower.area.stream().filter((x, y) -> towers[x + y * width] <= 0).freeze();
 
 		// if at least one position may change the player
 		// check if other towers occupy the area
@@ -357,13 +356,7 @@ public final class PartitionsGrid implements Serializable {
 				final PartitionOccupyingTower currTower = curr.e2;
 				final IMapArea currArea = currTower.area;
 
-				IteratorFilter<ShortPoint2D> area = new IteratorFilter<>(freedPositions, new IPredicate<ShortPoint2D>() {
-					@Override
-					public boolean evaluate(ShortPoint2D object) {
-						return currArea.contains(object);
-					}
-				});
-
+				CoordinateStream area = freedPositions.filter(currArea::contains);
 				occupyAreaByTower(currTower.playerId, area, currTower.areaBorders);
 
 				PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
@@ -384,16 +377,11 @@ public final class PartitionsGrid implements Serializable {
 	 * @param influencingArea
 	 * @param borders
 	 */
-	private void occupyAreaByTower(final byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				int index = pos.x + pos.y * width;
-				return towers[index] <= 0 && partitionObjects[partitions[index]].playerId != playerId;
-			}
-		};
-
-		Iterable<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate).toList();
+	private void occupyAreaByTower(final byte playerId, CoordinateStream influencingArea, SRectangle borders) {
+		CoordinateStream filtered = influencingArea.filter((x, y) -> {
+			int index = x + y * width;
+			return towers[index] <= 0 && partitionObjects[partitions[index]].playerId != playerId;
+		}).freeze();
 
 		// create PartitionCalculator
 		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, blockingProvider, borders.xMin, borders.yMin,
@@ -409,9 +397,7 @@ public final class PartitionsGrid implements Serializable {
 		// increase the tower counter
 		changeTowerCounter(playerId, influencingArea, +1);
 
-		for (ShortPoint2D curr : filtered) {
-			notifyPlayerChangedListener(curr.x, curr.y, playerId);
-		}
+		filtered.forEach((x, y) -> notifyPlayerChangedListener(x, y, playerId));
 	}
 
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
@@ -533,19 +519,9 @@ public final class PartitionsGrid implements Serializable {
 		return newPartitionsMap;
 	}
 
-	private void changeTowerCounter(final byte playerId, Iterable<ShortPoint2D> influencingArea, int delta) {
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				return partitionObjects[partitions[pos.x + pos.y * width]].playerId == playerId;
-			}
-		};
-
-		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
-
-		for (ShortPoint2D pos : filtered) {
-			towers[pos.x + pos.y * width] += delta;
-		}
+	private void changeTowerCounter(final byte playerId, CoordinateStream influencingArea, int delta) {
+		influencingArea.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
+				.forEach((x, y) -> towers[x + y * width] += delta);
 	}
 
 	/**

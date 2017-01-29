@@ -119,6 +119,15 @@ public abstract class CoordinateStream implements Serializable {
 		return !iterate((x, y) -> !(x == searchedX && y == searchedY));
 	}
 
+	/**
+	 * Creates a frozen instance of this stream. The content of the frozen stream will not be changed in the future.
+	 * 
+	 * @return
+	 */
+	public CoordinateStream freeze() {
+		return new CoordinatesList(this);
+	}
+
 	public static CoordinateStream fromList(final List<ShortPoint2D> positions) {
 		return new CoordinateStream() {
 			@Override
