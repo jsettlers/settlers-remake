@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.movable.interfaces;
 
-import java.io.Serializable;
-
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -30,6 +28,8 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.player.Player;
+
+import java.io.Serializable;
 
 /**
  * Defines methods needed by the {@link MovableStrategy}.
@@ -175,7 +175,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 * @param y
 	 * @param targetHeight
 	 */
-	public abstract void changeHeightTowards(short x, short y, byte targetHeight);
+	public abstract void changeHeightTowards(int x, int y, byte targetHeight);
 
 	/**
 	 * Changes the player at the given position to the given player.
@@ -194,7 +194,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *            y coordinate of the position to get the landscape type.
 	 * @return {@link ELandscapeType} at the given position.
 	 */
-	public abstract ELandscapeType getLandscapeTypeAt(short x, short y);
+	public abstract ELandscapeType getLandscapeTypeAt(int x, int y);
 
 	/**
 	 * Searches for an enemy around the position of the given movable in it's search radius.
@@ -228,7 +228,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength);
 
-	public abstract boolean hasNoMovableAt(short x, short y);
+	public abstract boolean hasNoMovableAt(int x, int y);
 
 	/**
 	 * 
@@ -241,5 +241,5 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
-	public abstract Movable getMovableAt(short x, short y);
+	public abstract Movable getMovableAt(int x, int y);
 }

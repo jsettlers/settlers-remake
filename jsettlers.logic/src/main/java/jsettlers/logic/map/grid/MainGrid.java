@@ -14,15 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -51,18 +43,9 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.common.map.object.*;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapLine;
-import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.map.shapes.*;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -74,6 +57,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
@@ -113,7 +97,13 @@ import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 
-import java8.util.Optional;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -372,20 +362,11 @@ public final class MainGrid implements Serializable {
 		return movableGrid;
 	}
 
-	/**
-	 * FOR TESTS ONLY!!
-	 *
-	 * @return
-	 */
-	public IAStarPathMap getPathfinderGrid() {
-		return movablePathfinderGrid.pathfinderGrid;
-	}
-
 	public final boolean isInBounds(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
-	public final Movable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
+	final Movable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
 		return new Movable(movablePathfinderGrid, type, pos, player);
 	}
 
@@ -417,7 +398,7 @@ public final class MainGrid implements Serializable {
 		return building;
 	}
 
-	protected final void setLandscapeTypeAt(int x, int y, ELandscapeType newType) {
+	final void setLandscapeTypeAt(int x, int y, ELandscapeType newType) {
 		if (newType.isBlocking) {
 			flagsGrid.setBlockedAndProtected(x, y, true);
 		} else {
@@ -558,7 +539,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		protected final boolean canAddRessourceSign(int x, int y) {
+		final boolean canAddRessourceSign(int x, int y) {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
@@ -571,7 +552,7 @@ public final class MainGrid implements Serializable {
 							EMapObjectType.FOUND_BRIMSTONE);
 		}
 
-		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
+		private boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
 			Movable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
@@ -597,11 +578,11 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private final boolean isMarked(int x, int y) {
+		private boolean isMarked(int x, int y) {
 			return flagsGrid.isMarked(x, y);
 		}
 
-		private final boolean hasProtectedNeighbor(int x, int y) {
+		private boolean hasProtectedNeighbor(int x, int y) {
 			for (EDirection currDir : EDirection.VALUES) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
@@ -609,7 +590,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean hasNeighbourLandscape(int x, int y, ELandscapeType landscape) {
+		private boolean hasNeighbourLandscape(int x, int y, ELandscapeType landscape) {
 			for (ShortPoint2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
 				if (isInBounds(pos.x, pos.y) && landscapeGrid.getLandscapeTypeAt(pos.x, pos.y) == landscape) {
 					return true;
@@ -618,11 +599,11 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean hasSamePlayer(int x, int y, IPathCalculatable requester) {
+		private boolean hasSamePlayer(int x, int y, IPathCalculatable requester) {
 			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayerId();
 		}
 
-		private final boolean isRiver(int x, int y) {
+		private boolean isRiver(int x, int y) {
 			ELandscapeType type = landscapeGrid.getLandscapeTypeAt(x, y);
 			return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 		}
@@ -631,19 +612,11 @@ public final class MainGrid implements Serializable {
 			return landscapeGrid.getLandscapeTypeAt(x, y).isGrass() && !flagsGrid.isProtected(x, y) && !hasBlockedNeighbor((short) x, (short) y);
 		}
 
-		private final boolean hasBlockedNeighbor(short x, short y) {
-			for (EDirection currDir : EDirection.VALUES) {
-				short currX = currDir.getNextTileX(x);
-				short currY = currDir.getNextTileY(y);
-				if (!isInBounds(currX, currY) || flagsGrid.isBlocked(currX, currY)) {
-					return true;
-				}
-			}
-
-			return false;
+		private boolean hasBlockedNeighbor(short x, short y) {
+			return !MapNeighboursArea.stream(x, y).iterate((currX, currY) -> isInBounds(currX, currY) && !flagsGrid.isBlocked(currX, currY));
 		}
 
-		private final boolean isCornPlantable(int x, int y) {
+		private boolean isCornPlantable(int x, int y) {
 			return !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
@@ -651,7 +624,7 @@ public final class MainGrid implements Serializable {
 					&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
-		private final boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
+		private boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
 			return objectsGrid.hasCuttableObject(x, y, type);
 		}
 
@@ -934,7 +907,6 @@ public final class MainGrid implements Serializable {
 		public short getWidth() {
 			return width;
 		}
-
 	}
 
 	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
@@ -1036,11 +1008,9 @@ public final class MainGrid implements Serializable {
 	}
 
 	final class MovablePathfinderGrid extends AbstractMovableGrid {
-
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
-
 		private transient AbstractAStar aStar;
 		transient DijkstraAlgorithm dijkstra; // not private, because it's used by BuildingsGrid
 		private transient InAreaFinder inAreaFinder;
@@ -1049,12 +1019,12 @@ public final class MainGrid implements Serializable {
 			initPathfinders();
 		}
 
-		private final void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 			ois.defaultReadObject();
 			initPathfinders();
 		}
 
-		private final void initPathfinders() {
+		private void initPathfinders() {
 			pathfinderGrid = new PathfinderGrid();
 
 			aStar = new BucketQueueAStar(pathfinderGrid, width, height);
@@ -1156,9 +1126,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D position, EMaterialType materialType) {
-			short x = position.x;
-			short y = position.y;
-			return mapObjectsManager.popMaterial(x, y, materialType);
+			return mapObjectsManager.popMaterial(position.x, position.y, materialType);
 		}
 
 		@Override
@@ -1168,10 +1136,8 @@ public final class MainGrid implements Serializable {
 			if (forced) {
 				position = mapObjectsManager.pushMaterialForced(position.x, position.y, materialType);
 				successful = position != null;
-			} else if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
-				successful = true;
 			} else {
-				successful = false;
+				successful = mapObjectsManager.pushMaterial(position.x, position.y, materialType);
 			}
 
 			if (successful && offer) {
@@ -1183,32 +1149,25 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType) {
+			IPredicate<ELandscapeType> predicate;
+
 			if (searchType == ESearchType.FISHABLE) {
-				for (EDirection direction : EDirection.VALUES) {
-					ShortPoint2D currPos = direction.getNextHexPoint(position);
-					short x = currPos.x, y = currPos.y;
-
-					if (isInBounds(x, y) && landscapeGrid.getLandscapeTypeAt(x, y).isWater()) {
-						return direction;
-					}
-				}
-				return null;
+				predicate = ELandscapeType::isWater;
 			} else if (searchType == ESearchType.RIVER) {
-				for (EDirection direction : EDirection.VALUES) {
-					ShortPoint2D currPos = direction.getNextHexPoint(position);
-					short x = currPos.x, y = currPos.y;
-					ELandscapeType landscapeTypeAt = landscapeGrid.getLandscapeTypeAt(x, y);
-
-					if (isInBounds(x, y)
-							&& (landscapeTypeAt == ELandscapeType.RIVER1 || landscapeTypeAt == ELandscapeType.RIVER2
-									|| landscapeTypeAt == ELandscapeType.RIVER3 || landscapeTypeAt == ELandscapeType.RIVER4)) {
-						return direction;
-					}
-				}
-				return null;
+				predicate = ELandscapeType::isRiver;
 			} else {
 				return null;
 			}
+
+			for (EDirection direction : EDirection.VALUES) {
+				int x = direction.getNextTileX(position.x);
+				int y = direction.getNextTileY(position.y);
+
+				if (isInBounds(x, y) && predicate.evaluate(landscapeGrid.getLandscapeTypeAt(x, y))) {
+					return direction;
+				}
+			}
+			return null;
 		}
 
 		@Override
@@ -1243,13 +1202,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void changeHeightTowards(short x, short y, byte targetHeight) {
+		public void changeHeightTowards(int x, int y, byte targetHeight) {
 			landscapeGrid.flattenAndChangeHeightTowards(x, y, targetHeight);
 			objectsGrid.removeMapObjectTypes(x, y, EMapObjectType.TO_BE_REMOVED_WHEN_FLATTENED);
 		}
 
 		@Override
-		public boolean hasNoMovableAt(short x, short y) {
+		public boolean hasNoMovableAt(int x, int y) {
 			return movableGrid.hasNoMovableAt(x, y);
 		}
 
@@ -1269,9 +1228,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea) {
 			movableGrid.movableEntered(position, movable);
-
 			notifyAttackers(position, movable, informFullArea);
-
 		}
 
 		public void notifyAttackers(ShortPoint2D position, Movable movable, boolean informFullArea) {
@@ -1302,7 +1259,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public Movable getMovableAt(short x, short y) {
+		public Movable getMovableAt(int x, int y) {
 			return movableGrid.getMovableAt(x, y);
 		}
 
@@ -1331,7 +1288,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ELandscapeType getLandscapeTypeAt(short x, short y) {
+		public ELandscapeType getLandscapeTypeAt(int x, int y) {
 			return landscapeGrid.getLandscapeTypeAt(x, y);
 		}
 
@@ -1416,22 +1373,22 @@ public final class MainGrid implements Serializable {
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
 		@Override
-		public final byte getPlayerIdAt(short x, short y) {
+		public final byte getPlayerIdAt(int x, int y) {
 			return partitionsGrid.getPlayerIdAt(x, y);
 		}
 
 		@Override
-		public final void setBorderAt(short x, short y, boolean isBorder) {
+		public final void setBorderAt(int x, int y, boolean isBorder) {
 			graphicsGrid.bordersGrid.set(x + y * width, isBorder);
 		}
 
 		@Override
-		public final boolean isInBounds(short x, short y) {
+		public final boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
 
 		@Override
-		public final short getBlockedPartition(short x, short y) {
+		public final short getBlockedPartition(int x, int y) {
 			return landscapeGrid.getBlockedPartitionAt(x, y);
 		}
 	}
@@ -1471,13 +1428,11 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private final void setProtectedState(FreeMapArea area, boolean setProtected) {
-			for (ShortPoint2D curr : area) {
-				flagsGrid.setProtected(curr.x, curr.y, setProtected);
-			}
+		private void setProtectedState(FreeMapArea area, boolean setProtected) {
+			area.stream().forEach((x, y) -> flagsGrid.setProtected(x, y, setProtected));
 		}
 
-		private final boolean canConstructAt(FreeMapArea area) {
+		private boolean canConstructAt(FreeMapArea area) {
 			for (ShortPoint2D curr : area) {
 				short x = curr.x;
 				short y = curr.y;
@@ -1497,23 +1452,15 @@ public final class MainGrid implements Serializable {
 			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
 			objectsGrid.setBuildingArea(area, null);
 
-			for (ShortPoint2D curr : area) {
-				short x = curr.x;
-				short y = curr.y;
-				if (isInBounds(x, y)) {
-					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
-					// if there is a stack, the position must stay protected
-					flagsGrid.setBlockedAndProtected(x, y, false, stack != null);
-				}
-			}
+			area.stream().filterBounds(width, height).forEach((x, y) -> {
+				StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
+				flagsGrid.setBlockedAndProtected(x, y, false, stack != null); // if there is a stack, the position must stay protected
+			});
 		}
 
 		@Override
 		public final void setBlocked(FreeMapArea area, boolean blocked) {
-			for (ShortPoint2D curr : area) {
-				if (MainGrid.this.isInBounds(curr.x, curr.y))
-					flagsGrid.setBlockedAndProtected(curr.x, curr.y, blocked);
-			}
+			area.stream().filterBounds(width, height).forEach((x, y) -> flagsGrid.setBlockedAndProtected(x, y, blocked));
 		}
 
 		@Override
@@ -1777,7 +1724,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException {
+		public final void save(PlayerState[] playerStates) throws IOException, InterruptedException {
 			boolean savedPausingState = MatchConstants.clock().isPausing();
 			MatchConstants.clock().setPausing(true);
 			try {
@@ -1808,8 +1755,7 @@ public final class MainGrid implements Serializable {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
 				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING WHERE IT WASN'T POSSIBLE! Type: " + type + "  pos: " + position
-						+ "  playerId: "
-						+ playerId);
+						+ "  playerId: " + playerId);
 			}
 		}
 
@@ -1905,5 +1851,4 @@ public final class MainGrid implements Serializable {
 			return Building.getAllBuildings();
 		}
 	}
-
 }

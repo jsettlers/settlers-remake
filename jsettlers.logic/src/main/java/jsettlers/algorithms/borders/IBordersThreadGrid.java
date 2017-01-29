@@ -31,7 +31,7 @@ public interface IBordersThreadGrid {
 	 *            y coordinate
 	 * @return the player that's currently occupying the given position.
 	 */
-	byte getPlayerIdAt(short x, short y);
+	byte getPlayerIdAt(int x, int y);
 
 	/**
 	 * Sets if the given position is a border tile or not.
@@ -44,9 +44,9 @@ public interface IBordersThreadGrid {
 	 *            if true, the given position is a border position<br>
 	 *            if false, the given position is no border position.
 	 */
-	void setBorderAt(short x, short y, boolean isBorder);
+	void setBorderAt(int x, int y, boolean isBorder);
 
-	boolean isInBounds(short x, short y);
+	boolean isInBounds(int x, int y);
 
 	/**
 	 * Gets the blocked partition at the given position.
@@ -57,6 +57,6 @@ public interface IBordersThreadGrid {
 	 *            Y coordinate.
 	 * @return Id of the blocked partition.
 	 */
-	short getBlockedPartition(short x, short y);
+	short getBlockedPartition(int x, int y);
 
 }

@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.algorithms.distances;
 
-import java.util.BitSet;
-
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;
+
+import java.util.BitSet;
 
 /**
  * Created by Andreas Eberle on 06.01.2017.
@@ -30,7 +30,7 @@ public class DistancesCalculationAlgorithm {
 		BitSet next = new BitSet(area);
 
 		setupInitial(width, height, provider, inDistance, next);
-//		DebugImagesHelper.writeDebugImageBoolean("inDistance-" + 0, width, height, (x, y) -> inDistance.get(x + y * width));
+		// DebugImagesHelper.writeDebugImageBoolean("inDistance-" + 0, width, height, (x, y) -> inDistance.get(x + y * width));
 
 		for (int distance = 1; distance <= maxDistance; distance++) {
 			next.andNot(inDistance);
@@ -44,11 +44,9 @@ public class DistancesCalculationAlgorithm {
 				int x = index % width;
 				int y = index / width;
 
-				MapNeighboursArea.iterate(x, y, (neighborX, neighborY) -> { // set neighbors for next run
-							if (0 <= neighborX && neighborX < width && 0 <= neighborY && neighborY < height) {
-								neighbors.set(width * neighborY + neighborX);
-							}
-						});
+				MapNeighboursArea.stream(x, y).filterBounds(width, height).forEach((neighborX, neighborY) -> { // set neighbors for next run
+					neighbors.set(width * neighborY + neighborX);
+				});
 			}
 
 			next = neighbors;
@@ -65,11 +63,9 @@ public class DistancesCalculationAlgorithm {
 				if (provider.test(x, y)) {
 					done.set(width * y + x); // set as done
 
-					MapNeighboursArea.iterate(x, y, (neighborX, neighborY) -> { // set neighbors for next run
-								if (0 <= neighborX && neighborX < width && 0 <= neighborY && neighborY < height) {
-									next.set(width * neighborY + neighborX);
-								}
-							});
+					MapNeighboursArea.stream(x, y).filterBounds(width, height).forEach((neighborX, neighborY) -> { // set neighbors for next run
+						next.set(width * neighborY + neighborX);
+					});
 				}
 			}
 		}

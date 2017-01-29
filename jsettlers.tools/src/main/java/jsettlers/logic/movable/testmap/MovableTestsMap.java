@@ -55,7 +55,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	private final Movable movableMap[][];
 	private final EMaterialType materialTypeMap[][];
-	private final byte materialAmmountMap[][];
+	private final byte materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -65,7 +65,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		this.movableMap = new Movable[width][height];
 		this.materialTypeMap = new EMaterialType[width][height];
-		this.materialAmmountMap = new byte[width][height];
+		this.materialAmountMap = new byte[width][height];
 
 		aStar = new BucketQueueAStar(this, this.width, this.height);
 	}
@@ -92,8 +92,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		if (materialTypeMap[x][y] != null && materialAmmountMap[x][y] > 0) {
-			return new StackMapObject(materialTypeMap[x][y], materialAmmountMap[x][y]);
+		if (materialTypeMap[x][y] != null && materialAmountMap[x][y] > 0) {
+			return new StackMapObject(materialTypeMap[x][y], materialAmountMap[x][y]);
 		} else {
 			return null;
 		}
@@ -144,7 +144,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean hasNoMovableAt(short x, short y) {
+		public boolean hasNoMovableAt(int x, int y) {
 			return isInBounds(x, y) && movableMap[x][y] == null;
 		}
 
@@ -202,8 +202,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
-			if (materialTypeMap[pos.x][pos.y] == materialType && materialAmmountMap[pos.x][pos.y] > 0) {
-				materialAmmountMap[pos.x][pos.y]--;
+			if (materialTypeMap[pos.x][pos.y] == materialType && materialAmountMap[pos.x][pos.y] > 0) {
+				materialAmountMap[pos.x][pos.y]--;
 				return true;
 			} else {
 				return false;
@@ -213,7 +213,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced) {
 			materialTypeMap[pos.x][pos.y] = materialType;
-			materialAmmountMap[pos.x][pos.y]++;
+			materialAmountMap[pos.x][pos.y]++;
 
 			materials.add(pos);
 
@@ -221,7 +221,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Movable getMovableAt(short x, short y) {
+		public Movable getMovableAt(int x, int y) {
 			return movableMap[x][y];
 		}
 
@@ -310,7 +310,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void changeHeightTowards(short x, short y, byte targetHeight) {
+		public void changeHeightTowards(int x, int y, byte targetHeight) {
 		}
 
 		@Override
@@ -360,7 +360,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public ELandscapeType getLandscapeTypeAt(short x, short y) {
+		public ELandscapeType getLandscapeTypeAt(int x, int y) {
 			return ELandscapeType.GRASS;
 		}
 

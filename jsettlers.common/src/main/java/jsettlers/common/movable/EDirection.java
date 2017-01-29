@@ -75,7 +75,7 @@ public enum EDirection {
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static final EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
+	public static EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
 		return getDirection(first.x, first.y, second.x, second.y);
 	}
 
@@ -83,14 +83,18 @@ public enum EDirection {
 	 * LIMITATION: the given ISPosition objects need to be direct neighbors and can not be the same object!! <br>
 	 * calculates the direction between the two given ShortPoint2D objects.
 	 * 
-	 * @param first
-	 *            one ShortPoint2D object
-	 * @param second
-	 *            another ISPisition2D object
+	 * @param sx
+	 *            x of first coordinate
+	 * @param sy
+	 *            y of first coordinate
+	 * @param tx
+	 *            x of second coordinate
+	 * @param ty
+	 *            y of second coordinate
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static final EDirection getDirection(short sx, short sy, short tx, short ty) {
+	public static EDirection getDirection(short sx, short sy, short tx, short ty) {
 		byte dx = (byte) (tx - sx);
 		byte dy = (byte) (ty - sy);
 
@@ -164,7 +168,7 @@ public enum EDirection {
 
 	}
 
-	public final static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
+	public static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
 		int steps;
 		if (dx != 0) {
 			steps = Math.abs(dx);
@@ -175,7 +179,7 @@ public enum EDirection {
 		return getDirection(dx / steps, dy / steps);
 	}
 
-	public final static EDirection getDirection(int dx, int dy) {
+	public static EDirection getDirection(int dx, int dy) {
 		for (EDirection currDir : VALUES) {
 			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
 				return currDir;
@@ -185,20 +189,20 @@ public enum EDirection {
 		return null;
 	}
 
-	public final short getNextTileX(int x) {
-		return (short) (x + gridDeltaX);
+	public final int getNextTileX(int x) {
+		return x + gridDeltaX;
 	}
 
-	public final short getNextTileY(int y) {
-		return (short) (y + gridDeltaY);
+	public final int getNextTileY(int y) {
+		return y + gridDeltaY;
 	}
 
-	public final short getNextTileX(int x, int steps) {
-		return (short) (x + gridDeltaX * steps);
+	public final int getNextTileX(int x, int steps) {
+		return x + gridDeltaX * steps;
 	}
 
-	public final short getNextTileY(int y, int steps) {
-		return (short) (y + gridDeltaY * steps);
+	public final int getNextTileY(int y, int steps) {
+		return y + gridDeltaY * steps;
 	}
 
 	/**
@@ -259,5 +263,4 @@ public enum EDirection {
 	public final boolean isHorizontal() {
 		return isHorizontal;
 	}
-
 }

@@ -41,7 +41,7 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	 *         false if there is no movable.
 	 */
 	@Override
-	public abstract boolean hasNoMovableAt(short x, short y);
+	public abstract boolean hasNoMovableAt(int x, int y);
 
 	public abstract void leavePosition(ShortPoint2D position, Movable movable);
 
