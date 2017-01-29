@@ -241,19 +241,19 @@ public final class PartitionsGrid implements Serializable {
 	 *            The position of the tower.
 	 * @return
 	 */
-	public Iterable<ShortPoint2D> removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+	public CoordinateStream removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
 		if (tower == null) {
-			return new LinkedList<ShortPoint2D>();
+			return CoordinateStream.EMPTY;
 		}
 
 		// reduce the tower counter
-		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
-
+		CoordinateStream towerStream = tower.area.stream();
+		changeTowerCounter(tower.playerId, towerStream, -1);
 		checkOtherTowersInArea(tower);
 
-		return tower.area;
+		return towerStream;
 	}
 
 	/**
@@ -264,11 +264,11 @@ public final class PartitionsGrid implements Serializable {
 	 * @param newPlayerId
 	 * @return
 	 */
-	public Iterable<ShortPoint2D> changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId) {
-		// get the tower object and the informations of it.
+	public CoordinateStream changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId) {
+		// get the tower object and the information of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(towerPosition);
 		if (tower == null) {
-			return new LinkedList<ShortPoint2D>(); // return if no tower has been found
+			return CoordinateStream.EMPTY; // return if no tower has been found
 		}
 
 		// reduce the tower counter
@@ -278,14 +278,13 @@ public final class PartitionsGrid implements Serializable {
 		checkOtherTowersInArea(tower);
 
 		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower);
-		return occupyAreaOfTower(newTower);
+		occupyAreaOfTower(newTower);
+		return newTower.area.stream();
 	}
 
-	private IMapArea occupyAreaOfTower(PartitionOccupyingTower tower) {
+	private void occupyAreaOfTower(PartitionOccupyingTower tower) {
 		// set the tower counter of the groundArea to 0 => the ground area will be occupied
-		for (ShortPoint2D currPos : tower.groundArea) {
-			towers[currPos.x + currPos.y * width] = 0;
-		}
+		tower.groundArea.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
 		// occupy the area for the new player
 		occupyAreaByTower(tower.playerId, tower.area.stream(), tower.areaBorders);
@@ -293,8 +292,6 @@ public final class PartitionsGrid implements Serializable {
 
 		// recalculate the tower counter for the ground area
 		recalculateTowerCounter(tower, tower.groundArea);
-
-		return tower.area;
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
@@ -322,7 +319,6 @@ public final class PartitionsGrid implements Serializable {
 	 * @param area
 	 */
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
-
 		area.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
 		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius,
@@ -406,25 +402,16 @@ public final class PartitionsGrid implements Serializable {
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
-			if (blockingProvider.isBlocked(pos.x, pos.y)) {
-				continue; // do not check the blocked partition
-			}
+			short innerPartition = newPartitionsMap[i];
 
-			final short innerPartition = newPartitionsMap[i];
-
-			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
-				@Override
-				public boolean contains(int x, int y) {
-					return partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition];
-				}
-			}, pos, borderVisitor, true);
+			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos,
+					borderVisitor, true);
 
 			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
 	}
 
-	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
-			LinkedList<BorderPartitionInfo> partitionsList) {
+	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition, LinkedList<BorderPartitionInfo> partitionsList) {
 		if (partitionsList.isEmpty()) {
 			return; // nothing to do
 		}
@@ -618,19 +605,11 @@ public final class PartitionsGrid implements Serializable {
 	 */
 	private void relabelArea(final short oldPartition, ShortPoint2D relabelStartPos, final short newPartition) {
 		// relabel the partition
-		IContainingProvider containingProvider = new IContainingProvider() {
-			@Override
-			public boolean contains(int x, int y) {
-				return partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
-			}
-		};
+		IContainingProvider containingProvider = (x, y) -> partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
 
-		IAreaVisitor relabelAreaVisitor = new IAreaVisitor() {
-			@Override
-			public boolean visit(int x, int y) {
-				changePartitionUncheckedAt(x, y, newPartition);
-				return true;
-			}
+		IAreaVisitor relabelAreaVisitor = (x, y) -> {
+			changePartitionUncheckedAt(x, y, newPartition);
+			return true;
 		};
 		AreaTraversingAlgorithm.traverseArea(containingProvider, relabelAreaVisitor, relabelStartPos, width, height);
 	}

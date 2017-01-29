@@ -74,6 +74,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
@@ -427,16 +428,16 @@ public final class MainGrid implements Serializable {
 		landscapeGrid.setLandscapeTypeAt(x, y, newType);
 	}
 
-	final void checkPositionThatChangedPlayer(ShortPoint2D position) {
-		if (!isInBounds(position.x, position.y)) {
+	final void checkPositionThatChangedPlayer(int x, int y) {
+		if (!isInBounds(x, y)) {
 			return;
 		}
 
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, position);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, x, y);
 
-		Movable movable = movableGrid.getMovableAt(position.x, position.y);
+		Movable movable = movableGrid.getMovableAt(x, y);
 		if (movable != null) {
-			movable.checkPlayerOfPosition(partitionsGrid.getPlayerAt(position.x, position.y));
+			movable.checkPlayerOfPosition(partitionsGrid.getPlayerAt(x, y));
 		}
 	}
 
@@ -751,8 +752,8 @@ public final class MainGrid implements Serializable {
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-										: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1110,7 +1111,7 @@ public final class MainGrid implements Serializable {
 			partitionsGrid.changePlayerAt(position, player.playerId);
 			bordersThread.checkPosition(position);
 
-			checkPositionThatChangedPlayer(position);
+			checkPositionThatChangedPlayer(position.x, position.y);
 		}
 
 		@Override
@@ -1607,25 +1608,23 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void occupyAreaByTower(Player player, MapCircle influencingArea, FreeMapArea groundArea) {
 			partitionsGrid.addTowerAndOccupyArea(player.playerId, influencingArea, groundArea);
-			checkAllPositionsForEnclosedBlockedAreas(influencingArea); // TODO @Andreas Eberle only test the borders of changed areas!!
+			checkAllPositionsForEnclosedBlockedAreas(influencingArea.stream()); // TODO @Andreas Eberle only test the borders of changed areas!!
 		}
 
 		@Override
 		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
-			Iterable<ShortPoint2D> positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
+			CoordinateStream positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
 			checkAllPositionsForEnclosedBlockedAreas(positions);
 		}
 
 		@Override
 		public void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, FreeMapArea groundArea) {
-			Iterable<ShortPoint2D> positions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId);
+			CoordinateStream positions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId);
 			checkAllPositionsForEnclosedBlockedAreas(positions);
 		}
 
-		private void checkAllPositionsForEnclosedBlockedAreas(Iterable<ShortPoint2D> area) {
-			for (ShortPoint2D curr : area) {
-				checkPositionThatChangedPlayer(curr);
-			}
+		private void checkAllPositionsForEnclosedBlockedAreas(CoordinateStream area) {
+			area.forEach(MainGrid.this::checkPositionThatChangedPlayer);
 		}
 
 		@Override

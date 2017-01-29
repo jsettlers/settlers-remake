@@ -27,6 +27,12 @@ import java.util.List;
  * Created by Andreas Eberle on 12.01.2017.
  */
 public abstract class CoordinateStream implements Serializable {
+	public static final CoordinateStream EMPTY = new CoordinateStream() {
+		@Override
+		public boolean iterate(IBooleanCoordinateFunction function) {
+			return true;
+		}
+	};
 
 	public <T> Optional<T> iterateForResult(ICoordinateFunction<Optional<T>> function) {
 		Mutable<Optional<T>> result = new Mutable<>(Optional.empty());
