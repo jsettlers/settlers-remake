@@ -29,32 +29,6 @@ import java.util.Iterator;
 public class MapLine implements IMapArea {
 	private static final long serialVersionUID = -5934808006015795383L;
 
-	private class LineIterator implements Iterator<ShortPoint2D> {
-		private ShortPoint2D next = start;
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			ShortPoint2D next = this.next;
-			if (next.equals(end)) {
-				this.next = null;
-			} else {
-				EDirection dir = EDirection.getApproxDirection(next, end);
-				this.next = dir.getNextHexPoint(next);
-			}
-			return next;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 	private final ShortPoint2D start;
 	private final ShortPoint2D end;
 
@@ -112,5 +86,31 @@ public class MapLine implements IMapArea {
 				return true;
 			}
 		};
+	}
+
+	private class LineIterator implements Iterator<ShortPoint2D> {
+		private ShortPoint2D next = start;
+
+		@Override
+		public boolean hasNext() {
+			return next != null;
+		}
+
+		@Override
+		public ShortPoint2D next() {
+			ShortPoint2D next = this.next;
+			if (next.equals(end)) {
+				this.next = null;
+			} else {
+				EDirection dir = EDirection.getApproxDirection(next, end);
+				this.next = dir.getNextHexPoint(next);
+			}
+			return next;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

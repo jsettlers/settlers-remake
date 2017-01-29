@@ -79,7 +79,8 @@ public final class MapRectangle implements IMapArea {
 	/**
 	 * Gets the first x coordinate contained by a line.
 	 *
-	 * @param line The line relative to the first line of this rectangle.
+	 * @param line
+	 *            The line relative to the first line of this rectangle.
 	 */
 	public final int getLineStartX(int line) {
 		return minX + getOffsetForLine(line);
@@ -88,7 +89,8 @@ public final class MapRectangle implements IMapArea {
 	/**
 	 * Gets the last x coordinate contained by a line.
 	 *
-	 * @param line The line relative to the first line of this rectangle.
+	 * @param line
+	 *            The line relative to the first line of this rectangle.
 	 */
 	public final int getLineEndX(int line) {
 		return getLineStartX(line) + this.width - 1;
@@ -112,6 +114,35 @@ public final class MapRectangle implements IMapArea {
 
 	public short getMinY() {
 		return minY;
+	}
+
+	public final short getWidth() {
+		return width;
+	}
+
+	public final short getHeight() {
+		return height;
+	}
+
+	@Override
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (int relativeY = 0; relativeY < height; relativeY++) {
+					int lineStartX = getLineStartX(relativeY);
+
+					for (int relativeX = 0; relativeX < width; relativeX++) {
+						int x = lineStartX + relativeX;
+						int y = getLineY(relativeY);
+						if (!function.apply(x, y)) {
+							return false;
+						}
+					}
+				}
+				return true;
+			}
+		};
 	}
 
 	private class RectangleIterator implements Iterator<ShortPoint2D> {
@@ -144,34 +175,5 @@ public final class MapRectangle implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException("Cannot remove tiles from a Shape");
 		}
-	}
-
-	public final short getWidth() {
-		return width;
-	}
-
-	public final short getHeight() {
-		return height;
-	}
-
-	@Override
-	public CoordinateStream stream() {
-		return new CoordinateStream() {
-			@Override
-			public boolean iterate(IBooleanCoordinateFunction function) {
-				for (int relativeY = 0; relativeY < height; relativeY++) {
-					int lineStartX = getLineStartX(relativeY);
-
-					for (int relativeX = 0; relativeX < width; relativeX++) {
-						int x = lineStartX + relativeX;
-						int y = getLineY(relativeY);
-						if (!function.apply(x, y)) {
-							return false;
-						}
-					}
-				}
-				return true;
-			}
-		};
 	}
 }

@@ -52,25 +52,6 @@ public class MapNeighboursArea implements IMapArea {
 		return new NeighbourIterator();
 	}
 
-	private class NeighbourIterator implements Iterator<ShortPoint2D> {
-		int directionIndex = 0;
-
-		@Override
-		public boolean hasNext() {
-			return directionIndex < EDirection.VALUES.length;
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			return EDirection.VALUES[directionIndex++].getNextHexPoint(x, y);
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 	@Override
 	public CoordinateStream stream() {
 		return stream(x, y);
@@ -91,5 +72,24 @@ public class MapNeighboursArea implements IMapArea {
 				return true;
 			}
 		};
+	}
+
+	private class NeighbourIterator implements Iterator<ShortPoint2D> {
+		int directionIndex = 0;
+
+		@Override
+		public boolean hasNext() {
+			return directionIndex < EDirection.VALUES.length;
+		}
+
+		@Override
+		public ShortPoint2D next() {
+			return EDirection.VALUES[directionIndex++].getNextHexPoint(x, y);
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

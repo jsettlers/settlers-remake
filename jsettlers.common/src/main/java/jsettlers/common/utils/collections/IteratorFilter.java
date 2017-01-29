@@ -60,12 +60,12 @@ public class IteratorFilter<T> implements Iterable<T> {
 	}
 
 	public static class FilteredIterator<T> implements Iterator<T> {
-		private final Iterator<? extends T> iter;
+		private final Iterator<? extends T> iterator;
 		private final IPredicate<T> predicate;
 		private T next;
 
-		public FilteredIterator(Iterator<? extends T> iter, IPredicate<T> predicate) {
-			this.iter = iter;
+		public FilteredIterator(Iterator<? extends T> iterator, IPredicate<T> predicate) {
+			this.iterator = iterator;
 			this.predicate = predicate;
 
 			findNext();
@@ -80,8 +80,8 @@ public class IteratorFilter<T> implements Iterable<T> {
 		}
 
 		private void findNext() {
-			while (iter.hasNext()) {
-				T curr = iter.next();
+			while (iterator.hasNext()) {
+				T curr = iterator.next();
 				if (predicate.evaluate(curr)) {
 					this.next = curr;
 					break;
@@ -99,7 +99,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 		@Override
 		public void remove() {
 			assert this.next == null : "remove may only be called after next() and before hasNext()";
-			iter.remove();
+			iterator.remove();
 		}
 	}
 }

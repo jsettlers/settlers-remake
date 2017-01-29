@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -31,28 +31,28 @@ import java.util.NoSuchElementException;
 public class Parallelogram implements IMapArea {
 	private static final long serialVersionUID = -8093699931739836499L;
 
-	private final short minx;
-	private final short miny;
-	private final short maxx;
-	private final short maxy;
+	private final short minX;
+	private final short minY;
+	private final short maxX;
+	private final short maxY;
 
 	/**
-	 * Creates a new shape form (minx, miny) to (maxx, maxy) including.
+	 * Creates a new shape form (minX, minY) to (maxX, maxY) including.
 	 * 
-	 * @param minx
+	 * @param minX
 	 *            The minimal x pixel
-	 * @param miny
+	 * @param minY
 	 *            The minimal y coordiante a pixel has.
-	 * @param maxx
+	 * @param maxX
 	 *            The max x
-	 * @param maxy
+	 * @param maxY
 	 *            The max y
 	 */
-	public Parallelogram(short minx, short miny, short maxx, short maxy) {
-		this.minx = minx;
-		this.miny = miny;
-		this.maxx = maxx;
-		this.maxy = maxy;
+	public Parallelogram(short minX, short minY, short maxX, short maxY) {
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
 	}
 
 	@Override
@@ -62,41 +62,12 @@ public class Parallelogram implements IMapArea {
 
 	@Override
 	public boolean contains(int x, int y) {
-		return x >= minx && x <= maxx && y >= miny && y <= maxy;
+		return x >= minX && x <= maxX && y >= minY && y <= maxY;
 	}
 
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return new ParallelogramIterator();
-	}
-
-	class ParallelogramIterator implements Iterator<ShortPoint2D> {
-		int x = minx;
-		int y = miny;
-
-		@Override
-		public boolean hasNext() {
-			return y <= maxy && x <= maxx; // maxx check for empty.
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			ShortPoint2D position = new ShortPoint2D(x, y);
-			x++;
-			if (x > maxx) {
-				x = minx;
-				y++;
-			}
-			return position;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	@Override
@@ -116,8 +87,8 @@ public class Parallelogram implements IMapArea {
 		return new CoordinateStream() {
 			@Override
 			public boolean iterate(IBooleanCoordinateFunction function) {
-				for (int y = miny; y <= maxy; y++) {
-					for (int x = minx; x <= maxx; x++) {
+				for (int y = minY; y <= maxY; y++) {
+					for (int x = minX; x <= maxX; x++) {
 						if (!function.apply(x, y)) {
 							return false;
 						}
@@ -126,5 +97,34 @@ public class Parallelogram implements IMapArea {
 				return true;
 			}
 		};
+	}
+
+	private class ParallelogramIterator implements Iterator<ShortPoint2D> {
+		int x = minX;
+		int y = minY;
+
+		@Override
+		public boolean hasNext() {
+			return y <= maxY && x <= maxX; // maxx check for empty.
+		}
+
+		@Override
+		public ShortPoint2D next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			ShortPoint2D position = new ShortPoint2D(x, y);
+			x++;
+			if (x > maxX) {
+				x = minX;
+				y++;
+			}
+			return position;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }
