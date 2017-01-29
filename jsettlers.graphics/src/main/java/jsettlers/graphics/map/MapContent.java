@@ -42,7 +42,6 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -56,14 +55,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.statistics.IGameTimeProvider;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.ActionHandler;
-import jsettlers.graphics.action.ActionThreadBlockingListener;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAreaAction;
-import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.graphics.action.*;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -104,7 +96,8 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
-	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0, 2);
+	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0,
+			2);
 	private static final float UI_OVERLAY_Z = .95f;
 
 	private final class ZoomEventHandler implements GOModalEventHandler {
@@ -334,9 +327,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private float messageAlpha(IMessage m) {
 		int age = (int) m.getAge();
 		return age < 1500
-				? Math.min(1,  age/1000f)
+				? Math.min(1, age / 1000f)
 				: Math.max(0,
-					1f - (float)age / IMessage.MESSAGE_TTL);
+						1f - (float) age / IMessage.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -354,13 +347,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
-					drawer.setColor(1, 1, 1, a/2);
+					drawer.setColor(1, 1, 1, a / 2);
 				} else if (bright < 2f) {
 					// bad visibility
-					drawer.setColor(0, 0, 0, a/2);
+					drawer.setColor(0, 0, 0, a / 2);
 				}
-				for (int i=-1; i<3; i++) {
-					drawer.drawString(x+i, y-1, name);
+				for (int i = -1; i < 3; i++) {
+					drawer.drawString(x + i, y - 1, name);
 				}
 				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
 				drawer.drawString(x, y, name);
@@ -515,57 +508,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawDebugColors() {
-		try {
-			IMapArea tiles = new MapShapeFilter(context.getScreenArea(), map.getWidth(),
-					map.getHeight());
-			GLDrawContext gl = this.context.getGl();
+		GLDrawContext gl = this.context.getGl();
 
-			float[] shape = new float[] {
-					0,
-					4,
-					.5f,
-					0,
-					0,
-					-3,
-					2,
-					.5f,
-					0,
-					0,
-					-3,
-					-2,
-					.5f,
-					0,
-					0,
-					0,
-					-4,
-					.5f,
-					0,
-					0,
-					0,
-					-4,
-					.5f,
-					0,
-					0,
-					3,
-					-2,
-					.5f,
-					0,
-					0,
-					3,
-					2,
-					.5f,
-					0,
-					0,
-					0,
-					4,
-					.5f,
-					0,
-					0,
-			};
+		float[] shape = new float[] { 0, 4, .5f, 0, 0, -3, 2, .5f, 0, 0, -3, -2, .5f, 0, 0, 0, -4, .5f, 0, 0, 0, -4, .5f, 0, 0, 3, -2, .5f, 0, 0, 3,
+				2, .5f, 0, 0, 0, 4, .5f, 0, 0, };
 
-			for (ShortPoint2D pos : tiles) {
-				short x = pos.x;
-				short y = pos.y;
+		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
+			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
 					this.context.beginTileContext(x, y);
@@ -576,18 +525,17 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					gl.drawQuadWithTexture(null, shape);
 					context.endTileContext();
 				}
+			} catch (IllegalBufferException e) {
+				// TODO: Create a crash report
+				// This should never happen since we only use texture 0 (no texture)
 			}
-		} catch (IllegalBufferException e) {
-			// TODO: Create a crash report
-			// This should never happen since we only use texture 0 (no texture)
-		}
+		});
 	}
 
 	/**
 	 * Draws the background.
 	 *
-	 * @param gl
-	 * @param screen2
+	 * @param screen
 	 */
 	private void drawBackground(FloatRectangle screen) {
 		this.background.drawMapContent(this.context, screen);
@@ -788,8 +736,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void finished(GOEvent event) {
-			updateSelectionArea(
-					((GODrawEvent) event).getDrawPosition(), true);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), true);
 		}
 
 		@Override
@@ -799,8 +746,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			updateSelectionArea(
-					((GODrawEvent) event).getDrawPosition(), false);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), false);
 		}
 
 	};

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,7 +18,6 @@ import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
-
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;
 
 /**
@@ -72,14 +71,14 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the distance of map coordinates to the center.
 	 *
-	 * @param x The x coordinate.
-	 * @param y The y coordinate
+	 * @param x
+	 *            The x coordinate.
+	 * @param y
+	 *            The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
-		int dx = x - centerX;
-		int dy = y - centerY;
-		return getSquaredDistance(dx, dy);
+		return getSquaredDistance(x - centerX, y - centerY);
 	}
 
 	/**
@@ -98,10 +97,6 @@ public final class MapCircle implements IMapArea {
 		return (float) Math.sqrt(squared);
 	}
 
-	public static final float getDistanceSquared(ShortPoint2D pos1, ShortPoint2D pos2) {
-		return getDistanceSquared(pos1.x, pos1.y, pos2.x, pos2.y);
-	}
-
 	public static final float getDistanceSquared(int x1, int y1, int x2, int y2) {
 		int dx = x1 - x2;
 		int dy = y1 - y2;
@@ -111,7 +106,8 @@ public final class MapCircle implements IMapArea {
 	/**
 	 * Gets the half width of a line, roundend.
 	 *
-	 * @param relativeY The x coordinate of the line relative to the center
+	 * @param relativeY
+	 *            The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected final float getHalfLineWidth(int relativeY) {
@@ -131,10 +127,6 @@ public final class MapCircle implements IMapArea {
 
 	public final double distanceToCenter(int x, int y) {
 		return Math.sqrt(squaredDistanceToCenter(x, y));
-	}
-
-	public final boolean isCloserToCenter(int x, int y, int minradius) {
-		return squaredDistanceToCenter(x, y) < minradius * minradius;
 	}
 
 	public final float getRadius() {

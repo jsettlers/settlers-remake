@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
@@ -26,6 +23,9 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -38,7 +38,7 @@ public interface IGuiInputGrid {
 
 	short getHeight();
 
-	IBuilding getBuildingAt(short x, short y);
+	IBuilding getBuildingAt(int x, int y);
 
 	boolean isInBounds(ShortPoint2D position);
 
@@ -60,8 +60,7 @@ public interface IGuiInputGrid {
 	 *            If this is false, only the given position will be checked.
 	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ShortPoint2D getConstructablePosition(ShortPoint2D position,
-			EBuildingType type, byte player, boolean useNeighbors);
+	ShortPoint2D getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player, boolean useNeighbors);
 
 	/**
 	 * Saves the map with the given {@link UIState}.
@@ -71,7 +70,7 @@ public interface IGuiInputGrid {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException;
+	void save(PlayerState[] playerStates) throws IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -98,7 +97,7 @@ public interface IGuiInputGrid {
 	 * @param y
 	 *            y coordinate of the position.
 	 */
-	void positionClicked(short x, short y);
+	void positionClicked(int x, int y);
 
 	/**
 	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.
@@ -111,8 +110,7 @@ public interface IGuiInputGrid {
 	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings
 	 *            .getBuildingTypesRequestingMaterial(materialType).
 	 */
-	void setMaterialDistributionSettings(ShortPoint2D managerPosition,
-			EMaterialType materialType, float[] probabilities);
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition,			EMaterialType materialType, float[] probabilities);
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.

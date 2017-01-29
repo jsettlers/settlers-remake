@@ -156,10 +156,8 @@ public final class HexGridArea implements IMapArea {
 		return new CoordinateStream() {
 			@Override
 			public boolean iterate(IBooleanCoordinateFunction function) {
-				if (startRadius == 0) {
-					if (!function.apply(cX, cY)) {
-						return false;
-					}
+				if (startRadius == 0 && !function.apply(cX, cY)) {
+					return false;
 				}
 
 				int x = cX;
@@ -182,6 +180,7 @@ public final class HexGridArea implements IMapArea {
 				return true;
 			}
 		};
+
 	}
 
 	public CoordinateStream streamBorder() {

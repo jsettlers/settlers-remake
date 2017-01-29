@@ -1692,7 +1692,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final IBuilding getBuildingAt(short x, short y) {
+		public final IBuilding getBuildingAt(int x, int y) {
 			return objectsGrid.getBuildingAt(x, y);
 		}
 
@@ -1760,7 +1760,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void positionClicked(short x, short y) {
+		public void positionClicked(int x, int y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
 					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
 					+ partitionsGrid.getTowerCountAt(x, y) + " blocked partition: " + landscapeGrid.getBlockedPartitionAt(x, y) + " landscapeType: "

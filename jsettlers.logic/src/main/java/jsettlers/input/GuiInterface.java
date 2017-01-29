@@ -14,18 +14,11 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -40,37 +33,9 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.action.ChangeTradingRequestAction;
-import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.action.PointAction;
-import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAreaAction;
-import jsettlers.graphics.action.SetBuildingPriorityAction;
-import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
-import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.action.SetMaterialProductionAction;
-import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
-import jsettlers.graphics.action.SetTradingWaypointAction;
-import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.action.SoldierAction;
-import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
+import jsettlers.graphics.action.*;
+import jsettlers.input.tasks.*;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskType;
-import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MovableGuiTask;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
-import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.tasks.SetMaterialProductionGuiTask;
-import jsettlers.input.tasks.SetTradingWaypointGuiTask;
-import jsettlers.input.tasks.SimpleGuiTask;
-import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.MatchConstants;
@@ -78,6 +43,8 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import java.util.*;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -528,16 +495,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void selectArea(SelectAreaAction action) {
 		final SelectionSet selectionSet = new SelectionSet();
 
-		for (final ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			final IGuiMovable movable = grid.getMovable(curr.x, curr.y);
+		action.getArea().stream().filterBounds(grid.getWidth(), grid.getHeight()).forEach((x, y) -> {
+			final IGuiMovable movable = grid.getMovable(x, y);
 			if (movable != null && canSelectPlayer(movable.getPlayerId())) {
 				selectionSet.add(movable);
 			}
-			final IBuilding building = grid.getBuildingAt(curr.x, curr.y);
+			final IBuilding building = grid.getBuildingAt(x, y);
 			if (building != null && canSelectPlayer(building.getPlayerId())) {
 				selectionSet.add(building);
 			}
-		}
+		});
 
 		setSelection(selectionSet);
 	}
@@ -663,13 +630,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	@Override
 	public void refreshSelection() {
 		if (!currentSelection.isEmpty()) {
-			SelectionSet newSelection = new SelectionSet();
-
-			for (ISelectable selected : currentSelection) {
-				if (selected.isSelected() && canSelectPlayer(selected.getPlayerId())) {
-					newSelection.add(selected);
-				}
-			}
+			SelectionSet newSelection = new SelectionSet(currentSelection.stream()
+					.filter(ISelectable::isSelected)
+					.filter(selected -> canSelectPlayer(selected.getPlayerId()))
+					.collect(Collectors.toList()));
 
 			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {
 				setSelection(newSelection);
