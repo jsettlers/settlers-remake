@@ -14,12 +14,22 @@ public abstract class MapSetupPresenter {
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
-    public MapSetupPresenter(MapSetupView view, GameStarter gameStarter) {
+    public MapSetupPresenter(MapSetupView view, GameStarter gameStarter, IMapDefinition mapDefinition) {
         this.view = view;
         this.gameStarter = gameStarter;
-        this.mapDefinition = gameStarter.getMapDefinition();
+        this.mapDefinition = mapDefinition;
     }
 
+    public void initView() {
+        view.setNumberOfPlayersOptions(allowedPlayerCounts());
+        view.setStartResourcesOptions(startResourcesOptions());
+        view.setPeaceTimeOptions(peaceTimeOptions());
+        view.setMapImage(mapDefinition.getImage());
+    }
+
+    public void updateViewTitle() {
+        view.setMapName(mapDefinition.getMapName());
+    }
 
     public void viewFinished() {
         if (gameStarter.getStartingGame() == null) {
@@ -34,16 +44,12 @@ public abstract class MapSetupPresenter {
         gameStarter.setMapDefinition(null);
     }
 
-    public String getMapName() {
-        return mapDefinition.getMapName();
-    }
+    public abstract void startGame();
 
-    public short[] getMapImage() {
-        return mapDefinition.getImage();
-    }
+
 
     //TODO return wrapper object with suitable toString()
-    public Integer[] getAllowedPlayerCounts() {
+    private Integer[] allowedPlayerCounts() {
         int maxPlayers = mapDefinition.getMaxPlayers();
         int minPlayers = mapDefinition.getMinPlayers();
         int numberOfOptions = maxPlayers - minPlayers + 1;
@@ -58,16 +64,14 @@ public abstract class MapSetupPresenter {
     }
 
     //TODO return wrapper object with suitable toString()
-    public EMapStartResources[] getStartResourcesOptions() {
+    private EMapStartResources[] startResourcesOptions() {
         return EMapStartResources.values();
     }
 
     //TODO return wrapper object with suitable toString()
-    public String[] getPeaceTimeOptions() {
+    private String[] peaceTimeOptions() {
         return new String[] { "Without" };
     }
-
-    public abstract void startGame();
 
 
 

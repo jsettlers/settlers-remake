@@ -23,7 +23,6 @@ public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
         this.gameStarter = gameStarter;
         this.navigator = navigator;
 
-        //TODO why would connector be null? cant remember why i wrote it this way
         connector = gameStarter.getJoinPhaseMultiplayerConnector();
         connector.setMultiplayerListener(this);
     }

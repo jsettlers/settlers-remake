@@ -17,6 +17,6 @@ public class NewSinglePlayerSetupFragment extends MapSetupFragment implements Ne
     protected NewSinglePlayerSetupPresenter getPresenter() {
         GameStarter gameStarter = (GameStarter) getActivity().getApplication();
         MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-        return new NewSinglePlayerSetupPresenter(this, gameStarter, navigator);
+        return new NewSinglePlayerSetupPresenter(this, navigator, gameStarter, gameStarter.getMapDefinition());
     }
 }

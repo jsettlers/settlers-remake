@@ -3,6 +3,7 @@ package jsettlers.main.android.mainmenu.presenters;
 import java.util.List;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.menu.IStartingGame;
@@ -25,13 +26,14 @@ public class NewMultiPlayerSetupPresenter extends MapSetupPresenter implements I
     private final IJoinPhaseMultiplayerGameConnector connector;
     private final String myPlayerId;
 
-    public NewMultiPlayerSetupPresenter(NewMultiPlayerSetupView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, gameStarter);
+    public NewMultiPlayerSetupPresenter(NewMultiPlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IJoinPhaseMultiplayerGameConnector connector, IMapDefinition mapDefinition) {
+        super(view, gameStarter, mapDefinition);
         this.view = view;
         this.gameStarter = gameStarter;
+        this.connector = connector;
         this.navigator = navigator;
 
-        connector = gameStarter.getJoinPhaseMultiplayerConnector();
+        //connector = gameStarter.getJoinPhaseMultiplayerConnector();
         connector.setMultiplayerListener(this);
         connector.getPlayers().setListener(this);
 
