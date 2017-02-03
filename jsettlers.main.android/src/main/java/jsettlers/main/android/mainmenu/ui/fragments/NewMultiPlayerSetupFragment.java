@@ -17,8 +17,6 @@ import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
@@ -36,9 +34,7 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
 
     @Override
     protected NewMultiPlayerSetupPresenter getPresenter() {
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-        presenter = PresenterFactory.createMultiPlayerSetupPresenter(getActivity(), this);// new NewMultiPlayerSetupPresenter(this, gameStarter, navigator);
+        presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this);// new NewMultiPlayerSetupPresenter(this, gameStarter, navigator);
         return presenter;
     }
 
