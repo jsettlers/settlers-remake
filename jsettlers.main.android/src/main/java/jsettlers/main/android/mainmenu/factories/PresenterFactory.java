@@ -8,6 +8,8 @@ import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenterImpl;
+import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.LoadSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
@@ -98,9 +100,12 @@ public class PresenterFactory {
     public static JoinMultiPlayerSetupPresenter createJoinMultiPlayerSetupPresenter(Activity activity, JoinMultiPlayerSetupView view) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
-
         IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
 
-        return new JoinMultiPlayerSetupPresenter(view, navigator, gameStarter, connector);
+        if (connector == null/* || mapDefinition == null */) {
+            return new JoinMultiPlayerSetupPresenterPop(navigator);
+        } else {
+            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector);
+        }
     }
 }
