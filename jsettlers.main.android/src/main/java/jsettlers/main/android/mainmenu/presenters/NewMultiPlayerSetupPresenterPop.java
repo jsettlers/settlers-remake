@@ -12,7 +12,7 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPresenter {
     public NewMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
-
+        navigator.popToMenuRoot();
     }
 
     @Override

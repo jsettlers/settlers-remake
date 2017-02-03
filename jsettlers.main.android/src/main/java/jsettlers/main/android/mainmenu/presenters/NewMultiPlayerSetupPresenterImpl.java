@@ -33,7 +33,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         this.connector = connector;
         this.navigator = navigator;
 
-        //connector = gameStarter.getJoinPhaseMultiplayerConnector();
         connector.setMultiplayerListener(this);
         connector.getPlayers().setListener(this);
 

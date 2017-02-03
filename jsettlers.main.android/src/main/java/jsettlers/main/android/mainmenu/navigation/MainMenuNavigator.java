@@ -15,4 +15,6 @@ public interface MainMenuNavigator {
 
     void showGame();
     void resumeGame();
+
+    void popToMenuRoot();
 }
