@@ -14,7 +14,7 @@ import android.app.Activity;
  */
 
 public class PresenterFactory {
-    public static NewMultiPlayerSetupPresenter createMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view) {
+    public static NewMultiPlayerSetupPresenter createNewMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view) {
         MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
