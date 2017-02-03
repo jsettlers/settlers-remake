@@ -6,6 +6,8 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
+import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.LoadSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
@@ -13,6 +15,8 @@ import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterIm
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
+import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
@@ -52,6 +56,13 @@ public class PresenterFactory {
         return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
 
+    public static JoinMultiPlayerPickerPresenter createJoinMultiPlayerPickerPresenter(Activity activity, JoinMultiPlayerPickerView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+
+        return new JoinMultiPlayerPickerPresenter(view, navigator, gameStarter);
+    }
+
     /**
      * Setup screen presenters
      */
@@ -82,5 +93,14 @@ public class PresenterFactory {
         } else {
             return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, mapDefinition);
         }
+    }
+
+    public static JoinMultiPlayerSetupPresenter createJoinMultiPlayerSetupPresenter(Activity activity, JoinMultiPlayerSetupView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+
+        IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
+
+        return new JoinMultiPlayerSetupPresenter(view, navigator, gameStarter, connector);
     }
 }

@@ -1,6 +1,7 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -31,10 +32,7 @@ public class JoinMultiPlayerSetupFragment extends Fragment implements JoinMultiP
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-
-        presenter = new JoinMultiPlayerSetupPresenter(this, gameStarter, navigator);
+        presenter = PresenterFactory.createJoinMultiPlayerSetupPresenter(getActivity(), this);
     }
 
     @Nullable

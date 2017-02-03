@@ -26,7 +26,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
 
     private IJoiningGame joiningGame;
 
-    public JoinMultiPlayerPickerPresenter(JoinMultiPlayerPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
+    public JoinMultiPlayerPickerPresenter(JoinMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.navigator = navigator;

@@ -13,17 +13,16 @@ import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 
 public class JoinMultiPlayerSetupPresenter implements IMultiplayerListener {
     private final JoinMultiPlayerSetupView view;
-    private final GameStarter gameStarter;
     private final MainMenuNavigator navigator;
+    private final GameStarter gameStarter;
+    private final IJoinPhaseMultiplayerGameConnector connector;
 
-    private IJoinPhaseMultiplayerGameConnector connector;
-
-    public JoinMultiPlayerSetupPresenter(JoinMultiPlayerSetupView view, GameStarter gameStarter, MainMenuNavigator navigator) {
+    public JoinMultiPlayerSetupPresenter(JoinMultiPlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IJoinPhaseMultiplayerGameConnector connector) {
         this.view = view;
-        this.gameStarter = gameStarter;
         this.navigator = navigator;
+        this.gameStarter = gameStarter;
+        this.connector = connector;
 
-        connector = gameStarter.getJoinPhaseMultiplayerConnector();
         connector.setMultiplayerListener(this);
     }
 

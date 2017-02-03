@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
@@ -54,10 +55,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-
-        presenter = new JoinMultiPlayerPickerPresenter(this, gameStarter, navigator);
+        presenter = PresenterFactory.createJoinMultiPlayerPickerPresenter(getActivity(), this);
         adapter = new JoinableGamesAdapter(presenter.getJoinableGames());
     }
 
