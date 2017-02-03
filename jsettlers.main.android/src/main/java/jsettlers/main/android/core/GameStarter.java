@@ -19,9 +19,6 @@ public interface GameStarter {
     IMultiplayerConnector getMultiPlayerConnector();
     void closeMultiPlayerConnector();
 
-//    IMapDefinition getMapDefinition();
-//    void setMapDefinition(IMapDefinition mapDefinition);
-
     IStartingGame getStartingGame();
     void setStartingGame(IStartingGame startingGame);
 

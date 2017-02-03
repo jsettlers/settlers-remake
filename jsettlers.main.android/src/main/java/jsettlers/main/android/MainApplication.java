@@ -94,16 +94,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		}
 	}
 
-//	@Override
-//	public IMapDefinition getMapDefinition() {
-//		return mapDefinition;
-//	}
-//
-//	@Override
-//	public void setMapDefinition(IMapDefinition mapDefinition) {
-//		this.mapDefinition = mapDefinition;
-//	}
-
 	@Override
 	public IStartingGame getStartingGame() {
 		return startingGame;
