@@ -10,14 +10,12 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
  * Created by tompr on 21/01/2017.
  */
 
-public class NewSinglePlayerSetupPresenter extends MapSetupPresenter {
+public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
     private final MainMenuNavigator navigator;
 
-    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, gameStarter);
+    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IMapDefinition mapDefinition) {
+        super(view, gameStarter, mapDefinition);
         this.navigator = navigator;
-
-        IMapDefinition mapDefinition = gameStarter.getMapDefinition();
     }
 
     @Override

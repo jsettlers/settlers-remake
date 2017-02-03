@@ -1,6 +1,7 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerPickerPresenter;
 import jsettlers.main.android.core.GameStarter;
@@ -23,10 +24,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment implements N
 
     @Override
     protected MapPickerPresenter getPresenter() {
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-
-        return new NewMultiPlayerPickerPresenter(this, gameStarter, navigator);
+        return PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
     }
 
     @Override

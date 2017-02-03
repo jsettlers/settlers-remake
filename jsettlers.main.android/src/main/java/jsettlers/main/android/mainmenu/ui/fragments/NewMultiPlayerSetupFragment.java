@@ -3,6 +3,7 @@ package jsettlers.main.android.mainmenu.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
@@ -11,13 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
 import java.util.List;
 
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.NoChangeItemAnimator;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
@@ -25,35 +29,35 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
  */
 
 public class NewMultiPlayerSetupFragment extends MapSetupFragment implements NewMultiPlayerSetupView {
-    public static Fragment create() {
-        return new NewMultiPlayerSetupFragment();
-    }
-
-    private PlayersAdapter adapter;
+    private static final String ARG_MAP_ID = "mapid";
 
     private NewMultiPlayerSetupPresenter presenter;
 
+    private PlayersAdapter adapter;
+    private RecyclerView recyclerView;
+
+    public static Fragment create(IMapDefinition mapDefinition) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
+
+        Fragment fragment = new NewMultiPlayerSetupFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     protected NewMultiPlayerSetupPresenter getPresenter() {
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-        presenter = new NewMultiPlayerSetupPresenter(this, gameStarter, navigator);
+        presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, getArguments().getString(ARG_MAP_ID));
         return presenter;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        adapter = new PlayersAdapter(presenter.getPlayers());
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
+
+        return view;
     }
 
     /**
@@ -61,7 +65,17 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
      */
     @Override
     public void setItems(List<IMultiplayerPlayer> items) {
-        getActivity().runOnUiThread(() -> adapter.setItems(items));
+        getActivity().runOnUiThread(() -> {
+            if (adapter == null) {
+                adapter = new PlayersAdapter(items);
+            }
+
+            if (recyclerView.getAdapter() == null) {
+                recyclerView.setAdapter(adapter);
+            }
+
+            adapter.setItems(items);
+        });
     }
 
     class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {

@@ -24,6 +24,7 @@ import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameService;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -68,6 +69,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	 */
 	public IStartScreen getStartScreen() {
 		if (startScreen == null) {
+			new ResourceLocationScanner(this).scanForResources();
 			startScreen = new StartScreenConnector();
 		}
 		return startScreen;
@@ -92,15 +94,15 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		}
 	}
 
-	@Override
-	public IMapDefinition getMapDefinition() {
-		return mapDefinition;
-	}
-
-	@Override
-	public void setMapDefinition(IMapDefinition mapDefinition) {
-		this.mapDefinition = mapDefinition;
-	}
+//	@Override
+//	public IMapDefinition getMapDefinition() {
+//		return mapDefinition;
+//	}
+//
+//	@Override
+//	public void setMapDefinition(IMapDefinition mapDefinition) {
+//		this.mapDefinition = mapDefinition;
+//	}
 
 	@Override
 	public IStartingGame getStartingGame() {

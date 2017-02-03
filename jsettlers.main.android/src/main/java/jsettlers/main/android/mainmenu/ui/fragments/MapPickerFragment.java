@@ -8,6 +8,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
@@ -63,21 +64,15 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
 		FragmentUtil.setActionBar(this, view);
 
+		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+
 		return view;
 	}
 
 	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		adapter = new MapAdapter(presenter.getItems());
-
-		recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
-		recyclerView.setHasFixedSize(true);
-		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-		recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-		recyclerView.setItemAnimator(new NoChangeItemAnimator());
-		recyclerView.setAdapter(adapter);
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		presenter.initView();
 	}
 
 	@Override
@@ -96,7 +91,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	public void onDetach() {
 		super.onDetach();
 		if (isRemoving() && !isSaving) {
-			getPresenter().viewFinished();
+			presenter.viewFinished();
 		}
 	}
 
@@ -105,7 +100,21 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
      */
 	@Override
 	public void setItems(List<? extends IMapDefinition> items) {
-		getView().post(() -> adapter.setItems(items));
+		getView().post(() -> {
+			if (adapter == null) {
+				adapter = new MapAdapter(items);
+			}
+
+			if (recyclerView.getAdapter() == null) {
+				recyclerView.setHasFixedSize(true);
+				recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+				recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+				recyclerView.setItemAnimator(new NoChangeItemAnimator());
+				recyclerView.setAdapter(adapter);
+			}
+
+			adapter.setItems(items);
+		});
 	}
 
 	/**

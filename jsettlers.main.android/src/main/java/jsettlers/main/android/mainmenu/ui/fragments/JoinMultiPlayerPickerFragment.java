@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
@@ -54,11 +55,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GameStarter gameStarter = (GameStarter) getActivity().getApplication();
-        MainMenuNavigator navigator = (MainMenuNavigator) getActivity();
-
-        presenter = new JoinMultiPlayerPickerPresenter(this, gameStarter, navigator);
-        adapter = new JoinableGamesAdapter(presenter.getJoinableGames());
+        presenter = PresenterFactory.createJoinMultiPlayerPickerPresenter(getActivity(), this);
     }
 
     @Nullable
@@ -68,11 +65,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         FragmentUtil.setActionBar(this, view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-        recyclerView.setItemAnimator(new NoChangeItemAnimator());
-        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -109,7 +101,21 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
      */
     @Override
     public void joinableGamesChanged(List<? extends IJoinableGame> joinableGames) {
-        getView().post(() -> adapter.setItems(joinableGames));
+        getView().post(() -> {
+            if (adapter == null) {
+                adapter = new JoinableGamesAdapter(joinableGames);
+            }
+
+            if (recyclerView.getAdapter() == null) {
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+                recyclerView.setItemAnimator(new NoChangeItemAnimator());
+                recyclerView.setAdapter(adapter);
+            }
+
+            adapter.setItems(joinableGames);
+        });
 
     }
 

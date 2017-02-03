@@ -1,11 +1,13 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
+import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.presenters.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.core.ui.FragmentUtil;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -66,32 +68,20 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         startGameButton.setOnClickListener(v -> presenter.startGame());
 
-        setSpinnerAdapter(numberOfPlayersSpinner, presenter.getAllowedPlayerCounts());
-        setSpinnerAdapter(startResourcesSpinner, presenter.getStartResourcesOptions());
-        setSpinnerAdapter(peacetimeSpinner, presenter.getPeaceTimeOptions());
-
-        mapPreviewSubscription = PreviewImageConverter.toBitmap(presenter.getMapImage())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<Bitmap>() {
-                    @Override
-                    public void onSuccess(Bitmap bitmap) {
-                        mapPreviewImageView.setImageBitmap(bitmap);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mapPreviewImageView.setImageDrawable(null);
-                    }
-                });
 
         return view;
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenter.initView();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(presenter.getMapName());
+        presenter.updateViewTitle();
     }
 
     @Override
@@ -115,6 +105,47 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         if (isRemoving() && !isSaving) {
             presenter.viewFinished();
         }
+    }
+
+    /**
+     * MapSetupView implementation
+     */
+    @Override
+    public void setNumberOfPlayersOptions(Integer[] numberOfPlayersOptions) {
+        setSpinnerAdapter(numberOfPlayersSpinner, numberOfPlayersOptions);
+    }
+
+    @Override
+    public void setStartResourcesOptions(EMapStartResources[] startResourcesOptions) {
+        setSpinnerAdapter(startResourcesSpinner, startResourcesOptions);
+    }
+
+    @Override
+    public void setPeaceTimeOptions(String[] peaceTimeOptions) {
+        setSpinnerAdapter(peacetimeSpinner, peaceTimeOptions);
+    }
+
+    @Override
+    public void setMapName(String mapName) {
+        getActivity().setTitle(mapName);
+    }
+
+    @Override
+    public void setMapImage(short[] image) {
+        mapPreviewSubscription = PreviewImageConverter.toBitmap(image)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<Bitmap>() {
+                    @Override
+                    public void onSuccess(Bitmap bitmap) {
+                        mapPreviewImageView.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mapPreviewImageView.setImageDrawable(null);
+                    }
+                });
     }
 
     private <T> void setSpinnerAdapter(Spinner spinner, T[] items) {

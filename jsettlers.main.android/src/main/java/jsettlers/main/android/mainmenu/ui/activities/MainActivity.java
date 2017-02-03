@@ -1,5 +1,6 @@
 package jsettlers.main.android.mainmenu.ui.activities;
 
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity;
 import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
@@ -16,6 +17,7 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -71,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewSinglePlayerSetup() {
+	public void showNewSinglePlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create())
+				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}
@@ -103,9 +105,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewMultiPlayerSetup() {
+	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create())
+				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}
@@ -125,7 +127,10 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		finish();
 	}
 
-
+	@Override
+	public void popToMenuRoot() {
+		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+	}
 
 	private void setUpButton() {
 		boolean isAtRootOfBackStack = getSupportFragmentManager().getBackStackEntryCount() == 0;

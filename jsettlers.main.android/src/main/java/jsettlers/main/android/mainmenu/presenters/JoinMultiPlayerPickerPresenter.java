@@ -26,7 +26,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
 
     private IJoiningGame joiningGame;
 
-    public JoinMultiPlayerPickerPresenter(JoinMultiPlayerPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
+    public JoinMultiPlayerPickerPresenter(JoinMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.navigator = navigator;
@@ -42,25 +42,20 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         }
     }
 
-    public List<IJoinableGame> getJoinableGames() {
-        return changingJoinableGames.getItems();
-    }
-
-
-    public void joinableGameSelected(IJoinableGame joinableGame) {
-        abort();
-        gameStarter.setMapDefinition(joinableGame.getMap());
-
-        joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
-        joiningGame.setListener(this);
-
-        gameStarter.setJoiningGame(joiningGame);
+    public void initView() {
     }
 
     public void viewFinished() {
         if (gameStarter.getStartingGame() == null) {
             abort();
         }
+    }
+
+    private void abort() {
+        if (joiningGame != null) {
+            joiningGame.abort();
+        }
+        gameStarter.setJoiningGame(null);
     }
 
     public void dispose() {
@@ -70,13 +65,20 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         }
     }
 
-    private void abort() {
-        if (joiningGame != null) {
-            joiningGame.abort();
-        }
-        gameStarter.setJoiningGame(null);
-        gameStarter.setMapDefinition(null);
+
+
+
+
+    public void joinableGameSelected(IJoinableGame joinableGame) {
+        abort();
+        //gameStarter.setMapDefinition(joinableGame.getMap());
+
+        joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
+        joiningGame.setListener(this);
+
+        gameStarter.setJoiningGame(joiningGame);
     }
+
 
     /**
      * ChangingListListener implementation
@@ -106,5 +108,4 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
         navigator.showJoinMultiPlayerSetup();
     }
-
 }
