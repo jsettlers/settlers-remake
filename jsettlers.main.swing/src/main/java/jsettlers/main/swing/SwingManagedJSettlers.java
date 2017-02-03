@@ -78,8 +78,8 @@ public class SwingManagedJSettlers {
 			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
 		}
 
-		if (options.isOptionSet("localhost")) {
-			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
+		if (options.containsKey("server")) {
+			CommonConstants.DEFAULT_SERVER_ADDRESS = options.getProperty("fixed-ai-type");
 		}
 
 		if (options.containsKey("locale")) {

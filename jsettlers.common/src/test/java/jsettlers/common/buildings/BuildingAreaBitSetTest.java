@@ -16,13 +16,11 @@ package jsettlers.common.buildings;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 
-import jsettlers.common.position.RelativePoint;
-import jsettlers.jsettlers.common.buildings.BuildingAreaUtils;
-
 import org.junit.Test;
+
+import jsettlers.common.position.RelativePoint;
 
 /**
  * Test for class {@link BuildingAreaBitSet}.

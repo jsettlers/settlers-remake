@@ -1,7 +1,27 @@
 apply plugin: 'java'
 
+
+task aiDifficultiesIT(type: Test, dependsOn: testClasses) {
+    include '**/AiDifficultiesIT*'
+}
+
+task autoReplayIT(type: Test, dependsOn: testClasses) {
+    include '**/AutoReplayIT*'
+}
+
+task replayValidationIT(type: Test, dependsOn: testClasses) {
+    include '**/ReplayValidationIT*'
+}
+
+task unitTest(type: Test) {
+    exclude 'jsettlers/integration/**'
+}
+
+
 dependencies {
     compile project(':jsettlers.graphics')
     compile project(':jsettlers.common')
     compile project(':jsettlers.network')
+
+    testCompile project(':jsettlers.testutils')
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,24 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.flags;
+package jsettlers.ai.highlevel.pioneers.target;
+
+import jsettlers.ai.highlevel.AiPositions;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This interface defines a listener for changes on the blocking grid.
- * 
- * @author Andreas Eberle
- * 
+ * @author codingberlin
  */
-public interface IBlockingChangedListener {
-	/**
-	 * This method needs to be called on every change of the blocking grid.
-	 * 
-	 * @param x
-	 *            x coordinate of the changed position.
-	 * @param y
-	 *            y coordinate of the changed position.
-	 * @param newBlockingValue
-	 *            The new blocking state. True if the position is now blocked, false if it is now unblocked.
-	 */
-	void blockingChanged(int x, int y, boolean newBlockingValue);
+public class NearStonesTargetFinder extends AbstractPioneerTargetFinder {
+
+	public NearStonesTargetFinder(AiStatistics aiStatistics, byte playerId, int searchDistance) {
+		super(aiStatistics, playerId, searchDistance);
+	}
+
+	@Override
+	public ShortPoint2D findTarget(AiPositions playerBorder, ShortPoint2D center) {
+		return aiStatistics.getStonesNearBy(playerId).getNearestPoint(center, searchDistance);
+	}
 }

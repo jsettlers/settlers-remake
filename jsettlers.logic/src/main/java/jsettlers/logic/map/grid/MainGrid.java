@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -153,7 +153,6 @@ public final class MainGrid implements Serializable {
 		this.height = height;
 
 		this.flagsGrid = new FlagsGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, flagsGrid);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
@@ -161,6 +160,7 @@ public final class MainGrid implements Serializable {
 		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
+		this.partitionsGrid = new PartitionsGrid(width, height, playerSettings, landscapeGrid);
 		this.buildingsGrid = new BuildingsGrid();
 
 		initAdditional();
@@ -432,7 +432,7 @@ public final class MainGrid implements Serializable {
 			return;
 		}
 
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, flagsGrid.getBlockedContainingProvider(), position);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, position);
 
 		Movable movable = movableGrid.getMovableAt(position.x, position.y);
 		if (movable != null) {
@@ -487,7 +487,7 @@ public final class MainGrid implements Serializable {
 			switch (searchType) {
 
 			case UNENFORCED_FOREIGN_GROUND:
-				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+				return !flagsGrid.isProtected(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
 			case VALID_FREE_POSITION:
 				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
@@ -904,8 +904,9 @@ public final class MainGrid implements Serializable {
 
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
-		public final boolean isBlocked(int x, int y) {
-			return MainGrid.this.isInBounds(x, y) && flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
+		public final boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
+			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0
+					&& !partitionsGrid.isEnforcedByTower(x, y);
 		}
 
 		@Override

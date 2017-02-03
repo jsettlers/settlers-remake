@@ -4,18 +4,35 @@ sudo: true
 jdk:
   - oraclejdk8
 
+
+env:
+  matrix:
+    # Only compile and build basic jars
+    - TARGET="assemble"
+    - TARGET=":jsettlers.main.android:build"
+
+    # Run single test targets
+    - TARGET=":jsettlers.logic:unitTest"
+    - TARGET=":jsettlers.common:test"
+    - TARGET=":jsettlers.network:test --info"
+    - TARGET=":jsettlers.logic:aiDifficultiesIT"
+    - TARGET=":jsettlers.logic:autoReplayIT"
+    - TARGET=":jsettlers.logic:replayValidationIT"
+
+    # Deploy to GitHub
+    - TARGET="release deployToGithub"
+
+
 android:
   components:
     # Those two lines allow us to use any build tools version.
     - tools
     - platform-tools
+    - android-25
 
-    - build-tools-23.0.3
-    - android-15
-
-before_install:
-  - mkdir -p $HOME/.gradle/caches/
-  - mkdir -p $HOME/.gradle/wrapper/
+    - build-tools-25.0.2
+    - extra-google-m2repository
+    - extra-android-m2repository
 
 
 before_script:
@@ -31,21 +48,18 @@ before_script:
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
 
-  
-env:
-  # Only compile and build basic jars
-  - TARGET="assemble"
-  - TARGET=":jsettlers.main.android:build"
 
-  # Run single test targets
-  - TARGET=":jsettlers.logic:test:unitTest"
-  - TARGET=":jsettlers.common:test:test"
-  - TARGET=":jsettlers.network:test --info"
-  - TARGET=":jsettlers.logic:test:aiDifficultiesIT"
-  - TARGET=":jsettlers.logic:test:autoReplayIT"
-  - TARGET=":jsettlers.logic:test:replayValidationIT"
-  
-  - TARGET="release deployToGithub"
-
-  
 script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+
+
+
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
