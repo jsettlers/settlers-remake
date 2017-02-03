@@ -6,12 +6,15 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.LoadSinglePlayerPickerPresenter;
+import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
+import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
@@ -22,6 +25,9 @@ import android.app.Activity;
  */
 
 public class PresenterFactory {
+    /**
+     * Picker screen presenters
+     */
     public static NewSinglePlayerPickerPresenter createNewSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
@@ -30,6 +36,25 @@ public class PresenterFactory {
         return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
 
+    public static LoadSinglePlayerPickerPresenter createLoadSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getStoredSingleplayerGames();
+
+        return new LoadSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
+    }
+
+    public static NewMultiPlayerPickerPresenter createNewMultiPlayerPickerPresenter(Activity activity, NewMultiPlayerPickerView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getMultiplayerMaps();
+
+        return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
+    }
+
+    /**
+     * Setup screen presenters
+     */
     public static NewSinglePlayerSetupPresenter createNewSinglePlayerSetupPresenter(Activity activity, NewSinglePlayerSetupView view, String mapId) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();

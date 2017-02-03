@@ -6,6 +6,7 @@ import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
@@ -23,11 +24,11 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     private IJoiningGame joiningGame;
     private IMapDefinition tempMapDefinition;
 
-    public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, navigator, gameStarter, gameStarter.getStartScreen().getMultiplayerMaps());
+    public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends IMapDefinition> changingMaps) {
+        super(view, navigator, gameStarter, changingMaps);
         this.view = view;
-        this.gameStarter = gameStarter;
         this.navigator = navigator;
+        this.gameStarter = gameStarter;
     }
 
     @Override

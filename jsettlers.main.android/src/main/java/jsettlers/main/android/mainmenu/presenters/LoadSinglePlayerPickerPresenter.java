@@ -2,6 +2,7 @@ package jsettlers.main.android.mainmenu.presenters;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
@@ -14,10 +15,10 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
     private final GameStarter gameStarter;
     private final MainMenuNavigator navigator;
 
-    public LoadSinglePlayerPickerPresenter(MapPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, navigator, gameStarter, gameStarter.getStartScreen().getStoredSingleplayerGames());
-        this.gameStarter = gameStarter;
+    public LoadSinglePlayerPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends IMapDefinition> changingMaps) {
+        super(view, navigator, gameStarter, changingMaps);
         this.navigator = navigator;
+        this.gameStarter = gameStarter;
     }
 
     @Override
