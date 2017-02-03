@@ -19,12 +19,12 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
     private final MainMenuNavigator navigator;
     private final ChangingList<? extends IMapDefinition> changingMaps;
 
-    public MapPickerPresenter(MapPickerView view, GameStarter gameStarter, MainMenuNavigator navigator, ChangingList<? extends IMapDefinition> changingMaps) {
+    public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends IMapDefinition> changingMaps) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.navigator = navigator;
-
         this.changingMaps = changingMaps;
+
         changingMaps.setListener(this);
     }
 

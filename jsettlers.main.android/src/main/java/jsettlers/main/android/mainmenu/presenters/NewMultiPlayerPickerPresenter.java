@@ -24,7 +24,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     private IMapDefinition tempMapDefinition;
 
     public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, gameStarter, navigator, gameStarter.getStartScreen().getMultiplayerMaps());
+        super(view, navigator, gameStarter, gameStarter.getStartScreen().getMultiplayerMaps());
         this.view = view;
         this.gameStarter = gameStarter;
         this.navigator = navigator;

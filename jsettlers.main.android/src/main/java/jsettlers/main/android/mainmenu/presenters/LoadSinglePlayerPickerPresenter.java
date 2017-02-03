@@ -15,7 +15,7 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
     private final MainMenuNavigator navigator;
 
     public LoadSinglePlayerPickerPresenter(MapPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
-        super(view, gameStarter, navigator, gameStarter.getStartScreen().getStoredSingleplayerGames());
+        super(view, navigator, gameStarter, gameStarter.getStartScreen().getStoredSingleplayerGames());
         this.gameStarter = gameStarter;
         this.navigator = navigator;
     }

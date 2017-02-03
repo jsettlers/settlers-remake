@@ -3,12 +3,15 @@ package jsettlers.main.android.mainmenu.factories;
 import java8.util.stream.StreamSupport;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterPop;
+import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.views.MapPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
@@ -19,6 +22,14 @@ import android.app.Activity;
  */
 
 public class PresenterFactory {
+    public static NewSinglePlayerPickerPresenter createNewSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getSingleplayerMaps();
+
+        return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
+    }
+
     public static NewSinglePlayerSetupPresenter createNewSinglePlayerSetupPresenter(Activity activity, NewSinglePlayerSetupView view, String mapId) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
