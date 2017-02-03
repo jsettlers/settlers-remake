@@ -4,6 +4,7 @@ import java8.util.stream.StreamSupport;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
@@ -93,7 +94,7 @@ public class PresenterFactory {
         if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
             return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);
         } else {
-            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, mapDefinition);
+            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, SettingsManager.getInstance(), mapDefinition);
         }
     }
 

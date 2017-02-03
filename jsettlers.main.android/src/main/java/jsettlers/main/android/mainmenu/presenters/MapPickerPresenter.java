@@ -28,6 +28,10 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
         changingMaps.setListener(this);
     }
 
+    public void initView() {
+        view.setItems(changingMaps.getItems());
+    }
+
     public void viewFinished() {
         if (gameStarter.getStartingGame() == null) {
             abort();
@@ -43,15 +47,7 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
 
 
 
-    protected ChangingList<? extends IMapDefinition> getMaps() {
-        return changingMaps;
-    }
-
     public abstract void itemSelected(IMapDefinition mapDefinition);
-
-    public List<? extends IMapDefinition> getItems() {
-        return changingMaps.getItems();
-    }
 
     /**
      * ChangingListListener implementation

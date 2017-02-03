@@ -42,9 +42,31 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         }
     }
 
-    public List<IJoinableGame> getJoinableGames() {
-        return changingJoinableGames.getItems();
+    public void initView() {
     }
+
+    public void viewFinished() {
+        if (gameStarter.getStartingGame() == null) {
+            abort();
+        }
+    }
+
+    private void abort() {
+        if (joiningGame != null) {
+            joiningGame.abort();
+        }
+        gameStarter.setJoiningGame(null);
+    }
+
+    public void dispose() {
+        changingJoinableGames.removeListener(this);
+        if (joiningGame != null) {
+            joiningGame.setListener(null);
+        }
+    }
+
+
+
 
 
     public void joinableGameSelected(IJoinableGame joinableGame) {
@@ -57,25 +79,6 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         gameStarter.setJoiningGame(joiningGame);
     }
 
-    public void viewFinished() {
-        if (gameStarter.getStartingGame() == null) {
-            abort();
-        }
-    }
-
-    public void dispose() {
-        changingJoinableGames.removeListener(this);
-        if (joiningGame != null) {
-            joiningGame.setListener(null);
-        }
-    }
-
-    private void abort() {
-        if (joiningGame != null) {
-            joiningGame.abort();
-        }
-        gameStarter.setJoiningGame(null);
-    }
 
     /**
      * ChangingListListener implementation
@@ -105,5 +108,4 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
         navigator.showJoinMultiPlayerSetup();
     }
-
 }

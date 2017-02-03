@@ -18,43 +18,43 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
  * Created by tompr on 21/01/2017.
  */
 
-public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl implements IMultiplayerListener, IChangingListListener<IMultiplayerPlayer>, NewMultiPlayerSetupPresenter {
+public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl implements NewMultiPlayerSetupPresenter, IMultiplayerListener, IChangingListListener<IMultiplayerPlayer> {
     private final NewMultiPlayerSetupView view;
 
     private final GameStarter gameStarter;
     private final MainMenuNavigator navigator;
     private final IJoinPhaseMultiplayerGameConnector connector;
+    private final SettingsManager settingsManager;
     private final String myPlayerId;
 
-    public NewMultiPlayerSetupPresenterImpl(NewMultiPlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IJoinPhaseMultiplayerGameConnector connector, IMapDefinition mapDefinition) {
+    public NewMultiPlayerSetupPresenterImpl(
+            NewMultiPlayerSetupView view,
+            MainMenuNavigator navigator,
+            GameStarter gameStarter,
+            IJoinPhaseMultiplayerGameConnector connector,
+            SettingsManager settingsManager,
+            IMapDefinition mapDefinition) {
+
         super(view, gameStarter, mapDefinition);
         this.view = view;
+        this.navigator = navigator;
         this.gameStarter = gameStarter;
         this.connector = connector;
-        this.navigator = navigator;
+        this.settingsManager = settingsManager;
 
         connector.setMultiplayerListener(this);
         connector.getPlayers().setListener(this);
 
-        myPlayerId = SettingsManager.getInstance().get(SettingsManager.SETTING_UUID);
+        myPlayerId = settingsManager.get(SettingsManager.SETTING_UUID);
 
         //TODO temp while no ui for this
         connector.setReady(true);
     }
 
     @Override
-    public List<IMultiplayerPlayer> getPlayers() {
-        return connector.getPlayers().getItems();
-    }
-
-    @Override
-    public String getMyPlayerId() {
-        return myPlayerId;
-    }
-
-    @Override
-    public void startGame() {
-        connector.startGame();
+    public void initView() {
+        super.initView();
+        view.setItems(connector.getPlayers().getItems());
     }
 
     @Override
@@ -70,6 +70,18 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         connector.getPlayers().setListener(null);
     }
 
+
+
+
+    @Override
+    public String getMyPlayerId() {
+        return myPlayerId;
+    }
+
+    @Override
+    public void startGame() {
+        connector.startGame();
+    }
 
     /**
      * IMultiplayerListener implementation

@@ -56,7 +56,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = PresenterFactory.createJoinMultiPlayerPickerPresenter(getActivity(), this);
-        adapter = new JoinableGamesAdapter(presenter.getJoinableGames());
     }
 
     @Nullable
@@ -66,11 +65,6 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         FragmentUtil.setActionBar(this, view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-        recyclerView.setItemAnimator(new NoChangeItemAnimator());
-        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -107,7 +101,21 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
      */
     @Override
     public void joinableGamesChanged(List<? extends IJoinableGame> joinableGames) {
-        getView().post(() -> adapter.setItems(joinableGames));
+        getView().post(() -> {
+            if (adapter == null) {
+                adapter = new JoinableGamesAdapter(joinableGames);
+            }
+
+            if (recyclerView.getAdapter() == null) {
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+                recyclerView.setItemAnimator(new NoChangeItemAnimator());
+                recyclerView.setAdapter(adapter);
+            }
+
+            adapter.setItems(joinableGames);
+        });
 
     }
 

@@ -1,9 +1,5 @@
 package jsettlers.main.android.mainmenu.presenters;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 /**
@@ -13,11 +9,6 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPresenter {
     public NewMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
         navigator.popToMenuRoot();
-    }
-
-    @Override
-    public List<IMultiplayerPlayer> getPlayers() {
-        return new ArrayList<>();
     }
 
     @Override
