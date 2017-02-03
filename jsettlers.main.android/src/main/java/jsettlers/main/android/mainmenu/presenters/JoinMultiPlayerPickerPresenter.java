@@ -1,7 +1,5 @@
 package jsettlers.main.android.mainmenu.presenters;
 
-import java.util.List;
-
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
@@ -43,6 +41,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
     }
 
     public void initView() {
+        view.joinableGamesChanged(changingJoinableGames.getItems());
     }
 
     public void viewFinished() {

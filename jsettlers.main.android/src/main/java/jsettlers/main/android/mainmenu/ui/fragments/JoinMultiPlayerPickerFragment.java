@@ -70,6 +70,12 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenter.initView(); //will need to remove this if this class ends up using the general Picker base class, because its already called there
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().setTitle(R.string.join_multi_player_game);
