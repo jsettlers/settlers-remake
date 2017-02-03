@@ -1,5 +1,6 @@
 package jsettlers.main.android.mainmenu.ui.activities;
 
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity;
 import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
@@ -72,9 +73,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewSinglePlayerSetup() {
+	public void showNewSinglePlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create())
+				.replace(R.id.frame_layout, NewSinglePlayerSetupFragment.create(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}
@@ -104,9 +105,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showNewMultiPlayerSetup() {
+	public void showNewMultiPlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create())
+				.replace(R.id.frame_layout, NewMultiPlayerSetupFragment.create(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}

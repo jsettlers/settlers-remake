@@ -45,7 +45,6 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
     }
 
     protected void abort() {
-        gameStarter.setMapDefinition(null);
     }
 
 

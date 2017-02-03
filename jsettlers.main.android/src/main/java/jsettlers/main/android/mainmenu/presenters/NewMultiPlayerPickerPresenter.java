@@ -21,6 +21,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     private final MainMenuNavigator navigator;
 
     private IJoiningGame joiningGame;
+    private IMapDefinition tempMapDefinition;
 
     public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, GameStarter gameStarter, MainMenuNavigator navigator) {
         super(view, gameStarter, navigator, gameStarter.getStartScreen().getMultiplayerMaps());
@@ -32,7 +33,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     @Override
     public void itemSelected(IMapDefinition mapDefinition) {
         cancelJoining();
-        gameStarter.setMapDefinition(mapDefinition);
+        tempMapDefinition = mapDefinition;
 
         joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
             @Override
@@ -74,7 +75,6 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
         }
 
         gameStarter.setJoiningGame(null);
-        gameStarter.setMapDefinition(null);
     }
 
     /**
@@ -95,6 +95,6 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
         view.dismissJoiningProgress();
 
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-        navigator.showNewMultiPlayerSetup();
+        navigator.showNewMultiPlayerSetup(tempMapDefinition);
     }
 }

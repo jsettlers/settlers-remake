@@ -49,7 +49,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
 
     public void joinableGameSelected(IJoinableGame joinableGame) {
         abort();
-        gameStarter.setMapDefinition(joinableGame.getMap());
+        //gameStarter.setMapDefinition(joinableGame.getMap());
 
         joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
         joiningGame.setListener(this);
@@ -75,7 +75,6 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
             joiningGame.abort();
         }
         gameStarter.setJoiningGame(null);
-        gameStarter.setMapDefinition(null);
     }
 
     /**

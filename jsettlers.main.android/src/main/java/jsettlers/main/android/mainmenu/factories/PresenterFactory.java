@@ -1,5 +1,6 @@
 package jsettlers.main.android.mainmenu.factories;
 
+import java8.util.stream.StreamSupport;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.core.GameStarter;
@@ -7,7 +8,9 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenterPop;
+import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.app.Activity;
 
@@ -16,11 +19,27 @@ import android.app.Activity;
  */
 
 public class PresenterFactory {
-    public static NewMultiPlayerSetupPresenter createNewMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view) {
+    public static NewSinglePlayerSetupPresenter createNewSinglePlayerSetupPresenter(Activity activity, NewSinglePlayerSetupView view, String mapId) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameStarter gameStarter = (GameStarter) activity.getApplication();
+
+        IMapDefinition mapDefinition = StreamSupport.stream(gameStarter.getStartScreen().getSingleplayerMaps().getItems())
+                .filter(x -> mapId.equals(x.getMapId()))
+                .findFirst()
+                .get();
+
+        return new NewSinglePlayerSetupPresenter(view, navigator, gameStarter, mapDefinition);
+    }
+
+    public static NewMultiPlayerSetupPresenter createNewMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view, String mapId) {
         MainMenuNavigator mainMenuNavigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
-        IMapDefinition mapDefinition = gameStarter.getMapDefinition();
+
+        IMapDefinition mapDefinition = StreamSupport.stream(gameStarter.getStartScreen().getMultiplayerMaps().getItems())
+                .filter(x -> mapId.equals(x.getMapId()))
+                .findFirst()
+                .get();
 
         if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
             return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);

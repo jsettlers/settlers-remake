@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
@@ -24,8 +25,15 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
  */
 
 public class NewMultiPlayerSetupFragment extends MapSetupFragment implements NewMultiPlayerSetupView {
-    public static Fragment create() {
-        return new NewMultiPlayerSetupFragment();
+    private static final String ARG_MAP_ID = "mapid";
+
+    public static Fragment create(IMapDefinition mapDefinition) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
+
+        Fragment fragment = new NewMultiPlayerSetupFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     private PlayersAdapter adapter;
@@ -34,7 +42,7 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
 
     @Override
     protected NewMultiPlayerSetupPresenter getPresenter() {
-        presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this);// new NewMultiPlayerSetupPresenter(this, gameStarter, navigator);
+        presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, getArguments().getString(ARG_MAP_ID));
         return presenter;
     }
 
