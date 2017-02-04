@@ -447,7 +447,7 @@ public final class MapDrawContext implements IGLProvider {
 							int x = lineStartX + relativeX;
 							int y = base.getLineY(relativeY);
 
-							if (contains(x, y)) {
+							if (HeightedMapRectangle.this.contains(x, y)) {
 								lastRelativeYWithPoint = relativeY;
 								if (!function.apply(x, y)) {
 									return false;
