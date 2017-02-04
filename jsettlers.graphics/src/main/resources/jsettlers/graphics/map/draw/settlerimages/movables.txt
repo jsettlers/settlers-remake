@@ -923,6 +923,13 @@ SMITH, NO_ACTION, IRON, NORTH_EAST = 11, 43, 36, 1
 SMITH, NO_ACTION, IRON, EAST       = 11, 43, 48, 1
 SMITH, NO_ACTION, IRON, SOUTH_EAST = 11, 43, 60, 1
 
+SMITH, WALKING, COAL, SOUTH_WEST = 11, 40,  0, 12
+SMITH, WALKING, COAL, WEST       = 11, 40, 12, 12
+SMITH, WALKING, COAL, NORTH_WEST = 11, 40, 24, 12
+SMITH, WALKING, COAL, NORTH_EAST = 11, 40, 36, 12
+SMITH, WALKING, COAL, EAST       = 11, 40, 48, 12
+SMITH, WALKING, COAL, SOUTH_EAST = 11, 40, 60, 12
+
 # need more reserch in original game (maybe additional animation is implemented through the buildings)
 # probably examines, ready or not
 #SMITH, ACTION3, *, NORTH_WEST = 11, 44, 0, 8
