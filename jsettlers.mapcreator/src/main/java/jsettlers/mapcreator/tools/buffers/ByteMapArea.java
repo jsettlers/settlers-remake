@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,12 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.buffers;
 
-import java.util.Iterator;
-
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.util.Iterator;
 
 /**
  * This class represents a two dimensional array, used as helper class for editing tools
@@ -40,21 +42,43 @@ public class ByteMapArea implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		short y = position.y;
-		short x = position.x;
+		return contains(position.y, position.x);
+	}
+
+	@Override
+	public boolean contains(int y, int x) {
 		return x >= 0 && y >= 0 && x < status.length && y < status[x].length && status[x][y] > Byte.MAX_VALUE / 2;
 	}
 
 	@Override
-	public Iterator<ShortPoint2D> iterator() {
-		return new It();
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (int x = 0; x < status.length; x++) {
+					for (int y = 0; y < status[x].length; y++) {
+						if (status[x][y] > Byte.MAX_VALUE / 2) {
+							if (!function.apply(x, y)) {
+								return false;
+							}
+						}
+					}
+				}
+				return true;
+			}
+		};
 	}
 
-	private class It implements Iterator<ShortPoint2D> {
+	@Override
+	public Iterator<ShortPoint2D> iterator() {
+		return new ByteMapAreaIterator();
+	}
+
+	private class ByteMapAreaIterator implements Iterator<ShortPoint2D> {
 		private int x = 0;
 		private int y = 0;
 
-		private It() {
+		private ByteMapAreaIterator() {
 			searchNext();
 		}
 
@@ -87,6 +111,5 @@ public class ByteMapArea implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-
 	}
 }

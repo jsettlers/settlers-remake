@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,6 +18,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 
@@ -37,7 +38,7 @@ public final class Corn extends GrowingObject {
 	/**
 	 * Creates a new Corn.
 	 * 
-	 * @param grid
+	 * @param pos
 	 */
 	public Corn(ShortPoint2D pos) {
 		super(pos, EMapObjectType.CORN_GROWING);
@@ -66,34 +67,26 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handlePlacement(x, y, mapObjectsManager, grid);
-
-		for (ShortPoint2D curr : getEarthArea(x, y)) {
-			grid.setLandscape(curr.x, curr.y, ELandscapeType.EARTH);
-		}
+		getEarthAreaStream(x, y).forEach((currX, currY) -> grid.setLandscape(currX, currY, ELandscapeType.EARTH));
 	}
 
 	@Override
 	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
 		super.handleRemove(x, y, mapObjectsManager, grid);
+		getEarthAreaStream(x, y).forEach((currX, currY) -> makePositionGrassIfPossible(currX, currY, grid));
+	}
 
-		for (ShortPoint2D curr : getEarthArea(x, y)) {
-			makePositionGrassIfPossible(curr.x, curr.y, mapObjectsManager, grid);
+	private void makePositionGrassIfPossible(int x, int y, IMapObjectsManagerGrid grid) {
+		boolean isFree = getEarthAreaStream(x, y)
+				.filter((currX, currY) -> grid.hasMapObjectType(currX, currY, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD))
+				.isEmpty();
+
+		if (isFree) {
+			grid.setLandscape(x, y, ELandscapeType.GRASS);
 		}
 	}
 
-	private void makePositionGrassIfPossible(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
-		for (ShortPoint2D pos : getEarthArea(x, y)) {
-			if (grid.hasMapObjectType(pos.x, pos.y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
-				return; // return if there is a map object in the area holding this position earth
-			}
-		}
-
-		// no other corn keeps this position as earth => make it grass
-		grid.setLandscape(x, y, ELandscapeType.GRASS);
+	private static CoordinateStream getEarthAreaStream(int x, int y) {
+		return HexGridArea.stream(x, y, 0, 1);
 	}
-
-	private static HexGridArea getEarthArea(int x, int y) {
-		return new HexGridArea(x, y, 0, 1);
-	}
-
 }

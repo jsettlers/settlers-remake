@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,8 +13,6 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.logic.movable.interfaces;
-
-import java.io.Serializable;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.landscape.ELandscapeType;
@@ -30,6 +28,8 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.player.Player;
+
+import java.io.Serializable;
 
 /**
  * Defines methods needed by the {@link MovableStrategy}.
@@ -88,16 +88,18 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	/**
 	 * Checks if the given position fits the given search type.
-	 * 
+	 *
 	 * @param pathCalculateable
 	 *            path requester
-	 * @param position
-	 *            position to check the given {@link ESearchType}.
+	 * @param x
+	 *            x coordinate of position to check the given {@link ESearchType}.
+	 * @param y
+	 *            y coordinate of position to check the given {@link ESearchType}.
 	 * @param searchType
 	 *            search type to be checked
 	 * @return true if the search type fits the given position.
 	 */
-	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D position, ESearchType searchType);
+	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, int x, int y, ESearchType searchType);
 
 	/**
 	 * 
@@ -169,10 +171,11 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	/**
 	 * Changes the height of the given position towards the given targetHeight and changes the landscape type to {@link ELandscapeType}.FLATTENED
 	 * 
-	 * @param position
+	 * @param x
+	 * @param y
 	 * @param targetHeight
 	 */
-	public abstract void changeHeightTowards(short x, short y, byte targetHeight);
+	public abstract void changeHeightTowards(int x, int y, byte targetHeight);
 
 	/**
 	 * Changes the player at the given position to the given player.
@@ -191,7 +194,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *            y coordinate of the position to get the landscape type.
 	 * @return {@link ELandscapeType} at the given position.
 	 */
-	public abstract ELandscapeType getLandscapeTypeAt(short x, short y);
+	public abstract ELandscapeType getLandscapeTypeAt(int x, int y);
 
 	/**
 	 * Searches for an enemy around the position of the given movable in it's search radius.
@@ -225,7 +228,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength);
 
-	public abstract boolean hasNoMovableAt(short x, short y);
+	public abstract boolean hasNoMovableAt(int x, int y);
 
 	/**
 	 * 
@@ -238,5 +241,5 @@ public abstract class AbstractStrategyGrid implements Serializable {
 
 	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
-	public abstract Movable getMovableAt(short x, short y);
+	public abstract Movable getMovableAt(int x, int y);
 }
