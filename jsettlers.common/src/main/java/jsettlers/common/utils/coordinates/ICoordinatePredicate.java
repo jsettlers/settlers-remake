@@ -14,11 +14,9 @@
  *******************************************************************************/
 package jsettlers.common.utils.coordinates;
 
-import java.io.Serializable;
-
 /**
  * Created by Andreas Eberle on 06.01.2017.
  */
-public interface ICoordinatePredicate extends Serializable {
+public interface ICoordinatePredicate {
 	boolean test(int x, int y);
 }
