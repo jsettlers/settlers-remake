@@ -510,8 +510,18 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawDebugColors() {
 		GLDrawContext gl = this.context.getGl();
 
-		float[] shape = new float[] { 0, 4, .5f, 0, 0, -3, 2, .5f, 0, 0, -3, -2, .5f, 0, 0, 0, -4, .5f, 0, 0, 0, -4, .5f, 0, 0, 3, -2, .5f, 0, 0, 3,
-				2, .5f, 0, 0, 0, 4, .5f, 0, 0, };
+		// @formatter:off
+		float[] shape = new float[] {
+									  0,  4, .5f,  0,  0,
+									 -3,  2, .5f,  0,  0,
+									 -3, -2, .5f,  0,  0,
+									  0, -4, .5f,  0,  0,
+									  0, -4, .5f,  0,  0,
+									  3, -2, .5f,  0,  0,
+									  3,  2, .5f,  0,  0,
+									  0,  4, .5f,  0,  0
+									};
+		// @formatter:on
 
 		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
 			try {
