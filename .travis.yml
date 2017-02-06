@@ -49,7 +49,7 @@ before_script:
   - sudo service x11-common stop || true
 
 
-script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET
+script: GRADLE_OPTS='-Xmx600m -Dorg.gradle.jvmargs="-Xmx1500m"' ./gradlew $TARGET --stacktrace
 
 
 

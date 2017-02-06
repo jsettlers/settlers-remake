@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,16 +18,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
@@ -191,38 +189,35 @@ public final class ObjectsGrid implements Serializable {
 	 * @param informFullArea
 	 *            if true, the full area is informed<br>
 	 *            if false, only the border of the area is informed.
-	 * @param b
+	 * @param informAttackable
 	 */
 	public void informObjectsAboutAttackable(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
-		IMapArea area;
+		CoordinateStream area;
 		if (informFullArea) {
-			area = new HexGridArea(position.x, position.y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
+			area = HexGridArea.stream(position.x, position.y, 1, Constants.TOWER_SEARCH_RADIUS);
 		} else {
-			area = new HexBorderArea(position.x, position.y, (short) (Constants.TOWER_SEARCH_RADIUS - 1));
+			area = HexGridArea.streamBorder(position.x, position.y, Constants.TOWER_SEARCH_RADIUS - 1);
 		}
 
 		byte movablePlayer = attackable.getPlayerId();
 
-		for (ShortPoint2D curr : area) {
-			short x = curr.x;
-			short y = curr.y;
-			if (0 <= x && x < width && 0 <= y && y < height) {
-				IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+		area.filterBounds(width, height)
+				.forEach((x, y) -> {
+					IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 
-				if (currTower != null && currTower.getPlayerId() != movablePlayer) {
-					currTower.informAboutAttackable(attackable);
+					if (currTower != null && currTower.getPlayerId() != movablePlayer) {
+						currTower.informAboutAttackable(attackable);
 
-					if (informAttackable) {
-						attackable.informAboutAttackable(currTower);
+						if (informAttackable) {
+							attackable.informAboutAttackable(currTower);
+						}
 					}
-				}
 
-				IInformable currInformable = (IInformable) getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT);
-				if (currInformable != null) {
-					currInformable.informAboutAttackable(attackable);
-				}
-			}
-		}
+					IInformable currInformable = (IInformable) getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT);
+					if (currInformable != null) {
+						currInformable.informAboutAttackable(attackable);
+					}
+				});
 	}
 
 	public void setBuildingArea(FreeMapArea area, Building building) {

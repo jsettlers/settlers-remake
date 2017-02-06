@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,12 +13,6 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.logic.movable;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.algorithms.path.IPathCalculatable;
@@ -46,6 +40,12 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Central Movable class of JSettlers.
@@ -617,7 +617,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return true;
 		}
 		case GO_IF_ALLOWED_AND_FREE:
-			if ((grid.isValidPosition(this, targetPosition) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
+			if ((grid.isValidPosition(this, targetPosition.x, targetPosition.y) && grid.hasNoMovableAt(targetPosition.x, targetPosition.y))) {
 				initGoingSingleStep(targetPosition);
 				setState(EMovableState.GOING_SINGLE_STEP);
 				return true;
@@ -687,10 +687,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 
 	final void enableNothingToDoAction(boolean enable) {
 		this.enableNothingToDo = enable;
-	}
-
-	final boolean isValidPosition(ShortPoint2D position) {
-		return grid.isValidPosition(this, position);
 	}
 
 	void abortPath() {

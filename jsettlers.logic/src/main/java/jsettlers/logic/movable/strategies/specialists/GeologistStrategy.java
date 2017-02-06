@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.specialists;
 
-import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableAction;
+import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.mutables.MutableDouble;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -101,20 +103,24 @@ public final class GeologistStrategy extends MovableStrategy {
 		this.state = EGeologistState.JOBLESS;
 	}
 
-	private final ShortPoint2D getCloseWorkablePos() {
-		ShortPoint2D bestNeighbourPos = null;
-		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
+	private ShortPoint2D getCloseWorkablePos() {
+		MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
+		MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
 
-		for (ShortPoint2D satelitePos : new HexBorderArea(movable.getPos(), (short) 2)) {
-			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
-				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
-				if (distance < bestNeighbourDistance) {
-					bestNeighbourDistance = distance;
-					bestNeighbourPos = satelitePos;
-				}
+		HexGridArea.streamBorder(movable.getPos(), 2).filter((x, y) -> super.isValidPosition(x, y) && canWorkOnPos(x, y)).forEach((x, y) -> {
+			double distance = ShortPoint2D.getOnGridDist(x - centerPos.x, y - centerPos.y);
+			if (distance < bestNeighbourDistance.value) {
+				bestNeighbourDistance.value = distance;
+				bestNeighbourPos.x = x;
+				bestNeighbourPos.y = y;
 			}
+		});
+
+		if (bestNeighbourDistance.value != Double.MAX_VALUE) {
+			return bestNeighbourPos.createShortPoint2D();
+		} else {
+			return null;
 		}
-		return bestNeighbourPos;
 	}
 
 	private void executeAction(ShortPoint2D pos) {
@@ -123,6 +129,10 @@ public final class GeologistStrategy extends MovableStrategy {
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
 		return super.fitsSearchType(pos, ESearchType.RESOURCE_SIGNABLE);
+	}
+
+	private boolean canWorkOnPos(int x, int y) {
+		return super.fitsSearchType(x, y, ESearchType.RESOURCE_SIGNABLE);
 	}
 
 	@Override
