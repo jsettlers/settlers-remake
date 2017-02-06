@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -55,7 +55,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	private final Movable movableMap[][];
 	private final EMaterialType materialTypeMap[][];
-	private final byte materialAmmountMap[][];
+	private final byte materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -65,7 +65,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		this.movableMap = new Movable[width][height];
 		this.materialTypeMap = new EMaterialType[width][height];
-		this.materialAmmountMap = new byte[width][height];
+		this.materialAmountMap = new byte[width][height];
 
 		aStar = new BucketQueueAStar(this, this.width, this.height);
 	}
@@ -92,8 +92,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		if (materialTypeMap[x][y] != null && materialAmmountMap[x][y] > 0) {
-			return new StackMapObject(materialTypeMap[x][y], materialAmmountMap[x][y]);
+		if (materialTypeMap[x][y] != null && materialAmountMap[x][y] > 0) {
+			return new StackMapObject(materialTypeMap[x][y], materialAmountMap[x][y]);
 		} else {
 			return null;
 		}
@@ -144,7 +144,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean hasNoMovableAt(short x, short y) {
+		public boolean hasNoMovableAt(int x, int y) {
 			return isInBounds(x, y) && movableMap[x][y] == null;
 		}
 
@@ -157,7 +157,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isInBounds(short x, short y) {
+		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
 		}
 
@@ -202,8 +202,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
-			if (materialTypeMap[pos.x][pos.y] == materialType && materialAmmountMap[pos.x][pos.y] > 0) {
-				materialAmmountMap[pos.x][pos.y]--;
+			if (materialTypeMap[pos.x][pos.y] == materialType && materialAmountMap[pos.x][pos.y] > 0) {
+				materialAmountMap[pos.x][pos.y]--;
 				return true;
 			} else {
 				return false;
@@ -213,7 +213,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer, boolean forced) {
 			materialTypeMap[pos.x][pos.y] = materialType;
-			materialAmmountMap[pos.x][pos.y]++;
+			materialAmountMap[pos.x][pos.y]++;
 
 			materials.add(pos);
 
@@ -221,12 +221,12 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Movable getMovableAt(short x, short y) {
+		public Movable getMovableAt(int x, int y) {
 			return movableMap[x][y];
 		}
 
 		@Override
-		public boolean isBlocked(short x, short y) {
+		public boolean isBlocked(int x, int y) {
 			return false;
 		}
 
@@ -310,28 +310,27 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void changeHeightTowards(short x, short y, byte targetHeight) {
+		public void changeHeightTowards(int x, int y, byte targetHeight) {
 		}
 
 		@Override
-		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
-			short x = position.x, y = position.y;
+		public boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 			return isInBounds(x, y) && !isBlocked(x, y)
 					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override
-		public boolean isProtected(short x, short y) {
+		public boolean isProtected(int x, int y) {
 			return false;
 		}
 
 		@Override
-		public boolean isBlockedOrProtected(short x, short y) {
+		public boolean isBlockedOrProtected(int x, int y) {
 			return isBlocked(x, y) || isProtected(x, y);
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
+		public boolean fitsSearchType(IPathCalculatable pathCalculateable, int x, int y, ESearchType searchType) {
 			return false;
 		}
 
@@ -361,7 +360,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public ELandscapeType getLandscapeTypeAt(short x, short y) {
+		public ELandscapeType getLandscapeTypeAt(int x, int y) {
 			return ELandscapeType.GRASS;
 		}
 
@@ -400,7 +399,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
-			return isValidPosition(pathCalculatable, nextPos);
+			return isValidPosition(pathCalculatable, nextPos.x, nextPos.y);
 		}
 
 		@Override

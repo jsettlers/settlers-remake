@@ -18,7 +18,6 @@ import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
-import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -31,21 +30,18 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public final class EnclosedBlockedAreaFinderAlgorithm {
 
-	public static final void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, ShortPoint2D startPos) {
-		final short startX = startPos.x;
-		final short startY = startPos.y;
-
-		if (grid.isPioneerBlocked(startX, startY)) {
+	public static void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, int startX, int startY) {
+		if (grid.isPioneerBlockedAndWithoutTowerProtection(startX, startY)) {
 			return;
 		}
 
-		final IContainingProvider containingProvider = grid::isPioneerBlocked;
-		final short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
+		final IContainingProvider containingProvider = grid::isPioneerBlockedAndWithoutTowerProtection;
+		final short startPartition = grid.getPartitionAt(startX, startY);
 
 		for (EDirection currDir : EDirection.VALUES) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);
 
-			if (grid.isPioneerBlocked(currPos.x, currPos.y)) {
+			if (grid.isPioneerBlockedAndWithoutTowerProtection(currPos.x, currPos.y)) {
 				if (needsRelabel(grid, containingProvider, currPos, startPartition)) {
 					relabel(grid, containingProvider, currPos, startPartition);
 				}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,26 +14,29 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_STONE_CUTTER_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FARM_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FISHER_HUT_RATIO;
+import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_LUMBERJACK_RATIO;
+import static jsettlers.common.buildings.EBuildingType.FISHER;
 
 import java.util.BitSet;
 
-import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_BARRACKS_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FISHER_HUT_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_FARM_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_MILL_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_WATERWORKS_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_PIG_FARM_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_SLAUGHTER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.WEAPON_SMITH_TO_LUMBERJACK_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_SAWMILL_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_FORESTER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.LUMBERJACK_TO_STONE_CUTTER_RATIO;
-import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
+import jsettlers.algorithms.distances.DistancesCalculationAlgorithm;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
+import jsettlers.logic.map.grid.landscape.LandscapeGrid;
+import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 /**
  * This class calculates information about the map for the AI. At the moment it calculates how many buildings of a building type can be build on the
@@ -62,9 +65,15 @@ public class AiMapInformation {
 	public long[][] resourceAndGrassCount;
 	public final BitSet wasFishNearByAtGameStart;
 
-	public AiMapInformation(PartitionsGrid partitionsGrid) {
+	public AiMapInformation(PartitionsGrid partitionsGrid, LandscapeGrid landscapeGrid) {
 		resourceAndGrassCount = new long[partitionsGrid.getNumberOfPlayers() + 1][EResourceType.VALUES.length + 1];
-		wasFishNearByAtGameStart = new BitSet(partitionsGrid.getWidth() * partitionsGrid.getHeight());
+		wasFishNearByAtGameStart = calculateIsFishNearBy(partitionsGrid, landscapeGrid);
+	}
+
+	private BitSet calculateIsFishNearBy(PartitionsGrid partitionsGrid, LandscapeGrid landscapeGrid) {
+		return DistancesCalculationAlgorithm.calculatePositionsInDistance(partitionsGrid.getWidth(), partitionsGrid.getHeight(),
+				(x, y) -> landscapeGrid.getResourceTypeAt(x, y) == EResourceType.FISH && landscapeGrid.getResourceAmountAt(x, y) > 0,
+				FISHER.getWorkRadius());
 	}
 
 	public void clear() {

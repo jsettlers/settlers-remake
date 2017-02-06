@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,11 @@
  *******************************************************************************/
 package jsettlers.algorithms.partitions;
 
-import java.util.BitSet;
-
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.util.BitSet;
 
 /**
  * An algorithm to calculate partitions for a given set of positions.
@@ -66,7 +67,7 @@ public final class PartitionCalculatorAlgorithm {
 	 * @param maxY
 	 *            The biggest y coordinate in the list of positions.
 	 */
-	public PartitionCalculatorAlgorithm(Iterable<ShortPoint2D> positions, IBlockingProvider blockingProvider, int minX, int minY, int maxX, int maxY) {
+	public PartitionCalculatorAlgorithm(CoordinateStream positions, IBlockingProvider blockingProvider, int minX, int minY, int maxX, int maxY) {
 		this.minX = --minX; // this increases the window, so that no position can lay on the border.
 		this.minY = --minY;
 		maxX++;
@@ -77,9 +78,7 @@ public final class PartitionCalculatorAlgorithm {
 		this.blockingProvider = blockingProvider;
 
 		this.containing = new BitSet(width * height);
-		for (ShortPoint2D curr : positions) {
-			containing.set((curr.x - minX) + (curr.y - minY) * width);
-		}
+		positions.forEach((x, y) -> containing.set((x - this.minX) + (y - this.minY) * width));
 
 		this.partitionsGrid = new short[width * height];
 		this.partitions[BLOCKED_PARTITION] = BLOCKED_PARTITION;
@@ -170,9 +169,6 @@ public final class PartitionCalculatorAlgorithm {
 						partitions[northEastPartition] = newPartition;
 						partitionsGrid[index] = newPartition;
 
-						if (westPartition == BLOCKED_PARTITION || northEastPartition == BLOCKED_PARTITION) {
-							System.out.println();
-						}
 					} else if (partition != -1) { // just set the value.
 						partitionsGrid[index] = partitions[partition];
 

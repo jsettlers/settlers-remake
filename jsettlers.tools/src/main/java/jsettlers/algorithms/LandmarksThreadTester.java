@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.algorithms;
 
-import java.io.IOException;
-
 import jsettlers.TestToolUtils;
-import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.common.Color;
@@ -29,14 +26,13 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
+
+import java.io.IOException;
 
 public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;
@@ -47,13 +43,9 @@ public class LandmarksThreadTester {
 		map = new Map();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
-		connector.addListener(new IMapInterfaceListener() {
-
-			@Override
-			public void action(IAction action) {
-				if (action.getActionType() == EActionType.SELECT_POINT) {
-					System.out.println("clicked: " + ((PointAction) action).getPosition());
-				}
+		connector.addListener(action -> {
+			if (action.getActionType() == EActionType.SELECT_POINT) {
+				System.out.println("clicked: " + ((PointAction) action).getPosition());
 			}
 		});
 
@@ -101,8 +93,7 @@ public class LandmarksThreadTester {
 
 	private static void setPartition(int x, int y, int partition) {
 		map.setPartitionAt((short) x, (short) y, (short) partition);
-		ShortPoint2D pos = new ShortPoint2D(x, y);
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, pos);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, x, y);
 	}
 
 	// private static void printMap(Map map) {
@@ -110,7 +101,7 @@ public class LandmarksThreadTester {
 	// printSpaces(y * 10);
 	// for (short x = 0; x < WIDTH; x++) {
 	// System.out.print(" (" + x + "|" + y + ")");
-	// if (map.isPioneerBlocked(x, y)) {
+	// if (map.isPioneerBlockedAndWithoutTowerProtection(x, y)) {
 	// System.out.print("b");
 	// } else {
 	// System.out.print(" ");
@@ -142,7 +133,7 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public boolean isPioneerBlocked(int x, int y) {
+		public boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
 			return blocked[x][y];
 		}
 
@@ -187,7 +178,8 @@ public class LandmarksThreadTester {
 
 		@Override
 		public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
-			return Color.getARGB(isPioneerBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
+			return Color.getARGB(isPioneerBlockedAndWithoutTowerProtection((short) x, (short) y) ? 1 : 0, 0,
+					getPartitionAt((short) x, (short) y) / 2f, 1);
 		}
 
 		@Override

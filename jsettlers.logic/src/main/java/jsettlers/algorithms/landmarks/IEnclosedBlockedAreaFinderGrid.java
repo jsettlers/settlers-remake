@@ -22,16 +22,16 @@ package jsettlers.algorithms.landmarks;
  */
 public interface IEnclosedBlockedAreaFinderGrid {
 
-	public boolean isPioneerBlocked(int x, int y);
+	boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y);
 
-	public short getPartitionAt(int x, int y);
+	short getPartitionAt(int x, int y);
 
-	public boolean isInBounds(int x, int y);
+	boolean isInBounds(int x, int y);
 
-	public void setPartitionAt(int x, int y, short newPartition);
+	void setPartitionAt(int x, int y, short newPartition);
 
-	public short getHeight();
+	short getHeight();
 
-	public short getWidth();
+	short getWidth();
 
 }

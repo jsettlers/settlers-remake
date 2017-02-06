@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,28 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
+import static jsettlers.common.buildings.EBuildingType.CASTLE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.mapobject.EMapObjectType.STONE;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Vector;
+
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
@@ -22,7 +44,6 @@ import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -42,29 +63,6 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Vector;
-
-import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
-import static jsettlers.common.buildings.EBuildingType.CASTLE;
-import static jsettlers.common.buildings.EBuildingType.FISHER;
-import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
-import static jsettlers.common.buildings.EBuildingType.TOWER;
-import static jsettlers.common.mapobject.EMapObjectType.STONE;
-import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
-import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
@@ -102,8 +100,8 @@ public class AiStatistics {
 		this.flagsGrid = mainGrid.getFlagsGrid();
 		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
 		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
-		this.aiMapInformation = new AiMapInformation(this.partitionsGrid);
-		calculateIsFishNearBy();
+		this.aiMapInformation = new AiMapInformation(partitionsGrid, landscapeGrid);
+		;
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
@@ -114,21 +112,6 @@ public class AiStatistics {
 			sortedResourceTypes[i] = new AiPositions();
 		}
 		resourceCountInDefaultPartition = new long[EResourceType.VALUES.length];
-	}
-
-	private void calculateIsFishNearBy() { // TODO @Andreas Eberle implement linearly scanning algorithm
-		for (int x = 0; x < partitionsGrid.getWidth(); x++) {
-			for (int y = 0; y < partitionsGrid.getHeight(); y++) {
-				if (landscapeGrid.getResourceTypeAt(x, y) == EResourceType.FISH && landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					for (ShortPoint2D position : new MapCircle(x, y, FISHER.getWorkRadius())) {
-						if (mainGrid.isInBounds(position.x, position.y)) {
-							int index = position.x * partitionsGrid.getWidth() + position.y;
-							aiMapInformation.wasFishNearByAtGameStart.set(index, true);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -398,7 +381,7 @@ public class AiStatistics {
 				PlayerStatistic playerStatistic = playerStatistics[playerId];
 				playerStatistic.referencePosition = referencePosition;
 				playerStatistic.partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
-				playerStatistic.blockedPartitionId = landscapeGrid.getBlockedPartitionAt(referencePosition.x,referencePosition.y);
+				playerStatistic.blockedPartitionId = landscapeGrid.getBlockedPartitionAt(referencePosition.x, referencePosition.y);
 				playerStatistic.materialProduction = partitionsGrid.getMaterialProductionAt(referencePosition.x, referencePosition.y);
 				playerStatistic.materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
@@ -459,7 +442,7 @@ public class AiStatistics {
 	}
 
 	public boolean hasPlayersBlockedPartition(byte playerId, int x, int y) {
-		return landscapeGrid.getBlockedPartitionAt(x, y) ==  playerStatistics[playerId].blockedPartitionId;
+		return landscapeGrid.getBlockedPartitionAt(x, y) == playerStatistics[playerId].blockedPartitionId;
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
@@ -551,7 +534,7 @@ public class AiStatistics {
 				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
 				&& !objectsGrid.isBuildingAt(x, y)
 				&& !flagsGrid.isProtected(x, y)
-				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+				&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
 	public boolean wasFishNearByAtGameStart(ShortPoint2D position) {

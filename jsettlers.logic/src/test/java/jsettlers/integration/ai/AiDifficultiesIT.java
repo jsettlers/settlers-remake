@@ -14,12 +14,6 @@
  *******************************************************************************/
 package jsettlers.integration.ai;
 
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-
-import org.junit.Test;
-
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
@@ -37,13 +31,18 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
+import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author codingberlin
  */
 public class AiDifficultiesIT {
-	public static final int MINUTES = 1000 * 60;
-	public static final int JUMP_FORWARD = 2 * MINUTES;
+	private static final int MINUTES = 1000 * 60;
+	private static final int JUMP_FORWARD = 2 * MINUTES;
 	private static final String LOW_PERFORMANCE_FAILURE_MESSAGE =
 			"%s's %s is higher than %d. It was %d\nSome code change caused the AI to have a worse runtime performance.";
 
@@ -80,7 +79,7 @@ public class AiDifficultiesIT {
 
 		ReplayUtils.awaitShutdown(startedGame);
 
-		short expectedMinimalProducedSoldiers = 1000;
+		short expectedMinimalProducedSoldiers = 950;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
 			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " within 90 minutes.\nOnly " + producedSoldiers + " "

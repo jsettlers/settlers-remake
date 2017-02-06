@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,32 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.map.shapes;
+package jsettlers.common.utils.mutables;
 
-import java.util.Iterator;
+public class MutableDouble {
+	public double value;
 
-import jsettlers.common.position.ShortPoint2D;
-
-public class MapCircleBorderIterator extends MapCircleIterator implements
-		Iterator<ShortPoint2D> {
-
-	private final MapCircleBorder circle;
-
-	public MapCircleBorderIterator(MapCircleBorder circle) {
-		super(circle.getBaseCircle());
-		this.circle = circle;
+	public MutableDouble() {
 	}
 
-	@Override
-	public ShortPoint2D next() {
-		/**
-		 * Skip inner parts. Assume not to skip the last point of the row, so we need no additional checking.
-		 */
-
-		ShortPoint2D next;
-		do {
-			next = super.next();
-		} while (circle.isInVolume(next));
-		return next;
+	public MutableDouble(double value) {
+		this.value = value;
 	}
 }
