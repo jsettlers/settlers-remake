@@ -17,6 +17,7 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
@@ -182,13 +183,12 @@ public class BuildingState {
 
 	private BitSet computeStockStates(IBuilding building) {
 		if (building instanceof IBuilding.IStock && !construction) {
-			BitSet set = new BitSet();
-			IBuilding.IStock stock = (IBuilding.IStock) building;
-			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
-				set.set(m.ordinal, stock.acceptsMaterial(m));
+			BitSet acceptedMaterialsSet = new BitSet();
+			IStockSettings stockSettings = ((IBuilding.IStock) building).getStockSettings();
+			for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
+				acceptedMaterialsSet.set(materialType.ordinal, stockSettings.isAccepted(materialType));
 			}
-			// TODO: Store the is global flag.
-			return set;
+			return acceptedMaterialsSet;
 		} else {
 			return null;
 		}

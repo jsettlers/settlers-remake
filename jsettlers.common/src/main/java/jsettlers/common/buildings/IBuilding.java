@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.util.List;
 
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -149,14 +150,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	}
 
 	interface IStock extends IBuilding {
-		/**
-		 * Checks if this stock building allows this material.
-		 * 
-		 * @param material
-		 *            The material
-		 * @return True if that material should be stored in this building.
-		 */
-		boolean acceptsMaterial(EMaterialType material);
+		IStockSettings getStockSettings();
 	}
 
 	interface ITrading extends IBuilding {

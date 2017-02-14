@@ -61,8 +61,8 @@ public class StockBuilding extends Building implements IBuilding.IStock {
 	}
 
 	@Override
-	public boolean acceptsMaterial(EMaterialType materialType) {
-		return stockSettings.isRequested(materialType);
+	public MaterialRequestSettings getStockSettings() {
+		return stockSettings;
 	}
 
 	@Override
