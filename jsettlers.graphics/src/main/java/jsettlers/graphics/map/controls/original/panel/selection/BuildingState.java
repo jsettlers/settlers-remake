@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,7 +17,6 @@ package jsettlers.graphics.map.controls.original.panel.selection;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
-import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
@@ -185,7 +184,7 @@ public class BuildingState {
 		if (building instanceof IBuilding.IStock && !construction) {
 			BitSet set = new BitSet();
 			IBuilding.IStock stock = (IBuilding.IStock) building;
-			for (EMaterialType m : IStockSettings.ACCEPTABLE_MATERIALS) {
+			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
 				set.set(m.ordinal, stock.acceptsMaterial(m));
 			}
 			// TODO: Store the is global flag.

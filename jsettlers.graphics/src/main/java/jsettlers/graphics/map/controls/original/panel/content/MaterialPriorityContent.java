@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,7 @@ import java.util.BitSet;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
@@ -177,10 +178,12 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 				for (int i = 0; i < newOrder.length; i++) {
 					// FIXME: Synchronize!
-					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
+					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPriority(i);
 				}
-				for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
-					materialsAccepted.set(m.ordinal, data.getPartitionSettings().isAcceptByStocks(m));
+
+				IStockSettings stockSettings = data.getPartitionSettings().getStockSettings();
+				for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
+					materialsAccepted.set(materialType.ordinal, stockSettings.isAccepted(materialType));
 				}
 				setOrder(newOrder);
 

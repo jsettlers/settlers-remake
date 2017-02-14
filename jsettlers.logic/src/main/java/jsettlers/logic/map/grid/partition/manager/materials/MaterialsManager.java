@@ -87,7 +87,7 @@ public final class MaterialsManager implements Serializable {
 			if (joblessSupplier.isEmpty()) // no jobless? just return
 				break;
 
-			distributeJobForMaterial(settings.getMaterialTypeForPrio(i));
+			distributeJobForMaterial(settings.getMaterialTypeForPriority(i));
 		}
 	}
 

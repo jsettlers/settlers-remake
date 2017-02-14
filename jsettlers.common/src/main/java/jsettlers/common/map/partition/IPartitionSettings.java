@@ -43,18 +43,7 @@ public interface IPartitionSettings {
 	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
 	 * @return Returns the {@link EMaterialType} with the given priority.
 	 */
-	EMaterialType getMaterialTypeForPrio(int priorityIdx);
-
-	/**
-	 * Checks if stock buildings accept this material in this partition.
-	 * 
-	 * @param material
-	 *            The material.
-	 * @return <code>true</code> if they accept this material.
-	 */
-	boolean isAcceptByStocks(EMaterialType material);
-
-	void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted);
+	EMaterialType getMaterialTypeForPriority(int priorityIdx);
 
 	IStockSettings getStockSettings();
 }

@@ -14,13 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.settings;
 
+import java.io.Serializable;
+
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
-
-import java.io.Serializable;
 
 /**
  * This class bundles all settings for the {@link PartitionManager}.
@@ -65,7 +65,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	}
 
 	@Override
-	public EMaterialType getMaterialTypeForPrio(int priorityIdx) {
+	public EMaterialType getMaterialTypeForPriority(int priorityIdx) {
 		return materialTypeForPriorities[priorityIdx];
 	}
 
@@ -93,12 +93,6 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		return materialProductionSettings;
 	}
 
-	@Override
-	public boolean isAcceptByStocks(EMaterialType material) {
-		return stockSettings.isRequested(material);
-	}
-
-	@Override
 	public void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted) {
 		stockSettings.setRequested(materialType, accepted);
 	}
