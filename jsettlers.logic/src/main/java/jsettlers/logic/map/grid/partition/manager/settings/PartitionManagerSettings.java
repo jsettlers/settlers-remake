@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
@@ -38,6 +39,8 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.VALUES[i]);
 		}
+
+		INITIAL_STOCK_SETTINGS[EMaterialType.GOLD.ordinal] = Short.MAX_VALUE; // GOLD is active by default
 	}
 
 	private final EMaterialType[] materialTypeForPriorities;
