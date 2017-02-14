@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,12 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Vector;
-
-import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -53,6 +47,10 @@ import jsettlers.logic.map.grid.partition.manager.objects.WorkerRequest;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
@@ -443,23 +441,11 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return this.materialOffers.getOfferObjectAt(position, materialType, offerPriority);
 	}
 
-	public IPartitionSettings getPartitionSettings() {
+	public PartitionManagerSettings getPartitionSettings() {
 		return settings;
 	}
 
 	public IMaterialCounts getMaterialCounts() {
 		return materialOffers;
-	}
-
-	public void setMaterialDistributionSettings(EMaterialType materialType, float[] probabilities) {
-		settings.getDistributionSettings(materialType).setProbabilities(probabilities);
-	}
-
-	public void setMaterialPrioritiesSettings(EMaterialType[] materialTypeForPriority) {
-		settings.setMaterialTypesForPriorities(materialTypeForPriority);
-	}
-
-	public void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted) {
-		settings.setAcceptedStockMaterial(materialType, accepted);
 	}
 }

@@ -24,7 +24,7 @@ public interface IRequestStack extends ILocatable, IStackSizeSupplier, Serializa
 
 	boolean hasMaterial();
 
-	boolean isFullfilled();
+	boolean isFulfilled();
 
 	boolean pop();
 

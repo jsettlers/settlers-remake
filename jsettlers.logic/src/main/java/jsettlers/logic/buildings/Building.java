@@ -374,7 +374,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private boolean areAllStacksFullfilled() {
 		for (IRequestStack curr : stacks) {
-			if (!curr.isFullfilled()) {
+			if (!curr.isFulfilled()) {
 				return false;
 			}
 		}

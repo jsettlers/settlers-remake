@@ -14,20 +14,21 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingMaterial;
+import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.map.partition.IStockSettings;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.movable.IMovable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-
-import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.buildings.IBuildingOccupier;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.ESoldierClass;
-import jsettlers.common.movable.IMovable;
 
 /**
  * This class saves the state parts of the building that is displayed by the gui, to detect changes.
@@ -184,7 +185,7 @@ public class BuildingState {
 		if (building instanceof IBuilding.IStock && !construction) {
 			BitSet set = new BitSet();
 			IBuilding.IStock stock = (IBuilding.IStock) building;
-			for (EMaterialType m : EMaterialType.DROPPABLE_MATERIALS) {
+			for (EMaterialType m : IStockSettings.ACCEPTABLE_MATERIALS) {
 				set.set(m.ordinal, stock.acceptsMaterial(m));
 			}
 			// TODO: Store the is global flag.

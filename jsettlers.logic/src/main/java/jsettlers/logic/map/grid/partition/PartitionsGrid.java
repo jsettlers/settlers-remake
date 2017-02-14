@@ -26,7 +26,6 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
@@ -38,6 +37,7 @@ import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
@@ -94,7 +94,7 @@ public final class PartitionsGrid implements Serializable {
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
-		Map<Byte, Team> teams = new HashMap<Byte, Team>();
+		Map<Byte, Team> teams = new HashMap<>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
 			if (playerSetting.isAvailable()) {
@@ -749,15 +749,15 @@ public final class PartitionsGrid implements Serializable {
 				partition.getMaterialCounts());
 	}
 
-	public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
-		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialDistributionSettings(materialType, probabilities);
-	}
-
-	public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
-		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialPrioritiesSettings(materialTypeForPriority);
-	}
-
 	public Team[] getTeams() {
 		return teams;
+	}
+
+	public PartitionManagerSettings getPartitionSettings(ShortPoint2D position) {
+		return getPartitionSettings(position.x, position.y);
+	}
+
+	public PartitionManagerSettings getPartitionSettings(int x, int y) {
+		return getPartitionAt(x, y).getPartitionSettings();
 	}
 }

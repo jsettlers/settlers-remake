@@ -14,12 +14,9 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import static java8.util.stream.StreamSupport.stream;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
@@ -50,9 +47,11 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  *
@@ -195,7 +194,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case SET_ACCEPTED_STOCK_MATERIAL:
-			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask)guiTask);
+			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask) guiTask);
 			break;
 
 		default:
@@ -205,15 +204,17 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private void setAcceptedStockMaterial(SetAcceptedStockMaterialGuiTask guiTask) {
-		if (guiTask.isLocal()){
-			IBuilding building =grid.getBuildingAt(guiTask.getPosition().x, guiTask.getPosition().y);
-			if (building != null && building instanceof StockBuilding){
+		ShortPoint2D taskPosition = guiTask.getPosition();
+
+		if (guiTask.isLocal()) {
+			IBuilding building = grid.getBuildingAt(taskPosition.x, taskPosition.y);
+			if (building != null && building instanceof StockBuilding) {
 				StockBuilding stock = (StockBuilding) building;
 				stock.setAcceptedMaterial(guiTask.getMaterialType(), guiTask.isAccepted());
 			}
 
 		} else {
-			grid.setAcceptedStockMaterial(guiTask.getPosition(), guiTask.getMaterialType(), guiTask.isAccepted());
+			grid.setAcceptedStockMaterial(taskPosition, guiTask.getMaterialType(), guiTask.isAccepted());
 		}
 	}
 

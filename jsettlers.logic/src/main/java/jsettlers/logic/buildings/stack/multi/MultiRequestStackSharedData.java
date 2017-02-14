@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.stack.multi;
 
+import jsettlers.common.material.EMaterialType;
+
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import jsettlers.common.material.EMaterialType;
 
 /**
  * This class holds shared data between multiple {@link MultiRequestStack}s of the same building.
@@ -29,16 +29,16 @@ import jsettlers.common.material.EMaterialType;
 public class MultiRequestStackSharedData implements Serializable {
 	private static final long serialVersionUID = 3890128212034591055L;
 
-	final short[] requestedMaterials;
+	final MaterialRequestSettings requestSettings;
 	final byte[] inDelivery = new byte[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-	final Set<MultiRequestStack>[] handlingStacks;
+	private final Set<MultiRequestStack>[] handlingStacks;
 
 	@SuppressWarnings("unchecked")
-	public MultiRequestStackSharedData(short[] requestedMaterials) {
-		this.requestedMaterials = requestedMaterials;
+	public MultiRequestStackSharedData(MaterialRequestSettings requestSettings) {
+		this.requestSettings = requestSettings;
 		this.handlingStacks = new Set[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
-			this.handlingStacks[i] = new LinkedHashSet<MultiRequestStack>();
+			this.handlingStacks[i] = new LinkedHashSet<>();
 		}
 	}
 
@@ -51,7 +51,9 @@ public class MultiRequestStackSharedData implements Serializable {
 	}
 
 	public short getStillNeededIfNoOthersHandleIt(EMaterialType materialType) {
-		for (MultiRequestStack stack : handlingStacks[materialType.ordinal]) {
+		Set<MultiRequestStack> stacksHandlingThisMaterial = handlingStacks[materialType.ordinal];
+
+		for (MultiRequestStack stack : stacksHandlingThisMaterial) {
 			if (stack.canAcceptMoreDeliveries()) {
 				return 0;
 			}
@@ -61,6 +63,7 @@ public class MultiRequestStackSharedData implements Serializable {
 	}
 
 	public short getStillNeeded(EMaterialType materialType) {
-		return (short) (requestedMaterials[materialType.ordinal] - inDelivery[materialType.ordinal]);
+		return (short) (requestSettings.getRequestedAmount(materialType) - inDelivery[materialType.ordinal]);
 	}
+
 }

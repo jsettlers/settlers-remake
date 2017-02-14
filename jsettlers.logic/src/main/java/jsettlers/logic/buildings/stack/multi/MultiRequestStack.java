@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -52,10 +52,11 @@ public class MultiRequestStack implements IRequestStack {
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
 	 * 
 	 * @param grid
-	 *            The {@link IRequestsStackGrid} to be used as base for this {@link AbstractRequestStack}.
+	 *            The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
 	 * @param position
 	 *            The position the stack will be.
 	 * @param buildingType
+	 *            Type of the building using this stack.
 	 */
 	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority,
 			MultiRequestStackSharedData sharedData) {
@@ -93,7 +94,7 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	void checkIfCurrentMaterialShouldBeReset() {
+	private void checkIfCurrentMaterialShouldBeReset() {
 		if (currentMaterialType != null && materialRequests[currentMaterialType.ordinal].getInDelivery() <= 0 && getStackSize() == 0) {
 			sharedData.unregisterHandlingStack(currentMaterialType, this);
 			currentMaterialType = null;
@@ -120,7 +121,7 @@ public class MultiRequestStack implements IRequestStack {
 	 *         false otherwise.
 	 */
 	@Override
-	public boolean isFullfilled() {
+	public boolean isFulfilled() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -132,7 +133,7 @@ public class MultiRequestStack implements IRequestStack {
 	@Override
 	public void releaseRequests() {
 		for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
-			sharedData.requestedMaterials[materialType.ordinal] = 0;
+			sharedData.requestSettings.setRequestedAmount(materialType, (short) 0);
 			grid.createOffersForAvailableMaterials(position, materialType);
 		}
 		released = true;
@@ -205,9 +206,7 @@ public class MultiRequestStack implements IRequestStack {
 
 		@Override
 		protected void materialDelivered() {
-			if (sharedData.requestedMaterials[materialType.ordinal] != Short.MAX_VALUE) {
-				sharedData.requestedMaterials[materialType.ordinal]--;
-			}
+			sharedData.requestSettings.changeRequested(materialType, -1);
 		}
 
 		@Override

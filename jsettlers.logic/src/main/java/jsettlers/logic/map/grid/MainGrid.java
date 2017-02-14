@@ -43,9 +43,18 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.*;
+import jsettlers.common.map.object.BuildingObject;
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.*;
+import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapLine;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -66,6 +75,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
+import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -1538,6 +1548,11 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
+			public MaterialRequestSettings getPartitionStockSettings(ShortPoint2D position) {
+				return partitionsGrid.getPartitionSettings(position).getStockSettings();
+			}
+
+			@Override
 			public final byte getStackSize(ShortPoint2D position, EMaterialType materialType) {
 				return mapObjectsManager.getStackSize(position.x, position.y, materialType);
 			}
@@ -1770,13 +1785,13 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.setMaterialDistributionSettings(managerPosition, materialType, probabilities);
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, probabilities);
 		}
 
 		@Override
 		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.setMaterialPrioritiesSettings(managerPosition, materialTypeForPriority);
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialPriorities(materialTypeForPriority);
 		}
 
 		@Override
@@ -1811,7 +1826,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted) {
-			partitionsGrid.getPartitionAt(position.x, position.y).setAcceptedStockMaterial(materialType, accepted);
+			partitionsGrid.getPartitionSettings(position).setAcceptedStockMaterial(materialType, accepted);
 		}
 	}
 

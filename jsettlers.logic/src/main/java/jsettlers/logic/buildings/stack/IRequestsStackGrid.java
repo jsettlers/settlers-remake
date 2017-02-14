@@ -14,11 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.stack;
 
-import java.io.Serializable;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+
+import java.io.Serializable;
 
 /**
  * This interface defines the methods a grid must supply that it can be used by a {@link RequestStack}.
@@ -61,4 +62,6 @@ public interface IRequestsStackGrid extends Serializable {
 	 *         position.
 	 */
 	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
+
+	MaterialRequestSettings getPartitionStockSettings(ShortPoint2D position);
 }
