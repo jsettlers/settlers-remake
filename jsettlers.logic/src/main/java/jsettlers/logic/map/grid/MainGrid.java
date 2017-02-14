@@ -1565,6 +1565,12 @@ public final class MainGrid implements Serializable {
 					partition.addOffer(position, materialType, EOfferPriority.OFFER_TO_ALL);
 				}
 			}
+
+			@Override
+			public void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority) {
+				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
+				partition.addOffer(position, materialType, priority);
+			}
 		}
 
 		@Override

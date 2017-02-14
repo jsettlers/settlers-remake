@@ -34,10 +34,18 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	AbstractMaterialRequestPriorityQueue requestQueue;
 	byte inDelivery;
 
+	public MaterialRequestObject() {
+	}
+
+	public MaterialRequestObject(EPriority priority) {
+		this.priority = priority;
+	}
+
 	/**
 	 * Updates the priority of this {@link MaterialRequestObject} to the given {@link EPriority}.
 	 *
-	 * @param newPriority The new priority of this {@link MaterialRequestObject}.
+	 * @param newPriority
+	 *            The new priority of this {@link MaterialRequestObject}.
 	 */
 	public final void updatePriority(EPriority newPriority) {
 		if (requestQueue != null && newPriority != priority) {
@@ -71,7 +79,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 
 	/**
 	 * @return Returns the number of materials that are still needed by this {@link MaterialRequestObject}.<br>
-	 * (That means, that materials that are in delivery are not counted here!)
+	 *         (That means, that materials that are in delivery are not counted here!)
 	 */
 	protected abstract short getStillNeeded();
 
