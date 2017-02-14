@@ -1,10 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2016 - 2017
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
+
+import java.io.Serializable;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
-
-import java.io.Serializable;
 
 /**
  * Created by Andreas Eberle on 23.08.2016.
@@ -68,6 +82,19 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable> i
 	public void addAll(PrioritizedPositionableList<P, T> otherList) {
 		for (int i = lists.length - 1; i >= 0; i--) {
 			lists[i].addAll(otherList.lists[i]);
+		}
+	}
+
+	public void updatePriorityAt(ShortPoint2D position, P newPriority) {
+		int newPriorityIndex = newPriority.ordinal();
+
+		for (int i = 0; i < lists.length; i++) {
+			if (i != newPriorityIndex) {
+				T foundObject = lists[i].removeObjectAt(position);
+				if (foundObject != null) {
+					lists[newPriorityIndex].insert(foundObject);
+				}
+			}
 		}
 	}
 }

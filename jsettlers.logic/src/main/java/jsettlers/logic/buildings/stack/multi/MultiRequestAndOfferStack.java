@@ -43,15 +43,22 @@ public class MultiRequestAndOfferStack extends MultiRequestStack {
 		super(grid, position, buildingType, priority, sharedData);
 	}
 
-
 	protected void deliveryFulFilled(EMaterialType materialType) {
-		grid.offer(position,materialType, EOfferPriority.LOWEST);
+		grid.offer(position, materialType, EOfferPriority.LOWEST);
 	}
 
 	protected RequestOfMultiRequestStack createRequestForMaterial(EPriority priority, EMaterialType materialType) {
 		return new RequestOfMultiRequestAndOfferStack(materialType, priority);
 	}
 
+	@Override
+	public void releaseRequests() {
+		for (RequestOfMultiRequestStack materialRequest : materialRequests) {
+			materialRequest.updatePriority(EPriority.STOPPED);
+			grid.updateOfferPriorities(position, materialRequest.materialType, EOfferPriority.OFFER_TO_ALL);
+		}
+		released = true;
+	}
 
 	protected class RequestOfMultiRequestAndOfferStack extends RequestOfMultiRequestStack {
 		RequestOfMultiRequestAndOfferStack(EMaterialType materialType, EPriority priority) {

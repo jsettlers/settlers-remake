@@ -133,6 +133,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		materialOffers.addOffer(position, materialType, offerPriority);
 	}
 
+	public void updateOfferPriority(ShortPoint2D position, EMaterialType materialType, EOfferPriority newPriority) {
+		materialOffers.updateOfferPriority(position, materialType, newPriority);
+	}
+
 	public void request(EMaterialType materialType, MaterialRequestObject requestObject) {
 		materialsManager.addRequestObject(materialType, requestObject);
 	}

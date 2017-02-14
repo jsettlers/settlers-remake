@@ -40,22 +40,25 @@ public class MultiRequestStack implements IRequestStack {
 	private final EBuildingType buildingType;
 
 	private final MultiRequestStackSharedData sharedData;
-	private final MaterialRequestObject[] materialRequests = new MaterialRequestObject[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	protected final RequestOfMultiRequestStack[] materialRequests = new RequestOfMultiRequestStack[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	private EMaterialType currentMaterialType;
 	private short popped;
 
-	private boolean released;
+	protected boolean released;
 
 	/**
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
 	 *
-	 * @param grid         The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
-	 * @param position     The position the stack will be.
-	 * @param buildingType Type of the building using this stack.
+	 * @param grid
+	 *            The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
+	 * @param position
+	 *            The position the stack will be.
+	 * @param buildingType
+	 *            Type of the building using this stack.
 	 */
 	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority,
-	                         MultiRequestStackSharedData sharedData) {
+			MultiRequestStackSharedData sharedData) {
 		this.grid = grid;
 		this.position = position;
 		this.buildingType = buildingType;
@@ -118,7 +121,7 @@ public class MultiRequestStack implements IRequestStack {
 	 * Checks if all needed materials have been delivered. Therefore this method is only useful with bounded request stacks.
 	 *
 	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
-	 * false otherwise.
+	 *         false otherwise.
 	 */
 	@Override
 	public boolean isFulfilled() {
@@ -132,9 +135,9 @@ public class MultiRequestStack implements IRequestStack {
 
 	@Override
 	public void releaseRequests() {
-		for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
-			sharedData.requestSettings.setRequestedAmount(materialType, (short) 0);
-			grid.createOffersForAvailableMaterials(position, materialType);
+		for (RequestOfMultiRequestStack materialRequest : materialRequests) {
+			materialRequest.updatePriority(EPriority.STOPPED);
+			grid.createOffersForAvailableMaterials(position, materialRequest.materialType);
 		}
 		released = true;
 	}
