@@ -42,7 +42,7 @@ public class MultiRequestStack implements IRequestStack {
 	private final MultiRequestStackSharedData sharedData;
 	protected final RequestOfMultiRequestStack[] materialRequests = new RequestOfMultiRequestStack[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
-	private EMaterialType currentMaterialType;
+	protected EMaterialType currentMaterialType;
 	private short popped;
 
 	protected boolean released;
@@ -159,9 +159,13 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	boolean canAcceptMoreDeliveries() {
-		MaterialRequestObject activeRequest = materialRequests[currentMaterialType.ordinal];
-		return getInDeliveryable() - activeRequest.getInDelivery() > 0;
+	boolean canAcceptMoreDeliveriesOf(EMaterialType materialType) {
+		if (materialType != null && materialType == currentMaterialType) {
+			MaterialRequestObject activeRequest = materialRequests[currentMaterialType.ordinal];
+			return getInDeliveryable() - activeRequest.getInDelivery() > 0;
+		} else {
+			return false;
+		}
 	}
 
 	private int getInDeliveryable() {

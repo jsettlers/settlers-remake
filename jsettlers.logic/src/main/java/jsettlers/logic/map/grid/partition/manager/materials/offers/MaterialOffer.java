@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,9 +16,9 @@ package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
 import java.io.Serializable;
 
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.manager.datastructures.IPrioritizable;
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
 
 /**
@@ -27,11 +27,11 @@ import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
  * @author Andreas Eberle
  * 
  */
-public final class MaterialOffer implements Serializable, ILocatable {
+public final class MaterialOffer implements Serializable, ILocatable, IPrioritizable<EOfferPriority> {
 	private static final long serialVersionUID = 8516955442065220998L;
 
 	private final ShortPoint2D position;
-	private final EOfferPriority priority;
+	private EOfferPriority priority;
 	private byte amount = 0;
 
 	MaterialOffer(ShortPoint2D position, EOfferPriority priority, byte amount) {
@@ -72,7 +72,13 @@ public final class MaterialOffer implements Serializable, ILocatable {
 		return amount;
 	}
 
+	@Override
 	public EOfferPriority getPriority() {
 		return priority;
+	}
+
+	@Override
+	public void updatePriority(EOfferPriority priority) {
+		this.priority = priority;
 	}
 }

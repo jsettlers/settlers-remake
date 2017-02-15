@@ -54,7 +54,7 @@ public class MultiRequestStackSharedData implements Serializable {
 		Set<MultiRequestStack> stacksHandlingThisMaterial = handlingStacks[materialType.ordinal];
 
 		for (MultiRequestStack stack : stacksHandlingThisMaterial) {
-			if (stack.canAcceptMoreDeliveries()) {
+			if (stack.canAcceptMoreDeliveriesOf(materialType)) {
 				return 0;
 			}
 		}

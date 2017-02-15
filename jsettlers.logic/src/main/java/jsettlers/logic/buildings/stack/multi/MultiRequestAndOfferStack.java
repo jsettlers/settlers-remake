@@ -55,7 +55,9 @@ public class MultiRequestAndOfferStack extends MultiRequestStack {
 	public void releaseRequests() {
 		for (RequestOfMultiRequestStack materialRequest : materialRequests) {
 			materialRequest.updatePriority(EPriority.STOPPED);
-			grid.updateOfferPriorities(position, materialRequest.materialType, EOfferPriority.OFFER_TO_ALL);
+		}
+		if (currentMaterialType != null) {
+			grid.updateOfferPriorities(position, currentMaterialType, EOfferPriority.OFFER_TO_ALL);
 		}
 		released = true;
 	}

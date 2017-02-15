@@ -23,7 +23,7 @@ import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableLis
 /**
  * Created by Andreas Eberle on 23.08.2016.
  */
-public class PrioritizedPositionableList<P extends Enum, T extends ILocatable> implements Serializable {
+public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & IPrioritizable<P>> implements Serializable {
 	private final PositionableList<T>[] lists;
 
 	public PrioritizedPositionableList(int numberOfPriorities) {
@@ -33,8 +33,8 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable> i
 		}
 	}
 
-	public void insert(P priority, T object) {
-		lists[priority.ordinal()].insert(object);
+	public void insert(T object) {
+		lists[object.getPriority().ordinal()].insert(object);
 	}
 
 	public T getObjectAt(ShortPoint2D position, P priority) {
@@ -68,9 +68,7 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable> i
 	}
 
 	public void remove(T offer) {
-		for (int i = lists.length - 1; i >= 0; i--) {
-			lists[i].remove(offer);
-		}
+		lists[offer.getPriority().ordinal()].remove(offer);
 	}
 
 	public void moveObjectsAtPositionTo(ShortPoint2D position, PrioritizedPositionableList<P, T> otherList, IMovedVisitor<T> movedVisitor) {
@@ -92,6 +90,7 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable> i
 			if (i != newPriorityIndex) {
 				T foundObject = lists[i].removeObjectAt(position);
 				if (foundObject != null) {
+					foundObject.updatePriority(newPriority);
 					lists[newPriorityIndex].insert(foundObject);
 				}
 			}
