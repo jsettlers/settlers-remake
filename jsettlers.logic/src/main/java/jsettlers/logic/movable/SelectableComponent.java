@@ -6,18 +6,22 @@ import jsettlers.common.selectable.ESelectionType;
  * Created by jt-1 on 2/6/2017.
  */
 
-public class SelectableComponent implements Component {
-    public boolean isSelected() {
-        //SectableComponent
-        return false;
-    }
+public class SelectableComponent extends Component {
 
-    public void setSelected(boolean selected) {
-        //SectableComponent
-    }
-
+    private final ESelectionType _selectionType;
     public ESelectionType getSelectionType() {
-        //SectableComponent
-        return null;
+        return _selectionType;
+    }
+
+    private boolean _isSelected;
+    public boolean isSelected() {
+        return _isSelected;
+    }
+    public void setSelected(boolean selected) {
+        _isSelected = selected;
+    }
+
+    SelectableComponent(ESelectionType selectionType) {
+        _selectionType = selectionType;
     }
 }

@@ -42,7 +42,7 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
 
     @Override
     public EDirection getDirection() {
-        return this.get(AnimationComponent.class).getDirection();
+        return this.get(AnimationComponent.class).getViewDirection();
     }
 
     @Override
@@ -72,7 +72,7 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
 
     @Override
     public void stopOrStartWorking(boolean stop) {
-        get(WorkComponent.class).stopOrStartWorking(stop);
+        get(WorkComponent.class).setIsWorking(!stop);
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
 
     @Override
     public boolean isTower() {
-        return get(AttackableComponent.class).isTower();
+        return false;
     }
 
     @Override
@@ -132,7 +132,7 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
 
     @Override
     public void informAboutAttackable(IAttackable attackable) {
-        get(AttackableComponent.class).informAboutAttackable(attackable);
+        get(AttackableComponent.class).informAboutAttackable((Entity)attackable);
     }
 
     @Override
