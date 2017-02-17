@@ -616,9 +616,6 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		} else {
 			layout.priority.setPriority(supported, building.getPriority());
 		}
-		for (SelectionManagedMaterialButton b : buttons) {
-			b.setSelectionManager(selectionManager);
-		}
 		for (TradingButton b : layout.getAll(TradingButton.class)) {
 			b.setSelectionManager(selectionManager);
 		}
