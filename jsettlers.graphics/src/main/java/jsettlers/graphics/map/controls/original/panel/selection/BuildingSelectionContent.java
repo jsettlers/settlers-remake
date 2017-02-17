@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
-import java.util.Collection;
 import java.util.List;
 
 import go.graphics.GLDrawContext;
@@ -35,15 +34,16 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ChangeTradingRequestAction;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
+import jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton;
+import jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton;
+import jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.OccupierState;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.StackState;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -71,7 +71,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 *
 	 * @author Michael Zangl.
 	 */
-	private interface StateDependingElement {
+	public interface StateDependingElement {
 		void setState(BuildingState state);
 	}
 
@@ -112,46 +112,6 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		 */
 		public SoldierCount(ESoldierType type) {
 			super("?", EFontSize.NORMAL);
-		}
-	}
-
-	/**
-	 * This is a material that is displayed on the stock screen.
-	 *
-	 * @author Michael Zangl
-	 */
-	public static class StockControlItem extends MaterialButton implements StateDependingElement {
-		/**
-		 * Creates a new stock control button.
-		 *
-		 * @param material
-		 *            The material.
-		 */
-		public StockControlItem(EMaterialType material) {
-			super(null, material);
-			setAction(createAction(material));
-		}
-
-		private Action createAction(EMaterialType material) {
-			return new ExecutableAction() {
-				@Override
-				public void execute() {
-					StockControlItem.this.setSelected(true);
-				}
-			};
-		}
-
-		@Override
-		public void setState(BuildingState state) {
-			setDotColor(computeColor(state));
-		}
-
-		private DotColor computeColor(BuildingState state) {
-			if (state.stockAcceptsMaterial(getMaterial())) {
-				return DotColor.GREEN;
-			} else {
-				return DotColor.RED;
-			}
 		}
 	}
 
@@ -599,17 +559,21 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	private BuildingBackgroundPanel createStockBuildingContent(BuildingState state) {
 		StockSelectionLayout layout = new StockSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
+		selectionManager.setButtons(layout.getAll(StockControlButton.class));
 		for (StateDependingElement i : layout.getAll(StateDependingElement.class)) {
 			i.setState(state);
 		}
+
+		layout.stock_accept.configure(selectionManager::getSelected, building::getPos, true, true);
+		layout.stock_reject.configure(selectionManager::getSelected, building::getPos, false, true);
+
 		return layout._root;
 	}
 
 	private BuildingBackgroundPanel createTradingBuildingContent(BuildingState state) {
 		TradingSelectionLayout layout = new TradingSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
-		Collection<SelectionManagedMaterialButton> buttons = layout.getAll(SelectionManagedMaterialButton.class);
-		selectionManager.setButtons(buttons);
+		selectionManager.setButtons(layout.getAll(SelectionManagedMaterialButton.class));
 		EPriority[] supported = state.getSupportedPriorities();
 		if (supported.length < 2) {
 			layout.background.removeChild(layout.priority);

@@ -26,10 +26,8 @@ import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
-import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
@@ -67,7 +65,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		/**
 		 * This is a mapping: {@link EMaterialType} -> label position.
 		 */
-		private final AnimateablePosition[] positions = new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
+		private final AnimatablePosition[] positions = new AnimatablePosition[EMaterialType.NUMBER_OF_MATERIALS];
 		private final SelectionManagedMaterialButton[] buttons = new SelectionManagedMaterialButton[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 		private final SelectionManager selectionManager = new SelectionManager();
 
@@ -127,9 +125,9 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		}
 
 		private void setToPosition(EMaterialType material, int newindex) {
-			AnimateablePosition pos = positions[material.ordinal];
+			AnimatablePosition pos = positions[material.ordinal];
 			if (pos == null) {
-				positions[material.ordinal] = new AnimateablePosition(xpoints[newindex], ypoints[newindex]);
+				positions[material.ordinal] = new AnimatablePosition(xpoints[newindex], ypoints[newindex]);
 			} else {
 				pos.setPosition(xpoints[newindex], ypoints[newindex]);
 			}
@@ -171,7 +169,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 				for (EMaterialType material : newOrder) {
 					SelectionManagedMaterialButton button = buttons[material.ordinal];
-					AnimateablePosition position = positions[material.ordinal];
+					AnimatablePosition position = positions[material.ordinal];
 
 					button.setDotColor(getColor(materialsAccepted, button));
 					removeChild(button);
@@ -306,7 +304,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 	/**
 	 * This is a button that changes the storage accepting state for that material.
-	 * 
+	 *
 	 * @author Michael Zangl
 	 *
 	 */
@@ -316,7 +314,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 		/**
 		 * Creates a new {@link ChangeAcceptButton}.
-		 * 
+		 *
 		 * @param image
 		 *            The image to display
 		 * @param description

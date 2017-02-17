@@ -17,100 +17,100 @@
 	</element>
 
 	<!-- row 1 -->
-	<element x="14" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="14" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="PLANK" />
 	</element>
-	<element x="32" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="32" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="STONE" />
 	</element>
-	<element x="50" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="50" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="TRUNK" />
 	</element>
-	<element x="68" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="68" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="COAL" />
 	</element>
-	<element x="86" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="86" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="IRONORE" />
 	</element>
-	<element x="104" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="104" y="306" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="GOLDORE" />
 	</element>
 	
 	<!-- row 2 -->
-	<element x="14" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="14" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="IRON" />
 	</element>
-	<element x="32" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="32" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="HAMMER" />
 	</element>
-	<element x="50" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="50" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="BLADE" />
 	</element>
-	<element x="68" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="68" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="AXE" />
 	</element>
-	<element x="86" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="86" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="SAW" />
 	</element>
-	<element x="104" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="104" y="324" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="PICK" />
 	</element>
 	
 	<!-- row 3 -->
-	<element x="14" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="14" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="FISHINGROD" />
 	</element>
-	<element x="32" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="32" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="SCYTHE" />
 	</element>
-	<element x="50" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="50" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="SWORD" />
 	</element>
-	<element x="68" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="68" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="BOW" />
 	</element>
-	<element x="86" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="86" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="SPEAR" />
 	</element>
-	<element x="104" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="104" y="342" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="WATER" />
 	</element>
 	
 	<!-- row 4 -->
-	<element x="14" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="14" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="FISH" />
 	</element>
-	<element x="32" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="32" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="PIG" />
 	</element>
-	<element x="50" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="50" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="MEAT" />
 	</element>
-	<element x="68" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="68" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="CROP" />
 	</element>
-	<element x="86" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="86" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="FLOUR" />
 	</element>
-	<element x="104" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="104" y="360" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="BREAD" />
 	</element>
 	
 	<!-- row 5 -->
-	<element x="14" y="378" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="14" y="378" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="WINE" />
 	</element>
-	<element x="32" y="378" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.StockControlItem">
+	<element x="32" y="378" width="18" height="18" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton">
 		<material material="GOLD" />
 	</element>
 
 
 	<!-- Buttons -->
-	<element x="11" y="410" width="18" height="18" id="stock_accept" class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton">
+	<element x="11" y="410" width="18" height="18" id="stock_accept" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton">
 		<image type="GUI" file="3" sequence="213" />
 		<localized label=""/>
 	</element>
-	<element x="29" y="410" width="18" height="18" id="stock_reject" class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton">
+	<element x="29" y="410" width="18" height="18" id="stock_reject" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton">
 		<image type="GUI" file="3" sequence="216" />
 		<localized label=""/>
 	</element>

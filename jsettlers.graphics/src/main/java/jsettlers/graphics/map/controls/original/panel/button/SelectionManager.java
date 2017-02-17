@@ -32,14 +32,19 @@ public class SelectionManager {
 	private SelectionManagedMaterialButton[] buttons;
 	private EMaterialType selected;
 
-	public void setButtons(Collection<SelectionManagedMaterialButton> buttons) {
+	public void setButtons(Collection<? extends SelectionManagedMaterialButton> buttons) {
 		setButtons(buttons.toArray(new SelectionManagedMaterialButton[buttons.size()]));
 	}
 
 	public void setButtons(SelectionManagedMaterialButton[] buttons) {
+		if (this.buttons != null) {
+			stream(this.buttons).forEach(button -> button.setSelectionManager(null));
+		}
 		this.buttons = buttons;
-		stream(buttons).forEach(button -> button.setSelectionManager(this));
-		updateSelected();
+		if (buttons != null) {
+			stream(buttons).forEach(button -> button.setSelectionManager(this));
+			updateSelected();
+		}
 	}
 
 	public Action getSelectAction(final EMaterialType material) {
