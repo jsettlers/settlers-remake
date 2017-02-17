@@ -22,7 +22,8 @@ import java.util.Arrays;
 
 public class MaterialRequestSettings implements IStockSettings, Serializable {
 
-	private static final short UNLIMITTED_REQUESTS_MAGIC_NUMBER = Short.MAX_VALUE;
+	private static final short UNLIMITED_REQUESTS_MAGIC_NUMBER = Short.MAX_VALUE;
+	private static final short USE_DEFAULTS_CONSTANT = -1;
 
 	private final MaterialRequestSettings defaultSettings;
 	private final short[] requestedMaterials;
@@ -38,7 +39,7 @@ public class MaterialRequestSettings implements IStockSettings, Serializable {
 	public MaterialRequestSettings(MaterialRequestSettings defaultSettings) {
 		this.defaultSettings = defaultSettings;
 		this.requestedMaterials = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-		Arrays.fill(this.requestedMaterials, (short) -1);
+		Arrays.fill(this.requestedMaterials, USE_DEFAULTS_CONSTANT);
 	}
 
 	public MaterialRequestSettings() {
@@ -55,11 +56,15 @@ public class MaterialRequestSettings implements IStockSettings, Serializable {
 	}
 
 	public void setRequestedAmount(EMaterialType materialType, short acceptedAmount) {
-		requestedMaterials[materialType.ordinal] = acceptedAmount;
+		if (defaultSettings != null && defaultSettings.getRequestedAmount(materialType) == acceptedAmount) {
+			requestedMaterials[materialType.ordinal] = USE_DEFAULTS_CONSTANT;
+		} else {
+			requestedMaterials[materialType.ordinal] = acceptedAmount;
+		}
 	}
 
 	public void setRequested(EMaterialType materialType, boolean accepted) {
-		setRequestedAmount(materialType, accepted ? UNLIMITTED_REQUESTS_MAGIC_NUMBER : 0);
+		setRequestedAmount(materialType, accepted ? UNLIMITED_REQUESTS_MAGIC_NUMBER : 0);
 	}
 
 	@Override
@@ -69,8 +74,8 @@ public class MaterialRequestSettings implements IStockSettings, Serializable {
 
 	void changeRequested(EMaterialType materialType, int change) {
 		short currentlyRequested = getRequestedAmount(materialType);
-		if (currentlyRequested != UNLIMITTED_REQUESTS_MAGIC_NUMBER) {
-			requestedMaterials[materialType.ordinal] = (short) Math.min(UNLIMITTED_REQUESTS_MAGIC_NUMBER, Math.max(0, currentlyRequested + change));
+		if (currentlyRequested != UNLIMITED_REQUESTS_MAGIC_NUMBER) {
+			requestedMaterials[materialType.ordinal] = (short) Math.min(UNLIMITED_REQUESTS_MAGIC_NUMBER, Math.max(0, currentlyRequested + change));
 		}
 	}
 }
