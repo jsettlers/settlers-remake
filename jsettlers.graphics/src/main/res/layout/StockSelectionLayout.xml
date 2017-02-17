@@ -108,10 +108,10 @@
 	<!-- Buttons -->
 	<element x="11" y="410" width="18" height="18" id="stock_accept" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton">
 		<image type="GUI" file="3" sequence="213" />
-		<localized label=""/>
+		<localized label="stock-material-local"/>
 	</element>
 	<element x="29" y="410" width="18" height="18" id="stock_reject" class="jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton">
 		<image type="GUI" file="3" sequence="216" />
-		<localized label=""/>
+		<localized label="dont-stock-material-local"/>
 	</element>
 </element>
