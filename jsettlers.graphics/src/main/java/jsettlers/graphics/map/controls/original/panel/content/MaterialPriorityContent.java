@@ -27,7 +27,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
@@ -302,42 +301,6 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		}
 	}
 
-	/**
-	 * This is a button that changes the storage accepting state for that material.
-	 *
-	 * @author Michael Zangl
-	 *
-	 */
-	public static class ChangeAcceptButton extends Button {
-		private MaterialPriorityPanel panel;
-		private boolean accept;
-
-		/**
-		 * Creates a new {@link ChangeAcceptButton}.
-		 *
-		 * @param image
-		 *            The image to display
-		 * @param description
-		 *            The description to use.
-		 */
-		public ChangeAcceptButton(ImageLink image, String description) {
-			super(null, image, image, description);
-		}
-
-		@Override
-		public Action getAction() {
-			if (panel == null) {
-				return null;
-			}
-			EMaterialType selected = panel.getSelected();
-			ShortPoint2D mapPosition = panel.getMapPosition();
-			if (selected == null || mapPosition == null) {
-				return null;
-			}
-			return new SetAcceptedStockMaterialAction(mapPosition, selected, accept, false);
-		}
-	}
-
 	private final MaterialPriorityLayout layout;
 
 	/**
@@ -346,10 +309,8 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 	public MaterialPriorityContent() {
 		layout = new MaterialPriorityLayout();
 
-		layout.stock_accept.panel = layout.panel;
-		layout.stock_accept.accept = true;
-		layout.stock_reject.panel = layout.panel;
-		layout.stock_reject.accept = false;
+		layout.stock_accept.configure(layout.panel::getSelected, layout.panel::getMapPosition, true, false);
+		layout.stock_reject.configure(layout.panel::getSelected, layout.panel::getMapPosition, false, false);
 
 		layout.all_up.panel = layout.panel;
 		layout.all_up.add = -MAX_MOVE_AMOUNT;
