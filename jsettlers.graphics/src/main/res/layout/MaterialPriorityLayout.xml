@@ -9,8 +9,7 @@
 
 	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.MaterialPriorityPanel" x="14" maxx="122" y="236" height="165" id="panel" />
 
-	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton" x="11" y="410" width="18" height="18"
-		id="stock_accept">
+	<element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ChangeAcceptButton" x="11" y="410" width="18" height="18" id="stock_accept">
 		<image type="GUI" file="3" sequence="213" />
 		<localized label=""/>
 	</element>

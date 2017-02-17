@@ -59,6 +59,10 @@ public class Button extends UIPanel {
 		return action;
 	}
 
+	public void setAction(Action action) {
+		this.action = action;
+	}
+
 	@Override
 	public Action getAction(float relativex, float relativey) {
 		return getAction();
