@@ -2,7 +2,7 @@
 <!DOCTYPE element SYSTEM "layout.dtd">
 <!-- TODO: Add the sizes/images here. -->
 <element
-	class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel"
+	class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuildingBackgroundPanel"
 	x="9" y="219" maxx="190" maxy="435" id="background">
 	<element
 		class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.PriorityButton"

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -62,16 +62,16 @@ import jsettlers.graphics.ui.layout.TradingSelectionLayout;
  * @author Michael Zangl
  */
 public class BuildingSelectionContent extends AbstractSelectionContent {
-	private static final int TRADING_MULTY_STEP_INCREASE = 8;
-	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
-	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
+	private static final int TRADING_MULTIPLE_STEP_INCREASE = 8;
+	private static final OriginalImageLink SOLDIER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
+	private static final OriginalImageLink SOLDIER_COMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
 
 	/**
 	 * This defines an element that depends on the state of the building.
 	 *
 	 * @author Michael Zangl.
 	 */
-	private interface StateDependendElement {
+	private interface StateDependingElement {
 		void setState(BuildingState state);
 	}
 
@@ -120,7 +120,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 *
 	 * @author Michael Zangl
 	 */
-	public static class StockControlItem extends MaterialButton implements StateDependendElement {
+	public static class StockControlItem extends MaterialButton implements StateDependingElement {
 		/**
 		 * Creates a new stock control button.
 		 *
@@ -160,7 +160,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 *
 	 * @author Michael Zangl
 	 */
-	public static class TradingMaterialCount extends Label implements StateDependendElement {
+	public static class TradingMaterialCount extends Label implements StateDependingElement {
 
 		private final EMaterialType material;
 
@@ -243,8 +243,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		@Override
-		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * NUMBER_OF_BUTTONS);
+		public Action getAction(float relativeX, float relativeY) {
+			int step = (int) (relativeX * NUMBER_OF_BUTTONS);
 			return getActionForStep(step);
 		}
 	}
@@ -269,8 +269,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		@Override
-		public Action getAction(float relativex, float relativey) {
-			int step = (int) (relativex * NUMBER_OF_BUTTONS) - 1;
+		public Action getAction(float relativeX, float relativeY) {
+			int step = (int) (relativeX * NUMBER_OF_BUTTONS) - 1;
 			if (step >= 0) {
 				return getActionForStep(step);
 			} else {
@@ -349,7 +349,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
-		BuidlingBackgroundPanel root;
+		BuildingBackgroundPanel root;
 		if (state.isOccupied()) {
 			root = createOccupiedBuildingContent(state);
 		} else if (state.isStock()) {
@@ -364,7 +364,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		rootPanel.addChild(root, 0, 0, 1, 1);
 	}
 
-	private BuidlingBackgroundPanel createNormalBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createNormalBuildingContent(BuildingState state) {
 		BuildingSelectionLayout layout = new BuildingSelectionLayout();
 
 		EPriority[] supported = state.getSupportedPriorities();
@@ -391,7 +391,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		addRequestAndOfferStacks(layout.materialArea, state);
 
-		BuidlingBackgroundPanel root = layout._root;
+		BuildingBackgroundPanel root = layout._root;
 		return root;
 	}
 
@@ -539,7 +539,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	}
 
-	private BuidlingBackgroundPanel createOccupiedBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createOccupiedBuildingContent(BuildingState state) {
 		OccupiableSelectionLayout layout = new OccupiableSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		addOccupyerPlaces(layout.infantry_places, layout.infantry_missing, state.getOccupiers(ESoldierClass.INFANTRY));
@@ -558,9 +558,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			if (i < occupiers.size()) {
 				OccupierState state = occupiers.get(i);
 				if (state.isComming()) {
-					missingIcon.setBackground(SOILDER_COMMING);
+					missingIcon.setBackground(SOLDIER_COMING);
 				} else if (state.isMissing()) {
-					missingIcon.setBackground(SOILDER_MISSING);
+					missingIcon.setBackground(SOLDIER_MISSING);
 				} else {
 					icon.setBackground(getIconFor(state.getMovable()));
 				}
@@ -596,16 +596,16 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
-	private BuidlingBackgroundPanel createStockBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createStockBuildingContent(BuildingState state) {
 		StockSelectionLayout layout = new StockSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
-		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
+		for (StateDependingElement i : layout.getAll(StateDependingElement.class)) {
 			i.setState(state);
 		}
 		return layout._root;
 	}
 
-	private BuidlingBackgroundPanel createTradingBuildingContent(BuildingState state) {
+	private BuildingBackgroundPanel createTradingBuildingContent(BuildingState state) {
 		TradingSelectionLayout layout = new TradingSelectionLayout();
 		layout.nameText.setType(building.getBuildingType(), false);
 		Collection<SelectionManagedMaterialButton> buttons = layout.getAll(SelectionManagedMaterialButton.class);
@@ -619,7 +619,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		for (TradingButton b : layout.getAll(TradingButton.class)) {
 			b.setSelectionManager(selectionManager);
 		}
-		for (StateDependendElement i : layout.getAll(StateDependendElement.class)) {
+		for (StateDependingElement i : layout.getAll(StateDependingElement.class)) {
 			i.setState(state);
 		}
 
@@ -630,13 +630,13 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 		layout.tradeAll.amount = Integer.MAX_VALUE;
 		layout.tradeMore5.relative = true;
-		layout.tradeMore5.amount = TRADING_MULTY_STEP_INCREASE;
+		layout.tradeMore5.amount = TRADING_MULTIPLE_STEP_INCREASE;
 		layout.tradeMore.relative = true;
 		layout.tradeMore.amount = 1;
 		layout.tradeLess.relative = true;
 		layout.tradeLess.amount = -1;
 		layout.tradeLess5.relative = true;
-		layout.tradeLess5.amount = -TRADING_MULTY_STEP_INCREASE;
+		layout.tradeLess5.amount = -TRADING_MULTIPLE_STEP_INCREASE;
 
 		return layout._root;
 	}
@@ -646,7 +646,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	 *
 	 * @author Michael Zangl
 	 */
-	public static class BuidlingBackgroundPanel extends UIPanel {
+	public static class BuildingBackgroundPanel extends UIPanel {
 		private ImageLink[] links = new ImageLink[0];
 
 		/**
