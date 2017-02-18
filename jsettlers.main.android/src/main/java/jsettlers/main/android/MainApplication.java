@@ -17,6 +17,9 @@ import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
 import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -33,9 +36,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.util.List;
+
 
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {
-	private IStartScreen startScreen;
+	private MapList mapList;
 	private IMultiplayerConnector multiplayerConnector;
 	private IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector;
 	private IMapDefinition mapDefinition;
@@ -67,21 +72,29 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	/**
 	 * GameStarter implementation
 	 */
-	public IStartScreen getStartScreen() {
-		if (startScreen == null) {
-			new ResourceLocationScanner(this).scanForResources();
-			startScreen = new StartScreenConnector();
-		}
-		return startScreen;
-	}
+//	public IStartScreen getStartScreen() {
+//		if (startScreen == null) {
+//			new ResourceLocationScanner(this).scanForResources();
+//			startScreen = new StartScreenConnector();
+//		}
+//		return startScreen;
+//	}
 
+
+	@Override
+	public MapList getMapList() {
+		if (mapList == null) {
+			mapList = MapList.getDefaultList();
+		}
+		return mapList;
+	}
 
 	@Override
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
 			AndroidPreferences androidPreferences = new AndroidPreferences(this);
 			Player player = SettingsManager.getInstance().getPlayer();// new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
-			multiplayerConnector = getStartScreen().getMultiplayerConnector(androidPreferences.getServer(), player);
+			multiplayerConnector = new MultiplayerConnector(androidPreferences.getServer(), player.getId(), player.getName());
 		}
 		return multiplayerConnector;
 	}

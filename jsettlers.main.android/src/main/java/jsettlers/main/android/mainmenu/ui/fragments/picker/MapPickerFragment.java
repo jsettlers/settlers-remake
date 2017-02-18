@@ -8,11 +8,13 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
+import jsettlers.main.android.mainmenu.views.MapPickerView;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -30,7 +32,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import jsettlers.main.android.mainmenu.views.MapPickerView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -98,7 +99,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	 * MapPickerView implementation
      */
 	@Override
-	public void setItems(List<? extends IMapDefinition> items) {
+	public void setItems(List<? extends MapLoader> items) {
 		getView().post(() -> {
 			if (adapter == null) {
 				adapter = new MapAdapter(items);
@@ -127,19 +128,19 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	 * RecyclerView Adapter for displaying list of maps
 	 */
 	private class MapAdapter extends RecyclerView.Adapter<MapHolder> {
-		private List<? extends IMapDefinition> maps;
+		private List<? extends MapLoader> maps;
 
 		private View.OnClickListener itemClickListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(v);
 				int position = viewHolder.getAdapterPosition();
-				IMapDefinition map = maps.get(position);
+				MapLoader map = maps.get(position);
 				presenter.itemSelected(map);
 			}
 		};
 
-		public MapAdapter(List<? extends IMapDefinition> maps) {
+		public MapAdapter(List<? extends MapLoader> maps) {
 			this.maps = maps;
 		}
 
@@ -162,7 +163,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 			holder.bind(map);
 		}
 
-		void setItems(List<? extends IMapDefinition> maps) {
+		void setItems(List<? extends MapLoader> maps) {
 			this.maps = maps;
 			notifyDataSetChanged();
 		}

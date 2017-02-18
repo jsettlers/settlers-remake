@@ -1,7 +1,8 @@
 package jsettlers.main.android.mainmenu.presenters.setup;
 
-import jsettlers.common.menu.IMapDefinition;
-import jsettlers.common.menu.IStartingGame;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
+import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
@@ -12,16 +13,24 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
     private final MainMenuNavigator navigator;
+    private final MapLoader mapLoader;
 
-    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IMapDefinition mapDefinition) {
-        super(view, gameStarter, mapDefinition);
+    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, MapLoader mapLoader) {
+        super(view, gameStarter, mapLoader);
         this.navigator = navigator;
+        this.mapLoader = mapLoader;
     }
 
     @Override
     public void startGame() {
-        IStartingGame startingGame = getGameStarter().getStartScreen().startSingleplayerGame(getMapDefinition());
-        getGameStarter().setStartingGame(startingGame);
+    //    IStartingGame startingGame = getGameStarter().getStartScreen().startSingleplayerGame(getMapDefinition());
+
+        byte playerId = (byte) 0;
+        PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
+
+        JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
+
+        getGameStarter().setStartingGame(game.start());
         navigator.showGame();
     }
 }

@@ -5,6 +5,8 @@ import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
@@ -27,18 +29,23 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.app.Activity;
 
+import java.util.List;
+
 /**
  * Created by tompr on 03/02/2017.
  */
 
 public class PresenterFactory {
+    private static final MapList defaultMapList = MapList.getDefaultList();
+
     /**
      * Picker screen presenters
      */
     public static NewSinglePlayerPickerPresenter createNewSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
-        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getSingleplayerMaps();
+        ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
+        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getSingleplayerMaps();
 
         return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
@@ -46,7 +53,8 @@ public class PresenterFactory {
     public static LoadSinglePlayerPickerPresenter createLoadSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
-        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getStoredSingleplayerGames();
+        ChangingList<? extends MapLoader> changingMaps = gameStarter.getMapList().getSavedMaps();
+        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getStoredSingleplayerGames();
 
         return new LoadSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
@@ -54,7 +62,8 @@ public class PresenterFactory {
     public static NewMultiPlayerPickerPresenter createNewMultiPlayerPickerPresenter(Activity activity, NewMultiPlayerPickerView view) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
-        ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getMultiplayerMaps();
+        ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
+        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getMultiplayerMaps();
 
         return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
@@ -73,7 +82,8 @@ public class PresenterFactory {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
 
-        IMapDefinition mapDefinition = StreamSupport.stream(gameStarter.getStartScreen().getSingleplayerMaps().getItems())
+        List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
+        MapLoader mapDefinition = StreamSupport.stream(maps)
                 .filter(x -> mapId.equals(x.getMapId()))
                 .findFirst()
                 .get();
@@ -86,7 +96,8 @@ public class PresenterFactory {
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
 
-        IMapDefinition mapDefinition = StreamSupport.stream(gameStarter.getStartScreen().getMultiplayerMaps().getItems())
+        List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
+        MapLoader mapDefinition = StreamSupport.stream(maps)
                 .filter(x -> mapId.equals(x.getMapId()))
                 .findFirst()
                 .get();
