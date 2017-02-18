@@ -157,8 +157,10 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		switch (state) {
 		case INIT_CARRY_JOB:
 		case GOING_TO_OFFER:
-			reoffer();
 		case TAKING:
+			if (super.movable.getMaterial() == EMaterialType.NO_MATERIAL){
+				reoffer();
+			}
 			if (workerCreationRequest != null) {
 				workerRequester.workerCreationRequestFailed(workerCreationRequest);
 			}
