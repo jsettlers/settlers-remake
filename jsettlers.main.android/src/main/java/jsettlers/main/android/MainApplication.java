@@ -12,22 +12,18 @@ import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
-import jsettlers.common.menu.IStartScreen;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.menu.Player;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
-import jsettlers.main.StartScreenConnector;
-import jsettlers.main.android.core.controls.ControlsAdapter;
-import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameService;
 import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
+import jsettlers.main.android.core.controls.ControlsAdapter;
+import jsettlers.main.android.core.controls.GameMenu;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -35,8 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
-
-import java.util.List;
 
 
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {

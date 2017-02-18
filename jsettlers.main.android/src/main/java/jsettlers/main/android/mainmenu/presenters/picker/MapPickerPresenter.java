@@ -1,8 +1,5 @@
 package jsettlers.main.android.mainmenu.presenters.picker;
 
-import java.util.List;
-
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.logic.map.loading.MapLoader;

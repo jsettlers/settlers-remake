@@ -13,24 +13,24 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
     private final MainMenuNavigator navigator;
+    private final GameStarter gameStarter;
     private final MapLoader mapLoader;
 
     public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, MapLoader mapLoader) {
         super(view, gameStarter, mapLoader);
         this.navigator = navigator;
+        this.gameStarter = gameStarter;
         this.mapLoader = mapLoader;
     }
 
     @Override
     public void startGame() {
-    //    IStartingGame startingGame = getGameStarter().getStartScreen().startSingleplayerGame(getMapDefinition());
-
         byte playerId = (byte) 0;
         PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 
         JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
 
-        getGameStarter().setStartingGame(game.start());
+        gameStarter.setStartingGame(game.start());
         navigator.showGame();
     }
 }

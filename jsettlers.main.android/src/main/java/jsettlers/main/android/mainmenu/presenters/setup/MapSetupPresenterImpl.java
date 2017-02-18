@@ -84,18 +84,4 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
     private String[] peaceTimeOptions() {
         return new String[] { "Without" };
     }
-
-
-
-
-    /**
-     * protected getters
-     */
-    protected GameStarter getGameStarter() {
-        return gameStarter;
-    }
-
-    protected IMapDefinition getMapDefinition() {
-        return mapDefinition;
-    }
 }
