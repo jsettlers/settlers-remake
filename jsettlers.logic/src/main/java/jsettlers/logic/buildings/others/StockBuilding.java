@@ -24,8 +24,8 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestAndOfferStack;
-import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.player.Player;
 
 import java.util.LinkedList;
@@ -35,11 +35,11 @@ import java.util.List;
  * Created by Andreas Eberle.
  */
 public class StockBuilding extends Building implements IBuilding.IStock {
-	private final MaterialRequestSettings stockSettings;
+	private final StockSettings stockSettings;
 
 	public StockBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(EBuildingType.STOCK, player, position, buildingsGrid);
-		stockSettings = new MaterialRequestSettings(buildingsGrid.getRequestStackGrid().getPartitionStockSettings(position));
+		stockSettings = new StockSettings(buildingsGrid.getRequestStackGrid().getPartitionStockSettings(position));
 	}
 
 	@Override
@@ -57,11 +57,11 @@ public class StockBuilding extends Building implements IBuilding.IStock {
 	}
 
 	public void setAcceptedMaterial(EMaterialType materialType, boolean accept) {
-		stockSettings.setRequestedAmount(materialType, accept ? Short.MAX_VALUE : 0);
+		stockSettings.setAccepted(materialType, accept);
 	}
 
 	@Override
-	public MaterialRequestSettings getStockSettings() {
+	public StockSettings getStockSettings() {
 		return stockSettings;
 	}
 

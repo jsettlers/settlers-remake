@@ -25,7 +25,7 @@ import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
-import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
+import jsettlers.logic.buildings.stack.multi.MultiMaterialRequestSettings;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
@@ -46,7 +46,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
-	private final MaterialRequestSettings requestedMaterials = new MaterialRequestSettings();
+	private final MultiMaterialRequestSettings requestedMaterials = new MultiMaterialRequestSettings();
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[EWaypointType.VALUES.length];
 
 	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {

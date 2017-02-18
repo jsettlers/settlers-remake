@@ -75,7 +75,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
-import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -1548,7 +1548,7 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public MaterialRequestSettings getPartitionStockSettings(ShortPoint2D position) {
+			public StockSettings getPartitionStockSettings(ShortPoint2D position) {
 				return partitionsGrid.getPartitionSettings(position).getStockSettings();
 			}
 

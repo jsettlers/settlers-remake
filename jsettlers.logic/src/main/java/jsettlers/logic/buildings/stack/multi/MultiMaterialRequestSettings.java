@@ -14,68 +14,39 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.stack.multi;
 
-import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class MaterialRequestSettings implements IStockSettings, Serializable {
-
-	private static final short UNLIMITED_REQUESTS_MAGIC_NUMBER = Short.MAX_VALUE;
-	private static final short USE_DEFAULTS_CONSTANT = -1;
-
-	private final MaterialRequestSettings defaultSettings;
+public class MultiMaterialRequestSettings implements IMultiMaterialRequestSettings, Serializable {
 	private final short[] requestedMaterials;
 
-	public MaterialRequestSettings(short[] requestedMaterials) {
+	public MultiMaterialRequestSettings(short[] requestedMaterials) {
 		if (requestedMaterials.length != EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS) {
 			throw new IllegalArgumentException("requestedMaterials has the wrong length" + Arrays.toString(requestedMaterials));
 		}
 		this.requestedMaterials = requestedMaterials;
-		this.defaultSettings = null;
 	}
 
-	public MaterialRequestSettings(MaterialRequestSettings defaultSettings) {
-		this.defaultSettings = defaultSettings;
-		this.requestedMaterials = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-		Arrays.fill(this.requestedMaterials, USE_DEFAULTS_CONSTANT);
-	}
-
-	public MaterialRequestSettings() {
+	public MultiMaterialRequestSettings() {
 		this(new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS]);
 	}
 
-	public boolean isRequested(EMaterialType materialType) {
-		return getRequestedAmount(materialType) > 0;
-	}
-
+	@Override
 	public short getRequestedAmount(EMaterialType materialType) {
-		short localRequested = requestedMaterials[materialType.ordinal];
-		return localRequested >= 0 ? localRequested : defaultSettings != null ? defaultSettings.getRequestedAmount(materialType) : (short) 0;
+		return requestedMaterials[materialType.ordinal];
 	}
 
-	public void setRequestedAmount(EMaterialType materialType, short acceptedAmount) {
-		if (defaultSettings != null && defaultSettings.getRequestedAmount(materialType) == acceptedAmount) {
-			requestedMaterials[materialType.ordinal] = USE_DEFAULTS_CONSTANT;
-		} else {
-			requestedMaterials[materialType.ordinal] = acceptedAmount;
-		}
-	}
-
-	public void setRequested(EMaterialType materialType, boolean accepted) {
-		setRequestedAmount(materialType, accepted ? UNLIMITED_REQUESTS_MAGIC_NUMBER : 0);
+	public void setRequestedAmount(EMaterialType materialType, short requestedAmount) {
+		requestedMaterials[materialType.ordinal] = requestedAmount;
 	}
 
 	@Override
-	public boolean isAccepted(EMaterialType materialType) {
-		return isRequested(materialType);
-	}
-
-	void changeRequested(EMaterialType materialType, int change) {
+	public void updateRequested(EMaterialType materialType, int delta) {
 		short currentlyRequested = getRequestedAmount(materialType);
 		if (currentlyRequested != UNLIMITED_REQUESTS_MAGIC_NUMBER) {
-			requestedMaterials[materialType.ordinal] = (short) Math.min(UNLIMITED_REQUESTS_MAGIC_NUMBER, Math.max(0, currentlyRequested + change));
+			requestedMaterials[materialType.ordinal] = (short) Math.min(UNLIMITED_REQUESTS_MAGIC_NUMBER, Math.max(0, currentlyRequested + delta));
 		}
 	}
 }

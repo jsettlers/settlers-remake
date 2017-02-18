@@ -16,7 +16,7 @@ package jsettlers.logic.buildings.stack;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 
@@ -64,7 +64,7 @@ public interface IRequestsStackGrid extends Serializable {
 	 */
 	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
 
-	MaterialRequestSettings getPartitionStockSettings(ShortPoint2D position);
+	StockSettings getPartitionStockSettings(ShortPoint2D position);
 
 	void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority);
 

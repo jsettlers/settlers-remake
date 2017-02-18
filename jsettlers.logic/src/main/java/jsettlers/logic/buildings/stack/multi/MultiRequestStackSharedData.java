@@ -29,12 +29,12 @@ import java.util.Set;
 public class MultiRequestStackSharedData implements Serializable {
 	private static final long serialVersionUID = 3890128212034591055L;
 
-	final MaterialRequestSettings requestSettings;
+	final IMultiMaterialRequestSettings requestSettings;
 	final byte[] inDelivery = new byte[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 	private final Set<MultiRequestStack>[] handlingStacks;
 
 	@SuppressWarnings("unchecked")
-	public MultiRequestStackSharedData(MaterialRequestSettings requestSettings) {
+	public MultiRequestStackSharedData(IMultiMaterialRequestSettings requestSettings) {
 		this.requestSettings = requestSettings;
 		this.handlingStacks = new Set[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {

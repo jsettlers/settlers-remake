@@ -14,14 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.settings;
 
-import java.io.Serializable;
-
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.buildings.stack.multi.MaterialRequestSettings;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+
+import java.io.Serializable;
 
 /**
  * This class bundles all settings for the {@link PartitionManager}.
@@ -33,20 +32,20 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	private static final long serialVersionUID = -6269898822727665606L;
 
 	private static final DistributionSettingsForMaterial[] defaultSettings = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
-	private static final short[] INITIAL_STOCK_SETTINGS = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	private static final boolean[] INITIAL_STOCK_SETTINGS = new boolean[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	static {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.VALUES[i]);
 		}
 
-		INITIAL_STOCK_SETTINGS[EMaterialType.GOLD.ordinal] = Short.MAX_VALUE; // GOLD is active by default
+		INITIAL_STOCK_SETTINGS[EMaterialType.GOLD.ordinal] = true; // GOLD is active by default
 	}
 
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
 	private final MaterialProductionSettings materialProductionSettings;
-	private final MaterialRequestSettings stockSettings;
+	private final StockSettings stockSettings;
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -64,7 +63,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		}
 
 		materialProductionSettings = new MaterialProductionSettings();
-		stockSettings = new MaterialRequestSettings(INITIAL_STOCK_SETTINGS);
+		stockSettings = new StockSettings(INITIAL_STOCK_SETTINGS);
 	}
 
 	@Override
@@ -97,11 +96,11 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	}
 
 	public void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted) {
-		stockSettings.setRequested(materialType, accepted);
+		stockSettings.setAccepted(materialType, accepted);
 	}
 
 	@Override
-	public MaterialRequestSettings getStockSettings() {
+	public StockSettings getStockSettings() {
 		return stockSettings;
 	}
 

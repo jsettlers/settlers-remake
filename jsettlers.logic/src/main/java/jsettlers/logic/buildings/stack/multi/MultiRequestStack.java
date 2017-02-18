@@ -214,7 +214,7 @@ public class MultiRequestStack implements IRequestStack {
 
 		@Override
 		protected void materialDelivered() {
-			sharedData.requestSettings.changeRequested(materialType, -1);
+			sharedData.requestSettings.updateRequested(materialType, -1);
 		}
 
 		@Override
