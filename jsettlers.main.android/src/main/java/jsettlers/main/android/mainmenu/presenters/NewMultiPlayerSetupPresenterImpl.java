@@ -54,7 +54,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     @Override
     public void initView() {
         super.initView();
-        view.setItems(connector.getPlayers().getItems());
+    //    view.setItems(connector.getPlayers().getItems());
     }
 
     @Override
@@ -103,6 +103,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
      */
     @Override
     public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
-        view.setItems(connector.getPlayers().getItems());
+    //    view.setItems(connector.getPlayers().getItems());
     }
 }

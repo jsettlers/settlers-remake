@@ -1,17 +1,22 @@
 package jsettlers.main.android.mainmenu.ui.fragments;
 
-import jsettlers.logic.map.loading.EMapStartResources;
-import jsettlers.main.android.core.ui.PreviewImageConverter;
-import jsettlers.main.android.R;
-import jsettlers.main.android.mainmenu.presenters.MapSetupPresenter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.core.ui.FragmentUtil;
+import java.util.List;
 
-import android.content.Intent;
+import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.main.android.R;
+import jsettlers.main.android.core.ui.FragmentUtil;
+import jsettlers.main.android.core.ui.PreviewImageConverter;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.MapSetupPresenter;
+import jsettlers.main.android.mainmenu.presenters.PlayerItemPresenter;
+import jsettlers.main.android.mainmenu.views.MapSetupView;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +24,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import jsettlers.main.android.mainmenu.views.MapSetupView;
+import jsettlers.main.android.mainmenu.views.PlayerItemView;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -34,9 +40,10 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     private MapSetupPresenter presenter;
     private MainMenuNavigator navigator;
 
+    private PlayersAdapter adapter;
     private Disposable mapPreviewSubscription;
 
-    //private TextView mapNameTextView;
+    private RecyclerView recyclerView;
     private ImageView mapPreviewImageView;
     private Spinner numberOfPlayersSpinner;
     private Spinner startResourcesSpinner;
@@ -59,7 +66,9 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
         FragmentUtil.setActionBar(this, view);
 
-        //mapNameTextView = (TextView) view.findViewById(R.id.text_view_map_name);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
         mapPreviewImageView = (ImageView) view.findViewById(R.id.image_view_map_preview);
         numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
         startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
@@ -67,7 +76,6 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         startGameButton = (Button) view.findViewById(R.id.button_start_game);
 
         startGameButton.setOnClickListener(v -> presenter.startGame());
-
 
         return view;
     }
@@ -152,5 +160,77 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         ArrayAdapter<T> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
+
+    @Override
+    public void setItems(List<PlayerItemPresenter> items) {
+        getActivity().runOnUiThread(() -> {
+            if (adapter == null) {
+                adapter = new PlayersAdapter(items);
+            }
+
+            if (recyclerView.getAdapter() == null) {
+                recyclerView.setAdapter(adapter);
+            }
+
+            adapter.setItems(items);
+        });
+    }
+
+
+
+    class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
+        private final LayoutInflater layoutInflater;
+
+        private List<PlayerItemPresenter> players;
+
+        PlayersAdapter(List<PlayerItemPresenter> players) {
+            this.layoutInflater = LayoutInflater.from(getActivity());
+            this.players = players;
+        }
+
+        @Override
+        public int getItemCount() {
+            return players.size();
+        }
+
+        @Override
+        public PlayerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = layoutInflater.inflate(R.layout.item_multi_player, parent, false);
+            PlayerHolder playerHolder = new PlayerHolder(view);
+
+            return playerHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(PlayerHolder holder, int position) {
+            holder.bind(players.get(position));
+        }
+
+        void setItems(List<PlayerItemPresenter> items) {
+            //TODO use diffutil
+            players = items;
+            notifyDataSetChanged();
+        }
+    }
+
+    class PlayerHolder extends RecyclerView.ViewHolder implements PlayerItemView {
+        private final TextView playerNameTextView;
+        private final SwitchCompat readySwitch;
+
+        PlayerHolder(View itemView) {
+            super(itemView);
+            this.playerNameTextView = (TextView) itemView.findViewById(R.id.text_view_player_name);
+            this.readySwitch = (SwitchCompat) itemView.findViewById(R.id.switch_ready);
+        }
+
+        @Override
+        public void setName(String name) {
+            playerNameTextView.setText(name);
+        }
+
+        void bind(PlayerItemPresenter player) {
+            player.bindView(this);
+        }
     }
 }

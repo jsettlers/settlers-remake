@@ -23,6 +23,7 @@ import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.PlayerItemView;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -63,20 +64,20 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
     /**
      * NewMultiPlayerSetupView implementation
      */
-    @Override
-    public void setItems(List<IMultiplayerPlayer> items) {
-        getActivity().runOnUiThread(() -> {
-            if (adapter == null) {
-                adapter = new PlayersAdapter(items);
-            }
-
-            if (recyclerView.getAdapter() == null) {
-                recyclerView.setAdapter(adapter);
-            }
-
-            adapter.setItems(items);
-        });
-    }
+//    @Override
+//    public void setItems(List<IMultiplayerPlayer> items) {
+//        getActivity().runOnUiThread(() -> {
+//            if (adapter == null) {
+//                adapter = new PlayersAdapter(items);
+//            }
+//
+//            if (recyclerView.getAdapter() == null) {
+//                recyclerView.setAdapter(adapter);
+//            }
+//
+//            adapter.setItems(items);
+//        });
+//    }
 
     class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
         private final LayoutInflater layoutInflater;
@@ -113,7 +114,7 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
         }
     }
 
-    class PlayerHolder extends RecyclerView.ViewHolder {
+    class PlayerHolder extends RecyclerView.ViewHolder{
         private final TextView playerNameTextView;
         private final SwitchCompat readySwitch;
 

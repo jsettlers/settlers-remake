@@ -1,5 +1,8 @@
 package jsettlers.main.android.mainmenu.presenters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
@@ -14,6 +17,8 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
+    private final List<PlayerItemPresenter> playerItemPresenters = new ArrayList<>();
+
     public MapSetupPresenterImpl(MapSetupView view, GameStarter gameStarter, IMapDefinition mapDefinition) {
         this.view = view;
         this.gameStarter = gameStarter;
@@ -26,6 +31,12 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
         view.setStartResourcesOptions(startResourcesOptions());
         view.setPeaceTimeOptions(peaceTimeOptions());
         view.setMapImage(mapDefinition.getImage());
+
+        for (int i = 0; i < mapDefinition.getMaxPlayers(); i++) {
+            playerItemPresenters.add(new PlayerItemPresenter());
+        }
+
+        view.setItems(playerItemPresenters);
     }
 
     @Override
