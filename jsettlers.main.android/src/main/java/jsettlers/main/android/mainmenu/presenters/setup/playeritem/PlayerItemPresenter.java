@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 
 import jsettlers.main.android.mainmenu.views.PlayerItemView;
 

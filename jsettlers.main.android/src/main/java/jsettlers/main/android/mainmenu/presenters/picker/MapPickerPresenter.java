@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.picker;
 
 import java.util.List;
 

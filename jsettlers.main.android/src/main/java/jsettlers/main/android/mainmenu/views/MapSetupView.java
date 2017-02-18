@@ -3,7 +3,7 @@ package jsettlers.main.android.mainmenu.views;
 import java.util.List;
 
 import jsettlers.logic.map.loading.EMapStartResources;
-import jsettlers.main.android.mainmenu.presenters.PlayerItemPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerItemPresenter;
 
 /**
  * Created by tompr on 22/01/2017.

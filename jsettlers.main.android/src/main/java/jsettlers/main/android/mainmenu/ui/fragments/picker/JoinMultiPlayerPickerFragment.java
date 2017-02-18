@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import java.util.List;
 
@@ -11,10 +11,8 @@ import jsettlers.common.menu.IJoinableGame;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
-import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 

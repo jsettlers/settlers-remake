@@ -1,13 +1,10 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import android.support.v4.app.Fragment;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.MapPickerPresenter;
-import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerPickerPresenter;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
 
 /**
  * Created by tompr on 19/01/2017.

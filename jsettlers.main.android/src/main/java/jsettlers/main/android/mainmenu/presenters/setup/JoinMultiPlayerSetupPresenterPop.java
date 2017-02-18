@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 

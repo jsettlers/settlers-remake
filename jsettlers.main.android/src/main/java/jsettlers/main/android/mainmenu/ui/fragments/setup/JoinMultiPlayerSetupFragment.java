@@ -1,10 +1,8 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerSetupPresenter;
-import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 

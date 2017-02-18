@@ -1,8 +1,8 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.NewSinglePlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.os.Bundle;

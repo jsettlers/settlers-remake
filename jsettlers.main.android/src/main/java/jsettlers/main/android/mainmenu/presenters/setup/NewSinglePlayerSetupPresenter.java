@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IStartingGame;

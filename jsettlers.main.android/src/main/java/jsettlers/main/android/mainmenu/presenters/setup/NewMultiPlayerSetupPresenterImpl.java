@@ -1,6 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
-
-import java.util.List;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;

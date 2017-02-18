@@ -1,9 +1,7 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
@@ -12,18 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
-
 import java.util.List;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.NewMultiPlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
-import jsettlers.main.android.mainmenu.views.PlayerItemView;
 
 /**
  * Created by tompr on 21/01/2017.

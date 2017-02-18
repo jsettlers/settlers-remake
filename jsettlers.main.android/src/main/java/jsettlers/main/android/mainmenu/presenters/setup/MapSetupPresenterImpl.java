@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerItemPresenter;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
