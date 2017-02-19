@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,19 +14,18 @@
  *******************************************************************************/
 package go.graphics.android;
 
-import go.graphics.TextureHandle;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.TypedValue;
 import android.widget.TextView;
+import go.graphics.TextureHandle;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class AndroidTextDrawer implements TextDrawer {
 
@@ -266,7 +265,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getWidth(String string) {
+	public float getWidth(String string) {
 		int index = findExistingString(string);
 		if (index < 0) {
 			return computeWidth(string);
@@ -275,14 +274,14 @@ public class AndroidTextDrawer implements TextDrawer {
 		}
 	}
 
-	private double computeWidth(String string) {
+	private float computeWidth(String string) {
 		Paint paint = new Paint();
 		paint.setTextSize(getScaledSize());
 		return paint.measureText(string);
 	}
 
 	@Override
-	public double getHeight(String string) {
+	public float getHeight(String string) {
 		return getScaledSize();
 	}
 

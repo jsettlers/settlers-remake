@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
+import jsettlers.common.menu.action.IAction;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import jsettlers.common.menu.action.IAction;
 
 /**
  * This class lets you schedule the firing of actions in a separate thread.
@@ -116,7 +116,7 @@ public class ActionFirerer implements ActionFireable {
 					System.err.println("Exception while handling action:");
 					e.printStackTrace();
 					if (blockingListener != null) {
-						blockingListener.actionThreadCoughtException(e);
+						blockingListener.actionThreadCaughtException(e);
 					}
 				}
 				if (toFire.isEmpty()) {
