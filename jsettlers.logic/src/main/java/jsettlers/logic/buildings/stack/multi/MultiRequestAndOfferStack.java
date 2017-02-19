@@ -20,12 +20,11 @@ import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 
 /**
  * Created by Andreas Eberle on 18.09.2016.
  */
-public class MultiRequestAndOfferStack extends MultiRequestStack {
+public class MultiRequestAndOfferStack extends MultiRequestStack implements IStockSettingsListener {
 
 	/**
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
@@ -60,6 +59,14 @@ public class MultiRequestAndOfferStack extends MultiRequestStack {
 			grid.updateOfferPriorities(position, currentMaterialType, EOfferPriority.OFFER_TO_ALL);
 		}
 		released = true;
+	}
+
+	@Override
+	public void stockSettingChanged(EMaterialType materialType, boolean accepted) {
+		if (currentMaterialType == materialType && getStackSize() > 0) {
+			System.out.println("relevant stock settings changed; " + materialType + " now accepted: " + accepted);
+			grid.updateOfferPriorities(position, materialType, accepted ? EOfferPriority.LOW : EOfferPriority.OFFER_TO_ALL);
+		}
 	}
 
 	protected class RequestOfMultiRequestAndOfferStack extends RequestOfMultiRequestStack {
