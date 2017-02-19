@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import jsettlers.algorithms.queue.ITypeAcceptor;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>

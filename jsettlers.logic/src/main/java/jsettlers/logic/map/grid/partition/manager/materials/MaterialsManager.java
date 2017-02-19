@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials;
 
-import java.io.Serializable;
-
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
@@ -28,6 +26,8 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMat
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPrioQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
+
+import java.io.Serializable;
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
@@ -92,7 +92,7 @@ public final class MaterialsManager implements Serializable {
 	}
 
 	private void distributeJobForMaterial(EMaterialType materialType) {
-		if (offersList.isEmpty(materialType, EOfferPriority.LOWEST)){
+		if (offersList.isEmpty(materialType, EOfferPriority.LOWEST)) {
 			return;
 		}
 
