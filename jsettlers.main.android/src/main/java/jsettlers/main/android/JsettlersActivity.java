@@ -28,6 +28,7 @@ import jsettlers.common.menu.Player;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.bg.BgControls;
@@ -220,8 +221,7 @@ public class JsettlersActivity extends AppCompatActivity implements IGameExitLis
 		GameCommandFragment p = new GameCommandFragment();
 		System.out.println("GameCommandFragment created");
 
-		MapContent content = new MapContent(game, soundPlayer,
-				new MobileControls(p.getPutable(this)));
+		MapContent content = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT,  new MobileControls(p.getPutable(this)));
 		System.out.println("MapContent created");
 
 		goRegion.setContent(content);
@@ -235,7 +235,7 @@ public class JsettlersActivity extends AppCompatActivity implements IGameExitLis
 	public void showBgMap() {
 		stopBgMapThreads();
 		IStartedGame game = new FakeMapGame(new BgMap());
-		activeBgMapContent = new MapContent(game, soundPlayer, new BgControls());
+		activeBgMapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, new BgControls());
 		goRegion.setContent(activeBgMapContent);
 	}
 

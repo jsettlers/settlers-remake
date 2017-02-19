@@ -165,6 +165,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final ReplaceableTextDrawer textDrawer;
 	private final IGameTimeProvider gameTimeProvider;
 
+	private final ETextDrawPosition textDrawPosition;
+
 	/**
 	 * The controls that represent the interface.
 	 */
@@ -203,8 +205,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param player
 	 *            The player
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player) {
-		this(game, player, null);
+	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition) {
+		this(game, player, textDrawPosition, null);
 	}
 
 	/**
@@ -218,9 +220,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param controls
 	 *            The controls object to use as user interface. If it is <code>null</code> the original controls are overlayed.
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
+		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
@@ -257,6 +260,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		try {
+			framerate.nextFrame();
+
 			// TODO: Do only check once.
 			if (textDrawer.getTextDrawer(gl, EFontSize.NORMAL).getWidth("a") == 0) {
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
@@ -295,8 +300,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			controls.drawAt(gl);
 			drawMessages(gl);
 
-			drawFramerate(gl);
-			drawCommitHash(gl);
+			drawFramerateTimeAndHash(gl);
+
 			if (actionThreadIsSlow) {
 				drawActionThreadSlow(gl);
 			}
@@ -398,28 +403,43 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
+	private void drawFramerateTimeAndHash(GLDrawContext gl) {
+		if (textDrawPosition == ETextDrawPosition.NONE) {
+			return;
+		}
 
-	private void drawFramerate(GLDrawContext gl) {
-		framerate.nextFrame();
 		String fps = Labels.getString("map-fps", framerate.getRate());
-		long gametime = gameTimeProvider.getGameTime() / 1000;
-		String timeString = Labels.getString("map-time", gametime / 60 / 60,
-				(gametime / 60) % 60, (gametime) % 60);
+		long gameTime = gameTimeProvider.getGameTime() / 1000;
+		String timeString = Labels.getString("map-time", gameTime / 60 / 60, (gameTime / 60) % 60, (gameTime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-		double spacing = drawer.getWidth("_");
-		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - 9 * (float) spacing, y, fps);
-		drawer.drawString(windowWidth - 23 * (float) spacing, y, timeString);
+		float letterWidth = getLetterWidth(drawer);
+		float textLineHeight = getTextLineHeight(drawer);
+
+		float yFirstLine = windowHeight - 1.5f * textLineHeight;
+		float ySecondLine = windowHeight - 3.0f * textLineHeight;
+
+		float sideXOffset = 2 * letterWidth;
+
+		drawer.drawString(getConfiguredX(sideXOffset, windowWidth, 7 * letterWidth), yFirstLine, fps);
+		drawer.drawString(getConfiguredX(sideXOffset + 9 * letterWidth, windowWidth, 9 * letterWidth), yFirstLine, timeString);
+		drawer.drawString(getConfiguredX(sideXOffset, windowWidth, 7 * letterWidth), ySecondLine, CommitInfo.COMMIT_HASH_SHORT);
 	}
 
-	private void drawCommitHash(GLDrawContext gl) {
-		String commitHash = CommitInfo.COMMIT_HASH_SHORT;
+	private float getConfiguredX(float borderDistance, int windowWidth, float fixedTextLength) {
+		if (textDrawPosition == ETextDrawPosition.TOP_LEFT) {
+			return borderDistance;
+		} else {
+			return windowWidth - (borderDistance + fixedTextLength);
+		}
+	}
 
-		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-		double spacing = drawer.getWidth("_");
-		float y = 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - 8 * (float) spacing, y, commitHash);
+	private float getLetterWidth(TextDrawer drawer) {
+		return drawer.getWidth("X");
+	}
+
+	private float getTextLineHeight(TextDrawer drawer) {
+		return drawer.getHeight("X");
 	}
 
 	private void drawTooltip(GLDrawContext gl) {
