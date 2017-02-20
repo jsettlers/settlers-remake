@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
 
 /**
@@ -58,13 +59,14 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 	}
 
 	public T getObjectCloseTo(ShortPoint2D position, P minimumIncludedPriority) {
+		T closestObject = null;
 		for (int i = lists.length - 1; i >= minimumIncludedPriority.ordinal(); i--) {
 			T object = lists[i].getObjectCloseTo(position);
-			if (object != null) {
-				return object;
+			if (closestObject == null || (object!=null&& MathUtils.squareHypot(object.getPos(), position) < MathUtils.squareHypot(closestObject.getPos(), position)) ){
+				closestObject = object;
 			}
 		}
-		return null;
+		return closestObject;
 	}
 
 	public void remove(T offer) {
