@@ -3,6 +3,7 @@ package jsettlers.main.android.mainmenu.views;
 import java.util.List;
 
 import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 
 /**
@@ -10,10 +11,11 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPre
  */
 
 public interface MapSetupView {
-    void setNumberOfPlayersOptions(Integer[] numberOfPlayersOptions);
+    void setNumberOfPlayersOptions(PlayerCount[] playerCounts);
     void setStartResourcesOptions(EMapStartResources[] startResourcesOptions);
     void setPeaceTimeOptions(String[] peaceTimeOptions);
     void setMapName(String mapName);
     void setMapImage(short[] image);
-    void setItems(List<PlayerSlotPresenter> items);
+    void setItems(List<PlayerSlotPresenter> items, int playerLimit);
+    void setPlayerCount(PlayerCount playerCount);
 }

@@ -9,6 +9,7 @@ import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
@@ -45,15 +46,17 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     private MapSetupPresenter presenter;
     private MainMenuNavigator navigator;
 
-    private PlayersAdapter adapter;
     private Disposable mapPreviewSubscription;
+
+    private PlayersAdapter adapter;
+    private ArrayAdapter<PlayerCount> playerCountsAdapter;
 
     private RecyclerView recyclerView;
     private ImageView mapPreviewImageView;
+    private Button startGameButton;
     private Spinner numberOfPlayersSpinner;
     private Spinner startResourcesSpinner;
     private Spinner peacetimeSpinner;
-    private Button startGameButton;
 
     private boolean isSaving = false;
 
@@ -74,13 +77,20 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
+        startGameButton = (Button) view.findViewById(R.id.button_start_game);
+        startGameButton.setOnClickListener(v -> presenter.startGame());
+
         mapPreviewImageView = (ImageView) view.findViewById(R.id.image_view_map_preview);
         numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
         startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
         peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
-        startGameButton = (Button) view.findViewById(R.id.button_start_game);
 
-        startGameButton.setOnClickListener(v -> presenter.startGame());
+        numberOfPlayersSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                presenter.playerCountSelected(playerCountsAdapter.getItem(position));
+            }
+        });
 
         return view;
     }
@@ -124,8 +134,14 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
      * MapSetupView implementation
      */
     @Override
-    public void setNumberOfPlayersOptions(Integer[] numberOfPlayersOptions) {
-        numberOfPlayersSpinner.setAdapter(getSpinnerAdapter(numberOfPlayersOptions));
+    public void setNumberOfPlayersOptions(PlayerCount[] numberOfPlayersOptions) {
+        playerCountsAdapter = getSpinnerAdapter(numberOfPlayersOptions);
+        numberOfPlayersSpinner.setAdapter(playerCountsAdapter);
+    }
+
+    @Override
+    public void setPlayerCount(PlayerCount playerCount) {
+        numberOfPlayersSpinner.setSelection(playerCountsAdapter.getPosition(playerCount));
     }
 
     @Override
@@ -168,7 +184,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     }
 
     @Override
-    public void setItems(List<PlayerSlotPresenter> items) {
+    public void setItems(List<PlayerSlotPresenter> items, int playerCount) {
         getActivity().runOnUiThread(() -> {
             if (adapter == null) {
                 adapter = new PlayersAdapter(items);
@@ -178,7 +194,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
                 recyclerView.setAdapter(adapter);
             }
 
-            adapter.setItems(items);
+            adapter.setItems(items, playerCount);
         });
     }
 
@@ -188,6 +204,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         private final LayoutInflater layoutInflater;
 
         private List<PlayerSlotPresenter> players;
+        private int playerCount;
 
         PlayersAdapter(List<PlayerSlotPresenter> players) {
             this.layoutInflater = LayoutInflater.from(getActivity());
@@ -196,7 +213,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         @Override
         public int getItemCount() {
-            return players.size();
+            return playerCount;
         }
 
         @Override
@@ -212,9 +229,10 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             holder.bind(players.get(position));
         }
 
-        void setItems(List<PlayerSlotPresenter> items) {
+        void setItems(List<PlayerSlotPresenter> items, int playerCount) {
             //TODO use diffutil
-            players = items;
+            this.players = items;
+            this.playerCount = playerCount;
             notifyDataSetChanged();
         }
     }
@@ -330,12 +348,12 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             this.presenter = playerSlotPresenter;
             playerSlotPresenter.bindView(this);
         }
+    }
 
-        private abstract class SpinnerListener implements AdapterView.OnItemSelectedListener {
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // No op
-            }
+    private abstract class SpinnerListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            // No op
         }
     }
 }

@@ -1,5 +1,7 @@
 package jsettlers.main.android.mainmenu.presenters.setup;
 
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
+
 /**
  * Created by tompr on 03/02/2017.
  */
@@ -13,4 +15,6 @@ public interface MapSetupPresenter {
     void dispose();
 
     void startGame();
+
+    void playerCountSelected(PlayerCount item);
 }

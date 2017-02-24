@@ -10,6 +10,7 @@ import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
@@ -79,6 +80,12 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     @Override
     public void startGame() {
         connector.startGame();
+    }
+
+
+    @Override
+    public void playerCountSelected(PlayerCount item) {
+        //TODO
     }
 
     /**

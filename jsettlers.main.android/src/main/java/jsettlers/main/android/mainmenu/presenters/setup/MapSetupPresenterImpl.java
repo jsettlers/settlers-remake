@@ -6,6 +6,8 @@ import java.util.List;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PositionChangedListener;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
@@ -21,6 +23,8 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
     private final IMapDefinition mapDefinition;
 
     private final List<PlayerSlotPresenter> playerSlotPresenters = new ArrayList<>();
+
+    protected PlayerCount playerCount;
 
     public MapSetupPresenterImpl(MapSetupView view, GameStarter gameStarter, IMapDefinition mapDefinition) {
         this.view = view;
@@ -57,17 +61,15 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
     protected void abort() {
     }
 
-
-    //TODO return wrapper object with suitable toString()
-    private Integer[] allowedPlayerCounts() {
+    private PlayerCount[] allowedPlayerCounts() {
         int maxPlayers = mapDefinition.getMaxPlayers();
         int minPlayers = mapDefinition.getMinPlayers();
         int numberOfOptions = maxPlayers - minPlayers + 1;
 
-        Integer[] allowedPlayerCounts = new Integer[numberOfOptions];
+        PlayerCount[] allowedPlayerCounts = new PlayerCount[numberOfOptions];
 
         for (int i = 0; i < numberOfOptions; i++) {
-            allowedPlayerCounts[i] = minPlayers + i;
+            allowedPlayerCounts[i] = new PlayerCount(minPlayers + i);
         }
 
         return allowedPlayerCounts;
