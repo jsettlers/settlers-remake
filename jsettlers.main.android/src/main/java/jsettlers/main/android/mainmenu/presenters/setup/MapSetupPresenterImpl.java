@@ -6,7 +6,7 @@ import java.util.List;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerItemPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
@@ -18,12 +18,14 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
 
-    private final List<PlayerItemPresenter> playerItemPresenters = new ArrayList<>();
+    private final List<PlayerSlotPresenter> playerSlotPresenters = new ArrayList<>();
 
     public MapSetupPresenterImpl(MapSetupView view, GameStarter gameStarter, IMapDefinition mapDefinition) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.mapDefinition = mapDefinition;
+
+        createPlayerSlots();
     }
 
     @Override
@@ -32,12 +34,6 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
         view.setStartResourcesOptions(startResourcesOptions());
         view.setPeaceTimeOptions(peaceTimeOptions());
         view.setMapImage(mapDefinition.getImage());
-
-        for (int i = 0; i < mapDefinition.getMaxPlayers(); i++) {
-            playerItemPresenters.add(new PlayerItemPresenter());
-        }
-
-        view.setItems(playerItemPresenters);
     }
 
     @Override
@@ -83,5 +79,15 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
     //TODO return wrapper object with suitable toString()
     private String[] peaceTimeOptions() {
         return new String[] { "Without" };
+    }
+
+    private void createPlayerSlots() {
+        for (int i = 0; i < mapDefinition.getMaxPlayers(); i++) {
+            playerSlotPresenters.add(new PlayerSlotPresenter());
+        }
+    }
+
+    protected List<PlayerSlotPresenter> getPlayerSlotPresenters() {
+        return playerSlotPresenters;
     }
 }

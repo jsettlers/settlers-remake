@@ -37,7 +37,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	private MapList mapList;
 	private IMultiplayerConnector multiplayerConnector;
 	private IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector;
-	private IMapDefinition mapDefinition;
 	private IStartingGame startingGame;
 	private IJoiningGame joiningGame;
 
@@ -83,6 +82,8 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		return mapList;
 	}
 
+
+	// This probably doesnt need to be global anymore
 	@Override
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
@@ -92,7 +93,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		}
 		return multiplayerConnector;
 	}
-
 	@Override
 	public void closeMultiPlayerConnector() {
 		if (multiplayerConnector != null) {
@@ -168,7 +168,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public void gameExited(IStartedGame game) {
 		controlsAdapter = null;
 		startingGame = null;
-		mapDefinition = null;
 		joiningGame = null;
 		joinPhaseMultiplayerGameConnector = null;
 
