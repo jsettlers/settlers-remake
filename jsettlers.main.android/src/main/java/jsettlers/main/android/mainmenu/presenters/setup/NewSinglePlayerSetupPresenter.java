@@ -10,11 +10,9 @@ import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartResources;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
@@ -86,6 +84,13 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
         navigator.showGame();
     }
 
+
+    //TODO Make these three virtual methods in the base class, some of this will work for multiplayer
+    /**
+     *
+     * @param playerSlotPresenter
+     * @param firstInList
+     */
     private void setSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter, boolean firstInList) {
         if (firstInList) {
             playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
@@ -108,6 +113,8 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
         if (playerSetting.getCivilisation() != null) {
             playerSlotPresenter.setCivilisation(new Civilisation(playerSetting.getCivilisation()));
+        } else {
+            playerSlotPresenter.setCivilisation(new Civilisation(ECivilisation.ROMAN));
         }
     }
 

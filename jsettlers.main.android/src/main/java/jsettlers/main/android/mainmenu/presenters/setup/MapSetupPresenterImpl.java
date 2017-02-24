@@ -40,7 +40,6 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
 
     @Override
     public void initView() {
-
         view.setNumberOfPlayersOptions(allowedPlayerCounts());
         view.setPlayerCount(playerCount);
 
@@ -80,7 +79,7 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
     @Override
     public void startResourcesSelected(StartResources item) {
         startResources = item;
-        view.setStartResources(item);
+    //    view.setStartResources(item);
     }
 
     protected void updateViewItems() {
