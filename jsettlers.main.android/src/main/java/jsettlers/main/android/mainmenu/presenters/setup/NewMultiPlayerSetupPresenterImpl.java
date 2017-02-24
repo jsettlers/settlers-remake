@@ -69,8 +69,10 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         connector.getPlayers().setListener(null);
     }
 
+    @Override
+    protected void updateViewItems() {
 
-
+    }
 
     @Override
     public String getMyPlayerId() {
@@ -82,11 +84,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         connector.startGame();
     }
 
-
-    @Override
-    public void playerCountSelected(PlayerCount item) {
-        //TODO
-    }
 
     /**
      * IMultiplayerListener implementation

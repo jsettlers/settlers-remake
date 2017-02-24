@@ -13,6 +13,7 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartResources;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
@@ -50,6 +51,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
     private PlayersAdapter adapter;
     private ArrayAdapter<PlayerCount> playerCountsAdapter;
+    private ArrayAdapter<StartResources> startResourcesAdapter;
 
     private RecyclerView recyclerView;
     private ImageView mapPreviewImageView;
@@ -89,6 +91,13 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 presenter.playerCountSelected(playerCountsAdapter.getItem(position));
+            }
+        });
+
+        startResourcesSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                presenter.startResourcesSelected(startResourcesAdapter.getItem(position));
             }
         });
 
@@ -145,8 +154,14 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     }
 
     @Override
-    public void setStartResourcesOptions(EMapStartResources[] startResourcesOptions) {
-        startResourcesSpinner.setAdapter(getSpinnerAdapter(startResourcesOptions));
+    public void setStartResourcesOptions(StartResources[] startResources) {
+        startResourcesAdapter = getSpinnerAdapter(startResources);
+        startResourcesSpinner.setAdapter(startResourcesAdapter);
+    }
+
+    @Override
+    public void setStartResources(StartResources startResources) {
+        startResourcesSpinner.setSelection(startResourcesAdapter.getPosition(startResources));
     }
 
     @Override

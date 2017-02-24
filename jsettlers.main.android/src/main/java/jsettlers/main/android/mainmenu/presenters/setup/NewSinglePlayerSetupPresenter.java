@@ -14,6 +14,7 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartResources;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
@@ -38,7 +39,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
         List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
         PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
-        int numberOfPlayers = playerSlotPresenters.size();
+        int numberOfPlayers = playerCount.getNumberOfPlayers();
 
         for (byte i = 0; i < numberOfPlayers; i++) {
             PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
@@ -49,15 +50,12 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
             setSlotStartPositions(playerSlotPresenter, numberOfPlayers, i);
             setSlotTeams(playerSlotPresenter, playerSetting, numberOfPlayers, i);
         }
-
-        playerCount = new PlayerCount(numberOfPlayers);
     }
 
     @Override
     public void initView() {
         super.initView();
-        view.setPlayerCount(playerCount);
-        updateItems();
+        updateViewItems();
     }
 
     @Override
@@ -86,16 +84,6 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
         gameStarter.setStartingGame(game.start());
         navigator.showGame();
-    }
-
-    @Override
-    public void playerCountSelected(PlayerCount item) {
-        playerCount = item;
-        updateItems();
-    }
-
-    private void updateItems() {
-        view.setItems(getPlayerSlotPresenters(), playerCount.getNumberOfPlayers());
     }
 
     private void setSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter, boolean firstInList) {

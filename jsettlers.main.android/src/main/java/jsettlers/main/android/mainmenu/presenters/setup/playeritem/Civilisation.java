@@ -1,6 +1,7 @@
 package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 
 import jsettlers.common.player.ECivilisation;
+import jsettlers.graphics.localization.Labels;
 
 /**
  * Created by tompr on 24/02/2017.
@@ -19,11 +20,11 @@ public class Civilisation {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof PlayerType && ((Civilisation)obj).getType() == type;
+        return obj instanceof Civilisation && ((Civilisation)obj).getType() == type;
     }
 
     @Override
     public String toString() {
-        return type.toString();
+        return Labels.getString("civilisation-" + type.name());
     }
 }

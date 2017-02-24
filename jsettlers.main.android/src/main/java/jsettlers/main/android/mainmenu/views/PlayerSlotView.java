@@ -1,7 +1,5 @@
 package jsettlers.main.android.mainmenu.views;
 
-import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.player.ECivilisation;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
