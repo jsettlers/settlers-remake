@@ -1,8 +1,8 @@
 package jsettlers.main.android.mainmenu.factories;
 
-import java8.util.stream.StreamSupport;
+import java.util.List;
+
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
@@ -10,15 +10,15 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
+import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
+import jsettlers.main.android.mainmenu.presenters.picker.NewMultiPlayerPickerPresenter;
+import jsettlers.main.android.mainmenu.presenters.picker.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.JoinMultiPlayerSetupPresenterPop;
-import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
-import jsettlers.main.android.mainmenu.presenters.picker.NewMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterPop;
-import jsettlers.main.android.mainmenu.presenters.picker.NewSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
@@ -29,7 +29,7 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.app.Activity;
 
-import java.util.List;
+import java8.util.stream.StreamSupport;
 
 /**
  * Created by tompr on 03/02/2017.

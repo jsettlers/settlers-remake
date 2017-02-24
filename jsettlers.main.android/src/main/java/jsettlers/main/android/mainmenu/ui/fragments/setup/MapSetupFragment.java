@@ -257,19 +257,19 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
                 }
             });
 
-            civilisationSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            slotSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     Integer slot = slotsAdapter.getItem(position);
-                    presenter.setSlot(slot.byteValue());
+                    presenter.positionSelected(slot);
                 }
             });
 
-            civilisationSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            teamSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     Integer team = teamsAdapter.getItem(position);
-                    presenter.setTeam(team.byteValue());
+                    presenter.teamSelected(team);
                 }
             });
         }
