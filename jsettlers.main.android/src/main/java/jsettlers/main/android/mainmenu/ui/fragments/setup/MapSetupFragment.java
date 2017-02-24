@@ -2,16 +2,17 @@ package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
 import java.util.List;
 
-import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 import android.graphics.Bitmap;
@@ -225,13 +226,13 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         private final SwitchCompat readySwitch;
         private final Spinner civilisationSpinner;
         private final Spinner typeSpinner;
-        private final Spinner slotSpinner;
+        private final Spinner startPositionSpinner;
         private final Spinner teamSpinner;
 
-        private ArrayAdapter<ECivilisation> civilisationsAdapter;
-        private ArrayAdapter<EPlayerType> playerTypesAdapter;
+        private ArrayAdapter<Civilisation> civilisationsAdapter;
+        private ArrayAdapter<PlayerType> playerTypesAdapter;
         private ArrayAdapter<StartPosition> startPositionsAdapter;
-        private ArrayAdapter<Integer> teamsAdapter;
+        private ArrayAdapter<Team> teamsAdapter;
 
         PlayerHolder(View itemView) {
             super(itemView);
@@ -239,13 +240,13 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             this.readySwitch = (SwitchCompat) itemView.findViewById(R.id.switch_ready);
             this.civilisationSpinner = (Spinner) itemView.findViewById(R.id.spinner_civilisation);
             this.typeSpinner = (Spinner) itemView.findViewById(R.id.spinner_type);
-            this.slotSpinner = (Spinner) itemView.findViewById(R.id.spinner_slot);
+            this.startPositionSpinner = (Spinner) itemView.findViewById(R.id.spinner_slot);
             this.teamSpinner = (Spinner) itemView.findViewById(R.id.spinner_team);
 
             civilisationSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    ECivilisation civilisation = civilisationsAdapter.getItem(position);
+                    Civilisation civilisation = civilisationsAdapter.getItem(position);
                     presenter.setCivilisation(civilisation);
                 }
             });
@@ -253,12 +254,12 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             typeSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    EPlayerType playerType = playerTypesAdapter.getItem(position);
+                    PlayerType playerType = playerTypesAdapter.getItem(position);
                     presenter.setPlayerType(playerType);
                 }
             });
 
-            slotSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            startPositionSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     StartPosition slot = startPositionsAdapter.getItem(position);
@@ -269,7 +270,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             teamSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    Integer team = teamsAdapter.getItem(position);
+                    Team team = teamsAdapter.getItem(position);
                     presenter.teamSelected(team);
                 }
             });
@@ -281,24 +282,24 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         }
 
         @Override
-        public void setPossibleCivilisations(ECivilisation[] possibleCivilisations) {
+        public void setPossibleCivilisations(Civilisation[] possibleCivilisations) {
             civilisationsAdapter = getSpinnerAdapter(possibleCivilisations);
             civilisationSpinner.setAdapter(civilisationsAdapter);
         }
 
         @Override
-        public void setCivilisation(ECivilisation civilisation) {
+        public void setCivilisation(Civilisation civilisation) {
             civilisationSpinner.setSelection(civilisationsAdapter.getPosition(civilisation));
         }
 
         @Override
-        public void setPossiblePlayerTypes(EPlayerType[] ePlayerTypes) {
+        public void setPossiblePlayerTypes(PlayerType[] ePlayerTypes) {
             playerTypesAdapter = getSpinnerAdapter(ePlayerTypes);
             typeSpinner.setAdapter(playerTypesAdapter);
         }
 
         @Override
-        public void setPlayerType(EPlayerType playerType) {
+        public void setPlayerType(PlayerType playerType) {
             typeSpinner.setSelection(playerTypesAdapter.getPosition(playerType));
 
         }
@@ -306,22 +307,22 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         @Override
         public void setPossibleStartPositions(StartPosition[] possibleSlots) {
             startPositionsAdapter = getSpinnerAdapter(possibleSlots);
-            slotSpinner.setAdapter(startPositionsAdapter);
+            startPositionSpinner.setAdapter(startPositionsAdapter);
         }
 
         @Override
         public void setStartPosition(StartPosition slot) {
-            slotSpinner.setSelection(startPositionsAdapter.getPosition(slot));
+            startPositionSpinner.setSelection(startPositionsAdapter.getPosition(slot));
         }
 
         @Override
-        public void setPossibleTeams(Integer[] possibleTeams) {
+        public void setPossibleTeams(Team[] possibleTeams) {
             teamsAdapter = getSpinnerAdapter(possibleTeams);
             teamSpinner.setAdapter(teamsAdapter);
         }
 
         @Override
-        public void setTeam(Integer team) {
+        public void setTeam(Team team) {
             teamSpinner.setSelection(teamsAdapter.getPosition(team));
         }
 

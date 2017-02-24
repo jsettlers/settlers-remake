@@ -2,7 +2,10 @@ package jsettlers.main.android.mainmenu.views;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 
 /**
  * Created by tompr on 18/02/2017.
@@ -11,15 +14,15 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition
 public interface PlayerSlotView {
     void setName(String name);
 
-    void setPossibleCivilisations(ECivilisation[] possibleCivilisations);
-    void setCivilisation(ECivilisation civilisation);
+    void setPossibleCivilisations(Civilisation[] possibleCivilisations);
+    void setCivilisation(Civilisation civilisation);
 
-    void setPossiblePlayerTypes(EPlayerType[] ePlayerTypes);
-    void setPlayerType(EPlayerType playerType);
+    void setPossiblePlayerTypes(PlayerType[] ePlayerTypes);
+    void setPlayerType(PlayerType playerType);
 
     void setPossibleStartPositions(StartPosition[] possibleSlots);
     void setStartPosition(StartPosition slot);
 
-    void setPossibleTeams(Integer[] possibleTeams);
-    void setTeam(Integer team);
+    void setPossibleTeams(Team[] possibleTeams);
+    void setTeam(Team team);
 }

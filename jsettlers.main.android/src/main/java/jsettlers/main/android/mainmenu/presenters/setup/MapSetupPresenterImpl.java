@@ -99,8 +99,8 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
     @Override
     public void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, StartPosition oldPosition, StartPosition newPosition) {
         for (PlayerSlotPresenter playerSlotPresenter : playerSlotPresenters) {
-            if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getPosition().equals(newPosition)) {
-                playerSlotPresenter.setPosition(oldPosition);
+            if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getStartPosition().equals(newPosition)) {
+                playerSlotPresenter.setStartPosition(oldPosition);
             }
         }
     }

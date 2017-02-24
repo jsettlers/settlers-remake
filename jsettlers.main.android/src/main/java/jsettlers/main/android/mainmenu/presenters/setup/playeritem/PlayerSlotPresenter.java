@@ -1,7 +1,5 @@
 package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 
-import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 
@@ -14,17 +12,17 @@ public class PlayerSlotPresenter {
 
     private PlayerSlotView view;
 
-    private ECivilisation[] possibleCivilisations;
-    private ECivilisation civilisation;
+    private Civilisation[] possibleCivilisations;
+    private Civilisation civilisation;
 
-    private EPlayerType[] possiblePlayerTypes;
-    private EPlayerType playerType;
+    private PlayerType[] possiblePlayerTypes;
+    private PlayerType playerType;
 
-    private StartPosition[] possiblePositions;
-    private StartPosition position;
+    private StartPosition[] possibleStartPositions;
+    private StartPosition startPosition;
 
-    private Integer[] possibleTeams;
-    private Integer team;
+    private Team[] possibleTeams;
+    private Team team;
 
     public PlayerSlotPresenter(PositionChangedListener positionChangedListener) {
         this.positionChangedListener = positionChangedListener;
@@ -37,8 +35,8 @@ public class PlayerSlotPresenter {
         view.setPossibleCivilisations(possibleCivilisations);
         view.setCivilisation(civilisation);
 
-        view.setPossibleStartPositions(possiblePositions);
-        view.setStartPosition(position);
+        view.setPossibleStartPositions(possibleStartPositions);
+        view.setStartPosition(startPosition);
 
         view.setPossibleTeams(possibleTeams);
         view.setTeam(team);
@@ -48,71 +46,71 @@ public class PlayerSlotPresenter {
     }
 
     public PlayerSetting getPlayerSettings() {
-        return new PlayerSetting(playerType, civilisation, (byte) (team - 1));
+        return new PlayerSetting(playerType.getType(), civilisation.getType(), team.asByte());
     }
 
     // Civilisation
-    public void setPossibleCivilisations(ECivilisation[] possibleCivilisations) {
+    public void setPossibleCivilisations(Civilisation[] possibleCivilisations) {
         this.possibleCivilisations = possibleCivilisations;
     }
 
-    public void setCivilisation(ECivilisation civilisation) {
+    public void setCivilisation(Civilisation civilisation) {
         this.civilisation = civilisation;
     }
 
-    // Player stpe
-    public void setPossiblePlayerTypes(EPlayerType[] ePlayerTypes) {
+    // Player type
+    public void setPossiblePlayerTypes(PlayerType[] ePlayerTypes) {
         this.possiblePlayerTypes = ePlayerTypes;
     }
 
-    public void setPlayerType(EPlayerType playerType) {
+    public void setPlayerType(PlayerType playerType) {
         this.playerType = playerType;
     }
 
     // Position
-    public void setPossiblePositions(int numberOfPlayers) {
-        possiblePositions = new StartPosition[numberOfPlayers];
+    public void setPossibleStartPositions(int numberOfPlayers) {
+        possibleStartPositions = new StartPosition[numberOfPlayers];
         for (byte i = 0; i < numberOfPlayers; i++) {
-            possiblePositions[i] = new StartPosition(i);
+            possibleStartPositions[i] = new StartPosition(i);
         }
     }
 
-    public void setPosition(StartPosition position) {
-        this.position = position;
+    public void setStartPosition(StartPosition startPosition) {
+        this.startPosition = startPosition;
         if (view != null) {
-            view.setStartPosition(position);
+            view.setStartPosition(startPosition);
         }
     }
 
     public void positionSelected(StartPosition position) {
-        positionChangedListener.positionChanged(this, this.position, position);
-        this.position = position;
+        positionChangedListener.positionChanged(this, this.startPosition, position);
+        this.startPosition = position;
     }
 
-    public StartPosition getPosition() {
+    public StartPosition getStartPosition() {
         // this should be wrapped in something better than Integer, same for team
-        return position;
+        return startPosition;
     }
 
     public byte getPlayerId() {
         // this should be wrapped in something better than Integer, same for team
-        return position.asByte();
+        return startPosition.asByte();
     }
 
 
     // Team
     public void setPossibleTeams(int numberOfPlayers) {
-        possibleTeams = new Integer[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) {
-            possibleTeams[i] = i + 1;
+        possibleTeams = new Team[numberOfPlayers];
+        for (byte i = 0; i < numberOfPlayers; i++) {
+            possibleTeams[i] = new Team(i);
         }
     }
 
-    public void setTeam(byte team) {
-        this.team = (int) team + 1;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
-    public void teamSelected(Integer team) {
+    public void teamSelected(Team team) {
         this.team = team;
     }
 }
