@@ -12,6 +12,9 @@ public class PlayerSlotPresenter {
 
     private PlayerSlotView view;
 
+    private ECivilisation[] possibleCivilisations;
+    private ECivilisation civilisation;
+
     private EPlayerType[] possiblePlayerTypes;
     private EPlayerType playerType;
 
@@ -28,6 +31,9 @@ public class PlayerSlotPresenter {
         this.view = view;
         view.setName("Random");
 
+        view.setPossibleCivilisations(possibleCivilisations);
+        view.setCivilisation(civilisation);
+
         view.setPossibleSlots(possibleSlots);
         view.setSlot(slot);
 
@@ -38,16 +44,20 @@ public class PlayerSlotPresenter {
         view.setPlayerType(playerType);
     }
 
+    public void setPossibleCivilisations(ECivilisation[] possibleCivilisations) {
+        this.possibleCivilisations = possibleCivilisations;
+    }
+
+    public void setCivilisation(ECivilisation civilisation) {
+        this.civilisation = civilisation;
+    }
+
     public void setPossiblePlayerTypes(EPlayerType[] ePlayerTypes) {
         this.possiblePlayerTypes = ePlayerTypes;
     }
 
     public void setPlayerType(EPlayerType playerType) {
         this.playerType = playerType;
-    }
-
-    public void setCivilisation(ECivilisation civilisation) {
-
     }
 
     public void setPossibleSlots(int numberOfPlayers) {
@@ -58,7 +68,7 @@ public class PlayerSlotPresenter {
     }
 
     public void setSlot(byte slot) {
-        this.slot = Integer.valueOf(slot) + 1;
+        this.slot = (int) slot + 1;
     }
 
     public void setPossibleTeams(int numberOfPlayers) {
@@ -68,7 +78,7 @@ public class PlayerSlotPresenter {
         }
     }
 
-    public void setTeam(Byte team) {
-        this.team = Integer.valueOf(team) + 1;
+    public void setTeam(byte team) {
+        this.team = (int) team + 1;
     }
 }

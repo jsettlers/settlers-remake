@@ -3,6 +3,7 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 import java.util.List;
 
 import jsettlers.common.ai.EPlayerType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -63,6 +64,8 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
             }
 
             // Civilisations
+            playerSlot.setPossibleCivilisations(new ECivilisation[] { ECivilisation.ROMAN });
+
             if (playerSetting.getCivilisation() != null) {
                 playerSlot.setCivilisation(playerSetting.getCivilisation());
             }
