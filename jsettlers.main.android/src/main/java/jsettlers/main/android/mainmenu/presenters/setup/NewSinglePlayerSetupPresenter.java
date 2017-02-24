@@ -105,7 +105,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
     private void setSlotPositions(PlayerSlotPresenter playerSlotPresenter, int numberOfPlayers, byte position) {
         playerSlotPresenter.setPossiblePositions(numberOfPlayers);
-        playerSlotPresenter.setPosition(position);
+        playerSlotPresenter.setPosition(new Integer(position + 1));
     }
 
     private void setSlotTeams(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting, int numberOfPlayers, byte position) {

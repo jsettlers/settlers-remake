@@ -10,6 +10,7 @@ import jsettlers.main.android.mainmenu.views.PlayerSlotView;
  */
 
 public class PlayerSlotPresenter {
+    private final PositionChangedListener positionChangedListener;
 
     private PlayerSlotView view;
 
@@ -25,7 +26,8 @@ public class PlayerSlotPresenter {
     private Integer[] possibleTeams;
     private Integer team;
 
-    public PlayerSlotPresenter() {
+    public PlayerSlotPresenter(PositionChangedListener positionChangedListener) {
+        this.positionChangedListener = positionChangedListener;
     }
 
     public void bindView(PlayerSlotView view) {
@@ -75,11 +77,15 @@ public class PlayerSlotPresenter {
         }
     }
 
-    public void setPosition(byte position) {
-        this.position = (int) position + 1;
+    public void setPosition(Integer position) {
+        this.position = position;
+        if (view != null) {
+            view.setSlot(position);
+        }
     }
 
     public void positionSelected(Integer position) {
+        positionChangedListener.positionChanged(this, this.position, position);
         this.position = position;
     }
 

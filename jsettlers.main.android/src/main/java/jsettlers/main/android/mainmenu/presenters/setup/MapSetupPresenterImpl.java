@@ -7,13 +7,14 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PositionChangedListener;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 
-public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
+public abstract class MapSetupPresenterImpl implements MapSetupPresenter, PositionChangedListener {
     private final MapSetupView view;
     private final GameStarter gameStarter;
     private final IMapDefinition mapDefinition;
@@ -83,11 +84,23 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter {
 
     private void createPlayerSlots() {
         for (int i = 0; i < mapDefinition.getMaxPlayers(); i++) {
-            playerSlotPresenters.add(new PlayerSlotPresenter());
+            playerSlotPresenters.add(new PlayerSlotPresenter(this));
         }
     }
 
     protected List<PlayerSlotPresenter> getPlayerSlotPresenters() {
         return playerSlotPresenters;
+    }
+
+    /**
+     * PositionChangedListener implementation
+     */
+    @Override
+    public void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, Integer oldPosition, Integer newPosition) {
+        for (PlayerSlotPresenter playerSlotPresenter : playerSlotPresenters) {
+            if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getPosition().equals(newPosition)) {
+                playerSlotPresenter.setPosition(oldPosition);
+            }
+        }
     }
 }
