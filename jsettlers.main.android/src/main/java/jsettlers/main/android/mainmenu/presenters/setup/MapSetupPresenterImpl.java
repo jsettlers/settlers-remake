@@ -8,6 +8,7 @@ import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PositionChangedListener;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 /**
@@ -96,7 +97,7 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
      * PositionChangedListener implementation
      */
     @Override
-    public void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, Integer oldPosition, Integer newPosition) {
+    public void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, StartPosition oldPosition, StartPosition newPosition) {
         for (PlayerSlotPresenter playerSlotPresenter : playerSlotPresenters) {
             if (playerSlotPresenter != updatedPlayerSlotPresenter && playerSlotPresenter.getPosition().equals(newPosition)) {
                 playerSlotPresenter.setPosition(oldPosition);

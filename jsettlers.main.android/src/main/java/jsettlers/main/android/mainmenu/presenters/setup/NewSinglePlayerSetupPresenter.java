@@ -11,6 +11,7 @@ import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 /**
@@ -59,7 +60,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
         byte humanPlayerId = playerSlotPresenters.get(0).getPlayerId();
 
         PlayerSetting[] playerSettings = StreamSupport.stream(playerSlotPresenters)
-                .sorted((playerSlot, otherPlayerSlot) -> playerSlot.getPosition() - otherPlayerSlot.getPosition())
+                .sorted((playerSlot, otherPlayerSlot) -> playerSlot.getPosition().asByte() - otherPlayerSlot.getPosition().asByte())
                 .map(PlayerSlotPresenter::getPlayerSettings)
                 .toArray(PlayerSetting[]::new);
 
@@ -105,7 +106,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
     private void setSlotPositions(PlayerSlotPresenter playerSlotPresenter, int numberOfPlayers, byte position) {
         playerSlotPresenter.setPossiblePositions(numberOfPlayers);
-        playerSlotPresenter.setPosition(new Integer(position + 1));
+        playerSlotPresenter.setPosition(new StartPosition(position));
     }
 
     private void setSlotTeams(PlayerSlotPresenter playerSlotPresenter, PlayerSetting playerSetting, int numberOfPlayers, byte position) {

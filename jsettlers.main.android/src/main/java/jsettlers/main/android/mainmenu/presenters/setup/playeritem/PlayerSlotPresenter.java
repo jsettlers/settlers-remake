@@ -20,8 +20,8 @@ public class PlayerSlotPresenter {
     private EPlayerType[] possiblePlayerTypes;
     private EPlayerType playerType;
 
-    private Integer[] possiblePositions;
-    private Integer position;
+    private StartPosition[] possiblePositions;
+    private StartPosition position;
 
     private Integer[] possibleTeams;
     private Integer team;
@@ -37,8 +37,8 @@ public class PlayerSlotPresenter {
         view.setPossibleCivilisations(possibleCivilisations);
         view.setCivilisation(civilisation);
 
-        view.setPossibleSlots(possiblePositions);
-        view.setSlot(position);
+        view.setPossibleStartPositions(possiblePositions);
+        view.setStartPosition(position);
 
         view.setPossibleTeams(possibleTeams);
         view.setTeam(team);
@@ -71,32 +71,32 @@ public class PlayerSlotPresenter {
 
     // Position
     public void setPossiblePositions(int numberOfPlayers) {
-        possiblePositions = new Integer[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) {
-            possiblePositions[i] = i + 1;
+        possiblePositions = new StartPosition[numberOfPlayers];
+        for (byte i = 0; i < numberOfPlayers; i++) {
+            possiblePositions[i] = new StartPosition(i);
         }
     }
 
-    public void setPosition(Integer position) {
+    public void setPosition(StartPosition position) {
         this.position = position;
         if (view != null) {
-            view.setSlot(position);
+            view.setStartPosition(position);
         }
     }
 
-    public void positionSelected(Integer position) {
+    public void positionSelected(StartPosition position) {
         positionChangedListener.positionChanged(this, this.position, position);
         this.position = position;
     }
 
-    public Integer getPosition() {
+    public StartPosition getPosition() {
         // this should be wrapped in something better than Integer, same for team
         return position;
     }
 
     public byte getPlayerId() {
         // this should be wrapped in something better than Integer, same for team
-        return (byte) (position - 1);
+        return position.asByte();
     }
 
 

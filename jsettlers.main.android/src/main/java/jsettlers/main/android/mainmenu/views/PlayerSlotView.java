@@ -2,6 +2,7 @@ package jsettlers.main.android.mainmenu.views;
 
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.player.ECivilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
 
 /**
  * Created by tompr on 18/02/2017.
@@ -16,8 +17,8 @@ public interface PlayerSlotView {
     void setPossiblePlayerTypes(EPlayerType[] ePlayerTypes);
     void setPlayerType(EPlayerType playerType);
 
-    void setPossibleSlots(Integer[] possibleSlots);
-    void setSlot(Integer slot);
+    void setPossibleStartPositions(StartPosition[] possibleSlots);
+    void setStartPosition(StartPosition slot);
 
     void setPossibleTeams(Integer[] possibleTeams);
     void setTeam(Integer team);

@@ -11,6 +11,7 @@ import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartPosition;
 import jsettlers.main.android.mainmenu.views.MapSetupView;
 
 import android.graphics.Bitmap;
@@ -229,7 +230,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         private ArrayAdapter<ECivilisation> civilisationsAdapter;
         private ArrayAdapter<EPlayerType> playerTypesAdapter;
-        private ArrayAdapter<Integer> slotsAdapter;
+        private ArrayAdapter<StartPosition> startPositionsAdapter;
         private ArrayAdapter<Integer> teamsAdapter;
 
         PlayerHolder(View itemView) {
@@ -260,7 +261,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             slotSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    Integer slot = slotsAdapter.getItem(position);
+                    StartPosition slot = startPositionsAdapter.getItem(position);
                     presenter.positionSelected(slot);
                 }
             });
@@ -303,14 +304,14 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         }
 
         @Override
-        public void setPossibleSlots(Integer[] possibleSlots) {
-            slotsAdapter = getSpinnerAdapter(possibleSlots);
-            slotSpinner.setAdapter(slotsAdapter);
+        public void setPossibleStartPositions(StartPosition[] possibleSlots) {
+            startPositionsAdapter = getSpinnerAdapter(possibleSlots);
+            slotSpinner.setAdapter(startPositionsAdapter);
         }
 
         @Override
-        public void setSlot(Integer slot) {
-            slotSpinner.setSelection(slotsAdapter.getPosition(slot));
+        public void setStartPosition(StartPosition slot) {
+            slotSpinner.setSelection(startPositionsAdapter.getPosition(slot));
         }
 
         @Override
