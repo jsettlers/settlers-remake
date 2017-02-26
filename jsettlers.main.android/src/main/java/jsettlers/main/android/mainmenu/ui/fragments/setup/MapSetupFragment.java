@@ -296,7 +296,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     StartPosition slot = startPositionsAdapter.getItem(position);
-                    presenter.positionSelected(slot);
+                    presenter.startPositionSelected(slot);
                 }
             });
 

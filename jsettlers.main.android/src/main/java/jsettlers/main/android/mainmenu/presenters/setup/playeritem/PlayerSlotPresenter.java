@@ -101,18 +101,16 @@ public class PlayerSlotPresenter {
         }
     }
 
-    public void positionSelected(StartPosition position) {
+    public void startPositionSelected(StartPosition position) {
         positionChangedListener.positionChanged(this, this.startPosition, position);
         this.startPosition = position;
     }
 
     public StartPosition getStartPosition() {
-        // this should be wrapped in something better than Integer, same for team
         return startPosition;
     }
 
     public byte getPlayerId() {
-        // this should be wrapped in something better than Integer, same for team
         return startPosition.asByte();
     }
 
