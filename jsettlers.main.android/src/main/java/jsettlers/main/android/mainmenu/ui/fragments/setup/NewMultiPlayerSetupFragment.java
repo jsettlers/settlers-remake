@@ -28,9 +28,6 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
 
     private NewMultiPlayerSetupPresenter presenter;
 
-    private PlayersAdapter adapter;
-    private RecyclerView recyclerView;
-
     public static Fragment create(IMapDefinition mapDefinition) {
         Bundle bundle = new Bundle();
         bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
@@ -44,89 +41,5 @@ public class NewMultiPlayerSetupFragment extends MapSetupFragment implements New
     protected NewMultiPlayerSetupPresenter getPresenter() {
         presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, getArguments().getString(ARG_MAP_ID));
         return presenter;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        return view;
-    }
-
-    /**
-     * NewMultiPlayerSetupView implementation
-     */
-//    @Override
-//    public void setItems(List<IMultiplayerPlayer> items) {
-//        getActivity().runOnUiThread(() -> {
-//            if (adapter == null) {
-//                adapter = new PlayersAdapter(items);
-//            }
-//
-//            if (recyclerView.getAdapter() == null) {
-//                recyclerView.setAdapter(adapter);
-//            }
-//
-//            adapter.setItems(items);
-//        });
-//    }
-
-    class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
-        private final LayoutInflater layoutInflater;
-
-        private List<IMultiplayerPlayer> players;
-
-        PlayersAdapter(List<IMultiplayerPlayer> players) {
-            this.layoutInflater = LayoutInflater.from(getActivity());
-            this.players = players;
-        }
-
-        @Override
-        public int getItemCount() {
-            return players.size();
-        }
-
-        @Override
-        public PlayerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = layoutInflater.inflate(R.layout.item_multi_player, parent, false);
-            PlayerHolder playerHolder = new PlayerHolder(view);
-
-            return playerHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(PlayerHolder holder, int position) {
-            holder.bind(players.get(position));
-        }
-
-        void setItems(List<IMultiplayerPlayer> items) {
-            //TODO use diffutil
-            players = items;
-            notifyDataSetChanged();
-        }
-    }
-
-    class PlayerHolder extends RecyclerView.ViewHolder{
-        private final TextView playerNameTextView;
-        private final SwitchCompat readySwitch;
-
-        PlayerHolder(View itemView) {
-            super(itemView);
-            this.playerNameTextView = (TextView) itemView.findViewById(R.id.text_view_player_name);
-            this.readySwitch = (SwitchCompat) itemView.findViewById(R.id.switch_ready);
-        }
-
-        void bind(IMultiplayerPlayer multiplayerPlayer) {
-            playerNameTextView.setText(multiplayerPlayer.getName());
-            readySwitch.setChecked(multiplayerPlayer.isReady());
-
-            String playerId = multiplayerPlayer.getId();
-            String myId = presenter.getMyPlayerId();
-            Log.d("Settlers", playerId + "-----------" + myId);
-            boolean isMe = multiplayerPlayer.getId().equals(presenter.getMyPlayerId());
-            readySwitch.setEnabled(isMe);
-        }
     }
 }

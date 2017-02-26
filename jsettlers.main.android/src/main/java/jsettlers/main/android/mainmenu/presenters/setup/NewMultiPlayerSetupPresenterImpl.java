@@ -1,5 +1,7 @@
 package jsettlers.main.android.mainmenu.presenters.setup;
 
+import java.util.List;
+
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerListener;
@@ -8,9 +10,10 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
@@ -32,9 +35,9 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
             GameStarter gameStarter,
             IJoinPhaseMultiplayerGameConnector connector,
             SettingsManager settingsManager,
-            IMapDefinition mapDefinition) {
+            MapLoader mapLoader) {
 
-        super(view, gameStarter, mapDefinition);
+        super(view, gameStarter, mapLoader);
         this.view = view;
         this.navigator = navigator;
         this.gameStarter = gameStarter;
@@ -48,12 +51,30 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
 
         //TODO temp while no ui for this
         connector.setReady(true);
+
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
+        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
+        int numberOfConnectedPlayers = players.size();
+
+        for (int i = 0; i < playerSlotPresenters.size(); i++) {
+            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
+
+            if (i < numberOfConnectedPlayers) {
+                playerSlotPresenter.setHumanMultiPlayer(players.get(i));
+            } else {
+                playerSlotPresenter.setComputerMultiPlayer();
+            }
+        }
     }
 
     @Override
     public void initView() {
         super.initView();
-    //    view.setItems(connector.getPlayers().getItems());
+        updateViewItems();
     }
 
     @Override
@@ -105,6 +126,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
      */
     @Override
     public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
+        updateSlots();
     //    view.setItems(connector.getPlayers().getItems());
     }
 }

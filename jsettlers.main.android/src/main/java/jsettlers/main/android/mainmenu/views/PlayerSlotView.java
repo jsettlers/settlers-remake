@@ -11,6 +11,7 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 
 public interface PlayerSlotView {
     void setName(String name);
+    void setReady(boolean ready);
 
     void setPossibleCivilisations(Civilisation[] possibleCivilisations);
     void setCivilisation(Civilisation civilisation);
@@ -23,4 +24,7 @@ public interface PlayerSlotView {
 
     void setPossibleTeams(Team[] possibleTeams);
     void setTeam(Team team);
+
+    void showReadyControl();
+    void hideReadyControl();
 }

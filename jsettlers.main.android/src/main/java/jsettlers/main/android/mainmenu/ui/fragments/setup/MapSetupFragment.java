@@ -8,6 +8,7 @@ import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Civilisation;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Peacetime;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
@@ -164,7 +165,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
     }
 
     @Override
-    public void setPeaceTimeOptions(String[] peaceTimeOptions) {
+    public void setPeaceTimeOptions(Peacetime[] peaceTimeOptions) {
         peacetimeSpinner.setAdapter(getSpinnerAdapter(peaceTimeOptions));
     }
 
@@ -314,6 +315,11 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         }
 
         @Override
+        public void setReady(boolean ready) {
+            readySwitch.setChecked(ready);
+        }
+
+        @Override
         public void setPossibleCivilisations(Civilisation[] possibleCivilisations) {
             civilisationsAdapter = getSpinnerAdapter(possibleCivilisations);
             civilisationSpinner.setAdapter(civilisationsAdapter);
@@ -356,6 +362,16 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         @Override
         public void setTeam(Team team) {
             teamSpinner.setSelection(teamsAdapter.getPosition(team));
+        }
+
+        @Override
+        public void showReadyControl() {
+            readySwitch.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void hideReadyControl() {
+            readySwitch.setVisibility(View.GONE);
         }
 
         void bind(PlayerSlotPresenter playerSlotPresenter) {

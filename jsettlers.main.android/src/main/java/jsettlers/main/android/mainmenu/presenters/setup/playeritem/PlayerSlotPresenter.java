@@ -1,5 +1,6 @@
 package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 
+import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 
@@ -11,6 +12,10 @@ public class PlayerSlotPresenter {
     private final PositionChangedListener positionChangedListener;
 
     private PlayerSlotView view;
+
+    private String name;
+    private boolean ready = false;
+    private boolean showReadyControl = false;
 
     private Civilisation[] possibleCivilisations;
     private Civilisation civilisation;
@@ -30,7 +35,15 @@ public class PlayerSlotPresenter {
 
     public void bindView(PlayerSlotView view) {
         this.view = view;
-        view.setName("Random");
+
+        view.setName(name);
+        view.setReady(ready);
+
+        if (showReadyControl) {
+            view.showReadyControl();
+        } else {
+            view.hideReadyControl();
+        }
 
         view.setPossibleCivilisations(possibleCivilisations);
         view.setCivilisation(civilisation);
@@ -49,7 +62,9 @@ public class PlayerSlotPresenter {
         return new PlayerSetting(playerType.getType(), civilisation.getType(), team.asByte());
     }
 
-    // Civilisation
+    /**
+     * Civilisations
+     */
     public void setPossibleCivilisations(Civilisation[] possibleCivilisations) {
         this.possibleCivilisations = possibleCivilisations;
     }
@@ -58,7 +73,9 @@ public class PlayerSlotPresenter {
         this.civilisation = civilisation;
     }
 
-    // Player type
+    /**
+     * Players types
+     */
     public void setPossiblePlayerTypes(PlayerType[] ePlayerTypes) {
         this.possiblePlayerTypes = ePlayerTypes;
     }
@@ -67,7 +84,9 @@ public class PlayerSlotPresenter {
         this.playerType = playerType;
     }
 
-    // Position
+    /**
+     * Start positions
+     */
     public void setPossibleStartPositions(int numberOfPlayers) {
         possibleStartPositions = new StartPosition[numberOfPlayers];
         for (byte i = 0; i < numberOfPlayers; i++) {
@@ -98,7 +117,9 @@ public class PlayerSlotPresenter {
     }
 
 
-    // Team
+    /**
+     * Teams
+     */
     public void setPossibleTeams(int numberOfPlayers) {
         possibleTeams = new Team[numberOfPlayers];
         for (byte i = 0; i < numberOfPlayers; i++) {
@@ -112,5 +133,20 @@ public class PlayerSlotPresenter {
 
     public void teamSelected(Team team) {
         this.team = team;
+    }
+
+
+
+
+    public void setHumanMultiPlayer(IMultiplayerPlayer player) {
+        name = player.getName();
+        ready = player.isReady();
+        showReadyControl = true;
+    }
+
+    public void setComputerMultiPlayer() {
+        name = "Computer";
+        ready = true;
+        showReadyControl = false;
     }
 }
