@@ -2,14 +2,12 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 
 import java.util.List;
 
-import jsettlers.common.ai.EPlayerType;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import java8.util.stream.StreamSupport;
@@ -32,8 +30,8 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
         this.mapLoader = mapLoader;
 
         PlayerSlotPresenter humanPlayerSlot = getPlayerSlotPresenters().get(0);
-        humanPlayerSlot.setPossiblePlayerTypes(new PlayerType[] { new PlayerType(EPlayerType.HUMAN) });
-        humanPlayerSlot.setPlayerType(new PlayerType(EPlayerType.HUMAN));
+        humanPlayerSlot.setName("Get name from settings");
+        setHumanSlotPlayerTypes(humanPlayerSlot);
     }
 
     @Override
@@ -57,7 +55,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
         for (int i = 0; i < sortedPlayers.length; i++) {
             PlayerSlotPresenter player = sortedPlayers[i];
 
-            if (playerSlotPresenters.indexOf(player) < playerCount.getNumberOfPlayers()) {
+            if (playerSlotPresenters.indexOf(player) < getPlayerCount().getNumberOfPlayers()) {
                 playerSettings[i] = player.getPlayerSettings();
             } else {
                 playerSettings[i] = new PlayerSetting();

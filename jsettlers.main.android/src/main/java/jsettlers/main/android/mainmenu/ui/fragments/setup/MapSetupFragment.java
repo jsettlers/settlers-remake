@@ -258,7 +258,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         private final TextView playerNameTextView;
         private final SwitchCompat readySwitch;
         private final Spinner civilisationSpinner;
-        private final Spinner typeSpinner;
+        private final Spinner playerTypeSpinner;
         private final Spinner startPositionSpinner;
         private final Spinner teamSpinner;
 
@@ -272,7 +272,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             this.playerNameTextView = (TextView) itemView.findViewById(R.id.text_view_player_name);
             this.readySwitch = (SwitchCompat) itemView.findViewById(R.id.switch_ready);
             this.civilisationSpinner = (Spinner) itemView.findViewById(R.id.spinner_civilisation);
-            this.typeSpinner = (Spinner) itemView.findViewById(R.id.spinner_type);
+            this.playerTypeSpinner = (Spinner) itemView.findViewById(R.id.spinner_type);
             this.startPositionSpinner = (Spinner) itemView.findViewById(R.id.spinner_slot);
             this.teamSpinner = (Spinner) itemView.findViewById(R.id.spinner_team);
 
@@ -284,7 +284,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
                 }
             });
 
-            typeSpinner.setOnItemSelectedListener(new SpinnerListener() {
+            playerTypeSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                     PlayerType playerType = playerTypesAdapter.getItem(position);
@@ -333,12 +333,12 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         @Override
         public void setPossiblePlayerTypes(PlayerType[] ePlayerTypes) {
             playerTypesAdapter = getSpinnerAdapter(ePlayerTypes);
-            typeSpinner.setAdapter(playerTypesAdapter);
+            playerTypeSpinner.setAdapter(playerTypesAdapter);
         }
 
         @Override
         public void setPlayerType(PlayerType playerType) {
-            typeSpinner.setSelection(playerTypesAdapter.getPosition(playerType));
+            playerTypeSpinner.setSelection(playerTypesAdapter.getPosition(playerType));
 
         }
 
@@ -372,6 +372,25 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         @Override
         public void hideReadyControl() {
             readySwitch.setVisibility(View.GONE);
+        }
+
+
+        @Override
+        public void setControlsEnabled() {
+            readySwitch.setEnabled(true);
+            playerTypeSpinner.setEnabled(true);
+            civilisationSpinner.setEnabled(true);
+            startPositionSpinner.setEnabled(true);
+            teamSpinner.setEnabled(true);
+        }
+
+        @Override
+        public void setControlsDisabled() {
+            readySwitch.setEnabled(false);
+            playerTypeSpinner.setEnabled(false);
+            civilisationSpinner.setEnabled(false);
+            startPositionSpinner.setEnabled(false);
+            teamSpinner.setEnabled(false);
         }
 
         void bind(PlayerSlotPresenter playerSlotPresenter) {

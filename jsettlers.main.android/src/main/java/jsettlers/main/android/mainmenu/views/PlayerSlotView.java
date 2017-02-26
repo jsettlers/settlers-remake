@@ -27,4 +27,7 @@ public interface PlayerSlotView {
 
     void showReadyControl();
     void hideReadyControl();
+
+    void setControlsEnabled();
+    void setControlsDisabled();
 }

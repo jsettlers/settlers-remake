@@ -16,6 +16,7 @@ public class PlayerSlotPresenter {
     private String name;
     private boolean ready = false;
     private boolean showReadyControl = false;
+    private boolean controlsEnabled = true;
 
     private Civilisation[] possibleCivilisations;
     private Civilisation civilisation;
@@ -43,6 +44,12 @@ public class PlayerSlotPresenter {
             view.showReadyControl();
         } else {
             view.hideReadyControl();
+        }
+
+        if (controlsEnabled) {
+            view.setControlsEnabled();
+        } else {
+            view.setControlsDisabled();
         }
 
         view.setPossibleCivilisations(possibleCivilisations);
@@ -134,17 +141,29 @@ public class PlayerSlotPresenter {
     }
 
 
-
-
-    public void setHumanMultiPlayer(IMultiplayerPlayer player) {
-        name = player.getName();
-        ready = player.isReady();
-        showReadyControl = true;
+    /**
+     * Name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setComputerMultiPlayer() {
-        name = "Computer";
-        ready = true;
-        showReadyControl = false;
+    /**
+     * Ready
+     */
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public void setShowReadyControl(boolean showReadyControl) {
+        this.showReadyControl = showReadyControl;
+    }
+
+
+    /**
+     * Controls enable
+     */
+    public void setControlsEnabled(boolean enabled) {
+        controlsEnabled = true;
     }
 }

@@ -3,7 +3,6 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 import java.util.List;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.menu.IStartingGame;
@@ -64,9 +63,20 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
             PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
 
             if (i < numberOfConnectedPlayers) {
-                playerSlotPresenter.setHumanMultiPlayer(players.get(i));
+                setHumanSlotPlayerTypes(playerSlotPresenter);
+
+                IMultiplayerPlayer multiplayerPlayer = players.get(i);
+                playerSlotPresenter.setName(multiplayerPlayer.getName());
+                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
+                playerSlotPresenter.setShowReadyControl(true);
+
+                boolean isMe = multiplayerPlayer.getId().equals(settingsManager.get(SettingsManager.SETTING_UUID));
+                playerSlotPresenter.setControlsEnabled(isMe);
             } else {
-                playerSlotPresenter.setComputerMultiPlayer();
+                setComputerSlotPlayerTypes(playerSlotPresenter);
+                playerSlotPresenter.setName("Computer " + i);
+                playerSlotPresenter.setShowReadyControl(false);
+                playerSlotPresenter.setControlsEnabled(true);
             }
         }
     }
@@ -88,16 +98,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         super.dispose();
         connector.setMultiplayerListener(null);
         connector.getPlayers().setListener(null);
-    }
-
-    @Override
-    protected void updateViewItems() {
-
-    }
-
-    @Override
-    public String getMyPlayerId() {
-        return myPlayerId;
     }
 
     @Override
@@ -127,6 +127,8 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     @Override
     public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
         updateSlots();
-    //    view.setItems(connector.getPlayers().getItems());
+
+        // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
+        updateViewItems();
     }
 }

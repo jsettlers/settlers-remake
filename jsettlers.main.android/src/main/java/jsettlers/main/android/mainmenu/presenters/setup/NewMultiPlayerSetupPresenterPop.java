@@ -14,11 +14,6 @@ public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPrese
     }
 
     @Override
-    public String getMyPlayerId() {
-        return "";
-    }
-
-    @Override
     public void initView() {
 
     }

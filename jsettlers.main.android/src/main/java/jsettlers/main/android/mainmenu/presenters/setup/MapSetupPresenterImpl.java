@@ -33,7 +33,7 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
 
     private final List<PlayerSlotPresenter> playerSlotPresenters = new ArrayList<>();
 
-    protected PlayerCount playerCount;
+    private PlayerCount playerCount;
     private StartResources startResources;
 
     public MapSetupPresenterImpl(MapSetupView view, GameStarter gameStarter, MapLoader mapLoader) {
@@ -95,6 +95,9 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
         return playerSlotPresenters;
     }
 
+    protected PlayerCount getPlayerCount() {
+        return playerCount;
+    }
 
     /**
      * Get items for the main map options
@@ -136,7 +139,10 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
             PlayerSlotPresenter playerSlotPresenter = new PlayerSlotPresenter(this);
             PlayerSetting playerSetting = playerSettings[i];
 
-            setSlotPlayerTypes(playerSlotPresenter);
+            playerSlotPresenter.setName("Computer " + i);
+            playerSlotPresenter.setShowReadyControl(false);
+
+            setComputerSlotPlayerTypes(playerSlotPresenter);
             setSlotCivilisations(playerSlotPresenter, playerSetting);
             setSlotStartPositions(playerSlotPresenter, playerCount.getNumberOfPlayers(), i);
             setSlotTeams(playerSlotPresenter, playerSetting, playerCount.getNumberOfPlayers(), i);
@@ -145,7 +151,13 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
         }
     }
 
-    private static void setSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+
+    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] { new PlayerType(EPlayerType.HUMAN) });
+        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
+    }
+
+    protected static void setComputerSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
         playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
                 new PlayerType(EPlayerType.AI_VERY_HARD),
                 new PlayerType(EPlayerType.AI_HARD),
