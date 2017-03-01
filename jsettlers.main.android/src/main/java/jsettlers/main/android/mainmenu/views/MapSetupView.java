@@ -2,11 +2,10 @@ package jsettlers.main.android.mainmenu.views;
 
 import java.util.List;
 
-import jsettlers.logic.map.loading.EMapStartResources;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Peacetime;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerCount;
+import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
+import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
-import jsettlers.main.android.mainmenu.presenters.setup.playeritem.StartResources;
+import jsettlers.main.android.mainmenu.presenters.setup.StartResources;
 
 /**
  * Created by tompr on 22/01/2017.

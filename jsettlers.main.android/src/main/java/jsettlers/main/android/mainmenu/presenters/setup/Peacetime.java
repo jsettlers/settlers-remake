@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 /**
  * Created by tompr on 24/02/2017.

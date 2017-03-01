@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.loading.EMapStartResources;
