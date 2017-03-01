@@ -182,7 +182,8 @@
 
     <job name="go_to_drop1" type="WALK" direction="EAST" successjob="go_to_drop2" failjob="go_to_door" />
     <job name="go_to_drop2" type="WALK" direction="EAST" successjob="go_to_drop3" failjob="go_to_door" />
-    <job name="go_to_drop3" type="WALK" direction="EAST" successjob="drop1" failjob="go_to_door" />
+    <job name="go_to_drop3" type="WALK" direction="EAST" successjob="go_to_drop4" failjob="go_to_door" />
+    <job name="go_to_drop4" type="LOOK_AT" direction="NORTH_EAST" successjob="drop1" failjob="go_to_door" />
 
     <job name="drop1" type="DROP_POPPED" successjob="go_inside1" failjob="go_to_door" />
 

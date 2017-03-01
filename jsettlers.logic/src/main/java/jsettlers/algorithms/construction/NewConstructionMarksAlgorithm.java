@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,18 +14,13 @@
  *******************************************************************************/
 package jsettlers.algorithms.construction;
 
-import java.util.BitSet;
-import java.util.EnumSet;
-import java.util.Set;
-
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.position.ShortPoint2D;
+
+import java.util.BitSet;
 
 /**
  * Algorithm to calculate the construction marks for the user.
@@ -118,7 +113,6 @@ public final class NewConstructionMarksAlgorithm {
 									}
 
 									doneSet.set((dx + pruneX) + (line + pruneY) * lineLength);
-
 									map.setConstructMarking(x + pruneX, y + pruneY, false, binaryConstructionMarkValues, null);
 								}
 							}
@@ -142,9 +136,9 @@ public final class NewConstructionMarksAlgorithm {
 	 */
 	public void removeConstructionMarks() {
 		if (lastArea != null) {
-			for (ShortPoint2D pos : new MapShapeFilter(lastArea, map.getWidth(), map.getHeight())) {
-				map.setConstructMarking(pos.x, pos.y, false, false, null);
-			}
+			lastArea.stream()
+					.filterBounds(map.getWidth(), map.getHeight())
+					.forEach((x, y) -> map.setConstructMarking(x, y, false, false, null));
 			lastArea = null;
 		}
 	}
@@ -158,10 +152,9 @@ public final class NewConstructionMarksAlgorithm {
 	 *            The area of marks that should be skipped.
 	 */
 	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
-		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
-			if (!notIn.contains(pos)) {
-				map.setConstructMarking(pos.x, pos.y, false, false, null);
-			}
-		}
+		area.stream()
+				.filterBounds(map.getWidth(), map.getHeight())
+				.filter((x, y) -> !notIn.contains(x, y))
+				.forEach((x, y) -> map.setConstructMarking(x, y, false, false, null));
 	}
 }

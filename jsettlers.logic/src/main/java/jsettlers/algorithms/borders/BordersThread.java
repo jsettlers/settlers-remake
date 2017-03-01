@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.algorithms.borders;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This thread calculates the positions that represent the border between the areas occupied by different players.
@@ -71,8 +71,8 @@ public class BordersThread implements Runnable {
 
 		if (grid.getBlockedPartition(x, y) > 0) { // the position is not a blocked landscape
 			for (EDirection currDir : EDirection.VALUES) {
-				short currNeighborX = currDir.getNextTileX(x);
-				short currNeighborY = currDir.getNextTileY(y);
+				int currNeighborX = currDir.getNextTileX(x);
+				int currNeighborY = currDir.getNextTileY(y);
 
 				if (!grid.isInBounds(currNeighborX, currNeighborY)) {
 					continue;
@@ -90,8 +90,8 @@ public class BordersThread implements Runnable {
 
 				if (neighborPlayer >= 0) { // this position is occupied by a player
 					for (EDirection currNeighborDir : EDirection.VALUES) {
-						short nextX = currNeighborDir.getNextTileX(currNeighborX);
-						short nextY = currNeighborDir.getNextTileY(currNeighborY);
+						int nextX = currNeighborDir.getNextTileX(currNeighborX);
+						int nextY = currNeighborDir.getNextTileY(currNeighborY);
 
 						if (grid.isInBounds(nextX, nextY) && grid.getPlayerIdAt(nextX, nextY) != neighborPlayer
 								&& grid.getBlockedPartition(nextX, nextY) > 0) {

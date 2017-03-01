@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,16 +14,17 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import java8.util.stream.Stream;
+import java8.util.stream.StreamSupport;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.common.selectable.ISelectionSet;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Defines a selection set that automatically ensures the selection type.
@@ -136,5 +137,9 @@ public final class SelectionSet implements ISelectionSet {
 	public String toString() {
 		final int maxLen = 10;
 		return "SelectionSet [set=" + (set != null ? set.subList(0, Math.min(set.size(), maxLen)) : null) + ", selectionType=" + selectionType + "]";
+	}
+
+	public Stream<ISelectable> stream() {
+		return StreamSupport.stream(set);
 	}
 }

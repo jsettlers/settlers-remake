@@ -30,16 +30,13 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public final class EnclosedBlockedAreaFinderAlgorithm {
 
-	public static void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, ShortPoint2D startPos) {
-		final short startX = startPos.x;
-		final short startY = startPos.y;
-
+	public static void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, int startX, int startY) {
 		if (grid.isPioneerBlockedAndWithoutTowerProtection(startX, startY)) {
 			return;
 		}
 
 		final IContainingProvider containingProvider = grid::isPioneerBlockedAndWithoutTowerProtection;
-		final short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
+		final short startPartition = grid.getPartitionAt(startX, startY);
 
 		for (EDirection currDir : EDirection.VALUES) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);

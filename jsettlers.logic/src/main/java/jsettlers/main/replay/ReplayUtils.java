@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,15 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.replay;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IStartedGame;
@@ -30,8 +21,8 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.common.utils.FileUtils.IFileVisitor;
-import jsettlers.common.utils.MutableInt;
 import jsettlers.common.utils.Tuple;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
@@ -45,6 +36,10 @@ import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.INetworkConnector;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 

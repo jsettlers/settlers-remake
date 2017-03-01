@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,13 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import java8.util.function.Predicate;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A data structure to store the towers that occupy areas on the {@link PartitionsGrid}.
@@ -54,24 +57,22 @@ final class PartitionOccupyingTowerList extends LinkedList<PartitionOccupyingTow
 	/**
 	 * Returns the {@link PartitionOccupyingTower} objects with areas that intersect the area specified by the given position and radius.
 	 * 
-	 * @param position
+	 * @param center
 	 *            Position of the tower defining the center of it's area.
 	 * @param radius
 	 *            Radius of it's area.
+	 * @param towerPredicate
+	 *            Predicate specifying the towers that should be checked
 	 * @return
 	 */
-	public List<Tuple<Integer, PartitionOccupyingTower>> getTowersInRange(ShortPoint2D center, int radius) {
-		LinkedList<Tuple<Integer, PartitionOccupyingTower>> result = new LinkedList<Tuple<Integer, PartitionOccupyingTower>>();
-
-		for (PartitionOccupyingTower curr : this) {
-			int sqDist = (int) MapCircle.getDistanceSquared(center.x, center.y, curr.position.x, curr.position.y);
-			int maxDist = radius + curr.radius;
-
-			if (sqDist <= (maxDist * maxDist)) {
-				result.add(new Tuple<Integer, PartitionOccupyingTower>(sqDist, curr));
-			}
-		}
-
-		return result;
+	public List<Tuple<Integer, PartitionOccupyingTower>> getTowersInRange(ShortPoint2D center, int radius,
+			Predicate<PartitionOccupyingTower> towerPredicate) {
+		return StreamSupport.stream(this).filter(towerPredicate).map(tower -> {
+			int sqDist = (int) MapCircle.getDistanceSquared(center.x, center.y, tower.position.x, tower.position.y);
+			return new Tuple<>(sqDist, tower);
+		}).filter(towerWithDistance -> {
+			int maxDist = radius + towerWithDistance.e2.radius;
+			return towerWithDistance.e1 <= (maxDist * maxDist);
+		}).collect(Collectors.toList());
 	}
 }

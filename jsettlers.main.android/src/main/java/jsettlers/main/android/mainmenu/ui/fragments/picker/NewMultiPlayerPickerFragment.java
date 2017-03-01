@@ -1,0 +1,53 @@
+package jsettlers.main.android.mainmenu.ui.fragments.picker;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.mainmenu.factories.PresenterFactory;
+import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
+import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
+import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
+
+import android.support.v4.app.Fragment;
+
+/**
+ * Created by tompr on 21/01/2017.
+ */
+
+public class NewMultiPlayerPickerFragment extends MapPickerFragment implements NewMultiPlayerPickerView {
+    private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
+
+    public static Fragment newInstance() {
+        return new NewMultiPlayerPickerFragment();
+    }
+
+    @Override
+    protected MapPickerPresenter getPresenter() {
+        return PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(R.string.new_multi_player_game);
+    }
+
+    /**
+     * NewMultiPlayerPickerView implementation
+     */
+    @Override
+    public void setJoiningProgress(String stateString, int progressPercentage) {
+        JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        if (joiningProgressDialog == null) {
+            JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
+        } else {
+            joiningProgressDialog.setProgress(stateString, progressPercentage);
+        }
+    }
+
+    @Override
+    public void dismissJoiningProgress() {
+        JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+        if (joiningProgressDialog != null) {
+            joiningProgressDialog.dismiss();
+        }
+    }
+}

@@ -1,20 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2015
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.graphics.map;
-
-import java.util.Iterator;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
@@ -26,9 +24,13 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
+
+import java.util.Iterator;
 
 /**
  * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
@@ -43,7 +45,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * given in draw space.
  * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw context can use. The buffer should be flushed when drawing one
  * component finished. When the draw buffer is used after a call to end(), the buffer is invalid.
- * 
+ *
  * @author Michael Zangl
  */
 public final class MapDrawContext implements IGLProvider {
@@ -110,11 +112,9 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Creates a new map context for a given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
-	 * @param textDrawer
-	 *            The text drawer to use.
 	 */
 	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
@@ -132,7 +132,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Sets the size of the context to width/height.
-	 * 
+	 *
 	 * @param windowWidth
 	 *            The width.
 	 * @param windowHeight
@@ -144,7 +144,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Begin a new draw session (=> draw a new image). Sets up the gl screen assuming the current viewport is set to (0,0,width,height)
-	 * 
+	 *
 	 * @param gl2
 	 *            The gl context to use.
 	 * @see #end()
@@ -171,7 +171,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the current gl context, of <code>null</code> if it is called outside a gl drawing session.
-	 * 
+	 *
 	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
 	@Override
@@ -182,7 +182,7 @@ public final class MapDrawContext implements IGLProvider {
 	/**
 	 * Gets the current draw buffer used for this context. You can add draws to this buffer instead of directly calling OpenGL since this object
 	 * buffers the calls.
-	 * 
+	 *
 	 * @return The buffer.
 	 */
 	public DrawBuffer getDrawBuffer() {
@@ -191,7 +191,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the region of the draw space that is drawn on the screen and therefore rendered.
-	 * 
+	 *
 	 * @return The region displayed on the screen as Rectangle.
 	 */
 	public ScreenPosition getScreen() {
@@ -199,29 +199,28 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * @param x
+	 * @param screenX
 	 *            The x coordinate in draw space
-	 * @param y
+	 * @param screenY
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ShortPoint2D getPositionUnder(float screenx, float screeny) {
-		ShortPoint2D currentPoint = converter.getMap(screenx, screeny);
-		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
+	public ShortPoint2D getPositionUnder(float screenX, float screenY) {
+		ShortPoint2D currentPoint = converter.getMap(screenX, screenY);
+		UIPoint desiredOnScreen = new UIPoint(screenX, screenY);
 
-		UIPoint onscreen = converter.getView(currentPoint.x, currentPoint.y,
-				getHeight(currentPoint.x, currentPoint.y));
-		double currentbest = onscreen.distance(desiredOnScreen);
+		UIPoint onScreen = converter.getView(currentPoint.x, currentPoint.y, getHeight(currentPoint.x, currentPoint.y));
+		double currentBest = onScreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
 		do {
 			couldBeImproved = false;
 
 			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
-				onscreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
-				double newDistance = onscreen.distance(desiredOnScreen);
-				if (newDistance < currentbest) {
-					currentbest = newDistance;
+				onScreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
+				double newDistance = onScreen.distance(desiredOnScreen);
+				if (newDistance < currentBest) {
+					currentBest = newDistance;
 					currentPoint = p;
 					couldBeImproved = true;
 				}
@@ -247,7 +246,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Checks two map coordiantes if they are on the map.
-	 * 
+	 *
 	 * @param x
 	 *            The y coordinate in map space.
 	 * @param y
@@ -261,7 +260,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the color for a given player.
-	 * 
+	 *
 	 * @param player
 	 *            The player to get the color for.
 	 * @return The color.
@@ -276,7 +275,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the converter for the map coordinate system to screen coordinates.
-	 * 
+	 *
 	 * @return The map coordinate converter.
 	 */
 	public MapCoordinateConverter getConverter() {
@@ -285,7 +284,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * sets up the gl drawing context to draw a given tile.
-	 * 
+	 *
 	 * @param x
 	 *            The tile to draw.
 	 * @param y
@@ -307,40 +306,8 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Sets up drawing between two tiles. This is e.g. used to draw walking settlers.
-	 * 
-	 * @param startx
-	 *            The start tile
-	 * @param starty
-	 *            The start tile
-	 * @param destinationx
-	 *            The second tile
-	 * @param destinationy
-	 *            The second tile
-	 * @param progress
-	 *            The progress between those two bytes.
-	 */
-	public void beginBetweenTileContext(int startx, int starty,
-			int destinationx, int destinationy, float progress) {
-		this.gl.glPushMatrix();
-		float theight = getHeight(startx, starty);
-		float dheight = getHeight(destinationx, destinationy);
-		float x = (1 - progress)
-				* this.converter.getViewX(startx, starty, theight)
-				+ progress
-						* this.converter.getViewX(destinationx, destinationy,
-								dheight);
-		float y = (1 - progress)
-				* this.converter.getViewY(startx, starty, theight)
-				+ progress
-						* this.converter.getViewY(destinationx, destinationy,
-								dheight);
-		this.gl.glTranslatef(x, y, 0);
-	}
-
-	/**
 	 * Converts a screen rectangle to an area on the map. Map heights are respected.
-	 * 
+	 *
 	 * @param x1
 	 *            one x (not ordered)
 	 * @param y1
@@ -356,17 +323,20 @@ public final class MapDrawContext implements IGLProvider {
 		float drawx2 = x2 / this.screen.getZoom() + this.screen.getLeft();
 		float drawy1 = y1 / this.screen.getZoom() + this.screen.getBottom();
 		float drawy2 = y2 / this.screen.getZoom() + this.screen.getBottom();
-		return new HeightedMapRectangle(new FloatRectangle(drawx1, drawy1,
-				drawx2, drawy2));
+		return new HeightedMapRectangle(new FloatRectangle(drawx1, drawy1, drawx2, drawy2));
 	}
 
 	/**
 	 * This class represents an area of the map that looks rectangular on the screen. Due to height differences, this is not a rectangle on the map.
-	 * 
-	 * @author Michael Zangl
+	 * <p/>
+	 * The height of the underlying rectangle is unknown due to the height differences on the map. High mountains result in a need for a higher area.
+	 * Therefore the iterator and stream of this class increase the height until no more points are found.
 	 *
+	 * @author Michael Zangl
 	 */
 	private class HeightedMapRectangle implements IMapArea {
+		private static final int MIN_SEARCH_LINES = 20;
+
 		/**
 		 * Note: This class is nor serializeable.
 		 */
@@ -380,21 +350,26 @@ public final class MapDrawContext implements IGLProvider {
 
 		/**
 		 * Creates a new IMapArea that contains the points that are in the rectangle on the screen.
-		 * 
+		 *
 		 * @param drawRect
 		 *            The rectangle in draw space
 		 */
 		HeightedMapRectangle(FloatRectangle drawRect) {
 			this.drawRect = drawRect;
-			base = converter.getMapForScreen(drawRect);
+			this.base = converter.getMapForScreen(drawRect);
 		}
 
 		@Override
 		public boolean contains(ShortPoint2D point) {
-			int height = getHeight(point.x, point.y);
-			float x = converter.getViewX(point.x, point.y, height);
-			float y = converter.getViewY(point.x, point.y, height);
-			return drawRect.contains(x, y);
+			return contains(point.x, point.y);
+		}
+
+		@Override
+		public boolean contains(int x, int y) {
+			int height = getHeight(x, y);
+			float viewX = converter.getViewX(x, y, height);
+			float viewY = converter.getViewY(x, y, height);
+			return drawRect.contains(viewX, viewY);
 		}
 
 		@Override
@@ -404,15 +379,13 @@ public final class MapDrawContext implements IGLProvider {
 
 		/**
 		 * This class iterates over a {@link HeightedMapRectangle}.
-		 * 
-		 * @author Michael Zangl
 		 *
+		 * @author Michael Zangl
 		 */
 		private final class ScreenIterator implements Iterator<ShortPoint2D> {
 			/**
 			 * How many lines to search at least.
 			 */
-			private static final int MIN_SEARCH_LINES = 20;
 			private ShortPoint2D next;
 			private int currentLine = 0;
 			private int currentX;
@@ -427,17 +400,16 @@ public final class MapDrawContext implements IGLProvider {
 
 			private ShortPoint2D searchNext() {
 				int startLine = currentLine;
-				while (startLine >= currentLine - 2
-						|| currentLine < MIN_SEARCH_LINES) {
+				while (startLine >= currentLine - 2 || currentLine < MIN_SEARCH_LINES) {
 					currentX++;
 					if (currentX > base.getLineEndX(currentLine)) {
 						currentLine++;
 						currentX = base.getLineStartX(currentLine);
 					}
-					ShortPoint2D point = new ShortPoint2D(currentX,
-							base.getLineY(currentLine));
-					if (contains(point)) {
-						return point;
+					int x = currentX;
+					int y = base.getLineY(currentLine);
+					if (contains(x, y)) {
+						return new ShortPoint2D(x, y);
 					}
 				}
 				return null;
@@ -461,11 +433,37 @@ public final class MapDrawContext implements IGLProvider {
 			}
 		}
 
+		public CoordinateStream stream() {
+			return new CoordinateStream() {
+				@Override
+				public boolean iterate(IBooleanCoordinateFunction function) {
+					int width = base.getWidth();
+					int lastRelativeYWithPoint = 0;
+
+					for (int relativeY = 0; relativeY < MIN_SEARCH_LINES || relativeY - lastRelativeYWithPoint <= 2; relativeY++) {
+						int lineStartX = base.getLineStartX(relativeY);
+
+						for (int relativeX = 0; relativeX < width; relativeX++) {
+							int x = lineStartX + relativeX;
+							int y = base.getLineY(relativeY);
+
+							if (HeightedMapRectangle.this.contains(x, y)) {
+								lastRelativeYWithPoint = relativeY;
+								if (!function.apply(x, y)) {
+									return false;
+								}
+							}
+						}
+					}
+					return true;
+				}
+			};
+		}
 	}
 
 	/**
 	 * Gets the area of the screen.
-	 * 
+	 *
 	 * @return An rectangle of the map in which the screen lies completely. The rectangle can be bigger than the screen.
 	 */
 	public MapRectangle getScreenArea() {
@@ -474,7 +472,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Move the view center to a given point.
-	 * 
+	 *
 	 * @param point
 	 *            The point to move the view to.
 	 */
@@ -487,7 +485,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the landscape at a given position.
-	 * 
+	 *
 	 * @param x
 	 *            x
 	 * @param y
@@ -513,5 +511,4 @@ public final class MapDrawContext implements IGLProvider {
 	public IGraphicsGrid getMap() {
 		return map;
 	}
-
 }

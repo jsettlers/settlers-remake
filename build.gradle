@@ -76,7 +76,7 @@ subprojects {
 
     plugins.withId("me.tatarka.retrolambda") {
         retrolambda {
-            jdk System.getenv("JAVA_HOME")
+            jdk 'C:/Program Files/Java/jdk1.8.0_111'
             oldJdk System.getenv("JAVA_HOME")
             javaVersion JavaVersion.VERSION_1_7
             incremental true
