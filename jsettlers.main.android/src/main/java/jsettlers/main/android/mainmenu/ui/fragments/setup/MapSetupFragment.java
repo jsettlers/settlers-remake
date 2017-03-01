@@ -276,6 +276,10 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
             this.startPositionSpinner = (Spinner) itemView.findViewById(R.id.spinner_slot);
             this.teamSpinner = (Spinner) itemView.findViewById(R.id.spinner_team);
 
+            readySwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+                presenter.readyChanged(checked);
+            });
+
             civilisationSpinner.setOnItemSelectedListener(new SpinnerListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {

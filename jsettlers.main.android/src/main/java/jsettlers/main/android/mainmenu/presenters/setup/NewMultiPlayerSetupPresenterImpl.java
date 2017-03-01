@@ -13,13 +13,14 @@ import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.ReadyListener;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
 /**
  * Created by tompr on 21/01/2017.
  */
 
-public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl implements NewMultiPlayerSetupPresenter, IMultiplayerListener, IChangingListListener<IMultiplayerPlayer> {
+public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl implements NewMultiPlayerSetupPresenter, IMultiplayerListener, IChangingListListener<IMultiplayerPlayer>, ReadyListener {
     private final NewMultiPlayerSetupView view;
 
     private final GameStarter gameStarter;
@@ -48,9 +49,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
 
         myPlayerId = settingsManager.get(SettingsManager.SETTING_UUID);
 
-        //TODO temp while no ui for this
-        connector.setReady(true);
-
         updateSlots();
     }
 
@@ -71,7 +69,14 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
                 playerSlotPresenter.setShowReadyControl(true);
 
                 boolean isMe = multiplayerPlayer.getId().equals(settingsManager.get(SettingsManager.SETTING_UUID));
-                playerSlotPresenter.setControlsEnabled(isMe);
+
+                if (isMe) {
+                    playerSlotPresenter.setControlsEnabled(true);
+                    playerSlotPresenter.setReadyListener(this);
+                } else {
+                    playerSlotPresenter.setControlsEnabled(false);
+                    playerSlotPresenter.setReadyListener(null);
+                }
             } else {
                 setComputerSlotPlayerTypes(playerSlotPresenter);
                 playerSlotPresenter.setName("Computer " + i);
@@ -130,5 +135,13 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
 
         // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
         updateViewItems();
+    }
+
+    /**
+     * ReadyListener implementation
+     */
+    @Override
+    public void readyChanged(boolean ready) {
+        connector.setReady(true);
     }
 }

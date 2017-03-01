@@ -1,6 +1,5 @@
 package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 
-import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 
@@ -17,6 +16,7 @@ public class PlayerSlotPresenter {
     private boolean ready = false;
     private boolean showReadyControl = false;
     private boolean controlsEnabled = true;
+    private ReadyListener readyListener;
 
     private Civilisation[] possibleCivilisations;
     private Civilisation civilisation;
@@ -155,8 +155,17 @@ public class PlayerSlotPresenter {
         this.ready = ready;
     }
 
+    public void readyChanged(boolean ready) {
+        if (readyListener != null)
+            readyListener.readyChanged(ready);
+    }
+
     public void setShowReadyControl(boolean showReadyControl) {
         this.showReadyControl = showReadyControl;
+    }
+
+    public void setReadyListener(ReadyListener readyListener) {
+        this.readyListener = readyListener;
     }
 
 
@@ -164,6 +173,6 @@ public class PlayerSlotPresenter {
      * Controls enable
      */
     public void setControlsEnabled(boolean enabled) {
-        controlsEnabled = true;
+        controlsEnabled = enabled;
     }
 }
