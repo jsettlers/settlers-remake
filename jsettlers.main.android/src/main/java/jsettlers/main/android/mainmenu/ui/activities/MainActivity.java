@@ -97,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 	}
 
 	@Override
-	public void showJoinMultiPlayerSetup() {
+	public void showJoinMultiPlayerSetup(IMapDefinition mapDefinition) {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create())
+				.replace(R.id.frame_layout, JoinMultiPlayerSetupFragment.create(mapDefinition))
 				.addToBackStack(null)
 				.commit();
 	}

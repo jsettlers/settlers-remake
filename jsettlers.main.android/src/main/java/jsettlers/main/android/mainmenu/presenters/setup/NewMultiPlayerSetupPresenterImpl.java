@@ -43,11 +43,10 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         this.gameStarter = gameStarter;
         this.connector = connector;
         this.settingsManager = settingsManager;
+        this.myPlayerId = settingsManager.get(SettingsManager.SETTING_UUID);
 
         connector.setMultiplayerListener(this);
         connector.getPlayers().setListener(this);
-
-        myPlayerId = settingsManager.get(SettingsManager.SETTING_UUID);
 
         updateSlots();
     }
@@ -68,7 +67,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
                 playerSlotPresenter.setReady(multiplayerPlayer.isReady());
                 playerSlotPresenter.setShowReadyControl(true);
 
-                boolean isMe = multiplayerPlayer.getId().equals(settingsManager.get(SettingsManager.SETTING_UUID));
+                boolean isMe = multiplayerPlayer.getId().equals(myPlayerId);
 
                 if (isMe) {
                     playerSlotPresenter.setControlsEnabled(true);
@@ -93,7 +92,8 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     }
 
     @Override
-    public void viewFinished() {
+    protected void abort() {
+        super.abort();
         connector.abort();
         gameStarter.setJoinPhaseMultiPlayerConnector(null);
     }
@@ -142,6 +142,6 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
      */
     @Override
     public void readyChanged(boolean ready) {
-        connector.setReady(true);
+        connector.setReady(ready);
     }
 }

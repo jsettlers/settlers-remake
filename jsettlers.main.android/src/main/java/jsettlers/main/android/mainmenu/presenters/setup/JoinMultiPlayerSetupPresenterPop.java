@@ -13,7 +13,12 @@ public class JoinMultiPlayerSetupPresenterPop implements JoinMultiPlayerSetupPre
     }
 
     @Override
-    public void setReady(boolean ready) {
+    public void initView() {
+
+    }
+
+    @Override
+    public void updateViewTitle() {
 
     }
 
@@ -24,6 +29,21 @@ public class JoinMultiPlayerSetupPresenterPop implements JoinMultiPlayerSetupPre
 
     @Override
     public void dispose() {
+
+    }
+
+    @Override
+    public void startGame() {
+
+    }
+
+    @Override
+    public void playerCountSelected(PlayerCount item) {
+
+    }
+
+    @Override
+    public void startResourcesSelected(StartResources item) {
 
     }
 }

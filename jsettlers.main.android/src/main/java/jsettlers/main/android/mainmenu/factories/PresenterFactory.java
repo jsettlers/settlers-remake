@@ -109,15 +109,21 @@ public class PresenterFactory {
         }
     }
 
-    public static JoinMultiPlayerSetupPresenter createJoinMultiPlayerSetupPresenter(Activity activity, JoinMultiPlayerSetupView view) {
+    public static JoinMultiPlayerSetupPresenter createJoinMultiPlayerSetupPresenter(Activity activity, JoinMultiPlayerSetupView view, String mapId) {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
 
+        List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
+        MapLoader mapDefinition = StreamSupport.stream(maps)
+                .filter(x -> mapId.equals(x.getMapId()))
+                .findFirst()
+                .get();
+
         if (connector == null/* || mapDefinition == null */) {
             return new JoinMultiPlayerSetupPresenterPop(navigator);
         } else {
-            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector);
+            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, SettingsManager.getInstance(), mapDefinition);
         }
     }
 }

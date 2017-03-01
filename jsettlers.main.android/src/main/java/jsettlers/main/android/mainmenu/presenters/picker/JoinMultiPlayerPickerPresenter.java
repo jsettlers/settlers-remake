@@ -5,6 +5,7 @@ import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IJoiningGameListener;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.localization.Labels;
@@ -23,6 +24,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
     private final ChangingList<IJoinableGame> changingJoinableGames;
 
     private IJoiningGame joiningGame;
+    private IMapDefinition mapDefinition;
 
     public JoinMultiPlayerPickerPresenter(JoinMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter) {
         this.view = view;
@@ -55,6 +57,8 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
             joiningGame.abort();
         }
         gameStarter.setJoiningGame(null);
+        joiningGame = null;
+        mapDefinition = null;
     }
 
     public void dispose() {
@@ -70,7 +74,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
 
     public void joinableGameSelected(IJoinableGame joinableGame) {
         abort();
-        //gameStarter.setMapDefinition(joinableGame.getMap());
+        mapDefinition = joinableGame.getMap();
 
         joiningGame = gameStarter.getMultiPlayerConnector().joinMultiplayerGame(joinableGame);
         joiningGame.setListener(this);
@@ -105,6 +109,6 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
         view.dismissJoiningProgress();
 
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-        navigator.showJoinMultiPlayerSetup();
+        navigator.showJoinMultiPlayerSetup(mapDefinition);
     }
 }
