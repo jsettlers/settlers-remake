@@ -20,8 +20,10 @@ import jsettlers.common.CommonConstants;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 
 public class AndroidPreferences {
+	private static final String PREFS = "prefs";
 	private static final String PREF_PLAYER_ID = "playerid";
 	private static final String PREF_PLAYER_NAME = "playername";
 	private static final String PREF_SERVER = "server";
@@ -29,7 +31,7 @@ public class AndroidPreferences {
 	private final SharedPreferences preferences;
 
 	public AndroidPreferences(Context context) {
-		this.preferences = context.getSharedPreferences("prefs", 0);
+		this.preferences = context.getSharedPreferences(PREFS, 0);
 	}
 
 	public String getPlayerId() {
@@ -42,7 +44,11 @@ public class AndroidPreferences {
 	}
 
 	public String getPlayerName() {
-		return preferences.getString(PREF_PLAYER_NAME, "not set");
+		String name = preferences.getString(PREF_PLAYER_NAME, null);
+		if (name == null) {
+			name = Build.MODEL;
+		}
+		return name;
 	}
 
 	public void setPlayerName(String name) {
@@ -56,8 +62,4 @@ public class AndroidPreferences {
 	public void setServer(String serverName) {
 		preferences.edit().putString(PREF_SERVER, serverName).apply();
 	}
-
-//	public boolean hasMissingMultiplayerPreferences() {
-//		return getPlayerName().isEmpty() || getServer().isEmpty();
-//	}
 }
