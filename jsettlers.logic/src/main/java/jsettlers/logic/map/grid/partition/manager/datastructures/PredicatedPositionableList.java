@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-
+import java8.util.function.Predicate;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
@@ -30,67 +27,33 @@ import jsettlers.common.utils.MathUtils;
  *
  * @param <T>
  */
-public class PositionableList<T extends ILocatable> implements Serializable {
-	private static final long serialVersionUID = 414099060331344505L;
-
-	protected final LinkedList<T> data;
-
-	public PositionableList() {
-		data = new LinkedList<>();
-	}
-
-	public void insert(T object) {
-		data.add(object);
-	}
-
-	public T removeObjectAt(ShortPoint2D position) {
-		Iterator<T> iterator = data.iterator();
-		while (iterator.hasNext()) {
-			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
-				iterator.remove();
-				return curr;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the first object found at the given position or null.
-	 * 
-	 * @param position
-	 *            The position to look for.
-	 * @return Returns the found object at the given position or null if no object has been found.
-	 */
-	public T getObjectAt(ShortPoint2D position) {
-		for (T curr : data) {
-			if (curr.getPos().equals(position)) {
-				return curr;
-			}
-		}
-		return null;
-	}
+public class PredicatedPositionableList<T extends ILocatable> extends PositionableList<T> {
 
 	/**
 	 * Finds the object that's closest to the given position and removes it.
 	 *
 	 * @param position
 	 *            position to be used to find the nearest accepted neighbor around it.
+	 * @param predicate
+	 *            if predicate != null => the result is accepted by the predicate. <br>
+	 *            if result == null every entry is accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T removeObjectNextTo(ShortPoint2D position) {
-		T currBest = getObjectCloseTo(position);
+	public T removeObjectNextTo(ShortPoint2D position, Predicate<T> predicate) {
+		T currBest = getObjectCloseTo(position, predicate);
 
 		if (currBest != null) { data.remove(currBest); }
 
 		return currBest;
 	}
 
-	protected T getObjectCloseTo(ShortPoint2D position) {
+	private T getObjectCloseTo(ShortPoint2D position, Predicate<T> acceptor) {
 		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
 		for (T currEntry : data) {
+			if (acceptor != null && !acceptor.test(currEntry)) { continue; }
+
 			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
 
 			if (bestDistance > currDist) {
@@ -99,42 +62,5 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 			}
 		}
 		return currBest;
-	}
-
-	@Override
-	public String toString() {
-		return data.toString();
-	}
-
-	public void addAll(PositionableList<T> otherList) {
-		this.data.addAll(otherList.data);
-	}
-
-	public void remove(T object) {
-		this.data.remove(object);
-	}
-
-	public boolean isEmpty() {
-		return data.isEmpty();
-	}
-
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<? super T> movedVisitor) {
-		Iterator<T> iterator = data.iterator();
-		while (iterator.hasNext()) {
-			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
-				iterator.remove();
-				movedVisitor.visit(curr);
-				newList.data.add(curr);
-			}
-		}
-	}
-
-	public int size() {
-		return data.size();
-	}
-
-	public interface IMovedVisitor<T> {
-		void visit(T moved);
 	}
 }

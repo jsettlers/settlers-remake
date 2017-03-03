@@ -28,6 +28,7 @@ import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
+import jsettlers.logic.map.grid.partition.manager.datastructures.PredicatedPositionableList;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer.IWorkerRequester;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
@@ -81,8 +82,8 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final MaterialsManager materialsManager;
 
-	private final LinkedList<WorkerRequest>           workerRequests = new LinkedList<>();
-	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<>();
+	private final LinkedList<WorkerRequest>                     workerRequests = new LinkedList<>();
+	private final PredicatedPositionableList<IManageableWorker> joblessWorkers = new PredicatedPositionableList<>();
 
 	private final LinkedList<DiggerRequest>           diggerRequests = new LinkedList<>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<>();
