@@ -24,7 +24,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMaterialRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPrioQueue;
+import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
 
 import java.io.Serializable;
@@ -63,7 +63,7 @@ public final class MaterialsManager implements Serializable {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			EMaterialType materialType = EMaterialType.VALUES[i];
 			if (materialType.isDistributionConfigurable()) {
-				requestQueues[i] = new MaterialsForBuildingsRequestPrioQueue(settings.getDistributionSettings(materialType));
+				requestQueues[i] = new MaterialsForBuildingsRequestPriorityQueue(settings.getDistributionSettings(materialType));
 			} else {
 				requestQueues[i] = new SimpleMaterialRequestPriorityQueue();
 			}

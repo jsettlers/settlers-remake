@@ -26,13 +26,12 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriorit
  *
  * @author Andreas Eberle
  */
-public abstract class MaterialRequestObject extends DoubleLinkedListItem<MaterialRequestObject> implements ILocatable,
-		IMaterialRequest {
+public abstract class MaterialRequestObject extends DoubleLinkedListItem<MaterialRequestObject> implements ILocatable, IMaterialRequest {
 	private static final long serialVersionUID = -5941459671438965185L;
 
 	private EPriority priority = EPriority.DEFAULT;
 	AbstractMaterialRequestPriorityQueue requestQueue;
-	byte inDelivery;
+	byte                                 inDelivery;
 
 	public MaterialRequestObject() {
 	}
@@ -63,17 +62,12 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) { return true; }
+		if (obj == null) { return false; }
+		if (getClass() != obj.getClass()) { return false; }
 		MaterialRequestObject other = (MaterialRequestObject) obj;
-		if (inDelivery != other.inDelivery)
-			return false;
-		if (priority != other.priority)
-			return false;
+		if (inDelivery != other.inDelivery) { return false; }
+		if (priority != other.priority) { return false; }
 		return true;
 	}
 

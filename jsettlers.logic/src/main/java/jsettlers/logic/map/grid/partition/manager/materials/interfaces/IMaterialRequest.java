@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,31 +18,31 @@ import jsettlers.common.position.ILocatable;
 
 /**
  * This interface defines the methods needed by a {@link IManagerBearer} to be able to carry an offer to a request.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public interface IMaterialRequest extends ILocatable {
 	/**
 	 * Signals that this {@link IMaterialRequest} is in delivery.
 	 */
-	public void deliveryAccepted();
+	void deliveryAccepted();
 
 	/**
 	 * Signals that the delivery has successfully been handled.
 	 */
-	public void deliveryFulfilled();
+	void deliveryFulfilled();
 
 	/**
 	 * Signals that the delivery has been aborted.
 	 */
-	public void deliveryAborted();
+	void deliveryAborted();
 
 	/**
 	 * Checks if the request is still active.
-	 * 
+	 *
 	 * @return Returns true if the request is still active,<br>
 	 *         otherwise it returns false.
 	 */
-	public boolean isActive();
+	boolean isActive();
 }
