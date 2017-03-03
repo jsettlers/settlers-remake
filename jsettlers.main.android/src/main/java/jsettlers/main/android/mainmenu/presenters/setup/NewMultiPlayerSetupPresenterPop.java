@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.setup;
 
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
@@ -9,11 +9,6 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPresenter {
     public NewMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
         navigator.popToMenuRoot();
-    }
-
-    @Override
-    public String getMyPlayerId() {
-        return "";
     }
 
     @Override
@@ -38,6 +33,16 @@ public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPrese
 
     @Override
     public void startGame() {
+
+    }
+
+    @Override
+    public void playerCountSelected(PlayerCount item) {
+
+    }
+
+    @Override
+    public void startResourcesSelected(StartResources item) {
 
     }
 }

@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

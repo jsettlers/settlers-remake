@@ -1,10 +1,8 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.picker;
 
-import java.util.List;
-
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
@@ -13,13 +11,13 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
  * Created by tompr on 22/01/2017.
  */
 
-public abstract class MapPickerPresenter implements IChangingListListener<IMapDefinition> {
+public abstract class MapPickerPresenter implements IChangingListListener<MapLoader> {
     private final MapPickerView view;
     private final GameStarter gameStarter;
     private final MainMenuNavigator navigator;
-    private final ChangingList<? extends IMapDefinition> changingMaps;
+    private final ChangingList<? extends MapLoader> changingMaps;
 
-    public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends IMapDefinition> changingMaps) {
+    public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
         this.view = view;
         this.gameStarter = gameStarter;
         this.navigator = navigator;
@@ -47,13 +45,13 @@ public abstract class MapPickerPresenter implements IChangingListListener<IMapDe
 
 
 
-    public abstract void itemSelected(IMapDefinition mapDefinition);
+    public abstract void itemSelected(MapLoader mapLoader);
 
     /**
      * ChangingListListener implementation
      */
     @Override
-    public void listChanged(ChangingList<? extends IMapDefinition> list) {
+    public void listChanged(ChangingList<? extends MapLoader> list) {
         view.setItems(list.getItems());
     }
 }

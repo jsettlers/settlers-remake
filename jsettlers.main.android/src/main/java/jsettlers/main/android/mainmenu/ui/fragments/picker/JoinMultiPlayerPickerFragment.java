@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.ui.fragments;
+package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import java.util.List;
 
@@ -8,13 +8,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import jsettlers.common.menu.IJoinableGame;
+import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
-import jsettlers.main.android.mainmenu.presenters.JoinMultiPlayerPickerPresenter;
-import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.ui.dialogs.JoiningGameProgressDialog;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.NoChangeItemAnimator;
 
@@ -171,8 +170,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
             final JoinableGameHolder mapHolder = new JoinableGameHolder(itemView);
 
             itemView.setOnClickListener(view -> {
-                RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(itemView);
-                int position = viewHolder.getAdapterPosition();
+                int position = mapHolder.getAdapterPosition();
                 joinableGameSelected(joinableGames.get(position));
             });
 
@@ -206,14 +204,19 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         }
 
         public void bind(IJoinableGame joinableGame) {
+            IMapDefinition mapDefinition = joinableGame.getMap();
+            if (mapDefinition == null)
+                return;
+
             nameTextView.setText(joinableGame.getName());
-            playerCountTextView.setText(joinableGame.getMap().getMinPlayers() + "-" + joinableGame.getMap().getMaxPlayers());
+
+            playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
 
             if (subscription != null) {
                 subscription.dispose();
             }
 
-            subscription = PreviewImageConverter.toBitmap(joinableGame.getMap().getImage())
+            subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableSingleObserver<Bitmap>() {

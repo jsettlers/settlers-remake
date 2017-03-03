@@ -9,5 +9,5 @@ import jsettlers.common.menu.IMultiplayerPlayer;
  */
 
 public interface NewMultiPlayerSetupView extends MapSetupView {
-    void setItems(List<IMultiplayerPlayer> items);
+    //void setItems(List<IMultiplayerPlayer> items);
 }

@@ -1,4 +1,4 @@
-package jsettlers.main.android.mainmenu.presenters;
+package jsettlers.main.android.mainmenu.presenters.picker;
 
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
@@ -8,6 +8,7 @@ import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
@@ -24,7 +25,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     private IJoiningGame joiningGame;
     private IMapDefinition tempMapDefinition;
 
-    public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends IMapDefinition> changingMaps) {
+    public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
         super(view, navigator, gameStarter, changingMaps);
         this.view = view;
         this.navigator = navigator;
@@ -32,9 +33,9 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
     }
 
     @Override
-    public void itemSelected(IMapDefinition mapDefinition) {
+    public void itemSelected(MapLoader mapLoader) {
         cancelJoining();
-        tempMapDefinition = mapDefinition;
+        tempMapDefinition = mapLoader;
 
         joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
             @Override
@@ -44,12 +45,12 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 
             @Override
             public IMapDefinition getMapDefinition() {
-                return mapDefinition;
+                return mapLoader;
             }
 
             @Override
             public int getMaxPlayers() {
-                return mapDefinition.getMaxPlayers();
+                return mapLoader.getMaxPlayers();
             }
         });
 
