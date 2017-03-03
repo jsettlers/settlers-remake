@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import jsettlers.algorithms.queue.ITypeAcceptor;
-import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MathUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import java8.util.function.Predicate;
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -37,7 +37,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	private ArrayList<T> data;
 
 	public PositionableList() {
-		data = new ArrayList<T>();
+		data = new ArrayList<>();
 	}
 
 	public void insert(T object) {
@@ -61,11 +61,11 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	}
 
 	public T removeObjectAt(ShortPoint2D position) {
-		Iterator<T> iter = data.iterator();
-		while (iter.hasNext()) {
-			T curr = iter.next();
+		Iterator<T> iterator = data.iterator();
+		while (iterator.hasNext()) {
+			T curr = iterator.next();
 			if (curr.getPos().equals(position)) {
-				iter.remove();
+				iterator.remove();
 				return curr;
 			}
 		}
@@ -98,7 +98,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 *            if result == null every entry is accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
+	public T removeObjectNextTo(ShortPoint2D position, Predicate<T> acceptor) {
 		T currBest = getObjectCloseTo(position, acceptor);
 
 		if (currBest != null)
@@ -107,12 +107,12 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return currBest;
 	}
 
-	private T getObjectCloseTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
+	private T getObjectCloseTo(ShortPoint2D position, Predicate<T> acceptor) {
 		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
 		for (T currEntry : data) {
-			if (acceptor != null && !acceptor.accepts(currEntry))
+			if (acceptor != null && !acceptor.test(currEntry))
 				continue;
 
 			ShortPoint2D currPosition = currEntry.getPos();
@@ -148,11 +148,11 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	}
 
 	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<? super T> movedVisitor) {
-		Iterator<T> iter = data.iterator();
-		while (iter.hasNext()) {
-			T curr = iter.next();
+		Iterator<T> iterator = data.iterator();
+		while (iterator.hasNext()) {
+			T curr = iterator.next();
 			if (curr.getPos().equals(position)) {
-				iter.remove();
+				iterator.remove();
 				movedVisitor.visit(curr);
 				newList.data.add(curr);
 			}

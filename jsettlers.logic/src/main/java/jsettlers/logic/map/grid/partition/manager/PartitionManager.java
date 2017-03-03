@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -48,10 +52,6 @@ import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSetti
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
  *
@@ -81,16 +81,16 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final MaterialsManager materialsManager;
 
-	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<>();
+	private final LinkedList<WorkerRequest>           workerRequests = new LinkedList<>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<>();
 
-	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<>();
+	private final LinkedList<DiggerRequest>           diggerRequests = new LinkedList<>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<>();
 
-	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<>();
+	private final LinkedList<BricklayerRequest>           bricklayerRequests = new LinkedList<>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<>();
 
-	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<>();
+	private final LinkedList<WorkerCreationRequest>  workerCreationRequests  = new LinkedList<>();
 	private final LinkedList<SoldierCreationRequest> soldierCreationRequests = new LinkedList<>();
 
 	private boolean stopped = true;
@@ -209,17 +209,13 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 			materialsManager.movePositionTo(position, newManager.materialsManager);
 
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
-			if (bearer != null)
-				newManager.addJobless(bearer);
+			if (bearer != null) { newManager.addJobless(bearer); }
 			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectAt(position);
-			if (bricklayer != null)
-				newManager.addJobless(bricklayer);
+			if (bricklayer != null) { newManager.addJobless(bricklayer); }
 			IManageableDigger digger = joblessDiggers.removeObjectAt(position);
-			if (digger != null)
-				newManager.addJobless(digger);
+			if (digger != null) { newManager.addJobless(digger); }
 			IManageableWorker worker = joblessWorkers.removeObjectAt(position);
-			if (worker != null)
-				newManager.addJobless(worker);
+			if (worker != null) { newManager.addJobless(worker); }
 		}
 
 		removePositionTo(position, this.workerCreationRequests, newManager.workerCreationRequests, newHasSamePlayer);
@@ -279,7 +275,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	private void handleWorkerRequest() {
 		WorkerRequest workerRequest = workerRequests.poll();
 		if (workerRequest != null) {
-			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), new MovableTypeAcceptor(workerRequest.movableType));
+			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), currentWorker -> currentWorker.getMovableType() == workerRequest.movableType);
 
 			if (worker != null && worker.isAlive()) {
 				worker.setWorkerJob(workerRequest.building);
@@ -298,7 +294,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	private void handleWorkerCreationRequests() {
-		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty();) {
+		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty(); ) {
 			WorkerCreationRequest workerCreationRequest = iterator.next();
 			if (!workerCreationRequest.isRequestAlive() || tryToCreateWorker(workerCreationRequest)) {
 				iterator.remove();
@@ -408,8 +404,9 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		EMaterialType bestTool = null;
 
 		for (WorkerCreationRequest request : workerCreationRequests) { // go through all requests and select the best one
-			if (!request.isRequestAlive() || !request.isToolProductionRequired())
+			if (!request.isRequestAlive() || !request.isToolProductionRequired()) {
 				continue; // skip inactive requests and requests not needing a tool production
+			}
 
 			request.setToolProductionRequired(false); // FIXME @andreas-eberle: Investigate if this is correct! And why it doesn't break the system
 
