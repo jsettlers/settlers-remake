@@ -73,6 +73,11 @@
 
 
     <!-- Main Menus -->
+    <!-- Settings -->
+    <string name="activity_settings">Settings</string>
+    <string name="settings_player_name">Player name</string>
+    <string name="settings_name">Name</string>
+
     <!-- Map picker -->
     <string name="new_single_player_game">New Single Player Game</string>
     <string name="new_multi_player_game">New Multi Player Game</string>

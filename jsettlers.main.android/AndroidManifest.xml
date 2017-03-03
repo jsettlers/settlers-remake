@@ -33,7 +33,9 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".mainmenu.ui.activities.SettingsActivity"></activity>
+        <activity
+            android:name=".mainmenu.ui.activities.SettingsActivity"
+            android:label="@string/activity_settings"/>
     </application>
 
 </manifest>
