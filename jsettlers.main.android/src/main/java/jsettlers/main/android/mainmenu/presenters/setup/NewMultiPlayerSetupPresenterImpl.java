@@ -10,6 +10,7 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
@@ -26,15 +27,14 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     private final GameStarter gameStarter;
     private final MainMenuNavigator navigator;
     private final IJoinPhaseMultiplayerGameConnector connector;
-    private final SettingsManager settingsManager;
-    private final String myPlayerId;
+    private final AndroidPreferences androidPreferences;
 
     public NewMultiPlayerSetupPresenterImpl(
             NewMultiPlayerSetupView view,
             MainMenuNavigator navigator,
             GameStarter gameStarter,
             IJoinPhaseMultiplayerGameConnector connector,
-            SettingsManager settingsManager,
+            AndroidPreferences settingsManager,
             MapLoader mapLoader) {
 
         super(view, gameStarter, mapLoader);
@@ -42,8 +42,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
         this.navigator = navigator;
         this.gameStarter = gameStarter;
         this.connector = connector;
-        this.settingsManager = settingsManager;
-        this.myPlayerId = settingsManager.get(SettingsManager.SETTING_UUID);
+        this.androidPreferences = settingsManager;
 
         connector.setMultiplayerListener(this);
         connector.getPlayers().setListener(this);
@@ -67,7 +66,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
                 playerSlotPresenter.setReady(multiplayerPlayer.isReady());
                 playerSlotPresenter.setShowReadyControl(true);
 
-                boolean isMe = multiplayerPlayer.getId().equals(myPlayerId);
+                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
 
                 if (isMe) {
                     playerSlotPresenter.setControlsEnabled(true);

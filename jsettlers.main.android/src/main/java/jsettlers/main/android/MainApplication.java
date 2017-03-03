@@ -88,8 +88,8 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
 			AndroidPreferences androidPreferences = new AndroidPreferences(this);
-			Player player = SettingsManager.getInstance().getPlayer();// new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
-			multiplayerConnector = new MultiplayerConnector(androidPreferences.getServer(), player.getId(), player.getName());
+			//Player player = SettingsManager.getInstance().getPlayer();// new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
+			multiplayerConnector = new MultiplayerConnector(androidPreferences.getServer(), androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
 		}
 		return multiplayerConnector;
 	}

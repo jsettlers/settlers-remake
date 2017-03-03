@@ -7,6 +7,7 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
@@ -105,7 +106,7 @@ public class PresenterFactory {
         if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
             return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);
         } else {
-            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, SettingsManager.getInstance(), mapDefinition);
+            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, new AndroidPreferences(activity), mapDefinition);
         }
     }
 
@@ -123,7 +124,7 @@ public class PresenterFactory {
         if (connector == null/* || mapDefinition == null */) {
             return new JoinMultiPlayerSetupPresenterPop(navigator);
         } else {
-            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, SettingsManager.getInstance(), mapDefinition);
+            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, new AndroidPreferences(activity), mapDefinition);
         }
     }
 }

@@ -22,6 +22,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class AndroidPreferences {
+	private static final String PREF_PLAYER_ID = "playerid";
+	private static final String PREF_PLAYER_NAME = "playername";
+	private static final String PREF_SERVER = "server";
 
 	private final SharedPreferences preferences;
 
@@ -29,32 +32,32 @@ public class AndroidPreferences {
 		this.preferences = context.getSharedPreferences("prefs", 0);
 	}
 
-	public boolean hasMissingMultiplayerPreferences() {
-		return getPlayerName().isEmpty() || getServer().isEmpty();
-	}
-
-	public String getPlayerName() {
-		return preferences.getString("player-name", "");
-	}
-
 	public String getPlayerId() {
-		String id = preferences.getString("player-id", "");
-		if (id.isEmpty()) {
+		String id = preferences.getString(PREF_PLAYER_ID, null);
+		if (id == null) {
 			id = UUID.randomUUID().toString();
-			preferences.edit().putString("player-id", id).commit();
+			preferences.edit().putString(PREF_PLAYER_ID, id).apply();
 		}
 		return id;
 	}
 
-	public String getServer() {
-		return preferences.getString("server", CommonConstants.DEFAULT_SERVER_ADDRESS);
+	public String getPlayerName() {
+		return preferences.getString(PREF_PLAYER_NAME, "not set");
 	}
 
 	public void setPlayerName(String name) {
-		preferences.edit().putString("player-name", name).commit();
+		preferences.edit().putString(PREF_PLAYER_NAME, name).apply();
+	}
+
+	public String getServer() {
+		return preferences.getString(PREF_SERVER, CommonConstants.DEFAULT_SERVER_ADDRESS);
 	}
 
 	public void setServer(String serverName) {
-		preferences.edit().putString("server", serverName).commit();
+		preferences.edit().putString(PREF_SERVER, serverName).apply();
 	}
+
+//	public boolean hasMissingMultiplayerPreferences() {
+//		return getPlayerName().isEmpty() || getServer().isEmpty();
+//	}
 }
