@@ -65,15 +65,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	/**
 	 * GameStarter implementation
 	 */
-//	public IStartScreen getStartScreen() {
-//		if (startScreen == null) {
-//			new ResourceLocationScanner(this).scanForResources();
-//			startScreen = new StartScreenConnector();
-//		}
-//		return startScreen;
-//	}
-
-
 	@Override
 	public MapList getMapList() {
 		if (mapList == null) {
@@ -82,17 +73,15 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		return mapList;
 	}
 
-
-	// This probably doesnt need to be global anymore
 	@Override
 	public IMultiplayerConnector getMultiPlayerConnector() {
 		if (multiplayerConnector == null) {
 			AndroidPreferences androidPreferences = new AndroidPreferences(this);
-			Player player = SettingsManager.getInstance().getPlayer();// new Player(androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
-			multiplayerConnector = new MultiplayerConnector(androidPreferences.getServer(), player.getId(), player.getName());
+			multiplayerConnector = new MultiplayerConnector(androidPreferences.getServer(), androidPreferences.getPlayerId(), androidPreferences.getPlayerName());
 		}
 		return multiplayerConnector;
 	}
+
 	@Override
 	public void closeMultiPlayerConnector() {
 		if (multiplayerConnector != null) {
@@ -165,15 +154,14 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	 * IGameExitedListener implementation
 	 */
 	@Override
-	public void gameExited(IStartedGame game) {
+		public void gameExited(IStartedGame game) {
 		controlsAdapter = null;
 		startingGame = null;
 		joiningGame = null;
 		joinPhaseMultiplayerGameConnector = null;
+		mapList = null; // Nulling this means that any new saved games will be available next time mapList is set
 
-		if (multiplayerConnector != null) {
-			closeMultiPlayerConnector();
-		}
+		closeMultiPlayerConnector();
 
 		// Send a local broadcast so that any UI can update if necessary and the service can stop itself
 		localBroadcastManager.sendBroadcast(new Intent(ACTION_QUIT_CONFIRM));

@@ -44,6 +44,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	private JoinableGamesAdapter adapter;
 
     private RecyclerView recyclerView;
+    private View searchingForGamesView;
 
     private boolean isSaving = false;
 
@@ -64,6 +65,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         FragmentUtil.setActionBar(this, view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        searchingForGamesView = view.findViewById(R.id.layout_searching_for_games);
 
         return view;
     }
@@ -105,7 +107,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
      * @param joinableGames
      */
     @Override
-    public void joinableGamesChanged(List<? extends IJoinableGame> joinableGames) {
+    public void updateJoinableGames(List<? extends IJoinableGame> joinableGames) {
         getView().post(() -> {
             if (adapter == null) {
                 adapter = new JoinableGamesAdapter(joinableGames);
@@ -142,6 +144,15 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         }
     }
 
+    @Override
+    public void showSearchingForGamesView() {
+        getView().post(() -> searchingForGamesView.setVisibility(View.VISIBLE));
+    }
+
+    @Override
+    public void hideSearchingForGamesView() {
+        getView().post(() -> searchingForGamesView.setVisibility(View.GONE));
+    }
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
         presenter.joinableGameSelected(joinableGame);
@@ -166,7 +177,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
         @Override
         public JoinableGameHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final View itemView = getActivity().getLayoutInflater().inflate(R.layout.item_map, parent, false);
+            final View itemView = getActivity().getLayoutInflater().inflate(R.layout.item_joinable_game, parent, false);
             final JoinableGameHolder mapHolder = new JoinableGameHolder(itemView);
 
             itemView.setOnClickListener(view -> {
@@ -190,7 +201,8 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
     }
 
     private class JoinableGameHolder extends RecyclerView.ViewHolder {
-        final TextView nameTextView;
+        final TextView hostNameTextView;
+        final TextView mapNameTextView;
         final TextView playerCountTextView;
         final ImageView mapPreviewImageView;
 
@@ -198,7 +210,8 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
         public JoinableGameHolder(View itemView) {
             super(itemView);
-            nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+            hostNameTextView = (TextView) itemView.findViewById(R.id.text_view_host_name);
+            mapNameTextView = (TextView) itemView.findViewById(R.id.text_view_map_name);
             playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
             mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
         }
@@ -208,7 +221,8 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
             if (mapDefinition == null)
                 return;
 
-            nameTextView.setText(joinableGame.getName());
+            hostNameTextView.setText(joinableGame.getName());
+            mapNameTextView.setText(mapDefinition.getMapName());
 
             playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
 

@@ -7,8 +7,13 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.main.android.core.AndroidPreferences;
+import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
+import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.NewMultiPlayerPickerPresenter;
@@ -20,23 +25,37 @@ import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPrese
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.MainMenuView;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import android.app.Activity;
+import android.content.Context;
 
 import java8.util.stream.StreamSupport;
+import jsettlers.main.android.mainmenu.views.SettingsView;
 
 /**
  * Created by tompr on 03/02/2017.
  */
 
 public class PresenterFactory {
-    private static final MapList defaultMapList = MapList.getDefaultList();
+
+    public static MainMenuPresenter createMainMenuPresenter(Activity activity, MainMenuView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameManager gameManager = (GameManager) activity.getApplication();
+
+        return new MainMenuPresenter(view, navigator, gameManager, new ResourceLocationScanner(activity));
+    }
+
+    public static SettingsPresenter createSettingsPresenter(Context context, SettingsView view) {
+        return new SettingsPresenter(view, new AndroidPreferences(context));
+    }
 
     /**
      * Picker screen presenters
@@ -45,7 +64,6 @@ public class PresenterFactory {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
-        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getSingleplayerMaps();
 
         return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
@@ -54,7 +72,6 @@ public class PresenterFactory {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         ChangingList<? extends MapLoader> changingMaps = gameStarter.getMapList().getSavedMaps();
-        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getStoredSingleplayerGames();
 
         return new LoadSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
     }
@@ -63,9 +80,8 @@ public class PresenterFactory {
         MainMenuNavigator navigator = (MainMenuNavigator) activity;
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
-        //ChangingList<? extends IMapDefinition> changingMaps = gameStarter.getStartScreen().getMultiplayerMaps();
 
-        return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
+        return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), changingMaps);
     }
 
     public static JoinMultiPlayerPickerPresenter createJoinMultiPlayerPickerPresenter(Activity activity, JoinMultiPlayerPickerView view) {
@@ -88,7 +104,7 @@ public class PresenterFactory {
                 .findFirst()
                 .get();
 
-        return new NewSinglePlayerSetupPresenter(view, navigator, gameStarter, mapDefinition);
+        return new NewSinglePlayerSetupPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), mapDefinition);
     }
 
     public static NewMultiPlayerSetupPresenter createNewMultiPlayerSetupPresenter(Activity activity, NewMultiPlayerSetupView view, String mapId) {
@@ -105,7 +121,7 @@ public class PresenterFactory {
         if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
             return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);
         } else {
-            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, SettingsManager.getInstance(), mapDefinition);
+            return new NewMultiPlayerSetupPresenterImpl(view, mainMenuNavigator, gameStarter, joinPhaseMultiplayerGameConnector, new AndroidPreferences(activity), mapDefinition);
         }
     }
 
@@ -123,7 +139,7 @@ public class PresenterFactory {
         if (connector == null/* || mapDefinition == null */) {
             return new JoinMultiPlayerSetupPresenterPop(navigator);
         } else {
-            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, SettingsManager.getInstance(), mapDefinition);
+            return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, new AndroidPreferences(activity), mapDefinition);
         }
     }
 }

@@ -1,5 +1,7 @@
 package jsettlers.main.android.mainmenu.presenters.picker;
 
+import java.util.List;
+
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoinableGame;
@@ -43,7 +45,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
     }
 
     public void initView() {
-        view.joinableGamesChanged(changingJoinableGames.getItems());
+        updateViewJoinableGames();
     }
 
     public void viewFinished() {
@@ -57,6 +59,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
             joiningGame.abort();
         }
         gameStarter.setJoiningGame(null);
+        gameStarter.closeMultiPlayerConnector();
         joiningGame = null;
         mapDefinition = null;
     }
@@ -88,7 +91,7 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
      */
     @Override
     public void listChanged(ChangingList<? extends IJoinableGame> list) {
-        view.joinableGamesChanged(list.getItems());
+        updateViewJoinableGames();
     }
 
     /**
@@ -110,5 +113,16 @@ public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJo
 
         gameStarter.setJoinPhaseMultiPlayerConnector(connector);
         navigator.showJoinMultiPlayerSetup(mapDefinition);
+    }
+
+    private void updateViewJoinableGames() {
+        List<IJoinableGame> joinableGames = changingJoinableGames.getItems();
+        view.updateJoinableGames(joinableGames);
+
+        if (joinableGames.size() > 0) {
+            view.hideSearchingForGamesView();
+        } else {
+            view.showSearchingForGamesView();
+        }
     }
 }
