@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 			return;
 
 		getSupportFragmentManager().beginTransaction()
-				.add(R.id.frame_layout, MainMenuFragment.newInstance())
+				.add(R.id.frame_layout, MainMenuFragment.create())
 				.commit();
 	}
 

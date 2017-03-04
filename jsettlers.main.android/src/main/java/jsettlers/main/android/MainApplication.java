@@ -165,7 +165,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	 * IGameExitedListener implementation
 	 */
 	@Override
-	public void gameExited(IStartedGame game) {
+		public void gameExited(IStartedGame game) {
 		controlsAdapter = null;
 		startingGame = null;
 		joiningGame = null;

@@ -8,8 +8,11 @@ import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.AndroidPreferences;
+import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
 import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.JoinMultiPlayerPickerPresenter;
 import jsettlers.main.android.mainmenu.presenters.picker.LoadSinglePlayerPickerPresenter;
@@ -22,8 +25,10 @@ import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPrese
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterImpl;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenterPop;
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
+import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.MainMenuView;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
@@ -40,6 +45,14 @@ import jsettlers.main.android.mainmenu.views.SettingsView;
  */
 
 public class PresenterFactory {
+
+    public static MainMenuPresenter createMainMenuPresenter(Activity activity, MainMenuView view) {
+        MainMenuNavigator navigator = (MainMenuNavigator) activity;
+        GameManager gameManager = (GameManager) activity.getApplication();
+
+        return new MainMenuPresenter(view, navigator, gameManager, new ResourceLocationScanner(activity));
+    }
+
     public static SettingsPresenter createSettingsPresenter(Context context, SettingsView view) {
         return new SettingsPresenter(view, new AndroidPreferences(context));
     }
