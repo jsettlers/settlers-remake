@@ -102,7 +102,7 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		super.onResume();
 		getActivity().setTitle(R.string.app_name);
 
-		// Work around for IllegalStateException when trying to show dialog from onPermissionResult. Meant to be fixed in v24 support library
+		// Work around for IllegalStateException when trying to show dialog from onPermissionResult which is too soon in the lifecycle.
 		if (showDirectoryPicker) {
 			showDirectoryPicker();
 			showDirectoryPicker = false;
@@ -126,22 +126,6 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		switch (requestCode) {
-		case REQUEST_CODE_PERMISSION_STORAGE:
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				showDirectoryPicker = true;
-			}
-			break;
-		}
-	}
-
-	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.fragment_mainmenu, menu);
 	}
@@ -156,6 +140,17 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 				return super.onOptionsItemSelected(item);
 		}
 		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case REQUEST_CODE_PERMISSION_STORAGE:
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					showDirectoryPicker = true;
+				}
+				break;
+		}
 	}
 
 	/**
