@@ -5,6 +5,7 @@ import java.util.List;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
@@ -20,17 +21,19 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
     private final NewSinglePlayerSetupView view;
     private final MainMenuNavigator navigator;
     private final GameStarter gameStarter;
+    private final AndroidPreferences androidPreferences;
     private final MapLoader mapLoader;
 
-    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, MapLoader mapLoader) {
+    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, AndroidPreferences androidPreferences, MapLoader mapLoader) {
         super(view, gameStarter, mapLoader);
         this.view = view;
         this.navigator = navigator;
         this.gameStarter = gameStarter;
+        this.androidPreferences = androidPreferences;
         this.mapLoader = mapLoader;
 
         PlayerSlotPresenter humanPlayerSlot = getPlayerSlotPresenters().get(0);
-        humanPlayerSlot.setName("Get name from settings");
+        humanPlayerSlot.setName(androidPreferences.getPlayerName());
         setHumanSlotPlayerTypes(humanPlayerSlot);
     }
 
