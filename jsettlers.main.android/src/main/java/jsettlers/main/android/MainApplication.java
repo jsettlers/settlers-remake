@@ -159,6 +159,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		startingGame = null;
 		joiningGame = null;
 		joinPhaseMultiplayerGameConnector = null;
+		mapList = null; // Nulling this means that any new saved games will be available next time mapList is set
 
 		closeMultiPlayerConnector();
 
