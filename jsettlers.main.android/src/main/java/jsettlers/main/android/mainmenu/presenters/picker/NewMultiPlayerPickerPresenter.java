@@ -9,6 +9,7 @@ import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
@@ -20,16 +21,24 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements IJoiningGameListener {
     private final NewMultiPlayerPickerView view;
     private final GameStarter gameStarter;
+    private final AndroidPreferences androidPreferences;
     private final MainMenuNavigator navigator;
 
     private IJoiningGame joiningGame;
     private IMapDefinition tempMapDefinition;
 
-    public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
+    public NewMultiPlayerPickerPresenter(
+            NewMultiPlayerPickerView view,
+            MainMenuNavigator navigator,
+            GameStarter gameStarter,
+            AndroidPreferences androidPreferences,
+            ChangingList<? extends MapLoader> changingMaps) {
+
         super(view, navigator, gameStarter, changingMaps);
         this.view = view;
         this.navigator = navigator;
         this.gameStarter = gameStarter;
+        this.androidPreferences = androidPreferences;
     }
 
     @Override
@@ -40,7 +49,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
         joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
             @Override
             public String getMatchName() {
-                return "test name";
+                return androidPreferences.getPlayerName();
             }
 
             @Override

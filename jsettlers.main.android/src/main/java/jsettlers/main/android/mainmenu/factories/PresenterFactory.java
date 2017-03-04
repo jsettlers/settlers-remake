@@ -81,7 +81,7 @@ public class PresenterFactory {
         GameStarter gameStarter = (GameStarter) activity.getApplication();
         ChangingList<MapLoader> changingMaps = gameStarter.getMapList().getFreshMaps();
 
-        return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
+        return new NewMultiPlayerPickerPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), changingMaps);
     }
 
     public static JoinMultiPlayerPickerPresenter createJoinMultiPlayerPickerPresenter(Activity activity, JoinMultiPlayerPickerView view) {
