@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager.datastructures;
+package jsettlers.logic.map.grid.partition.manager.materials.offers.list;
 
 import java.io.Serializable;
 
@@ -20,17 +20,18 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 
 /**
  * Created by Andreas Eberle on 23.08.2016.
  */
-public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & IPrioritizable<P>> implements Serializable {
-	private final PositionableList<T>[] lists;
+public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & IPrioritizable<P> & IListManageable> implements Serializable {
+	private final ManagingPositionableList<T>[] lists;
 
 	public PrioritizedPositionableList(int numberOfPriorities) {
-		lists = new PositionableList[numberOfPriorities];
+		lists = new ManagingPositionableList[numberOfPriorities];
 		for (int i = 0; i < numberOfPriorities; i++) {
-			lists[i] = new PositionableList<>();
+			lists[i] = new ManagingPositionableList<>();
 		}
 	}
 
@@ -46,23 +47,11 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 		return null;
 	}
 
-	public int size(P minimumIncludedPriority) {
-		int size = 0;
-		for (int i = lists.length - 1; i >= minimumIncludedPriority.ordinal(); i--) {
-			size += lists[i].size();
-		}
-		return size;
-	}
-
-	public boolean isEmpty(P minimumIncludedPriority) {
-		return size(minimumIncludedPriority) <= 0;
-	}
-
 	public T getObjectCloseTo(ShortPoint2D position, P minimumIncludedPriority) {
 		T closestObject = null;
 		for (int i = lists.length - 1; i >= minimumIncludedPriority.ordinal(); i--) {
 			T object = lists[i].getObjectCloseTo(position);
-			if (closestObject == null || (object!=null&& MathUtils.squareHypot(object.getPos(), position) < MathUtils.squareHypot(closestObject.getPos(), position)) ){
+			if (closestObject == null || (object != null && MathUtils.squareHypot(object.getPos(), position) < MathUtils.squareHypot(closestObject.getPos(), position))) {
 				closestObject = object;
 			}
 		}
@@ -97,5 +86,14 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 				}
 			}
 		}
+	}
+
+	public boolean isEmpty(P minimumIncludedPriority) {
+		for (int i = lists.length - 1; i >= minimumIncludedPriority.ordinal(); i--) {
+			if (!lists[i].hasNoActive()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

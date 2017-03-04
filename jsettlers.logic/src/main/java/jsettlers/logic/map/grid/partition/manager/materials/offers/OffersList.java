@@ -19,8 +19,7 @@ import java.io.Serializable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
-import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
-import jsettlers.logic.map.grid.partition.manager.datastructures.PrioritizedPositionableList;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.list.PrioritizedPositionableList;
 
 /**
  * This class builds a data structure to hold {@link MaterialOffer}s and access them with range searches.
@@ -64,7 +63,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 
 		MaterialOffer existingOffer = list.getObjectAt(position, offerPriority);
 		if (existingOffer != null) {
-			existingOffer.incAmount();
+			existingOffer.incrementAmount();
 		} else {
 			list.insert(new MaterialOffer(position, offerPriority, (byte) 1));
 		}
@@ -98,17 +97,13 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, EOfferPriority minimumIncludedPriority, ShortPoint2D position) {
 		PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
 		MaterialOffer offer = offerSlot.getObjectCloseTo(position, minimumIncludedPriority);
-
-		decrementOfferAmount(offerSlot, materialType, offer);
+		decrementOfferAmount(materialType, offer);
 		return offer;
 	}
 
-	private void decrementOfferAmount(PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot, EMaterialType materialType,
-			MaterialOffer offer) {
+	private void decrementOfferAmount(EMaterialType materialType, MaterialOffer offer) {
 		if (offer != null) {
-			if (offer.decAmount() <= 0) { // if the offer is now empty.
-				offerSlot.remove(offer);
-			}
+			offer.decrementAmount();
 			numberOfOffers[materialType.ordinal]--;
 			countListener.offersCountChanged(materialType, -1);
 		}
@@ -134,14 +129,12 @@ public final class OffersList implements IMaterialCounts, Serializable {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			final int materialTypeIdx = i;
 			final EMaterialType materialType = EMaterialType.VALUES[materialTypeIdx];
-			offersLists[materialTypeIdx].moveObjectsAtPositionTo(position, otherList.offersLists[i], new IMovedVisitor<MaterialOffer>() {
-				@Override
-				public void visit(MaterialOffer moved) { // correct the counts
-					numberOfOffers[materialTypeIdx] -= moved.getAmount();
-					countListener.offersCountChanged(materialType, -moved.getAmount());
-					otherList.numberOfOffers[materialTypeIdx] += moved.getAmount();
-					otherList.countListener.offersCountChanged(materialType, +moved.getAmount());
-				}
+			offersLists[materialTypeIdx].moveObjectsAtPositionTo(position, otherList.offersLists[i], moved -> {
+				// correct the counts
+				numberOfOffers[materialTypeIdx] -= moved.getAmount();
+				countListener.offersCountChanged(materialType, -moved.getAmount());
+				otherList.numberOfOffers[materialTypeIdx] += moved.getAmount();
+				otherList.countListener.offersCountChanged(materialType, +moved.getAmount());
 			});
 		}
 	}
