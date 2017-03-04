@@ -26,7 +26,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
+import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PredicatedPositionableList;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
@@ -242,11 +242,11 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	public final void mergeInto(PartitionManager newManager) {
 		newManager.bricklayerRequests.addAll(this.bricklayerRequests);
 		newManager.diggerRequests.addAll(this.diggerRequests);
-		newManager.joblessBearer.addAll(this.joblessBearer);
-		newManager.joblessBricklayers.addAll(this.joblessBricklayers);
-		newManager.joblessDiggers.addAll(this.joblessDiggers);
-		newManager.joblessWorkers.addAll(this.joblessWorkers);
-		newManager.materialOffers.addAll(this.materialOffers);
+		newManager.joblessBearer.moveAll(this.joblessBearer);
+		newManager.joblessBricklayers.moveAll(this.joblessBricklayers);
+		newManager.joblessDiggers.moveAll(this.joblessDiggers);
+		newManager.joblessWorkers.moveAll(this.joblessWorkers);
+		newManager.materialOffers.moveAll(this.materialOffers);
 		this.materialsManager.mergeInto(newManager.materialsManager);
 		newManager.soldierCreationRequests.addAll(this.soldierCreationRequests);
 		newManager.workerCreationRequests.addAll(this.workerCreationRequests);
@@ -447,7 +447,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return settings;
 	}
 
-	public IMaterialCounts getMaterialCounts() {
-		return materialOffers;
+	public MaterialCounts getMaterialCounts() {
+		return materialOffers.getMaterialCounts();
 	}
 }

@@ -35,7 +35,6 @@ import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
-import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.player.Player;
@@ -744,9 +743,7 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
-		Partition partition = getPartitionAt(x, y);
-		return new PartitionDataSupplier(partition.getPlayerId(), partition.partitionId, partition.getPartitionSettings(),
-				partition.getMaterialCounts());
+		return getPartitionAt(x, y).getPartitionData();
 	}
 
 	public Team[] getTeams() {

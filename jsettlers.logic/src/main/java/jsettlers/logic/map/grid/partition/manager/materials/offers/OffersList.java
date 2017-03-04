@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
+import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.PrioritizedPositionableList;
 
 /**
@@ -26,28 +26,22 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.list.Prioriti
  *
  * @author Andreas Eberle
  */
-public final class OffersList implements IMaterialCounts, Serializable {
+public final class OffersList implements Serializable {
 	private static final long serialVersionUID = 3747575330300586115L;
 
 	private final PrioritizedPositionableList<EOfferPriority, MaterialOffer>[] offersLists;
-	private final short[] numberOfOffers = new short[EMaterialType.NUMBER_OF_MATERIALS];
-	private final IOffersCountListener countListener;
+	private final MaterialCounts                                               materialCounts;
 
 	/**
 	 * Constructor to create a new {@link OffersList}.
 	 */
 	@SuppressWarnings("unchecked")
-	public OffersList(IOffersCountListener countListener) {
+	public OffersList(IOffersCountListener countsListener) {
 		offersLists = new PrioritizedPositionableList[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			offersLists[i] = new PrioritizedPositionableList<>(EOfferPriority.NUMBER_OF_PRIORITIES);
 		}
-
-		if (countListener != null) {
-			this.countListener = countListener;
-		} else {
-			this.countListener = IOffersCountListener.DEFAULT_IMPLEMENTATION;
-		}
+		this.materialCounts = new MaterialCounts(countsListener);
 	}
 
 	/**
@@ -68,8 +62,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 			list.insert(new MaterialOffer(position, offerPriority, (byte) 1));
 		}
 
-		numberOfOffers[material.ordinal]++;
-		countListener.offersCountChanged(material, +1);
+		materialCounts.offersCountChanged(material, +1);
 	}
 
 	/**
@@ -104,8 +97,7 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	private void decrementOfferAmount(EMaterialType materialType, MaterialOffer offer) {
 		if (offer != null) {
 			offer.decrementAmount();
-			numberOfOffers[materialType.ordinal]--;
-			countListener.offersCountChanged(materialType, -1);
+			materialCounts.offersCountChanged(materialType, -1);
 		}
 	}
 
@@ -126,39 +118,35 @@ public final class OffersList implements IMaterialCounts, Serializable {
 	}
 
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
-		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			final int materialTypeIdx = i;
-			final EMaterialType materialType = EMaterialType.VALUES[materialTypeIdx];
-			offersLists[materialTypeIdx].moveObjectsAtPositionTo(position, otherList.offersLists[i], moved -> {
+		for (int materialTypeIndex = 0; materialTypeIndex < EMaterialType.NUMBER_OF_MATERIALS; materialTypeIndex++) {
+			final EMaterialType materialType = EMaterialType.VALUES[materialTypeIndex];
+			offersLists[materialTypeIndex].moveObjectsAtPositionTo(position, otherList.offersLists[materialTypeIndex], moved -> {
 				// correct the counts
-				numberOfOffers[materialTypeIdx] -= moved.getAmount();
-				countListener.offersCountChanged(materialType, -moved.getAmount());
-				otherList.numberOfOffers[materialTypeIdx] += moved.getAmount();
-				otherList.countListener.offersCountChanged(materialType, +moved.getAmount());
+				materialCounts.offersCountChanged(materialType, -moved.getAmount());
+				otherList.materialCounts.offersCountChanged(materialType, +moved.getAmount());
 			});
 		}
 	}
 
-	public void addAll(OffersList otherList) {
+	public void moveAll(OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			short amount = otherList.numberOfOffers[i];
+			EMaterialType materialType = EMaterialType.VALUES[i];
+			int amount = otherList.materialCounts.getAmountOf(materialType);
+
 			if (amount > 0) {
-				offersLists[i].addAll(otherList.offersLists[i]);
-				numberOfOffers[i] += amount;
-				EMaterialType materialType = EMaterialType.VALUES[i];
-				otherList.countListener.offersCountChanged(materialType, -amount);
-				countListener.offersCountChanged(materialType, amount);
+				offersLists[i].moveAll(otherList.offersLists[i]);
+				otherList.materialCounts.offersCountChanged(materialType, -amount);
+				materialCounts.offersCountChanged(materialType, amount);
 			}
 		}
-	}
-
-	@Override
-	public int getAmountOf(EMaterialType materialType) {
-		return numberOfOffers[materialType.ordinal];
 	}
 
 	public void updateOfferPriority(ShortPoint2D position, EMaterialType materialType, EOfferPriority newPriority) {
 		PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
 		offerSlot.updatePriorityAt(position, newPriority);
+	}
+
+	public MaterialCounts getMaterialCounts() {
+		return materialCounts;
 	}
 }

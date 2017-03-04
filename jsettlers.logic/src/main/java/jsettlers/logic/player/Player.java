@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -25,6 +25,7 @@ import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
+import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
 /**
@@ -35,14 +36,14 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
 public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
 
-	public final byte playerId;
-	private final Team team;
-	private final byte numberOfPlayers;
-	private transient EPlayerType playerType;
+	public final      byte          playerId;
+	private final     Team          team;
+	private final     byte          numberOfPlayers;
+	private transient EPlayerType   playerType;
 	private transient ECivilisation civilisation;
 
-	private final ManaInformation manaInformation = new ManaInformation();
-	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_MATERIALS];
+	private final ManaInformation  manaInformation  = new ManaInformation();
+	private final MaterialCounts   materialCounts   = new MaterialCounts();
 	private final EndgameStatistic endgameStatistic = new EndgameStatistic(manaInformation);
 
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
@@ -96,22 +97,18 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	}
 
 	private int getAmountOf(EMaterialType materialType) {
-		return materialCounts[materialType.ordinal];
+		return materialCounts.getAmountOf(materialType);
 	}
 
 	@Override
 	public void offersCountChanged(EMaterialType materialType, int delta) {
-		materialCounts[materialType.ordinal] += delta;
-		if (materialCounts[materialType.ordinal] < 0) {
-			System.err.println("Sanity check: material count cannot be negative!");
-		}
+		materialCounts.offersCountChanged(materialType, delta);
 
 		if (materialType == EMaterialType.GOLD) {
 			CombatStrengthInformation combatStrength = this.combatStrengthInfo;
 			updateCombatStrengths();
-			System.out.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: "
-					+ getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" + combatStrength + "   to \n\t"
-					+ this.combatStrengthInfo);
+			System.out.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: " + getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" +
+									   combatStrength + "   to \n\t" + this.combatStrengthInfo);
 		}
 	}
 

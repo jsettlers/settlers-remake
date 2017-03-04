@@ -20,7 +20,6 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
-import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 
 /**
  * Created by Andreas Eberle on 23.08.2016.
@@ -68,9 +67,9 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 		}
 	}
 
-	public void addAll(PrioritizedPositionableList<P, T> otherList) {
+	public void moveAll(PrioritizedPositionableList<P, T> otherList) {
 		for (int i = lists.length - 1; i >= 0; i--) {
-			lists[i].addAll(otherList.lists[i]);
+			lists[i].moveAll(otherList.lists[i]);
 		}
 	}
 

@@ -57,7 +57,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 
 	/**
 	 * Returns the first object found at the given position or null.
-	 * 
+	 *
 	 * @param position
 	 *            The position to look for.
 	 * @return Returns the found object at the given position or null if no object has been found.
@@ -106,8 +106,10 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		return data.toString();
 	}
 
-	public void addAll(PositionableList<T> otherList) {
-		this.data.addAll(otherList.data);
+	public void moveAll(PositionableList<T> otherList) {
+		LinkedList<T> othersData = otherList.data;
+		this.data.addAll(othersData);
+		othersData.clear();
 	}
 
 	public void remove(T object) {
