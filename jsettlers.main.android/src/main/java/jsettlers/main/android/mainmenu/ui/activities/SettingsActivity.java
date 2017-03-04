@@ -3,6 +3,7 @@ package jsettlers.main.android.mainmenu.ui.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import jsettlers.main.android.R;
@@ -23,6 +24,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         textViewPlayerName = (TextView) findViewById(R.id.text_view_player_name);
 
         presenter = PresenterFactory.createSettingsPresenter(this, this);
@@ -33,6 +36,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
                     .create(REQUEST_CODE_PLAYER_NAME, R.string.settings_player_name, R.string.settings_name, textViewPlayerName.getText())
                     .show(getSupportFragmentManager(), null);
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
