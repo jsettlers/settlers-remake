@@ -12,54 +12,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.player;
+package jsettlers.common.player;
 
-import jsettlers.common.player.IEndgameStatistic;
-
-import java.io.Serializable;
+import jsettlers.common.movable.ESoldierType;
 
 /**
  * @author codingberlin
  */
-public class EndgameStatistic implements IEndgameStatistic, Serializable {
-	private static final long serialVersionUID = -1352905249487671842L;
+public interface IMannaInformation {
 
-	private MannaInformation mannaInformation;
-	private short amountOfProducedSoldiers = 0;
-	private short amountOfProducedGold = 0;
+	boolean isUpgradePossible(ESoldierType type);
 
-	public EndgameStatistic(MannaInformation mannaInformation) {
-		this.mannaInformation = mannaInformation;
-	}
+	byte getLevel(ESoldierType type);
 
-	@Override
-	public short getAmountOfProducedSoldiers() {
-		return amountOfProducedSoldiers;
-	}
+	byte getNextUpdateProgressPercent();
 
-	@Override
-	public short getAmountOfProducedMana() {
-		return mannaInformation.getAmountOfManna();
-	}
-
-	@Override
-	public short getAmountOfProducedGold() {
-		return amountOfProducedGold;
-	}
-
-	public void incrementAmountOfProducedSoldiers() {
-		amountOfProducedSoldiers++;
-	}
-
-	public void incrementAmountOfProducedGold() {
-		amountOfProducedGold++;
-	}
-
-	@Override
-	public String toString() {
-
-		return "amountOfProducedSoldiers: " + amountOfProducedSoldiers +
-				", amountOfProducedGold: " + amountOfProducedGold +
-				", amountOfProducedMana: " + getAmountOfProducedMana();
-	}
+	byte getMaximumLevel();
 }

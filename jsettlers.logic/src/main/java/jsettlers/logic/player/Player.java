@@ -42,9 +42,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private transient EPlayerType   playerType;
 	private transient ECivilisation civilisation;
 
-	private final ManaInformation  manaInformation  = new ManaInformation();
+	private final MannaInformation mannaInformation = new MannaInformation();
 	private final MaterialCounts   materialCounts   = new MaterialCounts();
-	private final EndgameStatistic endgameStatistic = new EndgameStatistic(manaInformation);
+	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
 
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
@@ -81,9 +81,8 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		}
 	}
 
-	@Override
-	public ManaInformation getManaInformation() {
-		return manaInformation;
+	public MannaInformation getMannaInformation() {
+		return mannaInformation;
 	}
 
 	@Override

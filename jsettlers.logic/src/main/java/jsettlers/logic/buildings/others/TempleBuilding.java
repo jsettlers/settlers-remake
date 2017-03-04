@@ -51,7 +51,7 @@ public final class TempleBuilding extends Building {
 		IRequestStack wineStack = getWineStack();
 
 		if (wineStack.pop()) {
-			getPlayer().getManaInformation().increaseMana();
+			getPlayer().getMannaInformation().increaseManna();
 			return CONSUME_DELAY;
 		} else {
 			return CHECK_DELAY;
