@@ -44,6 +44,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	private JoinableGamesAdapter adapter;
 
     private RecyclerView recyclerView;
+    private View searchingForGamesView;
 
     private boolean isSaving = false;
 
@@ -64,6 +65,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         FragmentUtil.setActionBar(this, view);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        searchingForGamesView = view.findViewById(R.id.layout_searching_for_games);
 
         return view;
     }
@@ -105,7 +107,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
      * @param joinableGames
      */
     @Override
-    public void joinableGamesChanged(List<? extends IJoinableGame> joinableGames) {
+    public void updateJoinableGames(List<? extends IJoinableGame> joinableGames) {
         getView().post(() -> {
             if (adapter == null) {
                 adapter = new JoinableGamesAdapter(joinableGames);
@@ -142,6 +144,15 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
         }
     }
 
+    @Override
+    public void showSearchingForGamesView() {
+        getView().post(() -> searchingForGamesView.setVisibility(View.VISIBLE));
+    }
+
+    @Override
+    public void hideSearchingForGamesView() {
+        getView().post(() -> searchingForGamesView.setVisibility(View.GONE));
+    }
 
     private void joinableGameSelected(IJoinableGame joinableGame) {
         presenter.joinableGameSelected(joinableGame);

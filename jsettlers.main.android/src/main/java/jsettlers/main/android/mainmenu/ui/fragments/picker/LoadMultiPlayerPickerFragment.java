@@ -22,9 +22,5 @@ public class LoadMultiPlayerPickerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isRemoving()) {
-            // move to presenter
-            gameStarter.closeMultiPlayerConnector();
-        }
     }
 }

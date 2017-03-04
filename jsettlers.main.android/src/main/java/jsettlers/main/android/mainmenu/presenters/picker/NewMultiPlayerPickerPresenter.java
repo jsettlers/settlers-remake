@@ -77,6 +77,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
         }
 
         gameStarter.setJoiningGame(null);
+        gameStarter.closeMultiPlayerConnector();
     }
 
     /**

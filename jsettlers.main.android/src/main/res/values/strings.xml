@@ -83,6 +83,7 @@
     <string name="new_multi_player_game">New Multi Player Game</string>
     <string name="load_single_player_game">Load Single Player Game</string>
     <string name="join_multi_player_game">Join Multi Player Game</string>
+    <string name="searching_for_multiplayer_games">Searching for games</string>
 
     <!-- game config -->
     <string name="number_of_players">Players</string>
