@@ -869,9 +869,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
 			return; // can't convert to bearer if the ground does not belong to the player
 		}
+		if (!(movableType == EMovableType.BEARER || (movableType == EMovableType.PIONEER && newMovableType == EMovableType.BEARER) || movableType == newMovableType)) {
+			System.err.println("Tried invalid conversion from " + movableType + " to " + newMovableType);
+			return; // can't convert between this types
+		}
 
 		this.health = (this.health * newMovableType.getHealth()) / this.movableType.getHealth();
 		this.movableType = newMovableType;
+		setVisible(true); // ensure the movable is visible
 		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
 	}
 
