@@ -14,21 +14,9 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
-import static jsettlers.common.buildings.EBuildingType.CASTLE;
-import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
-import static jsettlers.common.buildings.EBuildingType.TOWER;
-import static jsettlers.common.mapobject.EMapObjectType.STONE;
-import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
-import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
-import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +24,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Vector;
 
+import java8.util.Comparators;
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
@@ -64,6 +53,17 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
+import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
+import static jsettlers.common.buildings.EBuildingType.CASTLE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.mapobject.EMapObjectType.STONE;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
+
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
  * multiple times within one AiExecutor step triggerd by the game clock.
@@ -72,23 +72,23 @@ import jsettlers.logic.player.Team;
  */
 public class AiStatistics {
 
-	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = { LUMBERJACK, TOWER, BIG_TOWER, CASTLE };
-	public static final int NEAR_STONE_DISTANCE = 5;
+	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = {LUMBERJACK, TOWER, BIG_TOWER, CASTLE};
+	public static final  int             NEAR_STONE_DISTANCE                   = 5;
 
-	private final Queue<Building> buildings;
-	private final PlayerStatistic[] playerStatistics;
+	private final Queue<Building>                  buildings;
+	private final PlayerStatistic[]                playerStatistics;
 	private final Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
-	private final AiPositions[] sortedResourceTypes;
-	private final AiPositions sortedRiversInDefaultPartition;
-	private final MainGrid mainGrid;
-	private final LandscapeGrid landscapeGrid;
-	private final ObjectsGrid objectsGrid;
-	private final PartitionsGrid partitionsGrid;
-	private final MovableGrid movableGrid;
-	private final FlagsGrid flagsGrid;
-	private final AbstractConstructionMarkableMap constructionMarksGrid;
-	private final AiMapInformation aiMapInformation;
-	private final long[] resourceCountInDefaultPartition;
+	private final AiPositions[]                    sortedResourceTypes;
+	private final AiPositions                      sortedRiversInDefaultPartition;
+	private final MainGrid                         mainGrid;
+	private final LandscapeGrid                    landscapeGrid;
+	private final ObjectsGrid                      objectsGrid;
+	private final PartitionsGrid                   partitionsGrid;
+	private final MovableGrid                      movableGrid;
+	private final FlagsGrid                        flagsGrid;
+	private final AbstractConstructionMarkableMap  constructionMarksGrid;
+	private final AiMapInformation                 aiMapInformation;
+	private final long[]                           resourceCountInDefaultPartition;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -242,10 +242,7 @@ public class AiStatistics {
 						movablePlayerStatistic.movablePositions.put(movableType, new Vector<ShortPoint2D>());
 					}
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
-					if (player != null
-							&& player.playerId != movablePlayerId
-							&& movableType.isSoldier()
-							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
+					if (player != null && player.playerId != movablePlayerId && movableType.isSoldier() && getEnemiesOf(player.playerId).contains(movablePlayerId)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}
 				}
@@ -279,17 +276,12 @@ public class AiStatistics {
 	}
 
 	private boolean isBorderOf(int x, int y, byte playerId) {
-		return isIngestibleBy(x + 1, y + 1, playerId)
-				|| isIngestibleBy(x + 1, y - 1, playerId)
-				|| isIngestibleBy(x - 1, y + 1, playerId)
-				|| isIngestibleBy(x - 1, y - 1, playerId);
+		return isIngestibleBy(x + 1, y + 1, playerId) || isIngestibleBy(x + 1, y - 1, playerId) || isIngestibleBy(x - 1, y + 1, playerId) || isIngestibleBy(x - 1, y - 1, playerId);
 	}
 
 	private boolean isIngestibleBy(int x, int y, byte playerId) {
-		return mainGrid.isInBounds(x, y)
-				&& partitionsGrid.getPlayerIdAt(x, y) != playerId
-				&& !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking
-				&& !partitionsGrid.isEnforcedByTower(x, y);
+		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) != playerId && !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking && !partitionsGrid.isEnforcedByTower(x,
+																																																	y);
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
@@ -392,8 +384,7 @@ public class AiStatistics {
 		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
 	}
 
-	public ShortPoint2D getNearestResourcePointForPlayer(
-			ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance, AiPositionFilter filter) {
+	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance, AiPositionFilter filter) {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId, searchDistance, filter);
 	}
 
@@ -401,8 +392,7 @@ public class AiStatistics {
 		return sortedResourceTypes[EResourceType.FISH.ordinal].getNearestPoint(point, currentNearestPointDistance, new AiPositionFilter() {
 			@Override
 			public boolean contains(int x, int y) {
-				return isPlayerThere(x + 3, y) || isPlayerThere(x - 3, y) || isPlayerThere(x, y + 3)
-						|| isPlayerThere(x, y - 3);
+				return isPlayerThere(x + 3, y) || isPlayerThere(x - 3, y) || isPlayerThere(x, y + 3) || isPlayerThere(x, y - 3);
 			}
 
 			private boolean isPlayerThere(int x, int y) {
@@ -411,18 +401,15 @@ public class AiStatistics {
 		});
 	}
 
-	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(
-			ShortPoint2D point, EResourceType resourceType, int currentNearestPointDistance, AiPositionFilter filter) {
+	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType, int currentNearestPointDistance, AiPositionFilter filter) {
 		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance, filter);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(
-			ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, AiPositionFilter filter) {
+	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, AiPositionFilter filter) {
 		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, searchDistance, (byte) -1, filter);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, byte playerId,
-			AiPositionFilter filter) {
+	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, byte playerId, AiPositionFilter filter) {
 		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		if (sortedResourcePoints == null) {
 			return null;
@@ -431,8 +418,7 @@ public class AiStatistics {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, searchDistance, filter);
 	}
 
-	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(
-			ShortPoint2D point, AiPositions sortedPoints, final byte playerId, int searchDistance, final AiPositionFilter filter) {
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId, int searchDistance, final AiPositionFilter filter) {
 		return sortedPoints.getNearestPoint(point, searchDistance, new AiPositions.CombinedAiPositionFilter(new AiPositionFilter() {
 			@Override
 			public boolean contains(int x, int y) {
@@ -521,20 +507,26 @@ public class AiStatistics {
 	}
 
 	public boolean southIsFreeForPlayer(ShortPoint2D point, byte playerId) {
-		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId)
-				&& pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 12), playerId)
-				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 12), playerId)
-				&& pointIsFreeForPlayer(point.x, (short) (point.y + 6), playerId)
-				&& pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 6), playerId)
-				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 6), playerId);
+		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId) && pointIsFreeForPlayer((short) (point.x + 5),
+																									   (short) (point.y + 12),
+																									   playerId) && pointIsFreeForPlayer((short) (point.x + 10),
+																																		 (short) (point.y + 12),
+																																		 playerId) && pointIsFreeForPlayer(point.x,
+																																										   (short) (point.y + 6),
+																																										   playerId) &&
+				pointIsFreeForPlayer(
+				(short) (point.x + 5),
+				(short) (point.y + 6),
+				playerId) && pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 6), playerId);
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return mainGrid.isInBounds(x, y)
-				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
-				&& !objectsGrid.isBuildingAt(x, y)
-				&& !flagsGrid.isProtected(x, y)
-				&& landscapeGrid.isHexAreaOfType(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAt(x, y) && !flagsGrid.isProtected(x, y) && landscapeGrid.isHexAreaOfType(x,
+																																															   y,
+																																															   0,
+																																															   2,
+																																															   ELandscapeType.GRASS,
+																																															   ELandscapeType.EARTH);
 	}
 
 	public boolean wasFishNearByAtGameStart(ShortPoint2D position) {
@@ -565,8 +557,7 @@ public class AiStatistics {
 		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
 	}
 
-	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points,
-			int amountOfPointsToDetect) {
+	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
 			return Collections.emptyList();
 		}
@@ -575,12 +566,7 @@ public class AiStatistics {
 			return points;
 		}
 
-		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override
-			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
-				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
-			}
-		});
+		Collections.sort(points, Comparators.comparingInt(o -> o.getOnGridDistTo(referencePoint)));
 
 		return points.subList(0, amountOfPointsToDetect);
 	}
@@ -691,8 +677,8 @@ public class AiStatistics {
 			AiPositions myBorder = getBorderOf(playerId);
 			for (int i = 0; i < myBorder.size(); i += 10) {
 				ShortPoint2D myBorderPosition = myBorder.get(i);
-				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0
-						&& borderOfOtherPlayers.getNearestPoint(myBorderPosition, CommonConstants.TOWER_RADIUS) != null) {
+				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0 && borderOfOtherPlayers.getNearestPoint(myBorderPosition,
+																																					  CommonConstants.TOWER_RADIUS) != null) {
 					playerStatistics[playerId].threatenedBorder.add(myBorderPosition);
 				}
 			}
@@ -706,30 +692,30 @@ public class AiStatistics {
 
 	private static class PlayerStatistic {
 		ShortPoint2D referencePosition;
-		boolean isAlive;
-		final int[] totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-		final int[] buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
-		final List<ShortPoint2D> farmWorkAreas = new Vector<ShortPoint2D>();
-		final List<ShortPoint2D> wineGrowerWorkAreas = new Vector<ShortPoint2D>();
+		boolean      isAlive;
+		final int[]                                  totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+		final int[]                                  buildingsNumbers      = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions     = new HashMap<EBuildingType, List<ShortPoint2D>>();
+		final List<ShortPoint2D>                     farmWorkAreas         = new Vector<ShortPoint2D>();
+		final List<ShortPoint2D>                     wineGrowerWorkAreas   = new Vector<ShortPoint2D>();
 		short partitionIdToBuildOn;
 		public short blockedPartitionId;
 		IPartitionData materials;
-		final AiPositions landToBuildOn = new AiPositions();
-		final AiPositions border = new AiPositions();
-		final AiPositions otherPartitionBorder = new AiPositions();
-		final Map<EMovableType, List<ShortPoint2D>> movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
-		final AiPositions stones = new AiPositions();
-		final AiPositions stonesNearBy = new AiPositions();
-		final AiPositions trees = new AiPositions();
-		final AiPositions rivers = new AiPositions();
-		final AiPositions enemyTroopsInTown = new AiPositions();
+		final AiPositions                           landToBuildOn        = new AiPositions();
+		final AiPositions                           border               = new AiPositions();
+		final AiPositions                           otherPartitionBorder = new AiPositions();
+		final Map<EMovableType, List<ShortPoint2D>> movablePositions     = new HashMap<EMovableType, List<ShortPoint2D>>();
+		final AiPositions                           stones               = new AiPositions();
+		final AiPositions                           stonesNearBy         = new AiPositions();
+		final AiPositions                           trees                = new AiPositions();
+		final AiPositions                           rivers               = new AiPositions();
+		final AiPositions                           enemyTroopsInTown    = new AiPositions();
 		List<ShortPoint2D> threatenedBorder;
 		final long[] resourceCount = new long[EResourceType.VALUES.length];
-		int numberOfNotFinishedBuildings;
-		int numberOfTotalBuildings;
-		int numberOfNotOccupiedMilitaryBuildings;
-		int wineCount;
+		int                         numberOfNotFinishedBuildings;
+		int                         numberOfTotalBuildings;
+		int                         numberOfNotOccupiedMilitaryBuildings;
+		int                         wineCount;
 		IMaterialProductionSettings materialProduction;
 
 		PlayerStatistic() {
