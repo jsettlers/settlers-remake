@@ -15,6 +15,7 @@
 package jsettlers.logic.map.grid.partition.manager.materials.interfaces;
 
 import jsettlers.common.position.ILocatable;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 
 /**
  * This interface defines the methods needed by a {@link IManagerBearer} to be able to carry an offer to a request.
@@ -45,4 +46,6 @@ public interface IMaterialRequest extends ILocatable {
 	 *         otherwise it returns false.
 	 */
 	boolean isActive();
+
+	EOfferPriority getMinimumAcceptedOfferPriority();
 }

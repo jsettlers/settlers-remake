@@ -42,6 +42,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
@@ -187,7 +188,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					}
 
 					@Override
-					public boolean isStillValid() {
+					public boolean isStillValid(EOfferPriority minimumAcceptedPriority) {
 						return true;
 					}
 
@@ -205,6 +206,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					@Override
 					public boolean isActive() {
 						return true;
+					}
+
+					@Override
+					public EOfferPriority getMinimumAcceptedOfferPriority() {
+						return EOfferPriority.LOWEST;
 					}
 
 					@Override

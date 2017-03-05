@@ -22,6 +22,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
@@ -228,7 +229,18 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return (offer == null || offer.isStillValid()) && (request == null || request.isActive());
+		if (request != null && !request.isActive()) {
+			return false;
+		}
+
+		if (offer != null) {
+			EOfferPriority minimumAcceptedPriority = request != null ? request.getMinimumAcceptedOfferPriority() : EOfferPriority.LOWEST;
+			if (!offer.isStillValid(minimumAcceptedPriority)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override

@@ -118,8 +118,8 @@ public class MaterialOffer implements Serializable, ILocatable, IPrioritizable<E
 	}
 
 	@Override
-	public boolean isStillValid() {
-		return amount >= inDistribution;
+	public boolean isStillValid(EOfferPriority minimumAcceptedPriority) {
+		return amount >= inDistribution && priority.ordinal() >= minimumAcceptedPriority.ordinal();
 	}
 
 	public void changeOffersCountListener(IOffersCountListener newCountChangedListener) {
