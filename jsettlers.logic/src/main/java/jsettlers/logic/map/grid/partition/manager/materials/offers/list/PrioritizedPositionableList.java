@@ -16,10 +16,10 @@ package jsettlers.logic.map.grid.partition.manager.materials.offers.list;
 
 import java.io.Serializable;
 
+import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
-import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
 
 /**
  * Created by Andreas Eberle on 23.08.2016.
@@ -61,15 +61,15 @@ public class PrioritizedPositionableList<P extends Enum, T extends ILocatable & 
 		lists[offer.getPriority().ordinal()].remove(offer);
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PrioritizedPositionableList<P, T> otherList, IMovedVisitor<T> movedVisitor) {
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PrioritizedPositionableList<P, T> otherList, Consumer<T> movedVisitor) {
 		for (int i = lists.length - 1; i >= 0; i--) {
 			lists[i].moveObjectsAtPositionTo(position, otherList.lists[i], movedVisitor);
 		}
 	}
 
-	public void moveAll(PrioritizedPositionableList<P, T> otherList) {
+	public void moveAll(PrioritizedPositionableList<P, T> otherList, Consumer<T> movedVisitor) {
 		for (int i = lists.length - 1; i >= 0; i--) {
-			lists[i].moveAll(otherList.lists[i]);
+			lists[i].moveAll(otherList.lists[i], movedVisitor);
 		}
 	}
 

@@ -308,15 +308,14 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		EMaterialType tool = movableType.getTool();
 
 		if (tool != EMaterialType.NO_MATERIAL) { // try to create a worker with a tool
-			MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, EOfferPriority.LOWEST, workerCreationRequest.getPos());
+			MaterialOffer offer = materialOffers.getOfferCloseTo(tool, EOfferPriority.LOWEST, workerCreationRequest.getPos());
 
 			if (offer != null) {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
 				if (manageableBearer != null) {
-					return manageableBearer.becomeWorker(this, workerCreationRequest, offer.getPos());
+					return manageableBearer.becomeWorker(this, workerCreationRequest, offer);
 
-				} else { // no free movable found => return material and add the creation request to the end of the queue
-					materialOffers.addOffer(offer.getPos(), tool, offer.getPriority());
+				} else { // no free movable found => cannot create worker
 					return false;
 				}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,36 +12,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager.manageables;
+package jsettlers.logic.map.grid.partition.manager.materials.interfaces;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
-import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
-import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
+import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 
 /**
- * This interface defines methods needed by a bearer to be managed by a PartitionManager.
- * 
  * @author Andreas Eberle
- * 
  */
-public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
+public interface IMaterialOffer extends ILocatable {
+	void distributionAccepted();
 
-	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request);
+	void distributionAborted();
 
-	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, IMaterialOffer offer);
+	void offerTaken();
 
-	boolean becomeSoldier(IBarrack barrack);
-
-	/**
-	 * This interface is used by the bearers to signal the need of a reoffer of the worker creation request.
-	 * 
-	 * @author Andreas Eberle
-	 * 
-	 */
-	interface IWorkerRequester {
-		void workerCreationRequestFailed(WorkerCreationRequest failedRequest);
-	}
+	boolean isStillValid();
 }

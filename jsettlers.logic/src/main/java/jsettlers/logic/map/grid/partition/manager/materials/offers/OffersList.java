@@ -59,10 +59,8 @@ public final class OffersList implements Serializable {
 		if (existingOffer != null) {
 			existingOffer.incrementAmount();
 		} else {
-			list.insert(new MaterialOffer(position, offerPriority, (byte) 1));
+			list.insert(new MaterialOffer(position, material, materialCounts, offerPriority, (byte) 1));
 		}
-
-		materialCounts.offersCountChanged(material, +1);
 	}
 
 	/**
@@ -87,18 +85,9 @@ public final class OffersList implements Serializable {
 	 * @return Returns an offer of the given {@link EMaterialType} that's close to the given position or <br>
 	 *         null if no offer for the given {@link EMaterialType} exists.
 	 */
-	public MaterialOffer removeOfferCloseTo(EMaterialType materialType, EOfferPriority minimumIncludedPriority, ShortPoint2D position) {
+	public MaterialOffer getOfferCloseTo(EMaterialType materialType, EOfferPriority minimumIncludedPriority, ShortPoint2D position) {
 		PrioritizedPositionableList<EOfferPriority, MaterialOffer> offerSlot = offersLists[materialType.ordinal];
-		MaterialOffer offer = offerSlot.getObjectCloseTo(position, minimumIncludedPriority);
-		decrementOfferAmount(materialType, offer);
-		return offer;
-	}
-
-	private void decrementOfferAmount(EMaterialType materialType, MaterialOffer offer) {
-		if (offer != null) {
-			offer.decrementAmount();
-			materialCounts.offersCountChanged(materialType, -1);
-		}
+		return offerSlot.getObjectCloseTo(position, minimumIncludedPriority);
 	}
 
 	/**
@@ -119,25 +108,13 @@ public final class OffersList implements Serializable {
 
 	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
 		for (int materialTypeIndex = 0; materialTypeIndex < EMaterialType.NUMBER_OF_MATERIALS; materialTypeIndex++) {
-			final EMaterialType materialType = EMaterialType.VALUES[materialTypeIndex];
-			offersLists[materialTypeIndex].moveObjectsAtPositionTo(position, otherList.offersLists[materialTypeIndex], moved -> {
-				// correct the counts
-				materialCounts.offersCountChanged(materialType, -moved.getAmount());
-				otherList.materialCounts.offersCountChanged(materialType, +moved.getAmount());
-			});
+			offersLists[materialTypeIndex].moveObjectsAtPositionTo(position, otherList.offersLists[materialTypeIndex], movedOffer -> movedOffer.changeOffersCountListener(otherList.materialCounts));
 		}
 	}
 
 	public void moveAll(OffersList otherList) {
-		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			EMaterialType materialType = EMaterialType.VALUES[i];
-			int amount = otherList.materialCounts.getAmountOf(materialType);
-
-			if (amount > 0) {
-				offersLists[i].moveAll(otherList.offersLists[i]);
-				otherList.materialCounts.offersCountChanged(materialType, -amount);
-				materialCounts.offersCountChanged(materialType, amount);
-			}
+		for (int materialTypeIndex = 0; materialTypeIndex < EMaterialType.NUMBER_OF_MATERIALS; materialTypeIndex++) {
+			offersLists[materialTypeIndex].moveAll(otherList.offersLists[materialTypeIndex], movedOffer -> movedOffer.changeOffersCountListener(materialCounts));
 		}
 	}
 

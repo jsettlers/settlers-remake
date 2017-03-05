@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
@@ -108,7 +109,16 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 
 	public void moveAll(PositionableList<T> otherList) {
 		LinkedList<T> othersData = otherList.data;
-		this.data.addAll(othersData);
+		data.addAll(othersData);
+		othersData.clear();
+	}
+
+	public void moveAll(PositionableList<T> otherList, Consumer<T> movedVisitor) {
+		LinkedList<T> othersData = otherList.data;
+		for (T othersDatum : othersData) {
+			movedVisitor.accept(othersDatum);
+			data.add(othersDatum);
+		}
 		othersData.clear();
 	}
 
@@ -120,13 +130,13 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		return data.isEmpty();
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<? super T> movedVisitor) {
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, Consumer<T> movedVisitor) {
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();
 			if (curr.getPos().equals(position)) {
 				iterator.remove();
-				movedVisitor.visit(curr);
+				movedVisitor.accept(curr);
 				newList.data.add(curr);
 			}
 		}
@@ -134,9 +144,5 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 
 	public int size() {
 		return data.size();
-	}
-
-	public interface IMovedVisitor<T> {
-		void visit(T moved);
 	}
 }

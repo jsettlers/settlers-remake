@@ -107,7 +107,7 @@ public final class MaterialsManager implements Serializable {
 			return; // no offers => return
 		}
 
-		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
+		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
 
 		assert offer != null : "The offer can't be null here!";
 
@@ -115,9 +115,7 @@ public final class MaterialsManager implements Serializable {
 
 		assert jobless != null : "The jobless can't be null here!";
 
-		if (!jobless.deliver(materialType, offer.getPos(), request)) {
-			offersList.addOffer(offer.getPos(), materialType, offer.getPriority());
-		}
+		jobless.deliver(materialType, offer, request);
 	}
 
 	public void movePositionTo(ShortPoint2D position, MaterialsManager newManager) {

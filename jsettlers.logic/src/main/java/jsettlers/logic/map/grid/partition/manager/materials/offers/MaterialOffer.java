@@ -16,8 +16,11 @@ package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
 import java.io.Serializable;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.data.MaterialCounts;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.IListManageable;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.IPrioritizable;
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
@@ -28,17 +31,24 @@ import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
  * @author Andreas Eberle
  *
  */
-public final class MaterialOffer implements Serializable, ILocatable, IPrioritizable<EOfferPriority>, IListManageable {
-	private static final long serialVersionUID = 8516955442065220998L;
+public final class MaterialOffer implements Serializable, ILocatable, IPrioritizable<EOfferPriority>, IListManageable, IMaterialOffer {
+	private final ShortPoint2D  position;
+	private final EMaterialType materialType;
 
-	private final ShortPoint2D   position;
-	private       EOfferPriority priority;
-	private byte amount = 0;
+	private IOffersCountListener countChangedListener;
+	private EOfferPriority       priority;
+	private byte amount         = 0;
+	private byte inDistribution = 0;
 
-	MaterialOffer(ShortPoint2D position, EOfferPriority priority, byte amount) {
+	MaterialOffer(ShortPoint2D position, EMaterialType materialType, IOffersCountListener countChangedListener, EOfferPriority priority, byte amount) {
 		this.position = position;
+		this.materialType = materialType;
+
+		this.countChangedListener = countChangedListener;
 		this.priority = priority;
 		this.amount = amount;
+
+		countChangedListener.offersCountChanged(materialType, amount);
 	}
 
 	@Override
@@ -51,21 +61,17 @@ public final class MaterialOffer implements Serializable, ILocatable, IPrioritiz
 	 *
 	 * @return
 	 */
-	public byte incrementAmount() {
-		return ++amount;
-	}
-
-	/**
-	 * Decreases the amount and returns the new value.
-	 *
-	 * @return
-	 */
-	public void decrementAmount() {
-		--amount;
+	public void incrementAmount() {
+		++amount;
+		countChangedListener.offersCountChanged(materialType, +1);
 	}
 
 	public byte getAmount() {
 		return amount;
+	}
+
+	public int getAvailable() {
+		return Math.max(0, amount - inDistribution);
 	}
 
 	@Override
@@ -80,7 +86,7 @@ public final class MaterialOffer implements Serializable, ILocatable, IPrioritiz
 
 	@Override
 	public boolean isActive() {
-		return amount > 0;
+		return getAvailable() > 0;
 	}
 
 	@Override
@@ -91,5 +97,35 @@ public final class MaterialOffer implements Serializable, ILocatable, IPrioritiz
 	@Override
 	public String toString() {
 		return "MaterialOffer{" + "position=" + position + ", priority=" + priority + ", amount=" + amount + '}';
+	}
+
+	@Override
+	public void distributionAccepted() {
+		inDistribution++;
+		countChangedListener.offersCountChanged(materialType, -1);
+	}
+
+	@Override
+	public void distributionAborted() {
+		inDistribution--;
+		countChangedListener.offersCountChanged(materialType, +1);
+	}
+
+	@Override
+	public void offerTaken() {
+		inDistribution--;
+		amount--;
+	}
+
+	@Override
+	public boolean isStillValid() {
+		return amount >= inDistribution;
+	}
+
+	public void changeOffersCountListener(IOffersCountListener newCountChangedListener) {
+		int countedMaterials = amount - inDistribution;
+		this.countChangedListener.offersCountChanged(materialType, -countedMaterials);
+		newCountChangedListener.offersCountChanged(materialType, countedMaterials);
+		this.countChangedListener = newCountChangedListener;
 	}
 }

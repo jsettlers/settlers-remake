@@ -40,7 +40,9 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -49,13 +51,13 @@ import jsettlers.logic.player.Player;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
-	private final short width;
-	private final short height;
+	private final short  width;
+	private final short  height;
 	private final Player defaultPlayer;
 
-	private final Movable movableMap[][];
-	private final EMaterialType materialTypeMap[][];
-	private final byte materialAmountMap[][];
+	private final Movable          movableMap[][];
+	private final EMaterialType    materialTypeMap[][];
+	private final byte             materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -171,7 +173,29 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			if (!materials.isEmpty()) {
 				ShortPoint2D source = materials.pop();
 				final ShortPoint2D targetPos = new ShortPoint2D(MatchConstants.random().nextInt(width), MatchConstants.random().nextInt(height));
-				bearer.deliver(materialTypeMap[source.x][source.y], source, new IMaterialRequest() {
+				bearer.deliver(materialTypeMap[source.x][source.y], new IMaterialOffer() {
+					@Override
+					public void distributionAccepted() {
+					}
+
+					@Override
+					public void distributionAborted() {
+					}
+
+					@Override
+					public void offerTaken() {
+					}
+
+					@Override
+					public boolean isStillValid() {
+						return true;
+					}
+
+					@Override
+					public ShortPoint2D getPos() {
+						return source;
+					}
+				}, new IMaterialRequest() {
 
 					@Override
 					public ShortPoint2D getPos() {
@@ -265,7 +289,9 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean feedDonkeyAt(ShortPoint2D position) {
 			return false;
-		};
+		}
+
+		;
 
 		@Override
 		public void placeSmoke(ShortPoint2D position, boolean smokeOn) {
@@ -315,8 +341,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
-			return isInBounds(x, y) && !isBlocked(x, y)
-					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
+			return isInBounds(x, y) && !isBlocked(x, y) && (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override
@@ -365,8 +390,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius,
-				boolean includeTowers) {
+		public IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short minSearchRadius, short maxSearchRadius, boolean includeTowers) {
 			return null;
 		}
 
