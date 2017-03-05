@@ -148,9 +148,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		case GOING_TO_TOWER:
 			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
 				OccupierPlace place = building.addSoldier(this);
-				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
-				super.enableNothingToDoAction(false);
 				super.setVisible(false);
+				super.setPosition(place.getPosition().calculatePoint(building.getPos()));
+				super.enableNothingToDoAction(false);
 
 				if (isBowman()) {
 					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
