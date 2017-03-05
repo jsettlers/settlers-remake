@@ -36,14 +36,14 @@ public class MultiRequestStack implements IRequestStack {
 	private static final long serialVersionUID = 1735769845576581676L;
 
 	protected final IRequestsStackGrid grid;
-	protected final ShortPoint2D position;
-	private final EBuildingType buildingType;
+	protected final ShortPoint2D       position;
+	private final   EBuildingType      buildingType;
 
 	private final MultiRequestStackSharedData sharedData;
 	protected final RequestOfMultiRequestStack[] materialRequests = new RequestOfMultiRequestStack[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	protected EMaterialType currentMaterialType;
-	private short popped;
+	private   short         popped;
 
 	protected boolean released;
 
@@ -57,8 +57,7 @@ public class MultiRequestStack implements IRequestStack {
 	 * @param buildingType
 	 *            Type of the building using this stack.
 	 */
-	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority,
-			MultiRequestStackSharedData sharedData) {
+	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority, MultiRequestStackSharedData sharedData) {
 		this.grid = grid;
 		this.position = position;
 		this.buildingType = buildingType;
@@ -97,7 +96,7 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	private void checkIfCurrentMaterialShouldBeReset() {
+	protected void checkIfCurrentMaterialShouldBeReset() {
 		if (currentMaterialType != null && materialRequests[currentMaterialType.ordinal].getInDelivery() <= 0 && getStackSize() == 0) {
 			sharedData.unregisterHandlingStack(currentMaterialType, this);
 			currentMaterialType = null;

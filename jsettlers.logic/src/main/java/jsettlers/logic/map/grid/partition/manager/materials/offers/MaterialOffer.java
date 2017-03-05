@@ -31,7 +31,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
  * @author Andreas Eberle
  *
  */
-public final class MaterialOffer implements Serializable, ILocatable, IPrioritizable<EOfferPriority>, IListManageable, IMaterialOffer {
+public class MaterialOffer implements Serializable, ILocatable, IPrioritizable<EOfferPriority>, IListManageable, IMaterialOffer {
 	private final ShortPoint2D  position;
 	private final EMaterialType materialType;
 

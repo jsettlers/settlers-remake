@@ -95,6 +95,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.loading.list.MapList;
@@ -1567,8 +1568,8 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority) {
-				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType, priority);
+			public void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority, IOfferEmptiedListener offerListener) {
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType, priority, offerListener);
 			}
 
 			@Override

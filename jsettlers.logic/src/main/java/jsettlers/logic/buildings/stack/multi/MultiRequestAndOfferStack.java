@@ -19,12 +19,13 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 
 /**
  * Created by Andreas Eberle on 18.09.2016.
  */
-public class MultiRequestAndOfferStack extends MultiRequestStack implements IStockSettingsListener {
+public class MultiRequestAndOfferStack extends MultiRequestStack implements IStockSettingsListener, IOfferEmptiedListener {
 
 	/**
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
@@ -37,13 +38,12 @@ public class MultiRequestAndOfferStack extends MultiRequestStack implements ISto
 	 * @param priority
 	 * @param sharedData
 	 */
-	public MultiRequestAndOfferStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority,
-			MultiRequestStackSharedData sharedData) {
+	public MultiRequestAndOfferStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority, MultiRequestStackSharedData sharedData) {
 		super(grid, position, buildingType, priority, sharedData);
 	}
 
 	protected void deliveryFulFilled(EMaterialType materialType) {
-		grid.offer(position, materialType, EOfferPriority.LOWEST);
+		grid.offer(position, materialType, EOfferPriority.LOWEST, this);
 	}
 
 	protected RequestOfMultiRequestStack createRequestForMaterial(EPriority priority, EMaterialType materialType) {
@@ -67,6 +67,11 @@ public class MultiRequestAndOfferStack extends MultiRequestStack implements ISto
 			System.out.println("relevant stock settings changed; " + materialType + " now accepted: " + accepted);
 			grid.updateOfferPriorities(position, materialType, accepted ? EOfferPriority.LOW : EOfferPriority.OFFER_TO_ALL);
 		}
+	}
+
+	@Override
+	public void offerEmptied() {
+		checkIfCurrentMaterialShouldBeReset();
 	}
 
 	protected class RequestOfMultiRequestAndOfferStack extends RequestOfMultiRequestStack {

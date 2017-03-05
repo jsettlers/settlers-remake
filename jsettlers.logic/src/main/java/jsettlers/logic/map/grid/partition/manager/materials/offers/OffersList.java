@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.data.MaterialCounts;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.list.PrioritizedPositionableList;
 
 /**
@@ -46,11 +47,11 @@ public final class OffersList implements Serializable {
 
 	/**
 	 * Insert an offered material at the given position.
-	 *
-	 * @param position
+	 *  @param position
 	 *            The position the offered material is located.
 	 * @param material
 	 *            The material that is offered at the given position.
+	 * @param offerPriority
 	 */
 	public void addOffer(ShortPoint2D position, EMaterialType material, EOfferPriority offerPriority) {
 		PrioritizedPositionableList<EOfferPriority, MaterialOffer> list = offersLists[material.ordinal];
@@ -60,6 +61,29 @@ public final class OffersList implements Serializable {
 			existingOffer.incrementAmount();
 		} else {
 			list.insert(new MaterialOffer(position, material, materialCounts, offerPriority, (byte) 1));
+		}
+	}
+
+	/**
+	 * Insert an offered material at the given position.
+	 *
+	 * @param position
+	 *            The position the offered material is located.
+	 * @param material
+	 *            The material that is offered at the given position.
+	 * @param offerPriority
+	 *            The priority of the offer
+	 * @param offerListener
+	 *            A listener that will be set to the offer
+	 */
+	public void addOffer(ShortPoint2D position, EMaterialType material, EOfferPriority offerPriority, IOfferEmptiedListener offerListener) {
+		PrioritizedPositionableList<EOfferPriority, MaterialOffer> list = offersLists[material.ordinal];
+
+		MaterialOffer existingOffer = list.getObjectAt(position, offerPriority);
+		if (existingOffer != null && existingOffer instanceof ListenableMaterialOffer) {
+			existingOffer.incrementAmount();
+		} else {
+			list.insert(new ListenableMaterialOffer(position, material, materialCounts, offerPriority, (byte) 1, offerListener));
 		}
 	}
 

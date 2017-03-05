@@ -39,6 +39,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
@@ -132,6 +133,10 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	public void addOffer(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority) {
 		materialOffers.addOffer(position, materialType, offerPriority);
+	}
+
+	public void addOffer(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority, IOfferEmptiedListener offerListener) {
+		materialOffers.addOffer(position, materialType, offerPriority, offerListener);
 	}
 
 	public void updateOfferPriority(ShortPoint2D position, EMaterialType materialType, EOfferPriority newPriority) {
