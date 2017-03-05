@@ -36,14 +36,14 @@ public class MultiRequestStack implements IRequestStack {
 	private static final long serialVersionUID = 1735769845576581676L;
 
 	protected final IRequestsStackGrid grid;
-	protected final ShortPoint2D       position;
-	private final   EBuildingType      buildingType;
+	protected final ShortPoint2D position;
+	private final EBuildingType buildingType;
 
 	private final MultiRequestStackSharedData sharedData;
 	protected final RequestOfMultiRequestStack[] materialRequests = new RequestOfMultiRequestStack[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	protected EMaterialType currentMaterialType;
-	private   short         popped;
+	private short popped;
 
 	protected boolean released;
 
@@ -51,11 +51,11 @@ public class MultiRequestStack implements IRequestStack {
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
 	 *
 	 * @param grid
-	 *            The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
+	 * 		The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
 	 * @param position
-	 *            The position the stack will be.
+	 * 		The position the stack will be.
 	 * @param buildingType
-	 *            Type of the building using this stack.
+	 * 		Type of the building using this stack.
 	 */
 	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority, MultiRequestStackSharedData sharedData) {
 		this.grid = grid;
@@ -120,7 +120,7 @@ public class MultiRequestStack implements IRequestStack {
 	 * Checks if all needed materials have been delivered. Therefore this method is only useful with bounded request stacks.
 	 *
 	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
-	 *         false otherwise.
+	 * false otherwise.
 	 */
 	@Override
 	public boolean isFulfilled() {

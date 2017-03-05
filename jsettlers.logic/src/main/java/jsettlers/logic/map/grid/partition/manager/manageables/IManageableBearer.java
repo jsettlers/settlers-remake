@@ -15,7 +15,6 @@
 package jsettlers.logic.map.grid.partition.manager.manageables;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
@@ -23,9 +22,8 @@ import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 
 /**
  * This interface defines methods needed by a bearer to be managed by a PartitionManager.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
 
@@ -37,9 +35,8 @@ public interface IManageableBearer extends IManageable, ILocatable, IManagerBear
 
 	/**
 	 * This interface is used by the bearers to signal the need of a reoffer of the worker creation request.
-	 * 
+	 *
 	 * @author Andreas Eberle
-	 * 
 	 */
 	interface IWorkerRequester {
 		void workerCreationRequestFailed(WorkerCreationRequest failedRequest);

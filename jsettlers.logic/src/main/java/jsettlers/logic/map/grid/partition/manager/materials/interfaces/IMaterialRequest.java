@@ -21,7 +21,6 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriorit
  * This interface defines the methods needed by a {@link IManagerBearer} to be able to carry an offer to a request.
  *
  * @author Andreas Eberle
- *
  */
 public interface IMaterialRequest extends ILocatable {
 	/**
@@ -43,7 +42,7 @@ public interface IMaterialRequest extends ILocatable {
 	 * Checks if the request is still active.
 	 *
 	 * @return Returns true if the request is still active,<br>
-	 *         otherwise it returns false.
+	 * otherwise it returns false.
 	 */
 	boolean isActive();
 

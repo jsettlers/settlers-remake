@@ -21,11 +21,12 @@ import jsettlers.common.material.EMaterialType;
 
 public final class PartitionDataSupplier implements IPartitionData {
 
-	private final byte               playerId;
-	private final short              partitionId;
+	private final byte playerId;
+	private final short partitionId;
 	private final IPartitionSettings settings;
-	private final MaterialCounts     materialCounts;
-	private       IBuildingCounts    buildingCounts;
+	private final MaterialCounts materialCounts;
+
+	private IBuildingCounts buildingCounts;
 
 	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, MaterialCounts materialCounts) {
 		this.playerId = playerId;

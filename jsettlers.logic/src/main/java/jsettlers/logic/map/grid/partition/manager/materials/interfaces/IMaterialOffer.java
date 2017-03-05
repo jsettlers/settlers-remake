@@ -15,7 +15,6 @@
 package jsettlers.logic.map.grid.partition.manager.materials.interfaces;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 
 /**

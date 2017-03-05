@@ -14,10 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -54,6 +50,10 @@ import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSetti
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
  *
@@ -83,16 +83,16 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private final MaterialsManager materialsManager;
 
-	private final LinkedList<WorkerRequest>                     workerRequests = new LinkedList<>();
+	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<>();
 	private final PredicatedPositionableList<IManageableWorker> joblessWorkers = new PredicatedPositionableList<>();
 
-	private final LinkedList<DiggerRequest>           diggerRequests = new LinkedList<>();
+	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<>();
 
-	private final LinkedList<BricklayerRequest>           bricklayerRequests = new LinkedList<>();
+	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<>();
 
-	private final LinkedList<WorkerCreationRequest>  workerCreationRequests  = new LinkedList<>();
+	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<>();
 	private final LinkedList<SoldierCreationRequest> soldierCreationRequests = new LinkedList<>();
 
 	private boolean stopped = true;
@@ -197,14 +197,14 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	/**
 	 * @param x
-	 *            x coordinate of the position to be removed from this manager and added to the given manager
+	 * 		x coordinate of the position to be removed from this manager and added to the given manager
 	 * @param y
-	 *            y coordinate of the position to be removed from this manager and added to the given manager
+	 * 		y coordinate of the position to be removed from this manager and added to the given manager
 	 * @param newManager
-	 *            new manager of the given position <br>
-	 *            NOTE: the new manager MUST NOT be null!
+	 * 		new manager of the given position <br>
+	 * 		NOTE: the new manager MUST NOT be null!
 	 * @param newHasSamePlayer
-	 * Specifies if the new manager has the same player. If so, requests also need to be moved.
+	 * 		Specifies if the new manager has the same player. If so, requests also need to be moved.
 	 */
 	public void removePositionTo(final int x, final int y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
@@ -215,13 +215,21 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 			materialsManager.movePositionTo(position, newManager.materialsManager);
 
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
-			if (bearer != null) { newManager.addJobless(bearer); }
+			if (bearer != null) {
+				newManager.addJobless(bearer);
+			}
 			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectAt(position);
-			if (bricklayer != null) { newManager.addJobless(bricklayer); }
+			if (bricklayer != null) {
+				newManager.addJobless(bricklayer);
+			}
 			IManageableDigger digger = joblessDiggers.removeObjectAt(position);
-			if (digger != null) { newManager.addJobless(digger); }
+			if (digger != null) {
+				newManager.addJobless(digger);
+			}
 			IManageableWorker worker = joblessWorkers.removeObjectAt(position);
-			if (worker != null) { newManager.addJobless(worker); }
+			if (worker != null) {
+				newManager.addJobless(worker);
+			}
 		}
 
 		removePositionTo(position, this.workerCreationRequests, newManager.workerCreationRequests, newHasSamePlayer);
@@ -276,7 +284,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 		return SCHEDULING_PERIOD;
 	}
-
 
 	private void handleWorkerRequest() {
 		WorkerRequest workerRequest = workerRequests.poll();
@@ -436,11 +443,11 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	 * FOR TESTS ONLY!
 	 *
 	 * @param position
-	 *            position to look for the offer
+	 * 		position to look for the offer
 	 * @param materialType
-	 *            type of material of the offer
+	 * 		type of material of the offer
 	 * @param offerPriority
-	 *            offerPriority of the offer
+	 * 		offerPriority of the offer
 	 * @return Returns the offer at the given position of given materialType and offerPriority or <code>null</code>
 	 */
 	public MaterialOffer getMaterialOfferAt(ShortPoint2D position, EMaterialType materialType, EOfferPriority offerPriority) {

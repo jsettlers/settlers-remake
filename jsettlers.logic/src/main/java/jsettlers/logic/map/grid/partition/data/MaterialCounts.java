@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.data;
 
-import java.io.Serializable;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
+
+import java.io.Serializable;
 
 public class MaterialCounts implements IOffersCountListener, Serializable {
 	private final int[] materialCounts = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];

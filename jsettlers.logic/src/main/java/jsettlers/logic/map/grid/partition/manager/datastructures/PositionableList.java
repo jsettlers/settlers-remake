@@ -14,22 +14,21 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
  * It is also possible to find the nearest object around a given position.
  *
- * @author Andreas Eberle
- *
  * @param <T>
+ * @author Andreas Eberle
  */
 public class PositionableList<T extends ILocatable> implements Serializable {
 	private static final long serialVersionUID = 414099060331344505L;
@@ -60,7 +59,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 	 * Returns the first object found at the given position or null.
 	 *
 	 * @param position
-	 *            The position to look for.
+	 * 		The position to look for.
 	 * @return Returns the found object at the given position or null if no object has been found.
 	 */
 	public T getObjectAt(ShortPoint2D position) {
@@ -76,13 +75,15 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 	 * Finds the object that's closest to the given position and removes it.
 	 *
 	 * @param position
-	 *            position to be used to find the nearest accepted neighbor around it.
+	 * 		position to be used to find the nearest accepted neighbor around it.
 	 * @return accepted object that's nearest to position
 	 */
 	public T removeObjectNextTo(ShortPoint2D position) {
 		T currBest = getObjectCloseTo(position);
 
-		if (currBest != null) { data.remove(currBest); }
+		if (currBest != null) {
+			data.remove(currBest);
+		}
 
 		return currBest;
 	}

@@ -23,9 +23,8 @@ import jsettlers.common.utils.MathUtils;
  * This is a data structure for storing and retrieving objects at given positions.<br>
  * It is also possible to find the nearest object around a given position.
  *
- * @author Andreas Eberle
- *
  * @param <T>
+ * @author Andreas Eberle
  */
 public class PredicatedPositionableList<T extends ILocatable> extends PositionableList<T> {
 
@@ -33,16 +32,18 @@ public class PredicatedPositionableList<T extends ILocatable> extends Positionab
 	 * Finds the object that's closest to the given position and removes it.
 	 *
 	 * @param position
-	 *            position to be used to find the nearest accepted neighbor around it.
+	 * 		position to be used to find the nearest accepted neighbor around it.
 	 * @param predicate
-	 *            if predicate != null => the result is accepted by the predicate. <br>
-	 *            if result == null every entry is accepted.
+	 * 		if predicate != null => the result is accepted by the predicate. <br>
+	 * 		if result == null every entry is accepted.
 	 * @return accepted object that's nearest to position
 	 */
 	public T removeObjectNextTo(ShortPoint2D position, Predicate<T> predicate) {
 		T currBest = getObjectCloseTo(position, predicate);
 
-		if (currBest != null) { data.remove(currBest); }
+		if (currBest != null) {
+			data.remove(currBest);
+		}
 
 		return currBest;
 	}
@@ -52,7 +53,9 @@ public class PredicatedPositionableList<T extends ILocatable> extends Positionab
 		T currBest = null;
 
 		for (T currEntry : data) {
-			if (acceptor != null && !acceptor.test(currEntry)) { continue; }
+			if (acceptor != null && !acceptor.test(currEntry)) {
+				continue;
+			}
 
 			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
 

@@ -14,18 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.interfaces;
 
-import java.io.Serializable;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
+
+import java.io.Serializable;
 
 /**
  * This interface describes a bearer that can be used by the {@link MaterialsManager} to give job orders.
  *
  * @author Andreas Eberle
- *
  */
 public interface IManagerBearer extends ILocatable, Serializable {
 
@@ -37,5 +35,4 @@ public interface IManagerBearer extends ILocatable, Serializable {
 	 * @param request
 	 */
 	void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request);
-
 }

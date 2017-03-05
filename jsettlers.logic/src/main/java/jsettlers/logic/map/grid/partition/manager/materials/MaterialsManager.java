@@ -31,9 +31,8 @@ import java.io.Serializable;
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public final class MaterialsManager implements Serializable {
 	private static final long serialVersionUID = 6395951461349453696L;
@@ -46,13 +45,13 @@ public final class MaterialsManager implements Serializable {
 
 	/**
 	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
-	 * 
+	 *
 	 * @param joblessSupplier
-	 *            {@link IJoblessSupplier} providing the jobless bearers.
+	 * 		{@link IJoblessSupplier} providing the jobless bearers.
 	 * @param offersList
-	 *            {@link OffersList} providing the offered materials.
+	 * 		{@link OffersList} providing the offered materials.
 	 * @param settings
-	 *            {@link IPartitionSettings} providing the settings of the partition.
+	 * 		{@link IPartitionSettings} providing the settings of the partition.
 	 */
 	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IPartitionSettings settings) {
 		this.joblessSupplier = joblessSupplier;
@@ -72,11 +71,11 @@ public final class MaterialsManager implements Serializable {
 
 	/**
 	 * Adds the given {@link MaterialRequestObject} as requester for the given material.
-	 * 
+	 *
 	 * @param material
-	 *            The material that is requested.
+	 * 		The material that is requested.
 	 * @param requestObject
-	 *            The {@link MaterialRequestObject} object that specifies the amount of needed material.
+	 * 		The {@link MaterialRequestObject} object that specifies the amount of needed material.
 	 */
 	public void addRequestObject(EMaterialType material, MaterialRequestObject requestObject) {
 		requestQueues[material.ordinal].insertRequest(requestObject);

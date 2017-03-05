@@ -14,20 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.offers.list;
 
-import java.util.Iterator;
-
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 
+import java.util.Iterator;
+
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
  * It is also possible to find the nearest object around a given position.
  *
- * @author Andreas Eberle
- *
  * @param <T>
+ * @author Andreas Eberle
  */
 public class ManagingPositionableList<T extends ILocatable & IListManageable> extends PositionableList<T> {
 

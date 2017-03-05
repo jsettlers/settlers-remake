@@ -31,9 +31,9 @@ public class MultiRequestAndOfferStack extends MultiRequestStack implements ISto
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
 	 *
 	 * @param grid
-	 *            The {@link IRequestsStackGrid} to be used as base for this {@link MultiRequestStack}.
+	 * 		The {@link IRequestsStackGrid} to be used as base for this {@link MultiRequestStack}.
 	 * @param position
-	 *            The position the stack will be.
+	 * 		The position the stack will be.
 	 * @param buildingType
 	 * @param priority
 	 * @param sharedData

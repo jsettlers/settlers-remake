@@ -22,9 +22,8 @@ import java.util.Set;
 
 /**
  * This class holds shared data between multiple {@link MultiRequestStack}s of the same building.
- * 
- * @author Andreas Eberle
  *
+ * @author Andreas Eberle
  */
 public class MultiRequestStackSharedData implements Serializable {
 	private static final long serialVersionUID = 3890128212034591055L;
