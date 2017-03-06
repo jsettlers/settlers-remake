@@ -122,7 +122,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 *         false otherwise.
 	 */
 	@Override
-	public boolean isFullfilled() {
+	public boolean isFulfilled() {
 		return stillRequired <= 0;
 	}
 

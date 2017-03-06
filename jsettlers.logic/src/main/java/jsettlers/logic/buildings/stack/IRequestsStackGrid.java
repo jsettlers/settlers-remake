@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,11 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.stack;
 
-import java.io.Serializable;
-
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+
+import java.io.Serializable;
 
 /**
  * This interface defines the methods a grid must supply that it can be used by a {@link RequestStack}.
@@ -61,4 +64,10 @@ public interface IRequestsStackGrid extends Serializable {
 	 *         position.
 	 */
 	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
+
+	StockSettings getPartitionStockSettings(ShortPoint2D position);
+
+	void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority, IOfferEmptiedListener offerListener);
+
+	void updateOfferPriorities(ShortPoint2D position, EMaterialType materialType, EOfferPriority newPriority);
 }

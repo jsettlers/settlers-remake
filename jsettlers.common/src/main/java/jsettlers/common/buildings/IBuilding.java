@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.util.List;
 
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -85,7 +86,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * 
 	 * @author michael
 	 */
-	static interface IMill extends IBuilding, ISoundable {
+	interface IMill extends IBuilding, ISoundable {
 		/**
 		 * If the woking animation of the mill should be shown.
 		 * 
@@ -99,7 +100,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * 
 	 * @author michael
 	 */
-	static interface IOccupied extends IBuilding {
+	interface IOccupied extends IBuilding {
 		/**
 		 * Gets a list of people occupying this building.
 		 * 
@@ -132,7 +133,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * @author Michael Zangl
 	 * @author Andreas Eberle
 	 */
-	static interface IResourceBuilding extends IBuilding {
+	interface IResourceBuilding extends IBuilding {
 		/**
 		 * Gets the productivity of this {@link IResourceBuilding}.
 		 * 
@@ -145,28 +146,14 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 * 
 		 * @return The number of resources available.
 		 */
-		public int getRemainingResourceAmount();
+		int getRemainingResourceAmount();
 	}
 
-	static interface IStock extends IBuilding {
-		/**
-		 * Checks if this stock building allows this material.
-		 * 
-		 * @param material
-		 *            The material
-		 * @return True if that material should be stored in this building.
-		 */
-		boolean acceptsMaterial(EMaterialType material);
-
-		/**
-		 * Checks if this stock building is using the global stock settings
-		 * 
-		 * @return <code>true</code> if the settings are inherited from the partition/player.
-		 */
-		boolean usesGlobalSettings();
+	interface IStock extends IBuilding {
+		IStockSettings getStockSettings();
 	}
 
-	static interface ITrading extends IBuilding {
+	interface ITrading extends IBuilding {
 		/**
 		 * Gets the amount of material requested for a given type.
 		 * 

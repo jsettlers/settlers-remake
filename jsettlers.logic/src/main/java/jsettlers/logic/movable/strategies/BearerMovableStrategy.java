@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,30 +17,33 @@ package jsettlers.logic.movable.strategies;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageable;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
 /**
  * Strategy for bearers.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class BearerMovableStrategy extends MovableStrategy implements IManageableBearer {
 	private static final long serialVersionUID = -734268451796522451L;
 
 	private EBearerState state = EBearerState.JOBLESS;
 
-	private ShortPoint2D offer;
+	private IMaterialOffer   offer;
 	private IMaterialRequest request;
-	private EMaterialType materialType;
+	private EMaterialType    materialType;
 
-	private IBarrack barrack;
-	private IWorkerRequester workerRequester;
+	private IBarrack              barrack;
+	private IWorkerRequester      workerRequester;
 	private WorkerCreationRequest workerCreationRequest;
 
 	public BearerMovableStrategy(Movable movable) {
@@ -62,14 +65,14 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
 
-			if (!movable.getPos().equals(offer)) { // if we are not at the offers position, go to it.
-				if (!super.goToPos(offer)) {
+			if (!movable.getPos().equals(offer.getPos())) { // if we are not at the offers position, go to it.
+				if (!super.goToPos(offer.getPos())) {
 					handleJobFailed(true);
 				}
 				break;
 			}
 		case GOING_TO_OFFER:
-			if (movable.getPos().equals(offer)) {
+			if (movable.getPos().equals(offer.getPos())) {
 				state = EBearerState.TAKING;
 				if (!super.take(materialType, true)) {
 					handleJobFailed(true);
@@ -138,6 +141,12 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		}
 	}
 
+	protected void tookMaterial() {
+		if (offer != null) {
+			offer.offerTaken();
+		}
+	}
+
 	@Override
 	public boolean droppingMaterial() {
 		if (request != null) {
@@ -157,8 +166,10 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		switch (state) {
 		case INIT_CARRY_JOB:
 		case GOING_TO_OFFER:
-			reoffer();
 		case TAKING:
+			if (super.movable.getMaterial() == EMaterialType.NO_MATERIAL) {
+				reoffer();
+			}
 			if (workerCreationRequest != null) {
 				workerRequester.workerCreationRequestFailed(workerCreationRequest);
 			}
@@ -213,29 +224,35 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	private void reoffer() {
-		if (super.getGrid().takeMaterial(offer, materialType)) {
-			super.getGrid().dropMaterial(offer, materialType, true, false);
-		}
+		offer.distributionAborted();
 	}
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return request == null || request.isActive();
+		if (request != null && !request.isActive()) {
+			return false;
+		}
+
+		if (offer != null) {
+			EOfferPriority minimumAcceptedPriority = request != null ? request.getMinimumAcceptedOfferPriority() : EOfferPriority.LOWEST;
+			if (!offer.isStillValid(minimumAcceptedPriority)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
-	public boolean deliver(EMaterialType materialType, ShortPoint2D offer, IMaterialRequest request) {
+	public void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request) {
 		if (state == EBearerState.JOBLESS) {
 			this.offer = offer;
 			this.request = request;
 			this.materialType = materialType;
-
 			this.state = EBearerState.INIT_CARRY_JOB;
-			request.deliveryAccepted();
 
-			return true;
-		} else {
-			return false;
+			offer.distributionAccepted();
+			request.deliveryAccepted();
 		}
 	}
 
@@ -255,7 +272,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
+	public boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, IMaterialOffer offer) {
 		if (state == EBearerState.JOBLESS) {
 			this.workerRequester = requester;
 			this.workerCreationRequest = workerCreationRequest;
@@ -263,6 +280,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			this.state = EBearerState.INIT_CONVERT_WITH_TOOL_JOB;
 			this.materialType = workerCreationRequest.requestedMovableType().getTool();
 
+			offer.distributionAccepted();
 			return true;
 		} else {
 			return false;
@@ -300,9 +318,9 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	/**
 	 * This enum defines the internal states of a bearer.
-	 * 
+	 *
 	 * @author Andreas Eberle
-	 * 
+	 *
 	 */
 	private enum EBearerState {
 		JOBLESS,

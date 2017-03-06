@@ -176,7 +176,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private boolean upgradeSoldiers(ESoldierType type) {
-		if (player.getManaInformation().isUpgradePossible(type)) {
+		if (player.getMannaInformation().isUpgradePossible(type)) {
 			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(player.playerId, type));
 			return true;
 		}

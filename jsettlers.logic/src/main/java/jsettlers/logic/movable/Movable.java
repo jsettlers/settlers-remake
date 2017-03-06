@@ -253,6 +253,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			grid.takeMaterial(position, takeDropMaterial);
 			setMaterial(takeDropMaterial);
 			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+			strategy.tookMaterial();
 			break;
 		case DROP:
 			if (takeDropMaterial != null && takeDropMaterial.isDroppable()) {

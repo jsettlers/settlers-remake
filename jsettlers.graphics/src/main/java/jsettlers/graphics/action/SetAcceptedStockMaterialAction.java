@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,13 +23,14 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author Michael Zangl
  */
-public class SetMaterialStockAcceptedAction extends PointAction {
+public class SetAcceptedStockMaterialAction extends PointAction {
 
-	private EMaterialType material;
-	private boolean accept;
+	private final EMaterialType material;
+	private final boolean accept;
+	private final boolean local;
 
 	/**
-	 * Create a new {@link SetMaterialStockAcceptedAction}.
+	 * Create a new {@link SetAcceptedStockMaterialAction}.
 	 * 
 	 * @param mapPosition
 	 *            The position on the map to control.
@@ -37,11 +38,14 @@ public class SetMaterialStockAcceptedAction extends PointAction {
 	 *            The material to change
 	 * @param accept
 	 *            <code>true</code> if that material should be accepted in stock for that partition.
+	 * @param local
+	 *            If <code>true</code>, this setting is set locally for a single stock.
 	 */
-	public SetMaterialStockAcceptedAction(ShortPoint2D mapPosition, EMaterialType material, boolean accept) {
+	public SetAcceptedStockMaterialAction(ShortPoint2D mapPosition, EMaterialType material, boolean accept, boolean local) {
 		super(EActionType.SET_MATERIAL_STOCK_ACCEPTED, mapPosition);
 		this.material = material;
 		this.accept = accept;
+		this.local = local;
 	}
 
 	/**
@@ -70,8 +74,12 @@ public class SetMaterialStockAcceptedAction extends PointAction {
 		return accept;
 	}
 
+	public boolean isLocalSetting(){
+		return local;
+	}
+
 	@Override
 	public String toString() {
-		return "SetMaterialStockAcceptedAction [material=" + material + ", accept=" + accept + ", getPosition()=" + getPosition() + "]";
+		return "SetAcceptedStockMaterialAction [material=" + material + ", accept=" + accept + ", getPosition()=" + getPosition() + "]";
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,49 +12,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.button.stock;
 
-public class AnimateablePosition {
-	private static final long ANIMATION_TIME = 300;
-	private float startx, starty;
-	private float destx, desty;
-	private long animationstart = 0;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 
-	public AnimateablePosition(float startx, float starty) {
-		this.startx = startx;
-		this.starty = starty;
-		this.destx = startx;
-		this.desty = starty;
+/**
+ * This is a material that is displayed on the stock screen.
+ *
+ * @author Michael Zangl
+ * @author Andreas Eberle
+ */
+public class StockControlButton extends SelectionManagedMaterialButton implements BuildingSelectionContent.StateDependingElement {
+	/**
+	 * Creates a new stock control button.
+	 *
+	 * @param material
+	 *            The material.
+	 */
+	public StockControlButton(EMaterialType material) {
+		super(material);
 	}
 
-	public float getX() {
-		float p = getProgress();
-		return (1 - p) * startx + p * destx;
+	@Override
+	public void setState(BuildingState state) {
+		setDotColor(computeColor(state));
 	}
 
-	private float getProgress() {
-		if (animationstart == 0) {
-			return 1; // faster
+	private DotColor computeColor(BuildingState state) {
+		if (state.stockAcceptsMaterial(getMaterial())) {
+			return DotColor.GREEN;
+		} else {
+			return DotColor.RED;
 		}
-
-		long timediff = System.currentTimeMillis() - animationstart;
-		if (timediff >= ANIMATION_TIME) {
-			animationstart = 0;
-			return 1;
-		}
-		return (float) timediff / ANIMATION_TIME;
-	}
-
-	public float getY() {
-		float p = getProgress();
-		return (1 - p) * starty + p * desty;
-	}
-
-	public void setPosition(float x, float y) {
-		this.startx = getX();
-		this.starty = getY();
-		this.animationstart = System.currentTimeMillis();
-		this.destx = x;
-		this.desty = y;
 	}
 }

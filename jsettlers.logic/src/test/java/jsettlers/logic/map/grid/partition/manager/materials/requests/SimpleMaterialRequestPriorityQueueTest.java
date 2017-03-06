@@ -29,11 +29,10 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * This is a test for the {@link MaterialsForBuildingsRequestPrioQueue} data structure.
+ * This is a test for the {@link MaterialsForBuildingsRequestPriorityQueue} data structure.
  * 
  * @author Andreas Eberle
  * 

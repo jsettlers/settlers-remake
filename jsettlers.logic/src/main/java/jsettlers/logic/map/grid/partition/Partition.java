@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,24 +16,25 @@ package jsettlers.logic.map.grid.partition;
 
 import java.io.Serializable;
 
+import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
 /**
  * This class holds the metadata of a partition.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class Partition extends PartitionManager implements Serializable {
 	private static final long serialVersionUID = -2087692347209993840L;
 
 	final short partitionId;
-	final byte playerId;
+	final byte  playerId;
 
 	private int counter = 0;
-	private int xSum = 0;
-	private int ySum = 0;
+	private int xSum    = 0;
+	private int ySum    = 0;
 
 	public Partition(short partitionId, byte playerId, IOffersCountListener countListener) {
 		super(countListener);
@@ -78,8 +79,7 @@ public final class Partition extends PartitionManager implements Serializable {
 		newPartitionObject.increment(x, y);
 		super.removePositionTo(x, y, newPartitionObject, newPartitionObject.playerId == this.playerId);
 
-		if (isEmpty())
-			super.stopManager();
+		if (isEmpty()) { super.stopManager(); }
 	}
 
 	public boolean isEmpty() {
@@ -92,5 +92,9 @@ public final class Partition extends PartitionManager implements Serializable {
 
 	public int getNumberOfElements() {
 		return counter;
+	}
+
+	public PartitionDataSupplier getPartitionData() {
+		return new PartitionDataSupplier(playerId, partitionId, getPartitionSettings(), getMaterialCounts());
 	}
 }

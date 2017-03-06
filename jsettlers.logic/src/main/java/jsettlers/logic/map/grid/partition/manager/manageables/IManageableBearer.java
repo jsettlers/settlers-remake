@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,30 +15,28 @@
 package jsettlers.logic.map.grid.partition.manager.manageables;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 
 /**
  * This interface defines methods needed by a bearer to be managed by a PartitionManager.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
 
 	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request);
 
-	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, ShortPoint2D offer);
+	boolean becomeWorker(IWorkerRequester requester, WorkerCreationRequest request, IMaterialOffer offer);
 
 	boolean becomeSoldier(IBarrack barrack);
 
 	/**
 	 * This interface is used by the bearers to signal the need of a reoffer of the worker creation request.
-	 * 
+	 *
 	 * @author Andreas Eberle
-	 * 
 	 */
 	interface IWorkerRequester {
 		void workerCreationRequestFailed(WorkerCreationRequest failedRequest);

@@ -25,11 +25,12 @@ import jsettlers.graphics.action.Action;
  * @author michael
  */
 public class Button extends UIPanel {
+	private final ImageLink activeImage;
+	private final String description;
+
 	private boolean active = false;
 	private Action action;
-	private final String description;
 	private ImageLink image;
-	private final ImageLink activeImage;
 
 	public Button(ImageLink image) {
 		this(null, image, image, "");
@@ -57,6 +58,10 @@ public class Button extends UIPanel {
 
 	public Action getAction() {
 		return action;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 	@Override

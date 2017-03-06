@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,31 +14,30 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.stack.multi;
 
+import jsettlers.common.material.EMaterialType;
+
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jsettlers.common.material.EMaterialType;
-
 /**
  * This class holds shared data between multiple {@link MultiRequestStack}s of the same building.
- * 
- * @author Andreas Eberle
  *
+ * @author Andreas Eberle
  */
 public class MultiRequestStackSharedData implements Serializable {
 	private static final long serialVersionUID = 3890128212034591055L;
 
-	final short[] requestedMaterials;
+	final IMultiMaterialRequestSettings requestSettings;
 	final byte[] inDelivery = new byte[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-	final Set<MultiRequestStack>[] handlingStacks;
+	private final Set<MultiRequestStack>[] handlingStacks;
 
 	@SuppressWarnings("unchecked")
-	public MultiRequestStackSharedData(short[] requestedMaterials) {
-		this.requestedMaterials = requestedMaterials;
+	public MultiRequestStackSharedData(IMultiMaterialRequestSettings requestSettings) {
+		this.requestSettings = requestSettings;
 		this.handlingStacks = new Set[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
-			this.handlingStacks[i] = new LinkedHashSet<MultiRequestStack>();
+			this.handlingStacks[i] = new LinkedHashSet<>();
 		}
 	}
 
@@ -51,8 +50,10 @@ public class MultiRequestStackSharedData implements Serializable {
 	}
 
 	public short getStillNeededIfNoOthersHandleIt(EMaterialType materialType) {
-		for (MultiRequestStack stack : handlingStacks[materialType.ordinal]) {
-			if (stack.canAcceptMoreDeliveries()) {
+		Set<MultiRequestStack> stacksHandlingThisMaterial = handlingStacks[materialType.ordinal];
+
+		for (MultiRequestStack stack : stacksHandlingThisMaterial) {
+			if (stack.canAcceptMoreDeliveriesOf(materialType)) {
 				return 0;
 			}
 		}
@@ -61,6 +62,6 @@ public class MultiRequestStackSharedData implements Serializable {
 	}
 
 	public short getStillNeeded(EMaterialType materialType) {
-		return (short) (requestedMaterials[materialType.ordinal] - inDelivery[materialType.ordinal]);
+		return (short) (requestSettings.getRequestedAmount(materialType) - inDelivery[materialType.ordinal]);
 	}
 }
