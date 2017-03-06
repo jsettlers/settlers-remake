@@ -421,13 +421,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void sendConvertAction(ConvertAction action) {
-		final List<ISelectable> convertables = new LinkedList<ISelectable>();
+		final List<ISelectable> convertables = new LinkedList<>();
 		switch (action.getTargetType()) {
 		case BEARER:
 			for (final ISelectable curr : currentSelection) {
 				if (curr instanceof IMovable) {
 					final EMovableType currType = ((IMovable) curr).getMovableType();
-					if (currType == EMovableType.THIEF || currType == EMovableType.PIONEER || currType == EMovableType.GEOLOGIST) {
+					if (currType == EMovableType.PIONEER) {
 						convertables.add(curr);
 						if (convertables.size() >= action.getAmount()) {
 							break;
