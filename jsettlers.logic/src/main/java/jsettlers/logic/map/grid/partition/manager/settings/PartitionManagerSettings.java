@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,12 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.settings;
 
-import java.io.Serializable;
-
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+
+import java.io.Serializable;
 
 /**
  * This class bundles all settings for the {@link PartitionManager}.
@@ -31,16 +32,20 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	private static final long serialVersionUID = -6269898822727665606L;
 
 	private static final DistributionSettingsForMaterial[] defaultSettings = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
+	private static final boolean[] INITIAL_STOCK_SETTINGS = new boolean[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	static {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.VALUES[i]);
 		}
+
+		INITIAL_STOCK_SETTINGS[EMaterialType.GOLD.ordinal] = true; // GOLD is active by default
 	}
 
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
 	private final MaterialProductionSettings materialProductionSettings;
+	private final StockSettings stockSettings;
 
 	public PartitionManagerSettings() {
 		materialTypeForPriorities = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
@@ -58,10 +63,11 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		}
 
 		materialProductionSettings = new MaterialProductionSettings();
+		stockSettings = new StockSettings(INITIAL_STOCK_SETTINGS);
 	}
 
 	@Override
-	public EMaterialType getMaterialTypeForPrio(int priorityIdx) {
+	public EMaterialType getMaterialTypeForPriority(int priorityIdx) {
 		return materialTypeForPriorities[priorityIdx];
 	}
 
@@ -76,7 +82,7 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	 * @param materialTypeForPriority
 	 *            An array of all droppable {@link EMaterialType}s. The first element has the highest priority, the last one has the lowest.
 	 */
-	public void setMaterialTypesForPriorities(EMaterialType[] materialTypeForPriority) {
+	public void setMaterialPriorities(EMaterialType[] materialTypeForPriority) {
 		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
 
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
@@ -89,9 +95,16 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		return materialProductionSettings;
 	}
 
+	public void setAcceptedStockMaterial(EMaterialType materialType, boolean accepted) {
+		stockSettings.setAccepted(materialType, accepted);
+	}
+
 	@Override
-	public boolean getStockAcceptsMaterial(EMaterialType material) {
-		// TODO Auto-generated method stub
-		return true;
+	public StockSettings getStockSettings() {
+		return stockSettings;
+	}
+
+	public void setMaterialDistributionSettings(EMaterialType materialType, float[] probabilities) {
+		getDistributionSettings(materialType).setProbabilities(probabilities);
 	}
 }

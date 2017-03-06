@@ -35,7 +35,7 @@ public class SettlersSoldiersMenu {
     }
 
     public String getPromotionText() {
-        return Labels.getString("upgrade_warriros_progress", player.getManaInformation().getNextUpdateProgressPercent());
+        return Labels.getString("upgrade_warriors_progress", player.getMannaInformation().getNextUpdateProgressPercent());
     }
 
     public boolean isSwordsmenPromotionPossible() {
@@ -51,7 +51,7 @@ public class SettlersSoldiersMenu {
     }
 
     private boolean isPromotionPossible(ESoldierType soldierType) {
-        return player.getManaInformation().isUpgradePossible(soldierType);
+        return player.getMannaInformation().isUpgradePossible(soldierType);
 
     }
 
@@ -69,9 +69,9 @@ public class SettlersSoldiersMenu {
 
     private ImageLink getPromotionImageLink(ImageLink[] possibleImages, ImageLink[] notPossibleImages, ESoldierType soldierType) {
         if (isPromotionPossible(soldierType)) {
-            return possibleImages[player.getManaInformation().getLevel(soldierType)];
+            return possibleImages[player.getMannaInformation().getLevel(soldierType)];
         } else {
-            return notPossibleImages[player.getManaInformation().getLevel(soldierType)];
+            return notPossibleImages[player.getMannaInformation().getLevel(soldierType)];
         }
     }
 

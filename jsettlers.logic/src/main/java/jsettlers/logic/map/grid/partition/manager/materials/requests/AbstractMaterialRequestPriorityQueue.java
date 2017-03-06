@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -63,8 +63,8 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 */
 	public final MaterialRequestObject getHighestRequest() {
 		// Start with highest priority to lower ones. Skip the EPriority.STOPPED queue (index 0)
-		for (int prio = EPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
-			MaterialRequestObject request = getRequestForPrio(prio);
+		for (int priority = EPriority.NUMBER_OF_PRIORITIES - 1; priority >= 1; priority--) {
+			MaterialRequestObject request = getRequestForPriority(priority);
 			if (request != null) {
 				return request;
 			}
@@ -117,11 +117,11 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 
 	/**
 	 * 
-	 * @param prio
+	 * @param priority
 	 *            Ordinal value of the priority.
 	 * @return
 	 */
-	protected abstract MaterialRequestObject getRequestForPrio(int prio);
+	protected abstract MaterialRequestObject getRequestForPriority(int priority);
 
 	@Override
 	public abstract boolean equals(Object obj);

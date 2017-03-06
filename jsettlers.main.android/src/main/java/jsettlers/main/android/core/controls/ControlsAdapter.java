@@ -10,6 +10,7 @@ import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.main.android.gameplay.presenters.BuildingsMenu;
@@ -43,7 +44,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
-		mapContent = new MapContent(game, soundPlayer, androidControls);
+		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
 	}
 
@@ -155,7 +156,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 	/**
 	 * TaskControls implementation
-	 * 
+	 *
 	 * @return
 	 */
 	@Override

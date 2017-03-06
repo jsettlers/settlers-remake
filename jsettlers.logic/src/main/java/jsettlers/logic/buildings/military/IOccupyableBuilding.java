@@ -15,6 +15,7 @@
 package jsettlers.logic.buildings.military;
 
 import jsettlers.common.buildings.OccupierPlace;
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
@@ -25,7 +26,7 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public interface IOccupyableBuilding {
+public interface IOccupyableBuilding extends ILocatable{
 
 	/**
 	 * 

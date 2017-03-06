@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,14 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.ai.highlevel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import jsettlers.ai.army.ArmyGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
@@ -38,14 +46,6 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
@@ -255,10 +255,10 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 		// destroy not necessary buildings to get enough space for livinghouses in end-game
 		if (isEndGame && isWoodJam()) {
-			List<ShortPoint2D> forresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
-			if (forresters.size() > 1) {
-				for (int i = 1; i < forresters.size(); i++) {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, forresters.get(i)));
+			List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
+			if (foresters.size() > 1) {
+				for (int i = 1; i < foresters.size(); i++) {
+					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, foresters.get(i)));
 				}
 			}
 			for (ShortPoint2D lumberJackPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId)) {
@@ -288,8 +288,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean isWoodJam() {
-		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.TRUNK,
-				playerId) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
+		return aiStatistics.getNumberOfMaterialTypeForPlayer(EMaterialType.TRUNK, playerId) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) * 2;
 	}
 
 	private void buildBuildings() {

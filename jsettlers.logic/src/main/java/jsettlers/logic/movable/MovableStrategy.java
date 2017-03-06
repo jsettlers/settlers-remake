@@ -360,4 +360,7 @@ public abstract class MovableStrategy implements Serializable {
 	protected boolean receiveHit() {
 		return true;
 	}
+
+	protected void tookMaterial() {
+	}
 }

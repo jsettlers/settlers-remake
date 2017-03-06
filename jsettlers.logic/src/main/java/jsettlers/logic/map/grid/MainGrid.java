@@ -43,9 +43,18 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.*;
+import jsettlers.common.map.object.BuildingObject;
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.*;
+import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapLine;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -66,6 +75,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
+import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -85,6 +95,8 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
@@ -1141,7 +1153,7 @@ public final class MainGrid implements Serializable {
 			}
 
 			if (successful && offer) {
-				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType, EOfferPriority.OFFER_TO_ALL);
 			}
 
 			return successful;
@@ -1537,18 +1549,32 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
+			public StockSettings getPartitionStockSettings(ShortPoint2D position) {
+				return partitionsGrid.getPartitionSettings(position).getStockSettings();
+			}
+
+			@Override
 			public final byte getStackSize(ShortPoint2D position, EMaterialType materialType) {
 				return mapObjectsManager.getStackSize(position.x, position.y, materialType);
 			}
 
 			@Override
-			// FIXME @Andreas Eberle: implement check to prevent multiple offers for the same material
 			public final void createOffersForAvailableMaterials(ShortPoint2D position, EMaterialType materialType) {
 				byte stackSize = mapObjectsManager.getStackSize(position.x, position.y, materialType);
 				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				for (byte i = 0; i < stackSize; i++) {
-					partition.addOffer(position, materialType);
+					partition.addOffer(position, materialType, EOfferPriority.OFFER_TO_ALL);
 				}
+			}
+
+			@Override
+			public void offer(ShortPoint2D position, EMaterialType materialType, EOfferPriority priority, IOfferEmptiedListener offerListener) {
+				partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType, priority, offerListener);
+			}
+
+			@Override
+			public void updateOfferPriorities(ShortPoint2D position, EMaterialType materialType, EOfferPriority newPriority) {
+				partitionsGrid.getPartitionAt(position.x, position.y).updateOfferPriority(position, materialType, newPriority);
 			}
 		}
 
@@ -1770,13 +1796,13 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.setMaterialDistributionSettings(managerPosition, materialType, probabilities);
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, probabilities);
 		}
 
 		@Override
 		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.setMaterialPrioritiesSettings(managerPosition, materialTypeForPriority);
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialPriorities(materialTypeForPriority);
 		}
 
 		@Override
@@ -1807,6 +1833,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
 			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
+		}
+
+		@Override
+		public void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted) {
+			partitionsGrid.getPartitionSettings(position).setAcceptedStockMaterial(materialType, accepted);
 		}
 	}
 

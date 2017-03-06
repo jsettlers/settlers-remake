@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,12 +24,12 @@ import java.io.Serializable;
 public class EndgameStatistic implements IEndgameStatistic, Serializable {
 	private static final long serialVersionUID = -1352905249487671842L;
 
-	private ManaInformation manaInformation;
+	private MannaInformation mannaInformation;
 	private short amountOfProducedSoldiers = 0;
 	private short amountOfProducedGold = 0;
 
-	public EndgameStatistic(ManaInformation manaInformation) {
-		this.manaInformation = manaInformation;
+	public EndgameStatistic(MannaInformation mannaInformation) {
+		this.mannaInformation = mannaInformation;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class EndgameStatistic implements IEndgameStatistic, Serializable {
 
 	@Override
 	public short getAmountOfProducedMana() {
-		return manaInformation.getAmountOfMana();
+		return mannaInformation.getAmountOfManna();
 	}
 
 	@Override

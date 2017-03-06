@@ -23,7 +23,7 @@ import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
-import jsettlers.common.player.IManaInformation;
+import jsettlers.common.player.IMannaInformation;
 import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
@@ -49,11 +49,11 @@ public class WarriorsPanel extends AbstractContentProvider {
 		}
 		panel = new WarriorsLayout()._root;
 		for (final UIElement element : panel.getChildren()) {
-			if (element instanceof IManaInformationConsument) {
-				((IManaInformationConsument) element).setManaInformation(player.getManaInformation());
+			if (element instanceof IMannaInformationConsumer) {
+				((IMannaInformationConsumer) element).setMannaInformation(player.getMannaInformation());
 			}
-			if (element instanceof ICombatStrengthInformationConsument) {
-				((ICombatStrengthInformationConsument) element)
+			if (element instanceof ICombatStrengthInformationConsumer) {
+				((ICombatStrengthInformationConsumer) element)
 						.setCombatStrengthInformation(player.getCombatStrengthInformation());
 			}
 		}
@@ -69,11 +69,11 @@ public class WarriorsPanel extends AbstractContentProvider {
 		return panel;
 	}
 
-	public interface IManaInformationConsument {
-		void setManaInformation(IManaInformation manaInformation);
+	public interface IMannaInformationConsumer {
+		void setMannaInformation(IMannaInformation mannaInformation);
 	}
 
-	public interface ICombatStrengthInformationConsument {
+	public interface ICombatStrengthInformationConsumer {
 		void setCombatStrengthInformation(ICombatStrengthInformation combatStrengthInformation);
 	}
 
@@ -82,21 +82,20 @@ public class WarriorsPanel extends AbstractContentProvider {
 	 *
 	 * @author codingberlin
 	 */
-	public static class UpgradeProgressLabel extends Label implements IManaInformationConsument {
-		private IManaInformation manaInformation;
+	public static class UpgradeProgressLabel extends Label implements IMannaInformationConsumer {
+		private IMannaInformation mannaInformation;
 
 		public UpgradeProgressLabel() {
 			super("", EFontSize.NORMAL);
 		}
 
-		@Override
-		public void setManaInformation(IManaInformation manaInformation) {
-			this.manaInformation = manaInformation;
+		public void setMannaInformation(IMannaInformation mannaInformation) {
+			this.mannaInformation = mannaInformation;
 		}
 
 		@Override
 		public synchronized void drawAt(GLDrawContext gl) {
-			setText(Labels.getString("upgrade_warriros_progress", manaInformation.getNextUpdateProgressPercent()));
+			setText(Labels.getString("upgrade_warriors_progress", mannaInformation.getNextUpdateProgressPercent()));
 			super.drawAt(gl);
 		}
 	}
@@ -106,7 +105,7 @@ public class WarriorsPanel extends AbstractContentProvider {
 	 *
 	 * @author codingberlin
 	 */
-	public static class CombatStrengthLabel extends Label implements ICombatStrengthInformationConsument {
+	public static class CombatStrengthLabel extends Label implements ICombatStrengthInformationConsumer {
 		private ICombatStrengthInformation combatStrengthInformation;
 
 		public CombatStrengthLabel() {
@@ -126,16 +125,16 @@ public class WarriorsPanel extends AbstractContentProvider {
 	}
 
 	/**
-	 * This is a button that displays the upgrade possibility of a mana type.
+	 * This is a button that displays the upgrade possibility of a manna type.
 	 *
 	 * @author codingberlin
 	 */
-	public static class UpgradeButton extends Button implements IManaInformationConsument {
+	public static class UpgradeButton extends Button implements IMannaInformationConsumer {
 
-		private final ESoldierType soldierType;
-		private IManaInformation manaInformation;
-		private final ImageLink[] imageLinksActive;
-		private final ImageLink[] imageLinksInActive;
+		private final ESoldierType      soldierType;
+		private       IMannaInformation mannaInformation;
+		private final ImageLink[]       imageLinksActive;
+		private final ImageLink[]       imageLinksInActive;
 
 		public UpgradeButton(ESoldierType soldierType) {
 			super(new SoldierAction(EActionType.UPGRADE_SOLDIERS, soldierType), null, null, "");
@@ -162,27 +161,26 @@ public class WarriorsPanel extends AbstractContentProvider {
 			}
 		}
 
-		@Override
-		public void setManaInformation(IManaInformation manaInformation) {
-			this.manaInformation = manaInformation;
+		public void setMannaInformation(IMannaInformation mannaInformation) {
+			this.mannaInformation = mannaInformation;
 		}
 
 		@Override
 		public boolean isActive() {
-			return manaInformation.isUpgradePossible(soldierType);
+			return mannaInformation.isUpgradePossible(soldierType);
 		}
 
 		@Override
 		protected ImageLink getBackgroundImage() {
-			if (manaInformation == null) {
+			if (mannaInformation == null) {
 				return null;
 			}
-			if (manaInformation.getLevel(soldierType) >= manaInformation.getMaximumLevel()) {
+			if (mannaInformation.getLevel(soldierType) >= mannaInformation.getMaximumLevel()) {
 				return null;
 			} else if (isActive()) {
-				return imageLinksActive[manaInformation.getLevel(soldierType)];
+				return imageLinksActive[mannaInformation.getLevel(soldierType)];
 			} else {
-				return imageLinksInActive[manaInformation.getLevel(soldierType)];
+				return imageLinksInActive[mannaInformation.getLevel(soldierType)];
 			}
 		}
 

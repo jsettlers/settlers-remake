@@ -26,7 +26,8 @@ local.properties
 bin
 gen
 
-# JSettlers folders
+# JSettlers folders and files
 release
 save
 logs
+/replayForSavegame.log

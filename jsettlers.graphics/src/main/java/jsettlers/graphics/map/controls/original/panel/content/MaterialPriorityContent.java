@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,14 +22,14 @@ import java.util.BitSet;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
-import jsettlers.graphics.action.SetMaterialStockAcceptedAction;
-import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
+import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
+import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialPriorityLayout;
@@ -41,27 +41,6 @@ import jsettlers.graphics.ui.layout.MaterialPriorityLayout;
  */
 public class MaterialPriorityContent extends AbstractContentProvider {
 	private static final int MAX_MOVE_AMOUNT = 100;
-
-	/**
-	 * This is a button that displays a material for the priority view.
-	 * 
-	 * @author Michael Zangl
-	 *
-	 */
-	public static class MaterialPriorityButton extends MaterialButton {
-
-		/**
-		 * Creates a new Button.
-		 * 
-		 * @param panel
-		 *            The outer panel.
-		 * @param material
-		 *            THe material to display.
-		 */
-		public MaterialPriorityButton(MaterialPriorityPanel panel, EMaterialType material) {
-			super(new SelectMaterialAction(panel, material), material);
-		}
-	}
 
 	/**
 	 * Displays an ordered list of materials.
@@ -85,8 +64,9 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		/**
 		 * This is a mapping: {@link EMaterialType} -> label position.
 		 */
-		private final AnimateablePosition[] positions = new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
-		private final MaterialPriorityButton[] buttons = new MaterialPriorityButton[EMaterialType.NUMBER_OF_MATERIALS];
+		private final AnimatablePosition[] positions = new AnimatablePosition[EMaterialType.NUMBER_OF_MATERIALS];
+		private final SelectionManagedMaterialButton[] buttons = new SelectionManagedMaterialButton[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+		private final SelectionManager selectionManager = new SelectionManager();
 
 		/**
 		 * The order that is currently displayed.
@@ -95,7 +75,6 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 		private ShortPoint2D currentPos;
 		private IGraphicsGrid currentGrid;
-		private EMaterialType selected;
 
 		/**
 		 * Creates a new material panel.
@@ -106,8 +85,9 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			}
 
 			for (EMaterialType material : EMaterialType.DROPPABLE_MATERIALS) {
-				buttons[material.ordinal] = new MaterialPriorityButton(this, material);
+				buttons[material.ordinal] = new SelectionManagedMaterialButton(material);
 			}
+			selectionManager.setButtons(buttons);
 		}
 
 		private void addRowPositions(int rowIndex, boolean descent) {
@@ -144,9 +124,9 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		}
 
 		private void setToPosition(EMaterialType material, int newindex) {
-			AnimateablePosition pos = positions[material.ordinal];
+			AnimatablePosition pos = positions[material.ordinal];
 			if (pos == null) {
-				positions[material.ordinal] = new AnimateablePosition(xpoints[newindex], ypoints[newindex]);
+				positions[material.ordinal] = new AnimatablePosition(xpoints[newindex], ypoints[newindex]);
 			} else {
 				pos.setPosition(xpoints[newindex], ypoints[newindex]);
 			}
@@ -177,16 +157,18 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 				for (int i = 0; i < newOrder.length; i++) {
 					// FIXME: Synchronize!
-					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPrio(i);
+					newOrder[i] = data.getPartitionSettings().getMaterialTypeForPriority(i);
 				}
-				for (EMaterialType m : EMaterialType.VALUES) {
-					materialsAccepted.set(m.ordinal, data.getPartitionSettings().getStockAcceptsMaterial(m));
+
+				IStockSettings stockSettings = data.getPartitionSettings().getStockSettings();
+				for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
+					materialsAccepted.set(materialType.ordinal, stockSettings.isAccepted(materialType));
 				}
 				setOrder(newOrder);
 
 				for (EMaterialType material : newOrder) {
-					MaterialPriorityButton button = buttons[material.ordinal];
-					AnimateablePosition position = positions[material.ordinal];
+					SelectionManagedMaterialButton button = buttons[material.ordinal];
+					AnimatablePosition position = positions[material.ordinal];
 
 					button.setDotColor(getColor(materialsAccepted, button));
 					removeChild(button);
@@ -195,26 +177,11 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			}
 		}
 
-		private DotColor getColor(BitSet materialsAccepted, MaterialPriorityButton button) {
+		private DotColor getColor(BitSet materialsAccepted, SelectionManagedMaterialButton button) {
 			if (materialsAccepted.get(button.getMaterial().ordinal)) {
 				return DotColor.GREEN;
 			} else {
 				return DotColor.RED;
-			}
-		}
-
-		/**
-		 * Sets the selected material type.
-		 *
-		 * @param newlySelected
-		 *            The selected material.
-		 */
-		public void selectMaterial(EMaterialType newlySelected) {
-			this.selected = newlySelected;
-			for (MaterialPriorityButton b : buttons) {
-				if (b != null) {
-					b.setSelected(b.getMaterial() == newlySelected);
-				}
 			}
 		}
 
@@ -283,7 +250,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * @return The selected material.
 		 */
 		public EMaterialType getSelected() {
-			return selected;
+			return selectionManager.getSelected();
 		}
 
 		/**
@@ -294,35 +261,6 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		public ShortPoint2D getMapPosition() {
 			return currentPos;
 		}
-	}
-
-	/**
-	 * An action that selects a material in this panel.
-	 * 
-	 * @author Michael Zangl
-	 */
-	private static class SelectMaterialAction extends ExecutableAction {
-		private final EMaterialType eMaterialType;
-		private final MaterialPriorityPanel panel;
-
-		/**
-		 * Creates a new {@link SelectMaterialAction}.
-		 * 
-		 * @param panel
-		 *            The outer panel.
-		 * @param eMaterialType
-		 *            The material type.
-		 */
-		SelectMaterialAction(MaterialPriorityPanel panel, EMaterialType eMaterialType) {
-			this.panel = panel;
-			this.eMaterialType = eMaterialType;
-		}
-
-		@Override
-		public void execute() {
-			panel.selectMaterial(eMaterialType);
-		}
-
 	}
 
 	/**
@@ -363,42 +301,6 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		}
 	}
 
-	/**
-	 * This is a button that changes the storage accepting state for that material.
-	 * 
-	 * @author Michael Zangl
-	 *
-	 */
-	public static class ChangeAcceptButton extends Button {
-		private MaterialPriorityPanel panel;
-		private boolean accept;
-
-		/**
-		 * Creates a new {@link ChangeAcceptButton}.
-		 * 
-		 * @param image
-		 *            The image to display
-		 * @param description
-		 *            The description to use.
-		 */
-		public ChangeAcceptButton(ImageLink image, String description) {
-			super(null, image, image, description);
-		}
-
-		@Override
-		public Action getAction() {
-			if (panel == null) {
-				return null;
-			}
-			EMaterialType selected = panel.getSelected();
-			ShortPoint2D mapPosition = panel.getMapPosition();
-			if (selected == null || mapPosition == null) {
-				return null;
-			}
-			return new SetMaterialStockAcceptedAction(mapPosition, selected, accept);
-		}
-	}
-
 	private final MaterialPriorityLayout layout;
 
 	/**
@@ -407,10 +309,8 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 	public MaterialPriorityContent() {
 		layout = new MaterialPriorityLayout();
 
-		layout.stock_accept.panel = layout.panel;
-		layout.stock_accept.accept = true;
-		layout.stock_reject.panel = layout.panel;
-		layout.stock_reject.accept = false;
+		layout.stock_accept.configure(layout.panel::getSelected, layout.panel::getMapPosition, true, false);
+		layout.stock_reject.configure(layout.panel::getSelected, layout.panel::getMapPosition, false, false);
 
 		layout.all_up.panel = layout.panel;
 		layout.all_up.add = -MAX_MOVE_AMOUNT;

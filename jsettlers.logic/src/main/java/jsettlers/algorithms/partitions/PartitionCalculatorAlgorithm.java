@@ -111,6 +111,7 @@ public final class PartitionCalculatorAlgorithm {
 		this.containing = containing;
 		this.blockingProvider = blockingProvider;
 		this.partitionsGrid = new short[width * height];
+		this.partitions[BLOCKED_PARTITION] = BLOCKED_PARTITION;
 	}
 
 	/**
@@ -140,7 +141,7 @@ public final class PartitionCalculatorAlgorithm {
 					int northEastPartition = -1;
 
 					if (containing.get(westX + westY * width)) {
-						short currPartition = partitionsGrid[westX + westY * width];
+						short currPartition = partitions[partitionsGrid[westX + westY * width]];
 						if (currPartition != BLOCKED_PARTITION) {
 							westPartition = currPartition;
 							partition = currPartition;
@@ -148,14 +149,14 @@ public final class PartitionCalculatorAlgorithm {
 					}
 
 					if (containing.get(northWestX + northWestY * width)) {
-						short currPartition = partitionsGrid[northWestX + northWestY * width];
+						short currPartition =  partitions[partitionsGrid[northWestX + northWestY * width]];
 						if (currPartition != BLOCKED_PARTITION) {
 							partition = currPartition;
 						}
 					}
 
 					if (containing.get(northEastX + northEastY * width)) {
-						short currPartition = partitionsGrid[northEastX + northEastY * width];
+						short currPartition =  partitions[partitionsGrid[northEastX + northEastY * width]];
 						if (currPartition != BLOCKED_PARTITION) {
 							northEastPartition = currPartition;
 							partition = currPartition;

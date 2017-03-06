@@ -19,7 +19,7 @@ package jsettlers.common.player;
  */
 public interface IInGamePlayer {
 
-	IManaInformation getManaInformation();
+	IMannaInformation getMannaInformation();
 
 	ICombatStrengthInformation getCombatStrengthInformation();
 
