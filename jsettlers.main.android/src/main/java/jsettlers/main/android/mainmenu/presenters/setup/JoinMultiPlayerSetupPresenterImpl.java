@@ -49,38 +49,10 @@ public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl imp
         updateSlots();
     }
 
-    private void updateSlots() {
-        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
-        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
-        int numberOfConnectedPlayers = players.size();
-
-        for (int i = 0; i < playerSlotPresenters.size(); i++) {
-            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
-
-            if (i < numberOfConnectedPlayers) {
-                setHumanSlotPlayerTypes(playerSlotPresenter);
-
-                IMultiplayerPlayer multiplayerPlayer = players.get(i);
-                playerSlotPresenter.setName(multiplayerPlayer.getName());
-                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
-                playerSlotPresenter.setShowReadyControl(true);
-
-                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
-
-                if (isMe) {
-                    playerSlotPresenter.setControlsEnabled(true);
-                    playerSlotPresenter.setReadyListener(this);
-                } else {
-                    playerSlotPresenter.setControlsEnabled(false);
-                    playerSlotPresenter.setReadyListener(null);
-                }
-            } else {
-                setComputerSlotPlayerTypes(playerSlotPresenter);
-                playerSlotPresenter.setName("Computer " + i);
-                playerSlotPresenter.setShowReadyControl(false);
-                playerSlotPresenter.setControlsEnabled(false);
-            }
-        }
+    @Override
+    public void initView() {
+        super.initView();
+        view.disableHostOnlyControls();
     }
 
     @Override
@@ -133,5 +105,41 @@ public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl imp
     @Override
     public void readyChanged(boolean ready) {
         connector.setReady(ready);
+    }
+
+
+
+    private void updateSlots() {
+        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
+        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
+        int numberOfConnectedPlayers = players.size();
+
+        for (int i = 0; i < playerSlotPresenters.size(); i++) {
+            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
+
+            if (i < numberOfConnectedPlayers) {
+                setHumanSlotPlayerTypes(playerSlotPresenter);
+
+                IMultiplayerPlayer multiplayerPlayer = players.get(i);
+                playerSlotPresenter.setName(multiplayerPlayer.getName());
+                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
+                playerSlotPresenter.setShowReadyControl(true);
+
+                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
+
+                if (isMe) {
+                    playerSlotPresenter.setControlsEnabled(true);
+                    playerSlotPresenter.setReadyListener(this);
+                } else {
+                    playerSlotPresenter.setControlsEnabled(false);
+                    playerSlotPresenter.setReadyListener(null);
+                }
+            } else {
+                setComputerSlotPlayerTypes(playerSlotPresenter);
+                playerSlotPresenter.setName("Computer " + i);
+                playerSlotPresenter.setShowReadyControl(false);
+                playerSlotPresenter.setControlsEnabled(false);
+            }
+        }
     }
 }

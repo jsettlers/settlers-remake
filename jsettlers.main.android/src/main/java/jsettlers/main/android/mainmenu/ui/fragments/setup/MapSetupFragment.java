@@ -213,6 +213,9 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
         });
     }
 
+    protected int getListItemLayoutId() {
+        return  R.layout.item_playerslot;
+    }
 
 
     class PlayersAdapter extends RecyclerView.Adapter<PlayerHolder> {
@@ -233,10 +236,8 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         @Override
         public PlayerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = layoutInflater.inflate(R.layout.item_multi_player, parent, false);
-            PlayerHolder playerHolder = new PlayerHolder(view);
-
-            return playerHolder;
+            View view = layoutInflater.inflate(getListItemLayoutId(), parent, false);
+            return new PlayerHolder(view);
         }
 
         @Override
