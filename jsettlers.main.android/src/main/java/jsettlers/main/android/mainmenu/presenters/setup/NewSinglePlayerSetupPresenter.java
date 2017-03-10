@@ -2,6 +2,7 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 
 import java.util.List;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -9,6 +10,7 @@ import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import java8.util.stream.StreamSupport;
@@ -69,5 +71,17 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
         gameStarter.setStartingGame(game.start());
         navigator.showGame();
+    }
+
+
+    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
+                new PlayerType(EPlayerType.HUMAN),
+                new PlayerType(EPlayerType.AI_VERY_HARD),
+                new PlayerType(EPlayerType.AI_HARD),
+                new PlayerType(EPlayerType.AI_EASY),
+                new PlayerType(EPlayerType.AI_VERY_EASY)
+        });
+        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
     }
 }
