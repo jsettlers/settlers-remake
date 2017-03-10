@@ -42,7 +42,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
-		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
+		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.NONE, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
 	}
 
