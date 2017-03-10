@@ -13,8 +13,6 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.main.android.gameplay.presenters.BuildingsMenu;
-import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
 
 import android.content.Context;
 
@@ -22,7 +20,7 @@ import android.content.Context;
  * Created by tompr on 14/01/2017.
  */
 
-public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, MenuFactory {
+public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls {
 	private static final int SOUND_THREADS = 6;
 
 	private final Context context;
@@ -44,7 +42,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
-		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
+		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.NONE, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
 	}
 
@@ -169,21 +167,15 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		androidControls.endTask();
 	}
 
-	/**
-	 * MenuFactory implementation
-	 */
-	@Override
+
+
+
+
 	public GameMenu getGameMenu() {
 		return gameMenu;
 	}
 
-	@Override
-	public BuildingsMenu getBuildingsMenu() {
-		return new BuildingsMenu(this);
-	}
-
-	@Override
-	public SettlersSoldiersMenu getSettlersSoldiersMenu() {
-		return new SettlersSoldiersMenu(this, player);
+	public IInGamePlayer getInGamePlayer() {
+		return player;
 	}
 }

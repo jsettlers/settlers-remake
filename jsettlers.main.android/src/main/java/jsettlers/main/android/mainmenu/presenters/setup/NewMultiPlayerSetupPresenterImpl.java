@@ -2,6 +2,7 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 
 import java.util.List;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IMultiplayerPlayer;
@@ -14,6 +15,7 @@ import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.ReadyListener;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
@@ -142,5 +144,14 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
     @Override
     public void readyChanged(boolean ready) {
         connector.setReady(ready);
+    }
+
+
+
+    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
+                new PlayerType(EPlayerType.HUMAN)
+        });
+        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
     }
 }

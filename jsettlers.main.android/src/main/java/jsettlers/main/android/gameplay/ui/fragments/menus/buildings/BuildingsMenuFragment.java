@@ -1,9 +1,9 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import static jsettlers.main.android.gameplay.presenters.BuildingsMenu.BUILDINGS_CATEGORY_FOOD;
-import static jsettlers.main.android.gameplay.presenters.BuildingsMenu.BUILDINGS_CATEGORY_MILITARY;
-import static jsettlers.main.android.gameplay.presenters.BuildingsMenu.BUILDINGS_CATEGORY_NORMAL;
-import static jsettlers.main.android.gameplay.presenters.BuildingsMenu.BUILDINGS_CATEGORY_SOCIAL;
+import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_FOOD;
+import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_MILITARY;
+import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_NORMAL;
+import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_SOCIAL;
 
 import jsettlers.main.android.R;
 

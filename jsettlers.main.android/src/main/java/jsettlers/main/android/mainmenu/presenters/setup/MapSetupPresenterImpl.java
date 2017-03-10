@@ -148,12 +148,6 @@ public abstract class MapSetupPresenterImpl implements MapSetupPresenter, Positi
         }
     }
 
-
-    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
-        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] { new PlayerType(EPlayerType.HUMAN) });
-        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
-    }
-
     protected static void setComputerSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
         playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
                 new PlayerType(EPlayerType.AI_VERY_HARD),

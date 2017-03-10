@@ -2,6 +2,7 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 
 import java.util.List;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMultiplayerListener;
 import jsettlers.common.menu.IMultiplayerPlayer;
@@ -14,6 +15,7 @@ import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPresenter;
+import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.ReadyListener;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 
@@ -49,38 +51,10 @@ public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl imp
         updateSlots();
     }
 
-    private void updateSlots() {
-        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
-        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
-        int numberOfConnectedPlayers = players.size();
-
-        for (int i = 0; i < playerSlotPresenters.size(); i++) {
-            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
-
-            if (i < numberOfConnectedPlayers) {
-                setHumanSlotPlayerTypes(playerSlotPresenter);
-
-                IMultiplayerPlayer multiplayerPlayer = players.get(i);
-                playerSlotPresenter.setName(multiplayerPlayer.getName());
-                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
-                playerSlotPresenter.setShowReadyControl(true);
-
-                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
-
-                if (isMe) {
-                    playerSlotPresenter.setControlsEnabled(true);
-                    playerSlotPresenter.setReadyListener(this);
-                } else {
-                    playerSlotPresenter.setControlsEnabled(false);
-                    playerSlotPresenter.setReadyListener(null);
-                }
-            } else {
-                setComputerSlotPlayerTypes(playerSlotPresenter);
-                playerSlotPresenter.setName("Computer " + i);
-                playerSlotPresenter.setShowReadyControl(false);
-                playerSlotPresenter.setControlsEnabled(false);
-            }
-        }
+    @Override
+    public void initView() {
+        super.initView();
+        view.disableHostOnlyControls();
     }
 
     @Override
@@ -133,5 +107,50 @@ public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl imp
     @Override
     public void readyChanged(boolean ready) {
         connector.setReady(ready);
+    }
+
+
+
+    private void updateSlots() {
+        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
+        List<IMultiplayerPlayer> players = connector.getPlayers().getItems();
+        int numberOfConnectedPlayers = players.size();
+
+        for (int i = 0; i < playerSlotPresenters.size(); i++) {
+            PlayerSlotPresenter playerSlotPresenter = playerSlotPresenters.get(i);
+
+            if (i < numberOfConnectedPlayers) {
+                setHumanSlotPlayerTypes(playerSlotPresenter);
+
+                IMultiplayerPlayer multiplayerPlayer = players.get(i);
+                playerSlotPresenter.setName(multiplayerPlayer.getName());
+                playerSlotPresenter.setReady(multiplayerPlayer.isReady());
+                playerSlotPresenter.setShowReadyControl(true);
+
+                boolean isMe = multiplayerPlayer.getId().equals(androidPreferences.getPlayerId());
+
+                if (isMe) {
+                    playerSlotPresenter.setControlsEnabled(true);
+                    playerSlotPresenter.setReadyListener(this);
+                } else {
+                    playerSlotPresenter.setControlsEnabled(false);
+                    playerSlotPresenter.setReadyListener(null);
+                }
+            } else {
+                setComputerSlotPlayerTypes(playerSlotPresenter);
+                playerSlotPresenter.setName("Computer " + i);
+                playerSlotPresenter.setShowReadyControl(false);
+                playerSlotPresenter.setControlsEnabled(false);
+            }
+        }
+    }
+
+
+
+    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
+                new PlayerType(EPlayerType.HUMAN)
+        });
+        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
     }
 }

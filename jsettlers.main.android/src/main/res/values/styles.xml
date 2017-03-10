@@ -6,22 +6,21 @@
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
 
-        <!--<item name="colorButtonNormal">@color/accent</item>-->
-        <!--<item name="buttonStyle">@style/PrimaryButton</item>-->
-
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-    <!--    <item name="android:windowBackground">@color/grayLight</item>-->
+    </style>
 
+    <style name="InGameTheme" parent="SettlersTheme">
     </style>
 
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="colorButtonNormal">@color/primaryDark</item>
     </style>
 
-    <!--</style>-->
-
-    <!--<style name="PrimaryButton" parent="Widget.AppCompat.Button">-->
-        <!--<item name="android:textColor">@android:color/white</item>-->
+    <style name="ReadySwitch" >
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="colorSwitchThumbNormal">@color/accent</item>
+        <item name="android:colorForeground">@color/accent</item>
+    </style>
 </resources>
