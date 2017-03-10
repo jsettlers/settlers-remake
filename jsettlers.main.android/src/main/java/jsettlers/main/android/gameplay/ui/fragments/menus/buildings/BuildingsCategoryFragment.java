@@ -1,14 +1,5 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import java.util.List;
-
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.gameplay.presenters.BuildingsMenu;
-import jsettlers.main.android.gameplay.presenters.MenuFactory;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,15 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.androidui.utils.OriginalImageProvider;
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
+import jsettlers.main.android.gameplay.presenters.MenuFactory;
+import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+
 /**
  * Created by tompr on 24/11/2016.
  */
 
-public class BuildingsCategoryFragment extends Fragment {
+public class BuildingsCategoryFragment extends Fragment implements BuildingsCategoryView {
     private static final String ARG_BUILDINGS_CATEGORY = "arg_buildings_category";
 
-    private BuildingsMenu buildingsMenu;
+    private BuildingsCategoryMenu buildingsMenu;
 
+    private BuildingsAdapter adapter;
     private RecyclerView recyclerView;
 
     public static BuildingsCategoryFragment newInstance(int buildingsCategory) {
@@ -44,29 +45,38 @@ public class BuildingsCategoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.menu_buildings_category, container, false);
-
         recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        buildingsMenu = new MenuFactory(getActivity()).buildingsMenu();
-
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
-        List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);
-
-        recyclerView.setAdapter(new BuildingsCategoryFragment.BuildingsAdapter(buildingTypes));
+        buildingsMenu = new MenuFactory(getActivity()).buildingsMenu(this, buildingsCategory);
+        buildingsMenu.start();
     }
+
+    /**
+     * BuildingsCategoryView implementation
+     */
+    @Override
+    public void setBuildings(List<EBuildingType> buildings) {
+        if (adapter == null) {
+            adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildings);
+        }
+
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
 
     private void buildingSelected(EBuildingType buildingType) {
-        buildingsMenu.showConstructionMarkers(buildingType);
+        buildingsMenu.buildingSelected(buildingType);
     }
-
 
     /**
      * Adapter
@@ -76,9 +86,8 @@ public class BuildingsCategoryFragment extends Fragment {
 
         private LayoutInflater layoutInflater;
 
-        public BuildingsAdapter(List<EBuildingType> buildingTypes) {
+        BuildingsAdapter(List<EBuildingType> buildingTypes) {
             this.buildingTypes = buildingTypes;
-
             layoutInflater = getActivity().getLayoutInflater();
         }
 
@@ -92,13 +101,10 @@ public class BuildingsCategoryFragment extends Fragment {
             final View itemView = layoutInflater.inflate(R.layout.item_building, parent, false);
             final BuildingsCategoryFragment.BuildingViewHolder buildingViewHolder = new BuildingsCategoryFragment.BuildingViewHolder(itemView);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = buildingViewHolder.getLayoutPosition();
-                    EBuildingType buildingType = buildingTypes.get(position);
-                    buildingSelected(buildingType);
-                }
+            itemView.setOnClickListener(view -> {
+                int position = buildingViewHolder.getLayoutPosition();
+                EBuildingType buildingType = buildingTypes.get(position);
+                buildingSelected(buildingType);
             });
 
             return buildingViewHolder;
@@ -108,22 +114,18 @@ public class BuildingsCategoryFragment extends Fragment {
         public void onBindViewHolder(BuildingsCategoryFragment.BuildingViewHolder holder, int position) {
             EBuildingType buildingType = buildingTypes.get(position);
             holder.setBuildingType(buildingType);
-         //   OriginalImageProvider
         }
     }
 
     private class BuildingViewHolder extends RecyclerView.ViewHolder {
-    //    private final TextView textView;
         private final ImageView imageView;
 
-        public BuildingViewHolder(View itemView) {
+        BuildingViewHolder(View itemView) {
             super(itemView);
-        //    textView = (TextView) itemView.findViewById(R.id.text_view);
             imageView = (ImageView) itemView.findViewById(R.id.image_view);
         }
 
-        public void setBuildingType(EBuildingType buildingType) {
-        //    textView.setText(buildingType.name());
+        void setBuildingType(EBuildingType buildingType) {
             OriginalImageProvider.get(buildingType).setAsImage(imageView);
         }
     }

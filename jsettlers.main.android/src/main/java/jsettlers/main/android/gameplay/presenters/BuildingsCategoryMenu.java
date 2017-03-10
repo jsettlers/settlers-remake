@@ -7,41 +7,51 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
+import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 
 /**
  * Created by tompr on 22/11/2016.
  */
 
-public class BuildingsMenu {
+public class BuildingsCategoryMenu {
     public static final int BUILDINGS_CATEGORY_NORMAL = 10;
     public static final int BUILDINGS_CATEGORY_FOOD = 20;
     public static final int BUILDINGS_CATEGORY_MILITARY = 30;
     public static final int BUILDINGS_CATEGORY_SOCIAL = 40;
 
+    private final BuildingsCategoryView view;
     private final ActionFireable actionFireable;
     private final MenuNavigator menuNavigator;
+    private final int buildingsCategory;
 
-    public BuildingsMenu(
+    public BuildingsCategoryMenu(
+            BuildingsCategoryView view,
             ActionFireable actionFireable,
-            MenuNavigator menuNavigator) {
+            MenuNavigator menuNavigator,
+            int buildingsCategory) {
 
+        this.view = view;
         this.actionFireable = actionFireable;
         this.menuNavigator = menuNavigator;
+        this.buildingsCategory = buildingsCategory;
     }
 
-    public void showConstructionMarkers(EBuildingType buildingType) {
+    public void start() {
+        view.setBuildings(getBuildingTypes());
+    }
+
+    public void buildingSelected(EBuildingType buildingType) {
         Action action = new ShowConstructionMarksAction(buildingType);
         actionFireable.fireAction(action);
         menuNavigator.dismissMenu();
     }
 
-    public List<EBuildingType> getBuildingTypesForCategory(int category) {
+    private List<EBuildingType> getBuildingTypes() {
         EBuildingType[] buildingTypes;
 
-        switch (category) {
+        switch (buildingsCategory) {
             case BUILDINGS_CATEGORY_NORMAL:
                 buildingTypes = BuildingBuildContent.normalBuildings;
                 break;
@@ -55,7 +65,7 @@ public class BuildingsMenu {
                 buildingTypes = BuildingBuildContent.socialBuildings;
                 break;
             default:
-                throw new RuntimeException("No such buildings category exists " + category);
+                throw new RuntimeException("No such buildings category exists " + buildingsCategory);
         }
 
         return Arrays.asList(buildingTypes);
