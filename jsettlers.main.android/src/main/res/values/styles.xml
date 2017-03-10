@@ -11,6 +11,9 @@
 
     </style>
 
+    <style name="InGameTheme" parent="SettlersTheme">
+    </style>
+
     <style name="CardTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="colorButtonNormal">@color/primaryDark</item>
     </style>
