@@ -382,7 +382,8 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         @Override
         public void setControlsEnabled() {
-            readySwitch.setEnabled(true);
+            readySwitch.setClickable(true);
+            readySwitch.setFocusable(true);
             playerTypeSpinner.setEnabled(true);
             civilisationSpinner.setEnabled(true);
             startPositionSpinner.setEnabled(true);
@@ -391,7 +392,8 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
         @Override
         public void setControlsDisabled() {
-            readySwitch.setEnabled(false);
+            readySwitch.setClickable(false);
+            readySwitch.setFocusable(false);
             playerTypeSpinner.setEnabled(false);
             civilisationSpinner.setEnabled(false);
             startPositionSpinner.setEnabled(false);
