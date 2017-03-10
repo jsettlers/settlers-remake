@@ -46,7 +46,7 @@ public class SpecialistsSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        actionControls = ControlsResolver.getActionControls(getActivity());
+        actionControls = new ControlsResolver(getActivity()).getActionControls();
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         LinearLayout specialistsLayout = (LinearLayout) getView().findViewById(R.id.layout_specialists);

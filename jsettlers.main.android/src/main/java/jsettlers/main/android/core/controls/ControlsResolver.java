@@ -1,42 +1,42 @@
 package jsettlers.main.android.core.controls;
 
-import jsettlers.graphics.map.MapContent;
-
 import android.app.Activity;
+
+import jsettlers.graphics.map.MapContent;
+import jsettlers.main.android.core.GameManager;
 
 /**
  * Created by tompr on 13/01/2017.
  */
 
 public class ControlsResolver {
-    public static ActionControls getActionControls(Activity activity) {
-        return getControls(activity);
+    private final ControlsAdapter controlsAdapter;
+
+    public ControlsResolver(Activity activity) {
+        this.controlsAdapter = ((GameManager)activity.getApplication()).getControlsAdapter();
     }
 
-    public static DrawControls getDrawControls(Activity activity) {
-        return getControls(activity);
+    public ActionControls getActionControls() {
+        return controlsAdapter;
     }
 
-    public static SelectionControls getSelectionControls(Activity activity) {
-        return getControls(activity);
+    public DrawControls getDrawControls() {
+        return controlsAdapter;
     }
 
-    public static TaskControls getTaskControls(Activity activity) {
-        return getControls(activity);
+    public SelectionControls getSelectionControls() {
+        return controlsAdapter;
     }
 
-    public static MapContent getMapContent(Activity activity) {
-        return getControls(activity).getMapContent();
+    public TaskControls getTaskControls() {
+        return controlsAdapter;
     }
 
-    public static MenuFactory getMenuFactory(Activity activity) {
-        return getControls(activity);
+    public MapContent getMapContent() {
+        return controlsAdapter.getMapContent();
     }
 
-
-
-
-    private static ControlsAdapter getControls(Activity activity) {
-        return ((ControlsProvider)activity).getControlsAdapter();
+    public GameMenu getGameMenu() {
+        return controlsAdapter.getGameMenu();
     }
 }

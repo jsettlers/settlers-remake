@@ -7,6 +7,7 @@ import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.presenters.BuildingsMenu;
+import jsettlers.main.android.gameplay.presenters.MenuFactory;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,7 +55,7 @@ public class BuildingsCategoryFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        buildingsMenu = ControlsResolver.getMenuFactory(getActivity()).getBuildingsMenu();
+        buildingsMenu = new MenuFactory(getActivity()).buildingsMenu();
 
         int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
         List<EBuildingType> buildingTypes = buildingsMenu.getBuildingTypesForCategory(buildingsCategory);

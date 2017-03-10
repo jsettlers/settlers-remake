@@ -5,10 +5,10 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import java.util.List;
 
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ControlsAdapter;
-import jsettlers.main.android.core.controls.ControlsProvider;
+import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.fragments.LoadingFragment;
 import jsettlers.main.android.gameplay.ui.fragments.MapFragment;
 import jsettlers.main.android.mainmenu.navigation.Actions;
@@ -24,12 +24,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 
-public class GameActivity extends AppCompatActivity implements GameNavigator, ControlsProvider {
+public class GameActivity extends AppCompatActivity implements GameNavigator, MenuNavigatorProvider {
     private static final String TAG_FRAGMENT_MAP = "map_fragment";
     private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 
     private GameStarter gameStarter;
-    private GameManager gameManager;
 
     private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
@@ -37,7 +36,6 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Co
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gameStarter = (GameStarter) getApplication();
-        gameManager = (GameManager) getApplication();
 
         setContentView(R.layout.activity_game);
 
@@ -85,11 +83,11 @@ public class GameActivity extends AppCompatActivity implements GameNavigator, Co
 
 
     /**
-     * ControlsProvider implementation
+     * MenuNavigatorProvider implementation
      */
     @Override
-    public ControlsAdapter getControlsAdapter() {
-        return gameManager.getControlsAdapter();
+    public MenuNavigator getMenuNavigator() {
+        return (MenuNavigator) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT_MAP);
     }
 
 

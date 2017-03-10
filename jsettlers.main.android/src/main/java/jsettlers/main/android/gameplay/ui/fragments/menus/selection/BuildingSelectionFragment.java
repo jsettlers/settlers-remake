@@ -64,9 +64,11 @@ public class BuildingSelectionFragment extends SelectionFragment {
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
-        ActionControls actionControls = ControlsResolver.getActionControls(getActivity());
-        DrawControls drawControls = ControlsResolver.getDrawControls(getActivity());
-        TaskControls taskControls = ControlsResolver.getTaskControls(getActivity());
+
+        ControlsResolver controlsResolver = new ControlsResolver(getActivity());
+        ActionControls actionControls = controlsResolver.getActionControls();
+        DrawControls drawControls = controlsResolver.getDrawControls();
+        TaskControls taskControls = controlsResolver.getTaskControls();
 
         if (building instanceof IBuilding.IOccupied) {
             layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);

@@ -9,6 +9,7 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 /**
  * Created by tompr on 22/11/2016.
@@ -21,14 +22,20 @@ public class BuildingsMenu {
     public static final int BUILDINGS_CATEGORY_SOCIAL = 40;
 
     private final ActionFireable actionFireable;
+    private final MenuNavigator menuNavigator;
 
-    public BuildingsMenu(ActionFireable actionFireable) {
+    public BuildingsMenu(
+            ActionFireable actionFireable,
+            MenuNavigator menuNavigator) {
+
         this.actionFireable = actionFireable;
+        this.menuNavigator = menuNavigator;
     }
 
     public void showConstructionMarkers(EBuildingType buildingType) {
         Action action = new ShowConstructionMarksAction(buildingType);
         actionFireable.fireAction(action);
+        menuNavigator.dismissMenu();
     }
 
     public List<EBuildingType> getBuildingTypesForCategory(int category) {

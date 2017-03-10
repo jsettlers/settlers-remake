@@ -51,6 +51,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
+import jsettlers.main.android.mainmenu.ui.activities.MainActivity;
 
 
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
@@ -108,14 +109,15 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		actionControls = ControlsResolver.getActionControls(getActivity());
-		selectionControls = ControlsResolver.getSelectionControls(getActivity());
-		taskControls = ControlsResolver.getTaskControls(getActivity());
-		gameMenu = ControlsResolver.getMenuFactory(getActivity()).getGameMenu();
+		ControlsResolver controlsResolver = new ControlsResolver(getActivity());
+		actionControls = controlsResolver.getActionControls();
+		selectionControls = controlsResolver.getSelectionControls();
+		taskControls = controlsResolver.getTaskControls();
+		gameMenu = controlsResolver.getGameMenu();
 
 		selectionControls.addSelectionListener(this);
 
-		MapContent mapContent = ControlsResolver.getMapContent(getActivity());
+		MapContent mapContent = controlsResolver.getMapContent();
 		addMapViews(mapContent);
 
 		if (savedInstanceState == null) {
@@ -207,6 +209,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		switch (requestCode) {
 			case REQUEST_CODE_CONFIRM_QUIT:
 				gameMenu.quitConfirm();
+				startActivity(new Intent(getActivity(), MainActivity.class));
 				break;
 		}
 	}

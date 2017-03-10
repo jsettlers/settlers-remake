@@ -46,7 +46,7 @@ public class CarriersSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        actionControls = ControlsResolver.getActionControls(getActivity());
+        actionControls = new ControlsResolver(getActivity()).getActionControls();
 
         View convertOnePioneerButton = getView().findViewById(R.id.button_convert_one_pioneer);
         View convertAllPioneerButton = getView().findViewById(R.id.button_convert_all_pioneer);

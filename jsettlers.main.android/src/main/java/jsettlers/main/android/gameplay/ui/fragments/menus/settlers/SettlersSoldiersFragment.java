@@ -6,6 +6,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
 
 import android.os.Bundle;
@@ -56,8 +57,8 @@ public class SettlersSoldiersFragment extends Fragment implements DrawListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        settlersSoldiersMenu = ControlsResolver.getMenuFactory(getActivity()).getSettlersSoldiersMenu();
-        drawControls = ControlsResolver.getDrawControls(getActivity());
+        settlersSoldiersMenu = new MenuFactory(getActivity()).settlersSoldiersMenu();
+        drawControls = new ControlsResolver(getActivity()).getDrawControls();
 
         drawControls.addDrawListener(this);
         update();

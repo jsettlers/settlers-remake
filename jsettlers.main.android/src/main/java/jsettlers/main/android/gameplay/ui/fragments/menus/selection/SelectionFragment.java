@@ -22,7 +22,7 @@ public abstract class SelectionFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        selectionControls = ControlsResolver.getSelectionControls(getActivity());
+        selectionControls = new ControlsResolver(getActivity()).getSelectionControls();
 
         selection = selectionControls.getCurrentSelection();
 

@@ -57,7 +57,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        actionControls = ControlsResolver.getActionControls(getActivity());
+        actionControls = new ControlsResolver(getActivity()).getActionControls();
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         soldiers1Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_1);
