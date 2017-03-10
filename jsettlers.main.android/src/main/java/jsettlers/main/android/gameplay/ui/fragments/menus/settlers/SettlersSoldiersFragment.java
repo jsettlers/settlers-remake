@@ -8,6 +8,7 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
+import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,9 +23,8 @@ import android.widget.TextView;
  * Created by tompr on 13/01/2017.
  */
 
-public class SettlersSoldiersFragment extends Fragment implements DrawListener {
+public class SettlersSoldiersFragment extends Fragment implements SettlersSoldiersView {
     private SettlersSoldiersMenu settlersSoldiersMenu;
-    private DrawControls drawControls;
 
     private TextView soldierStrengthTextView;
     private TextView soldierPromotionTextView;
@@ -57,38 +57,60 @@ public class SettlersSoldiersFragment extends Fragment implements DrawListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        settlersSoldiersMenu = new MenuFactory(getActivity()).settlersSoldiersMenu();
-        drawControls = new ControlsResolver(getActivity()).getDrawControls();
-
-        drawControls.addDrawListener(this);
-        update();
+        settlersSoldiersMenu = new MenuFactory(getActivity()).settlersSoldiersMenu(this);
+        settlersSoldiersMenu.start();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        drawControls.removeDrawListener(this);
+        settlersSoldiersMenu.finish();
+    }
+
+    /**
+     * SettlersSoldiersView implementation
+     */
+    @Override
+    public void setStrengthText(String strengthText) {
+        soldierStrengthTextView.setText(strengthText);
     }
 
     @Override
-    public void draw() {
-        getActivity().runOnUiThread(() -> update());
+    public void setPromotionText(String promotionText) {
+        soldierPromotionTextView.setText(promotionText);
     }
 
-    private void update() {
-        soldierStrengthTextView.setText(settlersSoldiersMenu.getStrengthText());
-        soldierPromotionTextView.setText(settlersSoldiersMenu.getPromotionText());
-
-        swordsmenPromotionImageView.setEnabled(settlersSoldiersMenu.isSwordsmenPromotionPossible());
-        bowmenPromotionImageView.setEnabled(settlersSoldiersMenu.isBowmenPromotionPossible());
-        pikemenPromotionImageView.setEnabled(settlersSoldiersMenu.isPikemenPromotionPossible());
-
-        setPromotionButtonImage(swordsmenPromotionImageView, settlersSoldiersMenu.getSwordsmenPromotionImageLink());
-        setPromotionButtonImage(bowmenPromotionImageView, settlersSoldiersMenu.getBowmenPromotionImageLink());
-        setPromotionButtonImage(pikemenPromotionImageView, settlersSoldiersMenu.getPikemenPromotionImageLink());
+    @Override
+    public void setSwordsmenPromotionEnabled(boolean enabled) {
+        swordsmenPromotionImageView.setEnabled(enabled);
     }
 
-    public void setPromotionButtonImage(ImageView imageView, ImageLink imageLink) {
+    @Override
+    public void setBowmenPromotionEnabled(boolean enabled) {
+        bowmenPromotionImageView.setEnabled(enabled);
+    }
+
+    @Override
+    public void setPikemenPromotionEnabled(boolean enabled) {
+        pikemenPromotionImageView.setEnabled(enabled);
+    }
+
+    @Override
+    public void setSwordsmenImage(ImageLink imageLink) {
+        setPromotionButtonImage(swordsmenPromotionImageView, imageLink);
+    }
+
+    @Override
+    public void setBowmenImage(ImageLink imageLink) {
+        setPromotionButtonImage(bowmenPromotionImageView, imageLink);
+    }
+
+    @Override
+    public void setPikemenImage(ImageLink imageLink) {
+        setPromotionButtonImage(pikemenPromotionImageView, imageLink);
+    }
+
+    private void setPromotionButtonImage(ImageView imageView, ImageLink imageLink) {
         if (imageLink == null) {
             imageView.setImageDrawable(null);
         } else {
