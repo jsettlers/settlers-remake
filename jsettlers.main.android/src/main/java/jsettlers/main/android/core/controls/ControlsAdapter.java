@@ -54,6 +54,14 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		return mapContent;
 	}
 
+	public GameMenu getGameMenu() {
+		return gameMenu;
+	}
+
+	public IInGamePlayer getInGamePlayer() {
+		return player;
+	}
+
 	public void onAction(IAction action) {
 		synchronized (actionListeners) {
 			for (ActionListener listener : actionListeners) {
@@ -165,17 +173,5 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	@Override
 	public void endTask() {
 		androidControls.endTask();
-	}
-
-
-
-
-
-	public GameMenu getGameMenu() {
-		return gameMenu;
-	}
-
-	public IInGamePlayer getInGamePlayer() {
-		return player;
 	}
 }
