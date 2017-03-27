@@ -2,6 +2,7 @@ package jsettlers.logic.movable;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
@@ -14,16 +15,14 @@ public class Entity implements Serializable {
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
-    private Map<String, Component> components;
-    private Map<String, Object> properties;
+    private Map<Class, Component> components;
 
     boolean active;
 
     public Entity() {
         this.id = nextId++;
         this.active = true;
-        this.components = new HashMap<String, Component>();
-        this.properties = new HashMap<String, Object>();
+        this.components = new IdentityHashMap<Class, Component>();
     }
 
     public Entity(Component... cs) {
@@ -46,9 +45,15 @@ public class Entity implements Serializable {
     }
 
     public void add(Component c) {
-        components.put(c.getClass().getName(), c);
-
+        Class cls = c.getClass();
+        components.put(cls, c);
         c.entity = this;
+        //Iterate over all super classes
+        cls = cls.getSuperclass();
+        do {
+            components.put(cls, c);
+            cls = cls.getSuperclass();
+        } while (cls != null);
     }
 
     public void remove(Class<? extends Component> c) {
@@ -57,11 +62,7 @@ public class Entity implements Serializable {
 
     @SuppressWarnings("unchecked")
     public <C extends Component> C get(Class<C> c) {
-        return (C) components.get(c.getName());
-    }
-
-    public Component get(String c) {
-        return components.get(c);
+        return (C) components.get(c);
     }
 
     public boolean containsComponent(Class<? extends Component> c) {
@@ -87,17 +88,5 @@ public class Entity implements Serializable {
     @Override
     public int hashCode() {
         return id;
-    }
-
-    public void setProperty(String name, Object value) {
-        properties.put(name, value);
-    }
-
-    public void removeProperty(String name) {
-        properties.remove(name);
-    }
-
-    public Object getProperty(String name) {
-        return properties.get(name);
     }
 }
