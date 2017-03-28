@@ -1,10 +1,13 @@
 package jsettlers.logic.movable;
 
-import com.sun.net.httpserver.Authenticator;
-
+import jsettlers.algorithms.path.Path;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.mutables.MutableDouble;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
@@ -51,9 +54,59 @@ public final class EntityFactory {
     }
 
     static class FindAndGoToWorkablePosition implements INodeAction<Entity> {
+
+        private ShortPoint2D getCloseWorkablePos(Entity target) {
+            MovableComponent movC = target.get(MovableComponent.class);
+            GameFieldComponent gameC = target.get(GameFieldComponent.class);
+            WorkComponent workC = target.get(WorkComponent.class);
+
+            MutablePoint2D bestNeighbourPos = new MutablePoint2D(-1, -1);
+            MutableDouble bestNeighbourDistance = new MutableDouble(Double.MAX_VALUE); // distance from start point
+
+            HexGridArea.streamBorder(movC.getPos(), 2).filter((x, y) -> {
+                    boolean isValidPosition = gameC.getGrid().isValidPosition(movC, x, y);
+                    boolean canWorkOnPos = gameC.getGrid().fitsSearchType(movC, x, y, ESearchType.RESOURCE_SIGNABLE);
+                    return isValidPosition && canWorkOnPos;
+                }
+                ).forEach((x, y) -> {
+                    double distance = ShortPoint2D.getOnGridDist(x - workC.getCenterOfWork().x, y - workC.getCenterOfWork().y);
+                    if (distance < bestNeighbourDistance.value) {
+                        bestNeighbourDistance.value = distance;
+                        bestNeighbourPos.x = x;
+                        bestNeighbourPos.y = y;
+                    }
+                });
+
+            if (bestNeighbourDistance.value != Double.MAX_VALUE) {
+                return bestNeighbourPos.createShortPoint2D();
+            } else {
+                return null;
+            }
+        }
+
         @Override
         public NodeStatus run(Entity target) {
-            return NodeStatus.Success;
+            MovableComponent movC = target.get(MovableComponent.class);
+            GameFieldComponent gameC = target.get(GameFieldComponent.class);
+            WorkComponent workC = target.get(WorkComponent.class);
+            SteeringComponent steerC = target.get(SteeringComponent.class);
+
+            ShortPoint2D closeWorkablePos = getCloseWorkablePos(target);
+
+            if (closeWorkablePos != null && steerC.goToPos(closeWorkablePos)) {
+                gameC.getGrid().setMarked(closeWorkablePos, true);
+                return NodeStatus.Success;
+            }
+            workC.setCenterOfWork(null);
+
+            ShortPoint2D pos = movC.getPos();
+            Path path = steerC.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE);
+            if (path != null) {
+                steerC.followPath(path);
+                return NodeStatus.Success;
+            }
+
+            return NodeStatus.Failure;
         }
     }
 

@@ -1,6 +1,8 @@
 package jsettlers.logic.movable;
 
 import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.algorithms.path.Path;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -10,7 +12,7 @@ import jsettlers.logic.constants.Constants;
  * Created by jt-1 on 2/6/2017.
  */
 
-public class MovableComponent extends Component {
+public class MovableComponent extends Component implements IPathCalculatable{
     private final EMovableType movableType;
     private byte playerId;
     private ShortPoint2D position;
@@ -35,10 +37,12 @@ public class MovableComponent extends Component {
         return Constants.MOVABLE_VIEW_DISTANCE;
     }
 
+    @Override
     public boolean needsPlayersGround() {
         return movableType.needsPlayersGround();
     }
 
+    @Override
     public ShortPoint2D getPos() {
         return position;
     }
@@ -47,6 +51,7 @@ public class MovableComponent extends Component {
         this.position = position;
     }
 
+    @Override
     public byte getPlayerId() {
         return playerId;
     }

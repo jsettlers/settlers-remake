@@ -42,6 +42,10 @@ public class AnimationComponent extends Component {
         this.anmiation = animation;
     }
 
+    public void stopAnimation() {
+        this.anmiation = EMovableAction.NO_ACTION;
+    }
+
     public boolean isRightstep() {
         return isRightStep;
     }

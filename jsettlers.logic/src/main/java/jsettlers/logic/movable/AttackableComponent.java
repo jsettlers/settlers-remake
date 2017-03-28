@@ -36,7 +36,7 @@ public class AttackableComponent extends Component {
     }
 
     @Override
-    protected void OnLateUpdate() {
+    public void OnLateUpdate() {
         informedAboutAttackableEvent = null;
     }
 }

@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.common.material.ESearchType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 
 /**
@@ -28,7 +31,7 @@ public class GameFieldComponent extends Component {
         return movablesByID;
     }
 
-    public AbstractMovableGrid getMovableGrid() {
+    public AbstractMovableGrid getGrid() {
         return grid;
     }
 }

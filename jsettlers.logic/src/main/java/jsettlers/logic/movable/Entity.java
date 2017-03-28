@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.timer.IScheduledTimerable;
 
 /**
@@ -37,13 +38,12 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     private int resetInvokationDelay() {
         int lastValue = invokationDelay;
-        invokationDelay = 1;
+        invokationDelay = Constants.MOVABLE_INTERRUPT_PERIOD;
         return lastValue;
     }
 
     public void setInvokationDelay(int delay) {
-        // delay of 1 == reschedule at next time slot
-        invokationDelay = Math.max(invokationDelay, Math.max(1, delay));
+        invokationDelay = Math.max(invokationDelay, delay);
     }
 
     public boolean isActive() {
