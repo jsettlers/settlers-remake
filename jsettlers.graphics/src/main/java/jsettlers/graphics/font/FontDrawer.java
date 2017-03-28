@@ -100,7 +100,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getWidth(String string) {
+	public float getWidth(String string) {
 		float w = 0;
 		for (int i = 0; i < string.length(); i++) {
 			int idx = getCharIndex(string.charAt(i));
@@ -110,7 +110,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getHeight(String string) {
+	public float getHeight(String string) {
 		return size.getSize();
 	}
 

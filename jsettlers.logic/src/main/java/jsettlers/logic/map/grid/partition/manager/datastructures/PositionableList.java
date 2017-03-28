@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,58 +14,41 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import jsettlers.algorithms.queue.ITypeAcceptor;
+import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
  * It is also possible to find the nearest object around a given position.
- * 
- * @author Andreas Eberle
- * 
+ *
  * @param <T>
+ * @author Andreas Eberle
  */
-public class PositionableList<T extends ILocatable> implements Iterable<T>, Serializable {
+public class PositionableList<T extends ILocatable> implements Serializable {
 	private static final long serialVersionUID = 414099060331344505L;
 
-	private ArrayList<T> data;
+	protected final LinkedList<T> data;
 
 	public PositionableList() {
-		data = new ArrayList<T>();
+		data = new LinkedList<>();
 	}
 
 	public void insert(T object) {
 		data.add(object);
 	}
 
-	/**
-	 * Finds the object that's closest to the given position and removes it.
-	 * 
-	 * @param position
-	 *            position to be used to find the nearest accepted neighbor around it.
-	 * @return object that's nearest to position
-	 */
-	public T removeObjectNextTo(ShortPoint2D position) {
-		return removeObjectNextTo(position, null);
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return data.iterator();
-	}
-
 	public T removeObjectAt(ShortPoint2D position) {
-		Iterator<T> iter = data.iterator();
-		while (iter.hasNext()) {
-			T curr = iter.next();
+		Iterator<T> iterator = data.iterator();
+		while (iterator.hasNext()) {
+			T curr = iterator.next();
 			if (curr.getPos().equals(position)) {
-				iter.remove();
+				iterator.remove();
 				return curr;
 			}
 		}
@@ -74,9 +57,9 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 
 	/**
 	 * Returns the first object found at the given position or null.
-	 * 
+	 *
 	 * @param position
-	 *            The position to look for.
+	 * 		The position to look for.
 	 * @return Returns the found object at the given position or null if no object has been found.
 	 */
 	public T getObjectAt(ShortPoint2D position) {
@@ -90,33 +73,27 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 
 	/**
 	 * Finds the object that's closest to the given position and removes it.
-	 * 
+	 *
 	 * @param position
-	 *            position to be used to find the nearest accepted neighbor around it.
-	 * @param acceptor
-	 *            if acceptor != null => the result is accepted by the acceptor. <br>
-	 *            if result == null every entry is accepted.
+	 * 		position to be used to find the nearest accepted neighbor around it.
 	 * @return accepted object that's nearest to position
 	 */
-	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
-		T currBest = getObjectCloseTo(position, acceptor);
+	public T removeObjectNextTo(ShortPoint2D position) {
+		T currBest = getObjectCloseTo(position);
 
-		if (currBest != null)
+		if (currBest != null) {
 			data.remove(currBest);
+		}
 
 		return currBest;
 	}
 
-	private T getObjectCloseTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
+	protected T getObjectCloseTo(ShortPoint2D position) {
 		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
 		for (T currEntry : data) {
-			if (acceptor != null && !acceptor.accepts(currEntry))
-				continue;
-
-			ShortPoint2D currPosition = currEntry.getPos();
-			int currDist = MathUtils.squareHypot(position, currPosition);
+			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
 
 			if (bestDistance > currDist) {
 				bestDistance = currDist;
@@ -126,17 +103,24 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return currBest;
 	}
 
-	public T getObjectCloseTo(ShortPoint2D position) {
-		return getObjectCloseTo(position, null);
-	}
-
 	@Override
 	public String toString() {
 		return data.toString();
 	}
 
-	public void addAll(PositionableList<T> otherList) {
-		this.data.addAll(otherList.data);
+	public void moveAll(PositionableList<T> otherList) {
+		LinkedList<T> othersData = otherList.data;
+		data.addAll(othersData);
+		othersData.clear();
+	}
+
+	public void moveAll(PositionableList<T> otherList, Consumer<T> movedVisitor) {
+		LinkedList<T> othersData = otherList.data;
+		for (T othersDatum : othersData) {
+			movedVisitor.accept(othersDatum);
+			data.add(othersDatum);
+		}
+		othersData.clear();
 	}
 
 	public void remove(T object) {
@@ -147,19 +131,19 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return data.isEmpty();
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<? super T> movedVisitor) {
-		Iterator<T> iter = data.iterator();
-		while (iter.hasNext()) {
-			T curr = iter.next();
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, Consumer<T> movedVisitor) {
+		Iterator<T> iterator = data.iterator();
+		while (iterator.hasNext()) {
+			T curr = iterator.next();
 			if (curr.getPos().equals(position)) {
-				iter.remove();
-				movedVisitor.visit(curr);
+				iterator.remove();
+				movedVisitor.accept(curr);
 				newList.data.add(curr);
 			}
 		}
 	}
 
-	public interface IMovedVisitor<T> {
-		void visit(T moved);
+	public int size() {
+		return data.size();
 	}
 }

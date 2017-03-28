@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,28 +12,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager;
+package jsettlers.logic.map.grid.partition.manager.materials.offers.list;
 
-import java.io.Serializable;
+/**
+ * Created by Andreas Eberle on 15.02.2017.
+ */
+public interface IPrioritizable<P> {
+	void updatePriority(P newPriority);
 
-import jsettlers.algorithms.queue.ITypeAcceptor;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
-
-public final class MovableTypeAcceptor implements ITypeAcceptor<IManageableWorker>, Serializable {
-	private static final long serialVersionUID = 111392803354934224L;
-
-	public EMovableType movableType = null;
-
-	public MovableTypeAcceptor() {
-	}
-
-	public MovableTypeAcceptor(EMovableType movableType) {
-		this.movableType = movableType;
-	}
-
-	@Override
-	public final boolean accepts(IManageableWorker worker) {
-		return this.movableType == worker.getMovableType();
-	}
+	P getPriority();
 }

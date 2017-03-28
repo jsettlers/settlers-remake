@@ -14,23 +14,22 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ShortPoint2D;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
-
 /**
  * A simple slot queue that supports {@link #pushLast(int, ElementType)} and {@link #popFront(int)} on the single slots.
- * 
- * @author Andreas Eberle
- * 
+ *
  * @param <SlotType>
- *            Type of the slot identifiers.
+ * 		Type of the slot identifiers.
  * @param <ElementType>
- *            Type of the elements.
+ * 		Type of the elements.
+ * @author Andreas Eberle
  */
 public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> implements Serializable {
 	private static final long serialVersionUID = 979224996513554546L;
@@ -96,9 +95,9 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 
 	/**
 	 * Adds all elements of the other queue to this queue. The slotTypes array of both queues must be equal.
-	 * 
+	 *
 	 * @param other
-	 *            another queue that will be merged into this queue.
+	 * 		another queue that will be merged into this queue.
 	 */
 	public void merge(SimpleSlotQueue<SlotType, ElementType> other) {
 		if (Arrays.equals(slotTypes, other.slotTypes)) {
@@ -132,9 +131,9 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 	/**
 	 * Adds all elements in the given slotQueue to this one. <br>
 	 * NOTE: The queues must have an equal {@link #slotTypes} array!
-	 * 
+	 *
 	 * @param otherSlotQueue
-	 *            The other queue.
+	 * 		The other queue.
 	 */
 	public void addAll(SimpleSlotQueue<SlotType, ElementType> otherSlotQueue) {
 		assert Arrays.equals(slotTypes, otherSlotQueue.slotTypes);

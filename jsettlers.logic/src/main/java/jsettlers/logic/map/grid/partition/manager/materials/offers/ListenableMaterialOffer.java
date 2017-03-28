@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,10 +12,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.data;
+package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 
-public interface IMaterialCounts {
-	int getAmountOf(EMaterialType materialType);
+/**
+ * Created by Andreas Eberle on 05.03.2017.
+ */
+public class ListenableMaterialOffer extends MaterialOffer {
+	private final IOfferEmptiedListener emptiedListener;
+
+	ListenableMaterialOffer(ShortPoint2D position, EMaterialType materialType, IOffersCountListener countChangedListener, EOfferPriority priority, byte amount, IOfferEmptiedListener
+			emptiedListener) {
+		super(position, materialType, countChangedListener, priority, amount);
+		this.emptiedListener = emptiedListener;
+	}
+
+	@Override
+	public void offerTaken() {
+		super.offerTaken();
+		if (canBeRemoved()) {
+			emptiedListener.offerEmptied();
+		}
+	}
 }

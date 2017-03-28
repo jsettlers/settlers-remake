@@ -14,11 +14,9 @@
  *******************************************************************************/
 package jsettlers.ai.economy;
 
-import jsettlers.ai.highlevel.AiMapInformation;
-import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.common.buildings.EBuildingType;
-
 import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
 
 /**
  * @author codingberlin

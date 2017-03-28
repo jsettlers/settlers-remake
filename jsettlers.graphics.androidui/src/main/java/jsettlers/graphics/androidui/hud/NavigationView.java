@@ -27,7 +27,7 @@ import go.graphics.UIPoint;
 import jsettlers.common.utils.MathUtils;
 import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.map.ScreenPosition;
-import jsettlers.graphics.map.controls.original.panel.content.AnimateablePosition;
+import jsettlers.graphics.map.controls.original.panel.content.AnimatablePosition;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,7 +43,7 @@ public class NavigationView extends View {
 
 	private boolean panInProgress;
 	// relative to center.
-	private AnimateablePosition panPosition = new AnimateablePosition(0, 0);
+	private AnimatablePosition panPosition = new AnimatablePosition(0, 0);
 
 	private final Object panTimerMutex = new Object();
 	private Timer panTimer;
@@ -107,7 +107,7 @@ public class NavigationView extends View {
 		centerX = w / 2;
 		centerY = h / 2;
 		endPanning();
-		panPosition = new AnimateablePosition(0, 0);
+		panPosition = new AnimatablePosition(0, 0);
 		super.onSizeChanged(w, h, oldw, oldh);
 		invalidate();
 	}

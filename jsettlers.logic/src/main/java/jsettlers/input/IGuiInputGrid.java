@@ -29,7 +29,7 @@ import java.io.IOException;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public interface IGuiInputGrid {
@@ -48,7 +48,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Gets a position where the building can be constructed some points around pos.
-	 * 
+	 *
 	 * @param position
 	 *            THe position
 	 * @param type
@@ -64,7 +64,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Saves the map with the given {@link UIState}.
-	 * 
+	 *
 	 * @param playerStates
 	 * @throws FileNotFoundException
 	 * @throws IOException
@@ -78,7 +78,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Positions a new building of the given type at the given position.
-	 * 
+	 *
 	 * @param position
 	 *            Position the new building will be placed. <br>
 	 *            NOTE: There will be no validation if this position is allowed! This must be done prior to this call.
@@ -91,7 +91,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * This method can be used to print debug output when the given position is clicked by the user.
-	 * 
+	 *
 	 * @param x
 	 *            x coordinate of the position.
 	 * @param y
@@ -101,7 +101,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.
-	 * 
+	 *
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialType
@@ -114,14 +114,13 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.
-	 * 
+	 *
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialTypeForPriority
 	 *            The {@link EMaterialType}s for the priorities. The first element has the highest priority, the last one has the lowest.
 	 */
-	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
-			EMaterialType[] materialTypeForPriority);
+	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority);
 
 	short getBlockedPartition(int x, int y);
 
@@ -134,4 +133,6 @@ public interface IGuiInputGrid {
 	FogOfWar getFogOfWar();
 
 	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
+
+	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
 }
