@@ -1,5 +1,7 @@
 package jsettlers.logic.movable;
 
+import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
@@ -12,11 +14,21 @@ public class MovableComponent extends Component {
     private final EMovableType movableType;
     private byte playerId;
     private ShortPoint2D position;
+    private EDirection viewDirection;
 
-    public MovableComponent(EMovableType movableType, byte playerId, ShortPoint2D position) {
+    public MovableComponent(EMovableType movableType, byte playerId, ShortPoint2D position, EDirection viewDirection) {
         this.movableType = movableType;
         this.playerId = playerId;
         this.position = position;
+        this.viewDirection = viewDirection;
+    }
+
+    public void setViewDirection(EDirection viewDirection) {
+        this.viewDirection = viewDirection;
+    }
+
+    public EDirection getViewDirection() {
+        return viewDirection;
     }
 
     public short getViewDistance() {

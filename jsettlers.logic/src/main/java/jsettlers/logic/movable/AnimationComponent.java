@@ -15,22 +15,25 @@ public class AnimationComponent extends Component {
     private short animationDuration;
     private boolean isSoundPlayed = false;
     private boolean isRightStep = false;
-    private EDirection viewDirection;
 
-    public AnimationComponent(EDirection viewDirection) {
-        this.viewDirection = viewDirection;
+    public AnimationComponent() { }
+
+    @Override
+    public void OnLateUpdate() {
+        if (isAnimating())
+            entity.setInvokationDelay(getRemainingTime());
     }
 
     public EMovableAction getAnimation() {
         return anmiation;
     }
 
-    public EDirection getViewDirection() {
-        return viewDirection;
-    }
-
     public float getAnimationProgress() {
         return ((float) (MatchConstants.clock().getTime() - animationStartTime)) / animationDuration;
+    }
+
+    public boolean isAnimating() {
+        return animationStartTime + animationDuration < MatchConstants.clock().getTime();
     }
 
     public void startAnimation(EMovableAction animation, float duration) {
@@ -53,5 +56,9 @@ public class AnimationComponent extends Component {
 
     public boolean isSoundPlayed() {
         return isSoundPlayed;
+    }
+
+    public int getRemainingTime() {
+        return animationStartTime + animationDuration - MatchConstants.clock().getTime();
     }
 }

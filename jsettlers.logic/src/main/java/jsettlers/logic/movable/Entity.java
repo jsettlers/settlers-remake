@@ -5,19 +5,22 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import jsettlers.logic.timer.IScheduledTimerable;
+
 /**
  * Created by jt-1 on 2/5/2017.
  * from: https://github.com/bakpakin/EGF
  */
 
-public class Entity implements Serializable {
+public class Entity implements Serializable, IScheduledTimerable {
     private static int nextId = Integer.MIN_VALUE;
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
     private Map<Class, Component> components;
 
-    boolean active;
+    private boolean active;
+    private int invokationDelay;
 
     public Entity() {
         this.id = nextId++;
@@ -32,12 +35,38 @@ public class Entity implements Serializable {
         }
     }
 
+    private int resetInvokationDelay() {
+        int lastValue = invokationDelay;
+        invokationDelay = 1;
+        return lastValue;
+    }
+
+    public void setInvokationDelay(int delay) {
+        // delay of 1 == reschedule at next time slot
+        invokationDelay = Math.max(invokationDelay, Math.max(1, delay));
+    }
+
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void InvokeAwake() {
+        for (Component component : components.values()) {
+            component.OnAwake();
+        }
+    }
+
+    public void InvokeUpdate() {
+        for (Component component : components.values()) {
+            component.OnUpdate();
+        }
+        for (Component component : components.values()) {
+            component.OnLateUpdate();
+        }
     }
 
     public int getID() {
@@ -88,5 +117,19 @@ public class Entity implements Serializable {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public int timerEvent() {
+        if (!isActive()) return -1;
+
+        InvokeUpdate();
+
+        return resetInvokationDelay();
+    }
+
+    @Override
+    public void kill() {
+        setActive(false);
     }
 }

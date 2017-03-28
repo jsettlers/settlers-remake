@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public abstract class Component implements Serializable {
     public Entity entity;
-
-    protected void OnUpdate() {}
-    protected void OnLateUpdate() {}
+    public void OnAwake() {}
+    public void OnUpdate() {}
+    public void OnLateUpdate() {}
 }

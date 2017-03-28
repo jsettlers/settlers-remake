@@ -13,6 +13,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.input.IGuiMovable;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -22,11 +23,13 @@ import jsettlers.logic.timer.IScheduledTimerable;
  * Created by jt-1 on 2/5/2017.
  */
 
-public final class Movable2 extends Entity implements IScheduledTimerable, IPathCalculatable, IViewDistancable, IGuiMovable,
+public final class Movable2 extends Entity implements IPathCalculatable, IViewDistancable, IGuiMovable,
         IAttackableMovable, IDebugable, Serializable {
     private static final long serialVersionUID = 6873799805741909118L;
     private static final HashMap<Integer, Movable> movablesByID = new HashMap<>();
     private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<>();
+
+    // endregion
 
     //region Interface Implementations
     @Override
@@ -38,12 +41,10 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
     public boolean needsPlayersGround() { return this.get(MovableComponent.class).needsPlayersGround(); }
 
     @Override
-    public EMovableAction getAction() { return this.get(AnimationComponent.class).getAnimation(); }
+    public EDirection getDirection() { return this.get(MovableComponent.class).getViewDirection(); }
 
     @Override
-    public EDirection getDirection() {
-        return this.get(AnimationComponent.class).getViewDirection();
-    }
+    public EMovableAction getAction() { return this.get(AnimationComponent.class).getAnimation(); }
 
     @Override
     public float getMoveProgress() {
@@ -133,16 +134,6 @@ public final class Movable2 extends Entity implements IScheduledTimerable, IPath
     @Override
     public void informAboutAttackable(IAttackable attackable) {
         get(AttackableComponent.class).informAboutAttackable((Entity)attackable);
-    }
-
-    @Override
-    public int timerEvent() {
-        return 0;
-    }
-
-    @Override
-    public void kill() {
-
     }
 
     //endregion
