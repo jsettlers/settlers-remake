@@ -44,7 +44,7 @@ import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRONORE_MINE_RATIO;
@@ -161,9 +161,9 @@ public class WhatToDoAi implements IWhatToDoAi {
 		int bearersCount = bearersPositions.size();
 		int stoneCutterCount = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
 		if (geologistsCount == 0 && stoneCutterCount >= 1 && bearersCount - 3 > MINIMUM_NUMBER_OF_BEARERS) {
-			Movable coalGeologist = getBearerAt(bearersPositions.get(0));
-			Movable ironGeologist = getBearerAt(bearersPositions.get(1));
-			Movable goldGeologist = getBearerAt(bearersPositions.get(2));
+			ILogicMovable coalGeologist = getBearerAt(bearersPositions.get(0));
+			ILogicMovable ironGeologist = getBearerAt(bearersPositions.get(1));
+			ILogicMovable goldGeologist = getBearerAt(bearersPositions.get(2));
 
 			List<Integer> targetGeologists = new ArrayList<>();
 			targetGeologists.add(coalGeologist.getID());
@@ -178,7 +178,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	private void sendGeologistToNearest(Movable geologist, EResourceType resourceType) {
+	private void sendGeologistToNearest(ILogicMovable geologist, EResourceType resourceType) {
 		ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
 				playerId, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
 		if (resourcePoint == null) {
@@ -190,7 +190,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 		}
 	}
 
-	private Movable getBearerAt(ShortPoint2D point) {
+	private ILogicMovable getBearerAt(ShortPoint2D point) {
 		return mainGrid.getMovableGrid().getMovableAt(point.x, point.y);
 	}
 
