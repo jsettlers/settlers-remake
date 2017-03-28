@@ -13,10 +13,6 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 
-/**
- * Created by jt-1 on 3/28/2017.
- */
-
 public interface ILogicMovable extends
         IScheduledTimerable,
         IPathCalculatable,
