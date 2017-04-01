@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.algorithms.path.IPathCalculatable;
-import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 
 /**
@@ -17,10 +14,10 @@ import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 public class GameFieldComponent extends Component {
     private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
     private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
-    private final AbstractMovableGrid grid;
+    private final AbstractMovableGrid movableGrid;
 
     public GameFieldComponent(AbstractMovableGrid grid) {
-        this.grid = grid;
+        this.movableGrid = grid;
     }
 
     public Queue<Movable> getAllMovables() {
@@ -31,7 +28,7 @@ public class GameFieldComponent extends Component {
         return movablesByID;
     }
 
-    public AbstractMovableGrid getGrid() {
-        return grid;
+    public AbstractMovableGrid getMovableGrid() {
+        return movableGrid;
     }
 }

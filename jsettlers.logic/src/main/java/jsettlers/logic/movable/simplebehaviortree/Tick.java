@@ -2,27 +2,23 @@ package jsettlers.logic.movable.simplebehaviortree;
 import java.util.LinkedList;
 import java.util.Stack;
 
-import jsettlers.logic.movable.simplebehaviortree.nodes.Node;
-import jsettlers.logic.movable.simplebehaviortree.nodes.NodeStatus;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Root;
-
 public class Tick<T> {
-	public Root Root;
+	public Root<T> Root;
 	public T Target;
-	private Stack<Node> openNodes = new Stack<>();
+	private Stack<Node<T>> openNodes = new Stack<>();
 	private boolean blockOpenNodes = false;
 	
-	public Tick(T target, Root root) {
+	public Tick(T target, Root<T> root) {
 		this.Root = root;
 		this.Target = target; 
 	}
 
 	
 	public NodeStatus Tick() {
-		LinkedList<Node> lastOpenNodes = new LinkedList<Node>(openNodes);
+		LinkedList<Node<T>> lastOpenNodes = new LinkedList<>(openNodes);
 		openNodes.clear();
 		NodeStatus state = Root.execute(this);
-		for(Node node : openNodes) {
+		for(Node<T> node : openNodes) {
 			if (lastOpenNodes.size() <= 0) break;
 			if (node == lastOpenNodes.peek())
 				lastOpenNodes.removeFirst();
@@ -30,32 +26,32 @@ public class Tick<T> {
 				break;
 		}
 		blockOpenNodes = true;
-		for(Node node : lastOpenNodes) {
+		for(Node<T> node : lastOpenNodes) {
 			node.close(this);
 		}
 		blockOpenNodes = false;
 		return state;
 	}
 	
-	public void EnterNode(Node node) {
+	public void EnterNode(Node<T> node) {
 		if (!blockOpenNodes)
 			openNodes.push(node);
 	}
 	
-	public void OpenNode(Node node) {
+	public void OpenNode(Node<T> node) {
 		
 	}
 	
-	public void TickNode(Node node) {
+	public void TickNode(Node<T> node) {
 		
 	}
 	
-	public void CloseNode(Node node) {
+	public void CloseNode(Node<T> node) {
 		if (!blockOpenNodes)
 			openNodes.pop();
 	}
 	
-	public void ExitNode(Node node) {
+	public void ExitNode(Node<T> node) {
 		
 	}
 	

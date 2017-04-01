@@ -1,15 +1,19 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+import jsettlers.logic.movable.simplebehaviortree.Composite;
+import jsettlers.logic.movable.simplebehaviortree.Node;
+import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-public class MemSelector extends Composite {
+public class MemSelector<T> extends Composite<T> {
 	private int index = 0;
 
-	public MemSelector(Node... children) {
+	@SafeVarargs
+	public MemSelector(Node<T>... children) {
 		super(children);
 	}
 	
 	@Override
-	protected <T> NodeStatus onTick(Tick<T> tick) { 
+	protected NodeStatus onTick(Tick<T> tick) { 
 		for (; index < children.size(); index++) {
 			NodeStatus status = children.get(index).execute(tick);
 			if (!status.equals(NodeStatus.Failure)) 
@@ -19,7 +23,7 @@ public class MemSelector extends Composite {
 	}
 	
 	@Override
-	protected <T> void onOpen(Tick<T> tick) {
+	protected void onOpen(Tick<T> tick) {
 		index = 0;
 	}
 }

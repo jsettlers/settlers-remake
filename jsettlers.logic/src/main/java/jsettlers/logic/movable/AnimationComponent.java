@@ -16,6 +16,8 @@ public class AnimationComponent extends Component {
     private boolean isSoundPlayed = false;
     private boolean isRightStep = false;
 
+    public static class AnimationFinishedTrigger extends Notification {}
+
     public AnimationComponent() { }
 
     @Override

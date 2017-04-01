@@ -1,15 +1,19 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+import jsettlers.logic.movable.simplebehaviortree.Composite;
+import jsettlers.logic.movable.simplebehaviortree.Node;
+import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-public class Selector extends Composite {
+public class Selector<T> extends Composite<T> {
 
-	public Selector(Node... children) {
+	@SafeVarargs
+	public Selector(Node<T>... children) {
 		super(children);
 	}
 	
 	@Override
-	protected <T> NodeStatus onTick(Tick<T> tick) { 
-		for (Node node : children) {
+	protected NodeStatus onTick(Tick<T> tick) { 
+		for (Node<T> node : children) {
 			NodeStatus status = node.execute(tick);
 			if (!status.equals(NodeStatus.Failure)) 
 				return status;

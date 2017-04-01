@@ -3,6 +3,7 @@ package jsettlers.logic.movable;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.ESearchType;
+import jsettlers.logic.player.Player;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -14,13 +15,13 @@ import jsettlers.logic.constants.Constants;
 
 public class MovableComponent extends Component implements IPathCalculatable{
     private final EMovableType movableType;
-    private byte playerId;
+    private Player player;
     private ShortPoint2D position;
     private EDirection viewDirection;
 
-    public MovableComponent(EMovableType movableType, byte playerId, ShortPoint2D position, EDirection viewDirection) {
+    public MovableComponent(EMovableType movableType, Player player, ShortPoint2D position, EDirection viewDirection) {
         this.movableType = movableType;
-        this.playerId = playerId;
+        this.player = player;
         this.position = position;
         this.viewDirection = viewDirection;
     }
@@ -53,12 +54,14 @@ public class MovableComponent extends Component implements IPathCalculatable{
 
     @Override
     public byte getPlayerId() {
-        return playerId;
+        return player.playerId;
     }
 
-    public void setPlayerId(byte playerId) {
-        this.playerId = playerId;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
+
+    public Player getPlayer() {return this.player;}
 
     public EMovableType getMovableType() {
         return movableType;

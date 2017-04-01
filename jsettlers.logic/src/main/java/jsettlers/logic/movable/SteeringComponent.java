@@ -5,7 +5,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.constants.Constants;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
  * Created by jt-1 on 3/28/2017.
@@ -17,6 +17,9 @@ public class SteeringComponent extends Component {
     private MovableComponent movC;
     private AnimationComponent aniC;
 
+    public static class TargetReachedTrigger extends Notification {}
+    public static class TargetNotReachedTrigger extends Notification {}
+
     @Override
     public void OnAwake() {
         gameC = entity.get(GameFieldComponent.class);
@@ -25,7 +28,8 @@ public class SteeringComponent extends Component {
     }
 
     public boolean goToPos(ShortPoint2D targetPos) {
-        path = gameC.getGrid().calculatePathTo(movC, targetPos);
+        //TODO: rename to moveTo
+        path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
         return path != null;
     }
 
@@ -36,50 +40,52 @@ public class SteeringComponent extends Component {
 
     public Path preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
         if (dijkstra) {
-            return gameC.getGrid().searchDijkstra(movC, centerX, centerY, radius, searchType);
+            return gameC.getMovableGrid().searchDijkstra(movC, centerX, centerY, radius, searchType);
         } else {
-            return gameC.getGrid().searchInArea(movC, centerX, centerY, radius, searchType);
+            return gameC.getMovableGrid().searchInArea(movC, centerX, centerY, radius, searchType);
         }
     }
 
     @Override
     public void OnUpdate() {
+        aniC.stopAnimation();
         if (path == null || !path.hasNextStep()) {
             // if path is finished, or canceled
-            aniC.stopAnimation();
             path = null;
+            entity.raiseNotification(new TargetReachedTrigger());
             return;
         }
 
-        Movable blockingMovable = gameC.getGrid().getMovableAt(path.nextX(), path.nextY());
+        ILogicMovable blockingMovable = gameC.getMovableGrid().getMovableAt(path.nextX(), path.nextY());
         if (blockingMovable == null) { // if we can go on to the next step
-            if (gameC.getGrid().isValidNextPathPosition(movC, path.getNextPos(), path.getTargetPos())) { // next position is valid
+            if (gameC.getMovableGrid().isValidNextPathPosition(movC, path.getNextPos(), path.getTargetPos())) { // next position is valid
                 goSinglePathStep();
 
             } else { // next position is invalid
-                aniC.stopAnimation();
-                Path newPath = gameC.getGrid().calculatePathTo(movC, path.getTargetPos()); // try to find a new path
+
+                Path newPath = gameC.getMovableGrid().calculatePathTo(movC, path.getTargetPos()); // try to find a new path
 
                 if (newPath == null) { // no path found
                     path = null;
+                    entity.raiseNotification(new TargetNotReachedTrigger());
                 } else {
                     this.path = newPath; // continue with new path
-                    if (gameC.getGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
+                    if (gameC.getMovableGrid().hasNoMovableAt(path.nextX(), path.nextY())) { // path is valid, but maybe blocked (leaving blocked area)
                         goSinglePathStep();
                     }
                 }
             }
 
         } else { // step not possible, so try it next time (push not supported)
-            aniC.stopAnimation();
+
         }
     }
 
     private void goSinglePathStep() {
         movC.setViewDirection(EDirection.getDirection(movC.getPos(), path.getNextPos()));
         aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
-        gameC.getGrid().leavePosition(movC.getPos(), (Movable)entity);
-        gameC.getGrid().enterPosition(path.getNextPos(), (Movable)entity, false);
+        gameC.getMovableGrid().leavePosition(movC.getPos(), new MovableWrapper(entity));
+        gameC.getMovableGrid().enterPosition(path.getNextPos(), new MovableWrapper(entity), false);
         movC.setPos(path.getNextPos());
         aniC.switchStep();
         path.goToNextStep();

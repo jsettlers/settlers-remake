@@ -1,16 +1,16 @@
 package jsettlers.logic.movable;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
-import jsettlers.logic.movable.simplebehaviortree.nodes.NodeStatus;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Root;
+import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
+import jsettlers.logic.movable.simplebehaviortree.Root;
 
 /**
  * Created by jt-1 on 3/28/2017.
  */
 
 public class BehaviorComponent extends Component {
-    private Root root;
+    private Root<Entity> root;
     private Tick<Entity> tick;
-    public BehaviorComponent(Root behaviorTree) {
+    public BehaviorComponent(Root<Entity> behaviorTree) {
         root = behaviorTree;
     }
 

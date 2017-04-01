@@ -1,7 +1,10 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
+import jsettlers.logic.movable.simplebehaviortree.Composite;
+import jsettlers.logic.movable.simplebehaviortree.Node;
+import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
-public class Parallel extends Composite {
+public class Parallel<T> extends Composite<T> {
 	public enum Policy {
 		ONE,
 		ALL
@@ -13,14 +16,15 @@ public class Parallel extends Composite {
 	private NodeStatus[] childStatus;
 	private int successCount;
 
-	public Parallel(Policy successPolicy, Node... children) {
+	@SafeVarargs
+	public Parallel(Policy successPolicy, Node<T>... children) {
 		super(children);
 		childStatus = new NodeStatus[this.children.size()];
 		this.successPolicy = successPolicy;
 	}
 	
 	@Override
-	protected <T> NodeStatus onTick(Tick<T> tick) {
+	protected NodeStatus onTick(Tick<T> tick) {
 		boolean allFinished = true;
 		for (int index = 0; index < children.size(); index++) {
 			if (!childStatus[index].equals(NodeStatus.Running)) {
@@ -45,7 +49,7 @@ public class Parallel extends Composite {
 	}
 	
 	@Override
-	protected <T> void onOpen(Tick<T> tick) {
+	protected void onOpen(Tick<T> tick) {
 		for (int i = 0; i < childStatus.length; i++) {
 			childStatus[i] = NodeStatus.Running;
 		}

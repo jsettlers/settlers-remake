@@ -1,22 +1,22 @@
-package jsettlers.logic.movable.simplebehaviortree.nodes;
-import  jsettlers.logic.movable.simplebehaviortree.Tick;
+package jsettlers.logic.movable.simplebehaviortree;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Node {
+public class Node<T> {
 	private boolean isOpen = false;
 	
 	private int ID;
 	public int getID() { return ID; }
 	
-	protected ArrayList<Node> children;
+	protected ArrayList<Node<T>> children;
 	
-	public Node(Node... children) {
+	@SafeVarargs
+	public Node(Node<T>... children) {
 		this.children = new ArrayList<>(children.length);
 		this.children.addAll(Arrays.asList(children));
 	}
 
-	public <T> NodeStatus execute(Tick<T> tick) {
+	public NodeStatus execute(Tick<T> tick) {
 		enter(tick);
 		open(tick);
 		NodeStatus status = this.tick(tick);
@@ -27,12 +27,12 @@ public class Node {
 		return status;
 	}
 
-	private <T> void enter(Tick<T> tick) {
+	private void enter(Tick<T> tick) {
 		tick.EnterNode(this);
 		onEnter(tick);
 	}
 
-	private <T> void open(Tick<T> tick) {
+	private void open(Tick<T> tick) {
 		if (!isOpen) {
 			tick.OpenNode(this);
 			isOpen = true;
@@ -40,12 +40,12 @@ public class Node {
 		}		
 	}
 	
-	private <T> NodeStatus tick(Tick<T> tick) {
+	private NodeStatus tick(Tick<T> tick) {
 		tick.TickNode(this);
 		return onTick(tick);
 	}
 
-	public <T> void close(Tick<T> tick) {
+	public void close(Tick<T> tick) {
 		if (isOpen) {
 			tick.CloseNode(this);
 			isOpen = false;
@@ -53,23 +53,23 @@ public class Node {
 		}
 	}
 
-	private <T> void exit(Tick<T> tick) {
+	private void exit(Tick<T> tick) {
 		tick.ExitNode(this);
 		onExit(tick);
 	}
 	
-	protected <T> void onEnter(Tick<T> tick) { }
-	protected <T> void onOpen(Tick<T> tick) { }
-	protected <T> NodeStatus onTick(Tick<T> tick) { 
+	protected void onEnter(Tick<T> tick) { }
+	protected void onOpen(Tick<T> tick) { }
+	protected NodeStatus onTick(Tick<T> tick) { 
 		return NodeStatus.Success;
 	}
-	protected <T> void onClose(Tick<T> tick) { }
-	protected <T> void onExit(Tick<T> tick) { }
+	protected void onClose(Tick<T> tick) { }
+	protected void onExit(Tick<T> tick) { }
 
-	int initiate(int maxId) {
+	protected int initiate(int maxId) {
 		maxId++;
 		this.ID = maxId;
-		for (Node child : children) {
+		for (Node<T> child : children) {
 			maxId = child.initiate(maxId);
 		}
 		return maxId;
