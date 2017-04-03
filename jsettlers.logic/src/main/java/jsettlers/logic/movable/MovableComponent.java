@@ -13,17 +13,32 @@ import jsettlers.logic.constants.Constants;
  * Created by jt-1 on 2/6/2017.
  */
 
+@Requires({GameFieldComponent.class})
 public class MovableComponent extends Component implements IPathCalculatable{
     private final EMovableType movableType;
     private Player player;
     private ShortPoint2D position;
     private EDirection viewDirection;
 
+    private GameFieldComponent gameC;
+
     public MovableComponent(EMovableType movableType, Player player, ShortPoint2D position, EDirection viewDirection) {
         this.movableType = movableType;
         this.player = player;
         this.position = position;
         this.viewDirection = viewDirection;
+    }
+
+    @Override
+    public void OnAwake() {
+        gameC = entity.get(GameFieldComponent.class);
+    }
+
+    @Override
+    public void OnStart() {
+        gameC.getMovableMap().put(entity.getID(), new MovableWrapper(entity));
+        gameC.getAllMovables().offer(new MovableWrapper(entity));
+        gameC.getMovableGrid().enterPosition(position, new MovableWrapper(entity), true);
     }
 
     public void setViewDirection(EDirection viewDirection) {

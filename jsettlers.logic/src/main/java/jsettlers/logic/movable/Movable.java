@@ -56,9 +56,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<Integer, ILogicMovable>();
-	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<ILogicMovable>();
-	private static int nextID = Integer.MIN_VALUE;
+	public static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<Integer, ILogicMovable>();
+	public static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<ILogicMovable>();
+	public static Integer nextID = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
 	private final int id;

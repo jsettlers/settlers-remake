@@ -1,11 +1,8 @@
 package jsettlers.logic.movable;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.algorithms.fogofwar.IViewDistancable;
-import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -13,16 +10,11 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
-import jsettlers.input.IGuiMovable;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
-import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IAttackable;
-import jsettlers.logic.movable.interfaces.IAttackableMovable;
-import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.timer.IScheduledTimerable;
 
 /**
  * Created by jt-1 on 2/5/2017.
@@ -80,7 +72,7 @@ public final class MovableWrapper implements ILogicMovable {
 
     @Override
     public void stopOrStartWorking(boolean stop) {
-        entity.get(WorkComponent.class).setIsWorking(!stop);
+        entity.get(SpecialistComponent.class).setIsWorking(!stop);
     }
 
     @Override
@@ -217,7 +209,7 @@ public final class MovableWrapper implements ILogicMovable {
 
     @Override
     public void moveTo(ShortPoint2D targetPosition) {
-        entity.get(PlayerCommandComponent.class).sendMoveToAndWorkCommand(targetPosition);
+        entity.get(PlayerCmdComponent.class).send_AltLeftClick(targetPosition);
     }
 
     @Override

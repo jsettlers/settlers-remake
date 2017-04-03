@@ -6,7 +6,7 @@ import jsettlers.common.position.ShortPoint2D;
  * Created by jt-1 on 2/6/2017.
  */
 
-public class WorkComponent extends Component {
+public class SpecialistComponent extends Component {
     private boolean isWorking = false;
     private ShortPoint2D centerOfWork;
 

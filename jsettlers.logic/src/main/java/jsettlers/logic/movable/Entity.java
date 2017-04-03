@@ -11,14 +11,14 @@ import java.util.Set;
 
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * Created by jt-1 on 2/5/2017.
- * from: https://github.com/bakpakin/EGF
  */
 
 public class Entity implements Serializable, IScheduledTimerable {
-    private static int nextId = Integer.MIN_VALUE;
+    private static Integer nextId = Movable.nextID;
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
@@ -26,12 +26,13 @@ public class Entity implements Serializable, IScheduledTimerable {
     private Set<Notification> notificationsCurrent;
     private Set<Notification> notificationsLast;
 
-    private boolean active;
+    public enum State { ACTIVE, INACTIVE, UNINITALIZED }
+    private State state;
     private int invokationDelay;
 
     public Entity() {
         id = nextId++;
-        active = true;
+        state = State.UNINITALIZED;
         components = new IdentityHashMap<>();
         notificationsCurrent = new HashSet<>();
         notificationsLast = new HashSet<>();
@@ -55,20 +56,28 @@ public class Entity implements Serializable, IScheduledTimerable {
     }
 
     public boolean isActive() {
-        return active;
+        return state == State.ACTIVE;
     }
 
     public void setActive(boolean active) {
-        this.active = active;
+        if (active == isActive()) return;
+        if (state == State.UNINITALIZED) {
+            initialize();
+        }
+        state = active ? State.ACTIVE : State.INACTIVE;
     }
 
-    public void InvokeAwake() {
+    private void initialize() {
         for (Component component : components.values()) {
             component.OnAwake();
         }
+        for (Component component : components.values()) {
+            component.OnStart();
+        }
+        RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
     }
 
-    public void InvokeUpdate() {
+    private void invokeUpdate() {
         for (Component component : components.values()) {
             component.OnUpdate();
         }
@@ -94,7 +103,12 @@ public class Entity implements Serializable, IScheduledTimerable {
     }
 
     public void remove(Class<? extends Component> c) {
-        components.remove(c.toString());//.entity = null;
+        components.remove(c);
+        Class cls = c.getSuperclass();
+        while (cls != null && cls != Component.class) {
+            components.remove(cls);
+            cls = cls.getSuperclass();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -104,10 +118,6 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     public boolean containsComponent(Class<? extends Component> c) {
         return components.containsKey(c.getName());
-    }
-
-    public boolean containsComponent(String c) {
-        return components.containsKey(c);
     }
 
     public <T extends Notification> Iterator<T> getNotificationsIt(Class<T> type) {
@@ -163,13 +173,37 @@ public class Entity implements Serializable, IScheduledTimerable {
         notificationsCurrent.add(note);
     }
 
+    public void convertTo(Entity blueprint) {
+        // remove all unused components
+        for (Class<? extends Component> cls : components.keySet()) {
+            if (!blueprint.containsComponent(cls)) remove(cls);
+        }
+        // add all new components
+        List<Component> newComponents = new ArrayList<>();
+        for (Class<? extends Component> cls : blueprint.components.keySet()) {
+            Component c = blueprint.get(cls);
+            blueprint.remove(cls);
+            newComponents.add(c);
+            add(c);
+        }
+        if (state != State.UNINITALIZED) {
+            // initialize all new components
+            for (Component c : newComponents) {
+                c.OnAwake();
+            }
+            for (Component c : newComponents) {
+                c.OnStart();
+            }
+        }
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer(30);
-        sb.append("Entity[");
-        sb.append(id);
+        sb.append("Entity");
+        sb.append("(").append(id).append(")");
+        sb.append("[");
         for (Component c : components.values()) {
-            sb.append(c);
-            sb.append(", ");
+            sb.append(c).append(", ");
         }
         sb.append("]");
         return sb.toString();
@@ -184,7 +218,7 @@ public class Entity implements Serializable, IScheduledTimerable {
     public int timerEvent() {
         if (!isActive()) return -1;
 
-        InvokeUpdate();
+        invokeUpdate();
 
         notificationsLast = notificationsCurrent;
         notificationsCurrent = new HashSet<>();
