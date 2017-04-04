@@ -57,9 +57,9 @@ import jsettlers.graphics.sound.SoundManager;
 public class MapObjectDrawer {
 
 	private static final int SOUND_MILL = 42;
-	private static final int SOUND_BUILDING_DESTROYED = 36;
+	private static final int SOUND_BUILDING_DESTROYED = 93;
 	private static final int SOUND_SETTLER_KILLED = 35;
-	private static final int SOUND_FALLING_TREE = 4;
+	private static final int SOUND_FALLING_TREE = 36;
 	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
 	private static final OriginalImageLink INSIDE_BUILDING_LEFT = new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
@@ -214,7 +214,7 @@ public class MapObjectDrawer {
 
 		case TREE_DEAD:
 			// TODO: falling tree sound.
-			playSound(object, SOUND_FALLING_TREE);
+			playSound(object, SOUND_FALLING_TREE, x, y);
 			drawFallingTree(x, y, progress, color);
 			break;
 
@@ -260,13 +260,13 @@ public class MapObjectDrawer {
 
 		case GHOST:
 			drawPlayerableByProgress(x, y, 12, 27, object, color);
-			playSound(object, SOUND_SETTLER_KILLED);
+			playSound(object, SOUND_SETTLER_KILLED, x, y);
 			break;
 
 		case BUILDING_DECONSTRUCTION_SMOKE:
 			drawByProgress(x, y, 13, 38, object.getStateProgress(),
 					color);
-			playSound(object, SOUND_BUILDING_DESTROYED);
+			playSound(object, SOUND_BUILDING_DESTROYED, x, y);
 			break;
 
 		case FOUND_COAL:
@@ -471,50 +471,60 @@ public class MapObjectDrawer {
 		if (!movable.isSoundPlayed()) {
 			final EMovableAction action = movable.getAction();
 			if (action == EMovableAction.ACTION1) {
-				playSoundAction1(movable.getMovableType());
+				playSoundAction1(movable.getMovableType(), movable.getPos());
 				movable.setSoundPlayed();
 			} else if (action == EMovableAction.ACTION2) {
-				playSoundAction2(movable.getMovableType());
+				playSoundAction2(movable.getMovableType(), movable.getPos());
 				movable.setSoundPlayed();
 			}
 		}
 	}
 
-	private void playSoundAction1(EMovableType type) {
+	private void playSoundAction1(EMovableType type, ShortPoint2D position) {
 		switch (type) {
+		case BRICKLAYER:
+			sound.playSound(1, 1, position);
+			break;
 		case LUMBERJACK:
-			sound.playSound(1, 1, 1);
-			break;
-		case STONECUTTER:
-			sound.playSound(3, 1, 1);
-			break;
-		case DIGGER:
-			sound.playSound(2, 1, 1);
+			sound.playSound(0, 1, position);
 			break;
 		case SAWMILLER:
-			sound.playSound(5, 1, 1);
+			sound.playSound(5, 1, position);
+			break;
+		case STONECUTTER:
+			sound.playSound(3, 1, position);
+			break;
+		case DIGGER:
+			sound.playSound(2, 1, position);
 			break;
 		case SMITH:
-			sound.playSound(6, 1, 1);
+			sound.playSound(6, 1, position);
 			break;
 		case FARMER:
-			sound.playSound(12, 1, 1);
+			sound.playSound(12, 1, position);
 			break;
 		case SWORDSMAN_L1:
 		case SWORDSMAN_L2:
 		case SWORDSMAN_L3:
-			sound.playSound(30, 1, 1);
+			sound.playSound(30, 1, position);
 			break;
 		case BOWMAN_L1:
 		case BOWMAN_L2:
 		case BOWMAN_L3:
-			sound.playSound(33, 1, 1);
+			sound.playSound(33, 1, position);
+			break;
+		case CHARCOAL_BURNER:
+			sound.playSound(45, 1, position);
 			break;
 		}
 	}
 
-	private void playSoundAction2(EMovableType type) {
-		// currently there is nobody who needs this.
+	private void playSoundAction2(EMovableType type, ShortPoint2D position) {
+		switch (type) {
+			case LUMBERJACK:
+				sound.playSound(36, 1, position);
+				break;
+		}
 	}
 
 	private void drawMovableAt(IMovable movable, int x, int y) {
@@ -586,11 +596,11 @@ public class MapObjectDrawer {
 		context.getDrawBuffer().setZ(z);
 	}
 
-	private void playSound(IMapObject object, int soundid) {
+	private void playSound(IMapObject object, int soundid, int x, int y) {
 		if (object instanceof ISoundable) {
 			ISoundable soundable = (ISoundable) object;
 			if (!soundable.isSoundPlayed()) {
-				sound.playSound(soundid, 1, 1);
+				sound.playSound(soundid, 1, x, y);
 				soundable.setSoundPlayed();
 			}
 		}
@@ -884,7 +894,7 @@ public class MapObjectDrawer {
 					int step = i % seq.length();
 					draw(seq.getImageSafe(step), x, y, color);
 				}
-				playSound(building, SOUND_MILL);
+				playSound(building, SOUND_MILL, x, y);
 
 			} else {
 				ImageLink[] images = type.getImages();
