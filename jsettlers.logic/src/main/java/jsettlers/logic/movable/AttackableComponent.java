@@ -39,4 +39,9 @@ public class AttackableComponent extends Component {
     public void OnLateUpdate() {
         informedAboutAttackableEvent = null;
     }
+
+    @Override
+    public void OnDestroy() {
+        health = -200;
+    }
 }

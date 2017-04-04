@@ -1,5 +1,7 @@
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,15 +66,23 @@ public class Entity implements Serializable, IScheduledTimerable {
         if (state == State.UNINITALIZED) {
             initialize();
         }
-        state = active ? State.ACTIVE : State.INACTIVE;
+
+        if (active) {
+            state = State.ACTIVE;
+            for (Component c : components.values()) {
+                c.OnEnable();
+            }
+        } else {
+            state = State.INACTIVE;
+            for (Component c : components.values()) {
+                c.OnDisable();
+            }
+        }
     }
 
     private void initialize() {
         for (Component component : components.values()) {
             component.OnAwake();
-        }
-        for (Component component : components.values()) {
-            component.OnStart();
         }
         RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
     }
@@ -83,6 +93,12 @@ public class Entity implements Serializable, IScheduledTimerable {
         }
         for (Component component : components.values()) {
             component.OnLateUpdate();
+        }
+    }
+
+    private void invokeDestroy() {
+        for (Component component : components.values()) {
+            component.OnDestroy();
         }
     }
 
@@ -191,10 +207,17 @@ public class Entity implements Serializable, IScheduledTimerable {
             for (Component c : newComponents) {
                 c.OnAwake();
             }
-            for (Component c : newComponents) {
-                c.OnStart();
+            if (state == State.ACTIVE) {
+                for (Component c : newComponents) {
+                    c.OnEnable();
+                }
             }
         }
+    }
+
+    private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        Entity.nextId = Math.max(Entity.nextId, this.id + 1);
     }
 
     public String toString() {
@@ -229,5 +252,6 @@ public class Entity implements Serializable, IScheduledTimerable {
     @Override
     public void kill() {
         setActive(false);
+        invokeDestroy();
     }
 }

@@ -84,8 +84,8 @@ public class SteeringComponent extends Component {
     private void goSinglePathStep() {
         movC.setViewDirection(EDirection.getDirection(movC.getPos(), path.getNextPos()));
         aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
-        gameC.getMovableGrid().leavePosition(movC.getPos(), new MovableWrapper(entity));
-        gameC.getMovableGrid().enterPosition(path.getNextPos(), new MovableWrapper(entity), false);
+        gameC.getMovableGrid().leavePosition(movC.getPos(), movC.getaMovableWrapper());
+        gameC.getMovableGrid().enterPosition(path.getNextPos(), movC.getaMovableWrapper(), false);
         movC.setPos(path.getNextPos());
         aniC.switchStep();
         path.goToNextStep();

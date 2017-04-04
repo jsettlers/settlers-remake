@@ -1,5 +1,8 @@
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,14 +23,18 @@ import jsettlers.logic.player.Player;
  * Created by jt-1 on 2/5/2017.
  */
 
-public final class MovableWrapper implements ILogicMovable {
-    private static final long serialVersionUID = 6873799805741909118L;
-    private static final HashMap<Integer, Movable> movablesByID = new HashMap<>();
-    private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<>();
+public final class MovableWrapper implements ILogicMovable, Serializable {
+    private static final long serialVersionUID = -2853861825853788354L;
     private Entity entity;
 
     public MovableWrapper(Entity entity) {
         this.entity = entity;
+    }
+
+    private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        entity.get(GameFieldComponent.class).getMovableMap().put(entity.getID(), this);
+        entity.get(GameFieldComponent.class).getAllMovables().add(this);
     }
 
     //region Interface Implementations

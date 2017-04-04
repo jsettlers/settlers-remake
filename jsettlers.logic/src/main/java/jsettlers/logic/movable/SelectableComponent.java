@@ -24,4 +24,9 @@ public class SelectableComponent extends Component {
     SelectableComponent(ESelectionType selectionType) {
         _selectionType = selectionType;
     }
+
+    @Override
+    public void OnDisable() {
+        setSelected(false);
+    }
 }

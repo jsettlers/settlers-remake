@@ -1,7 +1,11 @@
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.logic.player.Player;
 import jsettlers.common.movable.EDirection;
@@ -19,6 +23,8 @@ public class MovableComponent extends Component implements IPathCalculatable{
     private Player player;
     private ShortPoint2D position;
     private EDirection viewDirection;
+    //TODO: make @aMovableWrapper not necessary
+    private MovableWrapper aMovableWrapper;
 
     private GameFieldComponent gameC;
 
@@ -32,13 +38,32 @@ public class MovableComponent extends Component implements IPathCalculatable{
     @Override
     public void OnAwake() {
         gameC = entity.get(GameFieldComponent.class);
+        aMovableWrapper = new MovableWrapper(entity);
     }
 
     @Override
-    public void OnStart() {
-        gameC.getMovableMap().put(entity.getID(), new MovableWrapper(entity));
-        gameC.getAllMovables().offer(new MovableWrapper(entity));
-        gameC.getMovableGrid().enterPosition(position, new MovableWrapper(entity), true);
+    public void OnEnable() {
+        gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
+        gameC.getAllMovables().offer(aMovableWrapper);
+        gameC.getMovableGrid().enterPosition(position, aMovableWrapper, true);
+    }
+
+    @Override
+    public void OnDisable() {
+        // TODO: refactor leavePosition to not use the instance
+        gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
+
+        gameC.getAllMovables().remove(gameC.getMovableMap().get(entity.getID()));
+        gameC.getMovableMap().remove(entity.getID());
+    }
+
+    @Override
+    public void OnDestroy() {
+        gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
+    }
+
+    public MovableWrapper getaMovableWrapper() {
+        return aMovableWrapper;
     }
 
     public void setViewDirection(EDirection viewDirection) {
