@@ -70,35 +70,35 @@ public class Entity implements Serializable, IScheduledTimerable {
         if (active) {
             state = State.ACTIVE;
             for (Component c : components.values()) {
-                c.OnEnable();
+                c.onEnable();
             }
         } else {
             state = State.INACTIVE;
             for (Component c : components.values()) {
-                c.OnDisable();
+                c.onDisable();
             }
         }
     }
 
     private void initialize() {
         for (Component component : components.values()) {
-            component.OnAwake();
+            component.onAwake();
         }
         RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
     }
 
     private void invokeUpdate() {
         for (Component component : components.values()) {
-            component.OnUpdate();
+            component.onUpdate();
         }
         for (Component component : components.values()) {
-            component.OnLateUpdate();
+            component.onLateUpdate();
         }
     }
 
     private void invokeDestroy() {
         for (Component component : components.values()) {
-            component.OnDestroy();
+            component.onDestroy();
         }
     }
 
@@ -205,11 +205,11 @@ public class Entity implements Serializable, IScheduledTimerable {
         if (state != State.UNINITALIZED) {
             // initialize all new components
             for (Component c : newComponents) {
-                c.OnAwake();
+                c.onAwake();
             }
             if (state == State.ACTIVE) {
                 for (Component c : newComponents) {
-                    c.OnEnable();
+                    c.onEnable();
                 }
             }
         }

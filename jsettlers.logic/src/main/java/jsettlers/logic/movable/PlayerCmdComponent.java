@@ -3,10 +3,12 @@ package jsettlers.logic.movable;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Created by jt-1 on 4/1/2017.
+ * @author homoroselaps
  */
 
 public class PlayerCmdComponent extends Component {
+    private static final long serialVersionUID = -3188445864619388414L;
+
     public static class LeftClickCommand extends Notification {
         ShortPoint2D pos;
         public LeftClickCommand(ShortPoint2D pos) {

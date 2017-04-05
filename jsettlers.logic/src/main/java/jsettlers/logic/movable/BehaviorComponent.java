@@ -4,10 +4,11 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
 
 /**
- * Created by jt-1 on 3/28/2017.
+ * @author homoroselaps
  */
 
 public class BehaviorComponent extends Component {
+    private static final long serialVersionUID = -7388888039559869043L;
     private Root<Entity> root;
     private Tick<Entity> tick;
     public BehaviorComponent(Root<Entity> behaviorTree) {
@@ -15,12 +16,12 @@ public class BehaviorComponent extends Component {
     }
 
     @Override
-    public void OnAwake() {
+    public void onAwake() {
         tick = new Tick<>(entity, root);
     }
 
     @Override
-    public void OnUpdate() {
+    public void onUpdate() {
         NodeStatus status = tick.Tick();
     }
 }

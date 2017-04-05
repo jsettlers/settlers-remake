@@ -9,10 +9,11 @@ import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
- * Created by jt-1 on 3/28/2017.
+ * @author homoroselaps
  */
 
 public class GameFieldComponent extends Component {
+    private static final long serialVersionUID = 476680901281177567L;
     private static final HashMap<Integer, ILogicMovable> movablesByID = Movable.movablesByID;
     private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = Movable.allMovables;
     private final AbstractMovableGrid movableGrid;

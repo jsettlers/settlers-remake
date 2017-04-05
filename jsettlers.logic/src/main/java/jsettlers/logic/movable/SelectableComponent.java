@@ -3,11 +3,11 @@ package jsettlers.logic.movable;
 import jsettlers.common.selectable.ESelectionType;
 
 /**
- * Created by jt-1 on 2/6/2017.
+ * @author homoroselaps
  */
 
 public class SelectableComponent extends Component {
-
+    private static final long serialVersionUID = 665477836143096339L;
     private final ESelectionType _selectionType;
     public ESelectionType getSelectionType() {
         return _selectionType;
@@ -26,7 +26,7 @@ public class SelectableComponent extends Component {
     }
 
     @Override
-    public void OnDisable() {
+    public void onDisable() {
         setSelected(false);
     }
 }

@@ -1,15 +1,14 @@
 package jsettlers.logic.movable;
 
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.constants.MatchConstants;
 
 /**
- * Created by jt-1 on 2/6/2017.
+ * @author homoroselaps
  */
 
 public class AnimationComponent extends Component {
+    private static final long serialVersionUID = 8064683552580286008L;
     private EMovableAction anmiation = EMovableAction.NO_ACTION;
     private int animationStartTime;
     private short animationDuration;
@@ -21,7 +20,7 @@ public class AnimationComponent extends Component {
     public AnimationComponent() { }
 
     @Override
-    public void OnLateUpdate() {
+    public void onLateUpdate() {
         if (isAnimating())
             entity.setInvokationDelay(getRemainingTime());
     }
@@ -42,6 +41,7 @@ public class AnimationComponent extends Component {
         this.animationStartTime = MatchConstants.clock().getTime();
         this.animationDuration = (short)(duration*1000);
         this.anmiation = animation;
+        isSoundPlayed = false;
     }
 
     public void stopAnimation() {

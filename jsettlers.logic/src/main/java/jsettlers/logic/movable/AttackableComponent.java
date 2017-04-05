@@ -1,15 +1,16 @@
 package jsettlers.logic.movable;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
- * Created by jt-1 on 2/6/2017.
+ * @author homoroselaps
  */
 
 public class AttackableComponent extends Component {
+    private static final long serialVersionUID = -5453513130369184993L;
     private float health;
     private boolean isAttackable;
-    private Entity informedAboutAttackableEvent;
 
     public AttackableComponent(boolean isAttackable) {
         this.isAttackable = isAttackable;
@@ -31,17 +32,17 @@ public class AttackableComponent extends Component {
         this.isAttackable = isAttackable;
     }
 
-    public void informAboutAttackable(Entity other) {
-        informedAboutAttackableEvent = other;
+    public void informAboutAttackable(ILogicMovable other) {
+        assert false: "Not implemented";
     }
 
     @Override
-    public void OnLateUpdate() {
-        informedAboutAttackableEvent = null;
+    public void onLateUpdate() {
+
     }
 
     @Override
-    public void OnDestroy() {
+    public void onDestroy() {
         health = -200;
     }
 }

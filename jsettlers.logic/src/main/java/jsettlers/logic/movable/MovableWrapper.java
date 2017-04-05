@@ -139,7 +139,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public void informAboutAttackable(IAttackable attackable) {
-        entity.get(AttackableComponent.class).informAboutAttackable((Entity)attackable);
+        entity.get(AttackableComponent.class).informAboutAttackable((ILogicMovable) attackable);
     }
 
     @Override

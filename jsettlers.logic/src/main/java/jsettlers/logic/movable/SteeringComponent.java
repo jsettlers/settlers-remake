@@ -8,10 +8,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
- * Created by jt-1 on 3/28/2017.
+ * @author homoroselaps
  */
 
 public class SteeringComponent extends Component {
+    private static final long serialVersionUID = 8281773945922792414L;
     private Path path;
     private GameFieldComponent gameC;
     private MovableComponent movC;
@@ -21,7 +22,7 @@ public class SteeringComponent extends Component {
     public static class TargetNotReachedTrigger extends Notification {}
 
     @Override
-    public void OnAwake() {
+    public void onAwake() {
         gameC = entity.get(GameFieldComponent.class);
         movC = entity.get(MovableComponent.class);
         aniC = entity.get(AnimationComponent.class);
@@ -47,7 +48,7 @@ public class SteeringComponent extends Component {
     }
 
     @Override
-    public void OnUpdate() {
+    public void onUpdate() {
         aniC.stopAnimation();
         if (path == null || !path.hasNextStep()) {
             // if path is finished, or canceled
@@ -83,10 +84,8 @@ public class SteeringComponent extends Component {
 
     private void goSinglePathStep() {
         movC.setViewDirection(EDirection.getDirection(movC.getPos(), path.getNextPos()));
-        aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
-        gameC.getMovableGrid().leavePosition(movC.getPos(), movC.getaMovableWrapper());
-        gameC.getMovableGrid().enterPosition(path.getNextPos(), movC.getaMovableWrapper(), false);
         movC.setPos(path.getNextPos());
+        aniC.startAnimation(EMovableAction.WALKING, movC.getMovableType().getStepDurationMs());
         aniC.switchStep();
         path.goToNextStep();
     }

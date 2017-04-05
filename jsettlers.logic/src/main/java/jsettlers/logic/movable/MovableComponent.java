@@ -14,11 +14,12 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 
 /**
- * Created by jt-1 on 2/6/2017.
+ * @author homoroselaps
  */
 
 @Requires({GameFieldComponent.class})
 public class MovableComponent extends Component implements IPathCalculatable{
+    private static final long serialVersionUID = -7615132582559956988L;
     private final EMovableType movableType;
     private Player player;
     private ShortPoint2D position;
@@ -36,20 +37,20 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     @Override
-    public void OnAwake() {
+    public void onAwake() {
         gameC = entity.get(GameFieldComponent.class);
         aMovableWrapper = new MovableWrapper(entity);
     }
 
     @Override
-    public void OnEnable() {
+    public void onEnable() {
         gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
         gameC.getAllMovables().offer(aMovableWrapper);
         gameC.getMovableGrid().enterPosition(position, aMovableWrapper, true);
     }
 
     @Override
-    public void OnDisable() {
+    public void onDisable() {
         // TODO: refactor leavePosition to not use the instance
         gameC.getMovableGrid().leavePosition(position, gameC.getMovableGrid().getMovableAt(position.x, position.y));
 
@@ -58,7 +59,7 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     @Override
-    public void OnDestroy() {
+    public void onDestroy() {
         gameC.getMovableGrid().addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
     }
 
@@ -89,7 +90,9 @@ public class MovableComponent extends Component implements IPathCalculatable{
     }
 
     public void setPos(ShortPoint2D position) {
+        gameC.getMovableGrid().leavePosition(this.position, aMovableWrapper);
         this.position = position;
+        gameC.getMovableGrid().enterPosition(this.position, aMovableWrapper, false);
     }
 
     @Override
