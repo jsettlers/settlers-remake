@@ -1,7 +1,8 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.movable.components;
 
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.Notification;
 
 /**
  * @author homoroselaps

@@ -1,7 +1,9 @@
 package jsettlers.logic.movable;
 
+import jsettlers.logic.movable.components.Component;
+
 /**
- * Created by jt-1 on 2/5/2017.
+ * @author homoroselaps
  */
 
 public @interface Requires {

@@ -1,16 +1,18 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.movable.components;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.movable.Notification;
+import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
  * @author homoroselaps
  */
-
+@Requires({GameFieldComponent.class, MovableComponent.class, AnimationComponent.class})
 public class SteeringComponent extends Component {
     private static final long serialVersionUID = 8281773945922792414L;
     private Path path;

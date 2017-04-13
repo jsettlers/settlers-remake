@@ -1,12 +1,9 @@
-package jsettlers.logic.movable;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
+package jsettlers.logic.movable.components;
 
 import jsettlers.algorithms.path.IPathCalculatable;
-import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.material.ESearchType;
+import jsettlers.logic.movable.MovableWrapper;
+import jsettlers.logic.movable.Requires;
 import jsettlers.logic.player.Player;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;

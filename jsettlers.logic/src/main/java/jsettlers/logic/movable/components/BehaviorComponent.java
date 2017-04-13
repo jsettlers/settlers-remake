@@ -1,4 +1,5 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.movable.components;
+import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;

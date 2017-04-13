@@ -3,8 +3,6 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
@@ -15,6 +13,14 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.movable.components.AnimationComponent;
+import jsettlers.logic.movable.components.AttackableComponent;
+import jsettlers.logic.movable.components.GameFieldComponent;
+import jsettlers.logic.movable.components.MaterialComponent;
+import jsettlers.logic.movable.components.MovableComponent;
+import jsettlers.logic.movable.components.PlayerCmdComponent;
+import jsettlers.logic.movable.components.SelectableComponent;
+import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
@@ -109,6 +115,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean isAttackable() {
+        if (!entity.containsComponent(AttackableComponent.class)) return false;
         return entity.get(AttackableComponent.class).isAttackable();
     }
 

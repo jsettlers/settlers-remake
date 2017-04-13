@@ -12,6 +12,14 @@ import java.util.Map;
 import java.util.Set;
 
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.movable.components.AnimationComponent;
+import jsettlers.logic.movable.components.BearerComponent;
+import jsettlers.logic.movable.components.Component;
+import jsettlers.logic.movable.components.GameFieldComponent;
+import jsettlers.logic.movable.components.MaterialComponent;
+import jsettlers.logic.movable.components.MovableComponent;
+import jsettlers.logic.movable.components.SpecialistComponent;
+import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
@@ -27,6 +35,19 @@ public class Entity implements Serializable, IScheduledTimerable {
     private Map<Class<? extends Component>, Component> components;
     private Set<Notification> notificationsCurrent;
     private Set<Notification> notificationsLast;
+
+    /**
+     * Checks whether or not all Component dependencies are satisfied.
+     * @return {@code true} if all Component dependencies are satisfied, {@code false} otherwise.
+     */
+    public boolean checkComponentDependencies() {
+        for(Class<? extends Component> cmp : this.components.keySet()) {
+            for (Class<? extends Component> dependency : cmp.getAnnotation(Requires.class).value()) {
+                assert components.containsKey(dependency): components.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
+            }
+        }
+        return true;
+    }
 
     public enum State { ACTIVE, INACTIVE, UNINITALIZED }
     private State state;
@@ -108,11 +129,13 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     public void add(Component c) {
         Class cls = c.getClass();
+        assert !components.containsKey(cls): "Component already registered";
         components.put(cls, c);
         c.entity = this;
         // Iterate over all super classes
         cls = cls.getSuperclass();
         do {
+            assert !components.containsKey(cls): "Component already registered";
             components.put(cls, c);
             cls = cls.getSuperclass();
         } while (cls != null && cls != Component.class);
@@ -185,6 +208,10 @@ public class Entity implements Serializable, IScheduledTimerable {
         return result;
     }
 
+    public <T extends Notification> boolean containsNotification(Class<T> type) {
+        return getNotificationsIt(type).hasNext();
+    }
+
     public void raiseNotification(Notification note) {
         notificationsCurrent.add(note);
     }
@@ -253,5 +280,33 @@ public class Entity implements Serializable, IScheduledTimerable {
     public void kill() {
         setActive(false);
         invokeDestroy();
+    }
+
+    protected final AnimationComponent aniC() {
+        return get(AnimationComponent.class);
+    }
+
+    protected final SteeringComponent steerC() {
+        return get(SteeringComponent.class);
+    }
+
+    protected final MovableComponent movC() {
+        return get(MovableComponent.class);
+    }
+
+    protected final BearerComponent bearerC() {
+        return get(BearerComponent.class);
+    }
+
+    protected final SpecialistComponent specC() {
+        return get(SpecialistComponent.class);
+    }
+
+    protected final GameFieldComponent gameC() {
+        return get(GameFieldComponent.class);
+    }
+
+    protected final MaterialComponent matC() {
+        return get(MaterialComponent.class);
     }
 }

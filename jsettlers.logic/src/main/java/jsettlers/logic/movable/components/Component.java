@@ -1,6 +1,8 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.movable.components;
 
 import java.io.Serializable;
+
+import jsettlers.logic.movable.Entity;
 
 public abstract class Component implements Serializable {
     public Entity entity;

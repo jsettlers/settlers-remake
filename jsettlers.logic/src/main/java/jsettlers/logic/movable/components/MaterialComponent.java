@@ -1,4 +1,4 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.movable.components;
 
 import jsettlers.common.material.EMaterialType;
 
