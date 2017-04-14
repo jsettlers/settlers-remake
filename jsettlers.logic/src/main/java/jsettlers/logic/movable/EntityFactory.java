@@ -6,7 +6,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
+import jsettlers.logic.movable.components.BearerComponent;
 import jsettlers.logic.movable.components.BehaviorComponent;
+import jsettlers.logic.movable.components.DonkeyComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
@@ -47,24 +49,37 @@ public final class EntityFactory {
         return null;
     }
 
+    public static Entity CreateDonkey(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+        Entity entity = new Entity();
+        entity.add(new BehaviorComponent(DonkeyBehaviorTreeFactory.create()));
+        entity.add(new AnimationComponent());
+        entity.add(new MaterialComponent());
+        entity.add(new AttackableComponent());
+        EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
+        entity.add(new MovableComponent(movableType, player, position, dir));
+        entity.add(new SteeringComponent());
+        entity.add(new DonkeyComponent());
+        return entity;
+    }
+
     public static Entity CreateGeologist(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
         Entity entity = new Entity();
-        entity.add(new AnimationComponent());
-        entity.add(new AttackableComponent(false));
         entity.add(new BehaviorComponent(GeologistBehaviorTreeFactory.create()));
+        entity.add(new SpecialistComponent());
+        entity.add(new AnimationComponent());
+        entity.add(new AttackableComponent());
         entity.add(new MaterialComponent());
         EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
         entity.add(new MovableComponent(movableType, player, position, dir));
-        entity.add(new SpecialistComponent());
         entity.add(new SteeringComponent());
-
         return entity;
     }
 
     public static Entity CreateBearer(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
         Entity entity = new Entity();
-        entity.add(new AnimationComponent());
         entity.add(new BehaviorComponent(BearerBehaviorTreeFactory.create()));
+        entity.add(new BearerComponent());
+        entity.add(new AnimationComponent());
         entity.add(new MaterialComponent());
         EDirection dir = EDirection.VALUES[MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS)];
         entity.add(new MovableComponent(movableType, player, position, dir));

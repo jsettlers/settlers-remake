@@ -137,7 +137,7 @@ public abstract class GeologistBehaviorTreeFactory extends BehaviorTreeFactory {
                 )
             ),
             new Guard<>(e -> e.specC().getTargetWorkPos() != null, true,
-                new MemSelector<>(
+                new Selector<>(
                     new MemSequence<>(
                         new Action<>(e->{e.steerC().goToPos(e.specC().getTargetWorkPos());}),
                         WaitForTargetReached_FailIfNot(),

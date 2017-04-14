@@ -141,9 +141,7 @@ public abstract class BearerBehaviorTreeFactory extends BehaviorTreeFactory {
                             // or: try fetch the tool
                             new MemSelector<>(
                                 new MemSequence<>(
-                                    new Action<>(e -> {
-                                        e.steerC().goToPos(e.bearerC().materialOffer.getPos());
-                                    }),
+                                    new Action<>(e -> { e.steerC().goToPos(e.bearerC().materialOffer.getPos()); }),
                                     WaitForTargetReached_FailIfNot(),
                                     new Condition<>(BearerBehaviorTreeFactory::canTakeMaterial),
                                     StartAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),

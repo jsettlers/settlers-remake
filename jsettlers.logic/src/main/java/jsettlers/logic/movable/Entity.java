@@ -13,11 +13,14 @@ import java.util.Set;
 
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.components.AnimationComponent;
+import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.BearerComponent;
 import jsettlers.logic.movable.components.Component;
+import jsettlers.logic.movable.components.DonkeyComponent;
 import jsettlers.logic.movable.components.GameFieldComponent;
 import jsettlers.logic.movable.components.MaterialComponent;
 import jsettlers.logic.movable.components.MovableComponent;
+import jsettlers.logic.movable.components.MultiMaterialComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.timer.IScheduledTimerable;
@@ -282,31 +285,35 @@ public class Entity implements Serializable, IScheduledTimerable {
         invokeDestroy();
     }
 
-    protected final AnimationComponent aniC() {
+    public final AnimationComponent aniC() {
         return get(AnimationComponent.class);
     }
 
-    protected final SteeringComponent steerC() {
+    public final SteeringComponent steerC() {
         return get(SteeringComponent.class);
     }
 
-    protected final MovableComponent movC() {
+    public final MovableComponent movC() {
         return get(MovableComponent.class);
     }
 
-    protected final BearerComponent bearerC() {
+    public final BearerComponent bearerC() {
         return get(BearerComponent.class);
     }
 
-    protected final SpecialistComponent specC() {
+    public final SpecialistComponent specC() {
         return get(SpecialistComponent.class);
     }
 
-    protected final GameFieldComponent gameC() {
+    public final GameFieldComponent gameC() {
         return get(GameFieldComponent.class);
     }
 
-    protected final MaterialComponent matC() {
-        return get(MaterialComponent.class);
-    }
+    public final MaterialComponent matC() { return get(MaterialComponent.class); }
+
+    public final MultiMaterialComponent mmatC() { return get(MultiMaterialComponent.class); }
+
+    public final DonkeyComponent donkeyC() { return get(DonkeyComponent.class); }
+
+    public final AttackableComponent attC() { return get(AttackableComponent.class); }
 }
