@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		GOEventHandlerProvider {
@@ -110,6 +111,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					CLICK_MOVE_TRESHOLD));
 
 			gestureDetector = new GestureDetector(context, gestureListener);
+			scaleGestureDetector = new ScaleGestureDetector(context, scaleGestureListener);
 		}
 
 		private boolean doZoom = false;
@@ -136,7 +138,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		private float lastZoomFactor = 1;
 
 		private final GestureDetector gestureDetector;
-
 		private final GestureDetector.OnGestureListener gestureListener = new GestureDetector.OnGestureListener() {
 			@Override
 			public boolean onDown(MotionEvent e) {
@@ -159,6 +160,21 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 				Log.d("GESTURETEST", "onScroll");
+
+				if (drawStarted()) {
+					abortDraw();
+				}
+
+				if (!panStarted()) {
+					endedPansX = 0;
+					endedPansY = 0;
+					panStart = new UIPoint(e2.getX(), getHeight() - e2.getY());
+					startPan(new UIPoint(0, 0));
+				} else {
+					panPosition = new UIPoint(panPosition.getX() + e2.getX(), panPosition.getY() + e2.getY());
+					updatePanPosition(new UIPoint(e2.getX() - panStart.getX() ,getHeight() -  e2.getY() - panStart.getY()));
+				}
+
 				return false;
 			}
 
@@ -175,86 +191,120 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			}
 		};
 
+		private UIPoint panPosition = new UIPoint(0,0);
+
+		private final ScaleGestureDetector scaleGestureDetector;
+		private final ScaleGestureDetector.OnScaleGestureListener scaleGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
+			@Override
+			public boolean onScale(ScaleGestureDetector detector) {
+				Log.d("SCALE_GESTURETEST", "onScale");
+				return false;
+			}
+
+			@Override
+			public boolean onScaleBegin(ScaleGestureDetector detector) {
+				Log.d("SCALE_GESTURETEST", "onScaleBegin");
+				return false;
+			}
+
+			@Override
+			public void onScaleEnd(ScaleGestureDetector detector) {
+				Log.d("SCALE_GESTURETEST", "onScaleEnd");
+
+			}
+		};
+
 		public void onTouchEvent(MotionEvent e) {
+			if (e.getAction() == MotionEvent.ACTION_UP) {
+				endPan(new UIPoint(e.getX() - panStart.getX() ,getHeight() -  e.getY() - panStart.getY()));
+			}
 
 			gestureDetector.onTouchEvent(e);
+			scaleGestureDetector.onTouchEvent(e);
 
-//			boolean isPan =
-//					panStarted()
-//							|| e.getPointerCount() > 1
-//							|| (e.getSource() & InputDevice.SOURCE_CLASS_MASK) == InputDevice.SOURCE_CLASS_TRACKBALL;
-//
-//			if (isPan) {
-//				if (drawStarted()) {
-//					abortDraw();
-//				}
-//				if (!panStarted()) {
-//					endedPansX = 0;
-//					endedPansY = 0;
-//					panStart = getStartedPanAverage();
-//					startPan(panStart);
-//					zoomStartDistance = getPointerDistance(e);
-//					lastZoomFactor = 1;
-//				}
-//
-//				if (e.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
-//					int index = getPointerIndex(e);
-//					Integer id = Integer.valueOf(e.getPointerId(index));
-//					UIPoint point = new UIPoint(e.getX(index), e.getY(index));
-//					panPointerStarts.put(id, point);
-//
-//				} else if (e.getAction() == MotionEvent.ACTION_POINTER_UP) {
-//					int index = getPointerIndex(e);
-//					Integer id = Integer.valueOf(e.getPointerId(index));
-//					UIPoint start = panPointerStarts.remove(id);
-//					if (start != null) {
-//						endedPansX +=
-//								(e.getX(index) - start.getX())
-//										/ e.getPointerCount();
-//						endedPansY -=
-//								(e.getY(index) - start.getY())
-//										/ e.getPointerCount();
-//					}
-//
-//				} else {
-//					float factor = computeZoomFactor(e);
-//					if (e.getAction() == MotionEvent.ACTION_MOVE) {
-//						UIPoint point = computePanPoint(e);
-//						updatePanPosition(point);
-//
-//						if (e.getPointerCount() > 1
-//								&& (factor < 1 / ZOOMSTART || factor > ZOOMSTART)
-//								&& getPointerDistance(e) > ZOOM_MIN_POINTERDISTANCE) {
-//							doZoom = true;
-//							startZoom();
-//						}
-//
-//						if (doZoom) {
-//							updateZoomFactor(factor);
-//						}
-//
-//					} else if (e.getAction() == MotionEvent.ACTION_UP) {
-//						endPan(computePanPoint(e));
-//						if (doZoom) {
-//							endZoomEvent(factor);
-//						}
-//					}
-//				}
-//			} else {
-//				if (e.getAction() == MotionEvent.ACTION_DOWN) {
-//					startDraw(convertToLocal(e, 0));
-//					panPointerStarts.clear();
-//					for (int i = 0; i < e.getPointerCount(); i++) {
-//						Integer index = e.getPointerId(i);
-//						panPointerStarts.put(index,
-//								new UIPoint(e.getX(i), e.getY(i)));
-//					}
-//				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-//					updateDrawPosition(convertToLocal(e, 0));
-//				} else if (e.getAction() == MotionEvent.ACTION_UP) {
-//					endDraw(convertToLocal(e, 0));
-//				}
-//			}
+		//	temp(e);
+		}
+
+		private void temp(MotionEvent e) {
+
+			boolean isPan =
+					panStarted()
+							|| e.getPointerCount() > 1
+							|| (e.getSource() & InputDevice.SOURCE_CLASS_MASK) == InputDevice.SOURCE_CLASS_TRACKBALL;
+
+			if (isPan) {
+				if (drawStarted()) {
+					abortDraw();
+				}
+				if (!panStarted()) {
+					endedPansX = 0;
+					endedPansY = 0;
+					panStart = getStartedPanAverage();
+					startPan(panStart);
+					zoomStartDistance = getPointerDistance(e);
+					lastZoomFactor = 1;
+				}
+
+				if (e.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
+					Log.d("TEMP", "ACTION_POINTER_DOWN");
+					int index = getPointerIndex(e);
+					Integer id = Integer.valueOf(e.getPointerId(index));
+					UIPoint point = new UIPoint(e.getX(index), e.getY(index));
+					panPointerStarts.put(id, point);
+
+				} else if (e.getAction() == MotionEvent.ACTION_POINTER_UP) {
+					Log.d("TEMP", "ACTION_POINTER_UP");
+					int index = getPointerIndex(e);
+					Integer id = Integer.valueOf(e.getPointerId(index));
+					UIPoint start = panPointerStarts.remove(id);
+					if (start != null) {
+						endedPansX +=
+								(e.getX(index) - start.getX())
+										/ e.getPointerCount();
+						endedPansY -=
+								(e.getY(index) - start.getY())
+										/ e.getPointerCount();
+					}
+
+				} else {
+					float factor = computeZoomFactor(e);
+					if (e.getAction() == MotionEvent.ACTION_MOVE) {
+						UIPoint point = computePanPoint(e);
+						updatePanPosition(point);
+
+						if (e.getPointerCount() > 1
+								&& (factor < 1 / ZOOMSTART || factor > ZOOMSTART)
+								&& getPointerDistance(e) > ZOOM_MIN_POINTERDISTANCE) {
+							doZoom = true;
+							startZoom();
+						}
+
+						if (doZoom) {
+							updateZoomFactor(factor);
+						}
+
+					} else if (e.getAction() == MotionEvent.ACTION_UP) {
+						endPan(computePanPoint(e));
+						if (doZoom) {
+							endZoomEvent(factor);
+						}
+					}
+				}
+			} else {
+				if (e.getAction() == MotionEvent.ACTION_DOWN) {
+					startDraw(convertToLocal(e, 0));
+					panPointerStarts.clear();
+					for (int i = 0; i < e.getPointerCount(); i++) {
+						Integer index = e.getPointerId(i);
+						panPointerStarts.put(index,
+								new UIPoint(e.getX(i), e.getY(i)));
+					}
+				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+					updateDrawPosition(convertToLocal(e, 0));
+				} else if (e.getAction() == MotionEvent.ACTION_UP) {
+					endDraw(convertToLocal(e, 0));
+				}
+			}
 		}
 
 		private double getPointerDistance(MotionEvent e) {
