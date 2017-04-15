@@ -75,7 +75,7 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
      */
     @Override
     public IAction replaceAction(IAction action) {
-        if (action.getActionType() == EActionType.SELECT_POINT ) {
+        if (action.getActionType() == EActionType.SELECT_POINT) {
             PointAction pointAction = (PointAction) action;
 
             if(taskAction != null) {
@@ -88,8 +88,14 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
                 }
             }
 
-            if (selection != null && selection.getSize() > 0 && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
-                return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
+//            if (selection != null && selection.getSize() > 0 && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection.getSelectionType() == ESelectionType.SPECIALISTS)) {
+//                return new PointAction(EActionType.MOVE_TO, pointAction.getPosition());
+//            }
+        } else if (action.getActionType() == EActionType.MOVE_TO) {
+            PointAction pointAction = (PointAction) action;
+
+            if (selection == null || selection.getSize() == 0) {
+                return null;
             }
         }
 
