@@ -21,6 +21,7 @@ import jsettlers.logic.movable.components.MovableComponent;
 import jsettlers.logic.movable.components.PlayerCmdComponent;
 import jsettlers.logic.movable.components.SelectableComponent;
 import jsettlers.logic.movable.components.SpecialistComponent;
+import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
@@ -46,30 +47,43 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
     //region Interface Implementations
     @Override
     public short getViewDistance() {
+        if (!entity.containsComponent(MovableComponent.class)) return 0;
         return entity.get(MovableComponent.class).getViewDistance();
     }
 
     @Override
-    public boolean needsPlayersGround() { return entity.get(MovableComponent.class).needsPlayersGround(); }
+    public boolean needsPlayersGround() {
+        if (!entity.containsComponent(MovableComponent.class)) return false;
+        return entity.get(MovableComponent.class).needsPlayersGround();
+    }
 
     @Override
-    public EDirection getDirection() { return entity.get(MovableComponent.class).getViewDirection(); }
+    public EDirection getDirection() {
+        if (!entity.containsComponent(MovableComponent.class)) return EDirection.NORTH_EAST;
+        return entity.get(MovableComponent.class).getViewDirection();
+    }
 
     @Override
-    public EMovableAction getAction() { return entity.get(AnimationComponent.class).getAnimation(); }
+    public EMovableAction getAction() {
+        if (!entity.containsComponent(AnimationComponent.class)) return EMovableAction.NO_ACTION;
+        return entity.get(AnimationComponent.class).getAnimation();
+    }
 
     @Override
     public float getMoveProgress() {
+        if (!entity.containsComponent(AnimationComponent.class)) return 0;
         return entity.get(AnimationComponent.class).getAnimationProgress();
     }
 
     @Override
     public EMaterialType getMaterial() {
+        if (!entity.containsComponent(MaterialComponent.class)) return EMaterialType.NO_MATERIAL;
         return entity.get(MaterialComponent.class).getMaterial();
     }
 
     @Override
     public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
+        if (!entity.containsComponent(AttackableComponent.class)) return;
         entity.get(AttackableComponent.class).receiveHit(strength, attackerPos, attackingPlayer);
     }
 
@@ -85,6 +99,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public void stopOrStartWorking(boolean stop) {
+        if (!entity.containsComponent(SpecialistComponent.class)) return;
         entity.get(SpecialistComponent.class).setIsWorking(!stop);
     }
 
@@ -95,16 +110,19 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean isSelected() {
+        if (entity.get(SelectableComponent.class) == null) return false;
         return entity.get(SelectableComponent.class).isSelected();
     }
 
     @Override
     public void setSelected(boolean selected) {
+        if (entity.get(SelectableComponent.class) == null) return;
         entity.get(SelectableComponent.class).setSelected(selected);
     }
 
     @Override
     public ESelectionType getSelectionType() {
+        if (!entity.containsComponent(PlayerCmdComponent.class)) return ESelectionType.PEOPLE;
         return entity.get(SelectableComponent.class).getSelectionType();
     }
 
@@ -151,13 +169,12 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean push(ILogicMovable pushingMovable) {
-        assert false: "not implemented";
+        entity.raiseNotification(new SteeringComponent.LeavePositionRequest());
         return false;
     }
 
     @Override
     public Path getPath() {
-        assert false: "not implemented";
         return null;
     }
 
@@ -223,6 +240,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public void moveTo(ShortPoint2D targetPosition) {
+        if (!entity.containsComponent(PlayerCmdComponent.class)) return;
         entity.get(PlayerCmdComponent.class).send_AltLeftClick(targetPosition);
     }
 

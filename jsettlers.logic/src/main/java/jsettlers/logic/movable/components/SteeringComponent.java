@@ -22,6 +22,7 @@ public class SteeringComponent extends Component {
 
     public static class TargetReachedTrigger extends Notification {}
     public static class TargetNotReachedTrigger extends Notification {}
+    public static class LeavePositionRequest extends Notification {}
 
     @Override
     public void onAwake() {
@@ -32,6 +33,10 @@ public class SteeringComponent extends Component {
 
     public boolean goToPos(ShortPoint2D targetPos) {
         //TODO: rename to moveTo
+        if (movC.getPos().equals(targetPos)) {
+            entity.raiseNotification(new TargetReachedTrigger());
+            return true;
+        }
         path = gameC.getMovableGrid().calculatePathTo(movC, targetPos);
         return path != null;
     }
@@ -51,9 +56,11 @@ public class SteeringComponent extends Component {
 
     @Override
     public void onUpdate() {
+        if (path == null) return;
         aniC.stopAnimation();
-        if (path == null || !path.hasNextStep()) {
-            // if path is finished, or canceled
+        // if path is finished
+        if (!path.hasNextStep()) {
+
             path = null;
             entity.raiseNotification(new TargetReachedTrigger());
             return;
@@ -70,6 +77,7 @@ public class SteeringComponent extends Component {
 
                 if (newPath == null) { // no path found
                     path = null;
+
                     entity.raiseNotification(new TargetNotReachedTrigger());
                 } else {
                     this.path = newPath; // continue with new path

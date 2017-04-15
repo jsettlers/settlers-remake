@@ -44,6 +44,7 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableDataManager;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
@@ -272,7 +273,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void convertMovables(ConvertGuiTask guiTask) {
 		for (Integer currID : guiTask.getSelection()) {
-			ILogicMovable movable = Movable.getMovableByID(currID);
+			ILogicMovable movable = MovableDataManager.getMovableByID(currID);
 			if (movable != null) {
 				movable.convertTo(guiTask.getTargetType());
 			}
@@ -282,7 +283,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
 		for (Integer currID : selectedMovables) {
-			ILogicMovable movable = Movable.getMovableByID(currID);
+			ILogicMovable movable = MovableDataManager.getMovableByID(currID);
 			if (movable != null) {
 				movable.stopOrStartWorking(stop);
 			}
@@ -291,7 +292,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
-			ILogicMovable curr = Movable.getMovableByID(currID);
+			ILogicMovable curr = MovableDataManager.getMovableByID(currID);
 			if (curr != null) {
 				curr.kill();
 			}
@@ -308,7 +309,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		if (movableIds.size() == 1) {
-			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
+			ILogicMovable currMovable = MovableDataManager.getMovableByID(movableIds.get(0));
 			if (currMovable != null) {
 				currMovable.moveTo(targetPosition);
 			}
@@ -318,7 +319,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds) {
-		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
+		List<ILogicMovable> movables = stream(movableIds).map(MovableDataManager::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
 		if (movables.isEmpty()) {
 			return;
 		}

@@ -16,7 +16,7 @@ public class Repeat<T> extends Decorator<T> {
 
     @Override
     protected NodeStatus onTick(Tick<T> tick) {
-        if (condition.apply(tick.Target)) {
+        while (condition.apply(tick.Target)) {
             NodeStatus result = child.execute(tick);
             if (result != NodeStatus.Success) return result;
         }

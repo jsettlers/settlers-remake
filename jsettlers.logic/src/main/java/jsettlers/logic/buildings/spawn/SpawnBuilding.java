@@ -20,6 +20,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.movable.EntityFactory;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
@@ -56,7 +57,7 @@ public abstract class SpawnBuilding extends Building {
 		ILogicMovable movableAtDoor = super.grid.getMovable(super.getDoor());
 
 		if (movableAtDoor == null) {
-			movableAtDoor = new Movable(super.grid.getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
+			movableAtDoor = EntityFactory.CreateMovable(super.grid.getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
 			produced++;
 
 			if (produced < getProduceLimit()) {

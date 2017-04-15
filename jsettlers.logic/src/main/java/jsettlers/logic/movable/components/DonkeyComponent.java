@@ -19,22 +19,36 @@ public class DonkeyComponent extends Component {
     private static final long serialVersionUID = -4747039405397703303L;
     private IDonkeyMarket market;
     private Iterator<ShortPoint2D> waypoints;
+    private ShortPoint2D nextWaypoint;
 
     public IDonkeyMarket getMarket() {
         return market;
     }
 
     public void setMarket(IDonkeyMarket market) {
+        assert market != null: "market should not be null, use reset() instead";
         this.market = market;
         this.waypoints = market.getWaypointsIterator();
+        this.nextWaypoint = waypoints != null ? waypoints.next() : null;
+    }
+
+    public void resetMarket() {
+        this.market = null;
+        this.waypoints = null;
     }
 
     public ShortPoint2D getNextWaypoint() {
-        return waypoints != null ? waypoints.next() : null;
+        ShortPoint2D last = nextWaypoint;
+        this.nextWaypoint = waypoints != null ? waypoints.next() : null;
+        return last;
     }
 
     public boolean hasNextWaypoint() {
-        return waypoints != null ? waypoints.hasNext() : false;
+        return nextWaypoint != null;
+    }
+
+    public ShortPoint2D peekNextWaypoint() {
+        return nextWaypoint;
     }
 
     public IDonkeyMarket findNextMarketNeedingDonkey() {

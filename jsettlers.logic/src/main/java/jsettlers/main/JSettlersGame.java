@@ -51,6 +51,7 @@ import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableDataManager;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
@@ -414,7 +415,7 @@ public class JSettlersGame {
 
 	public static void clearState() {
 		RescheduleTimer.stopAndClear();
-		Movable.resetState();
+		MovableDataManager.resetState();
 		Building.clearState();
 		MarketBuilding.clearState();
 		MatchConstants.clearState();

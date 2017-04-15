@@ -101,7 +101,9 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialReq
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
+import jsettlers.logic.movable.EntityFactory;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableDataManager;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -380,7 +382,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	final ILogicMovable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
-		return new Movable(movablePathfinderGrid, type, pos, player);
+		return EntityFactory.CreateMovable(movablePathfinderGrid, type, pos, player);
 	}
 
 	/**
@@ -874,7 +876,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void spawnDonkey(ShortPoint2D position, byte playerId) {
 			Player player = partitionsGrid.getPlayer(playerId);
-			ILogicMovable donkey = new Movable(movablePathfinderGrid, EMovableType.DONKEY, position, player);
+			ILogicMovable donkey = EntityFactory.CreateMovable(movablePathfinderGrid, EMovableType.DONKEY, position, player);
 			donkey.leavePosition();
 		}
 
@@ -1875,7 +1877,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
-			return Movable.getAllMovables();
+			return MovableDataManager.allMovables();
 		}
 
 		@Override

@@ -56,9 +56,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	public static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<Integer, ILogicMovable>();
-	public static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<ILogicMovable>();
-	public static Integer nextID = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
 	private final int id;
@@ -106,9 +103,9 @@ public final class Movable implements ILogicMovable {
 
 		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
-		this.id = nextID++;
-		movablesByID.put(this.id, this);
-		allMovables.offer(this);
+		this.id = MovableDataManager.getNextID();
+		MovableDataManager.movablesByID().put(this.id, this);
+		MovableDataManager.allMovables().offer(this);
 
 		grid.enterPosition(position, this, true);
 	}
@@ -122,9 +119,9 @@ public final class Movable implements ILogicMovable {
 	 */
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		movablesByID.put(this.id, this);
-		allMovables.add(this);
-		nextID = Math.max(nextID, this.id + 1);
+		MovableDataManager.movablesByID().put(this.id, this);
+		MovableDataManager.allMovables().add(this);
+		MovableDataManager.setNextID(this.id + 1);
 	}
 
 	/**
@@ -732,28 +729,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
-	 * Used for networking to identify movables over the network.
-	 *
-	 * @param id
-	 *            id to be looked for
-	 * @return returns the movable with the given ID<br>
-	 *         or null if the id can not be found
-	 */
-	public final static ILogicMovable getMovableByID(int id) {
-		return movablesByID.get(id);
-	}
-
-	public final static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
-		return allMovables;
-	}
-
-	public static void resetState() {
-		allMovables.clear();
-		movablesByID.clear();
-		nextID = Integer.MIN_VALUE;
-	}
-
-	/**
 	 * kills this movable.
 	 */
 	@Override
@@ -768,8 +743,8 @@ public final class Movable implements ILogicMovable {
 		this.state = EMovableState.DEAD;
 		this.selected = false;
 
-		movablesByID.remove(this.getID());
-		allMovables.remove(this);
+		MovableDataManager.movablesByID().remove(this.getID());
+		MovableDataManager.allMovables().remove(this);
 
 		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}

@@ -1,7 +1,11 @@
 package jsettlers.logic.movable.components;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.logic.movable.MovableDataManager;
 import jsettlers.logic.movable.MovableWrapper;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.player.Player;
@@ -44,6 +48,12 @@ public class MovableComponent extends Component implements IPathCalculatable{
         gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
         gameC.getAllMovables().offer(aMovableWrapper);
         gameC.getMovableGrid().enterPosition(position, aMovableWrapper, true);
+    }
+
+    private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        gameC.getMovableMap().put(entity.getID(), aMovableWrapper);
+        gameC.getAllMovables().offer(aMovableWrapper);
     }
 
     @Override

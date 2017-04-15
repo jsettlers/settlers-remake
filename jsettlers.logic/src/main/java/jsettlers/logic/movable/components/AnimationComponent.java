@@ -10,7 +10,7 @@ import jsettlers.logic.movable.Notification;
 
 public class AnimationComponent extends Component {
     private static final long serialVersionUID = 8064683552580286008L;
-    private EMovableAction anmiation = EMovableAction.NO_ACTION;
+    private EMovableAction animation = EMovableAction.NO_ACTION;
     private int animationStartTime;
     private short animationDuration;
     private boolean isSoundPlayed = false;
@@ -27,7 +27,7 @@ public class AnimationComponent extends Component {
     }
 
     public EMovableAction getAnimation() {
-        return anmiation;
+        return animation;
     }
 
     public float getAnimationProgress() {
@@ -38,15 +38,16 @@ public class AnimationComponent extends Component {
         return animationStartTime + animationDuration < MatchConstants.clock().getTime();
     }
 
-    public void startAnimation(EMovableAction animation, float duration) {
+    public void startAnimation(EMovableAction animation, short duration) {
         this.animationStartTime = MatchConstants.clock().getTime();
-        this.animationDuration = (short)(duration*1000);
-        this.anmiation = animation;
+        this.animationDuration = duration;
+        this.animation = animation;
         isSoundPlayed = false;
+        entity.setInvokationDelay(animationDuration);
     }
 
     public void stopAnimation() {
-        this.anmiation = EMovableAction.NO_ACTION;
+        this.animation = EMovableAction.NO_ACTION;
     }
 
     public boolean isRightstep() {

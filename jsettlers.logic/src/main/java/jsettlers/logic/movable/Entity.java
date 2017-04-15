@@ -31,7 +31,6 @@ import jsettlers.logic.timer.RescheduleTimer;
  */
 
 public class Entity implements Serializable, IScheduledTimerable {
-    private static Integer nextId = Movable.nextID;
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
@@ -45,11 +44,17 @@ public class Entity implements Serializable, IScheduledTimerable {
      */
     public boolean checkComponentDependencies() {
         for(Class<? extends Component> cmp : this.components.keySet()) {
-            for (Class<? extends Component> dependency : cmp.getAnnotation(Requires.class).value()) {
+            Requires ann = cmp.getAnnotation(Requires.class);
+            if (ann == null) continue;
+            for (Class<? extends Component> dependency : ann.value()) {
                 assert components.containsKey(dependency): components.get(cmp).getClass().getName() + "[" + cmp.getName() + "]: " + dependency.getName() + " missing";
             }
         }
         return true;
+    }
+
+    public boolean consumeNotification(Notification notification) {
+        return notificationsLast.remove(notification);
     }
 
     public enum State { ACTIVE, INACTIVE, UNINITALIZED }
@@ -57,7 +62,7 @@ public class Entity implements Serializable, IScheduledTimerable {
     private int invokationDelay;
 
     public Entity() {
-        id = nextId++;
+        id = MovableDataManager.getNextID();
         state = State.UNINITALIZED;
         components = new IdentityHashMap<>();
         notificationsCurrent = new HashSet<>();
@@ -137,11 +142,11 @@ public class Entity implements Serializable, IScheduledTimerable {
         c.entity = this;
         // Iterate over all super classes
         cls = cls.getSuperclass();
-        do {
+        while (cls != null && cls != Component.class) {
             assert !components.containsKey(cls): "Component already registered";
             components.put(cls, c);
             cls = cls.getSuperclass();
-        } while (cls != null && cls != Component.class);
+        }
     }
 
     public void remove(Class<? extends Component> c) {
@@ -159,7 +164,7 @@ public class Entity implements Serializable, IScheduledTimerable {
     }
 
     public boolean containsComponent(Class<? extends Component> c) {
-        return components.containsKey(c.getName());
+        return components.containsKey(c);
     }
 
     public <T extends Notification> Iterator<T> getNotificationsIt(Class<T> type) {
@@ -176,12 +181,12 @@ public class Entity implements Serializable, IScheduledTimerable {
                 consumed = false;
                 nextItem = null;
                 while (it.hasNext()) {
-                    try {
-                        nextItem = (T)it.next();
+                    Notification n = it.next();
+                    if (type.isInstance(n)) {
+                        nextItem = (T)n;
                         return;
-                    } catch (ClassCastException e) {
-                        nextItem = null;
                     }
+                    nextItem = null;
                 }
             }
 
@@ -247,7 +252,7 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        Entity.nextId = Math.max(Entity.nextId, this.id + 1);
+        MovableDataManager.setNextID(id+1);
     }
 
     public String toString() {

@@ -14,7 +14,7 @@ public class MaterialComponent extends Component {
         return material;
     }
 
-    public void setMaterialType(EMaterialType material) {
+    public void setMaterial(EMaterialType material) {
         this.material = material;
     }
 }
