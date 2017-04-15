@@ -207,22 +207,31 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		private final ScaleGestureDetector scaleGestureDetector;
 		private final ScaleGestureDetector.OnScaleGestureListener scaleGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
-			@Override
-			public boolean onScale(ScaleGestureDetector detector) {
-				Log.d("SCALE_GESTURETEST", "onScale");
-				return false;
-			}
+
+			private float startSpan;
 
 			@Override
 			public boolean onScaleBegin(ScaleGestureDetector detector) {
+
+				startSpan = detector.getCurrentSpan();
+				startZoom();
+
 				Log.d("SCALE_GESTURETEST", "onScaleBegin");
-				return false;
+				return true;
+			}
+
+			@Override
+			public boolean onScale(ScaleGestureDetector detector) {
+				updateZoomFactor(detector.getCurrentSpan() / startSpan);
+				Log.d("SCALE_GESTURETEST", "onScale");
+				return true;
 			}
 
 			@Override
 			public void onScaleEnd(ScaleGestureDetector detector) {
 				Log.d("SCALE_GESTURETEST", "onScaleEnd");
 
+				endZoomEvent(detector.getCurrentSpan() / startSpan);
 			}
 		};
 
@@ -237,9 +246,20 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				}
 			}
 
-			gestureDetector.onTouchEvent(e);
-			longPressDetector.onTouchEvent(e);
-			scaleGestureDetector.onTouchEvent(e);
+			if (e.getPointerCount() > 1) {
+				if (panStarted()) {
+					endPan(new UIPoint(e.getX() - panStart.getX(), getHeight() - e.getY() - panStart.getY()));
+				}
+
+				if (drawStarted()) {
+					abortDraw();
+				}
+
+				scaleGestureDetector.onTouchEvent(e);
+			} else {
+				gestureDetector.onTouchEvent(e);
+				longPressDetector.onTouchEvent(e);
+			}
 
 		//	temp(e);
 		}
