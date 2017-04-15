@@ -68,7 +68,7 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
         }
 
         public static Root<Entity> create() {
-            return new Root<>($("====", new Selector<>(
+            return new Root<>($("==<Root>==", new Selector<>(
                 TriggerGuard(AttackableComponent.RecievedHit.class,
                     $("recieved hit", new Sequence<>(
                         new Action<>(e->{e.donkeyC().resetMarket();}),
@@ -80,8 +80,7 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
                 new Guard<>(DonkeyBehaviorTreeFactory::hasValidMarket, true,
                     new Selector<>(
                         $("fulfill request", new MemSequence<>(
-                            $("go to market"),
-                            new Action<>(e -> { e.steerC().goToPos(e.donkeyC().getMarket().getDoor()); }),
+                            $("go to market", new Action<>(e -> { e.steerC().goToPos(e.donkeyC().getMarket().getDoor()); })),
                             $("wait", WaitForTargetReached_FailIfNot()),
                             new Condition<>(e->e.donkeyC().getMarket().needsDonkey()),
                             $("take material", tryTakeMaterialFromMarket()),
@@ -89,8 +88,7 @@ public final class DonkeyBehaviorComponent extends BehaviorComponent {
                             new Action<>(e->{e.attC().setAttackable(true);}),
                             $("follow waypoints", new Repeat<>(e->e.donkeyC().hasNextWaypoint(),
                                 new MemSequence<>(
-                                    $("go to next waypoint"),
-                                    new Action<>(e -> { e.steerC().goToPos(e.donkeyC().peekNextWaypoint()); }),
+                                    $("go to next waypoint", new Action<>(e -> { e.steerC().goToPos(e.donkeyC().peekNextWaypoint()); })),
                                     $("wait", WaitForTargetReached_FailIfNot()),
                                     new Action<>(e->{e.donkeyC().getNextWaypoint();})
                                 )

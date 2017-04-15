@@ -35,7 +35,7 @@ public class AnimationComponent extends Component {
     }
 
     public boolean isAnimating() {
-        return animationStartTime + animationDuration < MatchConstants.clock().getTime();
+        return animationStartTime + animationDuration > MatchConstants.clock().getTime();
     }
 
     public void startAnimation(EMovableAction animation, short duration) {
@@ -43,7 +43,6 @@ public class AnimationComponent extends Component {
         this.animationDuration = duration;
         this.animation = animation;
         isSoundPlayed = false;
-        entity.setInvokationDelay(animationDuration);
     }
 
     public void stopAnimation() {
