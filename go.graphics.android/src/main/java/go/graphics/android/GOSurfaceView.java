@@ -103,15 +103,18 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		protected ActionAdapter(Context context, GOEventHandlerProvider provider) {
 			super(provider);
-			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
-					Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
-					CLICK_MOVE_TRESHOLD));
-			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN,
-					Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD,
-					CLICK_MOVE_TRESHOLD));
+//			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
+//					Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
+//					CLICK_MOVE_TRESHOLD));
+//			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN,
+//					Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD,
+//					CLICK_MOVE_TRESHOLD));
 
 			gestureDetector = new GestureDetector(context, gestureListener);
+			longPressDetector = new GestureDetector(context, longPressListener);
 			scaleGestureDetector = new ScaleGestureDetector(context, scaleGestureListener);
+
+			gestureDetector.setIsLongpressEnabled(false);
 		}
 
 		private boolean doZoom = false;
@@ -137,6 +140,17 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		private float lastZoomFactor = 1;
 
+		private final GestureDetector longPressDetector;
+		private final GestureDetector.SimpleOnGestureListener longPressListener = new GestureDetector.SimpleOnGestureListener() {
+
+			@Override
+			public void onLongPress(MotionEvent e) {
+				Log.d("GESTURETEST", "onLongPress SIMPLE");
+				endPan(new UIPoint(e.getX() - panStart.getX() ,getHeight() -  e.getY() - panStart.getY()));
+				startDraw(new UIPoint(e.getX(), getHeight() -  e.getY()));
+			}
+		};
+
 		private final GestureDetector gestureDetector;
 		private final GestureDetector.OnGestureListener gestureListener = new GestureDetector.OnGestureListener() {
 			@Override
@@ -154,6 +168,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			@Override
 			public boolean onSingleTapUp(MotionEvent e) {
 				Log.d("GESTURETEST", "onSingleTapUp");
+
+				fireCommandEvent(new UIPoint(e.getX(), getHeight() -  e.getY()), true);
+
 				return false;
 			}
 
@@ -162,17 +179,12 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				Log.d("GESTURETEST", "onScroll");
 
 				if (drawStarted()) {
-					abortDraw();
-				}
-
-				if (!panStarted()) {
-					endedPansX = 0;
-					endedPansY = 0;
+					updateDrawPosition(new UIPoint(e2.getX(), getHeight() -  e2.getY()));
+				} else if (panStarted()) {
+					updatePanPosition(new UIPoint(e2.getX() - panStart.getX(), getHeight() -  e2.getY() - panStart.getY()));
+				} else {
 					panStart = new UIPoint(e2.getX(), getHeight() - e2.getY());
 					startPan(new UIPoint(0, 0));
-				} else {
-					panPosition = new UIPoint(panPosition.getX() + e2.getX(), panPosition.getY() + e2.getY());
-					updatePanPosition(new UIPoint(e2.getX() - panStart.getX() ,getHeight() -  e2.getY() - panStart.getY()));
 				}
 
 				return false;
@@ -216,10 +228,17 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		public void onTouchEvent(MotionEvent e) {
 			if (e.getAction() == MotionEvent.ACTION_UP) {
-				endPan(new UIPoint(e.getX() - panStart.getX() ,getHeight() -  e.getY() - panStart.getY()));
+				if (drawStarted()) {
+					endDraw(new UIPoint(e.getX(), getHeight() - e.getY()));
+				}
+
+				if (panStarted()) {
+					endPan(new UIPoint(e.getX() - panStart.getX(), getHeight() - e.getY() - panStart.getY()));
+				}
 			}
 
 			gestureDetector.onTouchEvent(e);
+			longPressDetector.onTouchEvent(e);
 			scaleGestureDetector.onTouchEvent(e);
 
 		//	temp(e);
@@ -389,6 +408,10 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			endKeyEvent(key);
 		}
 
+
+		private UIPoint adjustedCoordinates(MotionEvent e) {
+			return new UIPoint(e.getX(), getHeight() - e.getY());
+		}
 	}
 
 	private class Renderer implements GLSurfaceView.Renderer {
