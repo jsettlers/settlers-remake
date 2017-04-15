@@ -188,12 +188,11 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				if (panStarted()) {
 					endPan(new UIPoint(e.getX() - panStart.getX(), getHeight() - e.getY() - panStart.getY()));
 				}
-
-				scaleGestureDetector.onTouchEvent(e);
-			} else {
-				gestureDetector.onTouchEvent(e);
-				longPressDetector.onTouchEvent(e);
 			}
+
+			scaleGestureDetector.onTouchEvent(e);
+			gestureDetector.onTouchEvent(e);
+			longPressDetector.onTouchEvent(e);
 		}
 	}
 
