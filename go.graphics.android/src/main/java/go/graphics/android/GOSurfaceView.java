@@ -141,9 +141,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				if (drawStarted()) {
 					updateDrawPosition(currentPoint(e2));
 				} else if (panStarted()) {
-					updatePanPosition(relatiuvePanPoint(e2));
+					updatePanPosition(relativePanPoint(e2));
 				} else {
-					panStart = new UIPoint(e2.getX(), getHeight() - e2.getY());
+					panStart = currentPoint(e2);
 					startPan(new UIPoint(0, 0));
 				}
 
@@ -185,7 +185,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				}
 
 				if (panStarted()) {
-					endPan(relatiuvePanPoint(e));
+					endPan(relativePanPoint(e));
 				}
 			}
 
@@ -195,12 +195,12 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				}
 
 				if (panStarted()) {
-					endPan(relatiuvePanPoint(e));
+					endPan(relativePanPoint(e));
 				}
 			}
 		}
 
-		private UIPoint relatiuvePanPoint(MotionEvent e) {
+		private UIPoint relativePanPoint(MotionEvent e) {
 			return new UIPoint(e.getX() - panStart.getX(), getHeight() - e.getY() - panStart.getY());
 		}
 
