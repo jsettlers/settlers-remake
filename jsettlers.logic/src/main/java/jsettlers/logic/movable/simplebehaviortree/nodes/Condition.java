@@ -1,14 +1,14 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
-import java.util.function.Function;
-
+import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Condition<T> extends Node<T> {
-	private Function<T,Boolean> condition;
+	private static final long serialVersionUID = -5811980322685099119L;
+	private IBooleanConditionFunction<T> condition;
 
-	public Condition(Function<T,Boolean> condition) {
+	public Condition(IBooleanConditionFunction<T> condition) {
 		super();
 		this.condition = condition;
 	}

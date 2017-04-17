@@ -1,10 +1,12 @@
 package jsettlers.logic.movable.simplebehaviortree;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Node<T> {
+public class Node<T> implements Serializable {
+	private static final long serialVersionUID = -4544227752720944971L;
+
 	private boolean isOpen = false;
-	
 	private int ID;
 	public int getID() { return ID; }
 	

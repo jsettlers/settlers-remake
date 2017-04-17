@@ -1,15 +1,16 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
 
-import java.util.function.Function;
-
 import jsettlers.logic.movable.simplebehaviortree.Decorator;
+import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Repeat<T> extends Decorator<T> {
-    private Function<T,Boolean> condition;
-    public Repeat(Function<T,Boolean> condition, Node child) {
+    private static final long serialVersionUID = -661870259301299858L;
+    private IBooleanConditionFunction<T> condition;
+
+    public Repeat(IBooleanConditionFunction<T> condition, Node child) {
         super(child);
         this.condition = condition;
     }

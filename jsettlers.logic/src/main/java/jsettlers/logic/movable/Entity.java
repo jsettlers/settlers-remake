@@ -27,7 +27,7 @@ import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
- * Created by jt-1 on 2/5/2017.
+ * @author homoroselaps
  */
 
 public class Entity implements Serializable, IScheduledTimerable {

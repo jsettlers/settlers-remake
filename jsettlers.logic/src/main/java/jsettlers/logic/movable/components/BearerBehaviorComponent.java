@@ -34,11 +34,15 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.WaitFor;
     MovableComponent.class
 })
 public final class BearerBehaviorComponent extends BehaviorComponent {
+    private static final long serialVersionUID = -4581600901753172458L;
+
     public BearerBehaviorComponent() {
         super(BearerBehaviorTreeFactory.create());
     }
 
     private static abstract class BearerBehaviorTreeFactory extends BehaviorTreeFactory {
+        private static final long serialVersionUID = -3944410718150713949L;
+
         private static Action<Entity> accept_SaveDeliveryJob() {
             return new Action<>(e -> {
                 BearerComponent.DeliveryJob job = e.getNotificationsIt(BearerComponent.DeliveryJob.class).next();

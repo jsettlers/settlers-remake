@@ -1,23 +1,22 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
-import java.util.function.Function;
-
+import jsettlers.logic.movable.simplebehaviortree.IBooleanConditionFunction;
 import jsettlers.logic.movable.simplebehaviortree.Node;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Guard<T> extends Node<T> {
-	protected Function<T,Boolean> condition;
+	protected IBooleanConditionFunction<T> condition;
 	protected Node<T> child;
 	protected boolean value;
 
-	public Guard(Function<T,Boolean> condition, Node<T> child) {
+	public Guard(IBooleanConditionFunction<T> condition, Node<T> child) {
 		super(child);
 		this.condition = condition;
 		this.child = child;
 		value = true;
 	}
 	
-	public Guard(Function<T,Boolean> condition, boolean shouldBe, Node<T> child) {
+	public Guard(IBooleanConditionFunction<T> condition, boolean shouldBe, Node<T> child) {
 		super(child);
 		this.condition = condition;
 		this.child = child;

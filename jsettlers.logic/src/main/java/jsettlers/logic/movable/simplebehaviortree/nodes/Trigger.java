@@ -6,10 +6,12 @@ import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Notification;
 
 /**
- * Created by jt-1 on 4/1/2017.
+ * @author homoroselaps
  */
 
 public class Trigger extends Condition<Entity> {
+    private static final long serialVersionUID = -2201228478067951215L;
+
     public Trigger(Class<? extends Notification> type) {
         super((entity)->entity.getNotificationsIt(type).hasNext());
     }

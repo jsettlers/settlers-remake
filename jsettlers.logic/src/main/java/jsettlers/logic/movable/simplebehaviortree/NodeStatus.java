@@ -1,6 +1,10 @@
 package jsettlers.logic.movable.simplebehaviortree;
 
-public class NodeStatus {
+import java.io.Serializable;
+
+public class NodeStatus implements Serializable {
+	private static final long serialVersionUID = -705132187133760858L;
+
 	private enum Status {
 		Success,
 		Failure,

@@ -5,7 +5,8 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Inverter<T> extends Decorator<T> {
-	
+	private static final long serialVersionUID = -3568446114722874065L;
+
 	public Inverter(Node<T> child) {
 		super(child);
 	}

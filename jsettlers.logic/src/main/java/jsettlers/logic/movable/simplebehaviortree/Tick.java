@@ -1,8 +1,11 @@
 package jsettlers.logic.movable.simplebehaviortree;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class Tick<T> {
+public class Tick<T> implements Serializable {
+	private static final long serialVersionUID = 3673558738736795584L;
+
 	public Root<T> Root;
 	public T Target;
 	private Stack<Node<T>> openNodes = new Stack<>();

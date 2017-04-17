@@ -27,7 +27,7 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
 
 /**
- * Created by jt-1 on 2/5/2017.
+ * @author homoroselaps
  */
 
 public final class MovableWrapper implements ILogicMovable, Serializable {

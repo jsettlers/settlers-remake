@@ -5,6 +5,8 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Parallel<T> extends Composite<T> {
+	private static final long serialVersionUID = 3614671053589100247L;
+
 	public enum Policy {
 		ONE,
 		ALL

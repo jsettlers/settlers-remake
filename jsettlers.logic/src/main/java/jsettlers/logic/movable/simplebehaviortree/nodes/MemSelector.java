@@ -5,6 +5,7 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class MemSelector<T> extends Composite<T> {
+	private static final long serialVersionUID = -4098732000225742833L;
 	private int index = 0;
 
 	@SafeVarargs

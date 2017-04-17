@@ -8,11 +8,12 @@ import jsettlers.logic.movable.Notification;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 
 /**
- * Created by jt-1 on 4/1/2017.
+ * @author homoroselaps
  */
 
 public class WaitFor extends Action<Entity> {
-    private boolean consume = false;
+    private static final long serialVersionUID = 1780756145252644771L;
+
     public WaitFor(Class<? extends Notification> type) {
         this(type, false);
     }
@@ -26,6 +27,5 @@ public class WaitFor extends Action<Entity> {
             }
             return NodeStatus.Running();
         });
-        this.consume = consume;
     }
 }

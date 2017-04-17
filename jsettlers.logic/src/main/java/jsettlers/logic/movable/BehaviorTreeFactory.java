@@ -1,10 +1,9 @@
 package jsettlers.logic.movable;
 
-import java.util.function.Function;
+import java.io.Serializable;
 
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.SteeringComponent;
 import jsettlers.logic.movable.simplebehaviortree.Decorator;
 import jsettlers.logic.movable.simplebehaviortree.Node;
@@ -12,7 +11,6 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Action;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Condition;
-import jsettlers.logic.movable.simplebehaviortree.nodes.Failer;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Guard;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Inverter;
 import jsettlers.logic.movable.simplebehaviortree.nodes.Selector;
@@ -24,7 +22,9 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.WaitFor;
  * @author homoroselaps
  */
 
-public abstract class BehaviorTreeFactory {
+public abstract class BehaviorTreeFactory implements Serializable {
+    private static final long serialVersionUID = 8396039806339873520L;
+
     protected static Node<Entity> WaitForTargetReached_FailIfNot() {
         // wait for targetReached, but abort if target not reachable
         return new Sequence<>(
@@ -40,7 +40,7 @@ public abstract class BehaviorTreeFactory {
     }
 
     protected static Action<Entity> StartAnimation(EMovableAction animation, short duration) {
-        return new Action<>(e->{ e.aniC().startAnimation(animation, duration); });
+        return new Action<Entity>(e->{ e.aniC().startAnimation(animation, duration); });
     }
 
     protected static void convertTo(Entity entity, EMovableType type) {
