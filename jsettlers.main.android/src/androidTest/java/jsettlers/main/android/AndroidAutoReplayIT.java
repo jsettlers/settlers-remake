@@ -13,8 +13,8 @@ import jsettlers.integration.replay.AutoReplaySetting;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.main.android.resources.AndroidMapListFactory;
-import jsettlers.main.android.resources.AndroidResourceProvider;
+import jsettlers.main.android.core.resources.AndroidMapListFactory;
+import jsettlers.main.android.core.resources.AndroidResourceProvider;
 import jsettlers.main.replay.ReplayUtils;
 
 import android.content.Context;
