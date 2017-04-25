@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "jsettlers.main.android"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 25
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
