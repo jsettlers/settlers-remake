@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 /**
  * Created by tompr on 19/01/2017.
  */
-
 public class NewSinglePlayerPickerFragment extends MapPickerFragment {
 	public static Fragment newInstance() {
 		return new NewSinglePlayerPickerFragment();

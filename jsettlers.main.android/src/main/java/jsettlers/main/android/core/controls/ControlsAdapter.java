@@ -19,7 +19,6 @@ import android.content.Context;
 /**
  * Created by tompr on 14/01/2017.
  */
-
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls {
 	private static final int SOUND_THREADS = 6;
 
@@ -42,7 +41,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
-		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.NONE, androidControls);
+		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
 	}
 

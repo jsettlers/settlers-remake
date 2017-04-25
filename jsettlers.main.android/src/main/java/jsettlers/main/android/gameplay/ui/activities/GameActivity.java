@@ -4,6 +4,7 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 
 import java.util.List;
 
+import jsettlers.main.android.FullScreenAppCompatActivity;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.navigation.BackPressedListener;
@@ -21,9 +22,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 
-public class GameActivity extends AppCompatActivity implements GameNavigator, MenuNavigatorProvider {
+public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {
 	private static final String TAG_FRAGMENT_MAP = "map_fragment";
 	private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
 

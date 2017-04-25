@@ -1,5 +1,6 @@
 package jsettlers.main.android.mainmenu.ui.activities;
 
+import jsettlers.main.android.FullScreenAppCompatActivity;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.dialogs.EditTextDialog;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
@@ -7,12 +8,11 @@ import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
 import jsettlers.main.android.mainmenu.views.SettingsView;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsView, EditTextDialog.Listener {
+public class SettingsActivity extends FullScreenAppCompatActivity implements SettingsView, EditTextDialog.Listener {
 	private static final int REQUEST_CODE_PLAYER_NAME = 10;
 
 	private SettingsPresenter presenter;
