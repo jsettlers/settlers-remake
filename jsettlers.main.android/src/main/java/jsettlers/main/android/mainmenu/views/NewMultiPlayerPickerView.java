@@ -5,6 +5,7 @@ package jsettlers.main.android.mainmenu.views;
  */
 
 public interface NewMultiPlayerPickerView extends MapPickerView {
-    void setJoiningProgress(String stateString, int progressPercentage);
-    void dismissJoiningProgress();
+	void setJoiningProgress(String stateString, int progressPercentage);
+
+	void dismissJoiningProgress();
 }

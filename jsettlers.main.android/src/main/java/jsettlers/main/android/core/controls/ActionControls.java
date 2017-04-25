@@ -7,6 +7,7 @@ import jsettlers.graphics.action.ActionFireable;
  */
 
 public interface ActionControls extends ActionFireable {
-    void addActionListener(ActionListener actionListener);
-    void removeActionListener(ActionListener actionListener);
+	void addActionListener(ActionListener actionListener);
+
+	void removeActionListener(ActionListener actionListener);
 }

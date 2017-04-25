@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import jsettlers.common.resources.IResourceProvider;
+
 import android.content.Context;
 import android.content.res.AssetManager;
-import jsettlers.common.resources.IResourceProvider;
 
 public class AndroidResourceProvider implements IResourceProvider {
 	private final File resourcesDirectory;

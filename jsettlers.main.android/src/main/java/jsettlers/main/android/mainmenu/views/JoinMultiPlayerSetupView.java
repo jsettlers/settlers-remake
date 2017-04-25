@@ -5,5 +5,5 @@ package jsettlers.main.android.mainmenu.views;
  */
 
 public interface JoinMultiPlayerSetupView extends MapSetupView {
-    void disableHostOnlyControls();
+	void disableHostOnlyControls();
 }

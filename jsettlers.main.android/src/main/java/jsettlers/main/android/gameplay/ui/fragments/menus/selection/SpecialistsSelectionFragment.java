@@ -25,53 +25,53 @@ import android.widget.TextView;
  */
 
 public class SpecialistsSelectionFragment extends SelectionFragment {
-    private static final EMovableType[] specialistTypes = new EMovableType[] {
-            EMovableType.PIONEER,
-            EMovableType.THIEF,
-            EMovableType.GEOLOGIST,
-    };
+	private static final EMovableType[] specialistTypes = new EMovableType[] {
+			EMovableType.PIONEER,
+			EMovableType.THIEF,
+			EMovableType.GEOLOGIST,
+	};
 
-    private ActionControls actionControls;
+	private ActionControls actionControls;
 
-    public static Fragment newInstance() {
-        return new SpecialistsSelectionFragment();
-    }
+	public static Fragment newInstance() {
+		return new SpecialistsSelectionFragment();
+	}
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.menu_selection_specialists, container, false);
-    }
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.menu_selection_specialists, container, false);
+	}
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        actionControls = new ControlsResolver(getActivity()).getActionControls();
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		actionControls = new ControlsResolver(getActivity()).getActionControls();
 
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        LinearLayout specialistsLayout = (LinearLayout) getView().findViewById(R.id.layout_specialists);
+		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+		LinearLayout specialistsLayout = (LinearLayout) getView().findViewById(R.id.layout_specialists);
 
-        View convertCarriersButton = getView().findViewById(R.id.button_convert_carriers);
-        View workHereButton = getView().findViewById(R.id.button_work_here);
-        View haltButton = getView().findViewById(R.id.button_halt);
+		View convertCarriersButton = getView().findViewById(R.id.button_convert_carriers);
+		View workHereButton = getView().findViewById(R.id.button_work_here);
+		View haltButton = getView().findViewById(R.id.button_halt);
 
-        convertCarriersButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.BEARER, Short.MAX_VALUE)));
-        workHereButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.START_WORKING));
-        haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
+		convertCarriersButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.BEARER, Short.MAX_VALUE)));
+		workHereButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.START_WORKING));
+		haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
 
-        for (EMovableType movableType : specialistTypes) {
-            int count = getSelection().getMovableCount(movableType);
+		for (EMovableType movableType : specialistTypes) {
+			int count = getSelection().getMovableCount(movableType);
 
-            if (count > 0) {
-                View view = layoutInflater.inflate(R.layout.view_specialist, specialistsLayout, false);
-                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
-                TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
+			if (count > 0) {
+				View view = layoutInflater.inflate(R.layout.view_specialist, specialistsLayout, false);
+				ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
+				TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
 
-                OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
-                textView.setText(count + "");
+				OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
+				textView.setText(count + "");
 
-                specialistsLayout.addView(view);
-            }
-        }
-    }
+				specialistsLayout.addView(view);
+			}
+		}
+	}
 }

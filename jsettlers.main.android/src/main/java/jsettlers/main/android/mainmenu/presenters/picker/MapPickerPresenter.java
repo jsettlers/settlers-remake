@@ -12,46 +12,45 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
  */
 
 public abstract class MapPickerPresenter implements IChangingListListener<MapLoader> {
-    private final MapPickerView view;
-    private final GameStarter gameStarter;
-    private final MainMenuNavigator navigator;
-    private final ChangingList<? extends MapLoader> changingMaps;
+	private final MapPickerView view;
+	private final GameStarter gameStarter;
+	private final MainMenuNavigator navigator;
+	private final ChangingList<? extends MapLoader> changingMaps;
 
-    public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
-        this.view = view;
-        this.gameStarter = gameStarter;
-        this.navigator = navigator;
-        this.changingMaps = changingMaps;
+	public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
+			ChangingList<? extends MapLoader> changingMaps) {
+		this.view = view;
+		this.gameStarter = gameStarter;
+		this.navigator = navigator;
+		this.changingMaps = changingMaps;
 
-        changingMaps.setListener(this);
-    }
+		changingMaps.setListener(this);
+	}
 
-    public void initView() {
-        view.setItems(changingMaps.getItems());
-    }
+	public void initView() {
+		view.setItems(changingMaps.getItems());
+	}
 
-    public void viewFinished() {
-        if (gameStarter.getStartingGame() == null) {
-            abort();
-        }
-    }
+	public void viewFinished() {
+		if (gameStarter.getStartingGame() == null) {
+			abort();
+		}
+	}
 
-    protected void abort() {
-    }
+	protected void abort() {
+	}
 
-    public void dispose() {
-        changingMaps.removeListener(this);
-    }
+	public void dispose() {
+		changingMaps.removeListener(this);
+	}
 
+	public abstract void itemSelected(MapLoader mapLoader);
 
-
-    public abstract void itemSelected(MapLoader mapLoader);
-
-    /**
-     * ChangingListListener implementation
-     */
-    @Override
-    public void listChanged(ChangingList<? extends MapLoader> list) {
-        view.setItems(list.getItems());
-    }
+	/**
+	 * ChangingListListener implementation
+	 */
+	@Override
+	public void listChanged(ChangingList<? extends MapLoader> list) {
+		view.setItems(list.getItems());
+	}
 }

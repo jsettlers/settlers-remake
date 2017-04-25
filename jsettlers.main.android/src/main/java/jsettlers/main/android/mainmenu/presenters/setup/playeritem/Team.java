@@ -5,23 +5,23 @@ package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
  */
 
 public class Team {
-    private final byte teamByte;
+	private final byte teamByte;
 
-    public Team(byte teamByte) {
-        this.teamByte = teamByte;
-    }
+	public Team(byte teamByte) {
+		this.teamByte = teamByte;
+	}
 
-    public byte asByte() {
-        return teamByte;
-    }
+	public byte asByte() {
+		return teamByte;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Team && ((Team)obj).asByte() == teamByte;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Team && ((Team) obj).asByte() == teamByte;
+	}
 
-    @Override
-    public String toString() {
-        return "Team " + (teamByte + 1);
-    }
+	@Override
+	public String toString() {
+		return "Team " + (teamByte + 1);
+	}
 }

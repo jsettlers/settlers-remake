@@ -7,7 +7,7 @@
     <string name="save_string">Save</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Kill</string>
-    <string name="load_string">Load  game</string>
+    <string name="load_string">Load game</string>
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
@@ -97,7 +97,9 @@
     <string name="settings">Settings</string>
 
     <string name="resource_directory_title">Graphics and sound folders</string>
-    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from the installation folder of an original copy of The Settlers 3. Find those folders and copy them to your Android device before locating them for use in JSettlers.</string>
+    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from the installation folder of an original copy of The Settlers 3. Find those folders and copy them to your
+        Android device before locating them for use in JSettlers.
+    </string>
     <string name="resource_directory_button">Locate folders</string>
 
     <string name="menu_single_player_title">Single player</string>

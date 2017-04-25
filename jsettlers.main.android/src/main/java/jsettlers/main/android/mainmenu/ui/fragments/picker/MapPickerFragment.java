@@ -97,7 +97,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 
 	/**
 	 * MapPickerView implementation
-     */
+	 */
 	@Override
 	public void setItems(List<? extends MapLoader> items) {
 		getView().post(() -> {
@@ -119,7 +119,7 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 
 	/**
 	 * Subclass related methods
-     */
+	 */
 	protected boolean showMapDates() {
 		return false;
 	}

@@ -5,5 +5,5 @@ package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
  */
 
 public interface ReadyListener {
-    void readyChanged(boolean ready);
+	void readyChanged(boolean ready);
 }

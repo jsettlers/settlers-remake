@@ -5,7 +5,9 @@ package jsettlers.main.android.gameplay.navigation;
  */
 
 public interface MenuNavigator {
-    boolean isMenuOpen();
-    void dismissMenu();
-    boolean removeSelectionMenu();
+	boolean isMenuOpen();
+
+	void dismissMenu();
+
+	boolean removeSelectionMenu();
 }

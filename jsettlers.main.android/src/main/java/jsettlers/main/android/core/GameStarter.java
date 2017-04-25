@@ -13,21 +13,25 @@ import jsettlers.logic.map.loading.list.MapList;
  */
 
 public interface GameStarter {
-    //IStartScreen getStartScreen();
+	// IStartScreen getStartScreen();
 
-    MapList getMapList();
+	MapList getMapList();
 
-    IMultiplayerConnector getMultiPlayerConnector();
-    void closeMultiPlayerConnector();
+	IMultiplayerConnector getMultiPlayerConnector();
 
-    IStartingGame getStartingGame();
-    void setStartingGame(IStartingGame startingGame);
+	void closeMultiPlayerConnector();
 
-    IJoiningGame getJoiningGame();
-    void setJoiningGame(IJoiningGame joiningGame);
+	IStartingGame getStartingGame();
 
-    IJoinPhaseMultiplayerGameConnector getJoinPhaseMultiplayerConnector();
-    void setJoinPhaseMultiPlayerConnector(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector);
+	void setStartingGame(IStartingGame startingGame);
 
-    IMapInterfaceConnector gameStarted(IStartedGame game);
+	IJoiningGame getJoiningGame();
+
+	void setJoiningGame(IJoiningGame joiningGame);
+
+	IJoinPhaseMultiplayerGameConnector getJoinPhaseMultiplayerConnector();
+
+	void setJoinPhaseMultiPlayerConnector(IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector);
+
+	IMapInterfaceConnector gameStarted(IStartedGame game);
 }

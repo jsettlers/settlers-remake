@@ -5,5 +5,5 @@ package jsettlers.main.android.core.navigation;
  */
 
 public interface BackPressedListener {
-    boolean onBackPressed();
+	boolean onBackPressed();
 }

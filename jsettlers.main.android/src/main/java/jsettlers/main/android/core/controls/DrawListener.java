@@ -5,5 +5,5 @@ package jsettlers.main.android.core.controls;
  */
 
 public interface DrawListener {
-    void draw();
+	void draw();
 }

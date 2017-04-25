@@ -8,42 +8,42 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 public class JoinMultiPlayerSetupPresenterPop implements JoinMultiPlayerSetupPresenter {
 
-    public JoinMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
-        navigator.popToMenuRoot();
-    }
+	public JoinMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
+		navigator.popToMenuRoot();
+	}
 
-    @Override
-    public void initView() {
+	@Override
+	public void initView() {
 
-    }
+	}
 
-    @Override
-    public void updateViewTitle() {
+	@Override
+	public void updateViewTitle() {
 
-    }
+	}
 
-    @Override
-    public void viewFinished() {
+	@Override
+	public void viewFinished() {
 
-    }
+	}
 
-    @Override
-    public void dispose() {
+	@Override
+	public void dispose() {
 
-    }
+	}
 
-    @Override
-    public void startGame() {
+	@Override
+	public void startGame() {
 
-    }
+	}
 
-    @Override
-    public void playerCountSelected(PlayerCount item) {
+	@Override
+	public void playerCountSelected(PlayerCount item) {
 
-    }
+	}
 
-    @Override
-    public void startResourcesSelected(StartResources item) {
+	@Override
+	public void startResourcesSelected(StartResources item) {
 
-    }
+	}
 }

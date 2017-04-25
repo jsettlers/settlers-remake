@@ -5,23 +5,23 @@ package jsettlers.main.android.mainmenu.presenters.setup;
  */
 
 public class PlayerCount {
-    private final int numberOfPlayers;
+	private final int numberOfPlayers;
 
-    public PlayerCount(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
-    }
+	public PlayerCount(int numberOfPlayers) {
+		this.numberOfPlayers = numberOfPlayers;
+	}
 
-    public int getNumberOfPlayers() {
-        return numberOfPlayers;
-    }
+	public int getNumberOfPlayers() {
+		return numberOfPlayers;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof PlayerCount && ((PlayerCount)obj).getNumberOfPlayers() == numberOfPlayers;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof PlayerCount && ((PlayerCount) obj).getNumberOfPlayers() == numberOfPlayers;
+	}
 
-    @Override
-    public String toString() {
-        return numberOfPlayers + "";
-    }
+	@Override
+	public String toString() {
+		return numberOfPlayers + "";
+	}
 }

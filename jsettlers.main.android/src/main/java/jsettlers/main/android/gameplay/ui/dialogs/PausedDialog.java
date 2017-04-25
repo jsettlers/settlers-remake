@@ -14,33 +14,33 @@ import android.support.v7.app.AlertDialog;
  */
 
 public class PausedDialog extends DialogFragment {
-    public interface Listener {
-        void onUnPause();
-    }
+	public interface Listener {
+		void onUnPause();
+	}
 
-    public static PausedDialog newInstance() {
-        return new PausedDialog();
-    }
+	public static PausedDialog newInstance() {
+		return new PausedDialog();
+	}
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.game_menu_paused)
-                .setPositiveButton(R.string.game_menu_unpause, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        getDialog().cancel();
-                    }
-                })
-                .setCancelable(true)
-                .create();
-    }
+	@NonNull
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		return new AlertDialog.Builder(getActivity())
+				.setTitle(R.string.game_menu_paused)
+				.setPositiveButton(R.string.game_menu_unpause, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						getDialog().cancel();
+					}
+				})
+				.setCancelable(true)
+				.create();
+	}
 
-    @Override
-    public void onCancel(DialogInterface dialog) {
-        super.onCancel(dialog);
-        Listener listener = (Listener) getParentFragment();
-        listener.onUnPause();
-    }
+	@Override
+	public void onCancel(DialogInterface dialog) {
+		super.onCancel(dialog);
+		Listener listener = (Listener) getParentFragment();
+		listener.onUnPause();
+	}
 }

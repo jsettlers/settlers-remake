@@ -5,6 +5,7 @@ package jsettlers.main.android.core.controls;
  */
 
 public interface DrawControls {
-    void addDrawListener(DrawListener drawListener);
-    void removeDrawListener(DrawListener drawListener);
+	void addDrawListener(DrawListener drawListener);
+
+	void removeDrawListener(DrawListener drawListener);
 }

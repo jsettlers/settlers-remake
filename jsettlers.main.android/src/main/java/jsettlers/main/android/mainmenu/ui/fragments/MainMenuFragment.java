@@ -133,11 +133,11 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.menu_item_settings:
-				startActivity(new Intent(getActivity(), SettingsActivity.class));
-				break;
-			default:
-				return super.onOptionsItemSelected(item);
+		case R.id.menu_item_settings:
+			startActivity(new Intent(getActivity(), SettingsActivity.class));
+			break;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 		return true;
 	}
@@ -145,11 +145,11 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		switch (requestCode) {
-			case REQUEST_CODE_PERMISSION_STORAGE:
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					showDirectoryPicker = true;
-				}
-				break;
+		case REQUEST_CODE_PERMISSION_STORAGE:
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				showDirectoryPicker = true;
+			}
+			break;
 		}
 	}
 
@@ -207,8 +207,6 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		presenter.resourceDirectoryChosen();
 	}
 
-
-
 	private void showDirectoryPicker() {
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_PERMISSION_STORAGE);
@@ -221,21 +219,21 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
-				case ACTION_QUIT:
-					presenter.updateResumeGameView();
-					break;
-				case ACTION_QUIT_CONFIRM:
-					presenter.updateResumeGameView();
-					break;
-				case ACTION_QUIT_CANCELLED:
-					presenter.updateResumeGameView();
-					break;
-				case ACTION_PAUSE:
-					presenter.updateResumeGameView();
-					break;
-				case ACTION_UNPAUSE:
-					presenter.updateResumeGameView();
-					break;
+			case ACTION_QUIT:
+				presenter.updateResumeGameView();
+				break;
+			case ACTION_QUIT_CONFIRM:
+				presenter.updateResumeGameView();
+				break;
+			case ACTION_QUIT_CANCELLED:
+				presenter.updateResumeGameView();
+				break;
+			case ACTION_PAUSE:
+				presenter.updateResumeGameView();
+				break;
+			case ACTION_UNPAUSE:
+				presenter.updateResumeGameView();
+				break;
 			}
 		}
 	};

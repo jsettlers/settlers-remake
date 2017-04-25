@@ -4,10 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.DatFileType;
@@ -15,6 +11,11 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.resources.AndroidMapListFactory;
 import jsettlers.main.android.core.resources.AndroidResourceProvider;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 
 public class ResourceLocationScanner {
 	private static final String PREFERENCE = "external-files-path";

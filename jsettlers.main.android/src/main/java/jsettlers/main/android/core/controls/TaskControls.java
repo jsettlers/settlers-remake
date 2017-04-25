@@ -5,6 +5,7 @@ package jsettlers.main.android.core.controls;
  */
 
 public interface TaskControls {
-    boolean isTaskActive();
-    void endTask();
+	boolean isTaskActive();
+
+	void endTask();
 }

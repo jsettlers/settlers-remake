@@ -7,5 +7,5 @@ import jsettlers.common.menu.action.IAction;
  */
 
 public interface ActionListener {
-    void actionFired(IAction action);
+	void actionFired(IAction action);
 }

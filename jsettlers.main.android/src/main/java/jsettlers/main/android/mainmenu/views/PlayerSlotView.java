@@ -10,24 +10,31 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
  */
 
 public interface PlayerSlotView {
-    void setName(String name);
-    void setReady(boolean ready);
+	void setName(String name);
 
-    void setPossibleCivilisations(Civilisation[] possibleCivilisations);
-    void setCivilisation(Civilisation civilisation);
+	void setReady(boolean ready);
 
-    void setPossiblePlayerTypes(PlayerType[] ePlayerTypes);
-    void setPlayerType(PlayerType playerType);
+	void setPossibleCivilisations(Civilisation[] possibleCivilisations);
 
-    void setPossibleStartPositions(StartPosition[] possibleSlots);
-    void setStartPosition(StartPosition slot);
+	void setCivilisation(Civilisation civilisation);
 
-    void setPossibleTeams(Team[] possibleTeams);
-    void setTeam(Team team);
+	void setPossiblePlayerTypes(PlayerType[] ePlayerTypes);
 
-    void showReadyControl();
-    void hideReadyControl();
+	void setPlayerType(PlayerType playerType);
 
-    void setControlsEnabled();
-    void setControlsDisabled();
+	void setPossibleStartPositions(StartPosition[] possibleSlots);
+
+	void setStartPosition(StartPosition slot);
+
+	void setPossibleTeams(Team[] possibleTeams);
+
+	void setTeam(Team team);
+
+	void showReadyControl();
+
+	void hideReadyControl();
+
+	void setControlsEnabled();
+
+	void setControlsDisabled();
 }

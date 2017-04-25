@@ -9,5 +9,5 @@ import jsettlers.logic.map.loading.MapLoader;
  */
 
 public interface MapPickerView {
-    void setItems(List<? extends MapLoader> items);
+	void setItems(List<? extends MapLoader> items);
 }

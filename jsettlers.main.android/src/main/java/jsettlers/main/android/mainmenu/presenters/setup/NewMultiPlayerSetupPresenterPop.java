@@ -7,42 +7,42 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
  */
 
 public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPresenter {
-    public NewMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
-        navigator.popToMenuRoot();
-    }
+	public NewMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {
+		navigator.popToMenuRoot();
+	}
 
-    @Override
-    public void initView() {
+	@Override
+	public void initView() {
 
-    }
+	}
 
-    @Override
-    public void updateViewTitle() {
+	@Override
+	public void updateViewTitle() {
 
-    }
+	}
 
-    @Override
-    public void viewFinished() {
+	@Override
+	public void viewFinished() {
 
-    }
+	}
 
-    @Override
-    public void dispose() {
+	@Override
+	public void dispose() {
 
-    }
+	}
 
-    @Override
-    public void startGame() {
+	@Override
+	public void startGame() {
 
-    }
+	}
 
-    @Override
-    public void playerCountSelected(PlayerCount item) {
+	@Override
+	public void playerCountSelected(PlayerCount item) {
 
-    }
+	}
 
-    @Override
-    public void startResourcesSelected(StartResources item) {
+	@Override
+	public void startResourcesSelected(StartResources item) {
 
-    }
+	}
 }

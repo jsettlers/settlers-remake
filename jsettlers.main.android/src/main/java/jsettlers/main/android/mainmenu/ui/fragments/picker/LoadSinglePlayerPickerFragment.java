@@ -11,23 +11,23 @@ import android.support.v4.app.Fragment;
  */
 
 public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
-    public static Fragment newInstance() {
-        return new LoadSinglePlayerPickerFragment();
-    }
+	public static Fragment newInstance() {
+		return new LoadSinglePlayerPickerFragment();
+	}
 
-    @Override
-    protected MapPickerPresenter getPresenter() {
-        return PresenterFactory.createLoadSinglePlayerPickerPresenter(getActivity(), this);
-    }
+	@Override
+	protected MapPickerPresenter getPresenter() {
+		return PresenterFactory.createLoadSinglePlayerPickerPresenter(getActivity(), this);
+	}
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().setTitle(R.string.load_single_player_game);
-    }
+	@Override
+	public void onResume() {
+		super.onResume();
+		getActivity().setTitle(R.string.load_single_player_game);
+	}
 
-    @Override
-    protected boolean showMapDates() {
-        return true;
-    }
+	@Override
+	protected boolean showMapDates() {
+		return true;
+	}
 }

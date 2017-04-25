@@ -5,5 +5,5 @@ package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
  */
 
 public interface PositionChangedListener {
-    void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, StartPosition oldPosition, StartPosition newPosition);
+	void positionChanged(PlayerSlotPresenter updatedPlayerSlotPresenter, StartPosition oldPosition, StartPosition newPosition);
 }

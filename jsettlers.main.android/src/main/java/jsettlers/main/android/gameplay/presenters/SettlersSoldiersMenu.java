@@ -19,97 +19,102 @@ import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
  */
 
 public class SettlersSoldiersMenu implements DrawListener {
-    private final ImageLink[] swordsmenPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 396, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 402, 0), null };
-    private final ImageLink[] swordsmenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 399, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 405, 0), null };
-    private final ImageLink[] bowPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 408, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 414, 0), null };
-    private final ImageLink[] bowmenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 411, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 417, 0), null };
-    private final ImageLink[] pikemenPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 420, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 426, 0), null };
-    private final ImageLink[] pikemenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 423, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 429, 0), null };
+	private final ImageLink[] swordsmenPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 396, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 402, 0), null };
+	private final ImageLink[] swordsmenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 399, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 405, 0), null };
+	private final ImageLink[] bowPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 408, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 414, 0), null };
+	private final ImageLink[] bowmenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 411, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 417, 0), null };
+	private final ImageLink[] pikemenPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 420, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 426, 0), null };
+	private final ImageLink[] pikemenPromotionNotPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 423, 0),
+			new OriginalImageLink(EImageLinkType.GUI, 3, 429, 0), null };
 
-    private final SettlersSoldiersView view;
-    private final ActionFireable actionFireable;
-    private final DrawControls drawControls;
-    private final IInGamePlayer player;
-    private final Dispatcher dispatcher;
+	private final SettlersSoldiersView view;
+	private final ActionFireable actionFireable;
+	private final DrawControls drawControls;
+	private final IInGamePlayer player;
+	private final Dispatcher dispatcher;
 
-    public SettlersSoldiersMenu(
-            SettlersSoldiersView view,
-            ActionFireable actionFireable,
-            DrawControls drawControls,
-            IInGamePlayer player,
-            Dispatcher dispatcher) {
+	public SettlersSoldiersMenu(
+			SettlersSoldiersView view,
+			ActionFireable actionFireable,
+			DrawControls drawControls,
+			IInGamePlayer player,
+			Dispatcher dispatcher) {
 
-        this.view = view;
-        this.actionFireable = actionFireable;
-        this.drawControls = drawControls;
-        this.player = player;
-        this.dispatcher = dispatcher;
-    }
+		this.view = view;
+		this.actionFireable = actionFireable;
+		this.drawControls = drawControls;
+		this.player = player;
+		this.dispatcher = dispatcher;
+	}
 
-    public void start() {
-        drawControls.addDrawListener(this);
-        updateView();
-    }
+	public void start() {
+		drawControls.addDrawListener(this);
+		updateView();
+	}
 
-    public void finish() {
-        drawControls.removeDrawListener(this);
-    }
+	public void finish() {
+		drawControls.removeDrawListener(this);
+	}
 
-    public void swordsmenPromotionClicked() {
-        promote(ESoldierType.SWORDSMAN);
-    }
+	public void swordsmenPromotionClicked() {
+		promote(ESoldierType.SWORDSMAN);
+	}
 
-    public void bowmenPromotionClicked() {
-        promote(ESoldierType.BOWMAN);
-    }
+	public void bowmenPromotionClicked() {
+		promote(ESoldierType.BOWMAN);
+	}
 
-    public void pikemenPromotionClicked() {
-        promote(ESoldierType.PIKEMAN);
-    }
+	public void pikemenPromotionClicked() {
+		promote(ESoldierType.PIKEMAN);
+	}
 
+	/**
+	 * DrawListener implementation
+	 */
+	@Override
+	public void draw() {
+		dispatcher.runOnMainThread(this::updateView);
+	}
 
-    /**
-     * DrawListener implementation
-     */
-    @Override
-    public void draw() {
-        dispatcher.runOnMainThread(this::updateView);
-    }
+	private void updateView() {
+		view.setStrengthText(strengthText());
+		view.setPromotionText(promotionText());
+		view.setSwordsmenPromotionEnabled(isPromotionPossible(ESoldierType.SWORDSMAN));
+		view.setBowmenPromotionEnabled(isPromotionPossible(ESoldierType.BOWMAN));
+		view.setPikemenPromotionEnabled(isPromotionPossible(ESoldierType.PIKEMAN));
+		view.setSwordsmenImage(getPromotionImageLink(swordsmenPromotionPossibleImages, swordsmenPromotionNotPossibleImages, ESoldierType.SWORDSMAN));
+		view.setBowmenImage(getPromotionImageLink(bowPromotionPossibleImages, bowmenPromotionNotPossibleImages, ESoldierType.BOWMAN));
+		view.setPikemenImage(getPromotionImageLink(pikemenPromotionPossibleImages, pikemenPromotionNotPossibleImages, ESoldierType.PIKEMAN));
+	}
 
-    private void updateView() {
-        view.setStrengthText(strengthText());
-        view.setPromotionText(promotionText());
-        view.setSwordsmenPromotionEnabled(isPromotionPossible(ESoldierType.SWORDSMAN));
-        view.setBowmenPromotionEnabled(isPromotionPossible(ESoldierType.BOWMAN));
-        view.setPikemenPromotionEnabled(isPromotionPossible(ESoldierType.PIKEMAN));
-        view.setSwordsmenImage(getPromotionImageLink(swordsmenPromotionPossibleImages, swordsmenPromotionNotPossibleImages, ESoldierType.SWORDSMAN));
-        view.setBowmenImage(getPromotionImageLink(bowPromotionPossibleImages, bowmenPromotionNotPossibleImages, ESoldierType.BOWMAN));
-        view.setPikemenImage(getPromotionImageLink(pikemenPromotionPossibleImages, pikemenPromotionNotPossibleImages, ESoldierType.PIKEMAN));
-    }
+	private String strengthText() {
+		return Labels.getString("combat_strength", (int) (player.getCombatStrengthInformation().getCombatStrength(false) * 100));
+	}
 
-    private String strengthText() {
-        return Labels.getString("combat_strength", (int) (player.getCombatStrengthInformation().getCombatStrength(false) * 100));
-    }
+	private String promotionText() {
+		return Labels.getString("upgrade_warriors_progress", player.getMannaInformation().getNextUpdateProgressPercent());
+	}
 
-    private String promotionText() {
-        return Labels.getString("upgrade_warriors_progress", player.getMannaInformation().getNextUpdateProgressPercent());
-    }
+	private boolean isPromotionPossible(ESoldierType soldierType) {
+		return player.getMannaInformation().isUpgradePossible(soldierType);
+	}
 
-    private boolean isPromotionPossible(ESoldierType soldierType) {
-        return player.getMannaInformation().isUpgradePossible(soldierType);
-    }
+	private void promote(ESoldierType soldierType) {
+		if (isPromotionPossible(soldierType)) {
+			actionFireable.fireAction(new SoldierAction(EActionType.UPGRADE_SOLDIERS, soldierType));
+		}
+	}
 
-    private void promote(ESoldierType soldierType) {
-        if (isPromotionPossible(soldierType)) {
-            actionFireable.fireAction(new SoldierAction(EActionType.UPGRADE_SOLDIERS, soldierType));
-        }
-    }
-
-    private ImageLink getPromotionImageLink(ImageLink[] possibleImages, ImageLink[] notPossibleImages, ESoldierType soldierType) {
-        if (isPromotionPossible(soldierType)) {
-            return possibleImages[player.getMannaInformation().getLevel(soldierType)];
-        } else {
-            return notPossibleImages[player.getMannaInformation().getLevel(soldierType)];
-        }
-    }
+	private ImageLink getPromotionImageLink(ImageLink[] possibleImages, ImageLink[] notPossibleImages, ESoldierType soldierType) {
+		if (isPromotionPossible(soldierType)) {
+			return possibleImages[player.getMannaInformation().getLevel(soldierType)];
+		} else {
+			return notPossibleImages[player.getMannaInformation().getLevel(soldierType)];
+		}
+	}
 }

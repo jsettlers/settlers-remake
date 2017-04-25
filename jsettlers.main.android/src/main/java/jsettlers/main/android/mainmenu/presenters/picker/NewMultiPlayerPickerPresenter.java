@@ -19,94 +19,94 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
  */
 
 public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements IJoiningGameListener {
-    private final NewMultiPlayerPickerView view;
-    private final GameStarter gameStarter;
-    private final AndroidPreferences androidPreferences;
-    private final MainMenuNavigator navigator;
+	private final NewMultiPlayerPickerView view;
+	private final GameStarter gameStarter;
+	private final AndroidPreferences androidPreferences;
+	private final MainMenuNavigator navigator;
 
-    private IJoiningGame joiningGame;
-    private IMapDefinition tempMapDefinition;
+	private IJoiningGame joiningGame;
+	private IMapDefinition tempMapDefinition;
 
-    public NewMultiPlayerPickerPresenter(
-            NewMultiPlayerPickerView view,
-            MainMenuNavigator navigator,
-            GameStarter gameStarter,
-            AndroidPreferences androidPreferences,
-            ChangingList<? extends MapLoader> changingMaps) {
+	public NewMultiPlayerPickerPresenter(
+			NewMultiPlayerPickerView view,
+			MainMenuNavigator navigator,
+			GameStarter gameStarter,
+			AndroidPreferences androidPreferences,
+			ChangingList<? extends MapLoader> changingMaps) {
 
-        super(view, navigator, gameStarter, changingMaps);
-        this.view = view;
-        this.navigator = navigator;
-        this.gameStarter = gameStarter;
-        this.androidPreferences = androidPreferences;
-    }
+		super(view, navigator, gameStarter, changingMaps);
+		this.view = view;
+		this.navigator = navigator;
+		this.gameStarter = gameStarter;
+		this.androidPreferences = androidPreferences;
+	}
 
-    @Override
-    public void itemSelected(MapLoader mapLoader) {
-        cancelJoining();
-        tempMapDefinition = mapLoader;
+	@Override
+	public void itemSelected(MapLoader mapLoader) {
+		cancelJoining();
+		tempMapDefinition = mapLoader;
 
-        joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
-            @Override
-            public String getMatchName() {
-                return androidPreferences.getPlayerName();
-            }
+		joiningGame = gameStarter.getMultiPlayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
+			@Override
+			public String getMatchName() {
+				return androidPreferences.getPlayerName();
+			}
 
-            @Override
-            public IMapDefinition getMapDefinition() {
-                return mapLoader;
-            }
+			@Override
+			public IMapDefinition getMapDefinition() {
+				return mapLoader;
+			}
 
-            @Override
-            public int getMaxPlayers() {
-                return mapLoader.getMaxPlayers();
-            }
-        });
+			@Override
+			public int getMaxPlayers() {
+				return mapLoader.getMaxPlayers();
+			}
+		});
 
-        joiningGame.setListener(this);
+		joiningGame.setListener(this);
 
-        gameStarter.setJoiningGame(joiningGame);
-    }
+		gameStarter.setJoiningGame(joiningGame);
+	}
 
-    @Override
-    protected void abort() {
-        super.abort();
-        cancelJoining();
-    }
+	@Override
+	protected void abort() {
+		super.abort();
+		cancelJoining();
+	}
 
-    public void dispose() {
-        if (joiningGame != null) {
-            joiningGame.setListener(null);
-        }
-    }
+	public void dispose() {
+		if (joiningGame != null) {
+			joiningGame.setListener(null);
+		}
+	}
 
-    private void cancelJoining() {
-        if (joiningGame != null) {
-            joiningGame.abort();
-        }
+	private void cancelJoining() {
+		if (joiningGame != null) {
+			joiningGame.abort();
+		}
 
-        gameStarter.setJoiningGame(null);
-        gameStarter.closeMultiPlayerConnector();
-    }
+		gameStarter.setJoiningGame(null);
+		gameStarter.closeMultiPlayerConnector();
+	}
 
-    /**
-     * IJoiningGameListener imeplementation
-     */
-    @Override
-    public void joinProgressChanged(EProgressState state, float progress) {
-        String stateString = Labels.getProgress(state);
-        int progressPercentage = (int) (progress * 100);
+	/**
+	 * IJoiningGameListener imeplementation
+	 */
+	@Override
+	public void joinProgressChanged(EProgressState state, float progress) {
+		String stateString = Labels.getProgress(state);
+		int progressPercentage = (int) (progress * 100);
 
-        view.setJoiningProgress(stateString, progressPercentage);
-    }
+		view.setJoiningProgress(stateString, progressPercentage);
+	}
 
-    @Override
-    public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-        joiningGame.setListener(null);
-        gameStarter.setJoiningGame(null);
-        view.dismissJoiningProgress();
+	@Override
+	public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+		joiningGame.setListener(null);
+		gameStarter.setJoiningGame(null);
+		view.dismissJoiningProgress();
 
-        gameStarter.setJoinPhaseMultiPlayerConnector(connector);
-        navigator.showNewMultiPlayerSetup(tempMapDefinition);
-    }
+		gameStarter.setJoinPhaseMultiPlayerConnector(connector);
+		navigator.showNewMultiPlayerSetup(tempMapDefinition);
+	}
 }

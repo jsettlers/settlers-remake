@@ -5,5 +5,5 @@ package jsettlers.main.android.mainmenu.views;
  */
 
 public interface SettingsView {
-    void setPlayerName(String playerName);
+	void setPlayerName(String playerName);
 }

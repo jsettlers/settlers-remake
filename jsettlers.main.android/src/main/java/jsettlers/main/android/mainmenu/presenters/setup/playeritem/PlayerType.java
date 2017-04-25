@@ -8,23 +8,23 @@ import jsettlers.graphics.localization.Labels;
  */
 
 public class PlayerType {
-    private final EPlayerType type;
+	private final EPlayerType type;
 
-    public PlayerType(EPlayerType type) {
-        this.type = type;
-    }
+	public PlayerType(EPlayerType type) {
+		this.type = type;
+	}
 
-    public EPlayerType getType() {
-        return type;
-    }
+	public EPlayerType getType() {
+		return type;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof PlayerType && ((PlayerType)obj).getType() == type;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof PlayerType && ((PlayerType) obj).getType() == type;
+	}
 
-    @Override
-    public String toString() {
-        return Labels.getString("player-type-" + type.name());
-    }
+	@Override
+	public String toString() {
+		return Labels.getString("player-type-" + type.name());
+	}
 }

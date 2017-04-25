@@ -25,54 +25,54 @@ import me.relex.circleindicator.CircleIndicator;
  */
 
 public class BuildingsMenuFragment extends Fragment {
-    public static BuildingsMenuFragment newInstance() {
-        return new BuildingsMenuFragment();
-    }
+	public static BuildingsMenuFragment newInstance() {
+		return new BuildingsMenuFragment();
+	}
 
-    private ViewPager viewPager;
+	private ViewPager viewPager;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.menu_buildings, container, false);
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.menu_buildings, container, false);
 
-        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        BottomSheetUtils.setupViewPager(viewPager);
+		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+		BottomSheetUtils.setupViewPager(viewPager);
 
-        return view;
-    }
+		return view;
+	}
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
-        viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
+		viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
 
-        CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
-        indicator.setViewPager(viewPager);
-    }
+		CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
+		indicator.setViewPager(viewPager);
+	}
 
+	/**
+	 * Adapter
+	 */
+	private class BuildingsPagerAdapter extends FragmentPagerAdapter {
 
-    /**
-     * Adapter
-     */
-    private class BuildingsPagerAdapter extends FragmentPagerAdapter {
+		private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY,
+				BUILDINGS_CATEGORY_SOCIAL };
 
-        private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY, BUILDINGS_CATEGORY_SOCIAL };
+		public BuildingsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
 
-        public BuildingsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+		@Override
+		public int getCount() {
+			return buildingsCategories.length;
+		}
 
-        @Override
-        public int getCount() {
-            return buildingsCategories.length;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            int buildingsCategory = buildingsCategories[position];
-            return BuildingsCategoryFragment.newInstance(buildingsCategory);
-        }
-    }
+		@Override
+		public Fragment getItem(int position) {
+			int buildingsCategory = buildingsCategories[position];
+			return BuildingsCategoryFragment.newInstance(buildingsCategory);
+		}
+	}
 }

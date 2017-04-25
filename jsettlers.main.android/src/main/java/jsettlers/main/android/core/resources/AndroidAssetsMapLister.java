@@ -19,11 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import android.content.res.AssetManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.IListedMap;
 import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
+
+import android.content.res.AssetManager;
 
 public class AndroidAssetsMapLister implements IMapLister {
 	public static final class AndroidAssetMap implements IListedMap {

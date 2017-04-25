@@ -5,5 +5,5 @@ package jsettlers.main.android.gameplay.navigation;
  */
 
 public interface MenuNavigatorProvider {
-    MenuNavigator getMenuNavigator();
+	MenuNavigator getMenuNavigator();
 }

@@ -8,23 +8,23 @@ import jsettlers.graphics.localization.Labels;
  */
 
 public class Civilisation {
-    private final ECivilisation type;
+	private final ECivilisation type;
 
-    public Civilisation(ECivilisation type) {
-        this.type = type;
-    }
+	public Civilisation(ECivilisation type) {
+		this.type = type;
+	}
 
-    public ECivilisation getType() {
-        return type;
-    }
+	public ECivilisation getType() {
+		return type;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Civilisation && ((Civilisation)obj).getType() == type;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Civilisation && ((Civilisation) obj).getType() == type;
+	}
 
-    @Override
-    public String toString() {
-        return Labels.getString("civilisation-" + type.name());
-    }
+	@Override
+	public String toString() {
+		return Labels.getString("civilisation-" + type.name());
+	}
 }

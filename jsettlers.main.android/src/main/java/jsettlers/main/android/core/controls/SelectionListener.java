@@ -7,5 +7,5 @@ import jsettlers.common.selectable.ISelectionSet;
  */
 
 public interface SelectionListener {
-    void selectionChanged(ISelectionSet selection);
+	void selectionChanged(ISelectionSet selection);
 }

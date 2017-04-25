@@ -8,23 +8,23 @@ import jsettlers.logic.map.loading.EMapStartResources;
  */
 
 public class StartResources {
-    private final EMapStartResources type;
+	private final EMapStartResources type;
 
-    public StartResources(EMapStartResources type) {
-        this.type = type;
-    }
+	public StartResources(EMapStartResources type) {
+		this.type = type;
+	}
 
-    public EMapStartResources getType() {
-        return type;
-    }
+	public EMapStartResources getType() {
+		return type;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof StartResources && ((StartResources)obj).getType() == type;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof StartResources && ((StartResources) obj).getType() == type;
+	}
 
-    @Override
-    public String toString() {
-        return Labels.getString("map-start-resources-" + type.name());
-    }
+	@Override
+	public String toString() {
+		return Labels.getString("map-start-resources-" + type.name());
+	}
 }

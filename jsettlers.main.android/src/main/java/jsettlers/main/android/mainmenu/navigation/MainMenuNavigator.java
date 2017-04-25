@@ -6,17 +6,23 @@ import jsettlers.common.menu.IMapDefinition;
  * Created by tingl on 27/05/2016.
  */
 public interface MainMenuNavigator {
-    void showNewSinglePlayerPicker();
-    void showLoadSinglePlayerPicker();
-    void showNewSinglePlayerSetup(IMapDefinition mapDefinition);
+	void showNewSinglePlayerPicker();
 
-    void showNewMultiPlayerPicker();
-    void showJoinMultiPlayerPicker();
-    void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
-    void showJoinMultiPlayerSetup(IMapDefinition mapDefinition);
+	void showLoadSinglePlayerPicker();
 
-    void showGame();
-    void resumeGame();
+	void showNewSinglePlayerSetup(IMapDefinition mapDefinition);
 
-    void popToMenuRoot();
+	void showNewMultiPlayerPicker();
+
+	void showJoinMultiPlayerPicker();
+
+	void showNewMultiPlayerSetup(IMapDefinition mapDefinition);
+
+	void showJoinMultiPlayerSetup(IMapDefinition mapDefinition);
+
+	void showGame();
+
+	void resumeGame();
+
+	void popToMenuRoot();
 }

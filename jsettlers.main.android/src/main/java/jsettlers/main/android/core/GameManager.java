@@ -8,7 +8,9 @@ import jsettlers.main.android.core.controls.GameMenu;
  */
 
 public interface GameManager {
-    ControlsAdapter getControlsAdapter();
-    GameMenu getGameMenu();
-    boolean isGameInProgress();
+	ControlsAdapter getControlsAdapter();
+
+	GameMenu getGameMenu();
+
+	boolean isGameInProgress();
 }

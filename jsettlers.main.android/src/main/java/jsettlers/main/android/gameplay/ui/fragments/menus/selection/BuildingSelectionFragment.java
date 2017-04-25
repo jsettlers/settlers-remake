@@ -1,5 +1,7 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
+import java.util.LinkedList;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
@@ -7,6 +9,7 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.TaskControls;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.DestroyFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.OccupiedFeature;
@@ -14,7 +17,6 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.Pri
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.SelectionFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.TitleFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.WorkAreaFeature;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,88 +25,83 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import java.util.LinkedList;
-
 /**
- * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance.
- * So the buildings menu is made up of composable "features" which are a bit like mini fragments with a very
- * simple lifecycle consisting of just initialize() and viewFinished()
+ * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance. So the buildings menu is made up of composable "features" which are a bit like mini
+ * fragments with a very simple lifecycle consisting of just initialize() and viewFinished()
  *
  * This class just decides which features a building has and calls the lifecycle methods
  */
 public class BuildingSelectionFragment extends SelectionFragment {
 
-    private IBuilding building;
-    private BuildingState buildingState;
+	private IBuilding building;
+	private BuildingState buildingState;
 
-    private final LinkedList<SelectionFeature> features = new LinkedList<>();
+	private final LinkedList<SelectionFeature> features = new LinkedList<>();
 
-    private ViewGroup rootView;
+	private ViewGroup rootView;
 
-    public static BuildingSelectionFragment newInstance() {
-        return new BuildingSelectionFragment();
-    }
+	public static BuildingSelectionFragment newInstance() {
+		return new BuildingSelectionFragment();
+	}
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootView = new FrameLayout(getActivity());
-        return rootView;
-    }
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		rootView = new FrameLayout(getActivity());
+		return rootView;
+	}
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (getSelection().getSize() == 0) {
-            return;
-        }
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		if (getSelection().getSize() == 0) {
+			return;
+		}
 
-        building = (IBuilding) getSelection().get(0);
-        buildingState = new BuildingState(building);
+		building = (IBuilding) getSelection().get(0);
+		buildingState = new BuildingState(building);
 
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
+		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+		MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
 
-        ControlsResolver controlsResolver = new ControlsResolver(getActivity());
-        ActionControls actionControls = controlsResolver.getActionControls();
-        DrawControls drawControls = controlsResolver.getDrawControls();
-        TaskControls taskControls = controlsResolver.getTaskControls();
+		ControlsResolver controlsResolver = new ControlsResolver(getActivity());
+		ActionControls actionControls = controlsResolver.getActionControls();
+		DrawControls drawControls = controlsResolver.getDrawControls();
+		TaskControls taskControls = controlsResolver.getTaskControls();
 
-        if (building instanceof IBuilding.IOccupied) {
-            layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
-            features.add(new OccupiedFeature(getView(), building, menuNavigator, actionControls, drawControls));
+		if (building instanceof IBuilding.IOccupied) {
+			layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
+			features.add(new OccupiedFeature(getView(), building, menuNavigator, actionControls, drawControls));
 
+			// } else if (building instanceof IBuilding.IStock) {
+			// } else if (building instanceof IBuilding.ITrading) {
+		} else {
+			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
+		}
 
-//        } else if (building instanceof IBuilding.IStock) {
-//        } else if (building instanceof IBuilding.ITrading) {
-        } else {
-            layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);
-        }
+		features.add(new TitleFeature(getView(), building, menuNavigator, drawControls));
+		features.add(new DestroyFeature(getView(), building, menuNavigator, actionControls));
+		features.add(new MaterialsFeature(getView(), building, menuNavigator, drawControls));
 
+		if (buildingState.getSupportedPriorities().length > 1) {
+			features.add(new PriorityFeature(getView(), building, menuNavigator, actionControls, drawControls));
+		}
 
-        features.add(new TitleFeature(getView(), building, menuNavigator, drawControls));
-        features.add(new DestroyFeature(getView(), building, menuNavigator, actionControls));
-        features.add(new MaterialsFeature(getView(), building, menuNavigator, drawControls));
+		if (building.getBuildingType().getWorkRadius() > 0) {
+			features.add(new WorkAreaFeature(getView(), building, menuNavigator, actionControls, taskControls));
+		}
 
-        if (buildingState.getSupportedPriorities().length > 1) {
-            features.add(new PriorityFeature(getView(), building, menuNavigator, actionControls, drawControls));
-        }
+		for (SelectionFeature feature : features) {
+			feature.initialize(buildingState);
+		}
+	}
 
-        if (building.getBuildingType().getWorkRadius() > 0) {
-            features.add(new WorkAreaFeature(getView(), building, menuNavigator, actionControls, taskControls));
-        }
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
 
-        for (SelectionFeature feature : features) {
-            feature.initialize(buildingState);
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        for (SelectionFeature feature : features) {
-            feature.finish();
-        }
-    }
+		for (SelectionFeature feature : features) {
+			feature.finish();
+		}
+	}
 }

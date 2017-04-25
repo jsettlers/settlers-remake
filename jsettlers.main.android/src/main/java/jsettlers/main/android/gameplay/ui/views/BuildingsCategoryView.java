@@ -9,5 +9,5 @@ import jsettlers.common.buildings.EBuildingType;
  */
 
 public interface BuildingsCategoryView {
-    void setBuildings(List<EBuildingType> buildings);
+	void setBuildings(List<EBuildingType> buildings);
 }

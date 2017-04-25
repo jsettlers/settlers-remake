@@ -5,23 +5,23 @@ package jsettlers.main.android.mainmenu.presenters.setup;
  */
 
 public class Peacetime {
-    private final String type;
+	private final String type;
 
-    public Peacetime(String type) {
-        this.type = type;
-    }
+	public Peacetime(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Peacetime && ((Peacetime)obj).getType() == type;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Peacetime && ((Peacetime) obj).getType() == type;
+	}
 
-    @Override
-    public String toString() {
-        return type;
-    }
+	@Override
+	public String toString() {
+		return type;
+	}
 }

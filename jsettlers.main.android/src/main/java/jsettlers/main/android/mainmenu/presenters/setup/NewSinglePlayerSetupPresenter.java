@@ -20,68 +20,68 @@ import java8.util.stream.StreamSupport;
  */
 
 public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
-    private final NewSinglePlayerSetupView view;
-    private final MainMenuNavigator navigator;
-    private final GameStarter gameStarter;
-    private final AndroidPreferences androidPreferences;
-    private final MapLoader mapLoader;
+	private final NewSinglePlayerSetupView view;
+	private final MainMenuNavigator navigator;
+	private final GameStarter gameStarter;
+	private final AndroidPreferences androidPreferences;
+	private final MapLoader mapLoader;
 
-    public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, AndroidPreferences androidPreferences, MapLoader mapLoader) {
-        super(view, gameStarter, mapLoader);
-        this.view = view;
-        this.navigator = navigator;
-        this.gameStarter = gameStarter;
-        this.androidPreferences = androidPreferences;
-        this.mapLoader = mapLoader;
+	public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter,
+			AndroidPreferences androidPreferences, MapLoader mapLoader) {
+		super(view, gameStarter, mapLoader);
+		this.view = view;
+		this.navigator = navigator;
+		this.gameStarter = gameStarter;
+		this.androidPreferences = androidPreferences;
+		this.mapLoader = mapLoader;
 
-        PlayerSlotPresenter humanPlayerSlot = getPlayerSlotPresenters().get(0);
-        humanPlayerSlot.setName(androidPreferences.getPlayerName());
-        setHumanSlotPlayerTypes(humanPlayerSlot);
-    }
+		PlayerSlotPresenter humanPlayerSlot = getPlayerSlotPresenters().get(0);
+		humanPlayerSlot.setName(androidPreferences.getPlayerName());
+		setHumanSlotPlayerTypes(humanPlayerSlot);
+	}
 
-    @Override
-    public void initView() {
-        super.initView();
-        updateViewItems();
-    }
+	@Override
+	public void initView() {
+		super.initView();
+		updateViewItems();
+	}
 
-    @Override
-    public void startGame() {
-        List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
-        PlayerSetting[] playerSettings = new PlayerSetting[playerSlotPresenters.size()];
-        byte humanPlayerId = playerSlotPresenters.get(0).getPlayerId();
+	@Override
+	public void startGame() {
+		List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
+		PlayerSetting[] playerSettings = new PlayerSetting[playerSlotPresenters.size()];
+		byte humanPlayerId = playerSlotPresenters.get(0).getPlayerId();
 
-        // Sort players by position
-        PlayerSlotPresenter[] sortedPlayers = StreamSupport.stream(playerSlotPresenters)
-                .sorted((playerSlot, otherPlayerSlot) -> playerSlot.getStartPosition().asByte() - otherPlayerSlot.getStartPosition().asByte())
-                .toArray(PlayerSlotPresenter[]::new);
+		// Sort players by position
+		PlayerSlotPresenter[] sortedPlayers = StreamSupport.stream(playerSlotPresenters)
+				.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getStartPosition().asByte() - otherPlayerSlot.getStartPosition().asByte())
+				.toArray(PlayerSlotPresenter[]::new);
 
-        // Get player settings if player slot is within player count limit, otherwise use new PlayerSettings() for no player at that position
-        for (int i = 0; i < sortedPlayers.length; i++) {
-            PlayerSlotPresenter player = sortedPlayers[i];
+		// Get player settings if player slot is within player count limit, otherwise use new PlayerSettings() for no player at that position
+		for (int i = 0; i < sortedPlayers.length; i++) {
+			PlayerSlotPresenter player = sortedPlayers[i];
 
-            if (playerSlotPresenters.indexOf(player) < getPlayerCount().getNumberOfPlayers()) {
-                playerSettings[i] = player.getPlayerSettings();
-            } else {
-                playerSettings[i] = new PlayerSetting();
-            }
-        }
+			if (playerSlotPresenters.indexOf(player) < getPlayerCount().getNumberOfPlayers()) {
+				playerSettings[i] = player.getPlayerSettings();
+			} else {
+				playerSettings[i] = new PlayerSetting();
+			}
+		}
 
-        JSettlersGame game = new JSettlersGame(mapLoader, 4711L, humanPlayerId, playerSettings);
+		JSettlersGame game = new JSettlersGame(mapLoader, 4711L, humanPlayerId, playerSettings);
 
-        gameStarter.setStartingGame(game.start());
-        navigator.showGame();
-    }
+		gameStarter.setStartingGame(game.start());
+		navigator.showGame();
+	}
 
-
-    protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
-        playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
-                new PlayerType(EPlayerType.HUMAN),
-                new PlayerType(EPlayerType.AI_VERY_HARD),
-                new PlayerType(EPlayerType.AI_HARD),
-                new PlayerType(EPlayerType.AI_EASY),
-                new PlayerType(EPlayerType.AI_VERY_EASY)
-        });
-        playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
-    }
+	protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+		playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
+				new PlayerType(EPlayerType.HUMAN),
+				new PlayerType(EPlayerType.AI_VERY_HARD),
+				new PlayerType(EPlayerType.AI_HARD),
+				new PlayerType(EPlayerType.AI_EASY),
+				new PlayerType(EPlayerType.AI_VERY_EASY)
+		});
+		playerSlotPresenter.setPlayerType(new PlayerType(EPlayerType.HUMAN));
+	}
 }

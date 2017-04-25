@@ -9,10 +9,14 @@ import jsettlers.common.menu.IJoinableGame;
  */
 
 public interface JoinMultiPlayerPickerView {
-    void updateJoinableGames(List<? extends IJoinableGame> joinableGames);
-    void setJoiningProgress(String stateString, int progressPercentage);
-    void dismissJoiningProgress();
-    void showSearchingForGamesView();
-    void hideSearchingForGamesView();
+	void updateJoinableGames(List<? extends IJoinableGame> joinableGames);
+
+	void setJoiningProgress(String stateString, int progressPercentage);
+
+	void dismissJoiningProgress();
+
+	void showSearchingForGamesView();
+
+	void hideSearchingForGamesView();
 
 }

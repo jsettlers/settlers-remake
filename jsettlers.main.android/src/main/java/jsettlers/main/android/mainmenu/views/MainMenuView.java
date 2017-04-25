@@ -5,12 +5,15 @@ package jsettlers.main.android.mainmenu.views;
  */
 
 public interface MainMenuView {
-    void showResourcePicker();
-    void hideResourcePicker();
+	void showResourcePicker();
 
-    void updatePauseButton(boolean paused);
-    void updateQuitButton(boolean canQuitConfirm);
+	void hideResourcePicker();
 
-    void showResumeGameView();
-    void hideResumeGameView();
+	void updatePauseButton(boolean paused);
+
+	void updateQuitButton(boolean canQuitConfirm);
+
+	void showResumeGameView();
+
+	void hideResumeGameView();
 }

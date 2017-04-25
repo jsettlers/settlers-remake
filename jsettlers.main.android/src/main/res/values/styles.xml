@@ -18,7 +18,7 @@
         <item name="colorButtonNormal">@color/primaryDark</item>
     </style>
 
-    <style name="ReadySwitch" >
+    <style name="ReadySwitch">
         <item name="colorControlActivated">@color/primary</item>
         <item name="colorSwitchThumbNormal">@color/accent</item>
         <item name="android:colorForeground">@color/accent</item>

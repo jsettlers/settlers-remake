@@ -13,51 +13,51 @@ import android.view.View;
 
 public abstract class SelectionFeature {
 
-    private final View view;
-    private final IBuilding building;
-    private final MenuNavigator menuNavigator;
+	private final View view;
+	private final IBuilding building;
+	private final MenuNavigator menuNavigator;
 
-    private BuildingState buildingState;
+	private BuildingState buildingState;
 
-    public SelectionFeature(View view, IBuilding building, MenuNavigator menuNavigator) {
-        this.view = view;
-        this.building = building;
-        this.menuNavigator = menuNavigator;
-    }
+	public SelectionFeature(View view, IBuilding building, MenuNavigator menuNavigator) {
+		this.view = view;
+		this.building = building;
+		this.menuNavigator = menuNavigator;
+	}
 
-    public void initialize(BuildingState buildingState) {
-        this.buildingState = buildingState;
-    }
+	public void initialize(BuildingState buildingState) {
+		this.buildingState = buildingState;
+	}
 
-    public void finish() {
+	public void finish() {
 
-    }
+	}
 
-    public boolean hasNewState() {
-        if (!getBuildingState().isStillInState(getBuilding())) {
-            buildingState = new BuildingState(getBuilding());
-            return true;
-        }
-        return false;
-    }
+	public boolean hasNewState() {
+		if (!getBuildingState().isStillInState(getBuilding())) {
+			buildingState = new BuildingState(getBuilding());
+			return true;
+		}
+		return false;
+	}
 
-    protected IBuilding getBuilding() {
-        return building;
-    }
+	protected IBuilding getBuilding() {
+		return building;
+	}
 
-    protected MenuNavigator getMenuNavigator() {
-        return menuNavigator;
-    }
+	protected MenuNavigator getMenuNavigator() {
+		return menuNavigator;
+	}
 
-    protected View getView() {
-        return view;
-    }
+	protected View getView() {
+		return view;
+	}
 
-    protected Context getContext() {
-        return getView().getContext();
-    }
+	protected Context getContext() {
+		return getView().getContext();
+	}
 
-    protected BuildingState getBuildingState() {
-        return buildingState;
-    }
+	protected BuildingState getBuildingState() {
+		return buildingState;
+	}
 }

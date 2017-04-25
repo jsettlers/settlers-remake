@@ -7,12 +7,19 @@ import jsettlers.common.images.ImageLink;
  */
 
 public interface SettlersSoldiersView {
-    void setStrengthText(String strengthText);
-    void setPromotionText(String promotionText);
-    void setSwordsmenPromotionEnabled(boolean enabled);
-    void setBowmenPromotionEnabled(boolean enabled);
-    void setPikemenPromotionEnabled(boolean enabled);
-    void setSwordsmenImage(ImageLink imageLink);
-    void setBowmenImage(ImageLink imageLink);
-    void setPikemenImage(ImageLink imageLink);
+	void setStrengthText(String strengthText);
+
+	void setPromotionText(String promotionText);
+
+	void setSwordsmenPromotionEnabled(boolean enabled);
+
+	void setBowmenPromotionEnabled(boolean enabled);
+
+	void setPikemenPromotionEnabled(boolean enabled);
+
+	void setSwordsmenImage(ImageLink imageLink);
+
+	void setBowmenImage(ImageLink imageLink);
+
+	void setPikemenImage(ImageLink imageLink);
 }

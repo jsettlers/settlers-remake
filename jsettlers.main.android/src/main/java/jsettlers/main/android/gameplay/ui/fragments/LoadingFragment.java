@@ -44,8 +44,8 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_loading, container, false);
-		progressBar = (ProgressBar)view.findViewById(R.id.progress_bar);
-		statusTextView = (TextView)view.findViewById(R.id.text_view_status);
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+		statusTextView = (TextView) view.findViewById(R.id.text_view_status);
 		return view;
 	}
 
@@ -65,7 +65,6 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 		super.onDestroyView();
 		gameStarter.getStartingGame().setListener(null);
 	}
-
 
 	/**
 	 * IStartingGameListener implementation
@@ -91,13 +90,14 @@ public class LoadingFragment extends Fragment implements IStartingGameListener {
 		gameStarter.getStartingGame().setListener(null);
 
 		getActivity().runOnUiThread(() -> {
-            Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
-            getActivity().finish();
-        });
+			Toast.makeText(getActivity(), errorType.toString(), Toast.LENGTH_LONG).show();
+			getActivity().finish();
+		});
 	}
 
 	@Override
 	public void startFinished() {
 		gameStarter.getStartingGame().setListener(null);
 		getActivity().runOnUiThread(() -> navigator.showMap());
-	}}
+	}
+}

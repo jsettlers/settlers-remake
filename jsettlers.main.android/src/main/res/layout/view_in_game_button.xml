@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/menu_button_size"
-    android:layout_height="@dimen/menu_button_size"
-    android:layout_gravity="center"
-    android:scaleType="fitCenter"
-    android:padding="8dp"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    tools:src="@drawable/building_destroy" />
+           xmlns:tools="http://schemas.android.com/tools"
+           android:layout_width="@dimen/menu_button_size"
+           android:layout_height="@dimen/menu_button_size"
+           android:layout_gravity="center"
+           android:scaleType="fitCenter"
+           android:padding="8dp"
+           android:background="?attr/selectableItemBackgroundBorderless"
+           tools:src="@drawable/building_destroy"/>

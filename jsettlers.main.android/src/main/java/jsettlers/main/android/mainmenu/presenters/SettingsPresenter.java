@@ -9,20 +9,20 @@ import jsettlers.main.android.mainmenu.views.SettingsView;
 
 public class SettingsPresenter {
 
-    private final SettingsView view;
-    private final AndroidPreferences androidPreferences;
+	private final SettingsView view;
+	private final AndroidPreferences androidPreferences;
 
-    public SettingsPresenter(SettingsView view, AndroidPreferences androidPreferences) {
-        this.view = view;
-        this.androidPreferences = androidPreferences;
-    }
+	public SettingsPresenter(SettingsView view, AndroidPreferences androidPreferences) {
+		this.view = view;
+		this.androidPreferences = androidPreferences;
+	}
 
-    public void bindView() {
-        view.setPlayerName(androidPreferences.getPlayerName());
-    }
+	public void bindView() {
+		view.setPlayerName(androidPreferences.getPlayerName());
+	}
 
-    public void playerNameEdited(String playerName) {
-        androidPreferences.setPlayerName(playerName);
-        view.setPlayerName(playerName);
-    }
+	public void playerNameEdited(String playerName) {
+		androidPreferences.setPlayerName(playerName);
+		view.setPlayerName(playerName);
+	}
 }

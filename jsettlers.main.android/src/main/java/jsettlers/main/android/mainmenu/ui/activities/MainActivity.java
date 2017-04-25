@@ -3,6 +3,8 @@ package jsettlers.main.android.mainmenu.ui.activities;
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity;
+import jsettlers.main.android.mainmenu.navigation.Actions;
+import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.JoinMultiPlayerPickerFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.LoadSinglePlayerPickerFragment;
@@ -11,8 +13,6 @@ import jsettlers.main.android.mainmenu.ui.fragments.picker.NewSinglePlayerPicker
 import jsettlers.main.android.mainmenu.ui.fragments.setup.JoinMultiPlayerSetupFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.setup.NewMultiPlayerSetupFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.setup.NewSinglePlayerSetupFragment;
-import jsettlers.main.android.mainmenu.navigation.Actions;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 
 import android.content.Intent;
 import android.os.Bundle;

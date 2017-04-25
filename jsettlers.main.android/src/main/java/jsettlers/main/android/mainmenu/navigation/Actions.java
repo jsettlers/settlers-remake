@@ -5,5 +5,5 @@ package jsettlers.main.android.mainmenu.navigation;
  */
 
 public class Actions {
-    public static final String RESUME_GAME = "com.packagename.settlers.RESUME";
+	public static final String RESUME_GAME = "com.packagename.settlers.RESUME";
 }
