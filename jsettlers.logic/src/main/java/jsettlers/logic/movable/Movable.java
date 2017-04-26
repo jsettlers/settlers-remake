@@ -23,6 +23,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -53,11 +54,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andreas Eberle
  *
  */
-public final class Movable implements IScheduledTimerable, IPathCalculatable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
-		IAttackableMovable {
+public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
-	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
+	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<Integer, ILogicMovable>();
+	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<ILogicMovable>();
 	private static int nextID = Integer.MIN_VALUE;
 
 	protected final AbstractMovableGrid grid;
@@ -84,7 +84,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	private float health;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
-	private Movable pushedFrom;
+	private ILogicMovable pushedFrom;
 
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
@@ -154,7 +154,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			if (goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				break;
 			} else {
-				Movable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
+				ILogicMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
 				if (movableAtPos != null) {
 					movableAtPos.push(this);
 				}
@@ -292,7 +292,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			return;
 		}
 
-		Movable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
+		ILogicMovable blockingMovable = grid.getMovableAt(path.nextX(), path.nextY());
 		if (blockingMovable == null) { // if we can go on to the next step
 			if (grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is valid
 				goSinglePathStep();
@@ -327,9 +327,20 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 	}
 
-	private void goSinglePathStep() {
+	@Override
+	public void goSinglePathStep() {
 		initGoingSingleStep(path.getNextPos());
 		path.goToNextStep();
+	}
+
+	@Override
+	public ShortPoint2D getPosition() {
+		return position;
+	}
+
+	@Override
+	public ILogicMovable getPushedFrom() {
+		return pushedFrom;
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
@@ -394,7 +405,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @return true if this movable will move out of it's way in the near future <br>
 	 *         false if this movable doesn't move.
 	 */
-	private boolean push(Movable pushingMovable) {
+	@Override
+	public boolean push(ILogicMovable pushingMovable) {
 		if (state == EMovableState.DEAD) {
 			return false;
 		}
@@ -409,7 +421,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 				return true; // if we found a free direction, go there and tell the pushing one we'll move
 
 			} else { // if we didn't find a direction, check if it's possible to exchange positions
-				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
+				if (pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
 				} else if (pushingMovable.getMovableType().isPlayerControllable()
@@ -425,13 +437,13 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 			}
 
 		case PATHING:
-			if (path == null || pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
+			if (path == null || pushingMovable.getPath() == null || !pushingMovable.getPath().hasNextStep()) {
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
 			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
-				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
+				if (pushingMovable.getPosition() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 
@@ -448,7 +460,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 					} else {
 						while (pushingMovable != this) {
 							pushingMovable.goSinglePathStep();
-							pushingMovable = pushingMovable.pushedFrom;
+							pushingMovable = pushingMovable.getPushedFrom();
 						}
 						this.goSinglePathStep();
 					}
@@ -472,18 +484,23 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 		}
 	}
 
-	boolean isProbablyPushable(Movable pushingMovable) {
+	@Override
+	public Path getPath() {
+		return path;
+	}
+
+	public boolean isProbablyPushable(ILogicMovable pushingMovable) {
 		switch (state) {
 		case DOING_NOTHING:
 			return true;
 		case PATHING:
-			return path != null && pushingMovable.path != null && pushingMovable.path.hasNextStep();
+			return path != null && pushingMovable.getPath() != null && pushingMovable.getPath().hasNextStep();
 		default:
 			return false;
 		}
 	}
 
-	private boolean goToRandomDirection(Movable pushingMovable) {
+	private boolean goToRandomDirection(ILogicMovable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
 		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 
@@ -722,11 +739,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, ID
 	 * @return returns the movable with the given ID<br>
 	 *         or null if the id can not be found
 	 */
-	public final static Movable getMovableByID(int id) {
+	public final static ILogicMovable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	public final static ConcurrentLinkedQueue<Movable> getAllMovables() {
+	public final static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
 		return allMovables;
 	}
 

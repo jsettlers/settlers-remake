@@ -49,7 +49,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.objects.StandardMapObject;
@@ -111,7 +111,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	void changePlayerTo(ShortPoint2D attackerPos) {
 		assert sortedOccupiers.isEmpty() : "there cannot be any occupiers in the tower when changing the player.";
 
-		Movable attacker = super.grid.getMovable(attackerPos);
+		ILogicMovable attacker = super.grid.getMovable(attackerPos);
 		Player newPlayer = attacker.getPlayer();
 
 		setAttackableTowerObject(false);
@@ -177,7 +177,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 	private void releaseNextSoldierIfNeeded() {
 		if (!toBeReleasedOccupiers.isEmpty()) {
-			Movable movableAtDoor = grid.getMovable(super.getDoor());
+			ILogicMovable movableAtDoor = grid.getMovable(super.getDoor());
 			if (movableAtDoor == null) {
 				TowerOccupier releasedOccupier = toBeReleasedOccupiers.pop();
 				sortedOccupiers.remove(releasedOccupier);
@@ -204,7 +204,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 			Path path = super.grid.getDijkstra().find(dijkstraRequest);
 			if (path != null) {
-				Movable soldier = super.grid.getMovable(path.getTargetPos());
+				ILogicMovable soldier = super.grid.getMovable(path.getTargetPos());
 				if (soldier != null) {
 					IBuildingOccupyableMovable occupier = soldier.setOccupyableBuilding(this);
 					if (occupier != null) {
@@ -430,7 +430,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	}
 
 	@Override
-	public void requestSoldier(Movable soldier) {
+	public void requestSoldier(ILogicMovable soldier) {
 		if (!soldier.getMovableType().isSoldier()) {
 			return;
 		}
@@ -548,7 +548,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 				return; // building is destroyed => do nothing
 			}
 
-			Movable attacker = grid.getMovable(attackerPos);
+			ILogicMovable attacker = grid.getMovable(attackerPos);
 			if (attacker != null && attacker.getPlayer() == getPlayer()) {
 				return; // this can happen directly after the tower changed its player
 			}

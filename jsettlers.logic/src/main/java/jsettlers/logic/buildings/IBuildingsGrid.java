@@ -29,7 +29,7 @@ import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.player.Player;
 
@@ -74,7 +74,7 @@ public interface IBuildingsGrid {
 	 * @return the movable currently located at the given position<br>
 	 *         or null if no movable is located at the given position.
 	 */
-	Movable getMovable(ShortPoint2D position);
+	ILogicMovable getMovable(ShortPoint2D position);
 
 	MapObjectsManager getMapObjectsManager();
 
