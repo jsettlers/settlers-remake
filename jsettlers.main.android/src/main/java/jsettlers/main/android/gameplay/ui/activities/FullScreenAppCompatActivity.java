@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android;
+package jsettlers.main.android.gameplay.ui.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;

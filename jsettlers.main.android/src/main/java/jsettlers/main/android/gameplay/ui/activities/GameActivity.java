@@ -19,7 +19,6 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 
 import java.util.List;
 
-import jsettlers.main.android.FullScreenAppCompatActivity;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.navigation.BackPressedListener;

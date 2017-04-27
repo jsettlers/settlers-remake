@@ -16,7 +16,6 @@
 package jsettlers.main.android.mainmenu.ui.activities;
 
 import jsettlers.common.menu.IMapDefinition;
-import jsettlers.main.android.FullScreenAppCompatActivity;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity;
 import jsettlers.main.android.mainmenu.navigation.Actions;
@@ -34,9 +33,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class MainActivity extends FullScreenAppCompatActivity implements MainMenuNavigator {
+public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
