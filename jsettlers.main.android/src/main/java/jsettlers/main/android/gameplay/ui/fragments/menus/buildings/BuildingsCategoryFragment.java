@@ -18,7 +18,6 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
@@ -33,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.

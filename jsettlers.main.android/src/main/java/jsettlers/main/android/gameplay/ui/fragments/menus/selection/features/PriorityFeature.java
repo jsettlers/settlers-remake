@@ -21,7 +21,6 @@ import jsettlers.common.material.EPriority;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -30,6 +29,7 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.view.View;
 
@@ -63,12 +63,7 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
 
 			setImageForPriority(getBuilding().getPriority());
 
-			priorityButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					actionControls.fireAction(new SetBuildingPriorityAction(getNextPriority()));
-				}
-			});
+			priorityButton.setOnClickListener(view -> actionControls.fireAction(new SetBuildingPriorityAction(getNextPriority())));
 		}
 
 		actionControls.addActionListener(this);
@@ -94,12 +89,7 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
 	public void draw() {
 		if (hasNewState()) {
 			if (getBuildingState().getSupportedPriorities().length <= 1) {
-				getView().post(new Runnable() {
-					@Override
-					public void run() {
-						priorityButton.setVisibility(View.INVISIBLE);
-					}
-				});
+				getView().post(() -> priorityButton.setVisibility(View.INVISIBLE));
 			}
 		}
 	}
@@ -119,13 +109,7 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
 
 	private void setImageForPriority(EPriority priority) {
 		ImageLink imageLink = getImageLink(priority);
-
-		getView().post(new Runnable() {
-			@Override
-			public void run() {
-				OriginalImageProvider.get(imageLink).setAsImage(priorityButton.getImageView());
-			}
-		});
+		getView().post(() -> OriginalImageProvider.get(imageLink).setAsImage(priorityButton.getImageView()));
 	}
 
 	private ImageLink getImageLink(EPriority priority) {

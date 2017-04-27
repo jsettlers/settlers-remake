@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-    compile project(':jsettlers.graphics.androidui')
     compile project(':go.graphics.android')
     compile project(':go.graphics')
     compile project(':jsettlers.graphics')

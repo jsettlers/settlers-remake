@@ -18,12 +18,12 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.ConvertAction;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,7 +38,6 @@ import android.widget.TextView;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class SpecialistsSelectionFragment extends SelectionFragment {
 	private static final EMovableType[] specialistTypes = new EMovableType[] {
 			EMovableType.PIONEER,

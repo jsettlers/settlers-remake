@@ -16,11 +16,11 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.settlers;
 
 import jsettlers.common.images.ImageLink;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.presenters.SettlersSoldiersMenu;
 import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,7 +34,6 @@ import android.widget.TextView;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class SettlersSoldiersFragment extends Fragment implements SettlersSoldiersView {
 	private SettlersSoldiersMenu settlersSoldiersMenu;
 

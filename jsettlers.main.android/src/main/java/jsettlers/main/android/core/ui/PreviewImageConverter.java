@@ -19,17 +19,10 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 import android.graphics.Bitmap;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 public class PreviewImageConverter {
 	public static Single<Bitmap> toBitmap(short[] data) {
-		return Single.create(new SingleOnSubscribe<Bitmap>() {
-			@Override
-			public void subscribe(SingleEmitter<Bitmap> e) throws Exception {
-				e.onSuccess(convert(data));
-			}
-		});
+		return Single.create(e -> e.onSuccess(convert(data)));
 	}
 
 	private static Bitmap convert(short[] data) {
@@ -39,24 +32,16 @@ public class PreviewImageConverter {
 			return b;
 		}
 
-		if (data.length != MapFileHeader.PREVIEW_IMAGE_SIZE
-				* MapFileHeader.PREVIEW_IMAGE_SIZE) {
+		if (data.length != MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE) {
 			throw new IllegalArgumentException();
 		}
 
-		Bitmap b = Bitmap.createBitmap(MapFileHeader.PREVIEW_IMAGE_SIZE * 3 / 2,
-				MapFileHeader.PREVIEW_IMAGE_SIZE,
-				Bitmap.Config.ARGB_8888);
+		Bitmap b = Bitmap.createBitmap(MapFileHeader.PREVIEW_IMAGE_SIZE * 3 / 2, MapFileHeader.PREVIEW_IMAGE_SIZE, Bitmap.Config.ARGB_8888);
 
 		for (int y = 0; y < MapFileHeader.PREVIEW_IMAGE_SIZE; y++) {
 			int offset = (MapFileHeader.PREVIEW_IMAGE_SIZE - y) / 2;
 			for (int x = 0; x < MapFileHeader.PREVIEW_IMAGE_SIZE; x++) {
-				b.setPixel(
-						offset + x,
-						y,
-						Color.fromShort(
-								data[x + y * MapFileHeader.PREVIEW_IMAGE_SIZE])
-								.getARGB());
+				b.setPixel(offset + x, y, Color.fromShort(data[x + y * MapFileHeader.PREVIEW_IMAGE_SIZE]).getARGB());
 			}
 		}
 		return b;

@@ -16,12 +16,12 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;

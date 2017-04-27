@@ -25,7 +25,6 @@ import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.SoldierAction;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
@@ -35,6 +34,7 @@ import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.view.View;
 import android.widget.ImageView;

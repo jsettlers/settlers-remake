@@ -20,7 +20,6 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -31,6 +30,7 @@ import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 11/01/2017.

@@ -18,7 +18,6 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
@@ -35,11 +34,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class SoldiersSelectionFragment extends SelectionFragment {
 	private static final EMovableType[] soldierTypes = new EMovableType[] {
 			EMovableType.SWORDSMAN_L1,
