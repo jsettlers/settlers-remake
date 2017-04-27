@@ -30,7 +30,6 @@ import android.widget.Spinner;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public class NewMultiPlayerSetupFragment extends MapSetupFragment implements NewMultiPlayerSetupView {
 	private static final String ARG_MAP_ID = "mapid";
 

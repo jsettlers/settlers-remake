@@ -23,7 +23,6 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.Team;
 /**
  * Created by tompr on 18/02/2017.
  */
-
 public interface PlayerSlotView {
 	void setName(String name);
 

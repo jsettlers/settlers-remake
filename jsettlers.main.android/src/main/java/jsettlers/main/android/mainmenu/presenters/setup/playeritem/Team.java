@@ -18,7 +18,6 @@ package jsettlers.main.android.mainmenu.presenters.setup.playeritem;
 /**
  * Created by tompr on 24/02/2017.
  */
-
 public class Team {
 	private final byte teamByte;
 

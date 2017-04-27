@@ -23,9 +23,6 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-/**
- * TODO: document your custom view class.
- */
 public class InGameButton extends FrameLayout {
 	private ImageView imageView;
 

@@ -23,7 +23,6 @@ import jsettlers.common.movable.EMovableType;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class ImageLinkFactory {
 
 	public static ImageLink get(EMovableType movableType) {

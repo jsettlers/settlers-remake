@@ -32,7 +32,6 @@ import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements IJoiningGameListener {
 	private final NewMultiPlayerPickerView view;
 	private final GameStarter gameStarter;
@@ -42,11 +41,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 	private IJoiningGame joiningGame;
 	private IMapDefinition tempMapDefinition;
 
-	public NewMultiPlayerPickerPresenter(
-			NewMultiPlayerPickerView view,
-			MainMenuNavigator navigator,
-			GameStarter gameStarter,
-			AndroidPreferences androidPreferences,
+	public NewMultiPlayerPickerPresenter(NewMultiPlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, AndroidPreferences androidPreferences,
 			ChangingList<? extends MapLoader> changingMaps) {
 
 		super(view, navigator, gameStarter, changingMaps);

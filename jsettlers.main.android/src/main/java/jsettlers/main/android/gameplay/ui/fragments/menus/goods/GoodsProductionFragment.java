@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 /**
  * Created by tompr on 24/11/2016.
  */
-
 public class GoodsProductionFragment extends Fragment {
 	public static GoodsProductionFragment newInstance() {
 		return new GoodsProductionFragment();
@@ -36,7 +35,6 @@ public class GoodsProductionFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_goods_production, container, false);
-		return view;
+		return inflater.inflate(R.layout.menu_goods_production, container, false);
 	}
 }

@@ -32,7 +32,6 @@ import android.widget.TextView;
 /**
  * Created by tompr on 11/01/2017.
  */
-
 public class MaterialsFeature extends SelectionFeature implements DrawListener {
 	private final DrawControls drawControls;
 
@@ -74,14 +73,11 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 	public void draw() {
 		// TODO would be more efficient to compare the stacks rather than the entire building state to avoid unnecessary work
 		if (hasNewState()) {
-			getView().post(new Runnable() {
-				@Override
-				public void run() {
-					if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
-						update();
-					} else {
-						materialsLayout.setVisibility(View.GONE);
-					}
+			getView().post(() -> {
+				if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
+					update();
+				} else {
+					materialsLayout.setVisibility(View.GONE);
 				}
 			});
 		}

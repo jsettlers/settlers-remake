@@ -25,15 +25,13 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public abstract class MapPickerPresenter implements IChangingListListener<MapLoader> {
 	private final MapPickerView view;
 	private final GameStarter gameStarter;
 	private final MainMenuNavigator navigator;
 	private final ChangingList<? extends MapLoader> changingMaps;
 
-	public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
-			ChangingList<? extends MapLoader> changingMaps) {
+	public MapPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,			ChangingList<? extends MapLoader> changingMaps) {
 		this.view = view;
 		this.gameStarter = gameStarter;
 		this.navigator = navigator;

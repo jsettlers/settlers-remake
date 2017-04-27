@@ -53,13 +53,7 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
 		ImageLink imageLink = ImageLink.fromName(imageDestroy, 0);
 		OriginalImageProvider.get(imageLink).setAsImage(destroyButton.getImageView());
 
-		destroyButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				actionControls.fireAction(new Action(EActionType.ASK_DESTROY));
-			}
-		});
-
+		destroyButton.setOnClickListener(view -> actionControls.fireAction(new Action(EActionType.ASK_DESTROY)));
 		actionControls.addActionListener(this);
 	}
 
@@ -72,15 +66,11 @@ public class DestroyFeature extends SelectionFeature implements ActionListener {
 	@Override
 	public void actionFired(IAction action) {
 		if (action.getActionType() == EActionType.ASK_DESTROY) {
-			Snackbar
-					.make(getView(), "Destroy this building?", Snackbar.LENGTH_SHORT)
-					.setAction("Yes", new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							actionControls.fireAction(new Action(EActionType.DESTROY));
-							getMenuNavigator().dismissMenu();
-							getMenuNavigator().removeSelectionMenu();
-						}
+			Snackbar.make(getView(), "Destroy this building?", Snackbar.LENGTH_SHORT)
+					.setAction("Yes", view -> {
+						actionControls.fireAction(new Action(EActionType.DESTROY));
+						getMenuNavigator().dismissMenu();
+						getMenuNavigator().removeSelectionMenu();
 					})
 					.show();
 		}

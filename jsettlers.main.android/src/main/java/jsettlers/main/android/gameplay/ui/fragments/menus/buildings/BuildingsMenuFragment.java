@@ -37,7 +37,6 @@ import me.relex.circleindicator.CircleIndicator;
 /**
  * Created by tompr on 22/11/2016.
  */
-
 public class BuildingsMenuFragment extends Fragment {
 	public static BuildingsMenuFragment newInstance() {
 		return new BuildingsMenuFragment();
@@ -71,8 +70,7 @@ public class BuildingsMenuFragment extends Fragment {
 	 */
 	private class BuildingsPagerAdapter extends FragmentPagerAdapter {
 
-		private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY,
-				BUILDINGS_CATEGORY_SOCIAL };
+		private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY,				BUILDINGS_CATEGORY_SOCIAL };
 
 		public BuildingsPagerAdapter(FragmentManager fm) {
 			super(fm);

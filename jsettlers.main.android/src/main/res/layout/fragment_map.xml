@@ -1,73 +1,74 @@
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
-            android:id="@+id/frame_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <android.support.design.widget.CoordinatorLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:fitsSystemWindows="true"
-            app:statusBarBackground="@android:color/transparent">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:fitsSystemWindows="true"
+        app:statusBarBackground="@android:color/transparent">
+
         <android.support.v7.widget.ActionMenuView
-                android:id="@+id/action_menu_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/action_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.CoordinatorLayout
-            android:layout_gravity="center_horizontal"
-            android:layout_width="@dimen/menu_bar_width"
-            android:layout_height="match_parent">
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/menu_bar_width"
+        android:layout_height="match_parent">
+
         <LinearLayout
-                android:id="@+id/bottom_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_bar_full_height"
-                android:orientation="vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="#bb000000"
-                app:layout_behavior="@string/view_pager_bottom_sheet_behavior"
-                app:behavior_peekHeight="@dimen/menu_bar_peek_height"
-                app:behavior_hideable="true">
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/menu_bar_full_height"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="#bb000000"
+            app:layout_behavior="@string/view_pager_bottom_sheet_behavior"
+            app:behavior_peekHeight="@dimen/menu_bar_peek_height"
+            app:behavior_hideable="true">
 
             <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/menu_bar_peek_height"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/menu_bar_peek_height"
+                android:orientation="horizontal"
+                android:gravity="center">
 
                 <Button
-                        android:id="@+id/button_buildings_menu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Buildings"/>
+                    android:id="@+id/button_buildings_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buildings" />
 
                 <Button
-                        android:id="@+id/button_goods_menu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Goods"/>
+                    android:id="@+id/button_goods_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Goods" />
 
                 <Button
-                        android:id="@+id/button_settlers_menu"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Settlers"/>
+                    android:id="@+id/button_settlers_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Settlers" />
 
             </LinearLayout>
 
             <FrameLayout
-                    android:id="@+id/container_menu"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                android:id="@+id/container_menu"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>

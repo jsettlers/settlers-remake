@@ -24,7 +24,6 @@ import android.support.v4.app.DialogFragment;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class JoiningGameProgressDialog extends DialogFragment {
 	private static final String ARG_STATE = "argstate";
 	private static final String ARG_PROGRESS = "argprogress";

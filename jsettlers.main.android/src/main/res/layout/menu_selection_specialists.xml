@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingTop="8dp"
-              android:paddingBottom="8dp"
-              android:orientation="vertical"
-              android:gravity="center_horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
     <LinearLayout
-            android:id="@+id/layout_specialists"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:gravity="center_vertical"/>
+        android:id="@+id/layout_specialists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:gravity="center_vertical" />
 
     <Space
-            android:layout_weight="1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"/>
+        android:layout_weight="1"
+        android:layout_width="1dp"
+        android:layout_height="0dp" />
 
     <Button
-            android:id="@+id/button_convert_carriers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="172dp"
-            android:text="@string/convert_to_carriers"/>
+        android:id="@+id/button_convert_carriers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="172dp"
+        android:text="@string/convert_to_carriers" />
 
     <Space
-            android:layout_weight="1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"/>
+        android:layout_weight="1"
+        android:layout_width="1dp"
+        android:layout_height="0dp" />
 
     <Button
-            android:id="@+id/button_work_here"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="172dp"
-            android:text="@string/work_here"/>
+        android:id="@+id/button_work_here"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="172dp"
+        android:text="@string/work_here" />
 
     <Space
-            android:layout_weight="1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"/>
+        android:layout_weight="1"
+        android:layout_width="1dp"
+        android:layout_height="0dp" />
 
     <Button
-            android:id="@+id/button_halt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="172dp"
-            android:text="@string/halt"/>
+        android:id="@+id/button_halt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="172dp"
+        android:text="@string/halt" />
 
 </LinearLayout>

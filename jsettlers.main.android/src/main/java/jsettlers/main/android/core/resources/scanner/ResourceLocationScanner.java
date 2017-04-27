@@ -43,7 +43,7 @@ public class ResourceLocationScanner {
 	public boolean scanForResources() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersDirectory = new File(storage, "JSettlers");
-		ArrayList<File> files = new ArrayList<File>();
+		ArrayList<File> files = new ArrayList<>();
 		File outputDirectory = context.getExternalFilesDir(null); // <- output dir, always writable
 		files.add(outputDirectory);
 		files.add(jsettlersDirectory);
@@ -96,6 +96,6 @@ public class ResourceLocationScanner {
 	}
 
 	public void setExternalDirectory(String path) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREFERENCE, path).commit();
+		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREFERENCE, path).apply();
 	}
 }

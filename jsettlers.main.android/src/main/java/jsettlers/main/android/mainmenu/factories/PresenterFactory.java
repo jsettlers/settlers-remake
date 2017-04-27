@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.mainmenu.factories;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.List;
 
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
@@ -49,12 +51,10 @@ import jsettlers.main.android.mainmenu.views.SettingsView;
 
 import android.app.Activity;
 import android.content.Context;
-import java8.util.stream.StreamSupport;
 
 /**
  * Created by tompr on 03/02/2017.
  */
-
 public class PresenterFactory {
 
 	public static MainMenuPresenter createMainMenuPresenter(Activity activity, MainMenuView view) {
@@ -110,7 +110,7 @@ public class PresenterFactory {
 		GameStarter gameStarter = (GameStarter) activity.getApplication();
 
 		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = StreamSupport.stream(maps)
+		MapLoader mapDefinition = stream(maps)
 				.filter(x -> mapId.equals(x.getMapId()))
 				.findFirst()
 				.get();
@@ -124,7 +124,7 @@ public class PresenterFactory {
 		IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
 
 		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = StreamSupport.stream(maps)
+		MapLoader mapDefinition = stream(maps)
 				.filter(x -> mapId.equals(x.getMapId()))
 				.findFirst()
 				.get();
@@ -143,7 +143,7 @@ public class PresenterFactory {
 		IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
 
 		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = StreamSupport.stream(maps)
+		MapLoader mapDefinition = stream(maps)
 				.filter(x -> mapId.equals(x.getMapId()))
 				.findFirst()
 				.get();

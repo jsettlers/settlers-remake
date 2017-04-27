@@ -20,7 +20,6 @@ import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 /**
  * Created by tompr on 03/02/2017.
  */
-
 public class JoinMultiPlayerSetupPresenterPop implements JoinMultiPlayerSetupPresenter {
 
 	public JoinMultiPlayerSetupPresenterPop(MainMenuNavigator navigator) {

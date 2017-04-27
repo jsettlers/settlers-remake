@@ -67,8 +67,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
-public class MapFragment extends Fragment
-		implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
+public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
 	private static final String SAVE_BOTTOM_SHEET_STATE = "save_bottom_sheet_state";

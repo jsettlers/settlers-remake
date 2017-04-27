@@ -46,7 +46,7 @@
     <string name="preferences_playername">Dein Name</string>
     <string name="preferences_server">Netzwerkserver</string>
     <string name="preferences_ok">Übernehmen</string>
-    <string name="network_chat">Chat...</string>
+    <string name="network_chat">Chat…</string>
     <string name="preferences_label">Einstellungen</string>
     <string name="filechoser_ok">Diesen Ordner verwenden</string>
     <string name="filechoser_message">Wo sind die Gfx und Snd Ordner?</string>

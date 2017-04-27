@@ -36,22 +36,15 @@ import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
-public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl
-		implements JoinMultiPlayerSetupPresenter, IMultiplayerListener, IChangingListListener<IMultiplayerPlayer>, ReadyListener {
+public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl implements JoinMultiPlayerSetupPresenter, IMultiplayerListener, IChangingListListener<IMultiplayerPlayer>, ReadyListener {
 	private final JoinMultiPlayerSetupView view;
 	private final MainMenuNavigator navigator;
 	private final GameStarter gameStarter;
 	private final IJoinPhaseMultiplayerGameConnector connector;
 	private final AndroidPreferences androidPreferences;
 
-	public JoinMultiPlayerSetupPresenterImpl(
-			JoinMultiPlayerSetupView view,
-			MainMenuNavigator navigator,
-			GameStarter gameStarter,
-			IJoinPhaseMultiplayerGameConnector connector,
-			AndroidPreferences androidPreferences,
-			MapLoader mapLoader) {
+	public JoinMultiPlayerSetupPresenterImpl(JoinMultiPlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter, IJoinPhaseMultiplayerGameConnector connector,
+			AndroidPreferences androidPreferences, MapLoader mapLoader) {
 
 		super(view, gameStarter, mapLoader);
 		this.view = view;

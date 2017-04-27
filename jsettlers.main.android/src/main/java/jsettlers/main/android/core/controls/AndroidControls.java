@@ -35,7 +35,6 @@ import jsettlers.graphics.map.controls.IControls;
 /**
  * Created by tompr on 21/11/2016.
  */
-
 public class AndroidControls implements IControls, ActionFireable, TaskControls {
 	private final ControlsAdapter controlsAdapter;
 

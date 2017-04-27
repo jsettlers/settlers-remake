@@ -20,7 +20,6 @@ import jsettlers.common.images.ImageLink;
 /**
  * Created by tompr on 10/03/2017.
  */
-
 public interface SettlersSoldiersView {
 	void setStrengthText(String strengthText);
 

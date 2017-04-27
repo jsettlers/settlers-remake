@@ -21,7 +21,6 @@ import jsettlers.main.android.mainmenu.views.SettingsView;
 /**
  * Created by tompr on 03/03/2017.
  */
-
 public class SettingsPresenter {
 
 	private final SettingsView view;

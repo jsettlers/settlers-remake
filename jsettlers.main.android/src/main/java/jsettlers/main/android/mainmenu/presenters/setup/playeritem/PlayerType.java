@@ -21,7 +21,6 @@ import jsettlers.graphics.localization.Labels;
 /**
  * Created by tompr on 24/02/2017.
  */
-
 public class PlayerType {
 	private final EPlayerType type;
 

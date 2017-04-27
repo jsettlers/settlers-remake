@@ -30,9 +30,4 @@ public class FragmentUtil {
 		AppCompatActivity activity = (AppCompatActivity) fragment.getActivity();
 		activity.setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
 	}
-
-	public static void setDisplayHomeAsUpEnabled(Fragment fragment, boolean enabled) {
-		AppCompatActivity activity = (AppCompatActivity) fragment.getActivity();
-		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(enabled);
-	}
 }

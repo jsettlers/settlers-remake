@@ -56,10 +56,8 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public abstract class MapSetupFragment extends Fragment implements MapSetupView {
 	private MapSetupPresenter presenter;
-	private MainMenuNavigator navigator;
 
 	private Disposable mapPreviewSubscription;
 
@@ -82,7 +80,6 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		presenter = getPresenter();
-		navigator = (MainMenuNavigator) getActivity();
 	}
 
 	@Override

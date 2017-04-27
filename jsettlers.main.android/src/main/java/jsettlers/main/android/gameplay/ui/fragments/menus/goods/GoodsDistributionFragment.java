@@ -36,7 +36,6 @@ public class GoodsDistributionFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_goods_distribution, container, false);
-		return view;
+		return inflater.inflate(R.layout.menu_goods_distribution, container, false);
 	}
 }

@@ -26,10 +26,7 @@ import jsettlers.logic.map.loading.list.MapList;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public interface GameStarter {
-	// IStartScreen getStartScreen();
-
 	MapList getMapList();
 
 	IMultiplayerConnector getMultiPlayerConnector();

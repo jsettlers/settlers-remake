@@ -33,7 +33,6 @@ import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class JoinMultiPlayerPickerPresenter implements IChangingListListener<IJoinableGame>, IJoiningGameListener {
 	private final JoinMultiPlayerPickerView view;
 	private final GameStarter gameStarter;

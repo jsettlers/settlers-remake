@@ -30,24 +30,20 @@ import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
 import java8.util.stream.StreamSupport;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
-	private final NewSinglePlayerSetupView view;
 	private final MainMenuNavigator navigator;
 	private final GameStarter gameStarter;
-	private final AndroidPreferences androidPreferences;
 	private final MapLoader mapLoader;
 
-	public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter,
-			AndroidPreferences androidPreferences, MapLoader mapLoader) {
+	public NewSinglePlayerSetupPresenter(NewSinglePlayerSetupView view, MainMenuNavigator navigator, GameStarter gameStarter,			AndroidPreferences androidPreferences, MapLoader mapLoader) {
 		super(view, gameStarter, mapLoader);
-		this.view = view;
 		this.navigator = navigator;
 		this.gameStarter = gameStarter;
-		this.androidPreferences = androidPreferences;
 		this.mapLoader = mapLoader;
 
 		PlayerSlotPresenter humanPlayerSlot = getPlayerSlotPresenters().get(0);
@@ -68,7 +64,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 		byte humanPlayerId = playerSlotPresenters.get(0).getPlayerId();
 
 		// Sort players by position
-		PlayerSlotPresenter[] sortedPlayers = StreamSupport.stream(playerSlotPresenters)
+		PlayerSlotPresenter[] sortedPlayers = stream(playerSlotPresenters)
 				.sorted((playerSlot, otherPlayerSlot) -> playerSlot.getStartPosition().asByte() - otherPlayerSlot.getStartPosition().asByte())
 				.toArray(PlayerSlotPresenter[]::new);
 

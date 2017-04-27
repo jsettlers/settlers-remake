@@ -21,7 +21,6 @@ import jsettlers.main.android.core.controls.GameMenu;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public interface GameManager {
 	ControlsAdapter getControlsAdapter();
 

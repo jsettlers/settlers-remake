@@ -21,7 +21,6 @@ import android.os.Looper;
 /**
  * Created by tompr on 10/03/2017.
  */
-
 public class Dispatcher {
 	private final Handler handler;
 	private final long threadId;

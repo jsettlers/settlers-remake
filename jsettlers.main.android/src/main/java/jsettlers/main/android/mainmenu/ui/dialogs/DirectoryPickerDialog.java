@@ -67,31 +67,25 @@ public class DirectoryPickerDialog extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		ListView listView = new ListView(getActivity());
 		listView.setAdapter(directoryAdapter);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				if (position == 0) {
-					directoryStack.pop();
-				} else {
-					// String format = directoryStack.size() == 1 ? "%s%s" : "%s/%s";
-					// directoryStack.push(String.format(format, directoryStack.peek(), directoryAdapter.getItem(position)));
-					directoryStack.push(directoryAdapter.getItem(position));
-				}
-				updateList();
-				setButtonState();
+		listView.setOnItemClickListener((arg0, arg1, position, arg3) -> {
+			if (position == 0) {
+				directoryStack.pop();
+			} else {
+				// String format = directoryStack.size() == 1 ? "%s%s" : "%s/%s";
+				// directoryStack.push(String.format(format, directoryStack.peek(), directoryAdapter.getItem(position)));
+				directoryStack.push(directoryAdapter.getItem(position));
 			}
+			updateList();
+			setButtonState();
 		});
 
 		return new AlertDialog.Builder(getActivity())
 				.setTitle("Locate SND and GFX folders")
 				.setView(listView)
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						new ResourceLocationScanner(getActivity()).setExternalDirectory(directoryStack.peek().getAbsolutePath());
-						Listener listener = (Listener) getParentFragment();
-						listener.onDirectorySelected();
-					}
+				.setPositiveButton("OK", (dialog, which) -> {
+					new ResourceLocationScanner(getActivity()).setExternalDirectory(directoryStack.peek().getAbsolutePath());
+					Listener listener = (Listener) getParentFragment();
+					listener.onDirectorySelected();
 				})
 				.create();
 	}
@@ -130,24 +124,16 @@ public class DirectoryPickerDialog extends DialogFragment {
 		@Override
 		public void run() {
 			File dir = base;
-			final File[] files = dir.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.isDirectory();
-				}
-			});
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					directories.add(directoryStack.peek().getParentFile());
+			final File[] files = dir.listFiles(File::isDirectory);
+			handler.post(() -> {
+				directories.add(directoryStack.peek().getParentFile());
 
-					if (files != null && files.length > 0) {
-						for (File f : files) {
-							directories.add(f);
-						}
-					} else {
-						// TODO: Display an empty direcotry message.
+				if (files != null && files.length > 0) {
+					for (File f : files) {
+						directories.add(f);
 					}
+				} else {
+					// TODO: Display an empty direcotry message.
 				}
 			});
 		}

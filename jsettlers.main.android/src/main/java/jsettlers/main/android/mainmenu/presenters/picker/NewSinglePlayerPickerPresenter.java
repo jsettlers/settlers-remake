@@ -24,7 +24,6 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class NewSinglePlayerPickerPresenter extends MapPickerPresenter {
 	private final MainMenuNavigator navigator;
 

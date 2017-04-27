@@ -21,7 +21,6 @@ import jsettlers.logic.map.loading.EMapStartResources;
 /**
  * Created by tompr on 24/02/2017.
  */
-
 public class StartResources {
 	private final EMapStartResources type;
 

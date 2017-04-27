@@ -27,7 +27,6 @@ import android.support.v7.app.AlertDialog;
 /**
  * Created by tompr on 23/11/2016.
  */
-
 public class PausedDialog extends DialogFragment {
 	public interface Listener {
 		void onUnPause();
@@ -42,12 +41,7 @@ public class PausedDialog extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		return new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.game_menu_paused)
-				.setPositiveButton(R.string.game_menu_unpause, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						getDialog().cancel();
-					}
-				})
+				.setPositiveButton(R.string.game_menu_unpause, (dialogInterface, i) -> getDialog().cancel())
 				.setCancelable(true)
 				.create();
 	}

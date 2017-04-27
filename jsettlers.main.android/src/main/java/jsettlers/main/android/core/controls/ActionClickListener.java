@@ -24,7 +24,6 @@ import android.view.View;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class ActionClickListener implements View.OnClickListener {
 	private final ActionFireable actionFireable;
 	private final Action action;

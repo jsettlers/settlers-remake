@@ -49,7 +49,6 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
@@ -143,8 +142,7 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 	@Override
 	public void setJoiningProgress(String stateString, int progressPercentage) {
-		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager()
-				.findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog == null) {
 			JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
 		} else {

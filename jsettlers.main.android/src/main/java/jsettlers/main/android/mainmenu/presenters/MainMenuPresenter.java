@@ -23,7 +23,6 @@ import jsettlers.main.android.mainmenu.views.MainMenuView;
 /**
  * Created by tompr on 04/03/2017.
  */
-
 public class MainMenuPresenter {
 	private final MainMenuView view;
 	private final MainMenuNavigator navigator;

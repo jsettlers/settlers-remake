@@ -27,7 +27,6 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 	private final GameStarter gameStarter;
 	private final MainMenuNavigator navigator;
@@ -41,7 +40,6 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 
 	@Override
 	public void itemSelected(MapLoader mapLoader) {
-		// IStartingGame startingGame = gameStarter.getStartScreen().loadSingleplayerGame(mapDefinition);
 		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
 
 		byte playerId = 0; // find playerId of HUMAN player

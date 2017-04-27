@@ -26,7 +26,6 @@ import android.support.v4.app.Fragment;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public class NewMultiPlayerPickerFragment extends MapPickerFragment implements NewMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 

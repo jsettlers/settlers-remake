@@ -21,7 +21,6 @@ import jsettlers.main.android.mainmenu.views.PlayerSlotView;
 /**
  * Created by tompr on 18/02/2017.
  */
-
 public class PlayerSlotPresenter {
 	private final PositionChangedListener positionChangedListener;
 

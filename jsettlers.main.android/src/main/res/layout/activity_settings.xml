@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              tools:context="jsettlers.main.android.mainmenu.ui.activities.SettingsActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="jsettlers.main.android.mainmenu.ui.activities.SettingsActivity">
 
-    <include layout="@layout/include_app_bar"/>
+    <include layout="@layout/include_app_bar" />
 
     <LinearLayout
-            android:id="@+id/layout_player_name"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_item_height"
-            android:padding="16dp"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+        android:id="@+id/layout_player_name"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_item_height"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="?android:attr/selectableItemBackground">
+
         <TextView
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorPrimary"
-                android:text="@string/settings_player_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorPrimary"
+            android:text="@string/settings_player_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <android.support.v4.widget.Space
-                android:layout_width="24dp"
-                android:layout_height="1dp"/>
+            android:layout_width="24dp"
+            android:layout_height="1dp" />
 
         <TextView
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?android:textColorSecondary"
-                android:id="@+id/text_view_player_name"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"/>
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="?android:textColorSecondary"
+            android:id="@+id/text_view_player_name"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="end" />
     </LinearLayout>
 
     <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider"/>
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 </LinearLayout>

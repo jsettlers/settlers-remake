@@ -37,7 +37,6 @@ import java8.util.J8Arrays;
 /**
  * Created by tompr on 21/01/2017.
  */
-
 public abstract class MapSetupPresenterImpl implements MapSetupPresenter, PositionChangedListener {
 	private final MapSetupView view;
 	private final GameStarter gameStarter;

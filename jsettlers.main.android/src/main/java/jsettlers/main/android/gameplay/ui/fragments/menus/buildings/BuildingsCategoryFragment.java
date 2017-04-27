@@ -37,7 +37,6 @@ import jsettlers.main.android.utils.OriginalImageProvider;
 /**
  * Created by tompr on 24/11/2016.
  */
-
 public class BuildingsCategoryFragment extends Fragment implements BuildingsCategoryView {
 	private static final String ARG_BUILDINGS_CATEGORY = "arg_buildings_category";
 

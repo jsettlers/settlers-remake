@@ -28,7 +28,6 @@ import android.app.Activity;
 /**
  * Created by tompr on 10/03/2017.
  */
-
 public class MenuFactory {
 	private final ControlsAdapter controlsAdapter;
 	private final MenuNavigator menuNavigator;

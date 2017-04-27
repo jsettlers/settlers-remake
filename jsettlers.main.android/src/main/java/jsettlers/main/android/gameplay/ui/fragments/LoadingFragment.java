@@ -35,9 +35,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class LoadingFragment extends Fragment implements IStartingGameListener {
 	private GameStarter gameStarter;
 	private GameNavigator navigator;

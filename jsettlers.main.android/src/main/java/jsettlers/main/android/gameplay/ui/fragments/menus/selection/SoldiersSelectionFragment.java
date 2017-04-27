@@ -135,12 +135,7 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		@Override
 		public void onClick(View view) {
 			Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
-					.setAction(R.string.yes, new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							actionControls.fireAction(new Action(EActionType.DESTROY));
-						}
-					})
+					.setAction(R.string.yes, view1 -> actionControls.fireAction(new Action(EActionType.DESTROY)))
 					.show();
 		}
 	};

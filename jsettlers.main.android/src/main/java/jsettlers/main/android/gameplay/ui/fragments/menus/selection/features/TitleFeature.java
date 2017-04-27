@@ -31,7 +31,6 @@ import jsettlers.main.android.utils.OriginalImageProvider;
 /**
  * Created by tompr on 10/01/2017.
  */
-
 public class TitleFeature extends SelectionFeature implements DrawListener {
 	private final DrawControls drawControls;
 

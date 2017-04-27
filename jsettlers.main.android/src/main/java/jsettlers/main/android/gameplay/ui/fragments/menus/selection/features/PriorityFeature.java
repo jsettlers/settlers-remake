@@ -36,7 +36,6 @@ import android.view.View;
 /**
  * Created by tompr on 10/01/2017.
  */
-
 public class PriorityFeature extends SelectionFeature implements ActionListener, DrawListener {
 	private static final String stoppedImage = "original_3_GUI_192";
 	private static final String lowImage = "original_3_GUI_195";

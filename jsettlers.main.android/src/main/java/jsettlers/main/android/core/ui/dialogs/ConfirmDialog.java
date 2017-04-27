@@ -28,7 +28,6 @@ import android.support.v7.app.AlertDialog;
 /**
  * Created by tompr on 23/11/2016.
  */
-
 public class ConfirmDialog extends DialogFragment {
 	private static final String ARG_REQUEST_CODE = "requestcode";
 	private static final String ARG_TITLE = "title";

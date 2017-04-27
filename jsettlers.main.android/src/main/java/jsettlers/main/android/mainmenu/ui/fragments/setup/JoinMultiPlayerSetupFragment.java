@@ -32,7 +32,6 @@ import android.widget.Spinner;
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public class JoinMultiPlayerSetupFragment extends MapSetupFragment implements JoinMultiPlayerSetupView {
 	private static final String ARG_MAP_ID = "mapid";
 

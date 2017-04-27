@@ -18,7 +18,6 @@ package jsettlers.main.android.mainmenu.presenters.setup;
 /**
  * Created by tompr on 24/02/2017.
  */
-
 public class PlayerCount {
 	private final int numberOfPlayers;
 

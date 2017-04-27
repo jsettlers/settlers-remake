@@ -32,7 +32,6 @@ import me.relex.circleindicator.CircleIndicator;
 /**
  * Created by tompr on 22/11/2016.
  */
-
 public class SettlersMenuFragment extends Fragment {
 	private ViewPager viewPager;
 

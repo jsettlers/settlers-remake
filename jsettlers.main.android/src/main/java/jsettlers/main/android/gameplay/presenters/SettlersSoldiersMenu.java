@@ -32,7 +32,6 @@ import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class SettlersSoldiersMenu implements DrawListener {
 	private final ImageLink[] swordsmenPromotionPossibleImages = new OriginalImageLink[] { new OriginalImageLink(EImageLinkType.GUI, 3, 396, 0),
 			new OriginalImageLink(EImageLinkType.GUI, 3, 402, 0), null };

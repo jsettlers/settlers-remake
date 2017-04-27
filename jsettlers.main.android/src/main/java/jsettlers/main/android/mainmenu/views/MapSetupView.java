@@ -25,7 +25,6 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPre
 /**
  * Created by tompr on 22/01/2017.
  */
-
 public interface MapSetupView {
 	void setNumberOfPlayersOptions(PlayerCount[] playerCounts);
 

@@ -46,7 +46,6 @@ public abstract class SelectionFragment extends Fragment {
 			MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
 			menuNavigator.removeSelectionMenu();
 			menuNavigator.dismissMenu();
-			return;
 		}
 	}
 

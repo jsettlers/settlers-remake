@@ -44,7 +44,6 @@ import android.widget.TableLayout;
 /**
  * Created by tompr on 12/01/2017.
  */
-
 public class OccupiedFeature extends SelectionFeature implements DrawListener {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMING = new OriginalImageLink(EImageLinkType.GUI, 3, 48, 0);
@@ -130,12 +129,7 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 	@Override
 	public void draw() {
 		if (hasNewState()) {
-			getView().post(new Runnable() {
-				@Override
-				public void run() {
-					update();
-				}
-			});
+			getView().post(() -> update());
 		}
 	}
 

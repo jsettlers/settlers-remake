@@ -25,7 +25,6 @@ import android.view.View;
 /**
  * Created by tompr on 10/01/2017.
  */
-
 public abstract class SelectionFeature {
 
 	private final View view;

@@ -23,7 +23,6 @@ import android.app.Activity;
 /**
  * Created by tompr on 13/01/2017.
  */
-
 public class ControlsResolver {
 	private final ControlsAdapter controlsAdapter;
 

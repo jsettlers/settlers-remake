@@ -35,7 +35,6 @@ import jsettlers.main.android.utils.OriginalImageProvider;
 /**
  * Created by tompr on 11/01/2017.
  */
-
 public class WorkAreaFeature extends SelectionFeature implements ActionListener {
 	private static final String image = "original_3_GUI_201";
 
@@ -59,12 +58,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 		ImageLink imageLink = ImageLink.fromName(image, 0);
 		OriginalImageProvider.get(imageLink).setAsImage(workAreaButton.getImageView());
 
-		workAreaButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				actionControls.fireAction(new Action(EActionType.ASK_SET_WORK_AREA));
-			}
-		});
+		workAreaButton.setOnClickListener(view -> actionControls.fireAction(new Action(EActionType.ASK_SET_WORK_AREA)));
 
 		actionControls.addActionListener(this);
 	}
@@ -82,12 +76,7 @@ public class WorkAreaFeature extends SelectionFeature implements ActionListener 
 		case ASK_SET_WORK_AREA:
 			snackbar = Snackbar
 					.make(getView(), "Choose work area", Snackbar.LENGTH_INDEFINITE)
-					.setAction("Cancel", new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							taskControls.endTask();
-						}
-					});
+					.setAction("Cancel", view -> taskControls.endTask());
 			snackbar.show();
 			break;
 		case SET_WORK_AREA:

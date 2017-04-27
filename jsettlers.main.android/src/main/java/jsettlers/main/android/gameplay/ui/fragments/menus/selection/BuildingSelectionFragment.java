@@ -40,6 +40,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance. So the buildings menu is made up of composable "features" which are a bit like mini
  * fragments with a very simple lifecycle consisting of just initialize() and viewFinished()
@@ -114,9 +116,6 @@ public class BuildingSelectionFragment extends SelectionFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-
-		for (SelectionFeature feature : features) {
-			feature.finish();
-		}
+		stream(features).forEach(SelectionFeature::finish);
 	}
 }
