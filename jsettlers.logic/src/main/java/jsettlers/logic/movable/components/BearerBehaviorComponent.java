@@ -136,7 +136,7 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
         }
 
         public static Root<Entity> create() {
-            return new Root<Entity>(new Selector<>(
+            return new Root<>(new Selector<>(
                 TriggerGuard(BearerComponent.DeliveryJob.class,
                     new Guard<>(e -> e.bearerC().hasJob(), false,
                         accept_SaveDeliveryJob())
@@ -160,7 +160,9 @@ public final class BearerBehaviorComponent extends BehaviorComponent {
                                 // or: try fetch the tool
                                 new MemSelector<>(
                                     new MemSequence<>(
-                                        new Action<>(e -> { e.steerC().goToPos(e.bearerC().materialOffer.getPos()); }),
+                                        new Action<>(e -> {
+                                            e.steerC().goToPos(e.bearerC().materialOffer.getPos());
+                                        }),
                                         WaitForTargetReached_FailIfNot(),
                                         new Condition<>(BearerBehaviorTreeFactory::canTakeMaterial),
                                         StartAnimation(EMovableAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION),

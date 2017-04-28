@@ -9,7 +9,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableDouble;
 import jsettlers.logic.movable.BehaviorTreeFactory;
 import jsettlers.logic.movable.Entity;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.Requires;
 import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Root;
@@ -33,11 +32,15 @@ import jsettlers.logic.movable.simplebehaviortree.nodes.WaitFor;
     MovableComponent.class
 })
 public final class GeologistBehaviorComponent extends BehaviorComponent {
+    private static final long serialVersionUID = -4157235942699928852L;
+
     public GeologistBehaviorComponent() {
         super(GeologistBehaviorTreeFactory.create());
     }
 
     private static abstract class GeologistBehaviorTreeFactory extends BehaviorTreeFactory {
+        private static final long serialVersionUID = 8692659559502611661L;
+
         private static Action<Entity> WorkOnPosIfPossible() {
             return new Action<>(entity -> {
                 ShortPoint2D pos = entity.movC().getPos();
@@ -59,6 +62,8 @@ public final class GeologistBehaviorComponent extends BehaviorComponent {
         }
 
         private static class Find_GoToWorkablePosition extends Action<Entity> {
+
+            private static final long serialVersionUID = -5393050237159114345L;
 
             public Find_GoToWorkablePosition() {
                 super(Find_GoToWorkablePosition::run);

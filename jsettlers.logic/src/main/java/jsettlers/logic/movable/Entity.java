@@ -34,7 +34,7 @@ public class Entity implements Serializable, IScheduledTimerable {
     private final int id;
 
     private static final long serialVersionUID = -5615478576016074072L;
-    private Map<Class<? extends Component>, Component> components;
+    private final Map<Class<? extends Component>, Component> components;
     private Set<Notification> notificationsCurrent;
     private Set<Notification> notificationsLast;
 
@@ -59,7 +59,7 @@ public class Entity implements Serializable, IScheduledTimerable {
 
     public enum State { ACTIVE, INACTIVE, UNINITALIZED }
     private State state;
-    private int invokationDelay;
+    private int invocationDelay;
 
     public Entity() {
         id = MovableDataManager.getNextID();
@@ -77,13 +77,13 @@ public class Entity implements Serializable, IScheduledTimerable {
     }
 
     private int resetInvokationDelay() {
-        int lastValue = invokationDelay;
-        invokationDelay = Constants.MOVABLE_INTERRUPT_PERIOD;
+        int lastValue = invocationDelay;
+        invocationDelay = Constants.MOVABLE_INTERRUPT_PERIOD;
         return lastValue;
     }
 
-    public void setInvokationDelay(int delay) {
-        invokationDelay = Math.max(invokationDelay, delay);
+    public void setInvocationDelay(int delay) {
+        invocationDelay = Math.max(invocationDelay, delay);
     }
 
     public boolean isActive() {
@@ -206,12 +206,10 @@ public class Entity implements Serializable, IScheduledTimerable {
     }
 
     public <T extends Notification> List<T> getNotifications(Class<T> type) {
-        Iterator<Notification> it = notificationsLast.iterator();
+        Iterator<T> it = getNotificationsIt(type);
         List<T> result = new ArrayList<T>();
         while (it.hasNext()) {
-            try {
-                result.add((T)it.next());
-            } catch (ClassCastException e) {}
+            result.add(it.next());
         }
         return result;
     }
@@ -250,13 +248,13 @@ public class Entity implements Serializable, IScheduledTimerable {
         }
     }
 
-    private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         MovableDataManager.setNextID(id+1);
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(30);
+        StringBuilder sb = new StringBuilder(30);
         sb.append("Entity");
         sb.append("(").append(id).append(")");
         sb.append("[");

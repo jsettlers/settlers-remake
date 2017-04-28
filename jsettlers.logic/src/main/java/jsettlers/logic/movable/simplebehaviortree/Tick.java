@@ -6,9 +6,9 @@ import java.util.Stack;
 public class Tick<T> implements Serializable {
 	private static final long serialVersionUID = 3673558738736795584L;
 
-	public Root<T> Root;
-	public T Target;
-	private Stack<Node<T>> openNodes = new Stack<>();
+	public final Root<T> Root;
+	public final T Target;
+	private final Stack<Node<T>> openNodes = new Stack<>();
 	private boolean blockOpenNodes = false;
 	
 	public Tick(T target, Root<T> root) {

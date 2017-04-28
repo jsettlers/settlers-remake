@@ -8,9 +8,9 @@ import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Repeat<T> extends Decorator<T> {
     private static final long serialVersionUID = -661870259301299858L;
-    private IBooleanConditionFunction<T> condition;
+    private final IBooleanConditionFunction<T> condition;
 
-    public Repeat(IBooleanConditionFunction<T> condition, Node child) {
+    public Repeat(IBooleanConditionFunction<T> condition, Node<T> child) {
         super(child);
         this.condition = condition;
     }

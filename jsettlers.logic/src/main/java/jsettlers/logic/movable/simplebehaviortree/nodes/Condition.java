@@ -6,7 +6,7 @@ import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Condition<T> extends Node<T> {
 	private static final long serialVersionUID = -5811980322685099119L;
-	private IBooleanConditionFunction<T> condition;
+	private final IBooleanConditionFunction<T> condition;
 
 	public Condition(IBooleanConditionFunction<T> condition) {
 		super();

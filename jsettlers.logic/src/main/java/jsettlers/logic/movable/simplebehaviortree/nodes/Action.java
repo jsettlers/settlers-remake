@@ -7,7 +7,8 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Action<T> extends Node<T> {
-	private INodeStatusActionFunction<T> action;
+	private static final long serialVersionUID = -4535362950446826714L;
+	private final INodeStatusActionFunction<T> action;
 
 	public Action(INodeStatusActionFunction<T> action) {
 		super();

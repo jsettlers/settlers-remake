@@ -10,7 +10,7 @@ public class Node<T> implements Serializable {
 	private int ID;
 	public int getID() { return ID; }
 	
-	protected ArrayList<Node<T>> children;
+	protected final ArrayList<Node<T>> children;
 	
 	@SafeVarargs
 	public Node(Node<T>... children) {

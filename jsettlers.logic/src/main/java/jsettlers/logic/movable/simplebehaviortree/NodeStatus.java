@@ -10,9 +10,9 @@ public class NodeStatus implements Serializable {
 		Failure,
 		Running
 	}
-	public static NodeStatus Success = new NodeStatus(Status.Success);
-	public static NodeStatus Failure = new NodeStatus(Status.Failure);
-	public static NodeStatus Running = new NodeStatus(Status.Running);
+	public static final NodeStatus Success = new NodeStatus(Status.Success);
+	public static final NodeStatus Failure = new NodeStatus(Status.Failure);
+	public static final NodeStatus Running = new NodeStatus(Status.Running);
 	public static NodeStatus Running(Object value) {
 		return new NodeStatus(Status.Running, value);
 	}
@@ -21,7 +21,7 @@ public class NodeStatus implements Serializable {
 	}
 	
 	private Object value;
-	private Status status;
+	private final Status status;
 	
 	private NodeStatus(Status s) { 
 		status = s;

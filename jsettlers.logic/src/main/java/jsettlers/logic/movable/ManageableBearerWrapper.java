@@ -11,11 +11,12 @@ import jsettlers.logic.movable.components.BearerComponent;
 import jsettlers.logic.movable.components.MovableComponent;
 
 /**
- * Created by jt-1 on 4/5/2017.
+ * @author homoroselaps
  */
 
 public final class ManageableBearerWrapper implements IManageableBearer {
-    private Entity entity;
+    private static final long serialVersionUID = 2252932151684965586L;
+    private final Entity entity;
     public ManageableBearerWrapper(Entity entity) {
         this.entity = entity;
     }

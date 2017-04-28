@@ -3,7 +3,7 @@ package jsettlers.logic.movable.simplebehaviortree;
 public class Root<T> extends Node<T> {
 	private static final long serialVersionUID = 4857616270171506110L;
 
-	protected Node<T> child;
+	protected final Node<T> child;
 	private int maxID = -1;
 	public int getChildrenCount() {
 		return maxID+1;

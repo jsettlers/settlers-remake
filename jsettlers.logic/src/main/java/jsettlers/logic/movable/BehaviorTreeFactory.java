@@ -34,13 +34,13 @@ public abstract class BehaviorTreeFactory implements Serializable {
     }
 
     protected static Guard<Entity> TriggerGuard(Class<? extends Notification> type, Node<Entity> child) {
-        return new Guard<>(entity -> {
-            return entity.getNotificationsIt(type).hasNext();
-        }, true, child);
+        return new Guard<>(entity -> entity.getNotificationsIt(type).hasNext(), true, child);
     }
 
     protected static Action<Entity> StartAnimation(EMovableAction animation, short duration) {
-        return new Action<Entity>(e->{ e.aniC().startAnimation(animation, duration); });
+        return new Action<>(e -> {
+            e.aniC().startAnimation(animation, duration);
+        });
     }
 
     protected static void convertTo(Entity entity, EMovableType type) {
@@ -53,6 +53,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
     }
 
     protected static class Wait extends Node<Entity> {
+        private static final long serialVersionUID = 8774557186392581042L;
         boolean done = false;
         int delay = -1;
         public Wait(int milliseconds) {
@@ -63,7 +64,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
         @Override
         protected NodeStatus onTick(Tick<Entity> tick) {
             if (done) return NodeStatus.Success;
-            tick.Target.setInvokationDelay(delay);
+            tick.Target.setInvocationDelay(delay);
             done = true;
             return NodeStatus.Running();
         }
@@ -75,9 +76,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
     }
 
     protected static Condition<Entity> TriggerCondition(Class<? extends Notification> type) {
-        return new Condition<>(entity -> {
-            return entity.getNotificationsIt(type).hasNext();
-        });
+        return new Condition<>(entity -> entity.getNotificationsIt(type).hasNext());
     }
 
     protected static Debug $(String message, Node<Entity> child) {
@@ -90,7 +89,8 @@ public abstract class BehaviorTreeFactory implements Serializable {
 
     protected static class Debug extends Decorator<Entity> {
         private static final boolean DEBUG = true;
-        private String message;
+        private static final long serialVersionUID = 9019598003328102086L;
+        private final String message;
         public Debug(String message) {
             super(null);
             this.message = message;

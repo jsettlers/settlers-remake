@@ -1,7 +1,6 @@
 package jsettlers.logic.movable.components;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.movable.Notification;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 
@@ -10,7 +9,7 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
  */
 
 public class AttackableComponent extends Component {
-    public static class RecievedHit extends Notification { }
+    public static class ReceivedHit extends Notification { }
 
     private static final long serialVersionUID = -5453513130369184993L;
     private float health;
@@ -18,7 +17,7 @@ public class AttackableComponent extends Component {
 
     public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
         health -= strength;
-        entity.raiseNotification(new RecievedHit());
+        entity.raiseNotification(new ReceivedHit());
     }
 
     public float getHealth() {
@@ -35,11 +34,6 @@ public class AttackableComponent extends Component {
 
     public void informAboutAttackable(ILogicMovable other) {
         assert false: "Not implemented";
-    }
-
-    @Override
-    public void onLateUpdate() {
-
     }
 
     @Override

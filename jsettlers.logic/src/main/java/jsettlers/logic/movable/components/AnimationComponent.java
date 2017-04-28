@@ -23,7 +23,7 @@ public class AnimationComponent extends Component {
     @Override
     public void onLateUpdate() {
         if (isAnimating())
-            entity.setInvokationDelay(getRemainingTime());
+            entity.setInvocationDelay(getRemainingTime());
     }
 
     public EMovableAction getAnimation() {
@@ -49,7 +49,7 @@ public class AnimationComponent extends Component {
         this.animation = EMovableAction.NO_ACTION;
     }
 
-    public boolean isRightstep() {
+    public boolean isRightStep() {
         return isRightStep;
     }
 

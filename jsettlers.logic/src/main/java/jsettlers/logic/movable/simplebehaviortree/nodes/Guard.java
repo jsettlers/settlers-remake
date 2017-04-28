@@ -5,9 +5,10 @@ import jsettlers.logic.movable.simplebehaviortree.NodeStatus;
 import jsettlers.logic.movable.simplebehaviortree.Tick;
 
 public class Guard<T> extends Node<T> {
-	protected IBooleanConditionFunction<T> condition;
-	protected Node<T> child;
-	protected boolean value;
+	private static final long serialVersionUID = -4675927057210755053L;
+	protected final IBooleanConditionFunction<T> condition;
+	protected final Node<T> child;
+	protected final boolean value;
 
 	public Guard(IBooleanConditionFunction<T> condition, Node<T> child) {
 		super(child);

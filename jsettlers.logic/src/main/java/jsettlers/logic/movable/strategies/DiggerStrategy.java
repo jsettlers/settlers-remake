@@ -194,7 +194,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		requester.diggerRequestFailed();
 	}
 
-	private static enum EDiggerState {
+	private enum EDiggerState {
 		JOBLESS,
 		INIT_JOB,
 		GOING_TO_POS,

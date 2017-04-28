@@ -32,13 +32,13 @@ import jsettlers.logic.player.Player;
 
 public final class MovableWrapper implements ILogicMovable, Serializable {
     private static final long serialVersionUID = -2853861825853788354L;
-    private Entity entity;
+    private final Entity entity;
 
     public MovableWrapper(Entity entity) {
         this.entity = entity;
     }
 
-    private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         entity.get(GameFieldComponent.class).getMovableMap().put(entity.getID(), this);
         entity.get(GameFieldComponent.class).getAllMovables().add(this);
@@ -94,7 +94,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public boolean isRightstep() {
-        return entity.get(AnimationComponent.class).isRightstep();
+        return entity.get(AnimationComponent.class).isRightStep();
     }
 
     @Override

@@ -136,7 +136,7 @@ public class DonkeyStrategy extends MovableStrategy {
 		}
 
 		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(movable.getPlayer());
-		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<IDonkeyMarket>();
+		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
 
 		for (IDonkeyMarket currMarket : markets) {
 			if (currMarket.needsDonkey()) {
@@ -166,7 +166,7 @@ public class DonkeyStrategy extends MovableStrategy {
 		return false;
 	}
 
-	private static enum EDonkeyState {
+	private enum EDonkeyState {
 		JOBLESS,
 		INIT_GOING_TO_MARKET,
 		GOING_TO_MARKET,

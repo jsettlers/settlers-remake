@@ -1,11 +1,8 @@
 package jsettlers.logic.movable.components;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableDataManager;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;

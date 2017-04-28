@@ -57,7 +57,7 @@ public class DonkeyComponent extends Component {
         }
 
         Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(entity.movC().getPlayer());
-        List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<IDonkeyMarket>();
+        List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
 
         for (IDonkeyMarket currMarket : markets) {
             if (currMarket.needsDonkey()) {

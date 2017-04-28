@@ -283,7 +283,7 @@ public abstract class MovableStrategy implements Serializable {
 
 		ShortPoint2D overNextPos = path.getOverNextPos();
 
-		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<ShortPoint2D[]>();
+		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<>();
 
 		if (twoStraightPos.equals(overNextPos)) {
 			if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {

@@ -14,8 +14,9 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
-import jsettlers.algorithms.fogofwar.IViewDistancable;
-import jsettlers.algorithms.path.IPathCalculatable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -23,30 +24,20 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
-import jsettlers.input.IGuiMovable;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
-import jsettlers.logic.movable.interfaces.IAttackableMovable;
-import jsettlers.logic.movable.interfaces.IDebugable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.strategies.FleeStrategy;
 import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Central Movable class of JSettlers.

@@ -13,6 +13,8 @@ import jsettlers.logic.movable.Notification;
  */
 
 public class BearerComponent extends MaterialComponent {
+    private static final long serialVersionUID = -3315837668805312398L;
+
     public static class DeliveryJob extends Notification {
         public final EMaterialType materialType;
         public final IMaterialOffer offer;

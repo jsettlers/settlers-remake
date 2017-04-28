@@ -1,7 +1,5 @@
 package jsettlers.logic.movable.simplebehaviortree.nodes;
 
-import java.util.function.Function;
-
 import jsettlers.logic.movable.Entity;
 import jsettlers.logic.movable.Notification;
 

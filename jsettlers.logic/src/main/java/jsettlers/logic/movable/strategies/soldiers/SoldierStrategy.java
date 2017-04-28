@@ -26,7 +26,6 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
@@ -37,7 +36,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	 * 
 	 * @author Andreas Eberle
 	 */
-	private static enum ESoldierState {
+	private enum ESoldierState {
 		AGGRESSIVE,
 
 		SEARCH_FOR_ENEMIES,

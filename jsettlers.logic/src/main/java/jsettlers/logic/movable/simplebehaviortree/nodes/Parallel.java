@@ -14,8 +14,8 @@ public class Parallel<T> extends Composite<T> {
 	public static Policy ONE = Policy.ONE;
 	public static Policy ALL = Policy.ALL;
 	
-	private Policy successPolicy;
-	private NodeStatus[] childStatus;
+	private final Policy successPolicy;
+	private final NodeStatus[] childStatus;
 	private int successCount;
 
 	@SafeVarargs

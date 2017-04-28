@@ -8,7 +8,6 @@ import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.BearerBehaviorComponent;
 import jsettlers.logic.movable.components.BearerComponent;
-import jsettlers.logic.movable.components.BehaviorComponent;
 import jsettlers.logic.movable.components.DonkeyBehaviorComponent;
 import jsettlers.logic.movable.components.DonkeyComponent;
 import jsettlers.logic.movable.components.GameFieldComponent;

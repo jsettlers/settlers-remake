@@ -5,6 +5,7 @@ import java.io.Serializable;
 import jsettlers.logic.movable.Entity;
 
 public abstract class Component implements Serializable {
+    private static final long serialVersionUID = -3071296154652495126L;
     public Entity entity;
 
     /**

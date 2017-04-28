@@ -23,16 +23,16 @@ public final class MovableDataManager {
      * @return returns the movable with the given ID<br>
      *         or null if the id can not be found
      */
-    public final static ILogicMovable getMovableByID(int id) {
+    public static ILogicMovable getMovableByID(int id) {
         return movablesByID.get(id);
     }
 
-    public final static ConcurrentLinkedQueue<ILogicMovable> allMovables() {
-        if (allMovables == null) allMovables  = new ConcurrentLinkedQueue<ILogicMovable>();
+    public static ConcurrentLinkedQueue<ILogicMovable> allMovables() {
+        if (allMovables == null) allMovables  = new ConcurrentLinkedQueue<>();
         return allMovables;
     }
 
-    public final static Map<Integer, ILogicMovable> movablesByID() {
+    public static Map<Integer, ILogicMovable> movablesByID() {
         if (movablesByID == null) movablesByID = new HashMap<Integer, ILogicMovable>();
         return movablesByID;
     }

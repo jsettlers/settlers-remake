@@ -11,7 +11,7 @@ import jsettlers.common.material.EMaterialType;
 
 public class MultiMaterialComponent extends MaterialComponent {
     private static final long serialVersionUID = -2141241181575955088L;
-    private Map<EMaterialType,Integer> materials = new HashMap<>();
+    private final Map<EMaterialType,Integer> materials = new HashMap<>();
     private int sum = 0;
 
     public void addMaterial(EMaterialType material) {
