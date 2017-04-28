@@ -24,6 +24,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -47,6 +48,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  */
 public final class Movable implements ILogicMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
+
 
 	protected final AbstractMovableGrid grid;
 	private final int id;
@@ -720,6 +722,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	/**
+
 	 * kills this movable.
 	 */
 	@Override
