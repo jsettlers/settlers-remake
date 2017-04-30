@@ -46,7 +46,7 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.CarriersSele
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
-import jsettlers.main.android.mainmenu.ui.activities.MainActivity;
+import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -222,7 +222,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		switch (requestCode) {
 		case REQUEST_CODE_CONFIRM_QUIT:
 			gameMenu.quitConfirm();
-			startActivity(new Intent(getActivity(), MainActivity.class));
+			startActivity(new Intent(getActivity(), MainActivity_.class));
 			break;
 		}
 	}

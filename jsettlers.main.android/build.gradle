@@ -69,6 +69,9 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.0.4'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
+    annotationProcessor 'org.androidannotations:androidannotations:' + rootProject.ext.androidAnnotationsVersion
+    compile 'org.androidannotations:androidannotations-api:' + rootProject.ext.androidAnnotationsVersion
+
     androidTestCompile project(':jsettlers.testutils')
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'org.hamcrest:hamcrest-library:1.3'

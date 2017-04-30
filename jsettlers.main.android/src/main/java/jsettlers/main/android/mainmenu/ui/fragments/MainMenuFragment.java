@@ -25,7 +25,7 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
-import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity;
+import jsettlers.main.android.mainmenu.ui.activities.SettingsActivity_;
 import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.mainmenu.views.MainMenuView;
 
@@ -149,7 +149,7 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_settings:
-			startActivity(new Intent(getActivity(), SettingsActivity.class));
+			startActivity(new Intent(getActivity(), SettingsActivity_.class));
 			break;
 		default:
 			return super.onOptionsItemSelected(item);

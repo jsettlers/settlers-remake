@@ -36,7 +36,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import org.androidannotations.annotations.EActivity;
 
+@EActivity(R.layout.activity_game)
 public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {
 	private static final String TAG_FRAGMENT_MAP = "map_fragment";
 	private static final String TAG_FRAGMENT_LOADING = "loading_fragment";
@@ -49,8 +51,6 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		gameStarter = (GameStarter) getApplication();
-
-		setContentView(R.layout.activity_game);
 
 		IntentFilter intentFilter = new IntentFilter(ACTION_QUIT_CONFIRM);
 		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);

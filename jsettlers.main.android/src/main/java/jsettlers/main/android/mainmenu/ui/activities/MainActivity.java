@@ -15,9 +15,11 @@
 
 package jsettlers.main.android.mainmenu.ui.activities;
 
+import org.androidannotations.annotations.EActivity;
+
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.ui.activities.GameActivity;
+import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
@@ -36,12 +38,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+@EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		getSupportFragmentManager().addOnBackStackChangedListener(this::setUpButton);
 
 		if (savedInstanceState != null)
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void resumeGame() {
-		Intent intent = new Intent(this, GameActivity.class);
+		Intent intent = new Intent(this, GameActivity_.class);
 		intent.setAction(Actions.RESUME_GAME);
 		startActivity(intent);
 		finish();
@@ -137,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void showGame() {
-		Intent intent = new Intent(this, GameActivity.class);
+		Intent intent = new Intent(this, GameActivity_.class);
 		startActivity(intent);
 		finish();
 	}

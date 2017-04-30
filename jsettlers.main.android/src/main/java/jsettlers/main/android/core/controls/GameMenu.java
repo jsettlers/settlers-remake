@@ -23,7 +23,7 @@ import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.ui.activities.GameActivity;
+import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
 import android.app.Notification;
@@ -161,7 +161,7 @@ public class GameMenu {
 		public NotificationBuilder(Context context) {
 			this.context = context;
 
-			Intent gameActivityIntent = new Intent(context, GameActivity.class);
+			Intent gameActivityIntent = new Intent(context, GameActivity_.class);
 			gameActivityIntent.setAction(Actions.RESUME_GAME);
 			PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
 
