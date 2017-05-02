@@ -52,13 +52,7 @@ public class SettlersSoldiersMenu implements DrawListener {
 	private final IInGamePlayer player;
 	private final Dispatcher dispatcher;
 
-	public SettlersSoldiersMenu(
-			SettlersSoldiersView view,
-			ActionFireable actionFireable,
-			DrawControls drawControls,
-			IInGamePlayer player,
-			Dispatcher dispatcher) {
-
+	public SettlersSoldiersMenu(SettlersSoldiersView view, ActionFireable actionFireable, DrawControls drawControls, IInGamePlayer player, Dispatcher dispatcher) {
 		this.view = view;
 		this.actionFireable = actionFireable;
 		this.drawControls = drawControls;

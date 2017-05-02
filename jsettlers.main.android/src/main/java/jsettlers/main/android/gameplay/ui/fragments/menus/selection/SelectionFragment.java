@@ -28,20 +28,17 @@ import android.support.v4.app.Fragment;
 /**
  * Created by tompr on 10/01/2017.
  */
-
 public abstract class SelectionFragment extends Fragment {
 	private SelectionControls selectionControls;
-
 	private ISelectionSet selection;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		selectionControls = new ControlsResolver(getActivity()).getSelectionControls();
-
 		selection = selectionControls.getCurrentSelection();
 
-		// It shouldnt be possible for the selection to be null because the selection menu is only launched due to selection. Noticed it happen when doing loads of minute skips though.
+		// It shouldn't be possible for the selection to be null because the selection menu is only launched due to selection. Noticed it happen when doing loads of minute skips though.
 		if (selection == null) {
 			MenuNavigator menuNavigator = (MenuNavigator) getParentFragment();
 			menuNavigator.removeSelectionMenu();
@@ -61,9 +58,10 @@ public abstract class SelectionFragment extends Fragment {
 	}
 
 	public ISelectionSet getSelection() {
-		if (selection == null)
+		if (selection == null) {
 			return new SelectionSet(); // if its null return a dummy set to stop the subclasses from null reference crashing, menu dismiss has already been triggered.
-		else
+		} else {
 			return selection;
+		}
 	}
 }

@@ -15,64 +15,80 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 /**
  * Created by tompr on 13/01/2017.
  */
+@EFragment(R.layout.menu_selection_carriers)
 public class CarriersSelectionFragment extends SelectionFragment {
 
 	public static CarriersSelectionFragment newInstance() {
-		return new CarriersSelectionFragment();
+		return new CarriersSelectionFragment_();
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_selection_carriers, container, false);
+	@ViewById(R.id.image_view_pioneer)
+	ImageView pioneerImageView;
+	@ViewById(R.id.image_view_geologist)
+	ImageView geologistImageView;
+	@ViewById(R.id.image_view_thief)
+	ImageView thiefImageView;
 
-		ImageView pioneerImageView = (ImageView) view.findViewById(R.id.image_view_pioneer);
-		ImageView geologistImageView = (ImageView) view.findViewById(R.id.image_view_geologist);
-		ImageView thiefImageView = (ImageView) view.findViewById(R.id.image_view_thief);
+	private ActionControls actionControls;
 
+	@AfterViews
+	void setupImageProvider() {
 		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.PIONEER)).setAsImage(pioneerImageView);
 		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.GEOLOGIST)).setAsImage(geologistImageView);
 		OriginalImageProvider.get(ImageLinkFactory.get(EMovableType.THIEF)).setAsImage(thiefImageView);
 
-		return view;
+		actionControls = new ControlsResolver(getActivity()).getActionControls();
 	}
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		ActionControls actionControls = new ControlsResolver(getActivity()).getActionControls();
+	@Click(R.id.button_convert_one_pioneer)
+	void convertOnePioneerClicked() {
+		fireConvertAction(EMovableType.PIONEER, false);
+	}
 
-		View convertOnePioneerButton = getView().findViewById(R.id.button_convert_one_pioneer);
-		View convertAllPioneerButton = getView().findViewById(R.id.button_convert_all_pioneer);
-		View convertOneGeologistButton = getView().findViewById(R.id.button_convert_one_geologist);
-		View convertAllGeologistButton = getView().findViewById(R.id.button_convert_all_geologist);
-		View convertOneThiefButton = getView().findViewById(R.id.button_convert_one_thief);
-		View convertAllThiefButton = getView().findViewById(R.id.button_convert_all_thief);
+	@Click(R.id.button_convert_all_pioneer)
+	void convertAllPioneerClicked() {
+		fireConvertAction(EMovableType.PIONEER, true);
+	}
 
-		convertOnePioneerButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.PIONEER, (short) 1)));
-		convertAllPioneerButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.PIONEER, Short.MAX_VALUE)));
-		convertOneGeologistButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.GEOLOGIST, (short) 1)));
-		convertAllGeologistButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.GEOLOGIST, Short.MAX_VALUE)));
-		convertOneThiefButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.THIEF, (short) 1)));
-		convertAllThiefButton.setOnClickListener(new ActionClickListener(actionControls, new ConvertAction(EMovableType.THIEF, Short.MAX_VALUE)));
+	@Click(R.id.button_convert_one_geologist)
+	void convertOneGeologistClicked() {
+		fireConvertAction(EMovableType.GEOLOGIST, false);
+	}
+
+	@Click(R.id.button_convert_all_geologist)
+	void convertAllGeologistClicked() {
+		fireConvertAction(EMovableType.GEOLOGIST, true);
+	}
+
+	@Click(R.id.button_convert_one_thief)
+	void convertOneThiefClicked() {
+		fireConvertAction(EMovableType.THIEF, false);
+	}
+
+	@Click(R.id.button_convert_all_thief)
+	void convertAllThiefClicked() {
+		fireConvertAction(EMovableType.THIEF, true);
+	}
+
+	private void fireConvertAction(EMovableType convertToType, boolean convertAll) {
+		actionControls.fireAction(new ConvertAction(convertToType, convertAll ? Short.MAX_VALUE : (short) 1));
 	}
 }

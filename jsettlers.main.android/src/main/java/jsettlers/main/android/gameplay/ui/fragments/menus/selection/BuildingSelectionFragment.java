@@ -15,7 +15,11 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.LinkedList;
+
+import org.androidannotations.annotations.EFragment;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
@@ -40,26 +44,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import static java8.util.stream.StreamSupport.stream;
-
 /**
  * The games buildings have lots of overlapping functionality but don't fit that nicely into a tree of inheritance. So the buildings menu is made up of composable "features" which are a bit like mini
  * fragments with a very simple lifecycle consisting of just initialize() and viewFinished()
  *
  * This class just decides which features a building has and calls the lifecycle methods
  */
+@EFragment
 public class BuildingSelectionFragment extends SelectionFragment {
+	public static BuildingSelectionFragment newInstance() {
+		return new BuildingSelectionFragment_();
+	}
+
+	private final LinkedList<SelectionFeature> features = new LinkedList<>();
 
 	private IBuilding building;
 	private BuildingState buildingState;
 
-	private final LinkedList<SelectionFeature> features = new LinkedList<>();
-
 	private ViewGroup rootView;
-
-	public static BuildingSelectionFragment newInstance() {
-		return new BuildingSelectionFragment();
-	}
 
 	@Nullable
 	@Override

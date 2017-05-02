@@ -23,7 +23,6 @@ import jsettlers.common.buildings.EBuildingType;
 /**
  * Created by Andreas Eberle on 02.05.2017.
  */
-
 public enum EBuildingsCategory {
 	BUILDINGS_CATEGORY_NORMAL(
 			EBuildingType.LUMBERJACK,
