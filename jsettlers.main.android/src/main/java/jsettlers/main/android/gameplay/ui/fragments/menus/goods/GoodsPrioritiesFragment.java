@@ -23,18 +23,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import org.androidannotations.annotations.EFragment;
 
 /**
  * Created by tompr on 24/11/2016.
  */
+@EFragment(R.layout.menu_goods_priorities)
 public class GoodsPrioritiesFragment extends Fragment {
 	public static GoodsPrioritiesFragment newInstance() {
-		return new GoodsPrioritiesFragment();
-	}
-
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.menu_goods_priorities, container, false);
+		return new GoodsPrioritiesFragment_();
 	}
 }

@@ -15,54 +15,41 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.main.android.R;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import biz.laenger.android.vpbs.BottomSheetUtils;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by tompr on 22/11/2016.
  */
+@EFragment(R.layout.menu_view_pager)
 public class GoodsMenuFragment extends Fragment {
-	private ViewPager viewPager;
-
 	public static GoodsMenuFragment newInstance() {
-		return new GoodsMenuFragment();
+		return new GoodsMenuFragment_();
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_view_pager, container, false);
+	@ViewById(R.id.view_pager)
+	ViewPager viewPager;
 
-		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+	@ViewById(R.id.circle_indicator)
+	CircleIndicator circleIndicator;
+
+	@AfterViews
+	void setupViewPager() {
 		BottomSheetUtils.setupViewPager(viewPager);
-
-		return view;
-	}
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
 		viewPager.setAdapter(new GoodsPagerAdapter(getChildFragmentManager()));
-
-		CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
-		indicator.setViewPager(viewPager);
+		circleIndicator.setViewPager(viewPager);
 	}
 
-	/**
-	 * Adapter
-	 */
 	private class GoodsPagerAdapter extends FragmentPagerAdapter {
 		private GoodsPagerAdapter(FragmentManager fm) {
 			super(fm);
