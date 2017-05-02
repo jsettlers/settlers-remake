@@ -15,76 +15,57 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_FOOD;
-import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_MILITARY;
-import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_NORMAL;
-import static jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu.BUILDINGS_CATEGORY_SOCIAL;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
 import jsettlers.main.android.R;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import biz.laenger.android.vpbs.BottomSheetUtils;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by tompr on 22/11/2016.
  */
+@EFragment(R.layout.menu_buildings)
 public class BuildingsMenuFragment extends Fragment {
 	public static BuildingsMenuFragment newInstance() {
-		return new BuildingsMenuFragment();
+		return new BuildingsMenuFragment_();
 	}
 
-	private ViewPager viewPager;
+	@ViewById(R.id.view_pager)
+	ViewPager viewPager;
+	@ViewById(R.id.circle_indicator)
+	CircleIndicator circleIndicator;
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_buildings, container, false);
-
-		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+	@AfterViews
+	void setupBottomSheet() {
 		BottomSheetUtils.setupViewPager(viewPager);
-
-		return view;
-	}
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
+		circleIndicator.setViewPager(viewPager);
 		viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
-
-		CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
-		indicator.setViewPager(viewPager);
 	}
 
 	/**
 	 * Adapter
 	 */
 	private class BuildingsPagerAdapter extends FragmentPagerAdapter {
-
-		private int[] buildingsCategories = { BUILDINGS_CATEGORY_NORMAL, BUILDINGS_CATEGORY_FOOD, BUILDINGS_CATEGORY_MILITARY,				BUILDINGS_CATEGORY_SOCIAL };
-
 		public BuildingsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public int getCount() {
-			return buildingsCategories.length;
+			return EBuildingsCategory.NUMBER_OF_VALUES;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			int buildingsCategory = buildingsCategories[position];
-			return BuildingsCategoryFragment.newInstance(buildingsCategory);
+			return BuildingsCategoryFragment.newInstance(EBuildingsCategory.VALUES[position]);
 		}
 	}
 }

@@ -81,7 +81,6 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		presenter = PresenterFactory.createMainMenuPresenter(getActivity(), this);
 	}
 
@@ -153,20 +152,12 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 
 	@Override
 	public void updatePauseButton(boolean paused) {
-		if (paused) {
-			pauseButton.setText(R.string.game_menu_unpause);
-		} else {
-			pauseButton.setText(R.string.game_menu_pause);
-		}
+		pauseButton.setText(paused ? R.string.game_menu_unpause : R.string.game_menu_pause);
 	}
 
 	@Override
 	public void updateQuitButton(boolean canQuitConfirm) {
-		if (canQuitConfirm) {
-			quitButton.setText(R.string.game_menu_quit_confirm);
-		} else {
-			quitButton.setText(R.string.game_menu_quit);
-		}
+		quitButton.setText(canQuitConfirm ? R.string.game_menu_quit_confirm : R.string.game_menu_quit);
 	}
 
 	@Override

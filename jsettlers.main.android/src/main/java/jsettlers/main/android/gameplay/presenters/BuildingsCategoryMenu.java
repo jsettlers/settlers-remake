@@ -15,15 +15,14 @@
 
 package jsettlers.main.android.gameplay.presenters;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 
 /**
@@ -38,9 +37,9 @@ public class BuildingsCategoryMenu {
 	private final BuildingsCategoryView view;
 	private final ActionFireable actionFireable;
 	private final MenuNavigator menuNavigator;
-	private final int buildingsCategory;
+	private final EBuildingsCategory buildingsCategory;
 
-	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionFireable actionFireable, MenuNavigator menuNavigator, int buildingsCategory) {
+	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionFireable actionFireable, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
 		this.view = view;
 		this.actionFireable = actionFireable;
 		this.menuNavigator = menuNavigator;
@@ -58,25 +57,6 @@ public class BuildingsCategoryMenu {
 	}
 
 	private List<EBuildingType> getBuildingTypes() {
-		EBuildingType[] buildingTypes;
-
-		switch (buildingsCategory) {
-		case BUILDINGS_CATEGORY_NORMAL:
-			buildingTypes = BuildingBuildContent.normalBuildings;
-			break;
-		case BUILDINGS_CATEGORY_FOOD:
-			buildingTypes = BuildingBuildContent.foodBuildings;
-			break;
-		case BUILDINGS_CATEGORY_MILITARY:
-			buildingTypes = BuildingBuildContent.militaryBuildings;
-			break;
-		case BUILDINGS_CATEGORY_SOCIAL:
-			buildingTypes = BuildingBuildContent.socialBuildings;
-			break;
-		default:
-			throw new RuntimeException("No such buildings category exists " + buildingsCategory);
-		}
-
-		return Arrays.asList(buildingTypes);
+		return buildingsCategory.buildingTypes;
 	}
 }

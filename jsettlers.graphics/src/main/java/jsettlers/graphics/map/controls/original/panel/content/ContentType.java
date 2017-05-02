@@ -35,10 +35,10 @@ public final class ContentType {
 		};
 	};
 
-	public static final AbstractContentProvider BUILD_NORMAL = BuildingBuildContent.getNormal();
-	public static final AbstractContentProvider BUILD_SOCIAL = BuildingBuildContent.getSocial();
-	public static final AbstractContentProvider BUILD_MILITARY = BuildingBuildContent.getMilitary();
-	public static final AbstractContentProvider BUILD_FOOD = BuildingBuildContent.getFood();
+	public static final AbstractContentProvider BUILD_NORMAL = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_NORMAL);
+	public static final AbstractContentProvider BUILD_FOOD = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_FOOD);
+	public static final AbstractContentProvider BUILD_MILITARY = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_MILITARY);
+	public static final AbstractContentProvider BUILD_SOCIAL = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_SOCIAL);
 
 	public static final AbstractContentProvider STOCK = new InventoryPanel();
 	public static final AbstractContentProvider TOOLS = new ToolsPanel();

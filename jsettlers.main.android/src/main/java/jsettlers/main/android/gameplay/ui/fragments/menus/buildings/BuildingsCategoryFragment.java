@@ -19,16 +19,17 @@ import java.util.List;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,25 +45,20 @@ import android.widget.ImageView;
 public class BuildingsCategoryFragment extends Fragment implements BuildingsCategoryView {
 	private static final String ARG_BUILDINGS_CATEGORY = "arg_buildings_category";
 
-	private BuildingsCategoryMenu buildingsMenu;
-	private BuildingsAdapter adapter;
+	public static BuildingsCategoryFragment newInstance(EBuildingsCategory buildingsCategory) {
+		return BuildingsCategoryFragment_.builder().buildingsCategory(buildingsCategory).build();
+	}
 
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
+	@FragmentArg(ARG_BUILDINGS_CATEGORY)
+	EBuildingsCategory buildingsCategory;
 
-	public static BuildingsCategoryFragment newInstance(int buildingsCategory) {
-		Bundle bundle = new Bundle();
-		bundle.putInt(ARG_BUILDINGS_CATEGORY, buildingsCategory);
-
-		BuildingsCategoryFragment fragment = new BuildingsCategoryFragment_();
-		fragment.setArguments(bundle);
-
-		return fragment;
-	}
+	private BuildingsCategoryMenu buildingsMenu;
+	private BuildingsAdapter adapter;
 
 	@AfterViews
 	void afterViews() {
-		int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
 		buildingsMenu = new MenuFactory(getActivity()).buildingsMenu(this, buildingsCategory);
 		buildingsMenu.start();
 	}

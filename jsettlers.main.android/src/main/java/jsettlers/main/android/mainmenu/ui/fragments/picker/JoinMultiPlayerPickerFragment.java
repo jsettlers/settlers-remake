@@ -17,6 +17,11 @@ package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import java.util.List;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import jsettlers.common.menu.IJoinableGame;
@@ -36,7 +41,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -49,20 +54,23 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by tompr on 21/01/2017.
  */
+@EFragment(R.layout.fragment_map_picker)
 public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
+	@ViewById(R.id.recycler_view)
+	RecyclerView recyclerView;
+	@ViewById(R.id.layout_searching_for_games)
+	View searchingForGamesView;
+	@ViewById(R.id.toolbar)
+	Toolbar toolbar;
+
 	private JoinMultiPlayerPickerPresenter presenter;
-
 	private JoinableGamesAdapter adapter;
-
-	private RecyclerView recyclerView;
-	private View searchingForGamesView;
-
 	private boolean isSaving = false;
 
 	public static JoinMultiPlayerPickerFragment create() {
-		return new JoinMultiPlayerPickerFragment();
+		return new JoinMultiPlayerPickerFragment_();
 	}
 
 	@Override
@@ -71,21 +79,9 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 		presenter = PresenterFactory.createJoinMultiPlayerPickerPresenter(getActivity(), this);
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
-		FragmentUtil.setActionBar(this, view);
-
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-		searchingForGamesView = view.findViewById(R.id.layout_searching_for_games);
-
-		return view;
-	}
-
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+	@AfterViews
+	void setupToolbar() {
+		FragmentUtil.setActionBar(this, toolbar);
 		presenter.initView(); // will need to remove this if this class ends up using the general Picker base class, because its already called there
 	}
 
@@ -121,23 +117,21 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	 * @param joinableGames
 	 */
 	@Override
+	@UiThread
 	public void updateJoinableGames(List<? extends IJoinableGame> joinableGames) {
-		getView().post(() -> {
-			if (adapter == null) {
-				adapter = new JoinableGamesAdapter(joinableGames);
-			}
+		if (adapter == null) {
+			adapter = new JoinableGamesAdapter(joinableGames);
+		}
 
-			if (recyclerView.getAdapter() == null) {
-				recyclerView.setHasFixedSize(true);
-				recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-				recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-				recyclerView.setItemAnimator(new NoChangeItemAnimator());
-				recyclerView.setAdapter(adapter);
-			}
+		if (recyclerView.getAdapter() == null) {
+			recyclerView.setHasFixedSize(true);
+			recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+			recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+			recyclerView.setItemAnimator(new NoChangeItemAnimator());
+			recyclerView.setAdapter(adapter);
+		}
 
-			adapter.setItems(joinableGames);
-		});
-
+		adapter.setItems(joinableGames);
 	}
 
 	@Override
@@ -152,21 +146,22 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 
 	@Override
 	public void dismissJoiningProgress() {
-		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager()
-				.findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog != null) {
 			joiningProgressDialog.dismiss();
 		}
 	}
 
 	@Override
+	@UiThread
 	public void showSearchingForGamesView() {
-		getView().post(() -> searchingForGamesView.setVisibility(View.VISIBLE));
+		searchingForGamesView.setVisibility(View.VISIBLE);
 	}
 
 	@Override
+	@UiThread
 	public void hideSearchingForGamesView() {
-		getView().post(() -> searchingForGamesView.setVisibility(View.GONE));
+		searchingForGamesView.setVisibility(View.GONE);
 	}
 
 	private void joinableGameSelected(IJoinableGame joinableGame) {
