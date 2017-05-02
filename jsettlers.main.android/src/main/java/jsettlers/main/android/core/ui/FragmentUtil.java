@@ -30,4 +30,9 @@ public class FragmentUtil {
 		AppCompatActivity activity = (AppCompatActivity) fragment.getActivity();
 		activity.setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
 	}
+
+	public static void setActionBar(Fragment fragment, Toolbar toolbar) {
+		AppCompatActivity activity = (AppCompatActivity) fragment.getActivity();
+		activity.setSupportActionBar(toolbar);
+	}
 }

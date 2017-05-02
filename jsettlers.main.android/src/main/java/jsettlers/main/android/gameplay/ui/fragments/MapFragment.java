@@ -222,7 +222,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		switch (requestCode) {
 		case REQUEST_CODE_CONFIRM_QUIT:
 			gameMenu.quitConfirm();
-			startActivity(new Intent(getActivity(), MainActivity_.class));
+			MainActivity_.intent(this).start();
 			break;
 		}
 	}

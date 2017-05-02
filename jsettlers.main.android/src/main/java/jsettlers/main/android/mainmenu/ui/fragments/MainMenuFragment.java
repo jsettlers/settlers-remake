@@ -21,6 +21,13 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CANCELLE
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.Receiver;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
@@ -30,85 +37,57 @@ import jsettlers.main.android.mainmenu.ui.dialogs.DirectoryPickerDialog;
 import jsettlers.main.android.mainmenu.views.MainMenuView;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 /**
  * A simple {@link Fragment} subclass.
  */
+@EFragment(R.layout.fragment_main_menu)
+@OptionsMenu(R.menu.fragment_mainmenu)
 public class MainMenuFragment extends Fragment implements MainMenuView, DirectoryPickerDialog.Listener {
 	private static final int REQUEST_CODE_PERMISSION_STORAGE = 10;
 
 	private MainMenuPresenter presenter;
-	private LocalBroadcastManager localBroadcastManager;
 
-	private LinearLayout mainLinearLayout;
-	private View resourcesView;
-	private View resumeView;
-	private Button pauseButton;
-	private Button quitButton;
+	@ViewById(R.id.linear_layout_main)
+	LinearLayout mainLinearLayout;
+	@ViewById(R.id.card_view_resume)
+	View resumeView;
+	@ViewById(R.id.button_pause)
+	Button pauseButton;
+	@ViewById(R.id.button_quit)
+	Button quitButton;
+	@ViewById(R.id.toolbar)
+	Toolbar toolbar;
+
+	View resourcesView;
 
 	private boolean showDirectoryPicker = false;
 
 	public static MainMenuFragment create() {
-		return new MainMenuFragment();
+		return new MainMenuFragment_();
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-
 		presenter = PresenterFactory.createMainMenuPresenter(getActivity(), this);
-		localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
-		FragmentUtil.setActionBar(this, view);
-
-		mainLinearLayout = (LinearLayout) view.findViewById(R.id.linear_layout_main);
-		resumeView = view.findViewById(R.id.card_view_resume);
-		quitButton = (Button) view.findViewById(R.id.button_quit);
-		pauseButton = (Button) view.findViewById(R.id.button_pause);
-
-		resumeView.setOnClickListener(view1 -> presenter.resumeSelected());
-		quitButton.setOnClickListener(view12 -> presenter.quitSelected());
-		pauseButton.setOnClickListener(view13 -> presenter.pauseSelected());
-
-		Button newSinglePlayerGameButton = (Button) view.findViewById(R.id.button_new_single_player_game);
-		Button loadSinglePlayerGameButton = (Button) view.findViewById(R.id.button_load_single_player_game);
-		Button newMultiPlayerGameButton = (Button) view.findViewById(R.id.button_new_multi_player_game);
-		Button joinMultiPlayerGameButton = (Button) view.findViewById(R.id.button_join_multi_player_game);
-
-		newSinglePlayerGameButton.setOnClickListener(view14 -> presenter.newSinglePlayerSelected());
-		loadSinglePlayerGameButton.setOnClickListener(view15 -> presenter.loadSinglePlayerSelected());
-		newMultiPlayerGameButton.setOnClickListener(view16 -> presenter.newMultiPlayerSelected());
-		joinMultiPlayerGameButton.setOnClickListener(view17 -> presenter.joinMultiPlayerSelected());
-
-		return view;
-	}
-
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+	@AfterViews
+	public void afterViews() {
+		FragmentUtil.setActionBar(this, toolbar);
 		presenter.bindView();
 	}
 
@@ -123,33 +102,19 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 			showDirectoryPicker = false;
 		}
 
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_QUIT);
-		intentFilter.addAction(ACTION_QUIT_CONFIRM);
-		intentFilter.addAction(ACTION_QUIT_CANCELLED);
-		intentFilter.addAction(ACTION_PAUSE);
-		intentFilter.addAction(ACTION_UNPAUSE);
-		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
 		presenter.updateResumeGameView();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		localBroadcastManager.unregisterReceiver(broadcastReceiver);
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.fragment_mainmenu, menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_item_settings:
-			startActivity(new Intent(getActivity(), SettingsActivity_.class));
+			SettingsActivity_.intent(this).start();
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -230,26 +195,63 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 		}
 	}
 
-	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			switch (intent.getAction()) {
-			case ACTION_QUIT:
-				presenter.updateResumeGameView();
-				break;
-			case ACTION_QUIT_CONFIRM:
-				presenter.updateResumeGameView();
-				break;
-			case ACTION_QUIT_CANCELLED:
-				presenter.updateResumeGameView();
-				break;
-			case ACTION_PAUSE:
-				presenter.updateResumeGameView();
-				break;
-			case ACTION_UNPAUSE:
-				presenter.updateResumeGameView();
-				break;
-			}
-		}
-	};
+	@Click(R.id.card_view_resume)
+	void resumeView() {
+		presenter.resumeSelected();
+	}
+
+	@Click(R.id.button_quit)
+	void quitClicked() {
+		presenter.quitSelected();
+	}
+
+	@Click(R.id.button_pause)
+	void pauseClicked() {
+		presenter.pauseSelected();
+	}
+
+	@Click(R.id.button_new_single_player_game)
+	void newSinglePlayerGameClicked() {
+		presenter.newSinglePlayerSelected();
+	}
+
+	@Click(R.id.button_load_single_player_game)
+	void loadSinglePlayerGameClicked() {
+		presenter.loadSinglePlayerSelected();
+	}
+
+	@Click(R.id.button_new_multi_player_game)
+	void newMultiPlayerGameClicked() {
+		presenter.newMultiPlayerSelected();
+	}
+
+	@Click(R.id.button_join_multi_player_game)
+	void joinMultiplayerGameClicked() {
+		presenter.joinMultiPlayerSelected();
+	}
+
+	@Receiver(actions = ACTION_QUIT, local = true)
+	void quitReceived() {
+		presenter.updateResumeGameView();
+	}
+
+	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
+	void quitConfirmReceived() {
+		presenter.updateResumeGameView();
+	}
+
+	@Receiver(actions = ACTION_QUIT_CANCELLED, local = true)
+	void quitCancelled() {
+		presenter.updateResumeGameView();
+	}
+
+	@Receiver(actions = ACTION_PAUSE, local = true)
+	void pauseReceived() {
+		presenter.updateResumeGameView();
+	}
+
+	@Receiver(actions = ACTION_UNPAUSE, local = true)
+	void unpauseReceived() {
+		presenter.updateResumeGameView();
+	}
 }

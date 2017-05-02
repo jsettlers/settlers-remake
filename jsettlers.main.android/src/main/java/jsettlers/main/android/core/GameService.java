@@ -18,14 +18,15 @@ package jsettlers.main.android.core;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.core.controls.GameMenu.NOTIFICATION_ID;
 
+import org.androidannotations.annotations.EService;
+import org.androidannotations.annotations.Receiver;
+
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
+@EService
 public class GameService extends Service {
 	private LocalBroadcastManager localBroadcastManager;
 
@@ -34,18 +35,8 @@ public class GameService extends Service {
 		super.onCreate();
 		localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
 
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_QUIT_CONFIRM);
-		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
 		GameManager gameManager = (GameManager) getApplication();
 		startForeground(NOTIFICATION_ID, gameManager.getGameMenu().createNotification());
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
@@ -58,15 +49,9 @@ public class GameService extends Service {
 		return null;
 	}
 
-	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			switch (intent.getAction()) {
-			case ACTION_QUIT_CONFIRM:
-				stopForeground(true);
-				stopSelf();
-				break;
-			}
-		}
-	};
+	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
+	void quitConfirmReceived() {
+		stopForeground(true);
+		stopSelf();
+	}
 }

@@ -17,14 +17,18 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
 import java.util.List;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,40 +36,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.
  */
+@EFragment(R.layout.menu_buildings_category)
 public class BuildingsCategoryFragment extends Fragment implements BuildingsCategoryView {
 	private static final String ARG_BUILDINGS_CATEGORY = "arg_buildings_category";
 
 	private BuildingsCategoryMenu buildingsMenu;
-
 	private BuildingsAdapter adapter;
-	private RecyclerView recyclerView;
+
+	@ViewById(R.id.recycler_view)
+	RecyclerView recyclerView;
 
 	public static BuildingsCategoryFragment newInstance(int buildingsCategory) {
 		Bundle bundle = new Bundle();
 		bundle.putInt(ARG_BUILDINGS_CATEGORY, buildingsCategory);
 
-		BuildingsCategoryFragment fragment = new BuildingsCategoryFragment();
+		BuildingsCategoryFragment fragment = new BuildingsCategoryFragment_();
 		fragment.setArguments(bundle);
 
 		return fragment;
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_buildings_category, container, false);
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-		return view;
-	}
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	@AfterViews
+	void afterViews() {
 		int buildingsCategory = getArguments().getInt(ARG_BUILDINGS_CATEGORY);
 		buildingsMenu = new MenuFactory(getActivity()).buildingsMenu(this, buildingsCategory);
 		buildingsMenu.start();

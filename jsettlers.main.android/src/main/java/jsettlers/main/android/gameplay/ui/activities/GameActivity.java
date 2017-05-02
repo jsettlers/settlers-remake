@@ -19,6 +19,8 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 
 import java.util.List;
 
+import org.androidannotations.annotations.EActivity;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.navigation.BackPressedListener;
@@ -36,7 +38,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import org.androidannotations.annotations.EActivity;
 
 @EActivity(R.layout.activity_game)
 public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {

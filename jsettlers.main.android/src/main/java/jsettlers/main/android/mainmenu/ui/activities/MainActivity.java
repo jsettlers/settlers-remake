@@ -15,6 +15,7 @@
 
 package jsettlers.main.android.mainmenu.ui.activities;
 
+import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import org.androidannotations.annotations.EActivity;
 
 import jsettlers.common.menu.IMapDefinition;
@@ -22,7 +23,6 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.JoinMultiPlayerPickerFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.NewMultiPlayerPickerFragment;
@@ -31,7 +31,6 @@ import jsettlers.main.android.mainmenu.ui.fragments.setup.JoinMultiPlayerSetupFr
 import jsettlers.main.android.mainmenu.ui.fragments.setup.NewMultiPlayerSetupFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.setup.NewSinglePlayerSetupFragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -131,16 +130,13 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void resumeGame() {
-		Intent intent = new Intent(this, GameActivity_.class);
-		intent.setAction(Actions.RESUME_GAME);
-		startActivity(intent);
+		GameActivity_.intent(this).action(Actions.RESUME_GAME).start();
 		finish();
 	}
 
 	@Override
 	public void showGame() {
-		Intent intent = new Intent(this, GameActivity_.class);
-		startActivity(intent);
+		GameActivity_.intent(this).start();
 		finish();
 	}
 

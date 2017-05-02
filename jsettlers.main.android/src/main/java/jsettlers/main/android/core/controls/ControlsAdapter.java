@@ -37,8 +37,6 @@ import android.content.Context;
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls {
 	private static final int SOUND_THREADS = 6;
 
-	private final Context context;
-	private final AndroidSoundPlayer soundPlayer;
 	private final IInGamePlayer player;
 	private final AndroidControls androidControls;
 	private final MapContent mapContent;
@@ -51,10 +49,9 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private ISelectionSet selection;
 
 	public ControlsAdapter(Context context, IStartedGame game) {
-		this.context = context;
 		this.player = game.getInGamePlayer();
 
-		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
+		AndroidSoundPlayer soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
 		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);

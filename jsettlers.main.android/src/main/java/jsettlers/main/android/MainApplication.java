@@ -21,6 +21,8 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_SAVE;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
 
+import org.androidannotations.annotations.EApplication;
+
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -32,7 +34,7 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
-import jsettlers.main.android.core.GameService;
+import jsettlers.main.android.core.GameService_;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -44,6 +46,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
+@EApplication
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {
 	private MapList mapList;
 	private IMultiplayerConnector multiplayerConnector;
@@ -132,8 +135,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	@Override
 	public IMapInterfaceConnector gameStarted(IStartedGame game) {
 		controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
-
-		startService(new Intent(this, GameService.class));
+		GameService_.intent(this).start();
 
 		game.setGameExitListener(this);
 
@@ -180,19 +182,19 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
 			case ACTION_PAUSE:
-				getControlsAdapter().getGameMenu().pause();
+				controlsAdapter.getGameMenu().pause();
 				break;
 			case ACTION_UNPAUSE:
-				getControlsAdapter().getGameMenu().unPause();
+				controlsAdapter.getGameMenu().unPause();
 				break;
 			case ACTION_SAVE:
-				getControlsAdapter().getGameMenu().save();
+				controlsAdapter.getGameMenu().save();
 				break;
 			case ACTION_QUIT:
-				getControlsAdapter().getGameMenu().quit();
+				controlsAdapter.getGameMenu().quit();
 				break;
 			case ACTION_QUIT_CONFIRM:
-				getControlsAdapter().getGameMenu().quitConfirm();
+				controlsAdapter.getGameMenu().quitConfirm();
 				break;
 			}
 		}
