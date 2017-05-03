@@ -112,6 +112,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	}
 
 	@Override
+	public void fireAction(EActionType actionType) {
+		fireAction(new Action(actionType));
+	}
+
+	@Override
 	public void addActionListener(ActionListener actionListener) {
 		synchronized (actionListeners) {
 			actionListeners.add(actionListener);

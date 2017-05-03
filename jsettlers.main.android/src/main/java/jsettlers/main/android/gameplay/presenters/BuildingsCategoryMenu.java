@@ -29,11 +29,6 @@ import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
  * Created by tompr on 22/11/2016.
  */
 public class BuildingsCategoryMenu {
-	public static final int BUILDINGS_CATEGORY_NORMAL = 10;
-	public static final int BUILDINGS_CATEGORY_FOOD = 20;
-	public static final int BUILDINGS_CATEGORY_MILITARY = 30;
-	public static final int BUILDINGS_CATEGORY_SOCIAL = 40;
-
 	private final BuildingsCategoryView view;
 	private final ActionFireable actionFireable;
 	private final MenuNavigator menuNavigator;

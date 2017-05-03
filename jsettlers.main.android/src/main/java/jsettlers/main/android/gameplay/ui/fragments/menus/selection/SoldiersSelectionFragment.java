@@ -15,14 +15,17 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
 
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.graphics.action.Action;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,15 +33,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 13/01/2017.
  */
+@EFragment(R.layout.menu_selection_soldiers)
 public class SoldiersSelectionFragment extends SelectionFragment {
 	private static final EMovableType[] soldierTypes = new EMovableType[] {
 			EMovableType.SWORDSMAN_L1,
@@ -52,21 +54,18 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 			EMovableType.BOWMAN_L3,
 	};
 
-	private ActionControls actionControls;
-
-	private LinearLayout soldiers1Layout;
-	private LinearLayout soldiers2Layout;
-	private LinearLayout soldiers3Layout;
-
 	public static Fragment newInstance() {
-		return new SoldiersSelectionFragment();
+		return new SoldiersSelectionFragment_();
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.menu_selection_soldiers, container, false);
-	}
+	@ViewById(R.id.layout_soldiers_level_1)
+	LinearLayout soldiers1Layout;
+	@ViewById(R.id.layout_soldiers_level_2)
+	LinearLayout soldiers2Layout;
+	@ViewById(R.id.layout_soldiers_level_3)
+	LinearLayout soldiers3Layout;
+
+	private ActionControls actionControls;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -74,15 +73,6 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		actionControls = new ControlsResolver(getActivity()).getActionControls();
 
 		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-		soldiers1Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_1);
-		soldiers2Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_2);
-		soldiers3Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_3);
-
-		View killButton = getView().findViewById(R.id.button_kill);
-		View haltButton = getView().findViewById(R.id.button_halt);
-
-		killButton.setOnClickListener(killClickListener);
-		haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
 
 		for (EMovableType movableType : soldierTypes) {
 			int count = getSelection().getMovableCount(movableType);
@@ -131,12 +121,15 @@ public class SoldiersSelectionFragment extends SelectionFragment {
 		}
 	}
 
-	private final View.OnClickListener killClickListener = new View.OnClickListener() {
-		@Override
-		public void onClick(View view) {
-			Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
-					.setAction(R.string.yes, view1 -> actionControls.fireAction(new Action(EActionType.DESTROY)))
-					.show();
-		}
-	};
+	@Click(R.id.button_halt)
+	void haltClicked() {
+		actionControls.fireAction(EActionType.STOP_WORKING);
+	}
+
+	@Click(R.id.button_kill)
+	void killClicked() {
+		Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
+				.setAction(R.string.yes, view1 -> actionControls.fireAction(EActionType.DESTROY))
+				.show();
+	}
 }

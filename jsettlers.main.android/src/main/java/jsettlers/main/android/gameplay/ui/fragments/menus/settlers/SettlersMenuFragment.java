@@ -15,6 +15,10 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.settlers;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.main.android.R;
 
 import android.os.Bundle;
@@ -23,41 +27,34 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import biz.laenger.android.vpbs.BottomSheetUtils;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by tompr on 22/11/2016.
  */
+@EFragment(R.layout.menu_view_pager)
 public class SettlersMenuFragment extends Fragment {
-	private ViewPager viewPager;
-
 	public static SettlersMenuFragment newInstance() {
-		return new SettlersMenuFragment();
+		return new SettlersMenuFragment_();
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.menu_view_pager, container, false);
+	@ViewById(R.id.view_pager)
+	ViewPager viewPager;
 
-		viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+	@ViewById(R.id.circle_indicator)
+	CircleIndicator circleIndicator;
+
+	@AfterViews
+	void setupBottomSheet() {
 		BottomSheetUtils.setupViewPager(viewPager);
-
-		return view;
+		viewPager.setAdapter(new SettlersPagerAdapter(getChildFragmentManager()));
+		circleIndicator.setViewPager(viewPager);
 	}
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
-		viewPager.setAdapter(new SettlersPagerAdapter(getChildFragmentManager()));
-
-		CircleIndicator indicator = (CircleIndicator) getView().findViewById(R.id.circle_indicator);
-		indicator.setViewPager(viewPager);
 	}
 
 	/**

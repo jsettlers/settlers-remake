@@ -15,12 +15,16 @@
 
 package jsettlers.main.android.core.controls;
 
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.ActionFireable;
 
 /**
  * Created by tompr on 13/01/2017.
  */
 public interface ActionControls extends ActionFireable {
+
+	void fireAction(EActionType actionType);
+
 	void addActionListener(ActionListener actionListener);
 
 	void removeActionListener(ActionListener actionListener);
