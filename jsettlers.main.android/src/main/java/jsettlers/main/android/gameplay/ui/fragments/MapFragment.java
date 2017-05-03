@@ -70,6 +70,9 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
+	private static final String TAG_FRAGMENT_BUILDINGS_MENU = "com.jsettlers.buildingsmenufragment";
+	private static final String TAG_FRAGMENT_GOODS_MENU = "com.jsettlers.goodsmenufragment";
+	private static final String TAG_FRAGMENT_SETTLERS_MENU = "com.jsettlers.settlersmenufragment";
 	private static final String SAVE_BOTTOM_SHEET_STATE = "save_bottom_sheet_state";
 	private static final int REQUEST_CODE_CONFIRM_QUIT = 10;
 
@@ -295,25 +298,31 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void addBuildsingMenuFragment() {
-		getChildFragmentManager().beginTransaction()
-				.replace(R.id.container_menu, BuildingsMenuFragment.newInstance())
-				.commit();
+		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_BUILDINGS_MENU) == null) {
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, BuildingsMenuFragment.newInstance(), TAG_FRAGMENT_BUILDINGS_MENU)
+					.commit();
+		}
 	}
 
 	private void showGoodsMenu() {
 		showMenu();
 
-		getChildFragmentManager().beginTransaction()
-				.replace(R.id.container_menu, GoodsMenuFragment.newInstance())
-				.commit();
+		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_GOODS_MENU) == null) {
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, GoodsMenuFragment.newInstance(), TAG_FRAGMENT_GOODS_MENU)
+					.commit();
+		}
 	}
 
 	private void showSettlersMenu() {
 		showMenu();
 
-		getChildFragmentManager().beginTransaction()
-				.replace(R.id.container_menu, SettlersMenuFragment.newInstance())
-				.commit();
+		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_SETTLERS_MENU) == null) {
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, SettlersMenuFragment.newInstance(), TAG_FRAGMENT_SETTLERS_MENU)
+					.commit();
+		}
 	}
 
 	private void showSelectionMenu() {
