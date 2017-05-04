@@ -3,7 +3,7 @@ apply plugin: 'java'
 
 ext {
     androidAnnotationsVersion = '4.3.0'
-    streamSupportVersion = '1.5.3'
+    streamSupportVersion = '1.5.4'
 }
 
 buildscript {
