@@ -14,26 +14,26 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import go.graphics.TextureHandle;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.TypedValue;
 import android.widget.TextView;
-import go.graphics.TextureHandle;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class AndroidTextDrawer implements TextDrawer {
 
 	private static final int TEXTURE_HEIGHT = 512;
 	private static final int TEXTURE_WIDTH = 512;
 
-	private static AndroidTextDrawer[] instances =
-			new AndroidTextDrawer[EFontSize.values().length];
+	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
 	private final AndroidContext context;
@@ -203,8 +203,8 @@ public class AndroidTextDrawer implements TextDrawer {
 		renderer.setText(string);
 
 		int firstLine = findLineToUse();
-//		System.out.println("string cache miss for " + string +
-//				", allocating new line: " + firstLine);
+		// System.out.println("string cache miss for " + string +
+		// ", allocating new line: " + firstLine);
 		int lastLine = firstLine;
 
 		for (int x = 0; x < width; x += TEXTURE_WIDTH) {
@@ -212,7 +212,6 @@ public class AndroidTextDrawer implements TextDrawer {
 				line = firstLine;
 			} else {
 				line = findLineToUse();
-				System.out.println("Using multiple lines: " + line);
 				nextTile[lastLine] = line;
 				linestrings[line] = null;
 				linewidths[line] = -1;
@@ -223,9 +222,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			nextTile[line] = -1;
 
 			// render the new text to that line.
-			Bitmap bitmap =
-					Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
-							Bitmap.Config.ALPHA_8);
+			Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, lineheight, Bitmap.Config.ALPHA_8);
 			Canvas canvas = new Canvas(bitmap);
 			renderer.layout(0, 0, width, lineheight);
 			canvas.translate(-x, 0);
@@ -248,8 +245,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private void initialize() {
 		if (texture == null || !texture.isValid()) {
-			texture =
-					context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+			texture = context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 			lineheight = (int) (getScaledSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];

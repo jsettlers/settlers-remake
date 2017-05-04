@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -12,7 +10,7 @@
     <ImageView
         android:id="@+id/image_view_map_preview"
         android:layout_width="72dp"
-        android:layout_height="72dp"/>
+        android:layout_height="72dp" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -20,15 +18,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginLeft="16dp">
+
         <TextView
             android:id="@+id/text_view_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/text_view_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="@color/accent"
-        tools:text="Player count"/>
+        tools:text="Player count" />
 
 
 </LinearLayout>

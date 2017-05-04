@@ -1,74 +1,80 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'java'
 
+ext {
+    androidAnnotationsVersion = '4.3.0'
+    streamSupportVersion = '1.5.3'
+}
+
 buildscript {
-	repositories {
-		jcenter()
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.eclipse.jgit:org.eclipse.jgit:3.1.0.201310021548-r'
         classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'me.tatarka:gradle-retrolambda:3.4.0'
-	}
+    }
 }
 
 allprojects {
-	repositories {
-		jcenter()
-		maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
-	}
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
+    }
 }
 
 
 subprojects {
     apply plugin: 'me.tatarka.retrolambda'
 
-	plugins.withType(JavaPlugin).whenPluginAdded {
+    plugins.withType(JavaPlugin).whenPluginAdded {
         test {
             testLogging {
                 events "failed"
                 exceptionFormat "short"
             }
         }
-		compileJava {
+        compileJava {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
-		}
-		compileTestJava {
+        }
+        compileTestJava {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
-		}
+        }
 
         task copyMainResources(type: Copy) {
             from sourceSets.main.resources
             into sourceSets.main.output.classesDir
-		}
+        }
         processResources.dependsOn copyMainResources
 
         task copyTestResources(type: Copy) {
             from sourceSets.test.resources
             into sourceSets.test.output.classesDir
-		}
+        }
         processTestResources.dependsOn copyTestResources
     }
-	plugins.withType(ApplicationPlugin).whenPluginAdded {
-		startScripts {
-			defaultJvmOpts = ['-Xmx2G']
-			optsEnvironmentVar = "XXXREPLACEXXX"
-			def args = '"-Dsettlers.maps=$APP_HOME/maps"'
-			doLast {
-				unixScript.text = unixScript.text.replace('$XXXREPLACEXXX', args)
-				windowsScript.text = windowsScript.text.replace('%XXXREPLACEXXX%', args.replace('$APP_HOME', '%APP_HOME%'))
-			}
-		}
-	}
+    plugins.withType(ApplicationPlugin).whenPluginAdded {
+        startScripts {
+            defaultJvmOpts = ['-Xmx2G']
+            optsEnvironmentVar = "XXXREPLACEXXX"
+            def args = '"-Dsettlers.maps=$APP_HOME/maps"'
+            doLast {
+                unixScript.text = unixScript.text.replace('$XXXREPLACEXXX', args)
+                windowsScript.text = windowsScript.text.replace('%XXXREPLACEXXX%', args.replace('$APP_HOME', '%APP_HOME%'))
+            }
+        }
+    }
 
-	tasks.withType(Test) {
-		testLogging {
-			events 'passed'
-		}
-	}
+    tasks.withType(Test) {
+        testLogging {
+            events 'passed'
+        }
+    }
 
     tasks.withType(Jar) {
         duplicatesStrategy 'exclude'
@@ -86,12 +92,12 @@ subprojects {
     // Add streamsupport dependency
     def addGlobalDependencies = {
         dependencies {
-            compile 'net.sourceforge.streamsupport:streamsupport:1.5.3'
-            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:1.5.3'
-            compile 'net.sourceforge.streamsupport:streamsupport-atomic:1.5.3'
-            compile 'net.sourceforge.streamsupport:streamsupport-flow:1.5.3'
-            compile 'net.sourceforge.streamsupport:streamsupport-literal:1.5.3'
-            
+            compile 'net.sourceforge.streamsupport:streamsupport:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-cfuture:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-atomic:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-flow:' + rootProject.ext.streamSupportVersion
+            compile 'net.sourceforge.streamsupport:streamsupport-literal:' + rootProject.ext.streamSupportVersion
+
             testCompile 'junit:junit:4.12'
         }
     }
@@ -101,9 +107,6 @@ subprojects {
     plugins.withId('com.android.application', addGlobalDependencies)
     plugins.withId('com.android.library', addGlobalDependencies)
 }
-
-
-
 
 // This is a hack to make ./gradlew run only run the swing version.
 task run(dependsOn: ':jsettlers.main.swing:run') << {
@@ -120,27 +123,27 @@ tasks.getByPath(":jsettlers.network:run").onlyIf { !gradle.taskGraph.hasTask(":r
 task runMapCreator(dependsOn: ':jsettlers.mapcreator:run') {}
 
 if (findProject(':jsettlers.main.android')) {
-	// Android is present.
-	task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
-		def androidHome = System.env.ANDROID_HOME;
-		if (!androidHome) {
-		    Properties local = new Properties()
-		    local.load(new FileInputStream("local.properties"))
-			androidHome = local.getProperty('sdk.dir');
-		}
-	    def adb = androidHome + '/platform-tools/adb'
-	    println 'Copy files to your device...'
-	    exec {
-	        commandLine adb, 'uninstall', 'jsettlers.main.android'
-	    }
-	    exec {
-	        commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
-	    }
-	    exec {
-	        commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
-	    }
-	    println 'The application should have started now.'
-	}
+    // Android is present.
+    task runAndroid(dependsOn: ':jsettlers.main.android:assembleDebug') << {
+        def androidHome = System.env.ANDROID_HOME;
+        if (!androidHome) {
+            Properties local = new Properties()
+            local.load(new FileInputStream("local.properties"))
+            androidHome = local.getProperty('sdk.dir');
+        }
+        def adb = androidHome + '/platform-tools/adb'
+        println 'Copy files to your device...'
+        exec {
+            commandLine adb, 'uninstall', 'jsettlers.main.android'
+        }
+        exec {
+            commandLine adb, 'install', '-r', './jsettlers.main.android/build/outputs/apk/jsettlers.main.android-debug.apk'
+        }
+        exec {
+            commandLine adb, 'shell', 'am', 'start', '-n', 'jsettlers.main.android/jsettlers.main.android.JsettlersActivity'
+        }
+        println 'The application should have started now.'
+    }
 }
 
 
@@ -172,16 +175,16 @@ task releaseDedicatedServer(type: Copy) {
 
 
 if (findProject(':jsettlers.main.android')) {
-	task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
-	    into('JSettlers-Android') {
-	        from { project.getRootProject().file('LICENSE.txt') }
-	        from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
-	        rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
-	    }
+    task releaseAndroid(type: Zip, dependsOn: ':jsettlers.main.android:assembleDebug') {
+        into('JSettlers-Android') {
+            from { project.getRootProject().file('LICENSE.txt') }
+            from file(project(':jsettlers.main.android').getBuildDir().absolutePath + '/outputs/apk/jsettlers.main.android-debug.apk')
+            rename 'jsettlers.main.android-debug.apk', 'JSettlers-Android.apk'
+        }
 
-	    destinationDir releaseDir
-	    baseName "JSettlers-Android"
-	}
+        destinationDir releaseDir
+        baseName "JSettlers-Android"
+    }
 }
 
 

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
 package jsettlers.main.android.core.controls;
 
 import java.util.LinkedList;
@@ -19,12 +34,9 @@ import android.content.Context;
 /**
  * Created by tompr on 14/01/2017.
  */
-
 public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls {
 	private static final int SOUND_THREADS = 6;
 
-	private final Context context;
-	private final AndroidSoundPlayer soundPlayer;
 	private final IInGamePlayer player;
 	private final AndroidControls androidControls;
 	private final MapContent mapContent;
@@ -37,12 +49,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private ISelectionSet selection;
 
 	public ControlsAdapter(Context context, IStartedGame game) {
-		this.context = context;
 		this.player = game.getInGamePlayer();
 
-		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
+		AndroidSoundPlayer soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 		androidControls = new AndroidControls(this);
-		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.NONE, androidControls);
+		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
 	}
 
@@ -98,6 +109,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	@Override
 	public void fireAction(IAction action) {
 		androidControls.fireAction(action);
+	}
+
+	@Override
+	public void fireAction(EActionType actionType) {
+		fireAction(new Action(actionType));
 	}
 
 	@Override

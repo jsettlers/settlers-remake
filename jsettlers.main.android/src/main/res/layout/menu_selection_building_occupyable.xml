@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="8dp"
-            android:layout_gravity="bottom"/>
+            android:layout_gravity="bottom" />
 
     </FrameLayout>
 

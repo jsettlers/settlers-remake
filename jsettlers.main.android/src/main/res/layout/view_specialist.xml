@@ -10,7 +10,7 @@
         android:id="@+id/image_view_specialist"
         android:layout_width="@dimen/menu_tile_occupied_height"
         android:layout_height="@dimen/menu_tile_occupied_height"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/text_view_specialist_count"

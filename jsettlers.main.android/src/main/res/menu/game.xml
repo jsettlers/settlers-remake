@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_item_pause"
-        android:title="@string/game_menu_pause"
-        android:orderInCategory="10"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_pause"
+            android:title="@string/game_menu_pause"
+            android:orderInCategory="10"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_save"
-        android:title="@string/game_menu_save"
-        android:orderInCategory="20"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_save"
+            android:title="@string/game_menu_save"
+            android:orderInCategory="20"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_quit"
-        android:title="@string/game_menu_quit"
-        android:orderInCategory="30"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_quit"
+            android:title="@string/game_menu_quit"
+            android:orderInCategory="30"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_faster"
-        android:title="Faster"
-        android:orderInCategory="40"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_faster"
+            android:title="Faster"
+            android:orderInCategory="40"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_slower"
-        android:title="Slower"
-        android:orderInCategory="40"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_slower"
+            android:title="Slower"
+            android:orderInCategory="40"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_fastest"
-        android:title="Fastest"
-        android:orderInCategory="50"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_fastest"
+            android:title="Fastest"
+            android:orderInCategory="50"
+            app:showAsAction="never"/>
     <item
-        android:id="@+id/menu_item_skip"
-        android:title="Skip 1 minute"
-        android:orderInCategory="60"
-        app:showAsAction="never" />
+            android:id="@+id/menu_item_skip"
+            android:title="Skip 1 minute"
+            android:orderInCategory="60"
+            app:showAsAction="never"/>
 </menu>

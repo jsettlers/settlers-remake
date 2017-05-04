@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
 package jsettlers.main.android.gameplay.ui.fragments;
 
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
@@ -16,11 +31,13 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.GameMenu;
 import jsettlers.main.android.core.controls.SelectionControls;
 import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
-import jsettlers.main.android.core.controls.GameMenu;
+import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.dialogs.PausedDialog;
 import jsettlers.main.android.gameplay.ui.fragments.menus.buildings.BuildingsMenuFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.goods.GoodsMenuFragment;
@@ -29,8 +46,7 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.CarriersSele
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
-import jsettlers.main.android.core.navigation.BackPressedListener;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
+import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -49,10 +65,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
-import jsettlers.main.android.mainmenu.ui.activities.MainActivity;
-
 
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
@@ -194,7 +207,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 
 		if (isMenuOpen()) {
-            dismissMenu();
+			dismissMenu();
 			return true;
 		}
 
@@ -207,10 +220,10 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	@Override
 	public void onConfirm(int requestCode) {
 		switch (requestCode) {
-			case REQUEST_CODE_CONFIRM_QUIT:
-				gameMenu.quitConfirm();
-				startActivity(new Intent(getActivity(), MainActivity.class));
-				break;
+		case REQUEST_CODE_CONFIRM_QUIT:
+			gameMenu.quitConfirm();
+			MainActivity_.intent(this).start();
+			break;
 		}
 	}
 
@@ -222,33 +235,32 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		gameMenu.unPause();
 	}
 
-    /**
+	/**
 	 * SelectionListener implementation
-     */
+	 */
 	@Override
 	public void selectionChanged(ISelectionSet selection) {
-        if (selection != null) {
-            showSelectionMenu();
-        } else {
+		if (selection != null) {
+			showSelectionMenu();
+		} else {
 			if (removeSelectionMenu()) {
 				dismissMenu();
 			}
-        }
-    }
-
+		}
+	}
 
 	/**
 	 * Menu methods
 	 */
-    @Override
-    public boolean isMenuOpen() {
-        return bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED;
-    }
+	@Override
+	public boolean isMenuOpen() {
+		return bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED;
+	}
 
-    @Override
-    public void dismissMenu() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
+	@Override
+	public void dismissMenu() {
+		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+	}
 
 	@Override
 	public boolean removeSelectionMenu() {
@@ -306,36 +318,35 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 
 	private void showSelectionMenu() {
 
-        switch (selectionControls.getCurrentSelection().getSelectionType()) {
-            case BUILDING:
-				showMenu();
-                getChildFragmentManager().beginTransaction()
-                        .replace(R.id.container_menu, BuildingSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
-                        .commit();
-                break;
-			case SOLDIERS:
-				getChildFragmentManager().beginTransaction()
-						.replace(R.id.container_menu, SoldiersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
-						.commit();
-				break;
-			case SPECIALISTS:
-				showMenu();
-				getChildFragmentManager().beginTransaction()
-						.replace(R.id.container_menu, SpecialistsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
-						.commit();
-				break;
-			case PEOPLE:
-				showMenu();
-				getChildFragmentManager().beginTransaction()
-						.replace(R.id.container_menu, CarriersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
-						.commit();
-				break;
-            default:
-                Log.d("Settlers", "No selection menu for selection type " + selectionControls.getCurrentSelection().getSelectionType().name());
-                break;
-        }
+		switch (selectionControls.getCurrentSelection().getSelectionType()) {
+		case BUILDING:
+			showMenu();
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, BuildingSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
+		case SOLDIERS:
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, SoldiersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
+		case SPECIALISTS:
+			showMenu();
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, SpecialistsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
+		case PEOPLE:
+			showMenu();
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, CarriersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
+		default:
+			Log.d("Settlers", "No selection menu for selection type " + selectionControls.getCurrentSelection().getSelectionType().name());
+			break;
+		}
 	}
-
 
 	/**
 	 * GameMenu item click listener
@@ -344,38 +355,38 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
 			switch (item.getItemId()) {
-				case R.id.menu_item_pause:
-					gameMenu.pause();
-					break;
-				case R.id.menu_item_save:
-					gameMenu.save();
-					break;
-				case R.id.menu_item_quit:
-					new ConfirmDialog.Builder(REQUEST_CODE_CONFIRM_QUIT)
-							.setTitle(R.string.game_menu_quit)
-							.setConfirmButtonText(R.string.game_menu_quit)
-							.create()
-							.show(getChildFragmentManager(), null);
-					break;
-				case R.id.menu_item_faster:
-					actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
-					break;
-				case R.id.menu_item_slower:
-					actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
-					break;
-				case R.id.menu_item_fastest:
-					actionControls.fireAction(new Action(EActionType.SPEED_FAST));
-					break;
-				case R.id.menu_item_skip:
-					actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
-					break;
+			case R.id.menu_item_pause:
+				gameMenu.pause();
+				break;
+			case R.id.menu_item_save:
+				gameMenu.save();
+				break;
+			case R.id.menu_item_quit:
+				new ConfirmDialog.Builder(REQUEST_CODE_CONFIRM_QUIT)
+						.setTitle(R.string.game_menu_quit)
+						.setConfirmButtonText(R.string.game_menu_quit)
+						.create()
+						.show(getChildFragmentManager(), null);
+				break;
+			case R.id.menu_item_faster:
+				actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
+				break;
+			case R.id.menu_item_slower:
+				actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
+				break;
+			case R.id.menu_item_fastest:
+				actionControls.fireAction(new Action(EActionType.SPEED_FAST));
+				break;
+			case R.id.menu_item_skip:
+				actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+				break;
 			}
 			return true;
 		}
 	};
 
 	private void addMapViews(MapContent mapContent) {
-		FrameLayout frameLayout = (FrameLayout)getView().findViewById(R.id.frame_layout);
+		FrameLayout frameLayout = (FrameLayout) getView().findViewById(R.id.frame_layout);
 
 		Region goRegion = new Region(Region.POSITION_CENTER);
 		goRegion.setContent(mapContent);
@@ -392,13 +403,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
-				case ACTION_PAUSE:
-					showPausedMenu();
-					break;
-				case ACTION_UNPAUSE:
-					gameMenu.unMute();
-					dismissPausedMenu();
-					break;
+			case ACTION_PAUSE:
+				showPausedMenu();
+				break;
+			case ACTION_UNPAUSE:
+				gameMenu.unMute();
+				dismissPausedMenu();
+				break;
 			}
 		}
 	};

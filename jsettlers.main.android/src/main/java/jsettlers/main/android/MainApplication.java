@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
 package jsettlers.main.android;
 
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
@@ -6,21 +21,20 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_SAVE;
 import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
 
+import org.androidannotations.annotations.EApplication;
+
 import jsettlers.common.menu.IGameExitListener;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
-import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.Player;
-import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
-import jsettlers.main.android.core.GameService;
+import jsettlers.main.android.core.GameService_;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.controls.GameMenu;
@@ -32,7 +46,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-
+@EApplication
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {
 	private MapList mapList;
 	private IMultiplayerConnector multiplayerConnector;
@@ -50,7 +64,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
 		localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
-		//TODO register this only when a game starts
+		// TODO register this only when a game starts
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ACTION_PAUSE);
 		intentFilter.addAction(ACTION_UNPAUSE);
@@ -59,8 +73,6 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		intentFilter.addAction(ACTION_QUIT_CONFIRM);
 		registerReceiver(broadcastReceiver, intentFilter);
 	}
-
-
 
 	/**
 	 * GameStarter implementation
@@ -123,8 +135,7 @@ public class MainApplication extends Application implements GameStarter, GameMan
 	@Override
 	public IMapInterfaceConnector gameStarted(IStartedGame game) {
 		controlsAdapter = new ControlsAdapter(getApplicationContext(), game);
-
-		startService(new Intent(this, GameService.class));
+		GameService_.intent(this).start();
 
 		game.setGameExitListener(this);
 
@@ -149,12 +160,11 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		return controlsAdapter != null;
 	}
 
-
 	/**
 	 * IGameExitedListener implementation
 	 */
 	@Override
-		public void gameExited(IStartedGame game) {
+	public void gameExited(IStartedGame game) {
 		controlsAdapter = null;
 		startingGame = null;
 		joiningGame = null;
@@ -171,21 +181,21 @@ public class MainApplication extends Application implements GameStarter, GameMan
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			switch (intent.getAction()) {
-				case ACTION_PAUSE:
-					getControlsAdapter().getGameMenu().pause();
-					break;
-				case ACTION_UNPAUSE:
-					getControlsAdapter().getGameMenu().unPause();
-					break;
-				case ACTION_SAVE:
-					getControlsAdapter().getGameMenu().save();
-					break;
-				case ACTION_QUIT:
-					getControlsAdapter().getGameMenu().quit();
-					break;
-				case ACTION_QUIT_CONFIRM:
-					getControlsAdapter().getGameMenu().quitConfirm();
-					break;
+			case ACTION_PAUSE:
+				controlsAdapter.getGameMenu().pause();
+				break;
+			case ACTION_UNPAUSE:
+				controlsAdapter.getGameMenu().unPause();
+				break;
+			case ACTION_SAVE:
+				controlsAdapter.getGameMenu().save();
+				break;
+			case ACTION_QUIT:
+				controlsAdapter.getGameMenu().quit();
+				break;
+			case ACTION_QUIT_CONFIRM:
+				controlsAdapter.getGameMenu().quitConfirm();
+				break;
 			}
 		}
 	};

@@ -1,14 +1,31 @@
+/*
+ * Copyright (c) 2017
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection;
+
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.androidui.utils.OriginalImageProvider;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionClickListener;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
 import jsettlers.main.android.gameplay.ImageLinkFactory;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,7 +33,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,110 +40,96 @@ import android.widget.TextView;
 /**
  * Created by tompr on 13/01/2017.
  */
-
+@EFragment(R.layout.menu_selection_soldiers)
 public class SoldiersSelectionFragment extends SelectionFragment {
-    private static final EMovableType[] soldierTypes = new EMovableType[] {
-            EMovableType.SWORDSMAN_L1,
-            EMovableType.SWORDSMAN_L2,
-            EMovableType.SWORDSMAN_L3,
-            EMovableType.PIKEMAN_L1,
-            EMovableType.PIKEMAN_L2,
-            EMovableType.PIKEMAN_L3,
-            EMovableType.BOWMAN_L1,
-            EMovableType.BOWMAN_L2,
-            EMovableType.BOWMAN_L3,
-    };
+	private static final EMovableType[] soldierTypes = new EMovableType[] {
+			EMovableType.SWORDSMAN_L1,
+			EMovableType.SWORDSMAN_L2,
+			EMovableType.SWORDSMAN_L3,
+			EMovableType.PIKEMAN_L1,
+			EMovableType.PIKEMAN_L2,
+			EMovableType.PIKEMAN_L3,
+			EMovableType.BOWMAN_L1,
+			EMovableType.BOWMAN_L2,
+			EMovableType.BOWMAN_L3,
+	};
 
-    private ActionControls actionControls;
+	public static Fragment newInstance() {
+		return new SoldiersSelectionFragment_();
+	}
 
-    private LinearLayout soldiers1Layout;
-    private LinearLayout soldiers2Layout;
-    private LinearLayout soldiers3Layout;
+	@ViewById(R.id.layout_soldiers_level_1)
+	LinearLayout soldiers1Layout;
+	@ViewById(R.id.layout_soldiers_level_2)
+	LinearLayout soldiers2Layout;
+	@ViewById(R.id.layout_soldiers_level_3)
+	LinearLayout soldiers3Layout;
 
-    public static Fragment newInstance() {
-        return new SoldiersSelectionFragment();
-    }
+	private ActionControls actionControls;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.menu_selection_soldiers, container, false);
-    }
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		actionControls = new ControlsResolver(getActivity()).getActionControls();
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        actionControls = new ControlsResolver(getActivity()).getActionControls();
+		LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-        soldiers1Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_1);
-        soldiers2Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_2);
-        soldiers3Layout = (LinearLayout) getView().findViewById(R.id.layout_soldiers_level_3);
+		for (EMovableType movableType : soldierTypes) {
+			int count = getSelection().getMovableCount(movableType);
 
-        View killButton = getView().findViewById(R.id.button_kill);
-        View haltButton = getView().findViewById(R.id.button_halt);
+			if (count > 0) {
+				LinearLayout soldiersLayout = getLevelLayout(movableType);
 
-        killButton.setOnClickListener(killClickListener);
-        haltButton.setOnClickListener(new ActionClickListener(actionControls, EActionType.STOP_WORKING));
+				View view = layoutInflater.inflate(R.layout.view_specialist, soldiersLayout, false);
+				ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
+				TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
 
-        for (EMovableType movableType : soldierTypes) {
-            int count = getSelection().getMovableCount(movableType);
+				OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
+				textView.setText(count + "");
 
-            if (count > 0) {
-                LinearLayout soldiersLayout = getLevelLayout(movableType);
+				soldiersLayout.addView(view);
+			}
+		}
 
-                View view = layoutInflater.inflate(R.layout.view_specialist, soldiersLayout, false);
-                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
-                TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
+		goneIfEmpty(soldiers1Layout);
+		goneIfEmpty(soldiers2Layout);
+		goneIfEmpty(soldiers3Layout);
+	}
 
-                OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
-                textView.setText(count + "");
+	private void goneIfEmpty(LinearLayout linearLayout) {
+		if (linearLayout.getChildCount() == 0) {
+			linearLayout.setVisibility(View.GONE);
+		}
+	}
 
-                soldiersLayout.addView(view);
-            }
-        }
+	private LinearLayout getLevelLayout(EMovableType movableType) {
+		switch (movableType) {
+		case SWORDSMAN_L1:
+		case BOWMAN_L1:
+		case PIKEMAN_L1:
+			return soldiers1Layout;
+		case SWORDSMAN_L2:
+		case BOWMAN_L2:
+		case PIKEMAN_L2:
+			return soldiers2Layout;
+		case SWORDSMAN_L3:
+		case BOWMAN_L3:
+		case PIKEMAN_L3:
+			return soldiers3Layout;
+		default:
+			throw new RuntimeException("SoldiersSelctionFragment can't display movable: " + movableType.name());
+		}
+	}
 
-        goneIfEmpty(soldiers1Layout);
-        goneIfEmpty(soldiers2Layout);
-        goneIfEmpty(soldiers3Layout);
-    }
+	@Click(R.id.button_halt)
+	void haltClicked() {
+		actionControls.fireAction(EActionType.STOP_WORKING);
+	}
 
-    private void goneIfEmpty(LinearLayout linearLayout) {
-        if(linearLayout.getChildCount() == 0) {
-            linearLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private LinearLayout getLevelLayout(EMovableType movableType) {
-        switch (movableType) {
-            case SWORDSMAN_L1:
-            case BOWMAN_L1:
-            case PIKEMAN_L1:
-                return soldiers1Layout;
-            case SWORDSMAN_L2:
-            case BOWMAN_L2:
-            case PIKEMAN_L2:
-                return soldiers2Layout;
-            case SWORDSMAN_L3:
-            case BOWMAN_L3:
-            case PIKEMAN_L3:
-                return soldiers3Layout;
-            default:
-                throw new RuntimeException("SoldiersSelctionFragment can't display movable: " + movableType.name());
-        }
-    }
-
-    private final View.OnClickListener killClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
-                    .setAction(R.string.yes, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            actionControls.fireAction(new Action(EActionType.DESTROY));
-                        }
-                    })
-                    .show();
-        }
-    };
+	@Click(R.id.button_kill)
+	void killClicked() {
+		Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
+				.setAction(R.string.yes, view1 -> actionControls.fireAction(EActionType.DESTROY))
+				.show();
+	}
 }

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,12 +11,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ */
 package jsettlers.main.android.core.resources;
 
 import java.io.File;
 
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+
 import android.content.res.AssetManager;
 
 public class AndroidMapListFactory extends DefaultMapListFactory {

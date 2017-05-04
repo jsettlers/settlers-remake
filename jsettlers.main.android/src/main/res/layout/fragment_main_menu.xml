@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".mainmenu.ui.fragments.MainMenuFragment">
+    tools:context=".mainmenu.ui.fragments.MainMenuFragment_">
 
     <include layout="@layout/include_app_bar" />
 
@@ -53,6 +53,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_gravity="end"
                         android:orientation="horizontal">
+
                         <Button
                             android:id="@+id/button_quit"
                             android:layout_width="wrap_content"

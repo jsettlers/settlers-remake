@@ -4,7 +4,7 @@
     android:layout_width="@dimen/menu_button_size"
     android:layout_height="@dimen/menu_button_size"
     android:layout_gravity="center"
-    android:scaleType="fitCenter"
-    android:padding="8dp"
     android:background="?attr/selectableItemBackgroundBorderless"
+    android:padding="8dp"
+    android:scaleType="fitCenter"
     tools:src="@drawable/building_destroy" />
