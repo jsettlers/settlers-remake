@@ -15,49 +15,34 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerSetupView;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.View;
-import android.widget.Spinner;
 
 /**
  * Created by tompr on 21/01/2017.
  */
-public class NewMultiPlayerSetupFragment extends MapSetupFragment implements NewMultiPlayerSetupView {
-	private static final String ARG_MAP_ID = "mapid";
-
-	private NewMultiPlayerSetupPresenter presenter;
+@EFragment(R.layout.fragment_new_single_player_setup)
+public class NewMultiPlayerSetupFragment extends MapSetupFragment<NewMultiPlayerSetupPresenter> implements NewMultiPlayerSetupView {
 
 	public static Fragment create(IMapDefinition mapDefinition) {
-		Bundle bundle = new Bundle();
-		bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
-
-		Fragment fragment = new NewMultiPlayerSetupFragment();
-		fragment.setArguments(bundle);
-		return fragment;
+		return NewMultiPlayerSetupFragment_.builder().mapId(mapDefinition.getMapId()).build();
 	}
 
 	@Override
-	protected NewMultiPlayerSetupPresenter getPresenter() {
-		presenter = PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, getArguments().getString(ARG_MAP_ID));
-		return presenter;
+	protected NewMultiPlayerSetupPresenter createPresenter() {
+		return PresenterFactory.createNewMultiPlayerSetupPresenter(getActivity(), this, mapId);
 	}
 
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-
-		// TODO these are disabled as the functionality doesnt exist for multiplayer games yet
-		Spinner numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
-		Spinner startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
-		Spinner peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
+	@AfterViews
+	void disableUnavailableSpinners() {
 		numberOfPlayersSpinner.setEnabled(false);
 		startResourcesSpinner.setEnabled(false);
 		peacetimeSpinner.setEnabled(false);

@@ -25,7 +25,7 @@ public class PreviewImageConverter {
 		return Single.create(e -> e.onSuccess(convert(data)));
 	}
 
-	private static Bitmap convert(short[] data) {
+	public static Bitmap convert(short[] data) {
 		if (data == null) {
 			Bitmap b = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 			b.setPixel(0, 0, 0xffffffff);

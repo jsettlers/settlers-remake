@@ -140,9 +140,7 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
 	@Override
 	public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
 		updateSlots();
-
-		// trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
-		updateViewItems();
+		updateViewItems(); // trigger a notify data set changed for now. Probably want to update the view more dynamically at some point
 	}
 
 	/**

@@ -48,7 +48,7 @@ public class PlayerSlotPresenter {
 		this.positionChangedListener = positionChangedListener;
 	}
 
-	public void bindView(PlayerSlotView view) {
+	public void initView(PlayerSlotView view) {
 		this.view = view;
 
 		view.setName(name);

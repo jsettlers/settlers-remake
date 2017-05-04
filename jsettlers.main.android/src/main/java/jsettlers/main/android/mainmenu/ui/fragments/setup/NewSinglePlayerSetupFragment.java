@@ -15,28 +15,24 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
+import org.androidannotations.annotations.EFragment;
+
 import jsettlers.common.menu.IMapDefinition;
+import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-public class NewSinglePlayerSetupFragment extends MapSetupFragment implements NewSinglePlayerSetupView {
-	private static final String ARG_MAP_ID = "mapid";
-
+@EFragment(R.layout.fragment_new_single_player_setup)
+public class NewSinglePlayerSetupFragment extends MapSetupFragment<NewSinglePlayerSetupPresenter> implements NewSinglePlayerSetupView {
 	public static Fragment create(IMapDefinition mapDefinition) {
-		Bundle bundle = new Bundle();
-		bundle.putString(ARG_MAP_ID, mapDefinition.getMapId());
-
-		Fragment fragment = new NewSinglePlayerSetupFragment();
-		fragment.setArguments(bundle);
-		return fragment;
+		return NewSinglePlayerSetupFragment_.builder().mapId(mapDefinition.getMapId()).build();
 	}
 
 	@Override
-	protected NewSinglePlayerSetupPresenter getPresenter() {
-		return PresenterFactory.createNewSinglePlayerSetupPresenter(getActivity(), this, getArguments().getString(ARG_MAP_ID));
+	protected NewSinglePlayerSetupPresenter createPresenter() {
+		return PresenterFactory.createNewSinglePlayerSetupPresenter(getActivity(), this, mapId);
 	}
 }

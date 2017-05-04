@@ -17,10 +17,18 @@ package jsettlers.main.android.mainmenu.ui.fragments.setup;
 
 import java.util.List;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.ItemSelect;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.PreviewImageConverter;
-import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.setup.MapSetupPresenter;
 import jsettlers.main.android.mainmenu.presenters.setup.Peacetime;
 import jsettlers.main.android.mainmenu.presenters.setup.PlayerCount;
@@ -39,85 +47,61 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by tompr on 21/01/2017.
  */
-public abstract class MapSetupFragment extends Fragment implements MapSetupView {
-	private MapSetupPresenter presenter;
+@EFragment(R.layout.fragment_new_single_player_setup)
+public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> extends Fragment implements MapSetupView {
+	@ViewById(R.id.recycler_view)
+	RecyclerView recyclerView;
+	@ViewById(R.id.image_view_map_preview)
+	ImageView mapPreviewImageView;
+	@ViewById(R.id.toolbar)
+	Toolbar toolbar;
+	@ViewById(R.id.spinner_number_of_players)
+	protected Spinner numberOfPlayersSpinner;
+	@ViewById(R.id.spinner_start_resources)
+	protected Spinner startResourcesSpinner;
+	@ViewById(R.id.spinner_peacetime)
+	protected Spinner peacetimeSpinner;
 
-	private Disposable mapPreviewSubscription;
+	@FragmentArg("mapid")
+	protected String mapId;
 
-	private PlayersAdapter adapter;
-	private ArrayAdapter<PlayerCount> playerCountsAdapter;
-	private ArrayAdapter<StartResources> startResourcesAdapter;
+	protected Presenter presenter;
+	PlayersAdapter adapter;
+	ArrayAdapter<PlayerCount> playerCountsAdapter;
+	ArrayAdapter<StartResources> startResourcesAdapter;
 
-	private RecyclerView recyclerView;
-	private ImageView mapPreviewImageView;
-	private Button startGameButton;
-	private Spinner numberOfPlayersSpinner;
-	private Spinner startResourcesSpinner;
-	private Spinner peacetimeSpinner;
+	boolean isSaving = false;
 
-	private boolean isSaving = false;
-
-	protected abstract MapSetupPresenter getPresenter();
+	protected abstract Presenter createPresenter();
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = getPresenter();
+		presenter = createPresenter();
 	}
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_single_player_setup, container, false);
-		FragmentUtil.setActionBar(this, view);
-
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+	@AfterViews
+	void setupView() {
 		recyclerView.setHasFixedSize(true);
+		FragmentUtil.setActionBar(this, toolbar);
 
-		startGameButton = (Button) view.findViewById(R.id.button_start_game);
-		startGameButton.setOnClickListener(v -> presenter.startGame());
+		// Disable these for now, as these features are not implemented yet.
+		startResourcesSpinner.setEnabled(false);
+		peacetimeSpinner.setEnabled(false);
 
-		mapPreviewImageView = (ImageView) view.findViewById(R.id.image_view_map_preview);
-		numberOfPlayersSpinner = (Spinner) view.findViewById(R.id.spinner_number_of_players);
-		startResourcesSpinner = (Spinner) view.findViewById(R.id.spinner_start_resources);
-		peacetimeSpinner = (Spinner) view.findViewById(R.id.spinner_peacetime);
-
-		numberOfPlayersSpinner.setOnItemSelectedListener(new SpinnerListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-				presenter.playerCountSelected(playerCountsAdapter.getItem(position));
-			}
-		});
-
-		startResourcesSpinner.setOnItemSelectedListener(new SpinnerListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-				presenter.startResourcesSelected(startResourcesAdapter.getItem(position));
-			}
-		});
-
-		return view;
-	}
-
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
 		presenter.initView();
 	}
 
@@ -137,9 +121,6 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 	public void onDestroyView() {
 		super.onDestroyView();
 		presenter.dispose();
-		if (mapPreviewSubscription != null) {
-			mapPreviewSubscription.dispose();
-		}
 	}
 
 	@Override
@@ -148,6 +129,21 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 		if (isRemoving() && !isSaving) {
 			presenter.viewFinished();
 		}
+	}
+
+	@Click(R.id.button_start_game)
+	protected void onStartGameClicked() {
+		presenter.startGame();
+	}
+
+	@ItemSelect(R.id.spinner_number_of_players)
+	void playerSelected(boolean selected, int position) {
+		presenter.playerCountSelected(playerCountsAdapter.getItem(position));
+	}
+
+	@ItemSelect(R.id.spinner_start_resources)
+	void startResourcesSelected(boolean selected, int position) {
+		presenter.startResourcesSelected(startResourcesAdapter.getItem(position));
 	}
 
 	/**
@@ -186,21 +182,16 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 	}
 
 	@Override
+	@Background
 	public void setMapImage(short[] image) {
-		mapPreviewSubscription = PreviewImageConverter.toBitmap(image)
-				.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribeWith(new DisposableSingleObserver<Bitmap>() {
-					@Override
-					public void onSuccess(Bitmap bitmap) {
-						mapPreviewImageView.setImageBitmap(bitmap);
-					}
+		setMapImage(PreviewImageConverter.convert(image));
+	}
 
-					@Override
-					public void onError(Throwable e) {
-						mapPreviewImageView.setImageDrawable(null);
-					}
-				});
+	@UiThread
+	public void setMapImage(Bitmap bitmap) {
+		if (mapPreviewImageView != null) {
+			mapPreviewImageView.setImageBitmap(bitmap);
+		}
 	}
 
 	private <T> ArrayAdapter<T> getSpinnerAdapter(T[] items) {
@@ -210,18 +201,17 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 	}
 
 	@Override
+	@UiThread
 	public void setItems(List<PlayerSlotPresenter> items, int playerCount) {
-		getActivity().runOnUiThread(() -> {
-			if (adapter == null) {
-				adapter = new PlayersAdapter(items);
-			}
+		if (adapter == null) {
+			adapter = new PlayersAdapter(items);
+		}
 
-			if (recyclerView.getAdapter() == null) {
-				recyclerView.setAdapter(adapter);
-			}
+		if (recyclerView.getAdapter() == null) {
+			recyclerView.setAdapter(adapter);
+		}
 
-			adapter.setItems(items, playerCount);
-		});
+		adapter.setItems(items, playerCount);
 	}
 
 	protected int getListItemLayoutId() {
@@ -411,7 +401,7 @@ public abstract class MapSetupFragment extends Fragment implements MapSetupView 
 
 		void bind(PlayerSlotPresenter playerSlotPresenter) {
 			this.presenter = playerSlotPresenter;
-			playerSlotPresenter.bindView(this);
+			playerSlotPresenter.initView(this);
 		}
 	}
 
