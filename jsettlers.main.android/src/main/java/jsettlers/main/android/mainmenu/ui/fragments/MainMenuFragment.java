@@ -87,7 +87,7 @@ public class MainMenuFragment extends Fragment implements MainMenuView, Director
 	@AfterViews
 	public void afterViews() {
 		FragmentUtil.setActionBar(this, toolbar);
-		presenter.bindView();
+		presenter.initView();
 	}
 
 	@Override

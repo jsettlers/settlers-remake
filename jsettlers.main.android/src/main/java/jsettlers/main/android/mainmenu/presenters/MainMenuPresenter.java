@@ -44,7 +44,7 @@ public class MainMenuPresenter {
 		this.resourcesLoaded = resourceLocationScanner.scanForResources();
 	}
 
-	public void bindView() {
+	public void initView() {
 		if (!resourcesLoaded) {
 			view.showResourcePicker();
 		}

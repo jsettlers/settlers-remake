@@ -20,17 +20,19 @@ import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
 
 import android.support.v4.app.Fragment;
+import org.androidannotations.annotations.EFragment;
 
 /**
  * Created by tompr on 19/01/2017.
  */
+@EFragment(R.layout.fragment_map_picker)
 public class NewSinglePlayerPickerFragment extends MapPickerFragment {
 	public static Fragment newInstance() {
-		return new NewSinglePlayerPickerFragment();
+		return new NewSinglePlayerPickerFragment_();
 	}
 
 	@Override
-	protected MapPickerPresenter getPresenter() {
+	protected MapPickerPresenter createPresenter() {
 		return PresenterFactory.createNewSinglePlayerPickerPresenter(getActivity(), this);
 	}
 

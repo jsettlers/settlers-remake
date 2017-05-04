@@ -58,6 +58,10 @@ import io.reactivex.schedulers.Schedulers;
 public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
+	public static JoinMultiPlayerPickerFragment create() {
+		return new JoinMultiPlayerPickerFragment_();
+	}
+
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
 	@ViewById(R.id.layout_searching_for_games)
@@ -65,13 +69,10 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
 
-	private JoinMultiPlayerPickerPresenter presenter;
-	private JoinableGamesAdapter adapter;
-	private boolean isSaving = false;
+	JoinMultiPlayerPickerPresenter presenter;
+	JoinableGamesAdapter adapter;
 
-	public static JoinMultiPlayerPickerFragment create() {
-		return new JoinMultiPlayerPickerFragment_();
-	}
+	boolean isSaving = false;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {

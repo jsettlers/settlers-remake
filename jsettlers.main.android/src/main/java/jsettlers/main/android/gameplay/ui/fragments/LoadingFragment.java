@@ -39,13 +39,13 @@ import android.widget.Toast;
 
 @EFragment(R.layout.fragment_loading)
 public class LoadingFragment extends Fragment implements IStartingGameListener {
-	GameStarter gameStarter;
-	GameNavigator navigator;
-
 	@ViewById(R.id.progress_bar)
 	ProgressBar progressBar;
 	@ViewById(R.id.text_view_status)
 	TextView statusTextView;
+
+	GameStarter gameStarter;
+	GameNavigator navigator;
 
 	public static LoadingFragment newInstance() {
 		return new LoadingFragment_();

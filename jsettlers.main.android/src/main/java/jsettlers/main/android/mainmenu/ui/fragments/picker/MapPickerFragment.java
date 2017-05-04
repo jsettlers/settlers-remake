@@ -19,6 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import jsettlers.common.menu.IMapDefinition;
@@ -37,7 +42,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -50,43 +55,35 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A simple {@link Fragment} subclass.
  */
+@EFragment(R.layout.fragment_map_picker)
 public abstract class MapPickerFragment extends Fragment implements MapPickerView {
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Labels.getString("date.date-only"), Locale.getDefault());
 
-	private MapPickerPresenter presenter;
+	@ViewById(R.id.recycler_view)
+	RecyclerView recyclerView;
+	@ViewById(R.id.toolbar)
+	Toolbar toolbar;
 
-	private MapAdapter adapter;
+	MapPickerPresenter presenter;
+	MapAdapter adapter;
 
-	private RecyclerView recyclerView;
-
-	private boolean isSaving = false;
-
-	public MapPickerFragment() {
-	}
-
-	protected abstract MapPickerPresenter getPresenter();
+	boolean isSaving = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		presenter = getPresenter();
+		presenter = createPresenter();
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_map_picker, container, false);
-		FragmentUtil.setActionBar(this, view);
-
-		recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-
-		return view;
+	@AfterViews
+	void setupToolbar() {
+		FragmentUtil.setActionBar(this, toolbar);
+		presenter.initView();
 	}
 
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		presenter.initView();
 	}
 
 	@Override
@@ -113,22 +110,21 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	 * MapPickerView implementation
 	 */
 	@Override
+	@UiThread
 	public void setItems(List<? extends MapLoader> items) {
-		getView().post(() -> {
-			if (adapter == null) {
-				adapter = new MapAdapter(items);
-			}
+		if (adapter == null) {
+			adapter = new MapAdapter(items);
+		}
 
-			if (recyclerView.getAdapter() == null) {
-				recyclerView.setHasFixedSize(true);
-				recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-				recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
-				recyclerView.setItemAnimator(new NoChangeItemAnimator());
-				recyclerView.setAdapter(adapter);
-			}
+		if (recyclerView.getAdapter() == null) {
+			recyclerView.setHasFixedSize(true);
+			recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+			recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getActivity()).build());
+			recyclerView.setItemAnimator(new NoChangeItemAnimator());
+			recyclerView.setAdapter(adapter);
+		}
 
-			adapter.setItems(items);
-		});
+		adapter.setItems(items);
 	}
 
 	/**
@@ -137,6 +133,8 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	protected boolean showMapDates() {
 		return false;
 	}
+
+	protected abstract MapPickerPresenter createPresenter();
 
 	/**
 	 * RecyclerView Adapter for displaying list of maps
@@ -148,9 +146,11 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 			@Override
 			public void onClick(View v) {
 				RecyclerView.ViewHolder viewHolder = recyclerView.findContainingViewHolder(v);
-				int position = viewHolder.getAdapterPosition();
-				MapLoader map = maps.get(position);
-				presenter.itemSelected(map);
+				if (viewHolder != null) {
+					int position = viewHolder.getAdapterPosition();
+					MapLoader map = maps.get(position);
+					presenter.itemSelected(map);
+				}
 			}
 		};
 

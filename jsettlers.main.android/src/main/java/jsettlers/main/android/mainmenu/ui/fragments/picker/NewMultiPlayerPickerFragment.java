@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
+import org.androidannotations.annotations.EFragment;
+
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
@@ -26,15 +28,16 @@ import android.support.v4.app.Fragment;
 /**
  * Created by tompr on 21/01/2017.
  */
+@EFragment(R.layout.fragment_map_picker)
 public class NewMultiPlayerPickerFragment extends MapPickerFragment implements NewMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 
 	public static Fragment newInstance() {
-		return new NewMultiPlayerPickerFragment();
+		return new NewMultiPlayerPickerFragment_();
 	}
 
 	@Override
-	protected MapPickerPresenter getPresenter() {
+	protected MapPickerPresenter createPresenter() {
 		return PresenterFactory.createNewMultiPlayerPickerPresenter(getActivity(), this);
 	}
 
@@ -49,8 +52,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment implements N
 	 */
 	@Override
 	public void setJoiningProgress(String stateString, int progressPercentage) {
-		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager()
-				.findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog == null) {
 			JoiningGameProgressDialog.create(stateString, progressPercentage).show(getChildFragmentManager(), TAG_JOINING_PROGRESS_DIALOG);
 		} else {
@@ -60,8 +62,7 @@ public class NewMultiPlayerPickerFragment extends MapPickerFragment implements N
 
 	@Override
 	public void dismissJoiningProgress() {
-		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager()
-				.findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
+		JoiningGameProgressDialog joiningProgressDialog = (JoiningGameProgressDialog) getChildFragmentManager().findFragmentByTag(TAG_JOINING_PROGRESS_DIALOG);
 		if (joiningProgressDialog != null) {
 			joiningProgressDialog.dismiss();
 		}
