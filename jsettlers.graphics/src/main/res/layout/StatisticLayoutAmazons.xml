@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element x="9" y="219" maxx="127" maxy="435">
+    <element class="Label" x="9" maxx="127" y="219" maxy="234">
+        <localized label="settler_stats" />
+        <font-size size="NORMAL" />
+    </element>
+
+    <!-- Header -->
+    <element x="19" width="18" y="236" height="18"
+             class="jsettlers.graphics.ui.Button">
+        <image file="3" type="GUI" sequence="393" image="0"/>
+    </element>
+    <element x="19" y="254" maxx="37" maxy="262" class="jsettlers.graphics.ui.Label" id="lbSettler">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="44" width="18" y="236" height="18"
+             class="jsettlers.graphics.ui.Button">
+        <image file="3" type="GUI" sequence="126" image="0"/>
+    </element>
+    <element x="44" y="254" maxx="62" maxy="262" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="72" y="240" maxx="90" maxy="246" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+    <element x="72" width="18" y="250" height="10"
+             class="jsettlers.graphics.ui.Button">
+        <image file="3" type="GUI" sequence="3" image="0"/>
+    </element>
+
+    <element x="102" width="18" y="236" height="18"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="120" image="0"/>
+    </element>
+    <element x="102" y="254" maxx="120" maxy="262" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <!-- Row 1 -->
+    <element x="13" width="22" y="276" height="36"
+             class="jsettlers.graphics.ui.Button">
+       <image file="44" type="GUI" sequence="135" image="0"/>
+    </element>
+    <element x="13" y="312" maxx="35" maxy="320" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="42" width="22" y="276" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="138" image="0"/>
+    </element>
+    <element x="42" y="312" maxx="64" maxy="320" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="71" width="22" y="276" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="141" image="0"/>
+    </element>
+    <element x="71" y="312" maxx="93" maxy="320" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="100" width="22" y="276" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="153" image="0"/>
+    </element>
+    <element x="100" y="312" maxx="122" maxy="320" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <!-- Row 2 -->
+    <element x="13" width="22" y="330" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="210" image="0"/>
+    </element>
+    <element x="13" y="366" maxx="35" maxy="374" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="42" width="22" y="330" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="216" image="0"/>
+    </element>
+    <element x="41" y="366" maxx="64" maxy="374" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="71" width="22" y="330" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="213" image="0"/>
+    </element>
+    <element x="71" y="366" maxx="93" maxy="374" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="100" width="22" y="330" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="204" image="0"/>
+    </element>
+    <element x="100" y="366" maxx="122" maxy="374" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <!-- Row 3 -->
+    <element x="13" width="22" y="384" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="189" image="0"/>
+    </element>
+    <element x="13" y="420" maxx="35" maxy="428" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="42" width="22" y="384" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="186" image="0"/>
+    </element>
+    <element x="42" y="420" maxx="64" maxy="428" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="71" width="22" y="384" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="44" type="GUI" sequence="207" image="0"/>
+    </element>
+    <element x="71" y="420" maxx="93" maxy="428" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+    <element x="100" width="22" y="384" height="36"
+             class="jsettlers.graphics.ui.Button">
+        <image file="3" type="GUI" sequence="0" image="0"/>
+    </element>
+    <element x="100" y="420" maxx="122" maxy="428" class="jsettlers.graphics.ui.Label">
+        <localized label="0"/>
+        <font-size size="NORMAL"/>
+    </element>
+
+</element>
