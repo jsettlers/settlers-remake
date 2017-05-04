@@ -25,4 +25,5 @@ public interface IInGamePlayer {
 
 	IEndgameStatistic getEndgameStatistic();
 
+	ECivilisation getCivilisation();
 }

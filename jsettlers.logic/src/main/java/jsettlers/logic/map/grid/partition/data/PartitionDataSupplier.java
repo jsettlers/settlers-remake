@@ -15,9 +15,12 @@
 package jsettlers.logic.map.grid.partition.data;
 
 import jsettlers.common.map.partition.IBuildingCounts;
+import jsettlers.common.map.partition.IMovableCounts;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.logic.map.grid.partition.Partition;
+import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 public final class PartitionDataSupplier implements IPartitionData {
 
@@ -27,6 +30,7 @@ public final class PartitionDataSupplier implements IPartitionData {
 	private final MaterialCounts materialCounts;
 
 	private IBuildingCounts buildingCounts;
+	private IMovableCounts movableCounts;
 
 	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, MaterialCounts materialCounts) {
 		this.playerId = playerId;
@@ -51,5 +55,13 @@ public final class PartitionDataSupplier implements IPartitionData {
 			buildingCounts = new BuildingCounts(playerId, partitionId);
 		}
 		return buildingCounts;
+	}
+
+	@Override
+	public IMovableCounts getMovableCounts() {
+		if(movableCounts == null || true) {	// Disable caching, same reason here
+			movableCounts = new MovableCounts(playerId, partitionId);
+		}
+		return movableCounts;
 	}
 }

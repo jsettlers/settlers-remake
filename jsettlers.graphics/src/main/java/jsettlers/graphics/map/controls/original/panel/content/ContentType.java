@@ -45,7 +45,7 @@ public final class ContentType {
 	public static final AbstractContentProvider GOODS_SPREAD = new DistributionPanel();
 	public static final AbstractContentProvider GOODS_TRANSPORT = new MaterialPriorityContent();
 
-	public static final AbstractContentProvider SETTLERSTATISTIC = new SettlersStatisticsPanel();
+	public static final SettlersStatisticsPanel SETTLERSTATISTIC = new SettlersStatisticsPanel();
 	public static final AbstractContentProvider PROFESSION = EMPTY;
 	public static final WarriorsPanel WARRIORS = new WarriorsPanel();
 	public static final AbstractContentProvider PRODUCTION = EMPTY;

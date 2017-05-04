@@ -46,4 +46,11 @@ public interface IPartitionData {
 	 * @return An instance of {@link IBuildingCounts} providing the number of buildings.
 	 */
 	IBuildingCounts getBuildingCounts();
+
+	/**
+	 * Returns the number of movable unit in the partition or available to the player.
+	 *
+	 * @return An instance of {@Link IMovableCounts} providing the information.
+	 */
+	IMovableCounts getMovableCounts();
 }
