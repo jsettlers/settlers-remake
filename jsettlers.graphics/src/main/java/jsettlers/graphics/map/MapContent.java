@@ -922,7 +922,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (printMsg)
 			switch (message.getType()) {
 			case ATTACKED:
-				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1);
 				break;
 
 			default:

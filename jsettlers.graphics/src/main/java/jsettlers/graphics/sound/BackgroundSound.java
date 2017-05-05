@@ -26,17 +26,22 @@ import jsettlers.graphics.map.MapDrawContext;
  * @author michael
  */
 public class BackgroundSound implements Runnable {
-	private static final double BIRDS1_FRACTION = .5;
-	private static final int BACKGROUND_SLEEP_TIME = 300;
-	private static final int DESERT_PLAY_TIME = 500;
-	private static final int WATER_PLAY_TIME = 200;
-	private static final int BIRDS_PLAY_TIME = 800;
-	private static final float VOLUME = .4f;
+	private static final int BACKGROUND_SLEEP_TIME = 50;
+	private static final double BIRDS1_FRACTION = .25;
+	private static final double BIRDS_FREQUENCY = .3;
+
+	private static final float BIRDS_VOLUME = .4f;
+	private static final float WATER_VOLUME =  .1f;
+	private static final float DESERT_VOLUME =  .05f;
+	private static final float RIVER_VOLUME =  .03f;
+	private static final float MOUNTAIN_VOLUME =  .003f;
 
 	private static final int INDEX_BIRDS1 = 69;
 	private static final int INDEX_BIRDS2 = 70;
 	private static final int INDEX_WATER = 68;
-	private static final int INDEX_DESERT = 73;
+	private static final int INDEX_DESERT = 67;
+	private static final int INDEX_RIVER = 71;
+	private static final int INDEX_MOUNTAIN = 73;
 
 	private final MapDrawContext map;
 	private final SoundManager sound;
@@ -68,24 +73,29 @@ public class BackgroundSound implements Runnable {
 				if (screen == null) {
 					continue;
 				}
+				sound.setScreen(screen);
 				int line = (int) (Math.random() * screen.getLines());
 
-				int x = screen.getLineStartX(line) + (int) (Math.random() * screen.getLineLength());
+				int x0 = screen.getLineStartX(line);
+				int x = x0 + (int) (Math.random() * screen.getLineLength());
 				int y = screen.getLineY(line);
 
-				if (hasTree(x, y)) {
+				if (hasTree(x, y) && Math.random() < BIRDS_FREQUENCY) {
 					if (Math.random() < BIRDS1_FRACTION) {
-						sound.playSound(INDEX_BIRDS1, VOLUME, VOLUME);
+						sound.playSound(INDEX_BIRDS1, BIRDS_VOLUME, x, y);
 					} else {
-						sound.playSound(INDEX_BIRDS2, VOLUME, VOLUME);
+						sound.playSound(INDEX_BIRDS2, BIRDS_VOLUME, x, y);
 					}
-					waitTime(BIRDS_PLAY_TIME); // < Do not play it to often
-				} else if (hasWater(x, y)) {
-					sound.playSound(INDEX_WATER, VOLUME, VOLUME);
-					waitTime(WATER_PLAY_TIME);
 				} else if (hasDesert(x, y)) {
-					sound.playSound(INDEX_DESERT, VOLUME, VOLUME);
-					waitTime(DESERT_PLAY_TIME);
+					sound.playSound(INDEX_DESERT, DESERT_VOLUME, x, y);
+				} else if (hasWater(x, y)) {
+					sound.playSound(INDEX_WATER, WATER_VOLUME, x, y);
+				} else if (hasMountain(x, y)) {
+					sound.playSound(INDEX_MOUNTAIN, MOUNTAIN_VOLUME, x, y);
+				} else for (int x1 = 0; x1 < screen.getLineLength(); x1++) {
+					if (hasRiver(x0 + x1, y)) {
+						sound.playSound(INDEX_RIVER, RIVER_VOLUME, x0 + x1, y);;
+					}
 				}
 			}
 		} catch (Throwable e) {
@@ -112,6 +122,16 @@ public class BackgroundSound implements Runnable {
 	private boolean hasWater(int x, int y) {
 		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
 				&& map.getLandscape(x, y) == ELandscapeType.WATER1;
+	}
+
+	private boolean hasRiver(int x, int y) {
+		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
+				&& map.getLandscape(x, y) == ELandscapeType.RIVER1;
+	}
+
+	private boolean hasMountain(int x, int y) {
+		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
+				&& map.getLandscape(x, y) == ELandscapeType.MOUNTAIN;
 	}
 
 	private boolean hasTree(int cx, int cy) {

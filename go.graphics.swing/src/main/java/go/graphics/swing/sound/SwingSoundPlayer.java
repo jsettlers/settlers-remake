@@ -14,11 +14,6 @@
  *******************************************************************************/
 package go.graphics.swing.sound;
 
-import go.graphics.sound.ForgettingQueue;
-import go.graphics.sound.ForgettingQueue.Sound;
-import go.graphics.sound.ISoundDataRetriever;
-import go.graphics.sound.SoundPlayer;
-
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
@@ -28,9 +23,14 @@ import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import go.graphics.sound.ForgettingQueue;
+import go.graphics.sound.ForgettingQueue.Sound;
+import go.graphics.sound.ISoundDataRetriever;
+import go.graphics.sound.SoundPlayer;
+
 public class SwingSoundPlayer implements SoundPlayer {
 	private static final int BUFFER_SIZE = 4048 * 4;
-	private static final int SOUND_THREADS = 3;
+	private static final int SOUND_THREADS = 30;
 
 	ForgettingQueue<Integer> queue = new ForgettingQueue<Integer>();
 	private ISoundDataRetriever soundDataRetriever;
