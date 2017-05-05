@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.event.interpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.mouse.GOZoomEvent;
 
 /**
@@ -27,6 +28,7 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 	 * A float. 1 means no zoom, small values mean smaller, big values mean bigger.
 	 */
 	private float zoom;
+	private UIPoint pointingPosition;
 
 	/**
 	 * Constructor
@@ -39,14 +41,19 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 		return zoom;
 	}
 
+	public UIPoint getPointingPosition() {
+        return pointingPosition;
+    }
+
 	/**
 	 * Sets the zoom factor
 	 * 
 	 * @param factor
 	 *            A float. 1 means no zoom, small values mean smaller, big values mean bigger.
 	 */
-	public void setZoomFactor(float factor) {
+	public void setZoomFactor(float factor, UIPoint p) {
 		zoom = factor;
+		pointingPosition = p;
 		fireModalDataRefreshed();
 	}
 

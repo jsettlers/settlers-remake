@@ -14,6 +14,7 @@
  *******************************************************************************/
 package go.graphics.event.mouse;
 
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 
 /**
@@ -29,4 +30,5 @@ public interface GOZoomEvent extends GOEvent {
 	 * @return A float. 1 means no zoom, small values mean smaller, big values mean bigger.
 	 */
 	float getZoomFactor();
+	UIPoint getPointingPosition();
 }
