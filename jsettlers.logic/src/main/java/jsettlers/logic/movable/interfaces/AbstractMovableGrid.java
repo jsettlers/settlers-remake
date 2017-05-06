@@ -19,7 +19,6 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 /**
@@ -43,7 +42,7 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	@Override
 	public abstract boolean hasNoMovableAt(int x, int y);
 
-	public abstract void leavePosition(ShortPoint2D position, Movable movable);
+	public abstract void leavePosition(ShortPoint2D position, ILogicMovable movable);
 
 	/**
 	 * Lets the given movable enter the given position.
@@ -56,9 +55,9 @@ public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
 	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	public abstract void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea);
+	public abstract void enterPosition(ShortPoint2D position, ILogicMovable movable, boolean informFullArea);
 
-	public abstract void notifyAttackers(ShortPoint2D position, Movable movable, boolean informFullArea);
+	public abstract void notifyAttackers(ShortPoint2D position, ILogicMovable movable, boolean informFullArea);
 
 	public abstract Path calculatePathTo(IPathCalculatable pathCalculatable, ShortPoint2D targetPos);
 

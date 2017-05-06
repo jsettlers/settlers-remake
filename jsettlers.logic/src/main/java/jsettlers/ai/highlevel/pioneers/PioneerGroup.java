@@ -21,6 +21,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class PioneerGroup {
 			if (newPioneerIds.size() >= maxNewPioneersCount || isFull()) {
 				break;
 			}
-			Movable bearer = movableGrid.getMovableAt(bearerPosition.x, bearerPosition.y);
+			ILogicMovable bearer = movableGrid.getMovableAt(bearerPosition.x, bearerPosition.y);
 			if (bearer.getAction() == EMovableAction.NO_ACTION) {
 				newPioneerIds.add(bearer.getID());
 				pioneerIds.add(bearer.getID());

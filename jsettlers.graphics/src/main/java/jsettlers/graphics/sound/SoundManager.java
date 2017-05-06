@@ -14,9 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.sound;
 
-import go.graphics.sound.ISoundDataRetriever;
-import go.graphics.sound.SoundPlayer;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,37 +21,52 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Random;
 
+import go.graphics.sound.ISoundDataRetriever;
+import go.graphics.sound.SoundPlayer;
+import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.startscreen.SettingsManager;
 
-/**
+/*
  * This class manages reading and playing of the sound file.
  * <p>
  * Some known sounds:
  * <p>
- * 1 (6 times): knock a tree <br>
- * 2 (3 times): digg <br>
- * 3 (twice): knock stone <br>
- * 5: saw <br>
+ *
+ * 0 lumberjack
+ * 1 (6 times): bricklayer <br>
+ * 2 (3 times): digger <br>
+ * 3 (twice): stonecutter <br>
+ * 5: sawmiller <br>
  * 6: smith <br>
  * 7: smith <br>
- * 12: farmer <br>
+ * 8 and 12: farmer <br>
  * 14: donkey <br>
+ * 15: fisherman
+ * 20: shipyard
+ * 21: healer
+ * 24: geologist
+ * 25: bowman
  * 30: sword Soldier <br>
  * 31/32 (soldier ?) <br>
  * 33 Bowman <br>
  * 35 soldier killed <br>
- * 36 building getting removed <br>
- * 39: pigs <br>
- * 40: donkey <br>
+ * 36: falling tree <br>
+ * 39: pigs or brewer? <br>
+ * 40: donkey or dying pig (butcher) <br>
  * 41: donkey <br>
  * 42: wind/mill: 2.5s <br>
+ * 45: charcoal burner
+ * 51: trigger for building destruction
  * 56: lock <br>
  * 57-59: notification sounds<br>
  * 62: Ui klick <br>
+ * 67: desert
  * 68, 68b: Sea <br>
  * 69, 69b: Bird <br>
- * 70, 70b: Bird 71: Water (river) <br>
+ * 70, 70b: Bird
+ * 71: Water (river) <br>
  * 72 (+ alternaitves): moor <br>
  * 73: wind <br>
  * 74: crazy wind <br>
@@ -68,14 +80,21 @@ import jsettlers.graphics.startscreen.SettingsManager;
  * 85: Arrow shooting <br>
  * 86 -90: canon shooting <br>
  * 91: fire <br>
- * 92: small fire <br>
- * 100 - 110: Attacked (same sound?) ? <br>
- * 111, 112: gong, <br>
- * 113 (4 times): kill (maya?)
+ * 92: small fire on wood or building <br>
+ * 93: collapsing building
+ * 100-110: Attacked (same sound?) ? <br>
+ * 106: announcement of missing tool
+ * 111: 112: gong, <br>
+ * 113: (4 times): amazone killed
+ * 116: refused center of work displacement
+ * 117: bees
  * 
  * @author michael
  */
 public class SoundManager {
+
+	private static final int Z_STEPS_FOR_MAX_VOLUME = 50;
+
 	private static final int SOUND_META_LENGTH = 16;
 
 	private static final int SOUND_FILE_START = 0x24;
@@ -119,6 +138,7 @@ public class SoundManager {
 	 */
 	private int[][] soundStarts;
 	private boolean initializing = false;
+	private MapRectangle area = null;
 
 	/**
 	 * Creates a new sound manager.
@@ -213,21 +233,84 @@ public class SoundManager {
 	 * 
 	 * @param soundid
 	 *            The sound id to play.
-	 * @param volume1
-	 *            The volume for the left speaker.
-	 * @param volume2
-	 *            The volume for the right speaker.
+	 * @param volume
+	 *            The volume
 	 */
-	public void playSound(int soundid, float volume1, float volume2) {
+	public void playSound(int soundid, float volume) {
 		initialize();
 
 		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N) {
 			int[] alternatives = soundStarts[soundid];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
-				float volume = SettingsManager.getInstance().getVolume();
-				player.playSound(alternatives[rand], volume1 * volume, volume2
-						* volume);
+				float soundVolume = SettingsManager.getInstance().getVolume() * volume;
+				player.playSound(alternatives[rand], soundVolume, soundVolume);
+			}
+		}
+	}
+
+
+	public void playSound(int soundid, float volume, ShortPoint2D position) {
+		playSound (soundid, volume, position.x, position.y);
+	}
+
+	/**
+	 * Plays a given sound at a given coordinate
+	 * 
+	 * @param soundid
+	 *            The sound id to play
+	 * @param volume
+	 *            The volume
+	 * @param x
+	 *            The x coordinate of the sound
+	 * @param y
+	 *            The y coordinate of the sound
+	 */
+	public void playSound(int soundid, float volume, int x, int y) {
+		initialize();
+
+		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N && area != null) {
+			int[] alternatives = soundStarts[soundid];
+			if (alternatives != null && alternatives.length > 0) {
+				int rand = random.nextInt(alternatives.length);
+				float maxVolume = SettingsManager.getInstance().getVolume() * volume;
+				int maxA = area.getLineLength(); // get screen area
+				int maxB = area.getLines();
+				int b = y - area.getMinY();
+				int a = x - area.getLineStartX(b);
+				float leftVolume, rightVolume;
+				if (a < 0) { // volume depending on position right or left
+					leftVolume = 0;
+					rightVolume = 0;
+				} else if (a < maxA / 4) {
+					leftVolume = maxVolume * 4f * a / maxA;
+					rightVolume = 0;
+				} else if (a < 3 * maxA / 4) {
+					leftVolume = maxVolume * (2f * a / maxA - .5f);
+					rightVolume = maxVolume * (2f * (maxA - a) / maxA - .5f);
+				} else if (a < maxA) {
+					leftVolume = 0;
+					rightVolume = maxVolume * 4f * (maxA - a) / maxA;
+				} else {
+					leftVolume = 0;
+					rightVolume = 0;
+				}
+				float distanceVolume = Z_STEPS_FOR_MAX_VOLUME;
+				if (b < 0) // volume depending on position up or down
+					distanceVolume = 0;
+				else if (b < maxB / 4)
+					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * b / maxB;
+				else if (b >= maxB)
+					distanceVolume = 0;
+				else if (b >= 3 * maxB / 4)
+					distanceVolume = 4f * Z_STEPS_FOR_MAX_VOLUME * (maxB - b) / maxB;
+				distanceVolume /= maxA; // volume depending on zoom level
+				if (distanceVolume > 1) {
+					distanceVolume = 1;
+				}
+				leftVolume *= distanceVolume;
+				rightVolume *= distanceVolume;
+				player.playSound(alternatives[rand], leftVolume, rightVolume);
 			}
 		}
 	}
@@ -326,5 +409,9 @@ public class SoundManager {
 		}
 
 		return data;
+	}
+
+	public void setScreen(MapRectangle screen) {
+		area = screen;
 	}
 }
