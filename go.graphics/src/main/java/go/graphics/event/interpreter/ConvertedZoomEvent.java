@@ -42,8 +42,8 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 	}
 
 	public UIPoint getPointingPosition() {
-        return pointingPosition;
-    }
+		return pointingPosition;
+	}
 
 	/**
 	 * Sets the zoom factor

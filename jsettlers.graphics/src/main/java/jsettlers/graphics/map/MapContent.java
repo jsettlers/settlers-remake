@@ -30,6 +30,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -116,8 +117,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void finished(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor(),
-					((GOZoomEvent) event).getPointingPosition());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
 		@Override
@@ -127,8 +127,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor(),
-					((GOZoomEvent) event).getPointingPosition());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
 		private void eventDataChanged(float zoomFactor, UIPoint p) {
