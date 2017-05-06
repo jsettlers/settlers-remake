@@ -191,7 +191,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					} else if (e.getAction() == MotionEvent.ACTION_UP) {
 						endPan(computePanPoint(e));
 						if (doZoom) {
-							endZoomEvent(factor);
+							endZoomEvent(factor, null);
 						}
 					}
 				}
