@@ -15,6 +15,9 @@
 
 package jsettlers.main.android.mainmenu.presenters.picker;
 
+import java.util.List;
+
+import java8.util.stream.Collectors;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.MapLoader;
@@ -22,18 +25,22 @@ import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
-import jsettlers.main.android.mainmenu.views.MapPickerView;
+import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 22/01/2017.
  */
 public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
+	private final LoadSinglePlayerPickerView view;
 	private final GameStarter gameStarter;
 	private final MainMenuNavigator navigator;
 
-	public LoadSinglePlayerPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
+	public LoadSinglePlayerPickerPresenter(LoadSinglePlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
 			ChangingList<? extends MapLoader> changingMaps) {
 		super(view, navigator, gameStarter, changingMaps);
+		this.view = view;
 		this.navigator = navigator;
 		this.gameStarter = gameStarter;
 	}
@@ -54,5 +61,20 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 
 		gameStarter.setStartingGame(game.start());
 		navigator.showGame();
+	}
+
+	@Override
+	protected void updateViewItems(List<? extends MapLoader> items) {
+		List<? extends MapLoader> sortedList = stream(items)
+				.sorted((o1, o2) -> o2.getCreationDate().compareTo(o1.getCreationDate()))
+				.collect(Collectors.toList());
+
+		view.setItems(sortedList);
+
+		if (sortedList.size() > 0) {
+			view.hideNoGamesView();
+		} else {
+			view.showNoGamesView();
+		}
 	}
 }

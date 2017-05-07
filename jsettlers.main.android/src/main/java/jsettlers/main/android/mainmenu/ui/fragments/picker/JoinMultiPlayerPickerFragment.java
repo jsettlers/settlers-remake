@@ -54,7 +54,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by tompr on 21/01/2017.
  */
-@EFragment(R.layout.fragment_map_picker)
+@EFragment(R.layout.fragment_map_picker_join_multiplayer)
 public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMultiPlayerPickerView {
 	private static final String TAG_JOINING_PROGRESS_DIALOG = "joingingprogress";
 

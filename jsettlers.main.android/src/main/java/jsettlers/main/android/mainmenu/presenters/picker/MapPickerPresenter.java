@@ -15,12 +15,17 @@
 
 package jsettlers.main.android.mainmenu.presenters.picker;
 
+import java.util.List;
+
+import java8.util.stream.Collectors;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 22/01/2017.
@@ -41,7 +46,7 @@ public abstract class MapPickerPresenter implements IChangingListListener<MapLoa
 	}
 
 	public void initView() {
-		view.setItems(changingMaps.getItems());
+		sortAndUpdateItems(changingMaps.getItems());
 	}
 
 	public void viewFinished() {
@@ -59,11 +64,23 @@ public abstract class MapPickerPresenter implements IChangingListListener<MapLoa
 
 	public abstract void itemSelected(MapLoader mapLoader);
 
+	protected void updateViewItems(List<? extends MapLoader> items) {
+		view.setItems(items);
+	}
+
+	private void sortAndUpdateItems(List<? extends MapLoader> items) {
+		List<? extends MapLoader> sortedList = stream(items)
+				.sorted((o1, o2) -> o1.getMapName().compareToIgnoreCase(o2.getMapName()))
+				.collect(Collectors.toList());
+
+		updateViewItems(sortedList);
+	}
+
 	/**
 	 * ChangingListListener implementation
 	 */
 	@Override
 	public void listChanged(ChangingList<? extends MapLoader> list) {
-		view.setItems(list.getItems());
+		sortAndUpdateItems(list.getItems());
 	}
 }

@@ -16,18 +16,25 @@
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.mainmenu.factories.PresenterFactory;
 import jsettlers.main.android.mainmenu.presenters.picker.MapPickerPresenter;
+import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
 
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 /**
  * Created by tompr on 19/01/2017.
  */
-@EFragment(R.layout.fragment_map_picker)
-public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
+@EFragment(R.layout.fragment_map_picker_load_singleplayer)
+public class LoadSinglePlayerPickerFragment extends MapPickerFragment implements LoadSinglePlayerPickerView {
+
+	@ViewById(R.id.layout_no_saved_games)
+	View noSavedGamesView;
+
 	public static Fragment newInstance() {
 		return new LoadSinglePlayerPickerFragment_();
 	}
@@ -46,5 +53,15 @@ public class LoadSinglePlayerPickerFragment extends MapPickerFragment {
 	@Override
 	protected boolean showMapDates() {
 		return true;
+	}
+
+	@Override
+	public void hideNoGamesView() {
+		noSavedGamesView.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void showNoGamesView() {
+		noSavedGamesView.setVisibility(View.VISIBLE);
 	}
 }

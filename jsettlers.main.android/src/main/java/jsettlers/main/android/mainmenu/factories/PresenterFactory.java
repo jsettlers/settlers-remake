@@ -42,6 +42,7 @@ import jsettlers.main.android.mainmenu.presenters.setup.NewMultiPlayerSetupPrese
 import jsettlers.main.android.mainmenu.presenters.setup.NewSinglePlayerSetupPresenter;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerPickerView;
 import jsettlers.main.android.mainmenu.views.JoinMultiPlayerSetupView;
+import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
 import jsettlers.main.android.mainmenu.views.MainMenuView;
 import jsettlers.main.android.mainmenu.views.MapPickerView;
 import jsettlers.main.android.mainmenu.views.NewMultiPlayerPickerView;
@@ -79,7 +80,7 @@ public class PresenterFactory {
 		return new NewSinglePlayerPickerPresenter(view, navigator, gameStarter, changingMaps);
 	}
 
-	public static LoadSinglePlayerPickerPresenter createLoadSinglePlayerPickerPresenter(Activity activity, MapPickerView view) {
+	public static LoadSinglePlayerPickerPresenter createLoadSinglePlayerPickerPresenter(Activity activity, LoadSinglePlayerPickerView view) {
 		MainMenuNavigator navigator = (MainMenuNavigator) activity;
 		GameStarter gameStarter = (GameStarter) activity.getApplication();
 		ChangingList<? extends MapLoader> changingMaps = gameStarter.getMapList().getSavedMaps();
