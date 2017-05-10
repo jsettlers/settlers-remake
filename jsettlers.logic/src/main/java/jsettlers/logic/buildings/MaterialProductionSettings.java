@@ -138,6 +138,8 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 		for (float ratio : materialRatio) {
 			maxRatio += ratio;
 		}
+		if (maxRatio == 0)
+			return null;
 		int random = MatchConstants.random().nextInt(maxRatio);
 		for (int i = 0; i < materialGroup.length; i++) {
 			if (random <= materialRatio[i]) {

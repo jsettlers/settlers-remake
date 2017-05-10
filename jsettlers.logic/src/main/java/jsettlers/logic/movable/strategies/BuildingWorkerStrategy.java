@@ -302,7 +302,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			jobFinished();
 		} else { // tools requested by settings
 			poppedMaterial = building.getMaterialProduction().getToolToProduce();
-			jobFinished();
+			if (poppedMaterial != null) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
 		}
 	}
 
