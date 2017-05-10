@@ -33,7 +33,16 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 			EMaterialType.SWORD,
 			EMaterialType.SPEAR,
 			EMaterialType.BOW };
+	private static EMaterialType[] TOOLS = {
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD };
 	private static List<EMaterialType> WEAPONS_LIST = Arrays.asList(WEAPONS);
+	private static List<EMaterialType> TOOL_LIST = Arrays.asList(TOOLS);
 	private final float[] ratios = new float[EMaterialType.NUMBER_OF_MATERIALS];
 	private final int[] numberOfFutureProducedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
@@ -63,10 +72,16 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 				return 0;
 			}
 			return (configuredRatioOfMaterial(type) / allWeapons);
+		} else {
+			float allTools = 0;
+			for (EMaterialType currentTool : TOOL_LIST) {
+				allTools += configuredRatioOfMaterial(currentTool);
+			}
+			if (allTools == 0) {
+				return 0;
+			}
+			return (configuredRatioOfMaterial(type) / allTools);
 		}
-
-		// This line is for other materials than weapons to prevent Exceptions
-		return 0;
 	}
 
 	@Override
@@ -83,9 +98,6 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 	}
 
 	public void setNumberOfFutureProducedMaterial(EMaterialType type, int count) {
-		if (!WEAPONS_LIST.contains(type)) {
-			return;
-		}
 		if (count > MAXIMUM_FUTURE_PRODUCTION) {
 			numberOfFutureProducedMaterials[type.ordinal] = MAXIMUM_FUTURE_PRODUCTION;
 		} else if (count < 0) {
@@ -96,14 +108,15 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 	}
 
 	public void setRatioOfMaterial(EMaterialType type, float ratio) {
-		if (!WEAPONS_LIST.contains(type)) {
-			return;
-		}
 		ratios[type.ordinal] = ratio;
 	}
 
 	public EMaterialType getWeaponToProduce() {
 		return getMaterialOfGroupToProduce(WEAPONS);
+	}
+
+	public EMaterialType getToolToProduce() {
+		return getMaterialOfGroupToProduce(TOOLS);
 	}
 
 	private EMaterialType getMaterialOfGroupToProduce(EMaterialType[] materialGroup) {
