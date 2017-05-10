@@ -19,7 +19,7 @@ package jsettlers.common.player;
  */
 public enum ECivilisation {
 	ROMAN,
-	EGYPTIAN,
-	ASIAN,
-	AMAZON
+	//EGYPTIAN,
+	//ASIAN,
+	//AMAZON
 }

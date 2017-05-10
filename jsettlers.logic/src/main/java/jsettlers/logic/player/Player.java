@@ -25,6 +25,7 @@ import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.ISettlerInformation;
 import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
@@ -42,9 +43,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	private transient EPlayerType   playerType;
 	private transient ECivilisation civilisation;
 
-	private final MannaInformation mannaInformation = new MannaInformation();
-	private final MaterialCounts   materialCounts   = new MaterialCounts();
-	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
+	private final MannaInformation 	mannaInformation = new MannaInformation();
+	private final MaterialCounts   	materialCounts   = new MaterialCounts();
+	private final EndgameStatistic 	endgameStatistic = new EndgameStatistic(mannaInformation);
 
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
@@ -87,12 +88,17 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	@Override
 	public ICombatStrengthInformation getCombatStrengthInformation() {
-		return this.combatStrengthInfo;
+		return combatStrengthInfo;
 	}
 
 	@Override
 	public EndgameStatistic getEndgameStatistic() {
 		return endgameStatistic;
+	}
+
+	@Override
+	public ISettlerInformation getSettlerInformation() {
+		return new SettlerInformation(playerId);
 	}
 
 	private int getAmountOf(EMaterialType materialType) {

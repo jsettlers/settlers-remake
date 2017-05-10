@@ -46,7 +46,7 @@
     <!-- Row 1 -->
     <element x="13" width="22" y="276" height="36"
              class="jsettlers.graphics.ui.Button">
-       <image file="44" type="GUI" sequence="135" image="0"/>
+       <image file="14" type="GUI" sequence="138" image="0"/>
     </element>
     <element x="13" y="312" maxx="35" maxy="320"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -55,7 +55,7 @@
 
     <element x="42" width="22" y="276" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="138" image="0"/>
+        <image file="14" type="GUI" sequence="141" image="0"/>
     </element>
     <element x="42" y="312" maxx="64" maxy="320"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -64,7 +64,7 @@
 
     <element x="71" width="22" y="276" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="141" image="0"/>
+        <image file="14" type="GUI" sequence="144" image="0"/>
     </element>
     <element x="71" y="312" maxx="93" maxy="320"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -73,7 +73,7 @@
 
     <element x="100" width="22" y="276" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="153" image="0"/>
+        <image file="14" type="GUI" sequence="156" image="0"/>
     </element>
     <element x="100" y="312" maxx="122" maxy="320"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -83,7 +83,7 @@
     <!-- Row 2 -->
     <element x="13" width="22" y="330" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="210" image="0"/>
+        <image file="14" type="GUI" sequence="213" image="0"/>
     </element>
     <element x="13" y="366" maxx="35" maxy="374"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -92,7 +92,7 @@
 
     <element x="42" width="22" y="330" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="216" image="0"/>
+        <image file="14" type="GUI" sequence="219" image="0"/>
     </element>
     <element x="41" y="366" maxx="64" maxy="374"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -101,7 +101,7 @@
 
     <element x="71" width="22" y="330" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="213" image="0"/>
+        <image file="14" type="GUI" sequence="216" image="0"/>
     </element>
     <element x="71" y="366" maxx="93" maxy="374"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -110,7 +110,7 @@
 
     <element x="100" width="22" y="330" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="204" image="0"/>
+        <image file="14" type="GUI" sequence="207" image="0"/>
     </element>
     <element x="100" y="366" maxx="122" maxy="374"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -120,7 +120,7 @@
     <!-- Row 3 -->
     <element x="13" width="22" y="384" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="189" image="0"/>
+        <image file="14" type="GUI" sequence="192" image="0"/>
     </element>
     <element x="13" y="420" maxx="35" maxy="428"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -129,7 +129,7 @@
 
     <element x="42" width="22" y="384" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="186" image="0"/>
+        <image file="14" type="GUI" sequence="189" image="0"/>
     </element>
     <element x="42" y="420" maxx="64" maxy="428"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">
@@ -138,7 +138,7 @@
 
     <element x="71" width="22" y="384" height="36"
              class="jsettlers.graphics.ui.Button">
-        <image file="44" type="GUI" sequence="207" image="0"/>
+        <image file="14" type="GUI" sequence="210" image="0"/>
     </element>
     <element x="71" y="420" maxx="93" maxy="428"
              class="jsettlers.graphics.map.controls.original.panel.content.SettlersStatisticsPanel.NamedLabel">

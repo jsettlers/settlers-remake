@@ -16,7 +16,7 @@ package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IMovableCounts;
+import jsettlers.common.player.ISettlerInformation;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.ShortPoint2D;
@@ -24,6 +24,8 @@ import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.StatisticLayoutAmazons;
+import jsettlers.graphics.ui.layout.StatisticLayoutRomans;
+
 
 /**
  * This temporary empty panel is necessary so that you can choose the SETTLERSTATISTIC in the gui
@@ -32,23 +34,32 @@ import jsettlers.graphics.ui.layout.StatisticLayoutAmazons;
  */
 public class SettlersStatisticsPanel extends AbstractContentProvider {
 
-	private int buildingsCount = 1;
-	private IMovableCounts movableCounts;
-	private UIPanel panel = new StatisticLayoutAmazons()._root;
+	private IInGamePlayer player;
+	private ISettlerInformation movableCounts;
+	private UIPanel panel = new StatisticLayoutRomans()._root;
 
 	public void setPlayer(IInGamePlayer player) {
+		this.player = player;
 		switch(player.getCivilisation()) {
 			case ROMAN:
+				panel = new StatisticLayoutRomans()._root;
+				break;
+			// Not implemented yet
+			/*case ASIAN:
 				panel = new StatisticLayoutAmazons()._root;
-			case ASIAN:
-				panel = new StatisticLayoutAmazons()._root;
+				break;
 			case AMAZON:
 				panel = new StatisticLayoutAmazons()._root;
+				break;
 			case EGYPTIAN:
 				panel = new StatisticLayoutAmazons()._root;
+				break;*/
 			default:
-				panel = new StatisticLayoutAmazons()._root;
+				panel = new StatisticLayoutRomans()._root;
+				break;
 		}
+
+		movableCounts = player.getSettlerInformation();
 	}
 
 	@Override
@@ -58,65 +69,70 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 
 	@Override
 	public UIPanel getPanel() {
+		if(player != null)
+			movableCounts = player.getSettlerInformation();
+
 		if(movableCounts != null)
-			setValues(panel);
+			updateUI(panel, movableCounts);
 
 		return panel;
 	}
 
 	@Override
 	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		movableCounts = grid.getPartitionData(pos.x,pos.y).getMovableCounts();
+		if(player != null)
+			movableCounts = player.getSettlerInformation();
+
 		if(movableCounts != null)
-			setValues(panel);
+			updateUI(panel, movableCounts);
 	}
 
 	private String getMovableCountAsString(EMovableType type) {
-		return String.valueOf(movableCounts.getMovableCountGlobal(type));
+		return String.valueOf(movableCounts.getMovableCount(type));
 	}
 
-	private void setValues(UIPanel panel) {
+	private void updateUI(UIPanel panel, ISettlerInformation counts) {
 
-		int soldierCount = movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L1)
-				+ movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L2)
-				+ movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L3)
-				+ movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L1)
-				+ movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L2)
-				+ movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L3)
-				+ movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L1)
-				+ movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L2)
-				+ movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L3)
-				+ movableCounts.getMovableCountGlobal(EMovableType.MAGE);
+		int soldierCount = counts.getMovableCount(EMovableType.SWORDSMAN_L1)
+				+ counts.getMovableCount(EMovableType.SWORDSMAN_L2)
+				+ counts.getMovableCount(EMovableType.SWORDSMAN_L3)
+				+ counts.getMovableCount(EMovableType.BOWMAN_L1)
+				+ counts.getMovableCount(EMovableType.BOWMAN_L2)
+				+ counts.getMovableCount(EMovableType.BOWMAN_L3)
+				+ counts.getMovableCount(EMovableType.PIKEMAN_L1)
+				+ counts.getMovableCount(EMovableType.PIKEMAN_L2)
+				+ counts.getMovableCount(EMovableType.PIKEMAN_L3)
+				+ counts.getMovableCount(EMovableType.MAGE);
 
-		int genericWorker = movableCounts.getMovableCountGlobal(EMovableType.PIG_FARMER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.FARMER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.LUMBERJACK)
-				+ movableCounts.getMovableCountGlobal(EMovableType.SAWMILLER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.FISHERMAN)
-				+ movableCounts.getMovableCountGlobal(EMovableType.WATERWORKER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.BAKER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.MINER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.SLAUGHTERER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.MILLER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.SMITH)
-				+ movableCounts.getMovableCountGlobal(EMovableType.FORESTER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.MELTER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.WINEGROWER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.CHARCOAL_BURNER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.STONECUTTER);
+		int genericWorker = counts.getMovableCount(EMovableType.PIG_FARMER)
+				+ counts.getMovableCount(EMovableType.FARMER)
+				+ counts.getMovableCount(EMovableType.LUMBERJACK)
+				+ counts.getMovableCount(EMovableType.SAWMILLER)
+				+ counts.getMovableCount(EMovableType.FISHERMAN)
+				+ counts.getMovableCount(EMovableType.WATERWORKER)
+				+ counts.getMovableCount(EMovableType.BAKER)
+				+ counts.getMovableCount(EMovableType.MINER)
+				+ counts.getMovableCount(EMovableType.SLAUGHTERER)
+				+ counts.getMovableCount(EMovableType.MILLER)
+				+ counts.getMovableCount(EMovableType.SMITH)
+				+ counts.getMovableCount(EMovableType.FORESTER)
+				+ counts.getMovableCount(EMovableType.MELTER)
+				+ counts.getMovableCount(EMovableType.WINEGROWER)
+				+ counts.getMovableCount(EMovableType.CHARCOAL_BURNER)
+				+ counts.getMovableCount(EMovableType.STONECUTTER);
 
 		int civilianCount = genericWorker
-				+ movableCounts.getMovableCountGlobal(EMovableType.BEARER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.DIGGER)
-				+ movableCounts.getMovableCountGlobal(EMovableType.BRICKLAYER);
+				+ counts.getMovableCount(EMovableType.BEARER)
+				+ counts.getMovableCount(EMovableType.DIGGER)
+				+ counts.getMovableCount(EMovableType.BRICKLAYER);
 
 		for(UIElement element : panel.getChildren()) {
 			if(element instanceof NamedLabel) {
 				NamedLabel label = (NamedLabel)element;
 				String name = label.getName();
 
-				if(name == "stat_building") {
-					label.setText("-");
+				if(name == "stat_beds") {
+					label.setText("-");	// there is not concept of "beds" yet
 				} else if(name == "stat_civilian") {
 					label.setText(String.valueOf(civilianCount));
 				} else if(name == "stat_total") {
@@ -132,19 +148,19 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 				} else if(name == "stat_other") {
 					label.setText(String.valueOf(genericWorker));
 				} else if(name == "stat_swordsman") {
-					int count = movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L1)
-							+ movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L2)
-							+ movableCounts.getMovableCountGlobal(EMovableType.SWORDSMAN_L3);
+					int count = counts.getMovableCount(EMovableType.SWORDSMAN_L1)
+							+ counts.getMovableCount(EMovableType.SWORDSMAN_L2)
+							+ counts.getMovableCount(EMovableType.SWORDSMAN_L3);
 					label.setText(String.valueOf(count));
 				} else if(name == "stat_bowman") {
-					int count = movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L1)
-							+ movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L2)
-							+ movableCounts.getMovableCountGlobal(EMovableType.BOWMAN_L3);
+					int count = counts.getMovableCount(EMovableType.BOWMAN_L1)
+							+ counts.getMovableCount(EMovableType.BOWMAN_L2)
+							+ counts.getMovableCount(EMovableType.BOWMAN_L3);
 					label.setText(String.valueOf(count));
 				} else if(name == "stat_pikeman") {
-					int count = movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L1)
-							+ movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L2)
-							+ movableCounts.getMovableCountGlobal(EMovableType.PIKEMAN_L3);
+					int count = counts.getMovableCount(EMovableType.PIKEMAN_L1)
+							+ counts.getMovableCount(EMovableType.PIKEMAN_L2)
+							+ counts.getMovableCount(EMovableType.PIKEMAN_L3);
 					label.setText(String.valueOf(count));
 				} else if(name == "stat_mage") {
 					label.setText(getMovableCountAsString(EMovableType.MAGE));
