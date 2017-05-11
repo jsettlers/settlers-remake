@@ -28,6 +28,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
@@ -37,7 +38,7 @@ import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1, EPlayerType.HUMAN, ECivilisation.ROMAN);
-	private final Movable movable;
+	private final ILogicMovable movable;
 
 	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException,
 			SwingResourceLoader.ResourceSetupException {
@@ -99,9 +100,9 @@ public class MovableTestWindow {
 		{
 			Thread.sleep(3000);
 			// circle of three movables blocking each others path
-			Movable m1 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), PLAYER_0);
-			Movable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
-			Movable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
+			ILogicMovable m1 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), PLAYER_0);
+			ILogicMovable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
+			ILogicMovable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
 
 			m1.moveTo(new ShortPoint2D(52, 65));
 			m2.moveTo(new ShortPoint2D(49, 63));

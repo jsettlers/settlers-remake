@@ -44,7 +44,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterial
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.stack.StackMapObject;
@@ -56,7 +56,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	private final short  height;
 	private final Player defaultPlayer;
 
-	private final Movable          movableMap[][];
+	private final ILogicMovable movableMap[][];
 	private final EMaterialType    materialTypeMap[][];
 	private final byte             materialAmountMap[][];
 	private final BucketQueueAStar aStar;
@@ -66,7 +66,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		this.height = (short) height;
 		this.defaultPlayer = defaultPlayer;
 
-		this.movableMap = new Movable[width][height];
+		this.movableMap = new ILogicMovable[width][height];
 		this.materialTypeMap = new EMaterialType[width][height];
 		this.materialAmountMap = new byte[width][height];
 
@@ -140,7 +140,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		private static final long serialVersionUID = 610513829074598238L;
 
 		@Override
-		public void leavePosition(ShortPoint2D position, Movable movable) {
+		public void leavePosition(ShortPoint2D position, ILogicMovable movable) {
 			if (movableMap[position.x][position.y] == movable) {
 				movableMap[position.x][position.y] = null;
 			}
@@ -251,7 +251,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Movable getMovableAt(int x, int y) {
+		public ILogicMovable getMovableAt(int x, int y) {
 			return movableMap[x][y];
 		}
 
@@ -401,12 +401,12 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea) {
+		public void enterPosition(ShortPoint2D position, ILogicMovable movable, boolean informFullArea) {
 			movableMap[position.x][position.y] = movable;
 		}
 
 		@Override
-		public void notifyAttackers(ShortPoint2D position, Movable movable, boolean informFullArea) {
+		public void notifyAttackers(ShortPoint2D position, ILogicMovable movable, boolean informFullArea) {
 		}
 
 		@Override
