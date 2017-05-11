@@ -300,9 +300,10 @@ public final class ImageProvider {
 
 	private File findFileInPaths(String fileName) {
 		for (File path : this.lookupPaths) {
-			File searched = new File(path, fileName);
-			if (searched.isFile() && searched.canRead()) {
-				return searched;
+			for (File f : path.listFiles()) {
+				if (f.getName().equalsIgnoreCase(fileName) && f.isFile() && f.canRead()) {
+					return f;
+				}
 			}
 		}
 		return null;

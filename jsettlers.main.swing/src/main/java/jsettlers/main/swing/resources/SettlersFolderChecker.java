@@ -16,8 +16,6 @@ package jsettlers.main.swing.resources;
 
 import java.io.File;
 
-import jsettlers.graphics.reader.DatFileType;
-
 /**
  * Checks if a settler folder is valid
  * 
@@ -64,13 +62,16 @@ public final class SettlersFolderChecker {
 
 		for (File f : files) {
 			if (f.getName().equalsIgnoreCase("snd")) {
-				File testSndFile = new File(f, "Siedler3_00.dat");
-				if (testSndFile.exists()) {
-					sndFolder = f;
+				for (File g : f.listFiles()) {
+					g.getName();
+					if (g.getName().equalsIgnoreCase("siedler3_00.dat")) {
+						sndFolder = f;
+					}
 				}
 			} else if (f.getName().equalsIgnoreCase("gfx")) {
-				for (DatFileType t : DatFileType.values()) {
-					if (new File(f, "siedler3_00" + t.getFileSuffix()).exists()) {
+				for (File g : f.listFiles()) {
+					String a = g.getName();
+					if (a.substring(0, a.indexOf('.')).equalsIgnoreCase("siedler3_00")) {
 						gfxFolder = f;
 					}
 				}
