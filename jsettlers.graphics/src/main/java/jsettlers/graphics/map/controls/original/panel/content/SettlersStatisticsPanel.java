@@ -44,16 +44,6 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 			case ROMAN:
 				panel = new StatisticLayoutRomans()._root;
 				break;
-			// Not implemented yet
-			/*case ASIAN:
-				panel = new StatisticLayoutAmazons()._root;
-				break;
-			case AMAZON:
-				panel = new StatisticLayoutAmazons()._root;
-				break;
-			case EGYPTIAN:
-				panel = new StatisticLayoutAmazons()._root;
-				break;*/
 			default:
 				panel = new StatisticLayoutRomans()._root;
 				break;
