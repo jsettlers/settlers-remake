@@ -25,6 +25,7 @@ import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.startscreen.SettingsManager;
 
@@ -138,6 +139,7 @@ public class SoundManager {
 	 */
 	private int[][] soundStarts;
 	private boolean initializing = false;
+	private MapDrawContext map = null;
 	private MapRectangle area = null;
 
 	/**
@@ -267,6 +269,7 @@ public class SoundManager {
 	 *            The y coordinate of the sound
 	 */
 	public void playSound(int soundid, float volume, int x, int y) {
+		if (map.getVisibleStatus(x, y) == 0) return;
 		initialize();
 
 		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N && area != null) {
@@ -411,7 +414,8 @@ public class SoundManager {
 		return data;
 	}
 
-	public void setScreen(MapRectangle screen) {
-		area = screen;
+	public void setMap(MapDrawContext map) {
+		this.map = map;
+		area = map.getScreenArea();
 	}
 }

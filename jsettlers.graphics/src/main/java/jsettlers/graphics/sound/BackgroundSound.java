@@ -73,7 +73,7 @@ public class BackgroundSound implements Runnable {
 				if (screen == null) {
 					continue;
 				}
-				sound.setScreen(screen);
+				sound.setMap(map);
 				int line = (int) (Math.random() * screen.getLines());
 
 				int x0 = screen.getLineStartX(line);
