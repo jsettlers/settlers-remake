@@ -36,6 +36,10 @@ public class Button extends UIPanel {
 		this(null, image, image, "");
 	}
 
+	public Button(ImageLink image, String description) {
+		this(null, image, image, description);
+	}
+
 	public Button(Action action, ImageLink image, ImageLink active, String description) {
 		this.action = action;
 		this.image = image;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,11 +26,11 @@ import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.StatisticLayoutAmazons;
 import jsettlers.graphics.ui.layout.StatisticLayoutRomans;
 
-
 /**
- * This temporary empty panel is necessary so that you can choose the SETTLERSTATISTIC in the gui
+ * The ingame settler statistics panel
  *
  * @author codingberlin
+ * @author nptr
  */
 public class SettlersStatisticsPanel extends AbstractContentProvider {
 
