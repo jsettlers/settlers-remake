@@ -124,4 +124,6 @@
     <string name="game_menu_paused">Paused</string>
     <string name="game_menu_saved">JSettlers game saved</string>
     <string name="no_saved_games">No saved games</string>
+    <string name="resource_selection_dialog_title">Locate SND and GFX folders</string>
+    <string name="empty_directory">This directory is empty</string>
 </resources>

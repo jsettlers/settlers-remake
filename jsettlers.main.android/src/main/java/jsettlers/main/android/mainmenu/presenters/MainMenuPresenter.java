@@ -16,7 +16,7 @@
 package jsettlers.main.android.mainmenu.presenters;
 
 import jsettlers.main.android.core.GameManager;
-import jsettlers.main.android.core.resources.scanner.ResourceLocationScanner;
+import jsettlers.main.android.core.resources.scanner.ResourcesLocationManager;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.MainMenuView;
 
@@ -27,16 +27,11 @@ public class MainMenuPresenter {
 	private final MainMenuView view;
 	private final MainMenuNavigator navigator;
 	private final GameManager gameManager;
-	private final ResourceLocationScanner resourceLocationScanner;
+	private final ResourcesLocationManager resourceLocationScanner;
 
 	private boolean resourcesLoaded;
 
-	public MainMenuPresenter(
-			MainMenuView view,
-			MainMenuNavigator navigator,
-			GameManager gameManager,
-			ResourceLocationScanner resourceLocationScanner) {
-
+	public MainMenuPresenter(MainMenuView view, MainMenuNavigator navigator, GameManager gameManager, ResourcesLocationManager resourceLocationScanner) {
 		this.view = view;
 		this.navigator = navigator;
 		this.gameManager = gameManager;

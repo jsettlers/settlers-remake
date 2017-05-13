@@ -62,12 +62,14 @@ import android.widget.TextView;
  */
 @EFragment(R.layout.fragment_new_single_player_setup)
 public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> extends Fragment implements MapSetupView {
+
 	@ViewById(R.id.recycler_view)
 	RecyclerView recyclerView;
 	@ViewById(R.id.image_view_map_preview)
 	ImageView mapPreviewImageView;
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
+
 	@ViewById(R.id.spinner_number_of_players)
 	protected Spinner numberOfPlayersSpinner;
 	@ViewById(R.id.spinner_start_resources)

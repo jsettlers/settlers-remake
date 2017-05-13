@@ -24,17 +24,13 @@ import org.androidannotations.annotations.Receiver;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 
 @EService
 public class GameService extends Service {
-	private LocalBroadcastManager localBroadcastManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
-
 		GameManager gameManager = (GameManager) getApplication();
 		startForeground(NOTIFICATION_ID, gameManager.getGameMenu().createNotification());
 	}

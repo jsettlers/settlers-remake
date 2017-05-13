@@ -31,24 +31,27 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import org.androidannotations.annotations.EBean;
 
-public class ResourceLocationScanner {
-	private static final String PREFERENCE = "external-files-path";
-	private Context context;
+@EBean
+public class ResourcesLocationManager {
+	private static final String ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY = "external-files-path";
 
-	public ResourceLocationScanner(Context context) {
+	private final Context context;
+
+	public ResourcesLocationManager(Context context) {
 		this.context = context;
 	}
 
 	public boolean scanForResources() {
 		File storage = Environment.getExternalStorageDirectory();
-		File jsettlersDirectory = new File(storage, "JSettlers");
+		File jSettlersDirectory = new File(storage, "JSettlers");
 		ArrayList<File> files = new ArrayList<>();
 		File outputDirectory = context.getExternalFilesDir(null); // <- output dir, always writable
 		files.add(outputDirectory);
-		files.add(jsettlersDirectory);
+		files.add(jSettlersDirectory);
 		files.add(storage);
-		String path = PreferenceManager.getDefaultSharedPreferences(context).getString(PREFERENCE, "");
+		String path = PreferenceManager.getDefaultSharedPreferences(context).getString(ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY, "");
 		if (!path.isEmpty()) {
 			files.add(new File(path));
 		}
@@ -95,7 +98,7 @@ public class ResourceLocationScanner {
 		return a;
 	}
 
-	public void setExternalDirectory(String path) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREFERENCE, path).apply();
+	public void setResourcesDirectory(String path) {
+		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY, path).apply();
 	}
 }

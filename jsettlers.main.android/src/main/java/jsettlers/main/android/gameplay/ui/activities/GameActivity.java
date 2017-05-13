@@ -20,6 +20,7 @@ import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import java.util.List;
 
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Receiver;
 
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.GameStarter;
@@ -31,13 +32,8 @@ import jsettlers.main.android.gameplay.ui.fragments.LoadingFragment;
 import jsettlers.main.android.gameplay.ui.fragments.MapFragment;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 
 @EActivity(R.layout.activity_game)
 public class GameActivity extends FullScreenAppCompatActivity implements GameNavigator, MenuNavigatorProvider {
@@ -46,30 +42,20 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 
 	private GameStarter gameStarter;
 
-	private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		gameStarter = (GameStarter) getApplication();
 
-		IntentFilter intentFilter = new IntentFilter(ACTION_QUIT_CONFIRM);
-		localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-
-		if (savedInstanceState != null)
+		if (savedInstanceState != null) {
 			return;
+		}
 
 		if (Actions.RESUME_GAME.equals(getIntent().getAction())) {
 			showMap();
 		} else {
 			showLoading();
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		localBroadcastManager.unregisterReceiver(broadcastReceiver);
 	}
 
 	@Override
@@ -119,14 +105,8 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 				.commitNow();
 	}
 
-	private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			switch (intent.getAction()) {
-			case ACTION_QUIT_CONFIRM:
-				finish();
-				break;
-			}
-		}
-	};
+	@Receiver(actions = ACTION_QUIT_CONFIRM, local = true)
+	void onActionQuitConfirm() {
+		finish();
+	}
 }

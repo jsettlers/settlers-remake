@@ -15,14 +15,15 @@
 
 package jsettlers.main.android.mainmenu.ui.activities;
 
-import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.OptionsItem;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
+import jsettlers.main.android.mainmenu.ui.fragments.MainMenuFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.JoinMultiPlayerPickerFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.LoadSinglePlayerPickerFragment;
 import jsettlers.main.android.mainmenu.ui.fragments.picker.NewMultiPlayerPickerFragment;
@@ -59,14 +60,9 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 		setUpButton();
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			getSupportFragmentManager().popBackStack();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+	@OptionsItem(android.R.id.home)
+	void homeSelected() {
+		getSupportFragmentManager().popBackStack();
 	}
 
 	/**
