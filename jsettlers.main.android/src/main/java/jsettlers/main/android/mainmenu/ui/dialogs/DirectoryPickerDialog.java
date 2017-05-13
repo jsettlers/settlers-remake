@@ -109,7 +109,6 @@ public class DirectoryPickerDialog extends DialogFragment {
 			updateList();
 		}
 
-		@Background
 		void positionSelected(int position) {
 			String item = getItem(position);
 			if (item != null) {
