@@ -18,7 +18,6 @@ import java.util.List;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
@@ -41,9 +40,7 @@ import jsettlers.graphics.action.SoldierAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
-import jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton;
 import jsettlers.graphics.map.controls.original.panel.button.stock.StockControlButton;
-import jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.OccupierState;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.StackState;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -530,24 +527,24 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	private static OriginalImageLink getIconFor(IMovable movable) {
 		switch (movable.getMovableType()) {
-		case SWORDSMAN_L1:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
-		case SWORDSMAN_L2:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
-		case SWORDSMAN_L3:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
-		case PIKEMAN_L1:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
-		case PIKEMAN_L2:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
-		case PIKEMAN_L3:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 234, 0);
-		case BOWMAN_L1:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
-		case BOWMAN_L2:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
-		case BOWMAN_L3:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 237, 0);
+			case SWORDSMAN_L1:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 207, 0);
+			case PIKEMAN_L1:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
+			case BOWMAN_L1:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
+			case SWORDSMAN_L2:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
+			case PIKEMAN_L2:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
+			case BOWMAN_L2:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
+			case SWORDSMAN_L3:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 235, 0);
+			case PIKEMAN_L3:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 238, 0);
+			case BOWMAN_L3:
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
 
 		default:
 			System.err.println("A unknown image was requested for gui. "
