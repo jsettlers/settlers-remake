@@ -30,8 +30,16 @@ public class Peacetime {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof Peacetime && ((Peacetime) obj).getType() == type;
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Peacetime peacetime = (Peacetime) o;
+
+		return type != null ? type.equals(peacetime.type) : peacetime.type == null;
+
 	}
 
 	@Override

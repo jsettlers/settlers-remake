@@ -15,8 +15,8 @@
 
 package jsettlers.main.android.gameplay.ui.fragments;
 
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
 import go.graphics.android.GOSurfaceView;
 import go.graphics.android.IContextDestroyedListener;

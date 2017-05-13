@@ -15,11 +15,11 @@
 
 package jsettlers.main.android;
 
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_PAUSE;
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT;
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_SAVE;
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_UNPAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_SAVE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
 import org.androidannotations.annotations.EApplication;
 

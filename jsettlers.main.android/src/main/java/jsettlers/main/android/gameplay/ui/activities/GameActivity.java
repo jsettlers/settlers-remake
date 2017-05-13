@@ -15,7 +15,7 @@
 
 package jsettlers.main.android.gameplay.ui.activities;
 
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 			return;
 		}
 
-		if (Actions.RESUME_GAME.equals(getIntent().getAction())) {
+		if (Actions.ACTION_RESUME_GAME.equals(getIntent().getAction())) {
 			showMap();
 		} else {
 			showLoading();

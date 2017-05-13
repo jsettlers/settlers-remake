@@ -92,7 +92,7 @@
 
 
     <!-- Other -->
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="settings">Settings</string>
 
@@ -126,4 +126,5 @@
     <string name="no_saved_games">No saved games</string>
     <string name="resource_selection_dialog_title">Locate SND and GFX folders</string>
     <string name="empty_directory">This directory is empty</string>
+    <string name="notification_game_in_progress">Settlers game in progress</string>
 </resources>

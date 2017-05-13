@@ -15,6 +15,11 @@
 
 package jsettlers.main.android.core.controls;
 
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CANCELLED;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,15 +28,11 @@ import go.graphics.android.AndroidSoundPlayer;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.graphics.action.Action;
 import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.ui.activities.GameActivity_;
-import jsettlers.main.android.mainmenu.navigation.Actions;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
@@ -39,14 +40,9 @@ import android.widget.Toast;
  * GameMenu is a singleton within the scope of a started game
  */
 public class GameMenu {
-	public static final String ACTION_PAUSE = "com.jsettlers.pause";
-	public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
-	public static final String ACTION_SAVE = "com.jsettlers.save";
-	public static final String ACTION_QUIT = "com.jsettlers.quit";
-	public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
-	public static final String ACTION_QUIT_CANCELLED = "com.jsettlers.quitcancelled";
 
 	public static final int NOTIFICATION_ID = 100;
+
 	private final Context context;
 	private final ActionControls actionControls;
 	private final AndroidSoundPlayer soundPlayer;
@@ -72,7 +68,7 @@ public class GameMenu {
 		Toast.makeText(context, R.string.game_menu_saved, Toast.LENGTH_SHORT).show();
 	}
 
-	// mute the game when pausing whether or not its currently visibile
+	// mute the game when pausing whether or not its currently visible
 	public void pause() {
 		actionControls.fireAction(new Action(EActionType.SPEED_SET_PAUSE));
 		mute();
@@ -83,7 +79,7 @@ public class GameMenu {
 		notificationManager.notify(NOTIFICATION_ID, createNotification());
 	}
 
-	// don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visibile.
+	// don't unmute here, MapFragment will unmute when receiving unpause broadcast if its visible.
 	public void unPause() {
 		actionControls.fireAction(new Action(EActionType.SPEED_UNSET_PAUSE));
 		paused = false;
@@ -135,7 +131,7 @@ public class GameMenu {
 	}
 
 	public Notification createNotification() {
-		NotificationBuilder notificationBuilder = new NotificationBuilder(context);
+		NotificationBuilder notificationBuilder = NotificationBuilder_.getInstance_(context);
 
 		if (quitConfirmTimer == null) {
 			notificationBuilder.addQuitButton();
@@ -152,57 +148,5 @@ public class GameMenu {
 		}
 
 		return notificationBuilder.build();
-	}
-
-	private class NotificationBuilder {
-		private final Context context;
-		private final NotificationCompat.Builder builder;
-
-		public NotificationBuilder(Context context) {
-			this.context = context;
-
-			Intent gameActivityIntent = new Intent(context, GameActivity_.class);
-			gameActivityIntent.setAction(Actions.RESUME_GAME);
-			PendingIntent gameActivityPendingIntent = PendingIntent.getActivity(context, 0, gameActivityIntent, 0);
-
-			builder = new NotificationCompat.Builder(context)
-					.setSmallIcon(R.drawable.icon)
-					.setContentTitle("Settlers game in progress")
-					.setContentIntent(gameActivityPendingIntent);
-		}
-
-		public NotificationBuilder addQuitButton() {
-			PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_QUIT), 0);
-			builder.addAction(R.drawable.ic_stop, "Quit", quitPendingIntent);
-			return this;
-		}
-
-		public NotificationBuilder addQuitConfirmButton() {
-			PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_QUIT_CONFIRM), 0);
-			builder.addAction(R.drawable.ic_stop, "Sure?", quitPendingIntent);
-			return this;
-		}
-
-		public NotificationBuilder addSaveButton() {
-			PendingIntent savePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_SAVE), 0);
-			builder.addAction(R.drawable.ic_save, "Save", savePendingIntent);
-			return this;
-		}
-
-		public NotificationBuilder addPauseButton() {
-			PendingIntent pausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_PAUSE), 0);
-			builder.addAction(R.drawable.ic_pause, "Pause", pausePendingIntent);
-			return this;
-		}
-
-		public NotificationBuilder addUnPauseButton() {
-			PendingIntent unPausePendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_UNPAUSE), 0);
-			builder.addAction(R.drawable.ic_play, "Unpause", unPausePendingIntent);
-			return this;
-		}
-
-		public Notification build() {
-			return builder.build();
-		}
 	}
 }

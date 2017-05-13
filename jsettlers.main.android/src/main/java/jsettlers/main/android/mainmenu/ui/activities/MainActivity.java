@@ -36,7 +36,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity implements MainMenuNavigator {
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements MainMenuNavigator
 
 	@Override
 	public void resumeGame() {
-		GameActivity_.intent(this).action(Actions.RESUME_GAME).start();
+		GameActivity_.intent(this).action(Actions.ACTION_RESUME_GAME).start();
 		finish();
 	}
 

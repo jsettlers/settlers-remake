@@ -15,8 +15,8 @@
 
 package jsettlers.main.android.core;
 
-import static jsettlers.main.android.core.controls.GameMenu.ACTION_QUIT_CONFIRM;
 import static jsettlers.main.android.core.controls.GameMenu.NOTIFICATION_ID;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_QUIT_CONFIRM;
 
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.Receiver;

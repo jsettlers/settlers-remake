@@ -85,7 +85,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 		navigator.showGame();
 	}
 
-	protected static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
+	private static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {
 		playerSlotPresenter.setPossiblePlayerTypes(new PlayerType[] {
 				new PlayerType(EPlayerType.HUMAN),
 				new PlayerType(EPlayerType.AI_VERY_HARD),

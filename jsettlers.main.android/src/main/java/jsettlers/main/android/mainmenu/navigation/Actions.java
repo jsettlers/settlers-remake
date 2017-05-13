@@ -19,5 +19,11 @@ package jsettlers.main.android.mainmenu.navigation;
  * Created by tompr on 08/11/2016.
  */
 public class Actions {
-	public static final String RESUME_GAME = "com.packagename.settlers.RESUME";
+	public static final String ACTION_RESUME_GAME = "com.jsettlers.RESUME";
+	public static final String ACTION_PAUSE = "com.jsettlers.pause";
+	public static final String ACTION_UNPAUSE = "com.jsettlers.unpause";
+	public static final String ACTION_SAVE = "com.jsettlers.save";
+	public static final String ACTION_QUIT = "com.jsettlers.quit";
+	public static final String ACTION_QUIT_CONFIRM = "com.jsettlers.quitconfirm";
+	public static final String ACTION_QUIT_CANCELLED = "com.jsettlers.quitcancelled";
 }
