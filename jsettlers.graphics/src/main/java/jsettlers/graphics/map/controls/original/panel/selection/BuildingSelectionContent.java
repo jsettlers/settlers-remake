@@ -527,24 +527,24 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 	private static OriginalImageLink getIconFor(IMovable movable) {
 		switch (movable.getMovableType()) {
-			case SWORDSMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 207, 0);
-			case PIKEMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
-			case BOWMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
-			case SWORDSMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
-			case PIKEMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
-			case BOWMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
-			case SWORDSMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 235, 0);
-			case PIKEMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 238, 0);
-			case BOWMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
+		case SWORDSMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 207, 0);
+		case PIKEMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
+		case BOWMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
+		case SWORDSMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
+		case PIKEMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
+		case BOWMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
+		case SWORDSMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 235, 0);
+		case PIKEMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 238, 0);
+		case BOWMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
 
 		default:
 			System.err.println("A unknown image was requested for gui. "
