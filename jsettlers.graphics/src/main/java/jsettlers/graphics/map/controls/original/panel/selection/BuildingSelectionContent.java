@@ -540,9 +540,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		case BOWMAN_L2:
 			return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
 		case SWORDSMAN_L3:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 235, 0);
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
 		case PIKEMAN_L3:
-			return new OriginalImageLink(EImageLinkType.GUI, 14, 238, 0);
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
 		case BOWMAN_L3:
 			return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
 
