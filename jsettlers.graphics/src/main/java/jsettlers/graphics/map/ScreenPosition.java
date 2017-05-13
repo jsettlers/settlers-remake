@@ -44,6 +44,12 @@ public class ScreenPosition {
 	 * zoom factor. The smaller the smaller the settlers get.
 	 */
 	private float zoom = 1;
+	private float oldZoom = 1;
+
+	/**
+	 * the pointing position when zooming
+	 */
+	private UIPoint pointer = null;
 
 	/**
 	 * The x coordinate of the current screen, without extra panning.
@@ -89,6 +95,7 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the size of the screen without the zoom level applied.
+	 * When called for zooming, screen at pointer stands still.
 	 * 
 	 * @param newWidth
 	 *            The width.
@@ -96,8 +103,20 @@ public class ScreenPosition {
 	 *            The height.
 	 */
 	public void setSize(float newWidth, float newHeight) {
-		float x = this.screen.getCenterX();
-		float y = this.screen.getCenterY();
+		if (newHeight / zoom > mapHeight + TOPBORDER)
+			zoom = newHeight / (mapHeight + TOPBORDER);
+		float x = screen.getCenterX();
+		float y = screen.getCenterY();
+		if (pointer != null) {
+			float w = screen.getWidth();
+			float h = screen.getHeight();
+			float px = (float) pointer.getX();
+			float py = (float) pointer.getY();
+			x -= w / 2 - px / oldZoom + px / zoom - w / 2 * oldZoom / zoom;
+			y -= h / 2 - py / oldZoom + py / zoom - h / 2 * oldZoom / zoom;
+			screenCenterX = x;
+			screenCenterY = y;
+		}
 		setScreen(x, y, newWidth / zoom, newHeight / zoom);
 	}
 
@@ -107,8 +126,10 @@ public class ScreenPosition {
 	 * @param newzoom
 	 *            The new zoom factor. It is automatically clamped.
 	 */
-	public void setZoom(float newzoom) {
-		this.zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);
+	public void setZoom(float newzoom, UIPoint pointingPosition) {
+		oldZoom = zoom;
+		zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);
+		pointer = pointingPosition;
 	}
 
 	/**

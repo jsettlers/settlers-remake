@@ -116,22 +116,24 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void finished(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(),
+					((GOZoomEvent) event).getPointingPosition());
 		}
 
 		@Override
 		public void aborted(GOEvent event) {
-			eventDataChanged(1);
+			eventDataChanged(1, null);
 		}
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(),
+					((GOZoomEvent) event).getPointingPosition());
 		}
 
-		private void eventDataChanged(float zoomFactor) {
+		private void eventDataChanged(float zoomFactor, UIPoint p) {
 			float newZoom = startZoom * zoomFactor;
-			setZoom(newZoom);
+			setZoom(newZoom, p);
 		}
 	}
 
@@ -611,7 +613,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomIn() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom * 1.3f);
+			setZoom(zoom * 1.3f, null);
 		}
 	}
 
@@ -621,7 +623,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomOut() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom / 1.3f);
+			setZoom(zoom / 1.3f, null);
 		}
 	}
 
@@ -630,7 +632,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	public void zoom100() {
 		if (context != null) {
-			setZoom(1.0f);
+			setZoom(1.0f, null);
 		}
 	}
 
@@ -883,12 +885,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			break;
 		case ZOOM_IN:
 			if (context.getScreen().getZoom() < 1.1) {
-				setZoom(context.getScreen().getZoom() * 2);
+				setZoom(context.getScreen().getZoom() * 2, null);
 			}
 			break;
 		case ZOOM_OUT:
 			if (context.getScreen().getZoom() > 0.6) {
-				setZoom(context.getScreen().getZoom() / 2);
+				setZoom(context.getScreen().getZoom() / 2, null);
 			}
 			break;
 		case MOVE_TO:
@@ -907,8 +909,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void setZoom(float f) {
-		context.getScreen().setZoom(f);
+	private void setZoom(float f, UIPoint p) {
+		context.getScreen().setZoom(f, p);
 		reapplyContentSizes();
 	}
 
@@ -959,7 +961,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (state.getStartPoint() != null) {
 			scrollTo(state.getStartPoint(), false);
 		} else {
-			setZoom(state.getZoom());
+			setZoom(state.getZoom(), null);
 			context.getScreen().setScreenCenter(state.getScreenCenterX(), state.getScreenCenterY());
 		}
 	}

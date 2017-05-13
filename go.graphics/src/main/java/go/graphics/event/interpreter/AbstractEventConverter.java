@@ -14,14 +14,14 @@
  *******************************************************************************/
 package go.graphics.event.interpreter;
 
+import java.util.LinkedList;
+
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.SingleHandlerGoEvent;
 import go.graphics.event.command.GOCommandEvent;
-
-import java.util.LinkedList;
 
 /**
  * This class interprets events. It provides helper functions for e.g. Swing converter to send the events.
@@ -141,13 +141,13 @@ public class AbstractEventConverter {
 
 	protected void updateZoomFactor(float factor) {
 		if (ongoingZoomEvent != null) {
-			ongoingZoomEvent.setZoomFactor(factor);
+			ongoingZoomEvent.setZoomFactor(factor, null);
 		}
 	}
 
-	protected void endZoomEvent(float factor) {
+	protected void endZoomEvent(float factor, UIPoint p) {
 		if (ongoingZoomEvent != null) {
-			ongoingZoomEvent.setZoomFactor(factor);
+			ongoingZoomEvent.setZoomFactor(factor, p);
 			ongoingZoomEvent.released();
 			ongoingZoomEvent = null;
 		}
