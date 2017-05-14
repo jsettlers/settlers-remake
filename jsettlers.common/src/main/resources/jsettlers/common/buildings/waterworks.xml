@@ -87,7 +87,7 @@
 		dx="3" dy="3" />
 	<job name="hide" type="HIDE" successjob="reset" failjob="reset" />
 	<job name="reset" type="SET_MATERIAL" successjob="wait_at_home"
-		failjob="wait_at_home" material="NO_MATERIAL" />
+		failjob="wait_at_home" material="EMPTY_BUCKET" />
 	<job name="wait_at_home" type="WAIT" successjob="prepareShow1"
 		failjob="prepareShow1" time="1" />
 	<job name="prepareShow1" type="NOT_FULL" successjob="prepareShow2"
@@ -107,12 +107,6 @@
 		failjob="go_home" material="WATER" />
 	<job name="go_drop" type="GO_TO" successjob="drop1" failjob="go_home"
 		dx="3" dy="5" />
-	<job name="drop1" type="DROP" successjob="walk1" failjob="go_home"
+	<job name="drop1" type="DROP" successjob="go_home" failjob="go_home"
 		material="WATER" />
-	<job name="walk1" type="WALK" successjob="walk2" failjob="go_home"
-		direction="EAST" />
-	<job name="walk2" type="WALK" successjob="walk3" failjob="go_home"
-		direction="NORTH_EAST" />
-	<job name="walk3" type="WALK" successjob="hide" failjob="go_home"
-		direction="NORTH_WEST" />
 </building>

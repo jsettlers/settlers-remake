@@ -41,7 +41,8 @@
 	WHITE_BREAD|
 	BASKET|
 	TREE|
-	PLANT)
+	PLANT|
+	EMPTY_BUCKET)
 ">
 <!ENTITY % jobtype "(
 	WAIT|
