@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,38 +11,25 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.logic.constants;
+ */
 
-import java.util.Random;
+package jsettlers.common.utils.collections;
+
+import java.util.Collection;
 
 /**
- * Extended version of java.util.Random with some more functions.
- * 
- * @author Andreas Eberle
- *
+ * Created by Andreas Eberle on 16.05.2017.
  */
-public class ExtendedRandom extends Random {
-	private static final long serialVersionUID = -2814532519838158362L;
+public class CollectionUtils {
 
-	public ExtendedRandom(long seed) {
-		super(seed);
+	public static <E> void iterateWithIndex(Collection<E> collection, ElementWithIndexConsumer<E> consumer) {
+		int i = 0;
+		for (E element : collection) {
+			consumer.accept(i++, element);
+		}
 	}
 
-	/**
-	 * Returns a random number in the interval [min, max].
-	 * 
-	 * @param min
-	 *            Minimum value (inclusive)
-	 * @param max
-	 *            Maximum value (inclusive)
-	 * @return
-	 */
-	public int nextInt(int min, int max) {
-		return min + nextInt(max - min + 1);
-	}
-
-	public float nextFloat(float maxValue) {
-		return nextFloat() * maxValue;
+	public interface ElementWithIndexConsumer<E> {
+		void accept(int index, E element);
 	}
 }

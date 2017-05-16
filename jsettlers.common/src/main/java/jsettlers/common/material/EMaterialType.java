@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.material;
 
+import java.util.EnumSet;
+
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -100,6 +102,19 @@ public enum EMaterialType {
 			}
 		}
 	}
+
+	public static final EnumSet<EMaterialType> WEAPONS = EnumSet.of(
+			EMaterialType.SWORD,
+			EMaterialType.SPEAR,
+			EMaterialType.BOW);
+	public static final EnumSet<EMaterialType> TOOLS = EnumSet.of(
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD);
 
 	public final byte ordinal;
 
