@@ -23,6 +23,7 @@ import java.util.Random;
 import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
@@ -255,7 +256,7 @@ public class SoundManager {
 	 *            The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
-		if (map == null || map.getVisibleStatus(x, y) == 0) {
+		if (map == null || map.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
 			return;
 		}
 
