@@ -37,6 +37,7 @@ import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
+import jsettlers.main.android.core.ui.dialogs.ConfirmDialog_;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.dialogs.PausedDialog;
 import jsettlers.main.android.gameplay.ui.fragments.menus.buildings.BuildingsMenuFragment;
@@ -371,10 +372,11 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 				gameMenu.save();
 				break;
 			case R.id.menu_item_quit:
-				new ConfirmDialog.Builder(REQUEST_CODE_CONFIRM_QUIT)
-						.setTitle(R.string.game_menu_quit)
-						.setConfirmButtonText(R.string.game_menu_quit)
-						.create()
+				ConfirmDialog_.builder()
+						.requestCode(REQUEST_CODE_CONFIRM_QUIT)
+						.titleResId(R.string.game_menu_quit)
+						.confirmButtonTextResId(R.string.game_menu_quit)
+						.build()
 						.show(getChildFragmentManager(), null);
 				break;
 			case R.id.menu_item_faster:
