@@ -60,23 +60,22 @@ public final class SettlersFolderChecker {
 		File gfxFolder = null;
 		File mapsFolder = null;
 
-		for (File f : files) {
-			if (f.getName().equalsIgnoreCase("snd")) {
-				for (File g : f.listFiles()) {
-					g.getName();
-					if (g.getName().equalsIgnoreCase("siedler3_00.dat")) {
-						sndFolder = f;
+		for (File currentFolder : files) {
+			if (currentFolder.getName().equalsIgnoreCase("snd")) {
+				for (File currentFile : currentFolder.listFiles()) {
+					if ("siedler3_00.dat".equalsIgnoreCase(currentFile.getName())) {
+						sndFolder = currentFolder;
 					}
 				}
-			} else if (f.getName().equalsIgnoreCase("gfx")) {
-				for (File g : f.listFiles()) {
-					String a = g.getName();
-					if (a.substring(0, a.indexOf('.')).equalsIgnoreCase("siedler3_00")) {
-						gfxFolder = f;
+			} else if (currentFolder.getName().equalsIgnoreCase("gfx")) {
+				for (File currentFile : currentFolder.listFiles()) {
+					String fileName = currentFile.getName();
+					if (fileName.substring(0, fileName.indexOf('.')).equalsIgnoreCase("siedler3_00")) {
+						gfxFolder = currentFolder;
 					}
 				}
-			} else if(f.getName().equalsIgnoreCase("map")) {
-				mapsFolder = f;
+			} else if(currentFolder.getName().equalsIgnoreCase("map")) {
+				mapsFolder = currentFolder;
 			}
 		}
 
