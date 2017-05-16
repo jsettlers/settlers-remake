@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,6 @@
 package jsettlers.graphics.sound;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import java.util.Random;
 
 import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
+
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
@@ -127,12 +127,10 @@ public class SoundManager {
 	/**
 	 * The lookup paths for the dat files.
 	 */
+	private static final ArrayList<File> lookupPaths = new ArrayList<>();
 
 	private final SoundPlayer player;
-
 	private final Random random = new Random();
-
-	private static ArrayList<File> lookupPaths = new ArrayList<File>();
 
 	/**
 	 * The start positions of all the playable sounds.
@@ -144,7 +142,7 @@ public class SoundManager {
 
 	/**
 	 * Creates a new sound manager.
-	 * 
+	 *
 	 * @param player
 	 *            The player to play sounds at.
 	 */
@@ -153,61 +151,50 @@ public class SoundManager {
 		initialize();
 	}
 
-	private void loadSounds() throws FileNotFoundException, IOException {
-		ByteReader reader = openSoundFile();
-
-		this.soundStarts = getSoundStarts(reader);
-		player.setSoundDataRetriever(new SoundDataRetriever(reader));
-	}
-
 	/**
 	 * Reads the start indexes of the sounds.
-	 * 
+	 *
 	 * @param reader
 	 *            The reader to read from.
 	 * @return An array of start indexes for each sound and it's variants.
 	 * @throws IOException
 	 *             If the file could not be read.
 	 */
-	protected static int[][] getSoundStarts(ByteReader reader)
-			throws IOException {
-		int[] seqheaderstarts = new int[SEQUENCE_N];
+	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
+		int[] sequenceHeaderStarts = new int[SEQUENCE_N];
 		for (int i = 0; i < SEQUENCE_N; i++) {
-			seqheaderstarts[i] = reader.read32();
+			sequenceHeaderStarts[i] = reader.read32();
 		}
 
-		int[][] playerids = new int[SEQUENCE_N][];
+		int[][] playerIds = new int[SEQUENCE_N][];
 		for (int i = 0; i < SEQUENCE_N; i++) {
-			reader.skipTo(seqheaderstarts[i]);
-			int alternaitvecount = reader.read32();
-			int[] starts = new int[alternaitvecount];
-			for (int j = 0; j < alternaitvecount; j++) {
+			reader.skipTo(sequenceHeaderStarts[i]);
+			int alternativeCount = reader.read32();
+			int[] starts = new int[alternativeCount];
+			for (int j = 0; j < alternativeCount; j++) {
 				starts[j] = reader.read32();
 			}
 
-			playerids[i] = starts;
+			playerIds[i] = starts;
 		}
-		return playerids;
+		return playerIds;
 	}
 
 	/**
 	 * Opens the sound file.
-	 * 
+	 *
 	 * @return The file reader.
 	 * @throws IOException
 	 *             If the file could not be opened,
-	 * @throws FileNotFoundException
-	 *             If the file was not found.
 	 */
-	protected static ByteReader openSoundFile() throws IOException,
-			FileNotFoundException {
-		File sndfile = getSoundFile();
+	protected static ByteReader openSoundFile() throws IOException {
+		File sndFile = getSoundFile();
 
-		if (sndfile == null) {
+		if (sndFile == null) {
 			throw new IOException("Sound file not found.");
 		}
 
-		RandomAccessFile randomAccessFile = new RandomAccessFile(sndfile, "r");
+		RandomAccessFile randomAccessFile = new RandomAccessFile(sndFile, "r");
 		ByteReader reader = new ByteReader(randomAccessFile);
 
 		reader.assumeToRead(SOUND_FILE_MAGIC);
@@ -217,32 +204,32 @@ public class SoundManager {
 	}
 
 	private static File getSoundFile() {
-		File sndfile = null;
+		File sndFile = null;
 		synchronized (lookupPaths) {
 			for (File dir : lookupPaths) {
 				File file = new File(dir, "Siedler3_00.dat");
 				if (file.exists()) {
-					sndfile = file;
+					sndFile = file;
 					break;
 				}
 			}
 		}
-		return sndfile;
+		return sndFile;
 	}
 
 	/**
 	 * Plays a given sound.
-	 * 
-	 * @param soundid
+	 *
+	 * @param soundId
 	 *            The sound id to play.
 	 * @param volume
 	 *            The volume
 	 */
-	public void playSound(int soundid, float volume) {
+	public void playSound(int soundId, float volume) {
 		initialize();
 
-		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N) {
-			int[] alternatives = soundStarts[soundid];
+		if (soundStarts != null && soundId >= 0 && soundId < SEQUENCE_N) {
+			int[] alternatives = soundStarts[soundId];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
 				float soundVolume = SettingsManager.getInstance().getVolume() * volume;
@@ -251,15 +238,14 @@ public class SoundManager {
 		}
 	}
 
-
-	public void playSound(int soundid, float volume, ShortPoint2D position) {
-		playSound (soundid, volume, position.x, position.y);
+	public void playSound(int soundId, float volume, ShortPoint2D position) {
+		playSound(soundId, volume, position.x, position.y);
 	}
 
 	/**
 	 * Plays a given sound at a given coordinate
-	 * 
-	 * @param soundid
+	 *
+	 * @param soundId
 	 *            The sound id to play
 	 * @param volume
 	 *            The volume
@@ -268,12 +254,15 @@ public class SoundManager {
 	 * @param y
 	 *            The y coordinate of the sound
 	 */
-	public void playSound(int soundid, float volume, int x, int y) {
-		if (map.getVisibleStatus(x, y) == 0) return;
+	public void playSound(int soundId, float volume, int x, int y) {
+		if (map == null || map.getVisibleStatus(x, y) == 0) {
+			return;
+		}
+
 		initialize();
 
-		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N && area != null) {
-			int[] alternatives = soundStarts[soundid];
+		if (soundStarts != null && soundId >= 0 && soundId < SEQUENCE_N && area != null) {
+			int[] alternatives = soundStarts[soundId];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
 				float maxVolume = SettingsManager.getInstance().getVolume() * volume;
@@ -325,22 +314,24 @@ public class SoundManager {
 			}
 			initializing = true;
 		}
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					loadSounds();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
+		new Thread(() -> {
+			try {
+				loadSounds();
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}, "sound loader").start();
 	}
 
+	private void loadSounds() throws IOException {
+		ByteReader reader = openSoundFile();
+		this.soundStarts = getSoundStarts(reader);
+		player.setSoundDataRetriever(new SoundDataRetriever(reader));
+	}
+
 	/**
 	 * Adds a sound file lookup path.
-	 * 
+	 *
 	 * @param file
 	 *            The file path.
 	 */
@@ -352,34 +343,31 @@ public class SoundManager {
 
 	/**
 	 * This class wraps an open {@link ByteReader} to a {@link ISoundDataRetriever}.
-	 * 
-	 * @author Michael Zangl
 	 *
+	 * @author Michael Zangl
 	 */
-	protected static class SoundDataRetriever implements ISoundDataRetriever {
-
+	private static class SoundDataRetriever implements ISoundDataRetriever {
 		private final ByteReader reader;
 
 		/**
 		 * Create a new {@link SoundDataRetriever}.
-		 * 
+		 *
 		 * @param reader
 		 *            The byte reader.
 		 */
-		public SoundDataRetriever(ByteReader reader) {
+		SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
 		}
 
 		@Override
-		public synchronized short[] getSoundData(int soundStart)
-				throws IOException {
+		public synchronized short[] getSoundData(int soundStart) throws IOException {
 			return SoundManager.getSoundData(reader, soundStart);
 		}
 	}
 
 	/**
 	 * Reads the sound data from a byte reader.
-	 * 
+	 *
 	 * @param reader
 	 *            The reader to read.
 	 * @param start
@@ -388,8 +376,7 @@ public class SoundManager {
 	 * @throws IOException
 	 *             If that sound could not be read.
 	 */
-	protected static short[] getSoundData(ByteReader reader, int start)
-			throws IOException {
+	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
 		reader.skipTo(start);
 
 		int length = reader.read32() / 2 - SOUND_META_LENGTH;
@@ -401,8 +388,7 @@ public class SoundManager {
 		return loadSound(reader, length);
 	}
 
-	private static short[] loadSound(ByteReader reader, int length)
-			throws IOException {
+	private static short[] loadSound(ByteReader reader, int length) throws IOException {
 		if (length < 0) {
 			return new short[0];
 		}
@@ -416,6 +402,6 @@ public class SoundManager {
 
 	public void setMap(MapDrawContext map) {
 		this.map = map;
-		area = map.getScreenArea();
+		this.area = map.getScreenArea();
 	}
 }
