@@ -58,7 +58,7 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 				return 0;
 			}
 			return (configuredRatioOfMaterial(type) / allWeapons);
-		} else {
+		} else if (EMaterialType.TOOLS.contains(type)) {
 			float allTools = 0;
 			for (EMaterialType currentTool : EMaterialType.TOOLS) {
 				allTools += configuredRatioOfMaterial(currentTool);
@@ -67,6 +67,8 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 				return 0;
 			}
 			return (configuredRatioOfMaterial(type) / allTools);
+		} else {
+			return 0;
 		}
 	}
 
@@ -95,6 +97,15 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 
 	public void setRatioOfMaterial(EMaterialType type, float ratio) {
 		ratios[type.ordinal] = ratio;
+	}
+
+	public boolean materialIsRequestedByNumbers(EnumSet<EMaterialType> materialGroup) {
+		for (EMaterialType type : materialGroup) {
+			if (numberOfFutureProducedMaterials[type.ordinal] > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public EMaterialType getWeaponToProduce() {

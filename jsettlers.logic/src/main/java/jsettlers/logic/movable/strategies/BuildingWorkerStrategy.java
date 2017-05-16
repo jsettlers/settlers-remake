@@ -297,15 +297,24 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void popToolRequestAction() {
 		ShortPoint2D pos = building.getDoor();
-		poppedMaterial = super.getGrid().popToolProductionRequest(pos); // tools needed by workers
-		if (poppedMaterial != null) {
-			jobFinished();
-		} else { // tools requested by settings
+		if (building.getMaterialProduction().materialIsRequestedByNumbers(EMaterialType.TOOLS)) { // first priority: user requests a number of tools
 			poppedMaterial = building.getMaterialProduction().getToolToProduce();
 			if (poppedMaterial != null) {
 				jobFinished();
 			} else {
 				jobFailed();
+			}
+		} else {
+			poppedMaterial = super.getGrid().popToolProductionRequest(pos);// second priority: a worker needs a tool
+			if (poppedMaterial != null) {
+				jobFinished();
+			} else { // lowest priority: tools requested by UI ratio settings
+				poppedMaterial = building.getMaterialProduction().getToolToProduce();
+				if (poppedMaterial != null) {
+					jobFinished();
+				} else {
+					jobFailed();
+				}
 			}
 		}
 	}
