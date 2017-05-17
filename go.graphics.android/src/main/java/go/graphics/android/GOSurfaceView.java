@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,15 +13,6 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package go.graphics.android;
-
-import android.content.Context;
-import android.opengl.GLES10;
-import android.opengl.GLSurfaceView;
-import android.os.Vibrator;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 
 import java.lang.reflect.Method;
 
@@ -39,8 +30,16 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
-public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
-		GOEventHandlerProvider {
+import android.content.Context;
+import android.opengl.GLES10;
+import android.opengl.GLSurfaceView;
+import android.os.Vibrator;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+
+public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEventHandlerProvider {
 
 	private final Area area;
 
@@ -65,9 +64,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		// api level 11 :-(
 		// super.setPreserveEGLContextOnPause(true);
 		try {
-			Method m =
-					GLSurfaceView.class.getMethod(
-							"setPreserveEGLContextOnPause", Boolean.TYPE);
+			Method m = GLSurfaceView.class.getMethod("setPreserveEGLContextOnPause", Boolean.TYPE);
 			m.invoke(this, true);
 		} catch (Throwable t) {
 			Log.d("gl", "Could not enable context preservation");
@@ -170,7 +167,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 			@Override
 			public void onScaleEnd(ScaleGestureDetector detector) {
-				endZoomEvent(detector.getCurrentSpan() / startSpan);
+				endZoomEvent(detector.getCurrentSpan() / startSpan, null);
 			}
 		};
 
@@ -217,13 +214,10 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		}
 	}
 
-
-
-
 	private class Renderer implements GLSurfaceView.Renderer {
 
-		private Renderer(Context acontext) {
-			drawcontext = new AndroidContext(acontext);
+		private Renderer(Context aContext) {
+			drawcontext = new AndroidContext(aContext);
 		}
 
 		@Override
@@ -252,8 +246,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	private class Factory implements EGLContextFactory {
 
 		@Override
-		public EGLContext createContext(EGL10 arg0, EGLDisplay display,
-				EGLConfig config) {
+		public EGLContext createContext(EGL10 arg0, EGLDisplay display, EGLConfig config) {
 			int[] attributes = new int[] { EGL10.EGL_NONE };
 			return arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
 					attributes);
@@ -270,7 +263,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			}
 			arg0.eglDestroyContext(arg1, arg2);
 		}
-
 	}
 
 	@Override
@@ -287,9 +279,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		return drawcontext;
 	}
 
-	public void setContextDestroyedListener(
-			IContextDestroyedListener contextDestroyedListener) {
+	public void setContextDestroyedListener(IContextDestroyedListener contextDestroyedListener) {
 		this.contextDestroyedListener = contextDestroyedListener;
 	}
-
 }
