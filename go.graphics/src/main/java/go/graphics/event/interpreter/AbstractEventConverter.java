@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,21 +29,15 @@ import go.graphics.event.command.GOCommandEvent;
  * @author michael
  */
 public class AbstractEventConverter {
+	private static final int PAN_PER_KEY_PRESS = 20;
+
 	private final GOEventHandlerProvider provider;
+	private final LinkedList<EventReplacementRule> replace = new LinkedList<>();
 
 	private GOKeyEvent ongoingKeyEvent = null;
-
 	private ConvertedDrawEvent ongoingDrawEvent = null;
-
 	private ConvertedPanEvent ongoingPanEvent = null;
-
 	private ConvertedHoverEvent ongoingHoverEvent;
-
-	private final int PAN_PER_KEYPRESS = 20;
-
-	private final LinkedList<EventReplacementRule> replace =
-			new LinkedList<AbstractEventConverter.EventReplacementRule>();
-
 	private ConvertedZoomEvent ongoingZoomEvent;
 
 	protected AbstractEventConverter(GOEventHandlerProvider provider) {
@@ -145,9 +139,9 @@ public class AbstractEventConverter {
 		}
 	}
 
-	protected void endZoomEvent(float factor, UIPoint p) {
+	protected void endZoomEvent(float factor, UIPoint pointingPosition) {
 		if (ongoingZoomEvent != null) {
-			ongoingZoomEvent.setZoomFactor(factor, p);
+			ongoingZoomEvent.setZoomFactor(factor, pointingPosition);
 			ongoingZoomEvent.released();
 			ongoingZoomEvent = null;
 		}
@@ -195,8 +189,7 @@ public class AbstractEventConverter {
 	}
 
 	protected boolean fireCommandEvent(UIPoint point, boolean isSelect) {
-		ConvertedCommandEvent commandEvent =
-				new ConvertedCommandEvent(point, isSelect);
+		ConvertedCommandEvent commandEvent = new ConvertedCommandEvent(point, isSelect);
 
 		handleEvent(commandEvent);
 
@@ -223,16 +216,16 @@ public class AbstractEventConverter {
 
 	protected synchronized boolean replaceKeyEvent(GOKeyEvent event) {
 		if ("DOWN".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(event, 0, PAN_PER_KEYPRESS);
+			doPan(event, 0, PAN_PER_KEY_PRESS);
 			return true;
 		} else if ("UP".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(event, 0, -PAN_PER_KEYPRESS);
+			doPan(event, 0, -PAN_PER_KEY_PRESS);
 			return true;
 		} else if ("LEFT".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(event, PAN_PER_KEYPRESS, 0);
+			doPan(event, PAN_PER_KEY_PRESS, 0);
 			return true;
 		} else if ("RIGHT".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(event, -PAN_PER_KEYPRESS, 0);
+			doPan(event, -PAN_PER_KEY_PRESS, 0);
 			return true;
 		} else {
 			return false;
@@ -289,9 +282,8 @@ public class AbstractEventConverter {
 			double distance) {
 		for (EventReplacementRule r : replace) {
 			if (r.matches(e, time, distance)) {
-				boolean success =
-						fireCommandEvent(p,
-								r.replaced == Replacement.COMMAND_SELECT);
+				boolean success = fireCommandEvent(p,
+						r.replaced == Replacement.COMMAND_SELECT);
 				if (success) {
 					return true;
 				}

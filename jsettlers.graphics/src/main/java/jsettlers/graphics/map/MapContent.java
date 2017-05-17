@@ -104,8 +104,7 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
-	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0,
-			2);
+	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0, 2);
 	private static final float UI_OVERLAY_Z = .95f;
 
 	private final class ZoomEventHandler implements GOModalEventHandler {
@@ -338,7 +337,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private float messageAlpha(IMessage m) {
-		int age = (int) m.getAge();
+		int age = m.getAge();
 		return age < 1500
 				? Math.min(1, age / 1000f)
 				: Math.max(0, 1f - (float) age / IMessage.MESSAGE_TTL);
@@ -908,8 +907,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void setZoom(float f, UIPoint p) {
-		context.getScreen().setZoom(f, p);
+	private void setZoom(float newZoom, UIPoint pointingPosition) {
+		context.getScreen().setZoom(newZoom, pointingPosition);
 		reapplyContentSizes();
 	}
 
@@ -918,7 +917,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		synchronized (messenger) {
 			printMsg = messenger.addMessage(message);
 		}
-		if (printMsg)
+
+		if (printMsg) {
 			switch (message.getType()) {
 			case ATTACKED:
 				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1);
@@ -927,6 +927,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			default:
 				break;
 			}
+		}
 	}
 
 	@Override

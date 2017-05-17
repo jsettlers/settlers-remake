@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -51,9 +51,9 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 	 * @param factor
 	 *            A float. 1 means no zoom, small values mean smaller, big values mean bigger.
 	 */
-	public void setZoomFactor(float factor, UIPoint p) {
-		zoom = factor;
-		pointingPosition = p;
+	public void setZoomFactor(float factor, UIPoint pointingPosition) {
+		this.zoom = factor;
+		this.pointingPosition = pointingPosition;
 		fireModalDataRefreshed();
 	}
 

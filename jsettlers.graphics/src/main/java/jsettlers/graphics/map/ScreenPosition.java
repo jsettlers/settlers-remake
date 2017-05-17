@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -103,8 +103,10 @@ public class ScreenPosition {
 	 *            The height.
 	 */
 	public void setSize(float newWidth, float newHeight) {
-		if (newHeight / zoom > mapHeight + TOPBORDER)
+		if (newHeight / zoom > mapHeight + TOPBORDER) {
 			zoom = newHeight / (mapHeight + TOPBORDER);
+		}
+
 		float x = screen.getCenterX();
 		float y = screen.getCenterY();
 		if (pointer != null) {
@@ -123,12 +125,12 @@ public class ScreenPosition {
 	/**
 	 * Set the new zoom factor.
 	 * 
-	 * @param newzoom
+	 * @param newZoom
 	 *            The new zoom factor. It is automatically clamped.
 	 */
-	public void setZoom(float newzoom, UIPoint pointingPosition) {
+	public void setZoom(float newZoom, UIPoint pointingPosition) {
 		oldZoom = zoom;
-		zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newzoom);
+		zoom = clamp(MINIMUM_ZOOM, MAXIMUM_ZOOM, newZoom);
 		pointer = pointingPosition;
 	}
 
