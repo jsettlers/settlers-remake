@@ -35,7 +35,7 @@ public class EditTextDialog extends DialogFragment {
 	private EditText mEditText;
 
 	public interface Listener {
-		void saveEditTextDialog(int requestCode, CharSequence text);
+		void saveEditTextDialog(int requestCode, String text);
 	}
 
 	public static EditTextDialog create(int requestCode, int titleResId, int hintResId, CharSequence text) {
@@ -68,7 +68,7 @@ public class EditTextDialog extends DialogFragment {
 		return new AlertDialog.Builder(getActivity()).setView(view)
 				.setTitle(titleResId)
 				.setPositiveButton("OK", (dialog, id) -> {
-					CharSequence inputText = mEditText.getText();
+					String inputText = mEditText.getText().toString();
 
 					if (!StringUtil.isNullOrWhiteSpace(inputText)) {
 						Listener listener = (Listener) getParentFragment();

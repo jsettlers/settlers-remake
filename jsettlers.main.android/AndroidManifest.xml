@@ -39,7 +39,7 @@
 
         <activity
             android:name=".mainmenu.ui.activities.SettingsActivity_"
-            android:label="@string/activity_settings"/>
+            android:label="@string/settings"/>
     </application>
 
 </manifest>

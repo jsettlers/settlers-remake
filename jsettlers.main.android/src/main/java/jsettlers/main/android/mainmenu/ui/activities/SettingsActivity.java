@@ -81,10 +81,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsView,
 	}
 
 	@Override
-	public void saveEditTextDialog(int requestCode, CharSequence text) {
+	public void saveEditTextDialog(int requestCode, String text) {
 		switch (requestCode) {
 		case REQUEST_CODE_PLAYER_NAME:
-			presenter.playerNameEdited(text.toString());
+			presenter.playerNameEdited(text);
 			break;
 		}
 	}
