@@ -256,7 +256,7 @@ public class SoundManager {
 	 *            The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
-		if (map == null || map.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
+		if (map == null || map.getVisibleStatus(x, y) < CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
 			return;
 		}
 
