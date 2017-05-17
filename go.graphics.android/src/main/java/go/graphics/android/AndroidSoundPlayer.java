@@ -65,10 +65,10 @@ public class AndroidSoundPlayer implements SoundPlayer {
 						Sound<Integer> sound = queue.take();
 						long start = System.currentTimeMillis();
 						short[] data = soundDataRetriever.getSoundData(sound.getData());
-						System.out.println("loading sound data took: " + (System.currentTimeMillis() - start) + " ms");
+						//System.out.println("loading sound data took: " + (System.currentTimeMillis() - start) + " ms");
 
 						track.setStereoVolume(sound.getLvolume(), sound.getRvolume());
-						System.out.println("sound: playing " + data.length + " samples");
+						//System.out.println("sound: playing " + data.length + " samples");
 						track.write(data, 0, data.length);
 					} catch (IOException e) {
 						e.printStackTrace();

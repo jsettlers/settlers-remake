@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">JSettlers</string>
     <string name="please_wait">Bitte warten</string>
-    
-    <string name="f12_string">Vorspielen</string>
+
+    <string name="f12_string">Eine Minute vorspulen</string>
     <string name="save_string">Speichern</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Töten</string>
@@ -11,20 +11,19 @@
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
-    
+
     <string name="local_game">Einzelspieler</string>
     <string name="local_game_new">Neues Spiel</string>
     <string name="local_game_load">Spielstand laden</string>
     <string name="local_game_resume">Weiterspielen</string>
     <string name="local_game_resume_error">Es trat ein Fehler beim Laden des Spielstandes auf.</string>
-    <string name="preferences">Einstellungen</string>
     <string name="network_game">Netzwerkspiel</string>
     <string name="startscreen_network_new">Einleiten</string>
     <string name="startscreen_network_join">Beitreten</string>
     <string name="startscreen_network_load">Wiederherstellen</string>
-    
+
     <string name="game_title">Willkommen zu JSettlers</string>
-    
+
     <string name="maplist_local_new_headline">Neues Spiel starten</string>
     <string name="maplist_local_new_submit">Starten</string>
     <string name="maplist_local_load_headline">Spielstand laden</string>
@@ -33,12 +32,12 @@
     <string name="maplist_network_new_submit">Einleiten</string>
     <string name="maplist_network_join_headline">Einem Netzwerkspiel beitreten</string>
     <string name="maplist_network_join_submit">Beitreten</string>
-    
+
     <string name="player_count">Spieler</string>
     <string name="illegal_playercount">Ungültige Spielerzahl</string>
     <string name="illegal_playercount_too_high">So viele Spieler können auf der Karte nicht spielen</string>
     <string name="illegal_playercount_too_low">So wenige Spieler können auf der Karte nicht spielen</string>
-    
+
     <string name="send">Senden</string>
     <string name="accept_start">Start erlauben</string>
     <string name="local_game_delete">Spielstand löschen</string>
@@ -46,9 +45,52 @@
     <string name="preferences_playername">Dein Name</string>
     <string name="preferences_server">Netzwerkserver</string>
     <string name="preferences_ok">Übernehmen</string>
-    <string name="network_chat">Chat...</string>
-    <string name="preferences_label">Einstellungen</string>
+    <string name="network_chat">Chat…</string>
     <string name="filechoser_ok">Diesen Ordner verwenden</string>
-    <string name="filechoser_message">Wo sind die Gfx und Snd Ordner?</string>
+    <string name="filechoser_message">Wo sind die GFX und SND Ordner?</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="confirm_kill">Soldaten töten?</string>
+    <string name="convert_all">Alle konvertieren</string>
+    <string name="convert_one">Einen konvertieren</string>
+    <string name="convert_to_carriers">Konvertiere zu Trägern</string>
+    <string name="empty_directory">Dieses Verzeichnis ist leer</string>
+    <string name="game_menu_pause">Pause</string>
+    <string name="game_menu_paused">Pausiert</string>
+    <string name="game_menu_quit">Beenden</string>
+    <string name="game_menu_quit_confirm">Sicher?</string>
+    <string name="game_menu_save">Speichern</string>
+    <string name="game_menu_saved">Spiel gespeichert</string>
+    <string name="game_menu_title">Menü</string>
+    <string name="game_menu_unpause">Weiter</string>
+    <string name="halt">Stopp</string>
+    <string name="join_multi_player_game">Multiplayer Spiel beitreten</string>
+    <string name="load_single_player_game">Lade Einzelspieler</string>
+    <string name="menu_game_in_progress">Spiel läuft</string>
+    <string name="menu_join">Beitreten</string>
+    <string name="menu_load">Laden</string>
+    <string name="menu_multi_player_info">Fordere deine Freunde auf Handy, Tablet und Desktop heraus.</string>
+    <string name="menu_multi_player_title">Mehrspieler</string>
+    <string name="menu_new">Neu</string>
+    <string name="menu_single_player_info">Starte ein Spiel mit Computergegnern.</string>
+    <string name="menu_single_player_title">Einzelspieler</string>
+    <string name="new_multi_player_game">Neues Mehrspieler Spiel</string>
+    <string name="new_single_player_game">Neues Einzelspieler Spiel</string>
+    <string name="no_saved_games">Keine Spielstände vorhanden</string>
+    <string name="notification_game_in_progress">JSettlers Spiel läuft</string>
+    <string name="number_of_players">Spieler</string>
+    <string name="ok">OK</string>
+    <string name="peacetime">Friedenszeit</string>
+    <string name="resource_directory_button">Lokalisiere die Ordner</string>
+    <string name="resource_directory_info">JSettlers benötigt die GFX und SND Ordner aus dem Installationsverzeichnis eines originalen Die Siedler III. Finde diese Ordner und kopiere sie auf dein Android Gerät um sie dann für JSettlers zu nutzen.</string>
+    <string name="resource_directory_title">Grafik- und Audio-Dateien</string>
+    <string name="resource_selection_dialog_title">Lokalisiere die Grafik- und Audio-Dateien</string>
+    <string name="searching_for_multiplayer_games">Suche Spiele…</string>
+    <string name="settings">Einstellungen</string>
+    <string name="settings_name">Name</string>
+    <string name="settings_player_name">Spielername</string>
+    <string name="start_game">Starte Spiel</string>
+    <string name="start_resources">Ressourcen</string>
+    <string name="work_here">Arbeite hier</string>
+    <string name="yes">Ja</string>
 
 </resources>

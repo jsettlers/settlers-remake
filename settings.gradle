@@ -4,6 +4,7 @@ gradle.ext.projectsWithExtraTest = []
 
 include ':go.graphics'
 include ':go.graphics.swing'
+include ':go.graphics.android'
 include ':jsettlers.buildingcreator'
 include ':jsettlers.common'
 include ':jsettlers.graphics'
@@ -22,7 +23,6 @@ include ':jsettlers.tools'
 def androidFile = new File(rootProject.dir, 'local.properties');
 if (System.env.ANDROID_HOME || androidFile.isFile() && androidFile.text.matches('(?s)^(.*\\n)?\\s*sdk.dir=.*'))  {
 	include ':go.graphics.android'
-	include ':jsettlers.graphics.androidui'
 	include ':jsettlers.main.android'
 } else {
 	println 'WARNING: Android is disabled.'
