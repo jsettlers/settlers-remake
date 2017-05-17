@@ -272,7 +272,7 @@ public class GOSwingEventConverter extends AbstractEventConverter
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		float factor = (float) Math.exp(-e.getUnitsToScroll() / 20.0);
 		startZoom();
-		endZoomEvent(factor);
+		endZoomEvent(factor, convertToLocal(e));
 	}
 
 	@Override
