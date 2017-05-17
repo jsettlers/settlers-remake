@@ -14,6 +14,23 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import android.content.Context;
+import android.opengl.GLES10;
+import android.opengl.GLSurfaceView;
+import android.os.Vibrator;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+
+import java.lang.reflect.Method;
+
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.egl.EGLDisplay;
+import javax.microedition.khronos.opengles.GL10;
+
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -22,29 +39,12 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Hashtable;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
-import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.opengles.GL10;
-
-import android.content.Context;
-import android.opengl.GLES10;
-import android.opengl.GLSurfaceView;
-import android.util.Log;
-import android.view.InputDevice;
-import android.view.MotionEvent;
-
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		GOEventHandlerProvider {
 
 	private final Area area;
 
-	private final ActionAdapter actionAdapter = new ActionAdapter(this);
+	private final ActionAdapter actionAdapter = new ActionAdapter(getContext(), this);
 
 	private AndroidContext drawcontext;
 
@@ -77,7 +77,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
 		actionAdapter.onTouchEvent(e);
-
 		return true;
 	}
 
@@ -94,207 +93,132 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	}
 
 	private class ActionAdapter extends AbstractEventConverter {
-		private static final double CLICK_MOVE_TRESHOLD = 20;
-		private static final double CLICK_TIME_TRSHOLD = 1;
-		private static final float ZOOMSTART = 2f;
-		private static final double ZOOM_MIN_POINTERDISTANCE = 150;
 
-		protected ActionAdapter(GOEventHandlerProvider provider) {
+		protected ActionAdapter(Context context, GOEventHandlerProvider provider) {
 			super(provider);
-			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
-					Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
-					CLICK_MOVE_TRESHOLD));
-			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN,
-					Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD,
-					CLICK_MOVE_TRESHOLD));
+			gestureDetector = new GestureDetector(context, gestureListener);
+			longPressDetector = new GestureDetector(context, longPressListener);
+			scaleGestureDetector = new ScaleGestureDetector(context, scaleGestureListener);
+
+			gestureDetector.setIsLongpressEnabled(false);
+
+			vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		}
 
-		private boolean doZoom = false;
-
-		/**
-		 * The points where pointers started. In Android space
-		 */
-		private Hashtable<Integer, UIPoint> panPointerStarts =
-				new Hashtable<Integer, UIPoint>();
-
-		private double endedPansX = 0;
-		private double endedPansY = 0;
+		private final Vibrator vibrator;
 
 		/**
 		 * The pan start center, in GO space
 		 */
 		private UIPoint panStart = new UIPoint(0, 0);
 
-		/**
-		 * Distance the pointers had on zoom start
-		 */
-		private double zoomStartDistance = 0;
+		private final GestureDetector longPressDetector;
+		private final GestureDetector.SimpleOnGestureListener longPressListener = new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public void onLongPress(MotionEvent e) {
+				vibrator.vibrate(25);
 
-		private float lastZoomFactor = 1;
+				endPan(currentPoint(e));
+				startDraw(currentPoint(e));
+			}
+		};
+
+		private final GestureDetector gestureDetector;
+		private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public boolean onSingleTapUp(MotionEvent e) {
+				if (drawStarted()) {
+					abortDraw();
+					fireMoveTo(e);
+				} else {
+					fireSelectPoint(e);
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+				if (drawStarted()) {
+					updateDrawPosition(currentPoint(e2));
+				} else if (panStarted()) {
+					updatePanPosition(relativePanPoint(e2));
+				} else {
+					panStart = currentPoint(e2);
+					startPan(new UIPoint(0, 0));
+				}
+
+				return true;
+			}
+		};
+
+		private final ScaleGestureDetector scaleGestureDetector;
+		private final ScaleGestureDetector.OnScaleGestureListener scaleGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
+			private float startSpan;
+
+			@Override
+			public boolean onScaleBegin(ScaleGestureDetector detector) {
+				startSpan = detector.getCurrentSpan();
+				startZoom();
+				return true;
+			}
+
+			@Override
+			public boolean onScale(ScaleGestureDetector detector) {
+				updateZoomFactor(detector.getCurrentSpan() / startSpan);
+				return true;
+			}
+
+			@Override
+			public void onScaleEnd(ScaleGestureDetector detector) {
+				endZoomEvent(detector.getCurrentSpan() / startSpan);
+			}
+		};
 
 		public void onTouchEvent(MotionEvent e) {
+			scaleGestureDetector.onTouchEvent(e);
+			gestureDetector.onTouchEvent(e);
+			longPressDetector.onTouchEvent(e);
 
-			boolean isPan =
-					panStarted()
-							|| e.getPointerCount() > 1
-							|| (e.getSource() & InputDevice.SOURCE_CLASS_MASK) == InputDevice.SOURCE_CLASS_TRACKBALL;
+			if (e.getAction() == MotionEvent.ACTION_UP) {
+				if (drawStarted()) {
+					endDraw(currentPoint(e));
+				}
 
-			if (isPan) {
+				if (panStarted()) {
+					endPan(relativePanPoint(e));
+				}
+			}
+
+			if (e.getPointerCount() > 1) {
 				if (drawStarted()) {
 					abortDraw();
 				}
-				if (!panStarted()) {
-					endedPansX = 0;
-					endedPansY = 0;
-					panStart = getStartedPanAverage();
-					startPan(panStart);
-					zoomStartDistance = getPointerDistance(e);
-					lastZoomFactor = 1;
-				}
 
-				if (e.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
-					int index = getPointerIndex(e);
-					Integer id = Integer.valueOf(e.getPointerId(index));
-					UIPoint point = new UIPoint(e.getX(index), e.getY(index));
-					panPointerStarts.put(id, point);
-
-				} else if (e.getAction() == MotionEvent.ACTION_POINTER_UP) {
-					int index = getPointerIndex(e);
-					Integer id = Integer.valueOf(e.getPointerId(index));
-					UIPoint start = panPointerStarts.remove(id);
-					if (start != null) {
-						endedPansX +=
-								(e.getX(index) - start.getX())
-										/ e.getPointerCount();
-						endedPansY -=
-								(e.getY(index) - start.getY())
-										/ e.getPointerCount();
-					}
-
-				} else {
-					float factor = computeZoomFactor(e);
-					if (e.getAction() == MotionEvent.ACTION_MOVE) {
-						UIPoint point = computePanPoint(e);
-						updatePanPosition(point);
-
-						if (e.getPointerCount() > 1
-								&& (factor < 1 / ZOOMSTART || factor > ZOOMSTART)
-								&& getPointerDistance(e) > ZOOM_MIN_POINTERDISTANCE) {
-							doZoom = true;
-							startZoom();
-						}
-
-						if (doZoom) {
-							updateZoomFactor(factor);
-						}
-
-					} else if (e.getAction() == MotionEvent.ACTION_UP) {
-						endPan(computePanPoint(e));
-						if (doZoom) {
-							endZoomEvent(factor);
-						}
-					}
-				}
-			} else {
-				if (e.getAction() == MotionEvent.ACTION_DOWN) {
-					startDraw(convertToLocal(e, 0));
-					panPointerStarts.clear();
-					for (int i = 0; i < e.getPointerCount(); i++) {
-						Integer index = e.getPointerId(i);
-						panPointerStarts.put(index,
-								new UIPoint(e.getX(i), e.getY(i)));
-					}
-				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-					updateDrawPosition(convertToLocal(e, 0));
-				} else if (e.getAction() == MotionEvent.ACTION_UP) {
-					endDraw(convertToLocal(e, 0));
+				if (panStarted()) {
+					endPan(relativePanPoint(e));
 				}
 			}
 		}
 
-		private double getPointerDistance(MotionEvent e) {
-			float centerx = 0;
-			float centery = 0;
-			int pointerCount = e.getPointerCount();
-			for (int i = 0; i < pointerCount; i++) {
-				centerx += e.getX(i);
-				centery += e.getY(i);
-			}
-			centerx /= pointerCount;
-			centery /= pointerCount;
-
-			float dx = 0;
-			float dy = 0;
-			for (int i = 0; i < pointerCount; i++) {
-				dx += Math.abs(centerx - e.getX(i));
-				dy += Math.abs(centery - e.getY(i));
-			}
-			return Math.hypot(dx, dy);
+		private UIPoint relativePanPoint(MotionEvent e) {
+			return new UIPoint(e.getX() - panStart.getX(), getHeight() - e.getY() - panStart.getY());
 		}
 
-		private float computeZoomFactor(MotionEvent e) {
-			if (e.getPointerCount() > 1) {
-				double currentDistance = getPointerDistance(e);
-				float zoom = (float) (currentDistance / zoomStartDistance);
-				lastZoomFactor = zoom;
-				return zoom;
-			} else {
-				return lastZoomFactor;
-			}
+		private UIPoint currentPoint(MotionEvent e) {
+			return new UIPoint(e.getX(), getHeight() - e.getY());
 		}
 
-		private UIPoint computePanPoint(MotionEvent e) {
-			double dx = endedPansX;
-			double dy = endedPansY;
-			for (int i = 0; i < e.getPointerCount(); i++) {
-				Integer id = Integer.valueOf(e.getPointerId(i));
-				UIPoint p = panPointerStarts.get(id);
-				if (p != null) {
-					dx += e.getX(i) - p.getX();
-					dy -= e.getY(i) - p.getY();
-				}
-			}
-
-			UIPoint point =
-					new UIPoint(panStart.getX() + dx / e.getPointerCount(),
-							panStart.getY() + dy / e.getPointerCount());
-			return point;
+		private void fireSelectPoint(MotionEvent e) {
+			fireCommandEvent(new UIPoint(e.getX(), getHeight() - e.getY()), true);
 		}
 
-		/**
-		 * Gets the center of the points in the hashtable and adds the endedPans
-		 * 
-		 * @return
-		 */
-		private UIPoint getStartedPanAverage() {
-			double x = 0;
-			double y = 0;
-
-			Collection<UIPoint> values = panPointerStarts.values();
-			for (UIPoint start : values) {
-				x += start.getX();
-				y += start.getY();
-			}
-			return new UIPoint(x / values.size(), getHeight() - y
-					/ values.size());
+		private void fireMoveTo(MotionEvent e) {
+			fireCommandEvent(new UIPoint(e.getX(), getHeight() - e.getY()), false);
 		}
-
-		private int getPointerIndex(MotionEvent e) {
-			int mask = MotionEvent.ACTION_POINTER_INDEX_MASK;
-			int shift = MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-			return (e.getActionIndex() & mask) >> shift;
-		}
-
-		private UIPoint convertToLocal(MotionEvent e, int index) {
-			return new UIPoint(e.getX(index), getHeight() - e.getY(index));
-		}
-
-		public void fireKey(String key) {
-			startKeyEvent(key);
-			endKeyEvent(key);
-		}
-
 	}
+
+
+
 
 	private class Renderer implements GLSurfaceView.Renderer {
 
@@ -357,10 +281,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	@Override
 	public void handleEvent(GOEvent event) {
 		area.handleEvent(event);
-	}
-
-	public void fireKey(String key) {
-		actionAdapter.fireKey(key);
 	}
 
 	public GLDrawContext getDrawContext() {
