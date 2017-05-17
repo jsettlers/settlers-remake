@@ -49,7 +49,7 @@ import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -233,7 +233,7 @@ public class AiStatistics {
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
 					aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][aiMapInformation.GRASS_INDEX]++;
 				}
-				Movable movable = movableGrid.getMovableAt(x, y);
+				ILogicMovable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
 					byte movablePlayerId = movable.getPlayerId();
 					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];

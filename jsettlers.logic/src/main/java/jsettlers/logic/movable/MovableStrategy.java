@@ -20,6 +20,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -312,7 +313,7 @@ public abstract class MovableStrategy implements Serializable {
 		// try to find a way without a movable or with a pushable movable.
 		for (ShortPoint2D[] pathPrefix : possiblePaths) { // check if any of the paths is free of movables
 			ShortPoint2D firstPosition = pathPrefix[0];
-			Movable movable = grid.getMovableAt(firstPosition.x, firstPosition.y);
+			ILogicMovable movable = grid.getMovableAt(firstPosition.x, firstPosition.y);
 			if (movable == null || movable.isProbablyPushable(this.movable)) {
 				path.goToNextStep();
 				return new Path(path, pathPrefix);
