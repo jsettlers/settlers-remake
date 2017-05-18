@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2016
+/*
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,14 +11,17 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.main.swing.resources;
+ */
+package jsettlers.common.resources;
 
 import java.io.File;
 
+import jsettlers.common.utils.FileUtils;
+import jsettlers.common.utils.mutables.Mutable;
+
 /**
  * Checks if a settler folder is valid
- * 
+ *
  * @author Andreas Butti
  * @author Andreas Eberle
  */
@@ -32,54 +35,61 @@ public final class SettlersFolderChecker {
 
 	/**
 	 * Checks a potential Settlers III installation folder and extracts the gfx and snd folders.
-	 * 
-	 * @param settlersBaseFolder
+	 *
+	 * @param settlersFolder
 	 *            Folder of Settlers III installation
 	 * @return Instance of {@link SettlersFolderInfo}.
 	 */
-	public static SettlersFolderInfo checkSettlersFolder(String settlersBaseFolder) {
-		if (settlersBaseFolder == null) {
+	public static SettlersFolderInfo checkSettlersFolder(String settlersFolder) {
+		if (settlersFolder == null || settlersFolder.isEmpty()) {
 			return new SettlersFolderInfo();
 		}
 
-		if (settlersBaseFolder.isEmpty()) {
+		File settlersBaseFolderFile = new File(settlersFolder);
+		return checkSettlersFolder(settlersBaseFolderFile);
+	}
+
+	/**
+	 * Checks a potential Settlers III installation folder and extracts the gfx and snd folders.
+	 *
+	 * @param settlersFolder
+	 *            Folder of Settlers III installation
+	 * @return Instance of {@link SettlersFolderInfo}.
+	 */
+	public static SettlersFolderInfo checkSettlersFolder(File settlersFolder) {
+		if (!settlersFolder.exists() || !settlersFolder.isDirectory()) {
 			return new SettlersFolderInfo();
 		}
 
-		File settlersBaseFolderFile = new File(settlersBaseFolder);
-		if (!settlersBaseFolderFile.exists() || !settlersBaseFolderFile.isDirectory()) {
-			return new SettlersFolderInfo();
-		}
+		Mutable<File> sndFolder = new Mutable<>();
+		Mutable<File> gfxFolder = new Mutable<>();
+		Mutable<File> mapsFolder = new Mutable<>();
 
-		File[] files = settlersBaseFolderFile.listFiles();
-		if (files == null) {
-			return new SettlersFolderInfo();
-		}
-
-		File sndFolder = null;
-		File gfxFolder = null;
-		File mapsFolder = null;
-
-		for (File currentFolder : files) {
-			if (currentFolder.getName().equalsIgnoreCase("snd")) {
-				for (File currentFile : currentFolder.listFiles()) {
-					if ("siedler3_00.dat".equalsIgnoreCase(currentFile.getName())) {
-						sndFolder = currentFolder;
-					}
-				}
-			} else if (currentFolder.getName().equalsIgnoreCase("gfx")) {
-				for (File currentFile : currentFolder.listFiles()) {
-					String fileName = currentFile.getName();
-					if (fileName.substring(0, fileName.indexOf('.')).equalsIgnoreCase("siedler3_00")) {
-						gfxFolder = currentFolder;
-					}
-				}
-			} else if(currentFolder.getName().equalsIgnoreCase("map")) {
-				mapsFolder = currentFolder;
+		FileUtils.iterateChildren(settlersFolder, currentFolder -> {
+			if (!currentFolder.isDirectory()) {
+				return;
 			}
-		}
 
-		return new SettlersFolderInfo(sndFolder, gfxFolder, mapsFolder);
+			if (FileUtils.nameEqualsIgnoringCase("SND", currentFolder)) {
+				FileUtils.iterateChildren(currentFolder, currentFile -> {
+					if (currentFile.isFile() && FileUtils.nameEqualsIgnoringCase("siedler3_00.dat", currentFile)) {
+						sndFolder.object = currentFolder;
+					}
+				});
+			} else if (FileUtils.nameEqualsIgnoringCase("GFX", currentFolder)) {
+				FileUtils.iterateChildren(currentFolder, currentFile -> {
+					String fileName = currentFile.getName();
+					String firstPartOfName = fileName.substring(0, fileName.indexOf('.'));
+					if (currentFile.isFile() && "siedler3_00".equalsIgnoreCase(firstPartOfName)) {
+						gfxFolder.object = currentFolder;
+					}
+				});
+			} else if (FileUtils.nameEqualsIgnoringCase("MAP", currentFolder)) {
+				mapsFolder.object = currentFolder;
+			}
+		});
+
+		return new SettlersFolderInfo(sndFolder.object, gfxFolder.object, mapsFolder.object);
 	}
 
 	public static class SettlersFolderInfo {

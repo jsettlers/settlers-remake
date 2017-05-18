@@ -17,8 +17,6 @@ package jsettlers.main.android.mainmenu.ui.dialogs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
@@ -26,8 +24,9 @@ import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.UiThread;
 
+import jsettlers.common.resources.SettlersFolderChecker;
 import jsettlers.main.android.R;
-import jsettlers.main.android.core.resources.scanner.ResourcesLocationManager;
+import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -46,7 +45,7 @@ public class DirectoryPickerDialog extends DialogFragment {
 	@Bean
 	DirectoryAdapter directoryAdapter;
 	@Bean
-	ResourcesLocationManager resourcesLocationManager;
+	AndroidResourcesLoader androidResourcesLoader;
 
 	public interface Listener {
 		void onDirectorySelected();
@@ -76,7 +75,7 @@ public class DirectoryPickerDialog extends DialogFragment {
 				.setTitle(R.string.resource_selection_dialog_title)
 				.setView(listView)
 				.setPositiveButton(R.string.ok, (dialog, which) -> {
-					resourcesLocationManager.setResourcesDirectory(directoryAdapter.getCurrentDirectory().getAbsolutePath());
+					androidResourcesLoader.setResourcesDirectory(directoryAdapter.getCurrentDirectory().getAbsolutePath());
 					((Listener) getParentFragment()).onDirectorySelected();
 				})
 				.create();
@@ -90,8 +89,7 @@ public class DirectoryPickerDialog extends DialogFragment {
 
 	private void setButtonState() {
 		AlertDialog dialog = (AlertDialog) getDialog();
-		List<File> paths = Collections.singletonList(directoryAdapter.getCurrentDirectory());
-		boolean hasGameFiles = ResourcesLocationManager.hasImagesOnPath(paths);
+		boolean hasGameFiles = SettlersFolderChecker.checkSettlersFolder(directoryAdapter.getCurrentDirectory()).isValidSettlersFolder();
 		Button button = dialog.getButton(Dialog.BUTTON_POSITIVE);
 		button.setEnabled(hasGameFiles);
 	}
