@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#2E7D32</color>
+    <color name="primaryDark">#1B5E20</color>
+    <color name="accent">#FF1744</color>
 
     <color name="bg">#9000</color>
     <color name="network_not_ready">#fff</color>
     <color name="network_ready">#06470c</color>
 
+    <color name="grayLight">#EEEEEE</color>
+    <color name="gray">#E0E0E0</color>
+    <color name="grayDark">#9E9E9E</color>
 </resources>
