@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.buildings;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.io.Serializable;
 import java.util.EnumSet;
 
@@ -27,134 +29,115 @@ import jsettlers.logic.constants.MatchConstants;
  */
 public class MaterialProductionSettings implements IMaterialProductionSettings, Serializable {
 	private static final long serialVersionUID = 5315922528738308895L;
-	public static final int MAXIMUM_FUTURE_PRODUCTION = 20;
 
-	private final float[] ratios = new float[EMaterialType.NUMBER_OF_MATERIALS];
-	private final int[] numberOfFutureProducedMaterials = new int[EMaterialType.NUMBER_OF_MATERIALS];
+	private static final int MAXIMUM_FUTURE_PRODUCTION = 99;
+	private static final float RELATIVE_SCALE_FACTOR = 100;
+
+	private final int[] relativeProductionRequests = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	private final int[] absoluteProductionRequests = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
 	public MaterialProductionSettings() {
-		for (EMaterialType type : EMaterialType.VALUES) {
-			ratios[type.ordinal] = 0;
-			numberOfFutureProducedMaterials[type.ordinal] = 0;
-		}
-		ratios[EMaterialType.SWORD.ordinal] = 1f;
-		ratios[EMaterialType.SPEAR.ordinal] = 0.3f;
-		ratios[EMaterialType.BOW.ordinal] = 0.7f;
+		relativeProductionRequests[EMaterialType.SWORD.ordinal] = 100;
+		relativeProductionRequests[EMaterialType.SPEAR.ordinal] = 30;
+		relativeProductionRequests[EMaterialType.BOW.ordinal] = 70;
 	}
 
 	@Override
-	public float configuredRatioOfMaterial(EMaterialType type) {
-		return ratios[type.ordinal];
+	public float getRelativeProductionRequest(EMaterialType type) {
+		return relativeProductionRequests[type.ordinal] / RELATIVE_SCALE_FACTOR;
 	}
 
 	@Override
 	public float resultingRatioOfMaterial(EMaterialType type) {
 		if (EMaterialType.WEAPONS.contains(type)) {
-			float allWeapons = 0;
-			for (EMaterialType currentWeapon : EMaterialType.WEAPONS) {
-				allWeapons += configuredRatioOfMaterial(currentWeapon);
-			}
-			if (allWeapons == 0) {
-				return 0;
-			}
-			return (configuredRatioOfMaterial(type) / allWeapons);
+			return calculateDistributionValue(type, EMaterialType.WEAPONS);
+
 		} else if (EMaterialType.TOOLS.contains(type)) {
-			float allTools = 0;
-			for (EMaterialType currentTool : EMaterialType.TOOLS) {
-				allTools += configuredRatioOfMaterial(currentTool);
-			}
-			if (allTools == 0) {
-				return 0;
-			}
-			return (configuredRatioOfMaterial(type) / allTools);
+			return calculateDistributionValue(type, EMaterialType.TOOLS);
+
 		} else {
 			return 0;
 		}
 	}
 
 	@Override
-	public int numberOfFutureProducedMaterial(EMaterialType type) {
-		return numberOfFutureProducedMaterials[type.ordinal];
+	public int getAbsoluteProductionRequest(EMaterialType type) {
+		return absoluteProductionRequests[type.ordinal];
 	}
 
-	public void increaseNumberOfFutureProducedMaterial(EMaterialType type) {
-		setNumberOfFutureProducedMaterial(type, numberOfFutureProducedMaterials[type.ordinal] + 1);
+	public void increaseAbsoluteProductionRequest(EMaterialType type) {
+		setAbsoluteProductionRequest(type, absoluteProductionRequests[type.ordinal] + 1);
 	}
 
-	public void decreaseNumberOfFutureProducedMaterial(EMaterialType type) {
-		setNumberOfFutureProducedMaterial(type, numberOfFutureProducedMaterials[type.ordinal] - 1);
+	public void decreaseAbsoluteProductionRequest(EMaterialType type) {
+		setAbsoluteProductionRequest(type, absoluteProductionRequests[type.ordinal] - 1);
 	}
 
-	public void setNumberOfFutureProducedMaterial(EMaterialType type, int count) {
-		if (count > MAXIMUM_FUTURE_PRODUCTION) {
-			numberOfFutureProducedMaterials[type.ordinal] = MAXIMUM_FUTURE_PRODUCTION;
-		} else if (count < 0) {
-			numberOfFutureProducedMaterials[type.ordinal] = 0;
-		} else {
-			numberOfFutureProducedMaterials[type.ordinal] = count;
-		}
+	public void setAbsoluteProductionRequest(EMaterialType type, int count) {
+		absoluteProductionRequests[type.ordinal] = Math.min(MAXIMUM_FUTURE_PRODUCTION, Math.max(0, count));
 	}
 
-	public void setRatioOfMaterial(EMaterialType type, float ratio) {
-		ratios[type.ordinal] = ratio;
-	}
-
-	public boolean materialIsRequestedByNumbers(EnumSet<EMaterialType> materialGroup) {
-		for (EMaterialType type : materialGroup) {
-			if (numberOfFutureProducedMaterials[type.ordinal] > 0) {
-				return true;
-			}
-		}
-		return false;
+	public void setRelativeProductionRequest(EMaterialType type, float ratio) {
+		relativeProductionRequests[type.ordinal] = (int) (ratio * RELATIVE_SCALE_FACTOR);
 	}
 
 	public EMaterialType getWeaponToProduce() {
-		return getMaterialOfGroupToProduce(EMaterialType.WEAPONS);
+		EMaterialType weapon = getAbsolutelyRequestedMaterial(EMaterialType.WEAPONS);
+		if (weapon != null) {
+			return weapon;
+		} else {
+			return getRelativelyRequestedMaterial(EMaterialType.WEAPONS);
+		}
 	}
 
-	public EMaterialType getToolToProduce() {
-		return getMaterialOfGroupToProduce(EMaterialType.TOOLS);
+	public EMaterialType getAbsolutelyRequestedMaterial(EnumSet<EMaterialType> materialGroup) {
+		return getMaterialOfGroupToProduce(materialGroup, absoluteProductionRequests);
 	}
 
-	private EMaterialType getMaterialOfGroupToProduce(EnumSet<EMaterialType> materialGroup) {
-		float[] materialRatios = calculateMaterialRatios(materialGroup);
+	public EMaterialType getRelativelyRequestedMaterial(EnumSet<EMaterialType> materialGroup) {
+		return getMaterialOfGroupToProduce(materialGroup, relativeProductionRequests);
+	}
 
-		float ratioSum = 0;
-		for (float ratio : materialRatios) {
-			ratioSum += ratio;
-		}
+	private EMaterialType getMaterialOfGroupToProduce(EnumSet<EMaterialType> materialGroup, int[] productionRequests) {
+		float[] materialDistribution = calculateDistribution(materialGroup, productionRequests);
 
-		if (ratioSum == 0) {
-			return null;
-		}
-
-		float random = MatchConstants.random().nextFloat(ratioSum);
+		float random = MatchConstants.random().nextFloat();
+		float distributionSum = 0;
 		int i = 0;
+
 		for (EMaterialType material : materialGroup) {
-			if (random <= materialRatios[i]) {
-				decreaseNumberOfFutureProducedMaterial(material);
+			distributionSum += materialDistribution[i];
+			if (random <= distributionSum) {
+				decreaseAbsoluteProductionRequest(material);
 				return material;
-			} else {
-				random -= materialRatios[i];
 			}
 			i++;
 		}
 		return null;
 	}
 
-	private float[] calculateMaterialRatios(EnumSet<EMaterialType> materialGroup) {
-		float sumOfFutureProducedMaterials = 0;
-		for (EMaterialType type : materialGroup) {
-			sumOfFutureProducedMaterials += numberOfFutureProducedMaterials[type.ordinal];
-		}
-		float finalSumOfFutureProducedMaterials = sumOfFutureProducedMaterials;
+	private float[] calculateDistribution(EnumSet<EMaterialType> materialGroup, int[] valuesForMaterials) {
+		int sum = calculateSumOfGroup(materialGroup, valuesForMaterials);
+		float[] materialDistribution = new float[materialGroup.size()];
 
-		float[] materialRatio = new float[materialGroup.size()];
-		if (sumOfFutureProducedMaterials > 0) {
-			CollectionUtils.iterateWithIndex(materialGroup,	(i, material) -> materialRatio[i] = (numberOfFutureProducedMaterials[material.ordinal] / finalSumOfFutureProducedMaterials)	* 100);
-		} else {
-			CollectionUtils.iterateWithIndex(materialGroup, (i, material) -> materialRatio[i] = ratios[material.ordinal] * 100);
+		if (sum <= 0) {
+			return materialDistribution;
 		}
-		return materialRatio;
+
+		CollectionUtils.iterateWithIndex(materialGroup, (i, material) -> materialDistribution[i] = valuesForMaterials[material.ordinal] / (float) sum);
+		return materialDistribution;
 	}
+
+	private int calculateSumOfGroup(EnumSet<EMaterialType> materialGroup, int[] valuesForMaterials) {
+		return stream(materialGroup).mapToInt(materialType -> valuesForMaterials[materialType.ordinal]).sum();
+	}
+
+	private float calculateDistributionValue(EMaterialType materialType, EnumSet<EMaterialType> materialGroup) {
+		int sum = calculateSumOfGroup(materialGroup, relativeProductionRequests);
+		if (sum == 0) {
+			return 0;
+		}
+		return (relativeProductionRequests[materialType.ordinal] / (float) sum);
+	}
+
 }

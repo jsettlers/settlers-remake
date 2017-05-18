@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,9 +37,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
 /**
- *
  * @author Andreas Eberle
- *
  */
 public final class BuildingWorkerStrategy extends MovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
@@ -272,7 +270,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		jobFinished();
 	}
 
-
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
 		super.getGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
@@ -297,25 +294,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void popToolRequestAction() {
 		ShortPoint2D pos = building.getDoor();
-		if (building.getMaterialProduction().materialIsRequestedByNumbers(EMaterialType.TOOLS)) { // first priority: user requests a number of tools
-			poppedMaterial = building.getMaterialProduction().getToolToProduce();
-			if (poppedMaterial != null) {
-				jobFinished();
-			} else {
-				jobFailed();
-			}
+
+		poppedMaterial = building.getMaterialProduction().getAbsolutelyRequestedMaterial(EMaterialType.TOOLS); // first priority: Absolutely set tool production requests of user
+		if (poppedMaterial == null) {
+			poppedMaterial = super.getGrid().popToolProductionRequest(pos);  // second priority: Tools needed by settlers (automated production)
+		}
+		if (poppedMaterial == null) {
+			poppedMaterial = building.getMaterialProduction().getRelativelyRequestedMaterial(EMaterialType.TOOLS); // third priority: Relatively set tool production requests of user
+		}
+
+		if (poppedMaterial != null) {
+			jobFinished();
 		} else {
-			poppedMaterial = super.getGrid().popToolProductionRequest(pos);// second priority: a worker needs a tool
-			if (poppedMaterial != null) {
-				jobFinished();
-			} else { // lowest priority: tools requested by UI ratio settings
-				poppedMaterial = building.getMaterialProduction().getToolToProduce();
-				if (poppedMaterial != null) {
-					jobFinished();
-				} else {
-					jobFailed();
-				}
-			}
+			jobFailed();
 		}
 	}
 
@@ -345,10 +336,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	/**
-	 *
 	 * @param dijkstra
-	 *            if true, dijkstra algorithm is used<br>
-	 *            if false, in area finder is used.
+	 * 		if true, dijkstra algorithm is used<br>
+	 * 		if false, in area finder is used.
 	 */
 	private void preSearchPathAction(boolean dijkstra) {
 		super.setPosition(getCurrentJobPos());
@@ -463,7 +453,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void mark(ShortPoint2D position) {
-        clearMark();
+		clearMark();
 		markedPosition = position;
 		super.getGrid().setMarked(position, true);
 	}

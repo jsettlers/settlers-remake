@@ -41,8 +41,4 @@ public class ExtendedRandom extends Random {
 	public int nextInt(int min, int max) {
 		return min + nextInt(max - min + 1);
 	}
-
-	public float nextFloat(float maxValue) {
-		return nextFloat() * maxValue;
-	}
 }
