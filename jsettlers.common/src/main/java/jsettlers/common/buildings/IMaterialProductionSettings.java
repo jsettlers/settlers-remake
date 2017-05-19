@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,7 +24,7 @@ public interface IMaterialProductionSettings {
 	/**
 	 * This returns the configured ratio of the material which means how much the material bar is filled.
 	 */
-	float configuredRatioOfMaterial(EMaterialType type);
+	float getRelativeProductionRequest(EMaterialType type);
 
 	/**
 	 * This returns the resulting ratio of the material in relation to the other weapons.
@@ -32,5 +32,5 @@ public interface IMaterialProductionSettings {
 	 */
 	float resultingRatioOfMaterial(EMaterialType type);
 
-	int numberOfFutureProducedMaterial(EMaterialType type);
+	int getAbsoluteProductionRequest(EMaterialType type);
 }

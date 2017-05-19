@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.material;
 
+import java.util.EnumSet;
+
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -73,7 +75,8 @@ public enum EMaterialType {
 	WHITE_BREAD((short) 0, 0, 0, false, -1, false),
 	BASKET((short) 0, 0, 0, false, -1, false),
 	TREE((short) 0, 0, 0, false, -1, false),
-	PLANT((short) 0, 0, 0, false, -1, false);
+	PLANT((short) 0, 0, 0, false, -1, false),
+	EMPTY_BUCKET((short) 0, 0, 0, false, -1, false);
 
 	public static final EMaterialType[] VALUES = EMaterialType.values();
 	public static final int NUMBER_OF_MATERIALS = VALUES.length;
@@ -100,6 +103,19 @@ public enum EMaterialType {
 			}
 		}
 	}
+
+	public static final EnumSet<EMaterialType> WEAPONS = EnumSet.of(
+			EMaterialType.SWORD,
+			EMaterialType.SPEAR,
+			EMaterialType.BOW);
+	public static final EnumSet<EMaterialType> TOOLS = EnumSet.of(
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD);
 
 	public final byte ordinal;
 

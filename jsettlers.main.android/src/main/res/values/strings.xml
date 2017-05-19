@@ -2,29 +2,28 @@
 <resources>
     <string name="app_name">JSettlers</string>
     <string name="please_wait">Please wait</string>
-    
+
     <string name="f12_string">Skip one minute</string>
     <string name="save_string">Save</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Kill</string>
-    <string name="load_string">Load  game</string>
+    <string name="load_string">Load game</string>
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
-    
+
     <string name="local_game">Local game</string>
     <string name="local_game_new">New game</string>
     <string name="local_game_load">Load game</string>
     <string name="local_game_resume">Resume last game</string>
     <string name="local_game_resume_error">There was an error while loading the game.</string>
-    <string name="preferences">Settings</string>
     <string name="network_game">Network game</string>
     <string name="startscreen_network_new">New game</string>
     <string name="startscreen_network_join">Join game</string>
     <string name="startscreen_network_load">Load saved game</string>
-    
+
     <string name="game_title">Welcome to JSettlers</string>
-    
+
     <string name="maplist_local_new_headline">Start new game</string>
     <string name="maplist_local_new_submit">Start</string>
     <string name="maplist_local_load_headline">Load saved game</string>
@@ -33,12 +32,12 @@
     <string name="maplist_network_new_submit">Start</string>
     <string name="maplist_network_join_headline">Join network game</string>
     <string name="maplist_network_join_submit">Join</string>
-    
+
     <string name="player_count">Player count</string>
     <string name="illegal_playercount">Invalid player count</string>
     <string name="illegal_playercount_too_high">The player count is too high</string>
     <string name="illegal_playercount_too_low">The player count is too low</string>
-    
+
     <string name="send">Send</string>
     <string name="accept_start">Ready</string>
     <string name="local_game_delete">Delete saved game</string>
@@ -46,9 +45,80 @@
     <string name="preferences_playername">Your name</string>
     <string name="preferences_server">Network server address</string>
     <string name="preferences_ok">Save</string>
-    <string name="network_chat">Chat...</string>
-    <string name="preferences_label">Settings</string>
+    <string name="network_chat">Chat…</string>
     <string name="filechoser_ok">Use this directory</string>
-    <string name="filechoser_message">Where are the Gfx and Snd folders?</string>
+    <string name="filechoser_message">Where are the GFX and SND folders?</string>
 
+    <!-- New stuff -->
+
+    <!-- In Game -->
+    <!-- Selection Menus -->
+    <!-- Common -->
+    <string name="halt">Halt</string>
+
+    <!-- Carriers Selection -->
+    <string name="convert_all">Convert all</string>
+    <string name="convert_one">Convert one</string>
+
+    <!-- Specialists Selection -->
+    <string name="convert_to_carriers">Convert to carriers</string>
+    <string name="work_here">Work here</string>
+
+    <!-- Soldiers Selection -->
+    <string name="confirm_kill">Kill soldiers?</string>
+    <string name="yes">Yes</string>
+
+
+    <!-- Main Menus -->
+    <!-- Settings -->
+    <string name="settings_player_name">Player name</string>
+    <string name="settings_name">Name</string>
+
+    <!-- Map picker -->
+    <string name="new_single_player_game">New Single-Player Game</string>
+    <string name="new_multi_player_game">New Multi-Player Game</string>
+    <string name="load_single_player_game">Load Single-Player Game</string>
+    <string name="join_multi_player_game">Join Multi-Player Game</string>
+    <string name="searching_for_multiplayer_games">Searching games…</string>
+
+    <!-- game config -->
+    <string name="number_of_players">Players</string>
+    <string name="start_resources">Resources</string>
+    <string name="peacetime">Peacetime</string>
+
+
+    <!-- Other -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="settings">Settings</string>
+
+    <string name="resource_directory_title">Graphics and sound folders</string>
+    <string name="resource_directory_info">JSettlers requires the GFX and SND folders from the installation folder of an original copy of The Settlers 3. Find those folders and copy them to your Android device before locating them for use in JSettlers.</string>
+    <string name="resource_directory_button">Locate folders</string>
+
+    <string name="menu_single_player_title">Single-Player</string>
+    <string name="menu_single_player_info">Create a battle with computer opponents.</string>
+
+    <string name="menu_multi_player_title">Multi-Player</string>
+    <string name="menu_multi_player_info">Challenge your friends on phone, tablet or desktop.</string>
+
+    <string name="menu_game_in_progress">Game in progress</string>
+    <string name="menu_new">Start</string>
+    <string name="menu_load">Load</string>
+    <string name="menu_join">Join</string>
+
+    <string name="start_game">Start game</string>
+
+    <string name="game_menu_title">Menu</string>
+    <string name="game_menu_quit">Quit</string>
+    <string name="game_menu_quit_confirm">Sure?</string>
+    <string name="game_menu_save">Save</string>
+    <string name="game_menu_pause">Pause</string>
+    <string name="game_menu_unpause">Unpause</string>
+    <string name="game_menu_paused">Paused</string>
+    <string name="game_menu_saved">Game saved</string>
+    <string name="no_saved_games">No saved games available</string>
+    <string name="resource_selection_dialog_title">Locate GFX and SND folders</string>
+    <string name="empty_directory">This directory is empty</string>
+    <string name="notification_game_in_progress">JSettlers game in progress</string>
 </resources>
