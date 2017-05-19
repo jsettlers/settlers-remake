@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -162,14 +162,14 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private void setNumberOfFutureProducedMaterial(byte playerId, EMaterialType materialType, int numberToProduce) {
-		if (aiStatistics.getMaterialProduction(playerId).numberOfFutureProducedMaterial(materialType) != numberToProduce) {
+		if (aiStatistics.getMaterialProduction(playerId).getAbsoluteProductionRequest(materialType) != numberToProduce) {
 			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
 					EMaterialProductionType.SET_PRODUCTION, numberToProduce));
 		}
 	}
 
 	private void setRatioOfMaterial(byte playerId, EMaterialType materialType, float ratio) {
-		if (aiStatistics.getMaterialProduction(playerId).configuredRatioOfMaterial(materialType) != ratio) {
+		if (aiStatistics.getMaterialProduction(playerId).getRelativeProductionRequest(materialType) != ratio) {
 			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
 					EMaterialProductionType.SET_RATIO, ratio));
 		}
