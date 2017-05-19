@@ -14,9 +14,12 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
+import static java8.util.stream.StreamSupport.stream;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
@@ -40,6 +43,7 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
@@ -48,11 +52,9 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  *
@@ -173,18 +175,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case SET_MATERIAL_PRODUCTION: {
 			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
+			MaterialProductionSettings materialProduction = grid.getMaterialProductionAt(task.getPosition());
+
 			switch (task.getProductionType()) {
 			case INCREASE:
-				grid.getMaterialProductionAt(task.getPosition()).increaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.increaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case DECREASE:
-				grid.getMaterialProductionAt(task.getPosition()).decreaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.decreaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case SET_PRODUCTION:
-				grid.getMaterialProductionAt(task.getPosition()).setNumberOfFutureProducedMaterial(task.getMaterialType(), (int) task.getRatio());
+				materialProduction.setAbsoluteProductionRequest(task.getMaterialType(), (int) task.getRatio());
 				break;
 			case SET_RATIO:
-				grid.getMaterialProductionAt(task.getPosition()).setRatioOfMaterial(task.getMaterialType(), task.getRatio());
+				materialProduction.setRelativeProductionRequest(task.getMaterialType(), task.getRatio());
 				break;
 			}
 			break;
