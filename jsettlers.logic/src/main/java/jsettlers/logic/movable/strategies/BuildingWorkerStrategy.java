@@ -290,6 +290,12 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void popWeaponRequestAction() {
 		poppedMaterial = building.getMaterialProduction().getWeaponToProduce();
 		jobFinished();
+
+		if (poppedMaterial != null) {
+			jobFinished();
+		} else {
+			jobFailed();
+		}
 	}
 
 	private void popToolRequestAction() {
