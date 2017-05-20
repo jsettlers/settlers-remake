@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2017
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,20 +12,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.player;
 
-/**
- * @author codingberlin
- */
-public interface IInGamePlayer {
+package jsettlers.logic.player;
 
-	IMannaInformation getMannaInformation();
+import static java8.util.stream.StreamSupport.stream;
 
-	ICombatStrengthInformation getCombatStrengthInformation();
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ISettlerInformation;
+import jsettlers.logic.movable.Movable;
 
-	IEndgameStatistic getEndgameStatistic();
+public class SettlerInformation implements ISettlerInformation {
 
-	ISettlerInformation getSettlerInformation();
+	private final int[] movables = new int[EMovableType.NUMBER_OF_MOVABLETYPES];
 
-	ECivilisation getCivilisation();
+	public SettlerInformation(byte playerId) {
+		stream(Movable.getAllMovables())
+				.filter(movable -> movable.getPlayerId() == playerId)
+				.forEach(movable -> {
+					int movableTypeIndex = movable.getMovableType().ordinal();
+					movables[movableTypeIndex]++;
+				});
+	}
+
+	@Override
+	public int getMovableCount(EMovableType type) {
+		return movables[type.ordinal()];
+	}
 }

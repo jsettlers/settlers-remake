@@ -25,6 +25,7 @@ import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.ISettlerInformation;
 import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
 
@@ -36,16 +37,16 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
 public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
 
-	public final      byte          playerId;
-	private final     Team          team;
-	private final     byte          numberOfPlayers;
-	private transient EPlayerType   playerType;
-	private transient ECivilisation civilisation;
+	public final byte playerId;
 
+	private final Team team;
+	private final byte numberOfPlayers;
 	private final MannaInformation mannaInformation = new MannaInformation();
-	private final MaterialCounts   materialCounts   = new MaterialCounts();
+	private final MaterialCounts materialCounts = new MaterialCounts();
 	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
 
+	private transient EPlayerType playerType;
+	private transient ECivilisation civilisation;
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
 
@@ -87,12 +88,17 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	@Override
 	public ICombatStrengthInformation getCombatStrengthInformation() {
-		return this.combatStrengthInfo;
+		return combatStrengthInfo;
 	}
 
 	@Override
 	public EndgameStatistic getEndgameStatistic() {
 		return endgameStatistic;
+	}
+
+	@Override
+	public ISettlerInformation getSettlerInformation() {
+		return new SettlerInformation(playerId);
 	}
 
 	private int getAmountOf(EMaterialType materialType) {
@@ -107,7 +113,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 			CombatStrengthInformation combatStrength = this.combatStrengthInfo;
 			updateCombatStrengths();
 			System.out.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: " + getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" +
-									   combatStrength + "   to \n\t" + this.combatStrengthInfo);
+					combatStrength + "   to \n\t" + this.combatStrengthInfo);
 		}
 	}
 
