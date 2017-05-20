@@ -164,43 +164,43 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 		}
 	}
 
-	private int calculateSoldiersCount(ISettlerInformation counts) {
-		return counts.getMovableCount(EMovableType.SWORDSMAN_L1)
-				+ counts.getMovableCount(EMovableType.SWORDSMAN_L2)
-				+ counts.getMovableCount(EMovableType.SWORDSMAN_L3)
-				+ counts.getMovableCount(EMovableType.BOWMAN_L1)
-				+ counts.getMovableCount(EMovableType.BOWMAN_L2)
-				+ counts.getMovableCount(EMovableType.BOWMAN_L3)
-				+ counts.getMovableCount(EMovableType.PIKEMAN_L1)
-				+ counts.getMovableCount(EMovableType.PIKEMAN_L2)
-				+ counts.getMovableCount(EMovableType.PIKEMAN_L3)
-				+ counts.getMovableCount(EMovableType.MAGE);
+	private int calculateSoldiersCount(ISettlerInformation settlerInformation) {
+		return settlerInformation.getMovableCount(EMovableType.SWORDSMAN_L1)
+				+ settlerInformation.getMovableCount(EMovableType.SWORDSMAN_L2)
+				+ settlerInformation.getMovableCount(EMovableType.SWORDSMAN_L3)
+				+ settlerInformation.getMovableCount(EMovableType.BOWMAN_L1)
+				+ settlerInformation.getMovableCount(EMovableType.BOWMAN_L2)
+				+ settlerInformation.getMovableCount(EMovableType.BOWMAN_L3)
+				+ settlerInformation.getMovableCount(EMovableType.PIKEMAN_L1)
+				+ settlerInformation.getMovableCount(EMovableType.PIKEMAN_L2)
+				+ settlerInformation.getMovableCount(EMovableType.PIKEMAN_L3)
+				+ settlerInformation.getMovableCount(EMovableType.MAGE);
 	}
 
-	private int calculateCiviliansCount(ISettlerInformation counts, int genericWorker) {
+	private int calculateCiviliansCount(ISettlerInformation settlerInformation, int genericWorker) {
 		return genericWorker
-				+ counts.getMovableCount(EMovableType.BEARER)
-				+ counts.getMovableCount(EMovableType.DIGGER)
-				+ counts.getMovableCount(EMovableType.BRICKLAYER);
+				+ settlerInformation.getMovableCount(EMovableType.BEARER)
+				+ settlerInformation.getMovableCount(EMovableType.DIGGER)
+				+ settlerInformation.getMovableCount(EMovableType.BRICKLAYER);
 	}
 
-	private int calculateGenericWorkersCount(ISettlerInformation counts) {
-		return counts.getMovableCount(EMovableType.PIG_FARMER)
-				+ counts.getMovableCount(EMovableType.FARMER)
-				+ counts.getMovableCount(EMovableType.LUMBERJACK)
-				+ counts.getMovableCount(EMovableType.SAWMILLER)
-				+ counts.getMovableCount(EMovableType.FISHERMAN)
-				+ counts.getMovableCount(EMovableType.WATERWORKER)
-				+ counts.getMovableCount(EMovableType.BAKER)
-				+ counts.getMovableCount(EMovableType.MINER)
-				+ counts.getMovableCount(EMovableType.SLAUGHTERER)
-				+ counts.getMovableCount(EMovableType.MILLER)
-				+ counts.getMovableCount(EMovableType.SMITH)
-				+ counts.getMovableCount(EMovableType.FORESTER)
-				+ counts.getMovableCount(EMovableType.MELTER)
-				+ counts.getMovableCount(EMovableType.WINEGROWER)
-				+ counts.getMovableCount(EMovableType.CHARCOAL_BURNER)
-				+ counts.getMovableCount(EMovableType.STONECUTTER);
+	private int calculateGenericWorkersCount(ISettlerInformation settlerInformation) {
+		return settlerInformation.getMovableCount(EMovableType.PIG_FARMER)
+				+ settlerInformation.getMovableCount(EMovableType.FARMER)
+				+ settlerInformation.getMovableCount(EMovableType.LUMBERJACK)
+				+ settlerInformation.getMovableCount(EMovableType.SAWMILLER)
+				+ settlerInformation.getMovableCount(EMovableType.FISHERMAN)
+				+ settlerInformation.getMovableCount(EMovableType.WATERWORKER)
+				+ settlerInformation.getMovableCount(EMovableType.BAKER)
+				+ settlerInformation.getMovableCount(EMovableType.MINER)
+				+ settlerInformation.getMovableCount(EMovableType.SLAUGHTERER)
+				+ settlerInformation.getMovableCount(EMovableType.MILLER)
+				+ settlerInformation.getMovableCount(EMovableType.SMITH)
+				+ settlerInformation.getMovableCount(EMovableType.FORESTER)
+				+ settlerInformation.getMovableCount(EMovableType.MELTER)
+				+ settlerInformation.getMovableCount(EMovableType.WINEGROWER)
+				+ settlerInformation.getMovableCount(EMovableType.CHARCOAL_BURNER)
+				+ settlerInformation.getMovableCount(EMovableType.STONECUTTER);
 	}
 
 	public static class NamedLabel extends Label {
