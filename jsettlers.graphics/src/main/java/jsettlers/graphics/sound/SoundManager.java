@@ -17,7 +17,6 @@ package jsettlers.graphics.sound;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.Random;
 
 import go.graphics.sound.ISoundDataRetriever;
@@ -26,6 +25,7 @@ import go.graphics.sound.SoundPlayer;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.FileUtils;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.startscreen.SettingsManager;
@@ -95,11 +95,12 @@ import jsettlers.graphics.startscreen.SettingsManager;
  */
 public class SoundManager {
 
+	private static final String SOUND_FILE_NAME = "Siedler3_00.dat";
+
 	private static final int Z_STEPS_FOR_MAX_VOLUME = 50;
-
 	private static final int SOUND_META_LENGTH = 16;
-
 	private static final int SOUND_FILE_START = 0x24;
+	private static final int SEQUENCE_N = 118;
 
 	private static final byte[] SOUND_FILE_MAGIC = new byte[] {
 			0x44,
@@ -119,16 +120,8 @@ public class SoundManager {
 			0x00,
 			0x00
 	};
-	private static final int SEQUENCE_N = 118;
-	/**
-	 * Sound ID when we are attacked.
-	 */
-	public static final int NOTIFY_ATTACKED = 80;
 
-	/**
-	 * The lookup paths for the dat files.
-	 */
-	private static final ArrayList<File> lookupPaths = new ArrayList<>();
+	private static File lookupPath;
 
 	private final SoundPlayer player;
 	private final Random random = new Random();
@@ -145,7 +138,7 @@ public class SoundManager {
 	 * Creates a new sound manager.
 	 *
 	 * @param player
-	 *            The player to play sounds at.
+	 * 		The player to play sounds at.
 	 */
 	public SoundManager(SoundPlayer player) {
 		this.player = player;
@@ -156,10 +149,10 @@ public class SoundManager {
 	 * Reads the start indexes of the sounds.
 	 *
 	 * @param reader
-	 *            The reader to read from.
+	 * 		The reader to read from.
 	 * @return An array of start indexes for each sound and it's variants.
 	 * @throws IOException
-	 *             If the file could not be read.
+	 * 		If the file could not be read.
 	 */
 	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
 		int[] sequenceHeaderStarts = new int[SEQUENCE_N];
@@ -186,7 +179,7 @@ public class SoundManager {
 	 *
 	 * @return The file reader.
 	 * @throws IOException
-	 *             If the file could not be opened,
+	 * 		If the file could not be opened,
 	 */
 	protected static ByteReader openSoundFile() throws IOException {
 		File sndFile = getSoundFile();
@@ -205,26 +198,16 @@ public class SoundManager {
 	}
 
 	private static File getSoundFile() {
-		File sndFile = null;
-		synchronized (lookupPaths) {
-			for (File dir : lookupPaths) {
-				File file = new File(dir, "Siedler3_00.dat");
-				if (file.exists()) {
-					sndFile = file;
-					break;
-				}
-			}
-		}
-		return sndFile;
+		return FileUtils.getFileByNameIgnoringCase(lookupPath, SOUND_FILE_NAME);
 	}
 
 	/**
 	 * Plays a given sound.
 	 *
 	 * @param soundId
-	 *            The sound id to play.
+	 * 		The sound id to play.
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 */
 	public void playSound(int soundId, float volume) {
 		initialize();
@@ -247,13 +230,13 @@ public class SoundManager {
 	 * Plays a given sound at a given coordinate
 	 *
 	 * @param soundId
-	 *            The sound id to play
+	 * 		The sound id to play
 	 * @param volume
-	 *            The volume
+	 * 		The volume
 	 * @param x
-	 *            The x coordinate of the sound
+	 * 		The x coordinate of the sound
 	 * @param y
-	 *            The y coordinate of the sound
+	 * 		The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
 		if (map == null || map.getVisibleStatus(x, y) <= CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
@@ -331,15 +314,13 @@ public class SoundManager {
 	}
 
 	/**
-	 * Adds a sound file lookup path.
+	 * Sets the sound file lookup path.
 	 *
-	 * @param file
-	 *            The file path.
+	 * @param lookupPath
+	 * 		The file path.
 	 */
-	public static void addLookupPath(File file) {
-		synchronized (lookupPaths) {
-			lookupPaths.add(file);
-		}
+	public static void setLookupPath(File lookupPath) {
+		SoundManager.lookupPath = lookupPath;
 	}
 
 	/**
@@ -354,7 +335,7 @@ public class SoundManager {
 		 * Create a new {@link SoundDataRetriever}.
 		 *
 		 * @param reader
-		 *            The byte reader.
+		 * 		The byte reader.
 		 */
 		SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
@@ -370,12 +351,12 @@ public class SoundManager {
 	 * Reads the sound data from a byte reader.
 	 *
 	 * @param reader
-	 *            The reader to read.
+	 * 		The reader to read.
 	 * @param start
-	 *            The sound start position.
+	 * 		The sound start position.
 	 * @return The read sound data.
 	 * @throws IOException
-	 *             If that sound could not be read.
+	 * 		If that sound could not be read.
 	 */
 	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
 		reader.skipTo(start);

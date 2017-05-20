@@ -16,7 +16,7 @@
 package jsettlers.main.android.mainmenu.presenters;
 
 import jsettlers.main.android.core.GameManager;
-import jsettlers.main.android.core.resources.scanner.ResourcesLocationManager;
+import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.MainMenuView;
 
@@ -27,16 +27,16 @@ public class MainMenuPresenter {
 	private final MainMenuView view;
 	private final MainMenuNavigator navigator;
 	private final GameManager gameManager;
-	private final ResourcesLocationManager resourceLocationScanner;
+	private final AndroidResourcesLoader androidResourcesLoader;
 
 	private boolean resourcesLoaded;
 
-	public MainMenuPresenter(MainMenuView view, MainMenuNavigator navigator, GameManager gameManager, ResourcesLocationManager resourceLocationScanner) {
+	public MainMenuPresenter(MainMenuView view, MainMenuNavigator navigator, GameManager gameManager, AndroidResourcesLoader androidResourcesLoader) {
 		this.view = view;
 		this.navigator = navigator;
 		this.gameManager = gameManager;
-		this.resourceLocationScanner = resourceLocationScanner;
-		this.resourcesLoaded = resourceLocationScanner.scanForResources();
+		this.androidResourcesLoader = androidResourcesLoader;
+		this.resourcesLoaded = androidResourcesLoader.setup();
 	}
 
 	public void initView() {
@@ -101,7 +101,7 @@ public class MainMenuPresenter {
 	}
 
 	public void resourceDirectoryChosen() {
-		resourcesLoaded = resourceLocationScanner.scanForResources();
+		resourcesLoaded = androidResourcesLoader.setup();
 		if (resourcesLoaded) {
 			view.hideResourcePicker();
 		} else {

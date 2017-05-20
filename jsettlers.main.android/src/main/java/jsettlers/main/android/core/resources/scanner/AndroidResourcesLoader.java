@@ -16,86 +16,49 @@
 package jsettlers.main.android.core.resources.scanner;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.androidannotations.annotations.EBean;
 
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.resources.SettlersFolderChecker;
+import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.android.core.resources.AndroidMapListFactory;
 import jsettlers.main.android.core.resources.AndroidResourceProvider;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import org.androidannotations.annotations.EBean;
 
 @EBean
-public class ResourcesLocationManager {
+public class AndroidResourcesLoader {
 	private static final String ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY = "external-files-path";
 
 	private final Context context;
 
-	public ResourcesLocationManager(Context context) {
+	public AndroidResourcesLoader(Context context) {
 		this.context = context;
 	}
 
-	public boolean scanForResources() {
+	public boolean setup() {
 		File storage = Environment.getExternalStorageDirectory();
-		File jSettlersDirectory = new File(storage, "JSettlers");
-		ArrayList<File> files = new ArrayList<>();
 		File outputDirectory = context.getExternalFilesDir(null); // <- output dir, always writable
-		files.add(outputDirectory);
-		files.add(jSettlersDirectory);
-		files.add(storage);
-		String path = PreferenceManager.getDefaultSharedPreferences(context).getString(ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY, "");
-		if (!path.isEmpty()) {
-			files.add(new File(path));
-		}
 
-		if (!hasImagesOnPath(files)) {
+		String originalSettlersFolder = PreferenceManager.getDefaultSharedPreferences(context).getString(ORIGINAL_SETTLERS_FILES_PATH_SETTING_KEY, storage + "/JSettlers");
+
+		SettlersFolderInfo settlersFolders = SettlersFolderChecker.checkSettlersFolder(originalSettlersFolder);
+		if (!settlersFolders.isValidSettlersFolder()) {
 			return false;
 		}
 
-		for (File file : files) {
-			ImageProvider.getInstance().addLookupPath(findDir(file, "Gfx"));
-			SoundManager.addLookupPath(findDir(file, "Snd"));
-		}
-		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), files.get(0)));
+		ImageProvider.setLookupPath(settlersFolders.gfxFolder);
+		SoundManager.setLookupPath(settlersFolders.sndFolder);
 
-		AndroidResourceProvider provider = new AndroidResourceProvider(context, outputDirectory);
-		ResourceManager.setProvider(provider);
+		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), outputDirectory));
+		ResourceManager.setProvider(new AndroidResourceProvider(context, outputDirectory));
 		return true;
-	}
-
-	public static boolean hasImagesOnPath(List<File> files) {
-		boolean hasSnd = false;
-		boolean hasGfx = false;
-		for (File file : files) {
-			File gfx = findDir(file, "Gfx");
-			for (DatFileType t : DatFileType.values()) {
-				hasGfx |= new File(gfx, "siedler3_00" + t.getFileSuffix()).exists();
-			}
-			File snd = findDir(file, "Snd");
-			hasSnd |= new File(snd, "Siedler3_00.dat").exists();
-		}
-		return hasGfx && hasSnd;
-	}
-
-	@SuppressLint("DefaultLocale")
-	private static File findDir(File file, String dirname) {
-		File a = new File(file, dirname.toLowerCase());
-		if (a.isDirectory()) {
-			return a;
-		}
-		a = new File(file, dirname.toUpperCase());
-		if (a.isDirectory()) {
-			return a;
-		}
-		return a;
 	}
 
 	public void setResourcesDirectory(String path) {

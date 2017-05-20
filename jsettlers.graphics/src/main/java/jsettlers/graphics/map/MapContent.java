@@ -78,8 +78,8 @@ import jsettlers.graphics.sound.SoundManager;
 /**
  * This is the main map content class. It manages the map drawing on the screen region.
  * <p>
- * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for
- * settlers, and other map objects. Then the interface is drawn above everything else.
+ * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for settlers, and other map objects. Then the interface
+ * is drawn above everything else.
  * <p>
  * The objects and background are drawn with the map draw context.
  * <p>
@@ -142,6 +142,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private static final int MESSAGE_LINE_HEIGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
 	private static final long DOUBLE_CLICK_TIME = 500;
+	/**
+	 * Sound ID when we are attacked.
+	 */
+	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
 
@@ -921,7 +925,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (printMsg) {
 			switch (message.getType()) {
 			case ATTACKED:
-				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1);
+				soundmanager.playSound(NOTIFY_ATTACKED_SOUND_ID, 1);
 				break;
 
 			default:
