@@ -37,16 +37,16 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
 public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
 
-	public final      byte          playerId;
-	private final     Team          team;
-	private final     byte          numberOfPlayers;
-	private transient EPlayerType   playerType;
+	public final byte playerId;
+
+	private final Team team;
+	private final byte numberOfPlayers;
+	private final MannaInformation mannaInformation = new MannaInformation();
+	private final MaterialCounts materialCounts = new MaterialCounts();
+	private final EndgameStatistic endgameStatistic = new EndgameStatistic(mannaInformation);
+
+	private transient EPlayerType playerType;
 	private transient ECivilisation civilisation;
-
-	private final MannaInformation 	mannaInformation = new MannaInformation();
-	private final MaterialCounts   	materialCounts   = new MaterialCounts();
-	private final EndgameStatistic 	endgameStatistic = new EndgameStatistic(mannaInformation);
-
 	private transient CombatStrengthInformation combatStrengthInfo = new CombatStrengthInformation();
 	private transient IMessenger messenger;
 
@@ -113,7 +113,7 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 			CombatStrengthInformation combatStrength = this.combatStrengthInfo;
 			updateCombatStrengths();
 			System.out.println("amount of gold of player: " + playerId + "   changed by: " + delta + "    to total: " + getAmountOf(EMaterialType.GOLD) + "    combat strength changed from\n\t" +
-									   combatStrength + "   to \n\t" + this.combatStrengthInfo);
+					combatStrength + "   to \n\t" + this.combatStrengthInfo);
 		}
 	}
 

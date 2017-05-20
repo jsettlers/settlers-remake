@@ -15,26 +15,27 @@
 
 package jsettlers.logic.player;
 
-import jsettlers.common.player.ISettlerInformation;
+import static java8.util.stream.StreamSupport.stream;
+
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ISettlerInformation;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 public class SettlerInformation implements ISettlerInformation {
 
-    private final int[] movables = new int[EMovableType.NUMBER_OF_MOVABLETYPES];
+	private final int[] movables = new int[EMovableType.NUMBER_OF_MOVABLETYPES];
 
-    public SettlerInformation(byte playerId) {
-        for (ILogicMovable movable : Movable.getAllMovables()) {
-            if(movable.getPlayerId() == playerId) {
-                int movableTypeIndex = movable.getMovableType().ordinal();
-                movables[movableTypeIndex]++;
-            }
-        }
-    }
+	public SettlerInformation(byte playerId) {
+		stream(Movable.getAllMovables())
+				.filter(movable -> movable.getPlayerId() == playerId)
+				.forEach(movable -> {
+					int movableTypeIndex = movable.getMovableType().ordinal();
+					movables[movableTypeIndex]++;
+				});
+	}
 
-    @Override
-    public int getMovableCount(EMovableType type) {
-        return movables[type.ordinal()];
-    }
+	@Override
+	public int getMovableCount(EMovableType type) {
+		return movables[type.ordinal()];
+	}
 }
