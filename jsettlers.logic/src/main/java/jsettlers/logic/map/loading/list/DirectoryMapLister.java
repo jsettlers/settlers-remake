@@ -29,7 +29,6 @@ import java.util.zip.ZipOutputStream;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
-import jsettlers.common.utils.FileUtils.IFileVisitor;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
@@ -89,20 +88,13 @@ public class DirectoryMapLister implements IMapLister {
 			return;
 		}
 
-		try {
-			// traverse all files and sub-folders
-			FileUtils.walkFileTree(directory, new IFileVisitor() {
-				@Override
-				public void visitFile(File file) throws IOException {
-					String fileName = file.getName();
-					if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
-						callback.foundMap(new ListedMapFile(file));
-					}
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// traverse all files and sub-folders
+		FileUtils.walkFileTree(directory, file -> {
+			String fileName = file.getName();
+			if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
+				callback.foundMap(new ListedMapFile(file));
+			}
+		});
 	}
 
 	@Override

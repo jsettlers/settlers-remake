@@ -25,7 +25,7 @@ import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.android.core.AndroidPreferences;
 import jsettlers.main.android.core.GameManager;
 import jsettlers.main.android.core.GameStarter;
-import jsettlers.main.android.core.resources.scanner.ResourcesLocationManager;
+import jsettlers.main.android.core.resources.scanner.AndroidResourcesLoader;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.presenters.MainMenuPresenter;
 import jsettlers.main.android.mainmenu.presenters.SettingsPresenter;
@@ -62,7 +62,7 @@ public class PresenterFactory {
 		MainMenuNavigator navigator = (MainMenuNavigator) activity;
 		GameManager gameManager = (GameManager) activity.getApplication();
 
-		return new MainMenuPresenter(view, navigator, gameManager, new ResourcesLocationManager(activity));
+		return new MainMenuPresenter(view, navigator, gameManager, new AndroidResourcesLoader(activity));
 	}
 
 	public static SettingsPresenter createSettingsPresenter(Context context, SettingsView view) {

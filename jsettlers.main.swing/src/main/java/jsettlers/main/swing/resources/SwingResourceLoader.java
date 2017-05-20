@@ -14,16 +14,17 @@
  *******************************************************************************/
 package jsettlers.main.swing.resources;
 
+import java.io.File;
+import java.io.IOException;
+
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.resources.SettlersFolderChecker;
+import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
-import jsettlers.main.swing.resources.SettlersFolderChecker.SettlersFolderInfo;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -48,8 +49,8 @@ public class SwingResourceLoader {
 		SettlersFolderInfo settlersFolderInfo = getPathOfOriginalSettlers(options);
 
 		// setup image and sound provider
-		ImageProvider.getInstance().addLookupPath(settlersFolderInfo.gfxFolder).startPreloading();
-		SoundManager.addLookupPath(settlersFolderInfo.sndFolder);
+		ImageProvider.setLookupPath(settlersFolderInfo.gfxFolder);
+		SoundManager.setLookupPath(settlersFolderInfo.sndFolder);
 
 		// Set the resources directory.
 		File resources = options.getAppHome();
