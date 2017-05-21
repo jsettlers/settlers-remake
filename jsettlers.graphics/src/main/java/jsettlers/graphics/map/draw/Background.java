@@ -887,13 +887,7 @@ public class Background implements IGraphicsBackgroundListener {
 		synchronized (preloadMutex) {
 			if (preloadedTexture == null) {
 				preloadedTexture = getTexture();
-				ImageProvider.getInstance().addPreloadTask(new GLPreloadTask() {
-
-					@Override
-					public void run(GLDrawContext context) {
-						getTexture(context);
-					}
-				});
+				ImageProvider.getInstance().addPreloadTask(Background::getTexture);
 			}
 		}
 	}

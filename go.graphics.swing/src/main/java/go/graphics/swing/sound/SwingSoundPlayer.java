@@ -32,7 +32,7 @@ public class SwingSoundPlayer implements SoundPlayer {
 	private static final int BUFFER_SIZE = 4048 * 4;
 	private static final int SOUND_THREADS = 30;
 
-	ForgettingQueue<Integer> queue = new ForgettingQueue<Integer>();
+	ForgettingQueue<Integer> queue = new ForgettingQueue<>();
 	private ISoundDataRetriever soundDataRetriever;
 
 	public SwingSoundPlayer() {

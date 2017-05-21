@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,21 +29,17 @@ import jsettlers.network.infrastructure.channel.packet.Packet;
  * 
  */
 public abstract class TaskPacket extends Packet {
-	public static final IDeserializingable<TaskPacket> DEFAULT_DESERIALIZER = new IDeserializingable<TaskPacket>() {
-
-		@Override
-		public TaskPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
-			try {
-				dis.readInt(); // read the length in bytes from the stream. We don't need it here, only the server needs it.
-				String className = dis.readUTF();
-				@SuppressWarnings("unchecked")
-				Class<? extends TaskPacket> taskClass = (Class<? extends TaskPacket>) Class.forName(className);
-				TaskPacket packet = taskClass.newInstance();
-				packet.deserializeTask(dis);
-				return packet;
-			} catch (Exception e) {
-				throw new IOException(e);
-			}
+	public static final IDeserializingable<TaskPacket> DEFAULT_DESERIALIZER = (key, dis) -> {
+		try {
+			dis.readInt(); // read the length in bytes from the stream. We don't need it here, only the server needs it.
+			String className = dis.readUTF();
+			@SuppressWarnings("unchecked")
+			Class<? extends TaskPacket> taskClass = (Class<? extends TaskPacket>) Class.forName(className);
+			TaskPacket packet = taskClass.newInstance();
+			packet.deserializeTask(dis);
+			return packet;
+		} catch (Exception e) {
+			throw new IOException(e);
 		}
 	};
 
@@ -67,5 +63,4 @@ public abstract class TaskPacket extends Packet {
 	}
 
 	protected abstract void deserializeTask(DataInputStream dis) throws IOException;
-
 }

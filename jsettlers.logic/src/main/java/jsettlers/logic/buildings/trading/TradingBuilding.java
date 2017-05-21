@@ -159,7 +159,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 
 	@Override
 	protected List<IRequestStack> createWorkStacks() {
-		List<IRequestStack> newStacks = new LinkedList<IRequestStack>();
+		List<IRequestStack> newStacks = new LinkedList<>();
 
 		MultiRequestStackSharedData sharedData = new MultiRequestStackSharedData(requestedMaterials);
 

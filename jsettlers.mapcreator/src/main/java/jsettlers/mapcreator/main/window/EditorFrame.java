@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -113,7 +113,6 @@ public abstract class EditorFrame extends JFrame {
 		registerActions();
 
 		addWindowListener(new WindowAdapter() {
-
 			@Override
 			public void windowClosing(WindowEvent e) {
 				ActionMap actionMap = ((JPanel) getContentPane()).getActionMap();
@@ -298,13 +297,9 @@ public abstract class EditorFrame extends JFrame {
 			it = menu.add(action);
 		}
 
-		action.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (Action.NAME.equals(evt.getPropertyName())) {
-					it.setText((String) evt.getNewValue());
-				}
+		action.addPropertyChangeListener(evt -> {
+			if (Action.NAME.equals(evt.getPropertyName())) {
+				it.setText((String) evt.getNewValue());
 			}
 		});
 		it.setText((String) action.getValue(Action.NAME));
@@ -327,29 +322,21 @@ public abstract class EditorFrame extends JFrame {
 	private JMenuItem createCheckboxMenuItemForAction(final Action action) {
 		final JCheckBoxMenuItem it = new JCheckBoxMenuItem();
 		it.setAction(action);
-		it.addChangeListener(new ChangeListener() {
+		it.addChangeListener(e -> {
+			Object oldValue = action.getValue(EditorFrame.CHECKBOX_VALUE);
 
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				Object oldValue = action.getValue(EditorFrame.CHECKBOX_VALUE);
-
-				if (oldValue != null && oldValue.equals(it.isSelected())) {
-					return;
-				}
-
-				action.putValue(EditorFrame.CHECKBOX_VALUE, it.isSelected());
-				action.actionPerformed(new ActionEvent(it, 0, "changed"));
+			if (oldValue != null && oldValue.equals(it.isSelected())) {
+				return;
 			}
-		});
-		action.addPropertyChangeListener(new PropertyChangeListener() {
 
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (EditorFrame.CHECKBOX_VALUE.equals(evt.getPropertyName())) {
-					Boolean checked = (Boolean) evt.getNewValue();
-					if (it.isSelected() != checked) {
-						it.setSelected(checked);
-					}
+			action.putValue(EditorFrame.CHECKBOX_VALUE, it.isSelected());
+			action.actionPerformed(new ActionEvent(it, 0, "changed"));
+		});
+		action.addPropertyChangeListener(evt -> {
+			if (EditorFrame.CHECKBOX_VALUE.equals(evt.getPropertyName())) {
+				Boolean checked = (Boolean) evt.getNewValue();
+				if (it.isSelected() != checked) {
+					it.setSelected(checked);
 				}
 			}
 		});
@@ -384,13 +371,9 @@ public abstract class EditorFrame extends JFrame {
 				}
 				final JButton bt = tb.add(action);
 
-				action.addPropertyChangeListener(new PropertyChangeListener() {
-
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						if (Action.NAME.equals(evt.getPropertyName())) {
-							setButtonText(bt, action);
-						}
+				action.addPropertyChangeListener(evt -> {
+					if (Action.NAME.equals(evt.getPropertyName())) {
+						setButtonText(bt, action);
 					}
 				});
 

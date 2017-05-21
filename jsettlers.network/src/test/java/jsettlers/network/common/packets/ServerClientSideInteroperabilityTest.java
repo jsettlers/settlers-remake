@@ -63,10 +63,10 @@ public class ServerClientSideInteroperabilityTest {
 
 	@Test
 	public void testTaskPackets() throws InterruptedException {
-		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<TaskPacket>(ENetworkKey.TEST_PACKET,
+		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
 				TaskPacket.DEFAULT_DESERIALIZER);
-		BufferingPacketListener<ServersideTaskPacket> serverListener = new BufferingPacketListener<ServersideTaskPacket>(ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<ServersideTaskPacket>(ServersideTaskPacket.class));
+		BufferingPacketListener<ServersideTaskPacket> serverListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
+				new GenericDeserializer<>(ServersideTaskPacket.class));
 
 		c1.registerListener(clientListener);
 		c2.registerListener(serverListener);
@@ -89,11 +89,11 @@ public class ServerClientSideInteroperabilityTest {
 
 	@Test
 	public void testSnycTasksPackets() throws InterruptedException {
-		BufferingPacketListener<SyncTasksPacket> clientListener = new BufferingPacketListener<SyncTasksPacket>(ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<SyncTasksPacket>(SyncTasksPacket.class));
-		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<ServersideSyncTasksPacket>(
+		BufferingPacketListener<SyncTasksPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
+				new GenericDeserializer<>(SyncTasksPacket.class));
+		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<>(
 				ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<ServersideSyncTasksPacket>(ServersideSyncTasksPacket.class));
+				new GenericDeserializer<>(ServersideSyncTasksPacket.class));
 
 		c1.registerListener(clientListener);
 		c2.registerListener(serverListener);

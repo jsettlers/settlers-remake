@@ -116,7 +116,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	}
 
 	private ByteBuffer reuseableBuffer = null;
-	private ArrayList<ByteBuffer> geometries = new ArrayList<ByteBuffer>();
+	private ArrayList<ByteBuffer> geometries = new ArrayList<>();
 
 	/**
 	 * The global context valid flag. As soon as this is set to false, the context is not valid any more.

@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 public class MinHeap<T extends MinHeapable> {
 	private final int MIN_CAPACITY;
-	private final ArrayList<T> heap = new ArrayList<T>();
+	private final ArrayList<T> heap = new ArrayList<>();
 	private int size = 0;
 
 	/**

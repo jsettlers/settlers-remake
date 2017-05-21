@@ -124,12 +124,7 @@ public class SwingManagedJSettlers {
 		}
 
 		final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				folderChooser.setVisible(true);
-			}
-		});
+		SwingUtilities.invokeLater(() -> folderChooser.setVisible(true));
 
 		File selectedFolder = folderChooser.waitForUserInput();
 		if (selectedFolder == null) {

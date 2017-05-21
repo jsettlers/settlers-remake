@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,8 +20,6 @@ import jsettlers.TestToolUtils;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMapInterfaceListener;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
@@ -40,8 +38,7 @@ public class MovableTestWindow {
 	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1, EPlayerType.HUMAN, ECivilisation.ROMAN);
 	private final ILogicMovable movable;
 
-	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException,
-			SwingResourceLoader.ResourceSetupException {
+	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		new MovableTestWindow();
 	}
 
@@ -57,25 +54,22 @@ public class MovableTestWindow {
 
 		connector.setSelection(new SelectionSet(movable));
 
-		connector.addListener(new IMapInterfaceListener() {
-			@Override
-			public void action(IAction action) {
-				switch (action.getActionType()) {
-				case MOVE_TO:
-					movable.moveTo(((PointAction) action).getPosition());
-					break;
-				case SPEED_FASTER:
-					MatchConstants.clock().multiplyGameSpeed(1.2f);
-					break;
-				case SPEED_SLOWER:
-					MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
-					break;
-				case FAST_FORWARD:
-					MatchConstants.clock().fastForward();
-					break;
-				default:
-					break;
-				}
+		connector.addListener(action -> {
+			switch (action.getActionType()) {
+			case MOVE_TO:
+				movable.moveTo(((PointAction) action).getPosition());
+				break;
+			case SPEED_FASTER:
+				MatchConstants.clock().multiplyGameSpeed(1.2f);
+				break;
+			case SPEED_SLOWER:
+				MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
+				break;
+			case FAST_FORWARD:
+				MatchConstants.clock().fastForward();
+				break;
+			default:
+				break;
 			}
 		});
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -34,22 +34,18 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class ImageDisplay extends JFrame {
 
 	private static final String FILE =
-	// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.f8007e01f.dat";
-	"/home/michael/Desktop/sounds/VL-212.DX4";
+			// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.f8007e01f.dat";
+			"/home/michael/Desktop/sounds/VL-212.DX4";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3846777822789324058L;
-
-	protected static final int PIXELLENGTH = 8;
 
 	private final byte[] data;
 
@@ -176,17 +172,9 @@ public class ImageDisplay extends JFrame {
 	 */
 	private JSpinner getOffsetSpinner() {
 		if (this.offsetSpinner == null) {
-			this.offsetSpinner = new JSpinner(new SpinnerNumberModel(getImage().getOffset(),
-					0, this.data.length, 1));
+			this.offsetSpinner = new JSpinner(new SpinnerNumberModel(getImage().getOffset(), 0, this.data.length, 1));
 			this.offsetSpinner.setBounds(new Rectangle(322, 4, 100, 20));
-			this.offsetSpinner.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					getImage().setOffset(
-							(Integer) ImageDisplay.this.offsetSpinner
-									.getValue());
-				}
-			});
+			this.offsetSpinner.addChangeListener(e -> getImage().setOffset((Integer) ImageDisplay.this.offsetSpinner.getValue()));
 		}
 		return this.offsetSpinner;
 	}
@@ -263,15 +251,9 @@ public class ImageDisplay extends JFrame {
 			this.pixelLengthSpinner = new JSpinner(new SpinnerNumberModel(getImage()
 					.getPixelLength(), 1, 100, 1));
 			this.pixelLengthSpinner.setBounds(new Rectangle(323, 32, 100, 20));
-			this.pixelLengthSpinner.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					getImage().setPixelLength(
-							(Integer) ImageDisplay.this.pixelLengthSpinner
-									.getValue());
-					reloadLineLength();
-				}
-
+			this.pixelLengthSpinner.addChangeListener(e -> {
+				getImage().setPixelLength((Integer) ImageDisplay.this.pixelLengthSpinner.getValue());
+				reloadLineLength();
 			});
 		}
 		return this.pixelLengthSpinner;
@@ -292,14 +274,9 @@ public class ImageDisplay extends JFrame {
 			this.imageWidthSpinner = new JSpinner(new SpinnerNumberModel(getImage()
 					.getImageWidth(), 1, 1000, 1));
 			this.imageWidthSpinner.setBounds(new Rectangle(325, 58, 100, 20));
-			this.imageWidthSpinner.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					getImage().setImageWidth(
-							(Integer) ImageDisplay.this.imageWidthSpinner
-									.getValue());
-					reloadLineLength();
-				}
+			this.imageWidthSpinner.addChangeListener(e -> {
+				getImage().setImageWidth((Integer) ImageDisplay.this.imageWidthSpinner.getValue());
+				reloadLineLength();
 			});
 		}
 		return this.imageWidthSpinner;
@@ -316,14 +293,7 @@ public class ImageDisplay extends JFrame {
 			this.littleEndian.setBounds(new Rectangle(420, 38, 195, 17));
 			this.littleEndian.setText("Little endian");
 			this.littleEndian.setSelected(getImage().isLittleEndian());
-			this.littleEndian.addChangeListener(new ChangeListener() {
-
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					getImage().setLittleEndian(
-							ImageDisplay.this.littleEndian.isSelected());
-				}
-			});
+			this.littleEndian.addChangeListener(e -> getImage().setLittleEndian(ImageDisplay.this.littleEndian.isSelected()));
 		}
 		return this.littleEndian;
 	}
@@ -340,10 +310,8 @@ public class ImageDisplay extends JFrame {
 			this.redMask.setText("" + getImage().getRedMask());
 			this.redMask.getDocument().addDocumentListener(
 					new DocumentListener() {
-
 						private void changed() {
-							getImage().setRedMask(
-									loadMaskField(ImageDisplay.this.redMask));
+							getImage().setRedMask(loadMaskField(ImageDisplay.this.redMask));
 						}
 
 						@Override
@@ -359,7 +327,6 @@ public class ImageDisplay extends JFrame {
 						@Override
 						public void changedUpdate(DocumentEvent e) {
 							changed();
-
 						}
 					});
 		}
@@ -407,10 +374,8 @@ public class ImageDisplay extends JFrame {
 
 			this.greenMask.getDocument().addDocumentListener(
 					new DocumentListener() {
-
 						private void changed() {
-							getImage().setGreenMask(
-									loadMaskField(ImageDisplay.this.greenMask));
+							getImage().setGreenMask(loadMaskField(ImageDisplay.this.greenMask));
 						}
 
 						@Override
@@ -426,7 +391,6 @@ public class ImageDisplay extends JFrame {
 						@Override
 						public void changedUpdate(DocumentEvent e) {
 							changed();
-
 						}
 					});
 		}
@@ -445,10 +409,8 @@ public class ImageDisplay extends JFrame {
 			this.blueMask.setText("" + getImage().getBlueMask());
 			this.blueMask.getDocument().addDocumentListener(
 					new DocumentListener() {
-
 						private void changed() {
-							getImage().setBlueMask(
-									loadMaskField(ImageDisplay.this.blueMask));
+							getImage().setBlueMask(loadMaskField(ImageDisplay.this.blueMask));
 						}
 
 						@Override
@@ -464,7 +426,6 @@ public class ImageDisplay extends JFrame {
 						@Override
 						public void changedUpdate(DocumentEvent e) {
 							changed();
-
 						}
 					});
 		}
@@ -481,5 +442,4 @@ public class ImageDisplay extends JFrame {
 			e.printStackTrace();
 		}
 	}
-
 } // @jve:decl-index=0:visual-constraint="10,10"

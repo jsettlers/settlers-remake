@@ -36,12 +36,12 @@ public class UndoRedoHandler {
 	/**
 	 * Undo stack
 	 */
-	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<>();
 
 	/**
 	 * Redo stack
 	 */
-	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<>();
 
 	/**
 	 * Flag to indicate changes since last save

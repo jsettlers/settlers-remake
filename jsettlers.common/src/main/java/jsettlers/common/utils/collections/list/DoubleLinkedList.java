@@ -117,7 +117,7 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		@SuppressWarnings("unchecked")
 		DoubleLinkedList<T>[] array = new DoubleLinkedList[length];
 		for (int i = 0; i < length; i++) {
-			array[i] = new DoubleLinkedList<T>();
+			array[i] = new DoubleLinkedList<>();
 		}
 
 		return array;
@@ -146,7 +146,7 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 
 	@Override
 	public Iterator<T> iterator() {
-		return new DoubleLinkedListIterator<T>(this);
+		return new DoubleLinkedListIterator<>(this);
 	}
 
 	/**

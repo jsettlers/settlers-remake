@@ -81,7 +81,7 @@ public class SettingsManager {
 		SettingsManager man = manager == null ? null : manager.get();
 		if (man == null) {
 			man = new SettingsManager();
-			manager = new SoftReference<SettingsManager>(man);
+			manager = new SoftReference<>(man);
 		}
 		return man;
 	}

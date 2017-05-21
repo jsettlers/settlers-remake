@@ -77,7 +77,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewSingleplayerGamePanel);
 		openSaveGamePanel = new OpenPanel(MapList.getDefaultList().getSavedMaps(), this::loadSavegame);
 		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
-		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), this::showJoinMultiplayerGamePanel);
+		joinMultiPlayerGamePanel = new OpenPanel(new Vector<>(), this::showJoinMultiplayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
 
 		createStructure();

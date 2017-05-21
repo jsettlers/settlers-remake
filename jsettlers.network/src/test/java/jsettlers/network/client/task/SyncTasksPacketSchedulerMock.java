@@ -30,7 +30,7 @@ public class SyncTasksPacketSchedulerMock implements ISyncTasksPacketScheduler {
 	private int unlockedLockstep = 0;
 
 	public SyncTasksPacketSchedulerMock() {
-		this.buffer = new LinkedList<SyncTasksPacket>();
+		this.buffer = new LinkedList<>();
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class SyncTasksPacketSchedulerMock implements ISyncTasksPacketScheduler {
 	 */
 	public List<SyncTasksPacket> popBufferedPackets() {
 		List<SyncTasksPacket> temp = buffer;
-		buffer = new LinkedList<SyncTasksPacket>();
+		buffer = new LinkedList<>();
 		return temp;
 	}
 

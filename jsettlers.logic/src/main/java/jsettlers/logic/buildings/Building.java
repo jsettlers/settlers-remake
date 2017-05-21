@@ -78,7 +78,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
 
-	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
+	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<>();
 
 	protected final EBuildingType type;
 	protected final ShortPoint2D pos;
@@ -171,7 +171,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private List<IRequestStack> createConstructionStacks() {
-		List<IRequestStack> result = new LinkedList<IRequestStack>();
+		List<IRequestStack> result = new LinkedList<>();
 
 		for (ConstructionStack stack : type.getConstructionStacks()) {
 			result.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority,
@@ -591,7 +591,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public List<IBuildingMaterial> getMaterials() {
-		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
+		ArrayList<IBuildingMaterial> materials = new ArrayList<>();
 
 		for (IRequestStack stack : stacks) {
 			if (state == EBuildingState.CONSTRUCTED) {

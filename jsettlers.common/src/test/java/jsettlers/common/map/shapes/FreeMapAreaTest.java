@@ -33,7 +33,7 @@ public class FreeMapAreaTest {
 
 	@Test
 	public void test() {
-		List<ShortPoint2D> positions = new LinkedList<ShortPoint2D>();
+		List<ShortPoint2D> positions = new LinkedList<>();
 		positions.add(new ShortPoint2D(1, 1));
 		positions.add(new ShortPoint2D(2, 2));
 		positions.add(new ShortPoint2D(3, 3));

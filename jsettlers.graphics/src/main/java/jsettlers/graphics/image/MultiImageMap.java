@@ -140,7 +140,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 								settlery, torsometa,
 								torsox, torsoy);
 			}
-			addTo[seqindex] = new ArraySequence<Image>(images);
+			addTo[seqindex] = new ArraySequence<>(images);
 		}
 
 		// request a opengl rerender, or do it ourselves on the next image

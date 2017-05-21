@@ -63,7 +63,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	private final UIPanel panel;
 
-	private final ArrayList<BuildingButton> buttons = new ArrayList<BuildingButton>();
+	private final ArrayList<BuildingButton> buttons = new ArrayList<>();
 	private EBuildingType activeBuilding;
 
 	private final UIUpdater<BuildingCountState> updater;

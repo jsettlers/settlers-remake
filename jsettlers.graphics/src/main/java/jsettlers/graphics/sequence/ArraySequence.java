@@ -89,7 +89,7 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 */
 	public static Sequence<SingleImage> getNullSequence() {
 		if (nullSequence == null) {
-			nullSequence = new ArraySequence<SingleImage>(new SingleImage[0]);
+			nullSequence = new ArraySequence<>(new SingleImage[0]);
 		}
 		return nullSequence;
 	}

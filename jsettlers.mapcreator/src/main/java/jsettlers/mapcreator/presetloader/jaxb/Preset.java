@@ -90,7 +90,7 @@ public class Preset {
 	 */
 	public List<Building> getBuilding() {
 		if (building == null) {
-			building = new ArrayList<Building>();
+			building = new ArrayList<>();
 		}
 		return this.building;
 	}
@@ -117,7 +117,7 @@ public class Preset {
 	 */
 	public List<Object> getObject() {
 		if (object == null) {
-			object = new ArrayList<Object>();
+			object = new ArrayList<>();
 		}
 		return this.object;
 	}
@@ -144,7 +144,7 @@ public class Preset {
 	 */
 	public List<Moveable> getMoveable() {
 		if (moveable == null) {
-			moveable = new ArrayList<Moveable>();
+			moveable = new ArrayList<>();
 		}
 		return this.moveable;
 	}

@@ -38,7 +38,7 @@ public class AiExecutor implements INetworkTimerable {
 	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
 		aiStatistics.updateStatistics();
-		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		this.whatToDoAis = new ArrayList<>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[playerId];

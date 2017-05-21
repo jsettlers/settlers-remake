@@ -55,7 +55,7 @@ public final class Minimap implements IMinimapData {
 
 	private MapRectangle mapViewport;
 	private short[][] buffer;
-	private final LinkedList<Integer> updatedLines = new LinkedList<Integer>();
+	private final LinkedList<Integer> updatedLines = new LinkedList<>();
 	private final LineLoader lineLoader;
 	private boolean stopped = false;
 

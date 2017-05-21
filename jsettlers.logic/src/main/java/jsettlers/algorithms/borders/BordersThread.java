@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class BordersThread implements Runnable {
 
 	private final IBordersThreadGrid grid;
-	private final LinkedBlockingQueue<ShortPoint2D> positionsQueue = new LinkedBlockingQueue<ShortPoint2D>();
+	private final LinkedBlockingQueue<ShortPoint2D> positionsQueue = new LinkedBlockingQueue<>();
 	private final Thread bordersThread;
 
 	private boolean canceled = false;

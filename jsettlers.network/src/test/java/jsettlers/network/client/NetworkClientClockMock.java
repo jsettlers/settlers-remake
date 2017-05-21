@@ -32,8 +32,8 @@ import jsettlers.network.synchronic.timer.ITaskExecutor;
  */
 public class NetworkClientClockMock implements INetworkClientClock {
 
-	private LinkedList<Integer> adjustmentEvents = new LinkedList<Integer>();
-	private LinkedList<TaskPacket> bufferedTasks = new LinkedList<TaskPacket>();
+	private LinkedList<Integer> adjustmentEvents = new LinkedList<>();
+	private LinkedList<TaskPacket> bufferedTasks = new LinkedList<>();
 	private int time;
 	private int maxAllowedLockstep;
 
@@ -63,7 +63,7 @@ public class NetworkClientClockMock implements INetworkClientClock {
 
 	public LinkedList<Integer> popAdjustmentEvents() {
 		LinkedList<Integer> temp = adjustmentEvents;
-		adjustmentEvents = new LinkedList<Integer>();
+		adjustmentEvents = new LinkedList<>();
 		return temp;
 	}
 
@@ -124,7 +124,7 @@ public class NetworkClientClockMock implements INetworkClientClock {
 
 	public LinkedList<TaskPacket> popBufferedTasks() {
 		LinkedList<TaskPacket> temp = bufferedTasks;
-		bufferedTasks = new LinkedList<TaskPacket>();
+		bufferedTasks = new LinkedList<>();
 		return temp;
 	}
 

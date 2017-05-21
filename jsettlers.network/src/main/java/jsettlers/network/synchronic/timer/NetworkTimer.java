@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -31,30 +31,26 @@ import jsettlers.network.client.INetworkClientClock;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
 
+import java8.util.Comparators;
+
 /**
- * This is a basic game timer. All synchronous actions must be based on this clock. The {@link NetworkTimer} also triggers the execution of
- * synchronous tasks in the network game.
+ * This is a basic game timer. All synchronous actions must be based on this clock. The {@link NetworkTimer} also triggers the execution of synchronous tasks in the network game.
  *
  * @author Andreas Eberle
  *
  */
 public final class NetworkTimer extends TimerTask implements INetworkClientClock {
 	public static final short TIME_SLICE = 50;
-	private Comparator<SyncTasksPacket> tasksByTimeComperator = new Comparator<SyncTasksPacket>() {
-		@Override
-		public int compare(SyncTasksPacket o1, SyncTasksPacket o2) {
-			return o1.getLockstepNumber() - o2.getLockstepNumber();
-		}
-	};
+	private static final Comparator<SyncTasksPacket> tasksByTimeComparator = Comparators.comparingInt(SyncTasksPacket::getLockstepNumber);
 
 	private final Timer timer;
 	private final Object lockstepLock = new Object();
 
-	private final List<ScheduledTimerable> timerables = new ArrayList<ScheduledTimerable>();
-	private final List<ScheduledTimerable> newTimerables = new LinkedList<ScheduledTimerable>();
-	private final List<INetworkTimerable> timerablesToBeRemoved = new LinkedList<INetworkTimerable>();
+	private final List<ScheduledTimerable> timerables = new ArrayList<>();
+	private final List<ScheduledTimerable> newTimerables = new LinkedList<>();
+	private final List<INetworkTimerable> timerablesToBeRemoved = new LinkedList<>();
 
-	private final LinkedList<SyncTasksPacket> tasks = new LinkedList<SyncTasksPacket>();
+	private final LinkedList<SyncTasksPacket> tasks = new LinkedList<>();
 
 	private int time = 0;
 	private int maxAllowedLockstep = -1;
@@ -70,7 +66,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	private DataOutputStream replayLogStream;
 
 	public NetworkTimer() {
-		super();
 		this.timer = new Timer("NetworkTimer");
 	}
 
@@ -195,9 +190,8 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	/**
-	 * Schedules the given {@link INetworkTimerable} with given delay. The internal delay of NetworkTimer is {@value #TIME_SLICE}, but you may choose
-	 * smaller delays for the {@link INetworkTimerable}. The NetworkTimer will then call the {@link INetworkTimerable} multiple times on each internal
-	 * tick in the exact rate to ensure the given delay in the long run.
+	 * Schedules the given {@link INetworkTimerable} with given delay. The internal delay of NetworkTimer is {@value #TIME_SLICE}, but you may choose smaller delays for the {@link INetworkTimerable}.
+	 * The NetworkTimer will then call the {@link INetworkTimerable} multiple times on each internal tick in the exact rate to ensure the given delay in the long run.
 	 *
 	 * @param timerable
 	 *            {@link INetworkTimerable} to be scheduled.
@@ -252,8 +246,8 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	// methods for pausing
 
 	@Override
-	public void setPausing(boolean b) {
-		this.isPausing = b;
+	public void setPausing(boolean pausing) {
+		this.isPausing = pausing;
 	}
 
 	@Override
@@ -297,7 +291,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			synchronized (tasks) {
 				System.out.println("Scheduled SyncTasksPacket(" + tasksPacket + " for " + getLockstepText(tasksPacket.getLockstepNumber()));
 				tasks.addLast(tasksPacket);
-				Collections.sort(tasks, tasksByTimeComperator);
+				Collections.sort(tasks, tasksByTimeComparator);
 				saveReplayIfNeeded(tasksPacket);
 			}
 		}
@@ -395,5 +389,4 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		int millis = time % 1000;
 		return String.format("lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
 	}
-
 }

@@ -431,7 +431,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private static final Sequence<Image> NULL_SETTLER_SEQUENCE =
-			new ArraySequence<Image>(new SettlerImage[0]);
+			new ArraySequence<>(new SettlerImage[0]);
 
 	private class DirectSettlerSequenceList implements SequenceList<Image> {
 
@@ -480,7 +480,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 			}
 		}
 
-		settlersequences[index] = new ArraySequence<Image>(images);
+		settlersequences[index] = new ArraySequence<>(images);
 	}
 
 	private long[] readSequenceHeader(int position) throws IOException {

@@ -40,7 +40,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 
 	protected RescheduleTimer() {
 		for (int i = 0; i < TIME_SLOTS; i++) {
-			timerables[i] = new ArrayList<IScheduledTimerable>();
+			timerables[i] = new ArrayList<>();
 		}
 	}
 

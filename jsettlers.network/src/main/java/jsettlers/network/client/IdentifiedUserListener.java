@@ -31,7 +31,7 @@ public class IdentifiedUserListener extends PacketChannelListener<EmptyPacket> {
 	private NetworkClient networkClient;
 
 	public IdentifiedUserListener(NetworkClient networkClient) {
-		super(ENetworkKey.IDENTIFY_USER, new GenericDeserializer<EmptyPacket>(EmptyPacket.class));
+		super(ENetworkKey.IDENTIFY_USER, new GenericDeserializer<>(EmptyPacket.class));
 
 		this.networkClient = networkClient;
 	}

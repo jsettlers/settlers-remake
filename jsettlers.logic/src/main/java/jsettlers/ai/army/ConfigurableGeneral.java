@@ -184,7 +184,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private void defend(Situation situation, Set<Integer> soldiersWithOrders) {
-		List<ShortPoint2D> allMyTroops = new Vector<ShortPoint2D>();
+		List<ShortPoint2D> allMyTroops = new Vector<>();
 		allMyTroops.addAll(situation.bowmenPositions);
 		allMyTroops.addAll(situation.pikemenPositions);
 		allMyTroops.addAll(situation.swordsmenPositions);
@@ -230,7 +230,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private void sendTroopsTo(List<ShortPoint2D> attackerPositions, ShortPoint2D target, Set<Integer> soldiersWithOrders) {
-		List<Integer> attackerIds = new Vector<Integer>();
+		List<Integer> attackerIds = new Vector<>();
 		for (ShortPoint2D attackerPosition : attackerPositions) {
 			int movableId = movableGrid.getMovableAt(attackerPosition.x, attackerPosition.y).getID();
 			if (!soldiersWithOrders.contains(movableId)) {
@@ -268,9 +268,9 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private static class Situation {
-		private final List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
-		private final List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
-		private final List<ShortPoint2D> pikemenPositions = new Vector<ShortPoint2D>();
+		private final List<ShortPoint2D> swordsmenPositions = new Vector<>();
+		private final List<ShortPoint2D> bowmenPositions = new Vector<>();
+		private final List<ShortPoint2D> pikemenPositions = new Vector<>();
 		public int soldiersCount() {
 			return swordsmenPositions.size() + bowmenPositions.size() + pikemenPositions.size();
 		}

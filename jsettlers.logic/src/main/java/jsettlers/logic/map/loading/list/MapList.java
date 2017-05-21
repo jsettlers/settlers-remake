@@ -136,7 +136,7 @@ public class MapList implements IMapListerCallable {
 	 *         or null if no map with the given id has been found.
 	 */
 	public MapLoader getMapById(String id) {
-		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
+		ArrayList<MapLoader> maps = new ArrayList<>();
 		maps.addAll(getFreshMaps().getItems());
 		maps.addAll(getSavedMaps().getItems());
 
@@ -150,7 +150,7 @@ public class MapList implements IMapListerCallable {
 	}
 
 	public MapLoader getMapByName(String mapName) {
-		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
+		ArrayList<MapLoader> maps = new ArrayList<>();
 		maps.addAll(getFreshMaps().getItems());
 		maps.addAll(getSavedMaps().getItems());
 

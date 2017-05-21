@@ -17,7 +17,6 @@ package jsettlers.main.swing.foldertree;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -25,6 +24,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 
 import jsettlers.common.resources.SettlersFolderChecker;
+
+import java8.util.Comparators;
 
 /**
  * Node to display file / folders
@@ -188,7 +189,7 @@ public class FilesystemTreeNode implements TreeNode {
 		boolean snd = false;
 		boolean gfx = false;
 
-		List<FilesystemTreeNode> list = new ArrayList<FilesystemTreeNode>();
+		List<FilesystemTreeNode> list = new ArrayList<>();
 
 		for (File file : files) {
 			if (file.isDirectory()) {
@@ -209,12 +210,7 @@ public class FilesystemTreeNode implements TreeNode {
 			settlersFolder = false;
 		}
 
-		Collections.sort(list, new Comparator<FilesystemTreeNode>() {
-			@Override
-			public int compare(FilesystemTreeNode o1, FilesystemTreeNode o2) {
-				return o1.getFile().getName().compareTo(o2.getFile().getName());
-			}
-		});
+		Collections.sort(list, Comparators.comparing(node -> node.getFile().getName()));
 
 		return list;
 	}
@@ -222,12 +218,9 @@ public class FilesystemTreeNode implements TreeNode {
 	public void loadChildrenNodesAsync() {
 		final List<FilesystemTreeNode> childrenNodes = this.calculateChildrenNodes();
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				FilesystemTreeNode.this.children = childrenNodes;
-				findRoot().nodeStructureChanged(FilesystemTreeNode.this);
-			}
+		SwingUtilities.invokeLater(() -> {
+			FilesystemTreeNode.this.children = childrenNodes;
+			findRoot().nodeStructureChanged(FilesystemTreeNode.this);
 		});
 	}
 

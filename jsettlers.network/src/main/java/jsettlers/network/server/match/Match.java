@@ -62,8 +62,8 @@ public class Match {
 		this.name = name;
 		this.randomSeed = randomSeed;
 		this.id = UUID.randomUUID().toString();
-		this.players = new LinkedList<Player>();
-		this.leftPlayers = new LinkedList<Player>();
+		this.players = new LinkedList<>();
+		this.leftPlayers = new LinkedList<>();
 		this.logger = LoggerManager.getMatchLogger(id, name);
 		this.date = new Date();
 	}

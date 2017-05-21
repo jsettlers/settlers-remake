@@ -54,7 +54,7 @@ public class AsyncChannelTest {
 
 	@Test
 	public void testAsyncSendTime() throws InterruptedException {
-		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<BlockingTestPacket>(ENetworkKey.TEST_PACKET,
+		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
 				BlockingTestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
@@ -76,7 +76,7 @@ public class AsyncChannelTest {
 	public void testAsyncReceiveTime() throws InterruptedException {
 		final int RUNS = 10;
 
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
 				TestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
@@ -104,7 +104,7 @@ public class AsyncChannelTest {
 	 * 
 	 */
 	public static class BlockingTestPacket extends TestPacket {
-		public static final IDeserializingable<BlockingTestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<BlockingTestPacket>(
+		public static final IDeserializingable<BlockingTestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<>(
 				BlockingTestPacket.class);
 
 		public BlockingTestPacket(String testString, int testInt) {

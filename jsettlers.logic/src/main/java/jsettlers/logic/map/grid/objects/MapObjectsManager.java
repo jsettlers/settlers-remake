@@ -64,7 +64,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	private static final long serialVersionUID = 1833055351956872224L;
 
 	private final IMapObjectsManagerGrid grid;
-	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<TimeEvent>();
+	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<>();
 
 	private boolean killed = false;
 

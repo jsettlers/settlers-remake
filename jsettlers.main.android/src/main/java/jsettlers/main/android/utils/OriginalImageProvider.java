@@ -37,9 +37,9 @@ import android.widget.ImageView;
 public class OriginalImageProvider {
 	private static final OriginalImageProvider INSTANCE = new OriginalImageProvider();
 
-	private final HashMap<String, ImageReference> cachedImages = new HashMap<String, ImageReference>();
+	private final HashMap<String, ImageReference> cachedImages = new HashMap<>();
 	private ImageLoaderThread imageLoadThread;
-	private final LinkedBlockingQueue<ImageReference> toLoad = new LinkedBlockingQueue<ImageReference>();
+	private final LinkedBlockingQueue<ImageReference> toLoad = new LinkedBlockingQueue<>();
 
 	public static ImageReference get(EBuildingType building) {
 		return INSTANCE.create(building.getGuiImage());
@@ -89,7 +89,7 @@ public class OriginalImageProvider {
 	 */
 	public static class ImageReference {
 		private ImageLink image;
-		private ArrayList<ImageView> viewsToUpdate = new ArrayList<ImageView>();
+		private ArrayList<ImageView> viewsToUpdate = new ArrayList<>();
 		private final Handler handler = new Handler();
 		private Bitmap bm = null;
 

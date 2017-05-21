@@ -200,7 +200,7 @@ public class BuildingState {
 			IBuilding.IOccupied occupied = (IBuilding.IOccupied) building;
 			newStates = new Hashtable<>();
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
-				newStates.put(soldierClass, new ArrayList<OccupierState>());
+				newStates.put(soldierClass, new ArrayList<>());
 			}
 
 			for (IBuildingOccupier o : occupied.getOccupiers()) {

@@ -138,7 +138,7 @@ public abstract class RemakeMapLoader extends MapLoader {
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() { // TODO @Andreas Eberle: supply saved players information.
-		return new ArrayList<ILoadableMapPlayer>();
+		return new ArrayList<>();
 	}
 
 	@Override

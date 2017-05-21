@@ -28,7 +28,7 @@ import android.media.AudioTrack;
 public class AndroidSoundPlayer implements SoundPlayer {
 	private static final int SAMPLERATE = 22050;
 
-	private final ForgettingQueue<Integer> queue = new ForgettingQueue<Integer>();
+	private final ForgettingQueue<Integer> queue = new ForgettingQueue<>();
 
 	private ISoundDataRetriever soundDataRetriever;
 

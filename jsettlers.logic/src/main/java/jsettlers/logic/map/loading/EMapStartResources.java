@@ -35,7 +35,7 @@ public enum EMapStartResources {
 	}
 
 	public static List<MapObject> generateStackObjects(EMapStartResources mapStartResources) {
-		List<MapObject> goods = new Vector<MapObject>();
+		List<MapObject> goods = new Vector<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
 			goods.add(new StackObject(EMaterialType.PLANK, 6));
@@ -109,7 +109,7 @@ public enum EMapStartResources {
 	}
 
 	public static List<MapObject> generateMovableObjects(EMapStartResources mapStartResources, byte playerId) {
-		List<MapObject> movables = new Vector<MapObject>();
+		List<MapObject> movables = new Vector<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
 			for (byte i = 0; i < 2; i++)

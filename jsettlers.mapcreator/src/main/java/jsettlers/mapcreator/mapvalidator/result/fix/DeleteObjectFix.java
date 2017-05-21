@@ -54,13 +54,7 @@ public class DeleteObjectFix extends AbstractFix {
 	public JPopupMenu getPopupMenu() {
 		JPopupMenu menu = new JPopupMenu();
 		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.delete-invalid-objects"));
-		menuFix.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				autoFix();
-			}
-		});
+		menuFix.addActionListener(e -> autoFix());
 		menu.add(menuFix);
 		return menu;
 	}

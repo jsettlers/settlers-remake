@@ -136,7 +136,7 @@ public class DonkeyStrategy extends MovableStrategy {
 		}
 
 		Iterable<? extends IDonkeyMarket> markets = MarketBuilding.getAllMarkets(movable.getPlayer());
-		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<IDonkeyMarket>();
+		List<IDonkeyMarket> marketsNeedingDonkeys = new ArrayList<>();
 
 		for (IDonkeyMarket currMarket : markets) {
 			if (currMarket.needsDonkey()) {

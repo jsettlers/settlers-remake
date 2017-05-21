@@ -59,13 +59,10 @@ public class SelectSettlersFolderDialog extends JFrame {
 
 	private static final String HELP_URL = "https://github.com/jsettlers/settlers-remake/blob/master/README.md";
 
-	private final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread thread = new Thread(r, "fs-loader-thread");
-			thread.setDaemon(true);
-			return thread;
-		}
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor(runnable -> {
+		Thread thread = new Thread(runnable, "fs-loader-thread");
+		thread.setDaemon(true);
+		return thread;
 	});
 
 	/**
@@ -176,18 +173,15 @@ public class SelectSettlersFolderDialog extends JFrame {
 			}
 		});
 
-		SwingUtilities.invokeLater(new Runnable() { // this invoke later prevents an out of bounds exception in the tree
-			@Override
-			public void run() {
-				initHeader();
-				initTree();
+		SwingUtilities.invokeLater(() -> {
+			initHeader();
+			initTree();
 
-				add(new JScrollPane(tree), BorderLayout.CENTER);
-				add(foundPanel, BorderLayout.SOUTH);
+			add(new JScrollPane(tree), BorderLayout.CENTER);
+			add(foundPanel, BorderLayout.SOUTH);
 
-				setSize(750, 640);
-				setLocationRelativeTo(null);
-			}
+			setSize(750, 640);
+			setLocationRelativeTo(null);
 		});
 	}
 
@@ -207,33 +201,25 @@ public class SelectSettlersFolderDialog extends JFrame {
 		pButton.setLayout(new FlowLayout());
 
 		JButton btGoTo = new JButton(Labels.getString("enter-path"));
-		btGoTo.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String path = JOptionPane.showInputDialog(SelectSettlersFolderDialog.this, Labels.getString("enter-path"));
-				if (path != null) {
-					if (SettlersFolderChecker.checkSettlersFolder(path).isValidSettlersFolder()) {
-						foundPanel.setFolder(path);
-					} else {
-						JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",
-								JOptionPane.ERROR_MESSAGE);
-					}
+		btGoTo.addActionListener(e -> {
+			String path = JOptionPane.showInputDialog(SelectSettlersFolderDialog.this, Labels.getString("enter-path"));
+			if (path != null) {
+				if (SettlersFolderChecker.checkSettlersFolder(path).isValidSettlersFolder()) {
+					foundPanel.setFolder(path);
+				} else {
+					JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("settlers-folder-still-invalid"), "JSettler",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 		pButton.add(btGoTo);
 
 		JButton btHelp = new JButton(Labels.getString("i-need-help-button"));
-		btHelp.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop.getDesktop().browse(new URI(HELP_URL));
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("error-open-url") + ": " + HELP_URL);
-				}
+		btHelp.addActionListener(e -> {
+			try {
+				Desktop.getDesktop().browse(new URI(HELP_URL));
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(SelectSettlersFolderDialog.this, Labels.getString("error-open-url") + ": " + HELP_URL);
 			}
 		});
 		pButton.add(btHelp);

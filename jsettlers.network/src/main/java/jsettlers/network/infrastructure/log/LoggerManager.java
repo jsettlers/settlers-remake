@@ -28,7 +28,7 @@ public final class LoggerManager {
 	private static final File LOG_FOLDER = new File("logs/");
 
 	public static final Logger ROOT_LOGGER;
-	private static final HashMap<String, StreamLogger> LOGGERS = new HashMap<String, StreamLogger>();
+	private static final HashMap<String, StreamLogger> LOGGERS = new HashMap<>();
 
 	static {
 		Logger logger;

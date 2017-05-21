@@ -69,23 +69,17 @@ public abstract class AbstractOkCancelDialog extends JDialog {
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		JButton btOk = new JButton(EditorLabels.getLabel("general.OK"));
-		btOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (beforeOkAction()) {
-					confirmed = true;
-					dispose();
-				}
+		btOk.addActionListener(e -> {
+			if (beforeOkAction()) {
+				confirmed = true;
+				dispose();
 			}
 		});
 
 		JButton btCancel = new JButton(EditorLabels.getLabel("general.Cancel"));
-		btCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (beforeCancelAction()) {
-					dispose();
-				}
+		btCancel.addActionListener(e -> {
+			if (beforeCancelAction()) {
+				dispose();
 			}
 		});
 

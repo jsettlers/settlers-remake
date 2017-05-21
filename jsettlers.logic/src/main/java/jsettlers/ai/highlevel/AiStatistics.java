@@ -106,7 +106,7 @@ public class AiStatistics {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
 		sortedRiversInDefaultPartition = new AiPositions();
-		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, AiPositions>();
+		sortedCuttableObjectsInDefaultPartition = new HashMap<>();
 		sortedResourceTypes = new AiPositions[EResourceType.VALUES.length];
 		for (int i = 0; i < sortedResourceTypes.length; i++) {
 			sortedResourceTypes[i] = new AiPositions();
@@ -148,7 +148,7 @@ public class AiStatistics {
 
 	private void updateBuildingPositions(PlayerStatistic playerStatistic, EBuildingType type, Building building) {
 		if (!playerStatistic.buildingPositions.containsKey(type)) {
-			playerStatistic.buildingPositions.put(type, new ArrayList<ShortPoint2D>());
+			playerStatistic.buildingPositions.put(type, new ArrayList<>());
 		}
 		playerStatistic.buildingPositions.get(type).add(building.getPos());
 
@@ -231,7 +231,7 @@ public class AiStatistics {
 					}
 				}
 				if (landscapeGrid.getLandscapeTypeAt(x, y).isGrass()) {
-					aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][aiMapInformation.GRASS_INDEX]++;
+					aiMapInformation.resourceAndGrassCount[mapInformationPlayerId][AiMapInformation.GRASS_INDEX]++;
 				}
 				ILogicMovable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
@@ -239,7 +239,7 @@ public class AiStatistics {
 					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
 					EMovableType movableType = movable.getMovableType();
 					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
-						movablePlayerStatistic.movablePositions.put(movableType, new Vector<ShortPoint2D>());
+						movablePlayerStatistic.movablePositions.put(movableType, new Vector<>());
 					}
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
 					if (player != null && player.playerId != movablePlayerId && movableType.isSoldier() && getEnemiesOf(player.playerId).contains(movablePlayerId)) {
@@ -419,12 +419,7 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId, int searchDistance, final AiPositionFilter filter) {
-		return sortedPoints.getNearestPoint(point, searchDistance, new AiPositions.CombinedAiPositionFilter(new AiPositionFilter() {
-			@Override
-			public boolean contains(int x, int y) {
-				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
-			}
-		}, filter));
+		return sortedPoints.getNearestPoint(point, searchDistance, new AiPositions.CombinedAiPositionFilter((x, y) -> partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId, filter));
 	}
 
 	public boolean hasPlayersBlockedPartition(byte playerId, int x, int y) {
@@ -466,7 +461,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getBuildingPositionsOfTypesForPlayer(EnumSet<EBuildingType> buildingTypes, byte playerId) {
-		List<ShortPoint2D> buildingPositions = new Vector<ShortPoint2D>();
+		List<ShortPoint2D> buildingPositions = new Vector<>();
 		for (EBuildingType buildingType : buildingTypes) {
 			buildingPositions.addAll(getBuildingPositionsOfTypeForPlayer(buildingType, playerId));
 		}
@@ -485,11 +480,10 @@ public class AiStatistics {
 		return playerStatistics[playerId].landToBuildOn;
 	}
 
-	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId, EBuildingType buildingType) {
-
+	public boolean blocksWorkingAreaOfOtherBuilding(int x, int y, byte playerId, EBuildingType buildingType) {
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].wineGrowerWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.WINEGROWER.getWorkRadius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(x, y)) <= EBuildingType.WINEGROWER.getWorkRadius()) {
 					return true;
 				}
 			}
@@ -497,7 +491,7 @@ public class AiStatistics {
 
 		for (ShortPoint2D workAreaCenter : playerStatistics[playerId].farmWorkAreas) {
 			for (RelativePoint blockedPoint : buildingType.getBlockedTiles()) {
-				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(point)) <= EBuildingType.FARM.getWorkRadius()) {
+				if (workAreaCenter.getOnGridDistTo(blockedPoint.calculatePoint(x, y)) <= EBuildingType.FARM.getWorkRadius()) {
 					return true;
 				}
 			}
@@ -507,26 +501,20 @@ public class AiStatistics {
 	}
 
 	public boolean southIsFreeForPlayer(ShortPoint2D point, byte playerId) {
-		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId) && pointIsFreeForPlayer((short) (point.x + 5),
-																									   (short) (point.y + 12),
-																									   playerId) && pointIsFreeForPlayer((short) (point.x + 10),
-																																		 (short) (point.y + 12),
-																																		 playerId) && pointIsFreeForPlayer(point.x,
-																																										   (short) (point.y + 6),
-																																										   playerId) &&
-				pointIsFreeForPlayer(
-				(short) (point.x + 5),
-				(short) (point.y + 6),
-				playerId) && pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 6), playerId);
+		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId) &&
+				pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 12), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 12), playerId)
+				&& pointIsFreeForPlayer(point.x, (short) (point.y + 6),playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 5),(short) (point.y + 6), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 6), playerId);
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAt(x, y) && !flagsGrid.isProtected(x, y) && landscapeGrid.isHexAreaOfType(x,
-																																															   y,
-																																															   0,
-																																															   2,
-																																															   ELandscapeType.GRASS,
-																																															   ELandscapeType.EARTH);
+		return mainGrid.isInBounds(x, y)
+				&& partitionsGrid.getPlayerIdAt(x, y) == playerId
+				&& !objectsGrid.isBuildingAt(x, y)
+				&& !flagsGrid.isProtected(x, y)
+				&& landscapeGrid.isHexAreaOfType(x, y, 0, 2,ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
 	public boolean wasFishNearByAtGameStart(ShortPoint2D position) {
@@ -546,7 +534,11 @@ public class AiStatistics {
 		}
 
 		ShortPoint2D nearestSoldierPosition = detectNearestPointFromList(targetPosition, soldierPositions);
-		return movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
+		if (nearestSoldierPosition!=null){
+			return movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
+		} else {
+			return null;
+		}
 	}
 
 	public static ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
@@ -596,7 +588,7 @@ public class AiStatistics {
 	}
 
 	public List<Byte> getEnemiesOf(byte playerId) {
-		List<Byte> enemies = new ArrayList<Byte>();
+		List<Byte> enemies = new ArrayList<>();
 		for (Team team : partitionsGrid.getTeams()) {
 			if (!team.isMember(playerId)) {
 				for (Player player : team.getMembers()) {
@@ -695,16 +687,16 @@ public class AiStatistics {
 		boolean      isAlive;
 		final int[]                                  totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 		final int[]                                  buildingsNumbers      = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions     = new HashMap<EBuildingType, List<ShortPoint2D>>();
-		final List<ShortPoint2D>                     farmWorkAreas         = new Vector<ShortPoint2D>();
-		final List<ShortPoint2D>                     wineGrowerWorkAreas   = new Vector<ShortPoint2D>();
+		final Map<EBuildingType, List<ShortPoint2D>> buildingPositions     = new HashMap<>();
+		final List<ShortPoint2D>                     farmWorkAreas         = new Vector<>();
+		final List<ShortPoint2D>                     wineGrowerWorkAreas   = new Vector<>();
 		short partitionIdToBuildOn;
 		public short blockedPartitionId;
 		IPartitionData materials;
 		final AiPositions                           landToBuildOn        = new AiPositions();
 		final AiPositions                           border               = new AiPositions();
 		final AiPositions                           otherPartitionBorder = new AiPositions();
-		final Map<EMovableType, List<ShortPoint2D>> movablePositions     = new HashMap<EMovableType, List<ShortPoint2D>>();
+		final Map<EMovableType, List<ShortPoint2D>> movablePositions     = new HashMap<>();
 		final AiPositions                           stones               = new AiPositions();
 		final AiPositions                           stonesNearBy         = new AiPositions();
 		final AiPositions                           trees                = new AiPositions();
