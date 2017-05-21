@@ -55,7 +55,7 @@ public final class AreaTraversingAlgorithm {
 	 */
 	public static boolean traverseArea(IContainingProvider containingProvider, IAreaVisitor visitor, ShortPoint2D startPos, int width, int height) {
 
-		LinkedList<ShortPoint2D> stack = new LinkedList<ShortPoint2D>();
+		LinkedList<ShortPoint2D> stack = new LinkedList<>();
 		stack.push(startPos);
 		BitSet touched = new BitSet(width * height);
 		touched.set(startPos.x + startPos.y * width);

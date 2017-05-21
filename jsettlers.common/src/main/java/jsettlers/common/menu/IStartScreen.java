@@ -80,22 +80,22 @@ public interface IStartScreen {
 
 		@Override
 		public ChangingList<IMapDefinition> getSingleplayerMaps() {
-			return new ChangingList<IMapDefinition>();
+			return new ChangingList<>();
 		}
 
 		@Override
 		public ChangingList<IMapDefinition> getStoredSingleplayerGames() {
-			return new ChangingList<IMapDefinition>();
+			return new ChangingList<>();
 		}
 
 		@Override
 		public ChangingList<IMapDefinition> getMultiplayerMaps() {
-			return new ChangingList<IMapDefinition>();
+			return new ChangingList<>();
 		}
 
 		@Override
 		public ChangingList<IMapDefinition> getRestorableMultiplayerGames() {
-			return new ChangingList<IMapDefinition>();
+			return new ChangingList<>();
 		}
 
 		@Override

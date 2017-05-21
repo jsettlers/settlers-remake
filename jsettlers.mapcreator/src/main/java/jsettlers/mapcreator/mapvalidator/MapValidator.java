@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,14 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.mapcreator.data.MapData;
-import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 
 /**
  * Validate the map for errors
@@ -52,33 +50,16 @@ public class MapValidator {
 	/**
 	 * Broadcast listener
 	 */
-	private final ValidationResultListener resultListener = new ValidationResultListener() {
-
-		@Override
-		public void validationFinished(final ValidationListModel list) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					for (ValidationResultListener l : listener) {
-						l.validationFinished(list);
-					}
-				}
-			});
+	private final ValidationResultListener resultListener = list -> SwingUtilities.invokeLater(() -> {
+		for (ValidationResultListener l : listener) {
+			l.validationFinished(list);
 		}
-	};
+	});
 
 	/**
 	 * Executor service used to check the errors in another thread
 	 */
-	private final ExecutorService threadpool = Executors.newSingleThreadExecutor(new ThreadFactory() {
-
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r);
-			t.setName("MapValidator");
-			return t;
-		}
-	});
+	private final ExecutorService threadpool = Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "MapValidator"));
 
 	/**
 	 * Constructor
@@ -131,5 +112,4 @@ public class MapValidator {
 			e.printStackTrace();
 		}
 	}
-
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,14 +28,14 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 	public static class WorkAreaPositionRater implements PositionRater {
 		private static final int BLOCKS_WORK_AREA_MALUS = 12;
 		private static final int NO_WORK_AREA_MALUS = 8;
+
 		private final AbstractConstructionMarkableMap constructionMap;
 		private final AiStatistics aiStatistics;
 		private final byte playerId;
 		private final AiPositions objects;
 		private final EBuildingType buildingType;
 
-		public WorkAreaPositionRater(AbstractConstructionMarkableMap constructionMap, AiStatistics aiStatistics, byte playerId, AiPositions objects,
-				EBuildingType buildingType) {
+		public WorkAreaPositionRater(AbstractConstructionMarkableMap constructionMap, AiStatistics aiStatistics, byte playerId, AiPositions objects, EBuildingType buildingType) {
 			this.constructionMap = constructionMap;
 			this.aiStatistics = aiStatistics;
 			this.playerId = playerId;
@@ -53,7 +53,7 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 				if (!aiStatistics.southIsFreeForPlayer(p, playerId)) {
 					score += NO_WORK_AREA_MALUS;
 				}
-				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p, playerId, buildingType)) {
+				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p.x, p.y, playerId, buildingType)) {
 					score += BLOCKS_WORK_AREA_MALUS;
 				}
 
@@ -61,13 +61,13 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 					return RATE_INVALID;
 				}
 
-				short workradius = buildingType.getWorkRadius();
-				ShortPoint2D nearestTreePosition = objects.getNearestPoint(p, Math.min(workradius, currentBestRating - score), null);
+				short workRadius = buildingType.getWorkRadius();
+				ShortPoint2D nearestTreePosition = objects.getNearestPoint(p, Math.min(workRadius, currentBestRating - score), null);
 				if (nearestTreePosition == null) {
 					return RATE_INVALID;
 				}
 				int treeDistance = nearestTreePosition.getOnGridDistTo(p);
-				if (treeDistance >= workradius) {
+				if (treeDistance >= workRadius) {
 					return RATE_INVALID;
 				}
 				score += treeDistance;
@@ -92,5 +92,4 @@ public abstract class BestWorkareaConstructionPositionFinder implements IBestCon
 	}
 
 	protected abstract AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId);
-
 }

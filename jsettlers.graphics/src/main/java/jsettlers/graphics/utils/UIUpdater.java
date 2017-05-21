@@ -157,7 +157,7 @@ public class UIUpdater<T> {
 	 * @return The updater.
 	 */
 	public static <T> UIUpdater<T> getUpdater(IDataProvider<T> dataProvider, Collection<? extends IUpdateReceiver<T>> receivers) {
-		return new UIUpdater<T>(dataProvider, receivers);
+		return new UIUpdater<>(dataProvider, receivers);
 	}
 
 	/**

@@ -33,8 +33,8 @@ import jsettlers.network.server.match.Player;
  */
 public class InMemoryDB implements IDBFacade {
 
-	private HashMap<String, Player> players = new HashMap<String, Player>();
-	private HashMap<String, Match> matches = new HashMap<String, Match>();
+	private HashMap<String, Player> players = new HashMap<>();
+	private HashMap<String, Match> matches = new HashMap<>();
 
 	@Override
 	public boolean isAcceptedPlayer(String id) {
@@ -70,7 +70,7 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public List<Match> getJoinableMatches() {
-		List<Match> result = new LinkedList<Match>();
+		List<Match> result = new LinkedList<>();
 
 		synchronized (matches) {
 			for (Match curr : matches.values()) {
@@ -85,7 +85,7 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public List<Match> getJoinableRunningMatches(Player player) {
-		List<Match> result = new LinkedList<Match>();
+		List<Match> result = new LinkedList<>();
 
 		synchronized (matches) {
 			for (Match curr : matches.values()) {
@@ -123,7 +123,7 @@ public class InMemoryDB implements IDBFacade {
 	@Override
 	public List<Player> getPlayers(EPlayerState... allowedStates) {
 		synchronized (players) {
-			List<Player> result = new LinkedList<Player>();
+			List<Player> result = new LinkedList<>();
 			for (Player curr : players.values()) {
 				if (EPlayerState.isOneOf(curr.getState(), allowedStates)) {
 					result.add(curr);
@@ -135,7 +135,7 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public List<Match> getMatches() {
-		List<Match> matchesList = new ArrayList<Match>();
+		List<Match> matchesList = new ArrayList<>();
 		synchronized (matches) {
 			for (Entry<String, Match> matchEntry : matches.entrySet()) {
 				matchesList.add(matchEntry.getValue());

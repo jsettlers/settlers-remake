@@ -34,7 +34,7 @@ public class StartFinishedSignalListener extends PacketChannelListener<BooleanMe
 	private final Player player;
 
 	public StartFinishedSignalListener(IServerManager serverManager, Player player) {
-		super(ENetworkKey.CHANGE_START_FINISHED, new GenericDeserializer<BooleanMessagePacket>(BooleanMessagePacket.class));
+		super(ENetworkKey.CHANGE_START_FINISHED, new GenericDeserializer<>(BooleanMessagePacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

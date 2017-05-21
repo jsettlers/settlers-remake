@@ -119,7 +119,7 @@ public class PacketSerializationTest {
 	}
 
 	private static <T extends Packet> Object d(Class<T> classType) {
-		return new GenericDeserializer<T>(classType);
+		return new GenericDeserializer<>(classType);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class PacketSerializationTest {
 	 */
 	public <T extends Packet> PacketSerializationTest(T packet, IDeserializingable<T> deserializer) {
 		this.packet = packet;
-		this.listener = new BufferingPacketListener<T>(NetworkConstants.ENetworkKey.TEST_PACKET, deserializer);
+		this.listener = new BufferingPacketListener<>(NetworkConstants.ENetworkKey.TEST_PACKET, deserializer);
 	}
 
 	@Test

@@ -58,7 +58,7 @@ public class ImageIndexFile {
 	private void load() throws IOException {
 		final DataInputStream in = new DataInputStream(new BufferedInputStream(ResourceManager.getResourcesFileStream("images/texturemap")));
 
-		ArrayList<ImageIndexTexture> textures = new ArrayList<ImageIndexTexture>();
+		ArrayList<ImageIndexTexture> textures = new ArrayList<>();
 
 		byte[] header = new byte[4];
 		in.read(header);

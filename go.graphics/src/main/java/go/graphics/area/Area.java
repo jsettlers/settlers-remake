@@ -52,9 +52,9 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	private int width;
 	private int height;
 
-	private final ArrayList<Region> regions = new ArrayList<Region>();
+	private final ArrayList<Region> regions = new ArrayList<>();
 
-	private final LinkedList<RedrawListener> redrawListeners = new LinkedList<RedrawListener>();
+	private final LinkedList<RedrawListener> redrawListeners = new LinkedList<>();
 
 	private ArrayList<PositionedRegion> regionPositions;
 
@@ -137,7 +137,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	private void recalculateRegions() {
 		int regionCount = regions.size();
-		regionPositions = new ArrayList<PositionedRegion>();
+		regionPositions = new ArrayList<>();
 
 		int top = height;
 		int bottom = 0;

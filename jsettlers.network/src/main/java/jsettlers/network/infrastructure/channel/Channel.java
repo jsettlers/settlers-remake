@@ -56,7 +56,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final ByteArrayOutputStream byteBufferOutStream = new ByteArrayOutputStream();
 	private final DataOutputStream bufferDataOutStream = new DataOutputStream(byteBufferOutStream);
 
-	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<ENetworkKey, IChannelListener>();
+	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<>();
 
 	private final PingPacketListener pingPacketListener;
 

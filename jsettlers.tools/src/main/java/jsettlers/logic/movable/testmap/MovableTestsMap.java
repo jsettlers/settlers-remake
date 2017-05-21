@@ -228,7 +228,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			}
 		}
 
-		private final LinkedList<ShortPoint2D> materials = new LinkedList<ShortPoint2D>();
+		private final LinkedList<ShortPoint2D> materials = new LinkedList<>();
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,7 +32,7 @@ import jsettlers.network.infrastructure.channel.packet.Packet;
 public class BufferingPacketListener<T extends Packet> extends PacketChannelListener<T> {
 
 	private final Object lock = new Object();
-	private List<T> packets = new LinkedList<T>();
+	private List<T> packets = new LinkedList<>();
 
 	public BufferingPacketListener(ENetworkKey key, IDeserializingable<T> deserializer) {
 		super(key, deserializer);

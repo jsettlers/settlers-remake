@@ -34,7 +34,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
  * @author michael
  */
 public class UIPanel implements UIElement {
-	private final LinkedList<ChildLink> children = new LinkedList<UIPanel.ChildLink>();
+	private final LinkedList<ChildLink> children = new LinkedList<>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
 	private ImageLink background;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,21 +14,12 @@
  *******************************************************************************/
 package jsettlers.common.menu;
 
-import java.util.Comparator;
-
 /**
  * A
  * 
  * @author Andreas Eberle
  */
 public interface IJoinableGame {
-	public static final Comparator<IJoinableGame> MATCH_NAME_COMPARATOR = new Comparator<IJoinableGame>() {
-		@Override
-		public int compare(IJoinableGame o1, IJoinableGame o2) {
-			return o1.getName().compareTo(o2.getName());
-		}
-	};
-
 	/*
 	 * TODO: Supply a list of players / how many places are still free / ... Currently not needed.
 	 */
@@ -38,5 +29,4 @@ public interface IJoinableGame {
 	String getName();
 
 	IMapDefinition getMap();
-
 }

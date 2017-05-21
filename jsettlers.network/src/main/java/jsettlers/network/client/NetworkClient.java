@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,6 @@
 package jsettlers.network.client;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Timer;
 
 import jsettlers.network.NetworkConstants;
@@ -50,8 +49,8 @@ import jsettlers.network.server.match.EPlayerState;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 /**
- * The {@link NetworkClient} class offers an interface to the servers methods. All methods of the {@link NetworkClient} class will never block. All
- * calls to the server are done by an asynchronous Thread.
+ * The {@link NetworkClient} class offers an interface to the servers methods. All methods of the {@link NetworkClient} class will never block. All calls to the server are done by an asynchronous
+ * Thread.
  * 
  * @author Andreas Eberle
  * 
@@ -78,20 +77,17 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 		this(channel, channelClosedListener, new NetworkTimer());
 	}
 
-	public NetworkClient(String serverAddress, IChannelClosedListener channelClosedListener) throws UnknownHostException, IOException {
+	public NetworkClient(String serverAddress, IChannelClosedListener channelClosedListener) throws IOException {
 		this(new AsyncChannel(serverAddress, NetworkConstants.Server.SERVER_PORT), channelClosedListener);
 	}
 
 	NetworkClient(AsyncChannel channel, final IChannelClosedListener channelClosedListener, INetworkClientClock gameClock) {
 		this.channel = channel;
-		channel.setChannelClosedListener(new IChannelClosedListener() {
-			@Override
-			public void channelClosed() {
-				close();
+		channel.setChannelClosedListener(() -> {
+			close();
 
-				if (channelClosedListener != null)
-					channelClosedListener.channelClosed();
-			}
+			if (channelClosedListener != null)
+				channelClosedListener.channelClosed();
 		});
 
 		this.timer = new Timer("NetworkClientTimer");
@@ -123,24 +119,20 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	 * @param matchInfoUpdatedListener
 	 *            This listener will receive all further updates on the match.
 	 * @param chatMessageReceiver
-	 * @param taskScheduler
-	 * @throws InvalidStateException
+	 * @throws IllegalStateException
 	 */
 	@Override
-	public void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
-			IPacketReceiver<MatchStartPacket> matchStartedListener,
-			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-					throws IllegalStateException {
+	public void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed, IPacketReceiver<MatchStartPacket> matchStartedListener,
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo,
-				randomSeed));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo, randomSeed));
 	}
 
 	@Override
 	public void joinMatch(String matchId, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-					throws IllegalStateException {
+			throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH, new IdPacket(matchId));
@@ -195,7 +187,7 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(ENetworkKey key, Class<T> classType,
 			IPacketReceiver<T> listener) {
-		return new DefaultClientPacketListener<T>(key, new GenericDeserializer<T>(classType), listener);
+		return new DefaultClientPacketListener<>(key, new GenericDeserializer<>(classType), listener);
 	}
 
 	@Override
@@ -318,5 +310,4 @@ public class NetworkClient implements ITaskScheduler, INetworkConnector, INetwor
 	public INetworkConnector getNetworkConnector() {
 		return this;
 	}
-
 }

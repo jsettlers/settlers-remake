@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -79,8 +79,7 @@ public class TaskSendingTimerTask extends TimerTask {
 		leadSteps = (int) Math.ceil(((float) minimumLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		if (rtt > NetworkConstants.RTT_LOGGING_THRESHOLD || jitter > NetworkConstants.JITTER_LOGGING_THRESHOLD) {
-			logger.info(String.format("rtt/2: %5d   jitter: %d   min lead time: %4d   lead steps: %2d",
-					rtt / 2, jitter, minimumLeadTimeMs, leadSteps));
+			logger.info(String.format("rtt/2: %5d   jitter: %d   min lead time: %4d   lead steps: %2d",					rtt / 2, jitter, minimumLeadTimeMs, leadSteps));
 		}
 	}
 
@@ -93,14 +92,11 @@ public class TaskSendingTimerTask extends TimerTask {
 			jitterMaximum = new MaximumSlotBuffer(index + 1);
 		}
 
-		return new IPingUpdateListener() {
-			@Override
-			public void pingUpdated(RoundTripTime rtt) {
-				rttMaximum.insert(index, rtt.getRtt());
-				jitterMaximum.insert(index, rtt.getAveragedJitter());
+		return rtt -> {
+			rttMaximum.insert(index, rtt.getRtt());
+			jitterMaximum.insert(index, rtt.getAveragedJitter());
 
-				TaskSendingTimerTask.this.pingUpdated(rttMaximum.getMax(), jitterMaximum.getMax());
-			}
+			TaskSendingTimerTask.this.pingUpdated(rttMaximum.getMax(), jitterMaximum.getMax());
 		};
 	}
 }

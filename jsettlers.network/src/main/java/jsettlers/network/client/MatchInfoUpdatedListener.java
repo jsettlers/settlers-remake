@@ -33,7 +33,7 @@ public class MatchInfoUpdatedListener extends PacketChannelListener<MatchInfoUpd
 	private final IPacketReceiver<MatchInfoUpdatePacket> listener;
 
 	public MatchInfoUpdatedListener(NetworkClient client, IPacketReceiver<MatchInfoUpdatePacket> listener) {
-		super(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE, new GenericDeserializer<MatchInfoUpdatePacket>(MatchInfoUpdatePacket.class));
+		super(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE, new GenericDeserializer<>(MatchInfoUpdatePacket.class));
 
 		this.client = client;
 		this.listener = listener;

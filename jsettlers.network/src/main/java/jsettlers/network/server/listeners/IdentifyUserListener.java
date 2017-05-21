@@ -38,7 +38,7 @@ public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket
 	private final IServerManager serverManager;
 
 	public IdentifyUserListener(Channel channel, IServerManager userAcceptor) {
-		super(ENetworkKey.IDENTIFY_USER, new GenericDeserializer<PlayerInfoPacket>(PlayerInfoPacket.class));
+		super(ENetworkKey.IDENTIFY_USER, new GenericDeserializer<>(PlayerInfoPacket.class));
 		this.channel = channel;
 		this.serverManager = userAcceptor;
 	}

@@ -44,7 +44,7 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 		this.slotLists = (LinkedList<ElementType>[]) new LinkedList<?>[slotTypes.length];
 
 		for (int i = 0; i < slotTypes.length; i++) {
-			slotLists[i] = new LinkedList<ElementType>();
+			slotLists[i] = new LinkedList<>();
 		}
 	}
 

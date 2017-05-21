@@ -39,7 +39,7 @@ public class StartMatchListener extends PacketChannelListener<EmptyPacket> {
 	private final Player player;
 
 	public StartMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.ENetworkKey.REQUEST_START_MATCH, new GenericDeserializer<EmptyPacket>(EmptyPacket.class));
+		super(NetworkConstants.ENetworkKey.REQUEST_START_MATCH, new GenericDeserializer<>(EmptyPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

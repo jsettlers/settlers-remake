@@ -516,7 +516,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private final static List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
-		final List<Integer> selectedIds = new LinkedList<Integer>();
+		final List<Integer> selectedIds = new LinkedList<>();
 
 		for (final ISelectable curr : iterable) {
 			if (curr instanceof IIDable) {

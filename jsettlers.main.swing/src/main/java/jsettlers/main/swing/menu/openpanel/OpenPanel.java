@@ -144,7 +144,7 @@ public class OpenPanel extends JPanel {
 			}
 		});
 
-		mapList = new JList<MapLoader>(listModelFiltered);
+		mapList = new JList<>(listModelFiltered);
 		mapList.setCellRenderer(cellRenderer);
 		mapList.addMouseListener(new MouseAdapter() {
 			@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,7 +29,7 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class BestFisherConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	EBuildingType buildingType;
+	private EBuildingType buildingType;
 
 	public BestFisherConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
@@ -37,12 +37,12 @@ public class BestFisherConstructionPositionFinder implements IBestConstructionPo
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<>();
 
 		int fishDistance = buildingType.getWorkRadius();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (aiStatistics.wasFishNearByAtGameStart(point) && constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)
-					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId, buildingType)) {
+					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point.x, point.y, playerId, buildingType)) {
 				ShortPoint2D fishPosition = aiStatistics.getNearestFishPointForPlayer(point, playerId, fishDistance);
 				if (fishPosition != null) {
 					fishDistance = point.getOnGridDistTo(fishPosition);

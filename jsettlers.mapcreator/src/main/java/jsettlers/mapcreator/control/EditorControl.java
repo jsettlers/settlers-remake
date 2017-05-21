@@ -185,12 +185,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	public EditorControl() {
 		// use heavyweight component
 		playerCombobox.setLightWeightPopupEnabled(false);
-		playerCombobox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				currentPlayer = (Integer) playerCombobox.getSelectedItem();
-			}
-		});
+		playerCombobox.addActionListener(e -> currentPlayer = (Integer) playerCombobox.getSelectedItem());
 		playerCombobox.setRenderer(new DefaultListCellRenderer() {
 			private static final long serialVersionUID = 1L;
 
@@ -579,13 +574,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			}
 		};
 		window.registerAction("play", playAction);
-		validator.addListener(new ValidationResultListener() {
-
-			@Override
-			public void validationFinished(ValidationListModel list) {
-				playAction.setEnabled(list.size() == 0);
-			}
-		});
+		validator.addListener(list -> playAction.setEnabled(list.size() == 0));
 
 		window.registerAction("show-tools", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -689,23 +678,20 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		builder.redirectErrorStream(true);
 		final Process process = builder.start();
 
-		Thread streamReader = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		Thread streamReader = new Thread(() -> {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-				while (true) {
-					String line;
-					try {
-						line = reader.readLine();
-					} catch (IOException e) {
-						break;
-					}
-					if (line == null) {
-						break;
-					}
-					System.out.println(name + " " + line);
+			while (true) {
+				String line;
+				try {
+					line = reader.readLine();
+				} catch (IOException e) {
+					break;
 				}
+				if (line == null) {
+					break;
+				}
+				System.out.println(name + " " + line);
 			}
 		}, "ExecThread " + name);
 		streamReader.setDaemon(true);
@@ -787,43 +773,31 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					undoRedo.endUseStep();
-					validator.reValidate();
-				}
+			SwingUtilities.invokeLater(() -> {
+				undoRedo.endUseStep();
+				validator.reValidate();
 			});
 		} else if (action instanceof AbortDrawingAction) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					MapDataDelta delta = mapData.getUndoDelta();
-					if (delta != null) {
-						mapData.apply(delta);
-					}
-					mapData.resetUndoDelta();
-					validator.reValidate();
+			SwingUtilities.invokeLater(() -> {
+				MapDataDelta delta = mapData.getUndoDelta();
+				if (delta != null) {
+					mapData.apply(delta);
 				}
+				mapData.resetUndoDelta();
+				validator.reValidate();
 			});
 		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
-				SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(() -> {
+					PointAction lineAction = (PointAction) action;
 
-					@Override
-					public void run() {
-						PointAction lineAction = (PointAction) action;
+					ShapeType shape = toolSidebar.getActiveShape();
 
-						ShapeType shape = toolSidebar.getActiveShape();
+					tool.start(mapData, shape, lineAction.getPosition());
+					tool.apply(mapData, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
-						tool.start(mapData, shape, lineAction.getPosition());
-						tool.apply(mapData, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
-
-						undoRedo.endUseStep();
-						validator.reValidate();
-					}
+					undoRedo.endUseStep();
+					validator.reValidate();
 				});
 			}
 

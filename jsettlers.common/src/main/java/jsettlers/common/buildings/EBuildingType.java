@@ -350,9 +350,9 @@ public enum EBuildingType {
 	 *             If the name was not found.
 	 */
 	public final IBuildingJob getJobByName(String jobname) {
-		HashSet<String> visited = new HashSet<String>();
+		HashSet<String> visited = new HashSet<>();
 
-		ConcurrentLinkedQueue<IBuildingJob> queue = new ConcurrentLinkedQueue<IBuildingJob>();
+		ConcurrentLinkedQueue<IBuildingJob> queue = new ConcurrentLinkedQueue<>();
 		queue.add(startJob);
 
 		while (!queue.isEmpty()) {

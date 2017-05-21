@@ -83,17 +83,14 @@ public class JSettlersFrame extends JFrame {
 		updateFullScreenMode();
 
 		KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		keyboardFocusManager.addKeyEventDispatcher(new KeyEventDispatcher() {
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent e) {
-				if (e.getID() == KeyEvent.KEY_PRESSED) {
-					if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-						toogleFullScreenMode();
-						return true; // consume this key event.
-					}
+		keyboardFocusManager.addKeyEventDispatcher(e -> {
+			if (e.getID() == KeyEvent.KEY_PRESSED) {
+				if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+					toogleFullScreenMode();
+					return true; // consume this key event.
 				}
-				return false;
 			}
+			return false;
 		});
 	}
 

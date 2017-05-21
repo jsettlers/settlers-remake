@@ -320,8 +320,7 @@ public class AbstractEventConverter {
 		 * @param maxDistance
 		 *            Maximum distance the cursor moved. -1: ignore
 		 */
-		public EventReplacementRule(ReplacableEvent search,
-				Replacement replaced, double maxTime, double maxDistance) {
+		public EventReplacementRule(ReplacableEvent search, Replacement replaced, double maxTime, double maxDistance) {
 			this.search = search;
 			this.replaced = replaced;
 			this.maxTime = maxTime;
@@ -329,7 +328,8 @@ public class AbstractEventConverter {
 		}
 
 		private boolean matches(ReplacableEvent e, double time, double distance) {
-			return e == search && (maxTime < 0 || time < maxTime)
+			return e == search
+					&& (maxTime < 0 || time < maxTime)
 					&& (maxDistance < 0 || distance < maxDistance);
 		}
 	}
@@ -337,11 +337,11 @@ public class AbstractEventConverter {
 	public enum ReplacableEvent {
 		DRAW,
 		PAN,
-		HOVER;
+		HOVER
 	}
 
 	public enum Replacement {
 		COMMAND_SELECT,
-		COMMAND_ACTION;
+		COMMAND_ACTION
 	}
 }

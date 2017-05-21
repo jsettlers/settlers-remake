@@ -61,7 +61,7 @@ public class JoglTest {
 	private static class TestContent implements RegionContent {
 
 		private Hashtable<Object, ArrayList<UIPoint>> draw =
-				new Hashtable<Object, ArrayList<UIPoint>>();
+				new Hashtable<>();
 		private final Region region;
 
 		private TestContent(Region region) {
@@ -105,7 +105,7 @@ public class JoglTest {
 		@Override
 		public void handleEvent(GOEvent event) {
 			event.setHandler(handler);
-			draw.put(event, new ArrayList<UIPoint>());
+			draw.put(event, new ArrayList<>());
 			handler.eventDataChanged(event);
 		}
 

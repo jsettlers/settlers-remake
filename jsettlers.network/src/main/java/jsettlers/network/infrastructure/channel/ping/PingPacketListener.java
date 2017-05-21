@@ -40,7 +40,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 	private IPingUpdateListener pingUpdateListener = null;
 
 	public PingPacketListener(Logger logger, Channel channel) {
-		super(NetworkConstants.ENetworkKey.PING, new GenericDeserializer<PingPacket>(PingPacket.class));
+		super(NetworkConstants.ENetworkKey.PING, new GenericDeserializer<>(PingPacket.class));
 		this.logger = logger;
 
 		this.channel = channel;

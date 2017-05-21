@@ -432,7 +432,7 @@ public class BuildingListEconomyMinister implements EconomyMinister {
 	}
 
 	private List<EBuildingType> prefixBuildingsToBuildWithRushDefence() {
-		List<EBuildingType> allBuildingsToBuild = new ArrayList<EBuildingType>(RUSH_DEFENCE_BUILDINGS.size() + buildingsToBuild.size());
+		List<EBuildingType> allBuildingsToBuild = new ArrayList<>(RUSH_DEFENCE_BUILDINGS.size() + buildingsToBuild.size());
 		allBuildingsToBuild.addAll(RUSH_DEFENCE_BUILDINGS);
 		allBuildingsToBuild.addAll(buildingsToBuild);
 		return allBuildingsToBuild;

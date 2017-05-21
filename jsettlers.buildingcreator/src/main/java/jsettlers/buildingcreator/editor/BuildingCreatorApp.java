@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,12 +14,6 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
-import go.graphics.swing.sound.SwingSoundPlayer;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +54,8 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader.ResourceSetupException;
+
+import java8.util.Comparators;
 
 /**
  * This is the main building creator class.
@@ -111,29 +107,10 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	private JPanel generateMenu() {
 		JPanel menu = new JPanel();
 		menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-		// menu.setPreferredSize(new Dimension(200, 100));
-		// actionList = new JPanel();
-		// actionList.setLayout(new BoxLayout(actionList, BoxLayout.Y_AXIS));
-		// menu.add(new JScrollPane(actionList));
-
 		menu.add(createToolChangeBar());
 
-		// JButton addButton = new JButton("add new action");
-		// addButton.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// addNewAction();
-		// }
-		// });
-		// menu.add(addButton);
-
 		JButton xmlButton = new JButton("show xml data");
-		xmlButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showXML();
-			}
-		});
+		xmlButton.addActionListener(e -> showXML());
 		menu.add(xmlButton);
 		positionDisplayer = new JLabel();
 		menu.add(positionDisplayer);
@@ -146,21 +123,17 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 
 	private JButton createToolChangeBar() {
 		JButton button = new JButton("Select tool...");
-		button.addActionListener(new ActionListener() {
+		button.addActionListener(e -> {
+			ToolType newTool = (ToolType) JOptionPane.showInputDialog(null, "Select building type", "Building Type",
+					JOptionPane.QUESTION_MESSAGE, null, ToolType.values(), tool);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ToolType newTool = (ToolType) JOptionPane.showInputDialog(null, "Select building type", "Building Type",
-						JOptionPane.QUESTION_MESSAGE, null, ToolType.values(), tool);
+			if (newTool != null) {
+				tool = newTool;
+			}
 
-				if (newTool != null) {
-					tool = newTool;
-				}
-
-				for (int x = 0; x < map.getWidth(); x++) {
-					for (int y = 0; y < map.getWidth(); y++) {
-						reloadColor(new ShortPoint2D(x, y));
-					}
+			for (int x = 0; x < map.getWidth(); x++) {
+				for (int y = 0; y < map.getWidth(); y++) {
+					reloadColor(new ShortPoint2D(x, y));
 				}
 			}
 		});
@@ -169,14 +142,8 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 
 	private EBuildingType askType() {
 		EBuildingType[] buildingTypes = EBuildingType.values();
-		Arrays.sort(buildingTypes, new Comparator<EBuildingType>() {
-			@Override
-			public int compare(EBuildingType o1, EBuildingType o2) {
-				return o1.name().compareTo(o2.name());
-			}
-		});
-		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
-				buildingTypes, null);
+		Arrays.sort(buildingTypes, Comparators.comparing(EBuildingType::name));
+		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null, buildingTypes, null);
 	}
 
 	public static void main(String[] args) throws ResourceSetupException, InvocationTargetException, InterruptedException {
@@ -185,12 +152,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 
 	@Override
 	public void action(final IAction action) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				doAction(action);
-			}
-		});
+		SwingUtilities.invokeLater(() -> doAction(action));
 	}
 
 	private void doAction(IAction action) {
@@ -260,18 +222,13 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 				null, new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8 }, tool);
 
 		if (material != null && buildrequired != null) {
-			definition.setConstructionStack(relative, material, buildrequired.intValue());
+			definition.setConstructionStack(relative, material, buildrequired);
 		}
 	}
 
 	private EMaterialType requestMaterialType(ToolType tool) {
 		EMaterialType[] materialTypes = EMaterialType.values();
-		Arrays.sort(materialTypes, new Comparator<EMaterialType>() {
-			@Override
-			public int compare(EMaterialType o1, EMaterialType o2) {
-				return o1.name().compareTo(o2.name());
-			}
-		});
+		Arrays.sort(materialTypes, Comparators.comparing(EMaterialType::name));
 
 		return (EMaterialType) JOptionPane.showInputDialog(null, "Select Material Type", "Material Type",
 				JOptionPane.QUESTION_MESSAGE, null, materialTypes, tool);
@@ -294,13 +251,11 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 	}
 
 	private ShortPoint2D relativeToAbsolute(RelativePoint oldDoor) {
-		ShortPoint2D oldPos = new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET, oldDoor.getDy() + BuildingtestMap.OFFSET);
-		return oldPos;
+		return new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET, oldDoor.getDy() + BuildingtestMap.OFFSET);
 	}
 
 	private RelativePoint absoluteToRelative(ShortPoint2D pos) {
-		RelativePoint tile = new RelativePoint(pos.x - BuildingtestMap.OFFSET, pos.y - BuildingtestMap.OFFSET);
-		return tile;
+		return new RelativePoint(pos.x - BuildingtestMap.OFFSET, pos.y - BuildingtestMap.OFFSET);
 	}
 
 	private void toogleUsedTile(RelativePoint relative) {
@@ -315,7 +270,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 
 	private void reloadColor(ShortPoint2D pos) {
 		PseudoTile tile = map.getTile(pos);
-		ArrayList<Color> colors = new ArrayList<Color>();
+		ArrayList<Color> colors = new ArrayList<>();
 
 		RelativePoint relative = absoluteToRelative(pos);
 		if (definition.getBlockedStatus(relative)) {
@@ -421,8 +376,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener, Runnable {
 			redsum += color.getRed();
 			greensum += color.getGreen();
 		}
-		int color = Color.getARGB(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 1);
-		return color;
+		return Color.getARGB(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 1);
 	}
 
 	private void showXML() {

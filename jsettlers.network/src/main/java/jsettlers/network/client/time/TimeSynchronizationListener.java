@@ -35,7 +35,7 @@ public class TimeSynchronizationListener extends PacketChannelListener<TimeSyncP
 	private final ISynchronizableClock clock;
 
 	public TimeSynchronizationListener(IRoundTripTimeSupplier rttSupplier, ISynchronizableClock clock) {
-		super(NetworkConstants.ENetworkKey.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
+		super(NetworkConstants.ENetworkKey.TIME_SYNC, new GenericDeserializer<>(TimeSyncPacket.class));
 		this.rttSupplier = rttSupplier;
 		this.clock = clock;
 	}

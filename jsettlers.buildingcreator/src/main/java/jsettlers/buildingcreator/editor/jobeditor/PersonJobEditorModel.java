@@ -86,7 +86,7 @@ public class PersonJobEditorModel extends AbstractTableModel {
 	public TableCellEditor getCellEditor(int row, int column) {
 		if (column == 1) {
 			List<String> allowed = bpa.getAllowedValues(keys.get(row));
-			JComboBox<String> box = new JComboBox<String>(allowed.toArray(new String[allowed.size()]));
+			JComboBox<String> box = new JComboBox<>(allowed.toArray(new String[allowed.size()]));
 			return new DefaultCellEditor(box);
 		}
 		return null;

@@ -34,7 +34,7 @@ import org.junit.Test;
 public class DoubleLinkedListTest {
 	private static final int TEST_NUMBERS = 10;
 
-	private DoubleLinkedList<DoubleLinkedIntListItem> list = new DoubleLinkedList<DoubleLinkedIntListItem>();
+	private DoubleLinkedList<DoubleLinkedIntListItem> list = new DoubleLinkedList<>();
 
 	@Test
 	public void testPushFrontAndPopFront() {
@@ -206,7 +206,7 @@ public class DoubleLinkedListTest {
 
 	@Test
 	public void testMerge() {
-		DoubleLinkedList<DoubleLinkedIntListItem> list2 = new DoubleLinkedList<DoubleLinkedIntListItem>();
+		DoubleLinkedList<DoubleLinkedIntListItem> list2 = new DoubleLinkedList<>();
 		for (int i = 0; i < TEST_NUMBERS; i++) {
 			list.pushEnd(new DoubleLinkedIntListItem(i));
 			list2.pushEnd(new DoubleLinkedIntListItem(i));

@@ -36,7 +36,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	/**
 	 * Queue
 	 */
-	private final BlockingQueue<IAction> toFire = new LinkedBlockingQueue<IAction>();
+	private final BlockingQueue<IAction> toFire = new LinkedBlockingQueue<>();
 
 	/**
 	 * Target
@@ -51,13 +51,7 @@ public class CombiningActionFirerer implements ActionFireable {
 	 */
 	public CombiningActionFirerer(ActionFireable fireTo) {
 		this.fireTo = fireTo;
-		thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				forwardActions();
-			}
-		});
+		thread = new Thread(this::forwardActions);
 		thread.setName("action firerer");
 		thread.setDaemon(true);
 		thread.start();

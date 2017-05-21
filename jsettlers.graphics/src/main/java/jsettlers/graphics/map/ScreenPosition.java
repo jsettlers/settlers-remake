@@ -57,7 +57,7 @@ public class ScreenPosition {
 	private float screenCenterX;
 	private float screenCenterY;
 
-	private final Hashtable<Object, UIPoint> panProgresses = new Hashtable<Object, UIPoint>();
+	private final Hashtable<Object, UIPoint> panProgresses = new Hashtable<>();
 
 	private final int mapWidth;
 

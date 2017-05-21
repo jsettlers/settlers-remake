@@ -59,14 +59,14 @@ public class Region implements RedrawListener {
 	private int size;
 
 	private LinkedList<RedrawListener> redrawListeners =
-			new LinkedList<RedrawListener>();
+			new LinkedList<>();
 
 	private boolean collapsed = false;
 
 	private RegionContent content = null;
 
 	private LinkedList<GOEventHandlerProvider> eventHandlers =
-			new LinkedList<GOEventHandlerProvider>();
+			new LinkedList<>();
 
 	/**
 	 * Creates a new region with a dfault size.

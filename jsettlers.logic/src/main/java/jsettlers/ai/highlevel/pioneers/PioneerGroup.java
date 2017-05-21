@@ -42,7 +42,7 @@ public class PioneerGroup {
 	}
 
 	public PioneerGroup(int targetSize) {
-		this(new ArrayList<Integer>(targetSize), targetSize);
+		this(new ArrayList<>(targetSize), targetSize);
 	}
 
 	public PioneerGroup(List<Integer> pioneerIds) {

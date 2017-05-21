@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,6 @@
 package jsettlers.network.infrastructure.channel;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.network.NetworkConstants.ENetworkKey;
@@ -29,10 +28,10 @@ import jsettlers.network.infrastructure.channel.socket.ISocket;
  * 
  */
 public class AsyncChannel extends Channel {
-	private final LinkedBlockingQueue<PacketWithKey> sendBuffer = new LinkedBlockingQueue<PacketWithKey>();
+	private final LinkedBlockingQueue<PacketWithKey> sendBuffer = new LinkedBlockingQueue<>();
 	private final Thread senderThread;
 
-	public AsyncChannel(String host, int port) throws UnknownHostException, IOException {
+	public AsyncChannel(String host, int port) throws  IOException {
 		super(host, port);
 		senderThread = createSenderThread(host + ":" + port);
 	}

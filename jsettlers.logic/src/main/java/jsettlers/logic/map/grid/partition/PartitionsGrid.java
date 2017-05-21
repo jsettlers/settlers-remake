@@ -14,7 +14,18 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import java8.util.Lists;
+import static java8.util.stream.StreamSupport.stream;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -41,17 +52,8 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Lists;
+import java8.util.Maps;
 
 /**
  * This class handles the partitions of the map.
@@ -97,12 +99,9 @@ public final class PartitionsGrid implements Serializable {
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
 			if (playerSetting.isAvailable()) {
-				if (teams.get(playerSetting.getTeamId()) == null) {
-					teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
-				}
+				Maps.computeIfAbsent(teams, playerSetting.getTeamId(), Team::new);
 				Team team = teams.get(playerSetting.getTeamId());
-				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(),
-						playerSetting.getCivilisation());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(), playerSetting.getCivilisation());
 				team.registerPlayer(this.players[playerId]);
 				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
@@ -260,8 +259,7 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	/**
-	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the
-	 * new player.
+	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the new player.
 	 * 
 	 * @param towerPosition
 	 * @param newPlayerId
@@ -325,8 +323,7 @@ public final class PartitionsGrid implements Serializable {
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
 		area.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
-		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius,
-				currTower -> currTower.playerId == tower.playerId);
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius, currTower -> currTower.playerId == tower.playerId);
 		stream(towersInRange)
 				.forEach(currTower -> area.stream()
 						.filter(currTower.e2.area::contains)
@@ -408,8 +405,7 @@ public final class PartitionsGrid implements Serializable {
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
 			short innerPartition = newPartitionsMap[i];
 
-			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos,
-					borderVisitor, true);
+			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos, borderVisitor, true);
 
 			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
@@ -426,8 +422,7 @@ public final class PartitionsGrid implements Serializable {
 			Short currPartitionId = currPartitionInfo.partitionId;
 			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
 			if (existingPartitionInfo != null) {
-				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other
-																				// player's positions
+				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other player's positions
 					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
 
 					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
@@ -469,8 +464,7 @@ public final class PartitionsGrid implements Serializable {
 		MutableInt partition2Size = new MutableInt();
 
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2,
-						partition2Size)) {
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2, partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
 				dividePartition(partition, partitionInfo1.positionOfPartition, partitionInfo2.positionOfPartition);
 			} else {
@@ -511,7 +505,8 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	private void changeTowerCounter(final byte playerId, CoordinateStream influencingArea, int delta) {
-		influencingArea.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
+		influencingArea
+				.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
 				.forEach((x, y) -> towers[x + y * width] += delta);
 	}
 
@@ -571,8 +566,8 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	/**
-	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and
-	 * shall be divided. NOTE: There will be no check if the partition is really divided!
+	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and shall be divided. NOTE: There will be no check if the
+	 * partition is really divided!
 	 * 
 	 * @param oldPartition
 	 *            The original partition that now needs to be divided.
@@ -602,8 +597,7 @@ public final class PartitionsGrid implements Serializable {
 	 * @param oldPartition
 	 *            The id of the old partition.
 	 * @param relabelStartPos
-	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be
-	 *            relabeled.
+	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be relabeled.
 	 * @param newPartition
 	 *            The id of the new partition.
 	 */

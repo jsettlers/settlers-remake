@@ -44,7 +44,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new FilteredIterator<T>(iterable.iterator(), predicate);
+		return new FilteredIterator<>(iterable.iterator(), predicate);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 	 * @return A list containing all elements of this iterator.
 	 */
 	public ArrayList<T> toList() {
-		ArrayList<T> resultList = new ArrayList<T>();
+		ArrayList<T> resultList = new ArrayList<>();
 		for (T curr : this) {
 			resultList.add(curr);
 		}

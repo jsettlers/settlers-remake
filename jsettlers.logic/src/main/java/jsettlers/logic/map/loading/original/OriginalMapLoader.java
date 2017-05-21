@@ -157,7 +157,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() {
-		return new ArrayList<ILoadableMapPlayer>(); // - ToDo
+		return new ArrayList<>(); // - ToDo
 	}
 
 	// ----------------------------//

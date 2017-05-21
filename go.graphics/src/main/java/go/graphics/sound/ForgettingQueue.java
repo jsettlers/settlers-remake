@@ -37,7 +37,7 @@ public class ForgettingQueue<T> {
 		while (current == null) {
 			this.wait();
 		}
-		Sound<T> r = new Sound<T>(current, lvolume, rvolume);
+		Sound<T> r = new Sound<>(current, lvolume, rvolume);
 		current = null;
 		return r;
 	}

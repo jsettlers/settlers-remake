@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import java8.util.Comparators;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
@@ -287,12 +288,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 	private void addOccupier(TowerOccupier towerOccupier) {
 		sortedOccupiers.add(towerOccupier);
-		Collections.sort(sortedOccupiers, new Comparator<TowerOccupier>() {
-			@Override
-			public int compare(TowerOccupier o1, TowerOccupier o2) {
-				return o1.place.getSoldierClass().ordinal - o2.place.getSoldierClass().ordinal;
-			}
-		});
+		Collections.sort(sortedOccupiers, Comparators.comparingInt(occupier -> occupier.place.getSoldierClass().ordinal));
 	}
 
 	@Override

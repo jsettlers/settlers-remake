@@ -44,11 +44,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 		final AbstractConstructionMarkableMap constructionGrid = aiStatistics.getMainGrid().getConstructionMarksGrid();
 		return aiStatistics.getLandForPlayer(playerId).getNearestPoint(towerPositions.iterator().next(), Integer.MAX_VALUE,
-				new AiPositions.AiPositionFilter() {
-					@Override
-					public boolean contains(int x, int y) {
-						return constructionGrid.canConstructAt((short) x, (short) y, buildingType, playerId);
-					}
-				});
+				(x, y) -> constructionGrid.canConstructAt((short) x, (short) y, buildingType, playerId));
 	}
 }

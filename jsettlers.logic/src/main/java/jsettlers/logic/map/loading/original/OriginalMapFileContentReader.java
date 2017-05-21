@@ -70,7 +70,7 @@ public class OriginalMapFileContentReader {
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		// - init Resource Info
-		resources = new LinkedList<MapResourceInfo>();
+		resources = new LinkedList<>();
 
 		// - init players
 		mapData.setPlayerCount(1);
