@@ -77,8 +77,6 @@ public final class ServersideTaskPacket extends Packet {
 		if (getClass() != obj.getClass())
 			return false;
 		ServersideTaskPacket other = (ServersideTaskPacket) obj;
-		if (!Arrays.equals(data, other.data))
-			return false;
-		return true;
+		return Arrays.equals(data, other.data);
 	}
 }

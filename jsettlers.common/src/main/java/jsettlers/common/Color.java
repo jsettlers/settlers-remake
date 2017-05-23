@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -84,7 +84,9 @@ public final class Color {
 	 *            An integer in the hexadecimal form: AARRGGBB
 	 */
 	public Color(int argb) {
-		this(argb, argbFieldToFloat(argb >> SHIFT_ARGB_R), argbFieldToFloat(argb >> SHIFT_ARGB_G), argbFieldToFloat(argb >> SHIFT_ARGB_B),
+		this(argb, argbFieldToFloat(argb >> SHIFT_ARGB_R),
+				argbFieldToFloat(argb >> SHIFT_ARGB_G),
+				argbFieldToFloat(argb >> SHIFT_ARGB_B),
 				argbFieldToFloat(argb >> SHIFT_ARGB_A));
 	}
 
@@ -230,11 +232,11 @@ public final class Color {
 	/**
 	 * Convert a 16 bit color to a 32 bit color
 	 * 
-	 * @param The
-	 *            16 bit color in
+	 * @param color16bit
+	 *            The 16 bit color in
 	 * @return The 32 bit color;
 	 */
-	public static final int convertTo32Bit(int color16bit) {
+	public static  int convertTo32Bit(int color16bit) {
 		// TODO: Make faster
 		float red = (float) ((color16bit >> 11) & 0x1f) / 0x1f;
 		float green = (float) ((color16bit >> 6) & 0x1f) / 0x1f;
@@ -256,11 +258,11 @@ public final class Color {
 		}
 	}
 
-	private static final int convertColorChannel6to5(int c) {
+	private static  int convertColorChannel6to5(int c) {
 		return table6to5[c];
 	}
 
-	public static final int convert565to555(int rgb565) {
+	public static  int convert565to555(int rgb565) {
 		int r5 = (rgb565 & 0xf800) >> 11;
 		int g6 = (rgb565 & 0x07e0) >> 5;
 		int b5 = rgb565 & 0x001f;
@@ -318,7 +320,8 @@ public final class Color {
 	public static Color fromShort(short s) {
 		return new Color((float) (s >> SHORT_SHIFT_RED & SHORT_FIELD_MAX) / SHORT_FIELD_MAX, (float) (s >> SHORT_SHIFT_GREEN & SHORT_FIELD_MAX)
 				/ SHORT_FIELD_MAX, (float) (s >> SHORT_SHIFT_BLUE & SHORT_FIELD_MAX)
-				/ SHORT_FIELD_MAX, s & SHORT_MASK_ALPHA);
+						/ SHORT_FIELD_MAX,
+				s & SHORT_MASK_ALPHA);
 	}
 
 	@Override

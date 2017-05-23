@@ -51,7 +51,7 @@ public interface IOccupyableBuilding extends ILocatable{
 	 */
 	void towerDefended(IBuildingOccupyableMovable soldier);
 
-	public ShortPoint2D getTowerBowmanSearchPosition(OccupierPlace place);
+	ShortPoint2D getTowerBowmanSearchPosition(OccupierPlace place);
 
 	/**
 	 * 

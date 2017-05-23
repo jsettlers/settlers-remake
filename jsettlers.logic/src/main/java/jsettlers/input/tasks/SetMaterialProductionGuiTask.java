@@ -32,7 +32,7 @@ public class SetMaterialProductionGuiTask extends SimpleGuiTask {
 	private EMaterialType materialType;
 	private ShortPoint2D position;
 
-	public SetMaterialProductionGuiTask() {};
+	public SetMaterialProductionGuiTask() {}
 
 	public SetMaterialProductionGuiTask(byte playerId, ShortPoint2D position, EMaterialType materialType, SetMaterialProductionAction
 			.EMaterialProductionType productionType, float ratio) {

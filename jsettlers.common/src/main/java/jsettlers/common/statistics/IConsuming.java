@@ -28,14 +28,14 @@ public interface IConsuming {
 	 * 
 	 * @return The type
 	 */
-	public EConsumingType getConsumingType();
+	EConsumingType getConsumingType();
 
 	/**
 	 * Gets the type of material that is consumed.
 	 * 
 	 * @return The material
 	 */
-	public EMaterialType getMaterialType();
+	EMaterialType getMaterialType();
 
 	/**
 	 * Sets the priority that should be used when deciding to which consumers the material is brought. If the priority is out of range, it is clamped
@@ -44,12 +44,12 @@ public interface IConsuming {
 	 * @param priority
 	 *            The priority to use. 0 means no goods, 1 means highest priority.
 	 */
-	public void setPriority(float priority);
+	void setPriority(float priority);
 
 	/**
 	 * Gets the priority used for us,
 	 * 
 	 * @return The priority, in range 0..1.
 	 */
-	public float getPriority();
+	float getPriority();
 }

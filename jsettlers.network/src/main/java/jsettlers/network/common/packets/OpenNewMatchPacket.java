@@ -106,8 +106,6 @@ public class OpenNewMatchPacket extends Packet {
 			return false;
 		if (maxPlayers != other.maxPlayers)
 			return false;
-		if (randomSeed != other.randomSeed)
-			return false;
-		return true;
+		return randomSeed == other.randomSeed;
 	}
 }

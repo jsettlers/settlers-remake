@@ -30,12 +30,12 @@ import go.graphics.android.AndroidGLHandle.AndroidTextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-public class AndroidContext implements GLDrawContext {
+public class AndroidDrawContext implements GLDrawContext {
 	private final Context context;
 
 	private TextureHandle lastTexture = null;
 
-	public AndroidContext(Context context) {
+	public AndroidDrawContext(Context context) {
 		this.context = context;
 	}
 

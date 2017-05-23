@@ -32,7 +32,7 @@ public final class ContentType {
 		public boolean isForSelection() {
 			// This is the empty selection content.
 			return true;
-		};
+		}
 	};
 
 	public static final AbstractContentProvider BUILD_NORMAL = new BuildingBuildContent(EBuildingsCategory.BUILDINGS_CATEGORY_NORMAL);

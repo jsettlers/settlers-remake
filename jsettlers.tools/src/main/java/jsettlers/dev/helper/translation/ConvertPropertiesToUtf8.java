@@ -52,7 +52,7 @@ public class ConvertPropertiesToUtf8 {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private static String readProperty(File file) throws FileNotFoundException, IOException {
+	private static String readProperty(File file) throws IOException {
 		StringBuilder b = new StringBuilder();
 		try (FileInputStream f = new FileInputStream(file)) {
 			boolean lastWasBackslash = false;
@@ -108,7 +108,7 @@ public class ConvertPropertiesToUtf8 {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws IOException {
 		for (File f : listProperties()) {
 			System.out.println("->" + f);
 

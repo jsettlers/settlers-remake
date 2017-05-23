@@ -36,7 +36,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
-	private final AndroidContext context;
+	private final AndroidDrawContext context;
 	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
@@ -99,7 +99,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 	};
 
-	private AndroidTextDrawer(EFontSize size, AndroidContext context) {
+	private AndroidTextDrawer(EFontSize size, AndroidDrawContext context) {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
@@ -289,7 +289,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		context.color(red, green, blue, alpha);
 	}
 
-	public static TextDrawer getInstance(EFontSize size, AndroidContext context) {
+	public static TextDrawer getInstance(EFontSize size, AndroidDrawContext context) {
 		int ordinal = size.ordinal();
 		if (instances[ordinal] == null) {
 			instances[ordinal] = new AndroidTextDrawer(size, context);

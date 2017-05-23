@@ -84,7 +84,7 @@ public final class NewConstructionMarksAlgorithm {
 					partitionId = map.getPartitionIdAt(firstPosX, firstPosY);
 
 					if (!map.canPlayerConstructOnPartition(playerId, partitionId)) {
-						continue DX_LOOP;
+						continue;
 					}
 				}
 

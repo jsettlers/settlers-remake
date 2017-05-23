@@ -101,7 +101,6 @@ public class AiStatistics {
 		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
 		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
 		this.aiMapInformation = new AiMapInformation(partitionsGrid, landscapeGrid);
-		;
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}

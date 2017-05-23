@@ -198,7 +198,7 @@ public class ConstructionMarksAlgorithmTest {
 		@Override
 		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
 			throw new UnsupportedOperationException("not mocked");
-		};
+		}
 
 		@Override
 		public byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {

@@ -206,9 +206,7 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 				return false;
 			}
 		}
-		if (size != other.size)
-			return false;
-		return true;
+		return size == other.size;
 	}
 
 	@Override

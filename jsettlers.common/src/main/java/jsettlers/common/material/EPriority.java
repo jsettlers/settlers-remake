@@ -34,7 +34,7 @@ public enum EPriority {
 	public final byte ordinal;
 	private final int priorityIndex;
 
-	private EPriority(int priorityIndex) {
+	EPriority(int priorityIndex) {
 		this.ordinal = (byte) ordinal();
 		this.priorityIndex = priorityIndex;
 	}

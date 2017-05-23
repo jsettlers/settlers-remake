@@ -78,8 +78,6 @@ public class PingPacket extends Packet {
 		PingPacket other = (PingPacket) obj;
 		if (receiverTime != other.receiverTime)
 			return false;
-		if (senderTime != other.senderTime)
-			return false;
-		return true;
+		return senderTime == other.senderTime;
 	}
 }

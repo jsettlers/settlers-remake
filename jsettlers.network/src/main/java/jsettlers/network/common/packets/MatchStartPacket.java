@@ -76,9 +76,7 @@ public class MatchStartPacket extends Packet {
 				return false;
 		} else if (!matchInfo.equals(other.matchInfo))
 			return false;
-		if (randomSeed != other.randomSeed)
-			return false;
-		return true;
+		return randomSeed == other.randomSeed;
 	}
 
 	/**

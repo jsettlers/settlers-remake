@@ -29,5 +29,5 @@ public interface ValidationResultListener {
 	 * @param list
 	 *            List with errors / results
 	 */
-	public void validationFinished(ValidationListModel list);
+	void validationFinished(ValidationListModel list);
 }

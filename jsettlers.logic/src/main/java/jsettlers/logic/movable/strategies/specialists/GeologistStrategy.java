@@ -175,7 +175,7 @@ public final class GeologistStrategy extends MovableStrategy {
 		state = EGeologistState.JOBLESS;
 	}
 
-	private static enum EGeologistState {
+	private enum EGeologistState {
 		JOBLESS,
 		GOING_TO_POS,
 		PLAYING_ACTION_1,

@@ -67,8 +67,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 		if (getClass() != obj.getClass()) { return false; }
 		MaterialRequestObject other = (MaterialRequestObject) obj;
 		if (inDelivery != other.inDelivery) { return false; }
-		if (priority != other.priority) { return false; }
-		return true;
+		return priority == other.priority;
 	}
 
 	/**

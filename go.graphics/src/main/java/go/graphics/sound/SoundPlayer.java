@@ -24,8 +24,8 @@ public interface SoundPlayer {
 	 * @param lvolume
 	 * @param rvolume
 	 */
-	public void playSound(int soundStart, float lvolume, float rvolume);
+	void playSound(int soundStart, float lvolume, float rvolume);
 
-	public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever);
+	void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever);
 
 }

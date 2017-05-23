@@ -93,9 +93,7 @@ public class SetBuildingPriorityGuiTask extends SimpleGuiTask {
 				return false;
 		} else if (!buildingPosition.equals(other.buildingPosition))
 			return false;
-		if (newPriority != other.newPriority)
-			return false;
-		return true;
+		return newPriority == other.newPriority;
 	}
 
 	@Override

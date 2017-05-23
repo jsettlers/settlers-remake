@@ -384,8 +384,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		});
 	}
 
-	;
-
 	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
 		mapNameLabel.setText(mapLoader.getMapName());

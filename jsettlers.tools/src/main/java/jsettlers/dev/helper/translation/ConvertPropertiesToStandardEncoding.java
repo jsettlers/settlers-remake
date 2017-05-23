@@ -23,7 +23,7 @@ public class ConvertPropertiesToStandardEncoding {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private static String readProperty(File file) throws FileNotFoundException, IOException {
+	private static String readProperty(File file) throws IOException {
 		byte[] encoded = Files.readAllBytes(file.toPath());
 		return new String(encoded, "utf-8");
 	}
@@ -38,7 +38,7 @@ public class ConvertPropertiesToStandardEncoding {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private static void encodeProperty(String contents, File f) throws FileNotFoundException, IOException {
+	private static void encodeProperty(String contents, File f) throws IOException {
 		try (FileOutputStream out = new FileOutputStream(f)) {
 			for (int i = 0; i < contents.length(); i++) {
 				int c = contents.charAt(i);
@@ -65,7 +65,7 @@ public class ConvertPropertiesToStandardEncoding {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws IOException {
 		for (File f : ConvertPropertiesToUtf8.listProperties()) {
 			System.out.println("->" + f);
 

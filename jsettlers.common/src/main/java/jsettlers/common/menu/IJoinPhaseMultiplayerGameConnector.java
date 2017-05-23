@@ -29,11 +29,11 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * 
 	 * @param listener
 	 */
-	public void setMultiplayerListener(IMultiplayerListener listener);
+	void setMultiplayerListener(IMultiplayerListener listener);
 
-	public void setChatListener(IChatMessageListener chatMessageListener);
+	void setChatListener(IChatMessageListener chatMessageListener);
 
-	public void sendChatMessage(String chatMessage);
+	void sendChatMessage(String chatMessage);
 
 	/* TODO: Add a method to access information about the base map */
 
@@ -42,7 +42,7 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * 
 	 * @return
 	 */
-	public ChangingList<IMultiplayerPlayer> getPlayers();
+	ChangingList<IMultiplayerPlayer> getPlayers();
 
 	/**
 	 * Sets the ready state of the current user.
@@ -60,6 +60,6 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * Called when the user exits the screen, to abort the multiplayer game. This method does not need to call the abort() method of the
 	 * {@link IMultiplayerListener}.
 	 */
-	public void abort();
+	void abort();
 
 }

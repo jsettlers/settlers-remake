@@ -825,7 +825,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private byte[] fogOfWarStatus = new byte[1];
 	private MapRectangle oldBufferPosition = new MapRectangle(0, 0, 0, 0);
-	private int bufferWidth = 1;; // in map points.
+	private int bufferWidth = 1; // in map points.
 	private int bufferHeight = 1; // in map points.
 
 	private static TextureHandle texture = null;

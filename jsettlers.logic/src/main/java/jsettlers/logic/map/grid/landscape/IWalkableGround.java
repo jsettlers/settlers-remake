@@ -25,6 +25,6 @@ public interface IWalkableGround {
 	/**
 	 * Walks on a given landscape type. Flatens it if needed.
 	 */
-	public abstract void walkOn(int x, int y);
+	void walkOn(int x, int y);
 
 }
