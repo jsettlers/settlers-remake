@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -97,8 +97,8 @@ public class PacketSerializationTest {
 						new ServersideTaskPacket("ehgdhd".getBytes()))), d(ServersideSyncTasksPacket.class) },
 
 				{ new TestTaskPacket("tesdfk��l9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
-				{ new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
-						(TaskPacket) new TestTaskPacket("dsfs��#��dsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
+				{ new SyncTasksPacket(234, Arrays.asList(new TestTaskPacket("dsfdsdf", 23, (byte) -3),
+						new TestTaskPacket("dsfs��#��dsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
 
 				{ new BooleanMessagePacket(true), d(BooleanMessagePacket.class) },
 				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**�##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },

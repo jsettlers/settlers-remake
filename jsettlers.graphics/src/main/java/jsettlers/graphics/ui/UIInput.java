@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,6 +20,7 @@ import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.utils.FocusAction;
 
@@ -76,19 +77,13 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		super.drawAt(gl);
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
 
-		float textHeight =
-				(float) drawer.getHeight(inputString.toString() + "X");
+		float textHeight = drawer.getHeight(inputString.toString() + "X");
 		float y = getPosition().getCenterY() - textHeight / 2;
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
-		float carretX =
-				(float) (x
-						+ drawer.getWidth(inputString.substring(0, carret)
-								+ "X") - drawer.getWidth("X"));
-		gl.drawLine(new float[] {
-				carretX, y, 0, carretX, y + textHeight, 0
-		}, false);
+		float carretX = x + drawer.getWidth(inputString.substring(0, carret) + "X") - drawer.getWidth("X");
+		gl.drawLine(new float[] { carretX, y, 0, carretX, y + textHeight, 0 }, false);
 	}
 
 	public String getInputString() {

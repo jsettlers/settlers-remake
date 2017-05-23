@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading;
 
-import java.io.IOException;
-
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IMapDefinition;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,17 +14,18 @@
  *******************************************************************************/
 package go.graphics.region;
 
+import static java8.util.stream.StreamSupport.stream;
+
+import java.util.LinkedList;
+
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvider;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 /**
  * This class represents a region, a part of an area.
- * 
+ *
  * @author michael
  */
 public class Region implements RedrawListener {
@@ -48,29 +49,22 @@ public class Region implements RedrawListener {
 	 * Positions the region in the center, must be last region
 	 */
 	public static final int POSITION_CENTER = 0;
-
 	/**
 	 * The default width a region has.
 	 */
 	private static final int DEFAULT_WIDTH = 20;
 
+	private final LinkedList<RedrawListener> redrawListeners = new LinkedList<>();
+	private final LinkedList<GOEventHandlerProvider> eventHandlers = new LinkedList<>();
+
 	private final int position;
-
 	private int size;
-
-	private LinkedList<RedrawListener> redrawListeners =
-			new LinkedList<>();
-
 	private boolean collapsed = false;
-
 	private RegionContent content = null;
-
-	private LinkedList<GOEventHandlerProvider> eventHandlers =
-			new LinkedList<>();
 
 	/**
 	 * Creates a new region with a dfault size.
-	 * 
+	 *
 	 * @param position
 	 *            The position it should have on the area
 	 */
@@ -80,7 +74,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Creates a new region with a given size.
-	 * 
+	 *
 	 * @param position
 	 *            The position.
 	 * @param size
@@ -93,7 +87,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Draws the region on the gl space, assuming it 0,0 is the bottom left corner.
-	 * 
+	 *
 	 * @param gl2
 	 *            The gl space
 	 * @param width
@@ -113,7 +107,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Gets the position of the region in the area.
-	 * 
+	 *
 	 * @return The position constant.
 	 */
 	public int getPosition() {
@@ -122,7 +116,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Sets the size the region should have.
-	 * 
+	 *
 	 * @param size
 	 *            The size.
 	 */
@@ -132,7 +126,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * gets the size of the region
-	 * 
+	 *
 	 * @return The size in pixel.
 	 */
 	public int getSize() {
@@ -141,7 +135,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Sets the collapsed flag of the region.
-	 * 
+	 *
 	 * @param collapsed
 	 *            If the region should be collapsed.
 	 */
@@ -151,7 +145,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Sets whether the region is collapsed.
-	 * 
+	 *
 	 * @return The collapsed flag.
 	 */
 	public boolean isCollapsed() {
@@ -160,7 +154,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Sets the content of the region.
-	 * 
+	 *
 	 * @param content
 	 *            An object providing the draw mechanism.
 	 */
@@ -170,7 +164,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Gets the content of the region
-	 * 
+	 *
 	 * @return The content that is drawn on the region.
 	 */
 	public RegionContent getContent() {
@@ -179,16 +173,17 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Adds a redraw listener to the region.
-	 * 
-	 * @param l
+	 *
+	 * @param listener
+	 *            the new RedrawListener
 	 */
-	public void addRedrawListener(RedrawListener l) {
-		redrawListeners.add(l);
+	public void addRedrawListener(RedrawListener listener) {
+		redrawListeners.add(listener);
 	}
 
 	/**
 	 * Adds an provider that can seth handlers for the venets of this region.
-	 * 
+	 *
 	 * @param p
 	 *            The handler.
 	 */
@@ -200,19 +195,16 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Fires a go event, asks the handler providers to handle it.
-	 * 
+	 *
 	 * @param event
 	 *            The event to fire.
 	 */
 	private void fireGoEvent(GOEvent event) {
 		synchronized (eventHandlers) {
-			if (content instanceof GOEventHandlerProvider) {
-				((GOEventHandlerProvider) content).handleEvent(event);
+			if (content != null) {
+				content.handleEvent(event);
 			}
-			Iterator<GOEventHandlerProvider> it = eventHandlers.iterator();
-			while (it.hasNext()) {
-				it.next().handleEvent(event);
-			}
+			stream(eventHandlers).forEach(eventHandler -> eventHandler.handleEvent(event));
 		}
 	}
 
@@ -220,7 +212,7 @@ public class Region implements RedrawListener {
 	 * Lets the region handle a event.
 	 * <p>
 	 * All listeners are asked to set themselves as handler for the event.
-	 * 
+	 *
 	 * @param event
 	 *            The event.
 	 */
@@ -230,8 +222,6 @@ public class Region implements RedrawListener {
 
 	@Override
 	public void requestRedraw() {
-		for (RedrawListener listener : redrawListeners) {
-			listener.requestRedraw();
-		}
+		stream(redrawListeners).forEach(RedrawListener::requestRedraw);
 	}
 }

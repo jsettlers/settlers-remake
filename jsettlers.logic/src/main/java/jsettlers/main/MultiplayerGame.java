@@ -41,7 +41,6 @@ import jsettlers.network.common.packets.MapInfoPacket;
 import jsettlers.network.common.packets.MatchInfoUpdatePacket;
 import jsettlers.network.common.packets.MatchStartPacket;
 import jsettlers.network.common.packets.PlayerInfoPacket;
-import jsettlers.network.infrastructure.channel.reject.RejectPacket;
 import jsettlers.network.server.match.EPlayerState;
 
 /**

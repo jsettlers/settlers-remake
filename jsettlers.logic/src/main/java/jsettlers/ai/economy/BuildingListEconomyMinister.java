@@ -26,8 +26,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static jsettlers.common.buildings.EBuildingType.*;
-import static jsettlers.common.buildings.EBuildingType.IRONMELT;
-import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 
 /**
  * This economy minister is as optimized as possible to create fast and many level 3 soldiers with high combat strength. It builds a longterm economy

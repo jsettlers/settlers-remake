@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.BitSet;
 
 import jsettlers.TestToolUtils;
-import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;

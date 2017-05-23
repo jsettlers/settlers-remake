@@ -19,7 +19,6 @@ import java.util.TimerTask;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.infrastructure.channel.ping.IPingUpdateListener;
-import jsettlers.network.infrastructure.channel.ping.RoundTripTime;
 import jsettlers.network.infrastructure.log.Logger;
 import jsettlers.network.infrastructure.utils.MaximumSlotBuffer;
 import jsettlers.network.server.match.Match;

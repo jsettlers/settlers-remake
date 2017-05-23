@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,16 +14,18 @@
  *******************************************************************************/
 package jsettlers.network.server.db.inMemory;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import jsettlers.network.server.db.IDBFacade;
 import jsettlers.network.server.match.EPlayerState;
 import jsettlers.network.server.match.Match;
 import jsettlers.network.server.match.Player;
+
+import java8.util.stream.Collectors;
 
 /**
  * This class implements an in memory database.
@@ -33,8 +35,8 @@ import jsettlers.network.server.match.Player;
  */
 public class InMemoryDB implements IDBFacade {
 
-	private HashMap<String, Player> players = new HashMap<>();
-	private HashMap<String, Match> matches = new HashMap<>();
+	private final HashMap<String, Player> players = new HashMap<>();
+	private final HashMap<String, Match> matches = new HashMap<>();
 
 	@Override
 	public boolean isAcceptedPlayer(String id) {
@@ -70,32 +72,17 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public List<Match> getJoinableMatches() {
-		List<Match> result = new LinkedList<>();
-
 		synchronized (matches) {
-			for (Match curr : matches.values()) {
-				if (curr.canJoin()) {
-					result.add(curr);
-				}
-			}
+			return stream(matches.values()).collect(Collectors.toList());
 		}
-
-		return result;
 	}
 
 	@Override
 	public List<Match> getJoinableRunningMatches(Player player) {
-		List<Match> result = new LinkedList<>();
-
 		synchronized (matches) {
-			for (Match curr : matches.values()) {
-				if (curr.isRunning() && curr.hasLeftPlayer(player.getId())) {
-					result.add(curr);
-				}
-			}
+			String playerId = player.getId();
+			return stream(matches.values()).filter(Match::isRunning).filter(match -> match.hasLeftPlayer(playerId)).collect(Collectors.toList());
 		}
-
-		return result;
 	}
 
 	@Override
@@ -123,24 +110,14 @@ public class InMemoryDB implements IDBFacade {
 	@Override
 	public List<Player> getPlayers(EPlayerState... allowedStates) {
 		synchronized (players) {
-			List<Player> result = new LinkedList<>();
-			for (Player curr : players.values()) {
-				if (EPlayerState.isOneOf(curr.getState(), allowedStates)) {
-					result.add(curr);
-				}
-			}
-			return result;
+			return stream(players.values()).filter(player -> EPlayerState.isOneOf(player.getState(), allowedStates)).collect(Collectors.toList());
 		}
 	}
 
 	@Override
 	public List<Match> getMatches() {
-		List<Match> matchesList = new ArrayList<>();
 		synchronized (matches) {
-			for (Entry<String, Match> matchEntry : matches.entrySet()) {
-				matchesList.add(matchEntry.getValue());
-			}
+			return new ArrayList<>(matches.values());
 		}
-		return matchesList;
 	}
 }

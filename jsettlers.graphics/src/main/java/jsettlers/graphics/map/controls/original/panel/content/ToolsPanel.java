@@ -151,7 +151,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		for (int r = 0; r < WEAPONS_ROWS; r++, top -= rowHeight) {
 			panel.addChild(rows[itemIdx++], marginH, top - rowHeight, 1f - marginH, top);
 		}
-		updater = UIUpdater.<RowUiData> getUpdater(this, Arrays.asList(rows));
+		updater = UIUpdater.getUpdater(this, Arrays.asList(rows));
 	}
 
 	@Override

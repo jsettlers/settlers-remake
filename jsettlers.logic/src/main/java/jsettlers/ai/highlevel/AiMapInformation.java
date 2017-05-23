@@ -119,7 +119,7 @@ public class AiMapInformation {
 		}
 		buildingCounts[EBuildingType.COALMINE.ordinal] = numberOfWeaponSmiths;
 
-		buildingCounts[EBuildingType.IRONMINE.ordinal] = (int) Math.round(numberOfWeaponSmiths / COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
+		buildingCounts[EBuildingType.IRONMINE.ordinal] = Math.round(numberOfWeaponSmiths / COAL_MINE_TO_IRONORE_MINE_RATIO + 1);
 		buildingCounts[EBuildingType.IRONMELT.ordinal] = numberOfWeaponSmiths;
 		buildingCounts[EBuildingType.WEAPONSMITH.ordinal] = numberOfWeaponSmiths;
 		buildingCounts[EBuildingType.BARRACK.ordinal] = (int) Math.ceil((double) numberOfWeaponSmiths / WEAPON_SMITH_TO_BARRACKS_RATIO);
