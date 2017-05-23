@@ -358,7 +358,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (m.getSender() >= 0) {
 				String name = getPlayername(m.getSender()) + ":";
 				Color color = context.getPlayerColor(m.getSender());
-				float width = (float) drawer.getWidth(name);
+				float width = drawer.getWidth(name);
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
@@ -456,8 +456,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawActionThreadSlow(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		String string = Labels.getString("action_firerer_slow");
-		float x = windowWidth - (float) drawer.getWidth(string) - 5;
-		float y = windowHeight - 3 * (float) drawer.getHeight(string);
+		float x = windowWidth - drawer.getWidth(string) - 5;
+		float y = windowHeight - 3 * drawer.getHeight(string);
 		drawer.drawString(x, y, string);
 	}
 

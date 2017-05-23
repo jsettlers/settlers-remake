@@ -120,7 +120,7 @@ public class PlayerDiagram extends JPanel {
 		g.drawString("Trees", 50, 45);
 
 		((Graphics2D) g).scale(1, -1);
-		((Graphics2D) g).translate(0, -IMAGE_HEIGHT);
+		g.translate(0, -IMAGE_HEIGHT);
 
 		g.setColor(Color.DARK_GRAY);
 		g.drawPolyline(polylinex, founds[1], WATCHED_DISTANCE);

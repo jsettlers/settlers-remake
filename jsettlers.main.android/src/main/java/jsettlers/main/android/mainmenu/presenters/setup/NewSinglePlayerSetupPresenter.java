@@ -28,8 +28,6 @@ import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerSlotPre
 import jsettlers.main.android.mainmenu.presenters.setup.playeritem.PlayerType;
 import jsettlers.main.android.mainmenu.views.NewSinglePlayerSetupView;
 
-import java8.util.stream.StreamSupport;
-
 import static java8.util.stream.StreamSupport.stream;
 
 /**

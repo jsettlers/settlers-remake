@@ -5,7 +5,6 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.LinkedHashMap;
 
 import org.junit.Test;
 

@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.result.fix;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 

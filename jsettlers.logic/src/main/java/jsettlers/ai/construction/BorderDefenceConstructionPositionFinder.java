@@ -15,7 +15,6 @@
 package jsettlers.ai.construction;
 
 import jsettlers.ai.highlevel.AiPositions;
-import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;

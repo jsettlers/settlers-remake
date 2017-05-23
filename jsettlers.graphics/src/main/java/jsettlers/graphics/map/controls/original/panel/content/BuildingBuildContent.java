@@ -15,7 +15,6 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -84,7 +83,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 			buttons.add(button);
 			i++;
 		}
-		updater = UIUpdater.<BuildingCountState> getUpdater(this, buttons);
+		updater = UIUpdater.getUpdater(this, buttons);
 	}
 
 	/**

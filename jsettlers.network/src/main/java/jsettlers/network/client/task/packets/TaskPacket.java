@@ -19,7 +19,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import jsettlers.network.NetworkConstants.ENetworkKey;
 import jsettlers.network.infrastructure.channel.IDeserializingable;
 import jsettlers.network.infrastructure.channel.packet.Packet;
 

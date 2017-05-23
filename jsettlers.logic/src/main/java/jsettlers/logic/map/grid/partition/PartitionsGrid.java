@@ -81,12 +81,12 @@ public final class PartitionsGrid implements Serializable {
 	final short[] partitions;
 	private final byte[] towers;
 
-	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
-
 	private final short[] blockedPartitionsForPlayers;
 
-	private transient Object partitionsWriteLock;
+	private final transient Object partitionsWriteLock = new Object();
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
+
+	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IBlockingProvider blockingProvider) {
 		this.width = width;
@@ -114,8 +114,6 @@ public final class PartitionsGrid implements Serializable {
 
 		// the no player partition (the manager won't be started)
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
-
-		initAdditionalFields();
 	}
 
 	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
@@ -143,11 +141,6 @@ public final class PartitionsGrid implements Serializable {
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		initAdditionalFields();
-	}
-
-	private void initAdditionalFields() {
-		partitionsWriteLock = new Object();
 	}
 
 	public boolean isDefaultPartition(short partitionId) {

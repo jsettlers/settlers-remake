@@ -24,7 +24,6 @@ import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
-import jsettlers.common.resources.ResourceManager;
 
 /**
  * This class provides access to all messages.

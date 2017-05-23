@@ -131,8 +131,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
 		// TODO: we may want to optimize this.
-		drawString(cx - (float) getWidth(text) / 2, cy
-				- (float) getHeight(text) / 2, text);
+		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
 	}
 
 	@Override

@@ -14,20 +14,16 @@
  *******************************************************************************/
 package jsettlers.main.swing.resources;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.logic.map.loading.list.DirectoryMapLister;
 import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
-import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
 import jsettlers.logic.map.loading.list.MapList.ListedResourceMap;
 
 public class ResourceMapLister implements IMapLister {

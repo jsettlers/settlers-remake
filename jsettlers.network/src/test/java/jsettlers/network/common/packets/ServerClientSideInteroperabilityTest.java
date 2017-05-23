@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,8 +37,8 @@ import jsettlers.network.server.packets.ServersideSyncTasksPacket;
 import jsettlers.network.server.packets.ServersideTaskPacket;
 
 /**
- * This class tests that the server can handle client side packets with it's server side representative. After the server received a packet, it must
- * also be possible to send the packet back in the form it was received, so that the client can deserialize it correctly.
+ * This class tests that the server can handle client side packets with it's server side representative. After the server received a packet, it must also be possible to send the packet back in the
+ * form it was received, so that the client can deserialize it correctly.
  * 
  * @author Andreas Eberle
  * 
@@ -63,10 +63,8 @@ public class ServerClientSideInteroperabilityTest {
 
 	@Test
 	public void testTaskPackets() throws InterruptedException {
-		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
-				TaskPacket.DEFAULT_DESERIALIZER);
-		BufferingPacketListener<ServersideTaskPacket> serverListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<>(ServersideTaskPacket.class));
+		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET, TaskPacket.DEFAULT_DESERIALIZER);
+		BufferingPacketListener<ServersideTaskPacket> serverListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET, new GenericDeserializer<>(ServersideTaskPacket.class));
 
 		c1.registerListener(clientListener);
 		c2.registerListener(serverListener);
@@ -89,17 +87,13 @@ public class ServerClientSideInteroperabilityTest {
 
 	@Test
 	public void testSnycTasksPackets() throws InterruptedException {
-		BufferingPacketListener<SyncTasksPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<>(SyncTasksPacket.class));
-		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<>(
-				ENetworkKey.TEST_PACKET,
-				new GenericDeserializer<>(ServersideSyncTasksPacket.class));
+		BufferingPacketListener<SyncTasksPacket> clientListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET, new GenericDeserializer<>(SyncTasksPacket.class));
+		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET, new GenericDeserializer<>(ServersideSyncTasksPacket.class));
 
 		c1.registerListener(clientListener);
 		c2.registerListener(serverListener);
 
-		SyncTasksPacket clientTestTask = new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
-				(TaskPacket) new TestTaskPacket("iuz)(Z(/TZ�OJ�Jdf", 987875, (byte) -5)));
+		SyncTasksPacket clientTestTask = new SyncTasksPacket(234, Arrays.asList(new TestTaskPacket("dsfdsdf", 23, (byte) -3), new TestTaskPacket("iuz)(Z(/TZ�OJ�Jdf", 987875, (byte) -5)));
 		c1.sendPacket(ENetworkKey.TEST_PACKET, clientTestTask);
 
 		Thread.sleep(10);

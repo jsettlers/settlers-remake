@@ -21,7 +21,6 @@ import java.util.Collection;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.main.replay.ReplayUtils;
 import jsettlers.main.replay.ReplayUtils.IReplayStreamProvider;
 import jsettlers.testutils.map.MapUtils;
 

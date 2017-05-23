@@ -16,7 +16,6 @@ package jsettlers.integration.replay;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -33,7 +32,6 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 import jsettlers.testutils.map.MapUtils;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;

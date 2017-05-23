@@ -57,7 +57,7 @@ public class FontDrawer implements TextDrawer {
 
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
-		drawString(cx - (float) getWidth(text) / 2, cy - (float) getHeight(text) / 2, text);
+		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
 	}
 
 	private int getCharIndex(char c) {
