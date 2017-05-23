@@ -19,7 +19,7 @@ public enum DatFileType {
 	private final String fileSuffix;
 	private final byte[] startMagic;
 
-	private DatFileType(String fileSuffix, byte[] startMagic) {
+	DatFileType(String fileSuffix, byte[] startMagic) {
 		this.fileSuffix = fileSuffix;
 		this.startMagic = startMagic;
 	}

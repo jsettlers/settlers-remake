@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 public interface IMapLister {
-	public interface IMapListerCallable {
+	interface IMapListerCallable {
 		void foundMap(IListedMap map);
 	}
 

@@ -147,7 +147,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	private static enum EPioneerState {
+	private enum EPioneerState {
 		JOBLESS,
 		GOING_TO_POS,
 		WORKING_ON_POS

@@ -28,9 +28,9 @@ public interface ILoadableMapPlayer {
 	 * 
 	 * @return
 	 */
-	public String getName();
+	String getName();
 
-	public Color getColor();
+	Color getColor();
 
-	public boolean isDead();
+	boolean isDead();
 }

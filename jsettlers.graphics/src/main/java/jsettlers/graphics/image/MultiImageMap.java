@@ -271,7 +271,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		return texture;
 	}
 
-	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
+	private synchronized void loadTexture(GLDrawContext gl) throws
 			IOException {
 		if (buffers == null) {
 			allocateBuffers();

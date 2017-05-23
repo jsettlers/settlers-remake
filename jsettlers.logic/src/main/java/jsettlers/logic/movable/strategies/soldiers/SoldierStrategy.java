@@ -36,7 +36,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	 * 
 	 * @author Andreas Eberle
 	 */
-	private static enum ESoldierState {
+	private enum ESoldierState {
 		AGGRESSIVE,
 
 		SEARCH_FOR_ENEMIES,

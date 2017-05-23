@@ -18,7 +18,7 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 
 public interface ObjectContainer {
-	public MapObject getMapObject();
+	MapObject getMapObject();
 
-	public RelativePoint[] getProtectedArea();
+	RelativePoint[] getProtectedArea();
 }

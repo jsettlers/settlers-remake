@@ -25,15 +25,15 @@ public interface IMessage {
 	/**
 	 * Number of messages that queue can hold at largest.
 	 */
-	public static final int MAX_MESSAGES = 16;
+	int MAX_MESSAGES = 16;
 	/**
 	 * Longest duration for which messages should remain in queue, in milliseconds.
 	 */
-	public static final long MESSAGE_TTL = 90000;
+	long MESSAGE_TTL = 90000;
 	/**
 	 * Map grid distance beyond which two messages should be considered sufficiently different to be prompted separately.
 	 */
-	public static final int MESSAGE_DIST_THRESHOLD = 24;
+	int MESSAGE_DIST_THRESHOLD = 24;
 
 	/**
 	 * Gets the type of this message.

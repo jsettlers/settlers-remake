@@ -477,12 +477,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Boolean checked = (Boolean) getValue(EditorFrame.CHECKBOX_VALUE);
-				if (checked != null && checked) {
-					showResourcesAlways = true;
-				} else {
-					showResourcesAlways = false;
-				}
-
+				showResourcesAlways = checked != null && checked;
 				map.setShowResources(showResourcesAlways | showResourcesBecauseOfTool);
 			}
 		});

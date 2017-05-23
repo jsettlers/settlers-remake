@@ -157,11 +157,8 @@ public class OpenPanel extends JPanel {
 		if (m.getDescription().toLowerCase().contains(search)) {
 			return true;
 		}
-		if (m.getMapId().toLowerCase().contains(search)) {
-			return true;
-		}
+		return m.getMapId().toLowerCase().contains(search);
 
-		return false;
 	}
 
 	/**

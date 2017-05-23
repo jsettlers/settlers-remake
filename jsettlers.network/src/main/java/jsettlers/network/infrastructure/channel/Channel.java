@@ -76,7 +76,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		this(new ConsoleLogger(socket.toString()), socket);
 	}
 
-	public Channel(String host, int port) throws UnknownHostException, IOException {
+	public Channel(String host, int port) throws IOException {
 		this(ISocketFactory.DEFAULT_FACTORY.generateSocket(host, port));
 	}
 

@@ -73,9 +73,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 			return true;
 		if (checkExtention(filename, MAP_EXTENSION_COMPRESSED))
 			return true;
-		if (checkExtention(filename, MAP_EXTENSION_ORIGINAL_MAP_EDITOR))
-			return true;
-		return false;
+		return checkExtention(filename, MAP_EXTENSION_ORIGINAL_MAP_EDITOR);
 	}
 
 	// - Interface: Comparable<MapLoader>

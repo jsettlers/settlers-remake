@@ -57,10 +57,7 @@ public final class MapRectangle implements IMapArea {
 		if (!containsLine(y)) {
 			return false;
 		}
-		if (x < getLineStartX(y - getMinY()) || x > getLineEndX(y - getMinY())) {
-			return false;
-		}
-		return true;
+		return !(x < getLineStartX(y - getMinY()) || x > getLineEndX(y - getMinY()));
 	}
 
 	public final boolean containsLine(int y) {

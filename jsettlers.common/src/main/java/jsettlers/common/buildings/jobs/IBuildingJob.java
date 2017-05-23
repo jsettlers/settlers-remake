@@ -63,7 +63,7 @@ public interface IBuildingJob {
 	 * @param building
 	 * @return
 	 */
-	public ShortPoint2D calculatePoint(IBuilding building);
+	ShortPoint2D calculatePoint(IBuilding building);
 
 	/**
 	 * Gets the direction associated with this job.

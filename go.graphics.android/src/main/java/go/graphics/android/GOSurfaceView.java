@@ -45,7 +45,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(getContext(), this);
 
-	private AndroidContext drawcontext;
+	private AndroidDrawContext drawcontext;
 
 	private IContextDestroyedListener contextDestroyedListener = null;
 
@@ -217,7 +217,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 	private class Renderer implements GLSurfaceView.Renderer {
 
 		private Renderer(Context aContext) {
-			drawcontext = new AndroidContext(aContext);
+			drawcontext = new AndroidDrawContext(aContext);
 		}
 
 		@Override

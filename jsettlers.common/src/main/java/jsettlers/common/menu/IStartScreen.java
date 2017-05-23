@@ -76,7 +76,7 @@ public interface IStartScreen {
 	IMultiplayerConnector getMultiplayerConnector(String serverAddr,
 			Player player);
 
-	public static final IStartScreen DEFAULT_IMPLEMENTATION = new IStartScreen() {
+	IStartScreen DEFAULT_IMPLEMENTATION = new IStartScreen() {
 
 		@Override
 		public ChangingList<IMapDefinition> getSingleplayerMaps() {

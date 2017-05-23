@@ -44,6 +44,6 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 			double add = noise.getNoise(x, y) * noiseSize;
 			return toByte((int) (sloped + add));
 		}
-	};
+	}
 
 }

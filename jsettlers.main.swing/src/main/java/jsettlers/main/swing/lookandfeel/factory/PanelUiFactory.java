@@ -59,7 +59,7 @@ public final class PanelUiFactory {
 			g.setColor(UIDefaults.HALFTRANSPARENT_BLACK);
 			int arc = 15;
 			g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), arc, arc);
-		};
+		}
 	};
 
 	/**
@@ -76,7 +76,7 @@ public final class PanelUiFactory {
 		public void paint(java.awt.Graphics g, JComponent c) {
 			g.setColor(c.getBackground());
 			g.fillRect(0, 0, c.getWidth(), c.getHeight());
-		};
+		}
 	};
 
 	/**

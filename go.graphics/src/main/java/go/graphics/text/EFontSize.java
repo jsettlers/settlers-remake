@@ -36,7 +36,7 @@ public enum EFontSize {
 
 	private final int size;
 
-	private EFontSize(int size) {
+	EFontSize(int size) {
 		this.size = size;
 	}
 

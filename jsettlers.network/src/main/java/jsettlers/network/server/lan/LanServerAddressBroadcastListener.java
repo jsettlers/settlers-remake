@@ -100,7 +100,7 @@ public final class LanServerAddressBroadcastListener extends Thread {
 		return serverAddress;
 	}
 
-	public static interface ILanServerAddressListener {
+	public interface ILanServerAddressListener {
 		void foundServerAddress();
 	}
 

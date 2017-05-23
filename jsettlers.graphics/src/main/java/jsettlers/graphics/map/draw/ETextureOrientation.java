@@ -112,7 +112,7 @@ public enum ETextureOrientation {
 	private final boolean continous;
 	private final float[] relativecoords;
 
-	private ETextureOrientation(boolean continous, float[] relativecoords) {
+	ETextureOrientation(boolean continous, float[] relativecoords) {
 		this.continous = continous;
 		this.relativecoords = relativecoords;
 	}

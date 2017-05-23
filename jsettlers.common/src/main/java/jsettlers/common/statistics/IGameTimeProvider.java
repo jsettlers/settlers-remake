@@ -21,7 +21,7 @@ package jsettlers.common.statistics;
  * 
  */
 public interface IGameTimeProvider {
-	public static final IGameTimeProvider DUMMY_IMPLEMENTATION = new IGameTimeProvider() {
+	IGameTimeProvider DUMMY_IMPLEMENTATION = new IGameTimeProvider() {
 		@Override
 		public int getGameTime() {
 			return 0;

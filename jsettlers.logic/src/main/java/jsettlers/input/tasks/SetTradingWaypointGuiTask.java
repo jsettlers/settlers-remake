@@ -81,9 +81,7 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 				return false;
 		} else if (!position.equals(other.position))
 			return false;
-		if (waypointType != other.waypointType)
-			return false;
-		return true;
+		return waypointType == other.waypointType;
 	}
 
 	@Override

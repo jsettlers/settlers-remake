@@ -82,7 +82,7 @@ public final class NetworkConstants {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public static enum ENetworkMessage {
+	public enum ENetworkMessage {
 
 		PLAYER_JOINED,
 		PLAYER_LEFT,
@@ -123,7 +123,7 @@ public final class NetworkConstants {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public static enum ENetworkKey {
+	public enum ENetworkKey {
 
 		PING,
 

@@ -94,7 +94,7 @@ public class BackgroundSound implements Runnable {
 					sound.playSound(INDEX_MOUNTAIN, MOUNTAIN_VOLUME, x, y);
 				} else for (int x1 = 0; x1 < screen.getLineLength(); x1++) {
 					if (hasRiver(x0 + x1, y)) {
-						sound.playSound(INDEX_RIVER, RIVER_VOLUME, x0 + x1, y);;
+						sound.playSound(INDEX_RIVER, RIVER_VOLUME, x0 + x1, y);
 					}
 				}
 			}

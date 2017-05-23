@@ -132,7 +132,7 @@ public final class GameServerThread extends Thread {
 	}
 
 	public boolean isLanBroadcasterAlive() {
-		return lanBroadcastThread != null ? lanBroadcastThread.isAlive() : false;
+		return lanBroadcastThread != null && lanBroadcastThread.isAlive();
 	}
 
 	public IDBFacade getDatabase() {

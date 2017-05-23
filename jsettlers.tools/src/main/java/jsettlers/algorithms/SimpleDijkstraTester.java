@@ -37,10 +37,8 @@ public class SimpleDijkstraTester {
 					return true;
 				if (x == 110 && y == 110)
 					return true;
-				if (x == 118 && y == 115)
-					return true;
+				return x == 118 && y == 115;
 
-				return false;
 			}
 
 			@Override

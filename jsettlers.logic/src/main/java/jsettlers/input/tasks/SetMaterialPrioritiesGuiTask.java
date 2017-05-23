@@ -113,8 +113,6 @@ public class SetMaterialPrioritiesGuiTask extends SimpleGuiTask {
 				return false;
 		} else if (!managerPosition.equals(other.managerPosition))
 			return false;
-		if (!Arrays.equals(materialTypeForPriority, other.materialTypeForPriority))
-			return false;
-		return true;
+		return Arrays.equals(materialTypeForPriority, other.materialTypeForPriority);
 	}
 }

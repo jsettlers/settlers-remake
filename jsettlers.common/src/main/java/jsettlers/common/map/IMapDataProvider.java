@@ -21,5 +21,5 @@ package jsettlers.common.map;
  *
  */
 public interface IMapDataProvider {
-	public IMapData getData() throws MapLoadException;
+	IMapData getData() throws MapLoadException;
 }
