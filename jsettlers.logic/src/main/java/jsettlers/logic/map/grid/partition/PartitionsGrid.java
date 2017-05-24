@@ -82,11 +82,9 @@ public final class PartitionsGrid implements Serializable {
 	private final byte[] towers;
 
 	private final short[] blockedPartitionsForPlayers;
-
-	private final transient Object partitionsWriteLock = new Object();
-	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
-
 	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
+
+	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
 	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IBlockingProvider blockingProvider) {
 		this.width = width;
@@ -623,7 +621,7 @@ public final class PartitionsGrid implements Serializable {
 		Partition newPartitionObject = partitionObjects[newPartition];
 
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			partitions[idx] = newPartition;
 		}
 
@@ -644,7 +642,7 @@ public final class PartitionsGrid implements Serializable {
 			int length = partitionObjects.length;
 
 			if (newPartitionId >= length) {
-				synchronized (partitionsWriteLock) {
+				synchronized (this) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
 
@@ -709,7 +707,7 @@ public final class PartitionsGrid implements Serializable {
 
 		// normalize the partitions
 		for (int y = 0; y < height; y++) {
-			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+			synchronized (this) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
 				for (int x = 0; x < width; x++) {
 					int idx = x + y * width;
 					this.partitions[idx] = this.partitionObjects[this.partitions[idx]].partitionId;
@@ -718,7 +716,7 @@ public final class PartitionsGrid implements Serializable {
 		}
 
 		// clear the partition objects
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			for (int i = 1; i < maxPartitions; i++) {
 				if (stoppedManagers.get(i)) {
 					this.partitionObjects[i] = null;
