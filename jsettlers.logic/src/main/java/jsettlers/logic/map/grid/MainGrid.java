@@ -14,6 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
@@ -102,21 +110,13 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -1424,6 +1424,22 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void setDock(ShortPoint2D[] position, boolean place, byte playerId) {
+			if (place) { // place dock
+				for (ShortPoint2D point : position) {
+					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, null);
+					flagsGrid.setBlockedAndProtected(point.x, point.y, false);
+					partitionsGrid.changePlayerAt(point, playerId);
+				}
+			} else { // remove dock
+				for (ShortPoint2D point : position) {
+					mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
+					flagsGrid.setBlockedAndProtected(point.x, point.y, true);
+				}
+			}
+		}
+
+		@Override
 		public final boolean setBuilding(ShortPoint2D position, Building newBuilding) {
 			if (MainGrid.this.isInBounds(position.x, position.y)) {
 				FreeMapArea protectedArea = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
@@ -1726,6 +1742,54 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean isInBounds(ShortPoint2D position) {
 			return MainGrid.this.isInBounds(position.x, position.y);
+		}
+
+		public ShortPoint2D[] findDockPosition(ShortPoint2D position, Player owner) {
+			short x = position.x;
+			short y = position.y;
+			if (!isWaterSafe(x, y)) {
+				return null; // requested position is not in water
+			}
+			short dx = 0;
+			short dy = 0;
+			final byte[] xDeltaArray = EDirection.getXDeltaArray();
+			final byte[] yDeltaArray = EDirection.getYDeltaArray();
+			int distance;
+			int direction = 0;
+			boolean searching = true;
+			for (distance = 1; distance < 12 && searching; distance++) { // search coast
+				for (direction = 0; direction < 6; direction++) {
+					dx = (short) (xDeltaArray[direction] * distance);
+					dy = (short) (yDeltaArray[direction] * distance);
+					if (MainGrid.this.isInBounds(x + dx, y + dy) && !isWaterSafe(x + dx, y + dy)) {
+						searching = false;
+						break;
+					}
+				}
+			}
+			if (searching) {
+				return null; // no coast found
+			}
+			searching = true;
+			x += dx;
+			y += dy;
+			for (distance = 1; distance < 6 && searching; distance++) { // check water width
+				dx = (short) (xDeltaArray[direction] * distance);
+				dy = (short) (yDeltaArray[direction] * distance);
+				if (!isWaterSafe(x - dx, y - dy)) {
+					searching = false;
+				}
+			}
+			if (!searching) {
+				return null; // water width not sufficient to build ships
+			}
+			ShortPoint2D[] dockPosition = new ShortPoint2D[3];
+			for (distance = 1; distance < 4; distance++) {
+				dx = (short) (xDeltaArray[direction] * distance);
+				dy = (short) (yDeltaArray[direction] * distance);
+				dockPosition[distance - 1] = new ShortPoint2D(x - dx, y - dy);
+			}
+			return dockPosition;
 		}
 
 		@Override

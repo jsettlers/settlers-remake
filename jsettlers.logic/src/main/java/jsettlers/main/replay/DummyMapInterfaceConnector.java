@@ -67,4 +67,9 @@ class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 	@Override
 	public void fireAction(IAction action) {
 	}
+
+	@Override
+	public void playSound(int soundId, float volume) {
+
+	}
 }

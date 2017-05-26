@@ -23,6 +23,7 @@ package jsettlers.input.tasks;
 public enum EGuiAction {
 	BUILD,
 	SET_WORK_AREA,
+	SET_DOCK,
 	MOVE_TO,
 	QUICK_SAVE,
 	DESTROY_MOVABLES,

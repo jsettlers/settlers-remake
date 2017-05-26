@@ -13,8 +13,15 @@
 	</element>
 
 	<element class="SimpleActionButton" x="59" y="221" maxx="77"
-		maxy="239" id="workRadius">
+			 maxy="239" id="workRadius">
 		<action action="ASK_SET_WORK_AREA" />
+		<image type="GUI" file="3" sequence="201" />
+		<image type="GUI" file="3" sequence="201" />
+	</element>
+
+	<element class="SimpleActionButton" x="83" y="221" maxx="101"
+			 maxy="239" id="dockRadius">
+		<action action="SET_DOCK" />
 		<image type="GUI" file="3" sequence="201" />
 		<image type="GUI" file="3" sequence="201" />
 	</element>

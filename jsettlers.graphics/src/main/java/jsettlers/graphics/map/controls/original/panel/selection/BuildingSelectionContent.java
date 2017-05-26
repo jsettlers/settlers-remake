@@ -232,7 +232,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			if (step >= 0) {
 				return getActionForStep(step);
 			} else {
-				return new Action(EActionType.ASK_SET_DOCK);
+				return new Action(EActionType.SET_DOCK);
 			}
 		}
 	}
@@ -334,6 +334,13 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		if (building.getBuildingType().getWorkRadius() <= 0) {
 			layout.background.removeChild(layout.workRadius);
+			layout.background.removeChild(layout.dockRadius);
+		} else {
+			if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+				layout.background.removeChild(layout.workRadius);
+			} else {
+				layout.background.removeChild(layout.dockRadius);
+			}
 		}
 
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());

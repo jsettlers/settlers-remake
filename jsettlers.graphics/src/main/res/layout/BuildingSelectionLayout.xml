@@ -15,6 +15,12 @@
 		<image type="GUI" file="3" sequence="201" />
 	</element>
 
+	<element class="SimpleActionButton" x="83" y="221" maxx="101" maxy="239" id="dockRadius">
+		<action action="SET_DOCK" />
+		<image type="GUI" file="3" sequence="390" />
+		<image type="GUI" file="3" sequence="390" />
+	</element>
+
 	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
 		<action action="ASK_DESTROY" />
 		<image type="GUI" file="3" sequence="198" />

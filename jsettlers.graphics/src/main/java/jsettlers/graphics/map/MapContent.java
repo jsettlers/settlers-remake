@@ -934,6 +934,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
+	public void playSound(int soundId, float volume) {
+		soundmanager.playSound(soundId, volume);
+	}
+
 	@Override
 	public void fireAction(IAction action) {
 		IAction fire = controls.replaceAction(action);

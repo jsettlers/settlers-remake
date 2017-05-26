@@ -14,16 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
-import go.graphics.GLDrawContext;
-import go.graphics.area.Area;
-import go.graphics.event.GOEvent;
-import go.graphics.event.GOKeyEvent;
-import go.graphics.region.Region;
-import go.graphics.region.RegionContent;
-import go.graphics.swing.AreaContainer;
-import go.graphics.text.EFontSize;
-import go.graphics.text.TextDrawer;
-
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,6 +23,15 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
+import go.graphics.GLDrawContext;
+import go.graphics.area.Area;
+import go.graphics.event.GOEvent;
+import go.graphics.event.GOKeyEvent;
+import go.graphics.region.Region;
+import go.graphics.region.RegionContent;
+import go.graphics.swing.AreaContainer;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
@@ -208,7 +207,7 @@ public class DatFileTester {
 
 		private static final int SETTLERS = 1;
 		private static final int GUI = 2;
-		private static final int LANDSCAPE = 2;
+		private static final int LANDSCAPE = 3;
 		private int offsetY = 400;
 		private int offsetX = 200;
 		private int mode = SETTLERS;
@@ -240,8 +239,8 @@ public class DatFileTester {
 				} else if ("W".equalsIgnoreCase(keyCode)) {
 					exportAll();
 				}
-				region.requestRedraw();
 			}
+			region.requestRedraw();
 		}
 
 		@Override

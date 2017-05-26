@@ -73,7 +73,10 @@ public final class BucketQueueAStar extends AbstractAStar {
 		final short blockedAtStartPartition;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
+		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)
+				// TODO - the following line if uncommented prevents access to a dock
+				//		|| map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)
+				){
 			return null; // target can not be reached
 		} else if (sx == tx && sy == ty) {
 			return null;

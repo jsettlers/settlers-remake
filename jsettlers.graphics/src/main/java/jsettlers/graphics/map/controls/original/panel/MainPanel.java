@@ -290,17 +290,16 @@ public class MainPanel extends UIPanel {
 		EActionType type = action.getActionType();
 		switch (type) {
 		case MOVE_TO:
-		case SET_DOCK:
 		case SET_TRADING_WAYPOINT:
 		case SET_WORK_AREA:
 			if (activeContent instanceof SelectPointMessage) {
 				goBack();
 			}
 			return action;
-		case ASK_SET_DOCK:
+		case SET_DOCK:
 			goBackContent = activeContent;
 			setContent(new SelectPointMessage(
-					Labels.getString("click_set_dock")) {
+					Labels.getString("action_SET_DOCK")) {
 				@Override
 				public PointAction getSelectAction(ShortPoint2D position) {
 					return new PointAction(EActionType.SET_DOCK, position);

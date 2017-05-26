@@ -127,6 +127,7 @@ public enum EMapObjectType {
 	BUILDING_DECONSTRUCTION_SMOKE,
 	PLANT_DECORATION,
 	DESERT_DECORATION,
+	DOCK,
 
 	/**
 	 * Animated fish in the water.

@@ -14,6 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.buildings;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -55,14 +63,6 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, IScheduledTimerable,
 		IDebugable, IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
@@ -93,6 +93,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private short remainingMaterialActions = 0;
 	private List<? extends IRequestStack> stacks;
+	private ShortPoint2D workingCenter = null;
+	private ShortPoint2D[] dockPosition = null; // two points: first point is at coast and second point is working point
 
 	private transient boolean selected;
 
@@ -728,5 +730,16 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		CONSTRUCTED,
 		DESTROYED,
 		BRICKLAYERS_REQUESTED
+	}
+
+	public void setDock(ShortPoint2D[] position) {
+		if (this.type != EBuildingType.DOCKYARD) {
+			return;
+		}
+		if (this.dockPosition != null) {
+			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		}
+		this.dockPosition = position;
+		this.grid.setDock(position, true, this.getPlayerId());
 	}
 }

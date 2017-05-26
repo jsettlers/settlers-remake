@@ -358,6 +358,10 @@ public class MapObjectDrawer {
 			drawDonkey(x, y, object, color);
 			break;
 
+		case DOCK:
+			drawDock(x, y, object, color);
+			break;
+
 		case FISH_DECORATION:
 			drawDecorativeFish(x, y, color);
 			break;
@@ -422,6 +426,11 @@ public class MapObjectDrawer {
 	private void drawDonkey(int x, int y, IMapObject object, float color) {
 		int i = (getAnimationStep(x, y) / 20) % 6;
 		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 6, 17, 72 + i));
+		draw(image, x, y, getColor(object), color);
+	}
+
+	private void drawDock(int x, int y, IMapObject object, float color) {
+		Image image = imageProvider.getImage(new OriginalImageLink(EImageLinkType.SETTLER, 1, 112, 0));
 		draw(image, x, y, getColor(object), color);
 	}
 

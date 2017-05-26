@@ -268,7 +268,7 @@ public enum EBuildingType {
 
 	/**
 	 * Gets the working radius of the building. If it is 0, the building does not support a working radius.
-	 * 
+	 *
 	 * @return The radius.
 	 */
 	public final short getWorkRadius() {

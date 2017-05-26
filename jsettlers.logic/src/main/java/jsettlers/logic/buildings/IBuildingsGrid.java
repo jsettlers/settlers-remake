@@ -96,6 +96,8 @@ public interface IBuildingsGrid {
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
+	void setDock(ShortPoint2D[] position, boolean place, byte playerId);
+
 	/**
 	 * @return dijkstra algorithm to be used by buildings.
 	 */

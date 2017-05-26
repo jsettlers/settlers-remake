@@ -326,11 +326,6 @@ public enum EActionType {
 	SET_TRADING_WAYPOINT,
 
 	/**
-	 * Ask the user to set the dock position.
-	 */
-	ASK_SET_DOCK,
-
-	/**
 	 * Set the dock position.
 	 * 
 	 * @see PointAction

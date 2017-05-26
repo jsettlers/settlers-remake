@@ -14,6 +14,13 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
@@ -53,6 +60,7 @@ import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.DockGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
@@ -72,13 +80,6 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -231,8 +232,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			final PointAction moveToAction = (PointAction) action;
 
 			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
-				setBuildingWorkArea(moveToAction.getPosition());
-
+				if (((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.DOCKYARD) {
+					setDock(moveToAction.getPosition());
+				} else {
+					setBuildingWorkArea(moveToAction.getPosition());
+				}
 			} else {
 				moveTo(moveToAction.getPosition());
 			}
@@ -242,10 +246,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case SHOW_MESSAGE: {
 			break;
 		}
-
-		case SET_WORK_AREA:
-			setBuildingWorkArea(((PointAction) action).getPosition());
-			break;
 
 		case DESTROY:
 			destroySelected();
@@ -409,6 +409,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				setSelection(new SelectionSet(next));
 			} else if (first != null) {
 				setSelection(new SelectionSet(first));
+			}
+		}
+	}
+
+	private void setDock(ShortPoint2D setDockPosition) {
+		final ISelectable selected = currentSelection.getSingle();
+		if (selected instanceof Building) {
+			ShortPoint2D[] dockPosition = grid.findDockPosition(setDockPosition, ((Building) selected).getPlayer());
+			if (dockPosition == null) {
+				connector.playSound(116, 1); // this dock position is not accepted
+			} else {
+				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, ((Building) selected).getPos()));
+				((Building) selected).setDock(dockPosition);
 			}
 		}
 	}
