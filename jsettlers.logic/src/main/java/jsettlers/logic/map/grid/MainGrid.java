@@ -1636,8 +1636,9 @@ public final class MainGrid implements Serializable {
 				float circleRadius = radius * circle / (float) numCircles;
 				float mapObjectProgress = (circle - 1) / (float) (numCircles - 1);
 
-				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius).forEach(
-						(x, y) -> addOrRemoveMarkObject(buildingPartition, draw, new ShortPoint2D(x, y), mapObjectProgress));
+				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius)
+						.filterBounds(width, height)
+						.forEach((x, y) -> addOrRemoveMarkObject(buildingPartition, draw, x, y, mapObjectProgress));
 			}
 		}
 
@@ -1665,14 +1666,14 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, ShortPoint2D pos, float progress) {
+		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, int x, int y, float progress) {
 			if (draw) {
 				// Only place an object if the position is the same as the one of the building.
-				if (partitionsGrid.getPartitionIdAt(pos.x, pos.y) == buildingPartition) {
-					mapObjectsManager.addBuildingWorkAreaObject(pos.x, pos.y, progress);
+				if (partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) {
+					mapObjectsManager.addBuildingWorkAreaObject(x, y, progress);
 				}
 			} else {
-				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
+				mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
 			}
 		}
 
