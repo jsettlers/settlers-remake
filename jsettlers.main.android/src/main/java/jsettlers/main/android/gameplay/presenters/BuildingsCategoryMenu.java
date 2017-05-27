@@ -15,41 +15,72 @@
 
 package jsettlers.main.android.gameplay.presenters;
 
+import android.util.Log;
+
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.PositionChangedListener;
+import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 
 /**
  * Created by tompr on 22/11/2016.
  */
-public class BuildingsCategoryMenu {
+public class BuildingsCategoryMenu implements PositionChangedListener {
 	private final BuildingsCategoryView view;
-	private final ActionFireable actionFireable;
+	private final ActionControls actionControls;
+	private final PositionControls positionControls;
 	private final MenuNavigator menuNavigator;
 	private final EBuildingsCategory buildingsCategory;
 
-	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionFireable actionFireable, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
+	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionControls actionControls, PositionControls positionControls, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
 		this.view = view;
-		this.actionFireable = actionFireable;
+		this.actionControls = actionControls;
+		this.positionControls = positionControls;
 		this.menuNavigator = menuNavigator;
 		this.buildingsCategory = buildingsCategory;
 	}
 
 	public void start() {
+		positionControls.addPositionChangedListener(this);
 		view.setBuildings(getBuildingTypes());
+	}
+
+	public void finish() {
+		positionControls.removePositionChangedListener(this);
 	}
 
 	public void buildingSelected(EBuildingType buildingType) {
 		Action action = new ShowConstructionMarksAction(buildingType);
-		actionFireable.fireAction(action);
+		actionControls.fireAction(action);
 		menuNavigator.dismissMenu();
 	}
+
+	/**
+	 * DrawListener implementation
+	 */
+	@Override
+	public void positionChanged() {
+		if (positionControls.isInPlayerPartition()) {
+			IPartitionData partitionData = positionControls.getCurrentPartitionData();
+			int underconst = partitionData.getBuildingCounts().buildingsInPartitionUnderConstruction(EBuildingType.FORESTER);
+			int built = partitionData.getBuildingCounts().buildingsInPartiton(EBuildingType.FORESTER);
+
+			Log.d("Settlers", "construction = " + underconst + " -------- built = " + built);
+		} else {
+
+			Log.d("Settlers", "not in player partition");
+		}
+	}
+
+
 
 	private List<EBuildingType> getBuildingTypes() {
 		return buildingsCategory.buildingTypes;

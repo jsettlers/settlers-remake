@@ -53,6 +53,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 		public boolean isInPlayerPartition() {
 			// TODO: Check current player
+			// Tom-Pratt: I added getPlayerId to IInGamePlayer which may help here
 			return grid != null && grid.getPlayerIdAt(pos.x, pos.y) >= 0;
 		}
 	}

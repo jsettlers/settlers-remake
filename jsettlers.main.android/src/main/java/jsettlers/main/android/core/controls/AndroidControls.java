@@ -142,6 +142,11 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
+		ShortPoint2D displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
+				+ screenArea.getLineLength() / 2, screenArea
+				.getLineY(screenArea.getLines() / 2));
+
+		controlsAdapter.onPositionChanged(screenArea, displayCenter);
 	}
 
 	@Override

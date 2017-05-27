@@ -63,6 +63,12 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 		buildingsMenu.start();
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		buildingsMenu.finish();
+	}
+
 	/**
 	 * BuildingsCategoryView implementation
 	 */
