@@ -18,6 +18,7 @@ package jsettlers.main.android.mainmenu.ui.fragments.picker;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Semaphore;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -139,8 +140,9 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 	/**
 	 * RecyclerView Adapter for displaying list of maps
 	 */
-	private class MapAdapter extends RecyclerView.Adapter<MapHolder> {
+	private class MapAdapter extends RecyclerView.Adapter<MapAdapter.MapHolder> {
 		private List<? extends MapLoader> maps;
+		private final Semaphore limitImageLoadingSemaphore = new Semaphore(3, true);
 
 		private View.OnClickListener itemClickListener = new View.OnClickListener() {
 			@Override
@@ -181,55 +183,55 @@ public abstract class MapPickerFragment extends Fragment implements MapPickerVie
 			this.maps = maps;
 			notifyDataSetChanged();
 		}
-	}
 
-	private class MapHolder extends RecyclerView.ViewHolder {
-		final TextView nameTextView;
-		final TextView dateTextView;
-		final TextView playerCountTextView;
-		final ImageView mapPreviewImageView;
+		class MapHolder extends RecyclerView.ViewHolder {
+			final TextView nameTextView;
+			final TextView dateTextView;
+			final TextView playerCountTextView;
+			final ImageView mapPreviewImageView;
 
-		Disposable subscription;
+			Disposable subscription;
 
-		public MapHolder(View itemView) {
-			super(itemView);
-			nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
-			dateTextView = (TextView) itemView.findViewById(R.id.text_view_date);
-			playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
-			mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
+			public MapHolder(View itemView) {
+				super(itemView);
+				nameTextView = (TextView) itemView.findViewById(R.id.text_view_name);
+				dateTextView = (TextView) itemView.findViewById(R.id.text_view_date);
+				playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
+				mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
 
-			if (showMapDates()) {
-				dateTextView.setVisibility(View.VISIBLE);
-			}
-		}
-
-		public void bind(IMapDefinition mapDefinition) {
-			mapPreviewImageView.setImageDrawable(null);
-			nameTextView.setText(mapDefinition.getMapName());
-			playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
-
-			if (showMapDates()) {
-				dateTextView.setText(dateFormat.format(mapDefinition.getCreationDate()));
+				if (showMapDates()) {
+					dateTextView.setVisibility(View.VISIBLE);
+				}
 			}
 
-			if (subscription != null) {
-				subscription.dispose();
+			public void bind(IMapDefinition mapDefinition) {
+				mapPreviewImageView.setImageDrawable(null);
+				nameTextView.setText(mapDefinition.getMapName());
+				playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
+
+				if (showMapDates()) {
+					dateTextView.setText(dateFormat.format(mapDefinition.getCreationDate()));
+				}
+
+				if (subscription != null) {
+					subscription.dispose();
+				}
+
+				subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage(), limitImageLoadingSemaphore)
+						.subscribeOn(Schedulers.io())
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribeWith(new DisposableSingleObserver<Bitmap>() {
+							@Override
+							public void onSuccess(Bitmap bitmap) {
+								mapPreviewImageView.setImageBitmap(bitmap);
+							}
+
+							@Override
+							public void onError(Throwable e) {
+								mapPreviewImageView.setImageDrawable(null);
+							}
+						});
 			}
-
-			subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage())
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeWith(new DisposableSingleObserver<Bitmap>() {
-						@Override
-						public void onSuccess(Bitmap bitmap) {
-							mapPreviewImageView.setImageBitmap(bitmap);
-						}
-
-						@Override
-						public void onError(Throwable e) {
-							mapPreviewImageView.setImageDrawable(null);
-						}
-					});
 		}
 	}
 }
