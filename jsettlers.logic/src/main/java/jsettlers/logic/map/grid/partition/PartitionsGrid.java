@@ -287,16 +287,20 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
-		int idx = position.x + position.y * width;
+		changePlayerAt(position.x, position.y, playerId);
+	}
+
+	public void changePlayerAt(int x, int y, byte playerId) {
+		int idx = x + y * width;
 		if (towers[idx] <= 0) {
 			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(position.x, position.y, newPartition);
-			notifyPlayerChangedListener(position.x, position.y, playerId);
+			changePartitionUncheckedAt(x, y, newPartition);
+			notifyPlayerChangedListener(x, y, playerId);
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.VALUES) {
-				borderVisitor.visit(position.x, position.y, currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+				borderVisitor.visit(x, y, currDir.gridDeltaX + x, currDir.gridDeltaY + y);
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
