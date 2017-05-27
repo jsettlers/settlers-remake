@@ -509,6 +509,9 @@ public class MapObjectDrawer {
 		case SMITH:
 			sound.playSound(6, 1, position);
 			break;
+		case DOCKWORKER:
+			sound.playSound(20, 1, position);
+			break;
 		case FARMER:
 			sound.playSound(12, 1, position);
 			break;

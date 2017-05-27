@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -153,11 +154,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			takeAction();
 			break;
 
+		case TAKE_REQUESTED:
+			takeRequestedAction();
+			break;
+
 		case DROP:
 			dropAction(currentJob.getMaterial());
 			break;
 		case DROP_POPPED:
 			dropAction(poppedMaterial);
+			break;
+
+		case REQUEST:
+			requestAction();
 			break;
 
 		case PRE_SEARCH:
@@ -175,6 +184,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		case LOOK_AT_SEARCHED:
 			lookAtSearched();
 			break;
+
+		case GO_TO_DOCK:
+			gotoDockAction();
+			break;
+
 		case LOOK_AT:
 			super.lookInDirection(currentJob.getDirection());
 			jobFinished();
@@ -264,6 +278,41 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		return currentJob == null;
 	}
 
+	private void requestAction() {
+		boolean pathFound = false;
+		if (building.getBuildingType() == EBuildingType.DOCKYARD && building.getDock() != null) {
+
+			// TODO - check ship orders
+			if (building.getOrderedMaterial() == null) {
+				EMaterialType[] order = new EMaterialType[4];
+				order[0] = EMaterialType.PLANK;
+				order[1] = EMaterialType.PLANK;
+				order[2] = EMaterialType.PLANK;
+				order[3] = EMaterialType.IRON;
+				building.setOrder(order);
+			}
+			ShortPoint2D stackPosition = building.whereIsMaterialAvailable(building.getOrderedMaterial());
+			if (stackPosition != null) pathFound = super.setPathTo(stackPosition);
+		}
+		if (pathFound) {
+			jobFinished();
+		} else {
+			jobFailed();
+		}
+	}
+
+	private void gotoDockAction() {
+		if (!done) {
+			this.done = true;
+			if (!super.goToPos(building.getDock()[2])) {
+				jobFailed();
+			}
+		} else {
+			building.reduceOrder();
+			jobFinished(); // start next action
+		}
+	}
+
 	private void followPreSearchedAction() {
 		ShortPoint2D pathTargetPos = super.followPresearchedPath();
 		mark(pathTargetPos);
@@ -326,6 +375,14 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void takeAction() {
 		if (super.take(currentJob.getMaterial(), currentJob.isTakeMaterialFromMap())) {
+			jobFinished();
+		} else {
+			jobFailed();
+		}
+	}
+
+	private void takeRequestedAction() {
+		if (super.take(building.getOrderedMaterial(), currentJob.isTakeMaterialFromMap())) {
 			jobFinished();
 		} else {
 			jobFailed();

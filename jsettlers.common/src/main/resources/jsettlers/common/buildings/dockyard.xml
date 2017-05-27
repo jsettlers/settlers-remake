@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd" >
-<building worker="" workradius="15">
+<building worker="DOCKWORKER">
     <ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
@@ -84,5 +84,32 @@
 	<image file="14" for="GUI" type="GUI" sequence="108" image="0" />
 	<image file="13" type="SETTLER" for="FINAL" image="0" sequence="44" />
 	<image file="13" type="SETTLER" for="BUILD" image="1" sequence="44" />
- 
+
+	<startjob name="gohome"/>
+
+	<!-- go home -->
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="3" dy="2"/>
+	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome"/>
+	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
+
+	<!-- wait some time -->
+	<job name="wait_at_home" 	type="WAIT" 			successjob="check" 			failjob="wait_at_home" 	time="3.0"/>
+	<job name="check"		 	type="REQUEST"			successjob="show" 			failjob="wait_at_home"/>
+
+	<!-- show and take the requested material to the dock -->
+	<job name="show" 			type="SHOW" 			successjob="go_to_material"	failjob="hide"			dx="3" dy="2"/>
+	<job name="go_to_material"	type="FOLLOW_SEARCHED"	successjob="take"			failjob="gohome"/>
+	<job name="take"		 	type="TAKE_REQUESTED" 	successjob="go_to_ship" 	failjob="gohome"/>
+	<job name="go_to_ship"		type="GO_TO_DOCK"		successjob="at_dock"		failjob="drop"/>
+	<job name="drop"			type="DROP"				successjob="gohome"			failjob="gohome"/>
+
+	<!-- build the ship -->
+	<job name="at_dock"			type="SET_MATERIAL"		successjob="hammer1"		failjob="gohome"		material="NO_MATERIAL"/>
+	<job name="hammer1" 		type="PLAY_ACTION1" 	successjob="hammer2" 		failjob="gohome" 		time="0.75"/>
+	<job name="hammer2" 		type="PLAY_ACTION1" 	successjob="hammer3" 		failjob="gohome" 		time="0.75"/>
+	<job name="hammer3" 		type="PLAY_ACTION1" 	successjob="hammer4"	 	failjob="gohome" 		time="0.75"/>
+	<job name="hammer4" 		type="PLAY_ACTION1" 	successjob="hammer5" 		failjob="gohome" 		time="0.75"/>
+	<job name="hammer5" 		type="PLAY_ACTION1" 	successjob="hammer6" 		failjob="gohome" 		time="0.75"/>
+	<job name="hammer6" 		type="PLAY_ACTION1" 	successjob="gohome" 		failjob="gohome" 		time="0.75"/>
+
 </building>

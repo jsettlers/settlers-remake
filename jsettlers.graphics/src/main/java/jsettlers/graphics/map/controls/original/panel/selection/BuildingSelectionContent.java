@@ -332,15 +332,13 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			layout.priority.setPriority(supported, building.getPriority());
 		}
 
-		if (building.getBuildingType().getWorkRadius() <= 0) {
+		if (building.getBuildingType() == EBuildingType.DOCKYARD) {
 			layout.background.removeChild(layout.workRadius);
-			layout.background.removeChild(layout.dockRadius);
+		} else if (building.getBuildingType().getWorkRadius() <= 0) {
+			layout.background.removeChild(layout.workRadius);
+			layout.background.removeChild(layout.dockPosition);
 		} else {
-			if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-				layout.background.removeChild(layout.workRadius);
-			} else {
-				layout.background.removeChild(layout.dockRadius);
-			}
+			layout.background.removeChild(layout.dockPosition);
 		}
 
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());

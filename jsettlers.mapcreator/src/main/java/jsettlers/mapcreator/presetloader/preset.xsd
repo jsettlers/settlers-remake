@@ -164,6 +164,7 @@
       <xs:enumeration value="BOWMAN_L3"/>
       <xs:enumeration value="DONKEY"/>
       <xs:enumeration value="WHITEFLAGGED_DONKEY"/>
+      <xs:enumeration value="DOCKWORKER"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

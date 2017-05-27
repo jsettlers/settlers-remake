@@ -31,6 +31,7 @@ import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.player.IPlayerable;
@@ -94,7 +95,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private short remainingMaterialActions = 0;
 	private List<? extends IRequestStack> stacks;
 	private ShortPoint2D workingCenter = null;
-	private ShortPoint2D[] dockPosition = null; // two points: first point is at coast and second point is working point
+	private ShortPoint2D[] dockPosition = null; // three points: first point is at coast and third point is working point
 
 	private transient boolean selected;
 
@@ -677,6 +678,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case WEAPONSMITH:
 		case WATERWORKS:
 		case WINEGROWER:
+		case DOCKYARD:
 			return new WorkerBuilding(type, player, position, buildingsGrid);
 
 		case MILL:
@@ -696,7 +698,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new MineBuilding(type, player, position, buildingsGrid);
 
 		case FISHER:
-			return new ResourceBuilding(EBuildingType.FISHER, player, position, buildingsGrid);
+			return new ResourceBuilding(type, player, position, buildingsGrid);
 
 		case STOCK:
 			return new StockBuilding(player, position, buildingsGrid);
@@ -706,6 +708,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case MARKET_PLACE:
 			return new MarketBuilding(type, player, position, buildingsGrid);
+
 		case HARBOR:
 			return new TradingBuilding(type, player, position, buildingsGrid, true);
 
@@ -714,7 +717,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case HOSPITAL:
 		case LOOKOUT_TOWER:
-		case DOCKYARD:
 			return new DefaultBuilding(type, player, position, buildingsGrid);
 
 		default:
@@ -741,5 +743,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 		this.dockPosition = position;
 		this.grid.setDock(position, true, this.getPlayerId());
+	}
+
+	public ShortPoint2D[] getDock() {
+		return this.dockPosition;
+	}
+
+	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
+		for (IRequestStack stack : getStacks()) {
+			if (stack.getMaterialType() == material) {
+				if (stack.hasMaterial()) {
+					return stack.getPos();
+				}
+			}
+		}
+		return null;
 	}
 }

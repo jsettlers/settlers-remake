@@ -14,6 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -21,7 +26,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -31,15 +35,11 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.strategies.FleeStrategy;
 import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Central Movable class of JSettlers.
@@ -688,6 +688,15 @@ public final class Movable implements ILogicMovable {
 		}
 
 		return path != null;
+	}
+
+	final boolean setPathTo(ShortPoint2D destination) {
+		this.path = grid.calculatePathTo(this, destination);
+		if (this.path == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	final ShortPoint2D followPresearchedPath() {

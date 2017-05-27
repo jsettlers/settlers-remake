@@ -15,7 +15,7 @@
 		<image type="GUI" file="3" sequence="201" />
 	</element>
 
-	<element class="SimpleActionButton" x="83" y="221" maxx="101" maxy="239" id="dockRadius">
+	<element class="SimpleActionButton" x="83" y="221" maxx="101" maxy="239" id="dockPosition">
 		<action action="SET_DOCK" />
 		<image type="GUI" file="3" sequence="390" />
 		<image type="GUI" file="3" sequence="390" />

@@ -87,6 +87,15 @@ public enum EBuildingJobType {
 	TAKE,
 
 	/**
+	 * Picks up the requested material.
+	 * <p>
+	 * Success: There was a material at that position, one item was removed.
+	 * <p>
+	 * Fail: There was no given material at that position.
+	 */
+	TAKE_REQUESTED,
+
+	/**
 	 * Lets the settler drop the given material to the stack at the position.
 	 * <p>
 	 * The given material that is dropped is independent from the material the settler is having, and the material property is not changed by this
@@ -99,6 +108,16 @@ public enum EBuildingJobType {
 	 * Fail: If the drop is impossible, e.g. because there is already material at that position.
 	 */
 	DROP,
+
+	/**
+	 * Checks what material is needed for the current job and whether it is available.
+	 * <p>
+	 * Success: A path to the requested material has been found.
+	 * <p>
+	 * Fail: no job or no material available or no path to the material.
+	 * <p>
+	 */
+	REQUEST,
 
 	/**
 	 * Searches a given search type. The search center is given by the working center of the building.
@@ -114,7 +133,7 @@ public enum EBuildingJobType {
 	 * Fail: If the searched thing was not found.
 	 * <p>
 	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
-	 * 
+	 *
 	 * @see ESearchType
 	 * @see EBuildingType#getWorkRadius()
 	 */
@@ -139,7 +158,8 @@ public enum EBuildingJobType {
 	PRE_SEARCH_IN_AREA,
 
 	/**
-	 * Follows the pre-calculated path that has been searched with {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA}
+	 * Follows the pre-calculated path that has been searched with
+	 * {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA} or {@link #REQUEST}
 	 */
 	FOLLOW_SEARCHED,
 
@@ -151,6 +171,15 @@ public enum EBuildingJobType {
 	 * Fail: The position is unreachable.
 	 */
 	GO_TO,
+
+	/**
+	 * Goes to the dock.
+	 * <p>
+	 * Success: The settler is at the position
+	 * <p>
+	 * Fail: The position is unreachable.
+	 */
+	GO_TO_DOCK,
 
 	/**
 	 * Look at

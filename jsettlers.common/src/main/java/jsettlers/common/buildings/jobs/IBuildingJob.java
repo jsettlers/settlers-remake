@@ -75,9 +75,9 @@ public interface IBuildingJob {
 
 	/**
 	 * Gets the material for this job.
-	 * 
+	 *
 	 * @see EBuildingJobType
-	 * @return The direction or null if it is not provided by this type.
+	 * @return the material for this job.
 	 */
 	EMaterialType getMaterial();
 

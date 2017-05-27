@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -49,10 +53,6 @@ import jsettlers.logic.map.grid.partition.manager.objects.WorkerRequest;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.

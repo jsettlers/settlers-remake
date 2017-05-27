@@ -33,7 +33,7 @@ public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
 
 	private final float time;
 
-	private final EMaterialType material;
+	private EMaterialType material;
 	private final EDirection direction;
 	private final EBuildingJobType type;
 	private final ESearchType search;
@@ -87,7 +87,7 @@ public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
 
 	@Override
 	public EMaterialType getMaterial() {
-		return material;
+		return this.material;
 	}
 
 	@Override

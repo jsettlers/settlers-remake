@@ -186,6 +186,7 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 
 	private int calculateGenericWorkersCount(ISettlerInformation settlerInformation) {
 		return settlerInformation.getMovableCount(EMovableType.PIG_FARMER)
+				+ settlerInformation.getMovableCount(EMovableType.DOCKWORKER)
 				+ settlerInformation.getMovableCount(EMovableType.FARMER)
 				+ settlerInformation.getMovableCount(EMovableType.LUMBERJACK)
 				+ settlerInformation.getMovableCount(EMovableType.SAWMILLER)

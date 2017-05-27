@@ -65,4 +65,14 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	void setCannotWork(boolean cannotWork);
 
 	void addMapObjectCleanupPosition(ShortPoint2D pos, EMapObjectType objectType);
+
+	ShortPoint2D whereIsMaterialAvailable(EMaterialType material);
+
+    ShortPoint2D[] getDock();
+
+    EMaterialType getOrderedMaterial();
+
+    void setOrder(EMaterialType[] list);
+
+    void reduceOrder();
 }

@@ -46,7 +46,7 @@ import jsettlers.graphics.startscreen.SettingsManager;
  * 8 and 12: farmer <br>
  * 14: donkey <br>
  * 15: fisherman
- * 20: shipyard
+ * 20: dockyard
  * 21: healer
  * 24: geologist
  * 25: bowman

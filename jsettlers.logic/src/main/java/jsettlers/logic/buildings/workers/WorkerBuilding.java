@@ -40,6 +40,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private static final long serialVersionUID = 7050284039312172046L;
 
 	private IManageableWorker worker;
+	private EMaterialType[] order = null;
+	private int orderPointer = 0;
 
 	/**
 	 * Points where we need to clean up pigs or donkeys.
@@ -148,5 +150,24 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 		}
 		cleanupPositions.add(new Tuple<>(pos, objectType));
+	}
+
+	@Override
+	public EMaterialType getOrderedMaterial() {
+		if (this.order != null && this.orderPointer < this.order.length) {
+			return this.order[this.orderPointer];
+		}
+		return null;
+	}
+
+	@Override
+	public void setOrder(EMaterialType[] list) {
+		this.order = list;
+		this.orderPointer = 0;
+	}
+
+	@Override
+	public void reduceOrder() {
+		this.orderPointer++;
 	}
 }
