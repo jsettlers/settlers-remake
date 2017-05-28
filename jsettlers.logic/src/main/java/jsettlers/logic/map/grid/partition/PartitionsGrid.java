@@ -232,21 +232,17 @@ public final class PartitionsGrid implements Serializable {
 	 * 
 	 * @param pos
 	 *            The position of the tower.
-	 * @return
-	 */
-	public CoordinateStream removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+	  */
+	public void removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
 		if (tower == null) {
-			return CoordinateStream.EMPTY;
+			return ;
 		}
 
 		// reduce the tower counter
-		CoordinateStream towerStream = tower.area.stream();
-		changeTowerCounter(tower.playerId, towerStream, -1);
+		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
 		checkOtherTowersInArea(tower);
-
-		return towerStream;
 	}
 
 	/**

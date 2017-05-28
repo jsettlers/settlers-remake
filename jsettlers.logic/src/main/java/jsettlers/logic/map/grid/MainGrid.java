@@ -1607,8 +1607,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
-			CoordinateStream positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
-			checkAllPositionsForEnclosedBlockedAreas(positions);
+			partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
 		}
 
 		@Override
