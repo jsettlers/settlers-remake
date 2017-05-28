@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd" >
+
+<building>
+
+    <image file="14" for="GUI" type="GUI" sequence="0" image="272" />
+    <image file="36" type="SETTLER" for="FINAL" image="0" sequence="7" />
+    <image file="36" type="SETTLER" for="BUILD" image="0" sequence="4" />
+
+</building>

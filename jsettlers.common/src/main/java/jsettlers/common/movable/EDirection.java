@@ -244,6 +244,10 @@ public enum EDirection {
 		return values()[(this.ordinal() + NUMBER_OF_DIRECTIONS / 2) % NUMBER_OF_DIRECTIONS];
 	}
 
+	public EDirection rotateRight(int steps) {
+		return values()[(this.ordinal() + steps) % NUMBER_OF_DIRECTIONS];
+	}
+
 	public static byte[] getXDeltaArray() {
 		byte[] result = new byte[NUMBER_OF_DIRECTIONS];
 		for (int i = 0; i < NUMBER_OF_DIRECTIONS; i++) {

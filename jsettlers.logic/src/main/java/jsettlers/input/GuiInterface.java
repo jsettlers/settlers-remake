@@ -75,6 +75,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
@@ -416,12 +417,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setDock(ShortPoint2D setDockPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
-			ShortPoint2D[] dockPosition = grid.findDockPosition(setDockPosition, ((Building) selected).getPlayer());
+			int[] dockPosition = grid.findDockPosition(setDockPosition, ((Building) selected).getPlayer());
 			if (dockPosition == null) {
 				connector.playSound(116, 1); // this dock position is not accepted
 			} else {
 				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, ((Building) selected).getPos()));
-				((Building) selected).setDock(dockPosition);
+				((WorkerBuilding) selected).setDock(dockPosition);
 			}
 		}
 	}

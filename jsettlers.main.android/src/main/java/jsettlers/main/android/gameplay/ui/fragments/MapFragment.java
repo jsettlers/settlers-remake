@@ -352,6 +352,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 					.replace(R.id.container_menu, CarriersSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
 					.commit();
 			break;
+		case SHIPS:
+			showMenu();
+			getChildFragmentManager().beginTransaction()
+					.replace(R.id.container_menu, ShipsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
+					.commit();
+			break;
 		default:
 			Log.d("Settlers", "No selection menu for selection type " + selectionControls.getCurrentSelection().getSelectionType().name());
 			break;

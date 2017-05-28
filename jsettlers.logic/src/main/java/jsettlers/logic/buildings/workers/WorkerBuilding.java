@@ -20,6 +20,8 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.IBuildingsGrid;
@@ -28,6 +30,7 @@ import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 /**
@@ -42,6 +45,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private IManageableWorker worker;
 	private EMaterialType[] order = null;
 	private int orderPointer = 0;
+	private Movable ship = null;
+	private int[] dockPosition = null; // x, y, dx, dy
 
 	/**
 	 * Points where we need to clean up pigs or donkeys.
@@ -169,5 +174,53 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public void reduceOrder() {
 		this.orderPointer++;
+	}
+
+	@Override
+	public void buildShipAction() {
+		if (this.ship == null) {
+			ShortPoint2D position = new ShortPoint2D
+					((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
+					(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
+			this.ship = new Movable(super.grid.getMovableGrid(), EMovableType.FERRY,
+					position, super.getPlayer());
+			EDirection direction = EDirection.getDirection
+					(this.dockPosition[2], this.dockPosition[3]).rotateRight(1);
+			this.ship.setDirection(direction);
+		} else {
+			this.ship.increaseStateProgress((float) (1./24.));
+			if (this.ship.getStateProgress() >= .99) {
+				this.ship = null;
+			}
+		}
+	}
+
+	public void setDock(int[] position) {
+		if (this.type != EBuildingType.DOCKYARD) {
+			return;
+		}
+		if (this.dockPosition != null) { // replace dock, kill ship
+			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+			if (this.ship != null) {
+				this.ship.kill();
+			}
+		}
+		this.dockPosition = position;
+		this.grid.setDock(position, true, this.getPlayerId());
+	}
+
+	public int[] getDock() {
+		return this.dockPosition;
+	}
+
+	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
+		for (IRequestStack stack : getStacks()) {
+			if (stack.getMaterialType() == material) {
+				if (stack.hasMaterial()) {
+					return stack.getPos();
+				}
+			}
+		}
+		return null;
 	}
 }

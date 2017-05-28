@@ -16,10 +16,14 @@ package jsettlers.logic.movable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.path.Path;
+import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -40,6 +44,9 @@ import jsettlers.logic.movable.strategies.FleeStrategy;
 import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
+
+import static jsettlers.common.movable.EMovableType.CARGO_BOAT;
+import static jsettlers.common.movable.EMovableType.FERRY;
 
 /**
  * Central Movable class of JSettlers.
@@ -86,6 +93,17 @@ public final class Movable implements ILogicMovable {
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
+	private float constructionProgress = 0.0f;
+
+
+	// the following block of data only for ships
+	private ImageLink[] images = null;
+	private ImageLink[] buildImages = null;
+	private EMaterialType[] cargo = null;
+	private EMovableType[] passengers = null;
+	public static final Set<EMovableType> ships = EnumSet.of(
+			FERRY, CARGO_BOAT);
+
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -102,6 +120,12 @@ public final class Movable implements ILogicMovable {
 		this.id = nextID++;
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
+
+		if (isShip()) {
+			BuildingFile file = new BuildingFile(this.movableType.toString());
+			this.images = file.getImages();
+			this.buildImages = file.getBuildImages();
+		}
 
 		grid.enterPosition(position, this, true);
 	}
@@ -262,8 +286,9 @@ public final class Movable implements ILogicMovable {
 		}
 
 		if (state == EMovableState.DOING_NOTHING) { // if movable is currently doing nothing
-			strategy.action(); // let the strategy work
-
+			if (strategy != null) {
+				strategy.action(); // let the strategy work
+			}
 			if (state == EMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
 				if (visible && enableNothingToDo) {
 					return doingNothingAction();
@@ -327,8 +352,8 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
-	public ShortPoint2D getPosition() {
-		return position;
+	public ShortPoint2D getPos() {
+		return this.position;
 	}
 
 	@Override
@@ -346,6 +371,9 @@ public final class Movable implements ILogicMovable {
 	}
 
 	private int doingNothingAction() {
+		if (this.isShip()) {
+			return animationDuration;
+		}
 		if (grid.isBlockedOrProtected(position.x, position.y)) {
 			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
 			if (newPath == null) {
@@ -436,7 +464,7 @@ public final class Movable implements ILogicMovable {
 
 			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
-				if (pushingMovable.getPosition() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
+				if (pushingMovable.getPos() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 
@@ -846,11 +874,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
-	public final ShortPoint2D getPos() {
-		return position;
-	}
-
-	@Override
 	public final float getHealth() {
 		return health;
 	}
@@ -922,6 +945,9 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public final boolean isAttackable() {
+		if (strategy == null) {
+			return false;
+		}
 		return strategy.isAttackable();
 	}
 
@@ -969,6 +995,10 @@ public final class Movable implements ILogicMovable {
 				+ " direction: " + direction + " material: " + materialType;
 	}
 
+	public float getStateProgress() {
+		return this.constructionProgress;
+	}
+
 	private enum EMovableState {
 		PLAYING_ACTION,
 		PATHING,
@@ -987,4 +1017,26 @@ public final class Movable implements ILogicMovable {
 		DEBUG_STATE
 	}
 
+	public void increaseStateProgress(float step) {
+		this.constructionProgress += step;
+	}
+
+	public boolean isShip() {
+		if (ships == null) {
+			return false;
+		}
+		return ships.contains(this.movableType);
+	}
+
+	public final ImageLink[] getImages() {
+		return images;
+	}
+
+	public final ImageLink[] getBuildImages() {
+		return buildImages;
+	}
+
+	public final void setDirection(EDirection direction) {
+		this.direction = direction;
+	}
 }

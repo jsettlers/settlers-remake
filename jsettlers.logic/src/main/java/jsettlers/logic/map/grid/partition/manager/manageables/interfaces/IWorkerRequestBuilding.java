@@ -68,11 +68,13 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	ShortPoint2D whereIsMaterialAvailable(EMaterialType material);
 
-    ShortPoint2D[] getDock();
+    int[] getDock();
 
     EMaterialType getOrderedMaterial();
 
     void setOrder(EMaterialType[] list);
 
     void reduceOrder();
+
+	void buildShipAction();
 }

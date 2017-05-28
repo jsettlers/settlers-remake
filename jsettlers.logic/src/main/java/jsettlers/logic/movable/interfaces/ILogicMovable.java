@@ -24,7 +24,7 @@ public interface ILogicMovable extends
     boolean push(ILogicMovable pushingMovable);
     Path getPath();
     void goSinglePathStep();
-    ShortPoint2D getPosition();
+    ShortPoint2D getPos();
     ILogicMovable getPushedFrom();
     boolean isProbablyPushable(ILogicMovable pushingMovable);
     void leavePosition();

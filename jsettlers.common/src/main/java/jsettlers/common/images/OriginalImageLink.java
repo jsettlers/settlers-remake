@@ -143,4 +143,8 @@ public final class OriginalImageLink extends ImageLink {
 	public int getImageIndex() {
 		return image;
 	}
+
+	public EImageLinkType type() {
+		return type;
+	}
 }

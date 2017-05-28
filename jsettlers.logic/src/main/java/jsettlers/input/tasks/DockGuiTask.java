@@ -26,7 +26,7 @@ import jsettlers.common.position.ShortPoint2D;
  *
  */
 public class DockGuiTask extends SimpleBuildingGuiTask {
-    private ShortPoint2D[] dockPosition;
+    private int[] dockPosition;
 
     public DockGuiTask() {
     }
@@ -38,29 +38,29 @@ public class DockGuiTask extends SimpleBuildingGuiTask {
      * @param dockPosition
      * @param buildingPos
      */
-    public DockGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D[] dockPosition, ShortPoint2D buildingPos) {
+    public DockGuiTask(EGuiAction guiAction, byte playerId, int[] dockPosition, ShortPoint2D buildingPos) {
         super(guiAction, playerId, buildingPos);
         this.dockPosition = dockPosition;
     }
 
-    public ShortPoint2D[] getPosition() {
+    public int[] getPosition() {
         return dockPosition;
     }
 
     @Override
     protected void serializeTask(DataOutputStream dos) throws IOException {
         super.serializeTask(dos);
-        SimpleGuiTask.serializePosition(dos, dockPosition[0]);
-        SimpleGuiTask.serializePosition(dos, dockPosition[1]);
-        SimpleGuiTask.serializePosition(dos, dockPosition[2]);
+        for(int i = 0; i < 5; i++) {
+            dos.writeInt(dockPosition[i]);
+        }
     }
 
     @Override
     protected void deserializeTask(DataInputStream dis) throws IOException {
         super.deserializeTask(dis);
-        dockPosition[0] = SimpleGuiTask.deserializePosition(dis);
-        dockPosition[1] = SimpleGuiTask.deserializePosition(dis);
-        dockPosition[3] = SimpleGuiTask.deserializePosition(dis);
+        for(int i = 0; i < 5; i++) {
+            dockPosition[i] = dis.readInt();
+        }
     }
 
     @Override

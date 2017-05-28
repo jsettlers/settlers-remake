@@ -189,6 +189,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			gotoDockAction();
 			break;
 
+		case BUILD_SHIP:
+			building.buildShipAction();
+			jobFinished();
+			break;
+
 		case LOOK_AT:
 			super.lookInDirection(currentJob.getDirection());
 			jobFinished();
@@ -304,7 +309,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void gotoDockAction() {
 		if (!done) {
 			this.done = true;
-			if (!super.goToPos(building.getDock()[2])) {
+			int x = building.getDock()[0] + 2 * building.getDock()[2];
+			int y = building.getDock()[1] + 2 * building.getDock()[3];
+			ShortPoint2D position = new ShortPoint2D(x, y);
+			if (!super.goToPos(position)) {
 				jobFailed();
 			}
 		} else {

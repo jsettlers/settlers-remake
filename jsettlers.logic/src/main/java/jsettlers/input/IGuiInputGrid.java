@@ -136,5 +136,5 @@ public interface IGuiInputGrid {
 
 	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
 
-	ShortPoint2D[] findDockPosition(ShortPoint2D position, Player player);
+	int[] findDockPosition(ShortPoint2D position, Player player);
 }

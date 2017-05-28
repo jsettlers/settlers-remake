@@ -13,7 +13,7 @@
 	<blocked dx="0" dy="1" block="true" />
 	<blocked dx="1" dy="1" block="true" />
 	<blocked dx="2" dy="2" block="true" />
-	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="1" block="false" />
 	<blocked dx="1" dy="-1" block="true" />
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="0" dy="-1" block="true" />
@@ -88,7 +88,7 @@
 	<startjob name="gohome"/>
 
 	<!-- go home -->
-	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="3" dy="2"/>
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="2" dy="1"/>
 	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome"/>
 	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
 
@@ -97,19 +97,25 @@
 	<job name="check"		 	type="REQUEST"			successjob="show" 			failjob="wait_at_home"/>
 
 	<!-- show and take the requested material to the dock -->
-	<job name="show" 			type="SHOW" 			successjob="go_to_material"	failjob="hide"			dx="3" dy="2"/>
+	<job name="show" 			type="SHOW" 			successjob="go_to_material"	failjob="hide"			dx="3" dy="1"/>
 	<job name="go_to_material"	type="FOLLOW_SEARCHED"	successjob="take"			failjob="gohome"/>
 	<job name="take"		 	type="TAKE_REQUESTED" 	successjob="go_to_ship" 	failjob="gohome"/>
 	<job name="go_to_ship"		type="GO_TO_DOCK"		successjob="at_dock"		failjob="drop"/>
 	<job name="drop"			type="DROP"				successjob="gohome"			failjob="gohome"/>
 
 	<!-- build the ship -->
-	<job name="at_dock"			type="SET_MATERIAL"		successjob="hammer1"		failjob="gohome"		material="NO_MATERIAL"/>
-	<job name="hammer1" 		type="PLAY_ACTION1" 	successjob="hammer2" 		failjob="gohome" 		time="0.75"/>
-	<job name="hammer2" 		type="PLAY_ACTION1" 	successjob="hammer3" 		failjob="gohome" 		time="0.75"/>
-	<job name="hammer3" 		type="PLAY_ACTION1" 	successjob="hammer4"	 	failjob="gohome" 		time="0.75"/>
-	<job name="hammer4" 		type="PLAY_ACTION1" 	successjob="hammer5" 		failjob="gohome" 		time="0.75"/>
-	<job name="hammer5" 		type="PLAY_ACTION1" 	successjob="hammer6" 		failjob="gohome" 		time="0.75"/>
-	<job name="hammer6" 		type="PLAY_ACTION1" 	successjob="gohome" 		failjob="gohome" 		time="0.75"/>
+	<job name="at_dock"			type="SET_MATERIAL"		successjob="hammer1"		failjob="hammer1"		material="NO_MATERIAL"/>
+	<job name="hammer1" 		type="PLAY_ACTION1" 	successjob="build1" 		failjob="build1" 		time="0.75"/>
+	<job name="build1"			type="BUILD_SHIP"		successjob="hammer2"		failjob="hammer2"/>
+	<job name="hammer2" 		type="PLAY_ACTION1" 	successjob="build2" 		failjob="build2" 		time="0.75"/>
+	<job name="build2"			type="BUILD_SHIP"		successjob="hammer3"		failjob="hammer3"/>
+	<job name="hammer3" 		type="PLAY_ACTION1" 	successjob="build3" 		failjob="build3" 		time="0.75"/>
+	<job name="build3"			type="BUILD_SHIP"		successjob="hammer4"		failjob="hammer4"/>
+	<job name="hammer4" 		type="PLAY_ACTION1" 	successjob="build4" 		failjob="build4" 		time="0.75"/>
+	<job name="build4"			type="BUILD_SHIP"		successjob="hammer5"		failjob="hammer5"/>
+	<job name="hammer5" 		type="PLAY_ACTION1" 	successjob="build5" 		failjob="build5" 		time="0.75"/>
+	<job name="build5"			type="BUILD_SHIP"		successjob="hammer6"		failjob="hammer6"/>
+	<job name="hammer6" 		type="PLAY_ACTION1" 	successjob="build6" 		failjob="build6" 		time="0.75"/>
+	<job name="build6"			type="BUILD_SHIP"		successjob="gohome"			failjob="gohome"/>
 
 </building>

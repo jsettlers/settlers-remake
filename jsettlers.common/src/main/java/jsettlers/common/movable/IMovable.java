@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
@@ -84,4 +85,12 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 *            if false, it should stop working.
 	 */
 	void stopOrStartWorking(boolean stop);
+
+	float getStateProgress();
+
+	ImageLink[] getImages();
+
+	ImageLink[] getBuildImages();
+
+	boolean isShip();
 }

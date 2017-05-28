@@ -31,7 +31,6 @@ import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.player.IPlayerable;
@@ -95,7 +94,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private short remainingMaterialActions = 0;
 	private List<? extends IRequestStack> stacks;
 	private ShortPoint2D workingCenter = null;
-	private ShortPoint2D[] dockPosition = null; // three points: first point is at coast and third point is working point
 
 	private transient boolean selected;
 
@@ -732,31 +730,5 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		CONSTRUCTED,
 		DESTROYED,
 		BRICKLAYERS_REQUESTED
-	}
-
-	public void setDock(ShortPoint2D[] position) {
-		if (this.type != EBuildingType.DOCKYARD) {
-			return;
-		}
-		if (this.dockPosition != null) {
-			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
-		}
-		this.dockPosition = position;
-		this.grid.setDock(position, true, this.getPlayerId());
-	}
-
-	public ShortPoint2D[] getDock() {
-		return this.dockPosition;
-	}
-
-	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
-		for (IRequestStack stack : getStacks()) {
-			if (stack.getMaterialType() == material) {
-				if (stack.hasMaterial()) {
-					return stack.getPos();
-				}
-			}
-		}
-		return null;
 	}
 }

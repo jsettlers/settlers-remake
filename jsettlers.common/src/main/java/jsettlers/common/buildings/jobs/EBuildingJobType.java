@@ -182,6 +182,15 @@ public enum EBuildingJobType {
 	GO_TO_DOCK,
 
 	/**
+	 * Build a ship.
+	 * <p>
+	 * Success: always
+	 * <p>
+	 * Fail: never
+	 */
+	BUILD_SHIP,
+
+	/**
 	 * Look at
 	 * <p>
 	 * Parameter: direction

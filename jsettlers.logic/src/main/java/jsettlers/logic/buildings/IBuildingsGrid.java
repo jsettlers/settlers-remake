@@ -96,7 +96,7 @@ public interface IBuildingsGrid {
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
-	void setDock(ShortPoint2D[] position, boolean place, byte playerId);
+	void setDock(int[] position, boolean place, byte playerId);
 
 	/**
 	 * @return dijkstra algorithm to be used by buildings.
@@ -172,5 +172,4 @@ public interface IBuildingsGrid {
 
 	ShortPoint2D getClosestReachablePosition(ShortPoint2D start, ShortPoint2D target, boolean needsPlayersGround, byte playerId,
 			short targetRadius);
-
 }

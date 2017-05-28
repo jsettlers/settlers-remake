@@ -277,8 +277,9 @@ public final class MainGrid implements Serializable {
 	}
 
 	private boolean isInsideWater(short x, short y) {
-		return isWaterSafe(x - 1, y) && isWaterSafe(x, y) && isWaterSafe(x + 1, y) && isWaterSafe(x - 1, y + 1) && isWaterSafe(x, y + 1)
-				&& isWaterSafe(x + 1, y + 1) && isWaterSafe(x, y + 2) && isWaterSafe(x + 1, y + 2) && isWaterSafe(x + 2, y + 2);
+		return isWaterSafe(x - 1, y - 1) && isWaterSafe(x, y - 1) && isWaterSafe(x - 1, y) && isWaterSafe(x, y)
+				&& isWaterSafe(x + 1, y) && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
+				&& objectsGrid.getObjectsAt(x, y) == null;
 	}
 
 	private boolean isWaterSafe(int x, int y) {
@@ -1424,17 +1425,26 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setDock(ShortPoint2D[] position, boolean place, byte playerId) {
+		public void setDock(int[] position, boolean place, byte playerId) {
 			if (place) { // place dock
-				for (ShortPoint2D point : position) {
+				int x = position[0];
+				int y = position[1];
+				for (int i = 0; i < 3; i++) {
+					ShortPoint2D point = new ShortPoint2D(x, y);
 					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, null);
-					flagsGrid.setBlockedAndProtected(point.x, point.y, false);
+					flagsGrid.setBlockedAndProtected(x, y, false);
 					partitionsGrid.changePlayerAt(point, playerId);
+					x += position[2];
+					y += position[3];
 				}
 			} else { // remove dock
-				for (ShortPoint2D point : position) {
-					mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
-					flagsGrid.setBlockedAndProtected(point.x, point.y, true);
+				int x = position[0];
+				int y = position[1];
+				for (int i = 0; i < 3; i++) {
+					mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.DOCK);
+					flagsGrid.setBlockedAndProtected(x, y, true);
+					x += position[2];
+					y += position[3];
 				}
 			}
 		}
@@ -1744,7 +1754,7 @@ public final class MainGrid implements Serializable {
 			return MainGrid.this.isInBounds(position.x, position.y);
 		}
 
-		public ShortPoint2D[] findDockPosition(ShortPoint2D position, Player owner) {
+		public int[] findDockPosition(ShortPoint2D position, Player owner) {
 			short x = position.x;
 			short y = position.y;
 			if (!isWaterSafe(x, y)) {
@@ -1783,12 +1793,14 @@ public final class MainGrid implements Serializable {
 			if (!searching) {
 				return null; // water width not sufficient to build ships
 			}
-			ShortPoint2D[] dockPosition = new ShortPoint2D[3];
-			for (distance = 1; distance < 4; distance++) {
-				dx = (short) (xDeltaArray[direction] * distance);
-				dy = (short) (yDeltaArray[direction] * distance);
-				dockPosition[distance - 1] = new ShortPoint2D(x - dx, y - dy);
-			}
+			int[] dockPosition = new int[5];
+			dx = (short) (xDeltaArray[direction]);
+			dy = (short) (yDeltaArray[direction]);
+			dockPosition[0] = x - dx; // dock position at coast
+			dockPosition[1] = y - dy;
+			dockPosition[2] = -dx; // step to next dock position
+			dockPosition[3] = -dy;
+			dockPosition[4] = direction;
 			return dockPosition;
 		}
 

@@ -128,6 +128,8 @@ public enum EMapObjectType {
 	PLANT_DECORATION,
 	DESERT_DECORATION,
 	DOCK,
+	FERRY,
+	CARGO_BOAT,
 
 	/**
 	 * Animated fish in the water.

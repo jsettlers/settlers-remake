@@ -34,6 +34,7 @@ import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -195,11 +196,46 @@ public class MapObjectDrawer {
 		}
 	}
 
+	public void drawShip(int x, int y, IMovable ship, EDirection direction) {
+		EMovableType type = ship.getMovableType();
+		byte fogstatus = context.getVisibleStatus(x, y);
+		if (fogstatus == 0) {
+			return; // break
+		}
+		float color = getColor(fogstatus);
+		float state = ship.getStateProgress();
+		float maskState = state * 2;
+		ImageLink[] images;
+		if (state < .95) {
+			images = ship.getBuildImages();
+			for (ImageLink link : images) {
+				ImageLink turnedLink = new OriginalImageLink(link.getType(), link.getFile(), link.getSequence(), direction.ordinal);
+				Image image = imageProvider.getImage(turnedLink);
+				drawWithConstructionMask(x+1, y+1, maskState, image, color); // the ship images differ in position...
+			}
+		}
+		if (state > .5) {
+			images = ship.getImages();
+			for (ImageLink link : images) {
+				ImageLink turnedLink = new OriginalImageLink(link.getType(), link.getFile(), link.getSequence(), direction.ordinal);
+				Image image = imageProvider.getImage(turnedLink);
+				if (state < .95) {
+					maskState %= 1;
+					drawWithConstructionMask(x, y, maskState, image, color);
+				} else {
+					draw(image, x, y, color);
+				}
+			}
+		}
+		if (state >= 0.95 && ship.isSelected()) {
+				drawSelectionMark(x, y, ship.getHealth());
+		}
+	}
+
 	private void drawObject(int x, int y, IMapObject object, float color) {
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
-
 		switch (type) {
 		case ARROW:
 			drawArrow(context, (IArrowMapObject) object, color);
@@ -213,7 +249,6 @@ public class MapObjectDrawer {
 			break;
 
 		case TREE_DEAD:
-			// TODO: falling tree sound.
 			playSound(object, SOUND_FALLING_TREE, x, y);
 			drawFallingTree(x, y, progress, color);
 			break;
@@ -840,10 +875,14 @@ public class MapObjectDrawer {
 	/**
 	 * Draws a stack
 	 *
-	 * @param context
-	 *            The context to draw with
+	 * @param x
+	 *            x position
+	 * @param y
+	 *            y position
 	 * @param object
 	 *            The stack to draw.
+	 * @param color
+	 *            color
 	 */
 	public void drawStack(int x, int y, IStackMapObject object, float color) {
 		forceSetup();
@@ -857,12 +896,16 @@ public class MapObjectDrawer {
 	/**
 	 * Draws the stack directly to the screen.
 	 *
-	 * @param glDrawContext
-	 *            The gl context to draw at.
+	 * @param x
+	 *            x position
+	 * @param y
+	 *            y position
 	 * @param material
 	 *            The material the stack should have.
 	 * @param count
 	 *            The number of elements on the stack
+	 * @param color
+	 *            color
 	 */
 	private void drawStackAtScreen(int x, int y, EMaterialType material,
 			int count, float color) {
@@ -885,8 +928,12 @@ public class MapObjectDrawer {
 	/**
 	 * Draws a given buildng to the context.
 	 *
-	 * @param context
+	 * @param x
+	 *            x position
+	 * @param y
+	 *            y position
 	 * @param building
+	 *            the building to draw
 	 * @param color
 	 *            Gray color shade
 	 */
@@ -962,6 +1009,7 @@ public class MapObjectDrawer {
 	 * @param x
 	 *            The x coordinate of the building
 	 * @param y
+	 *            the y coordinate
 	 * @param building
 	 *            The occupyed building
 	 * @param basecolor
@@ -1023,7 +1071,7 @@ public class MapObjectDrawer {
 	}
 
 	private void drawWithConstructionMask(int x, int y, float maskState,
-			Image unsafeimage, float color) {
+										  Image unsafeimage, float color) {
 		if (!(unsafeimage instanceof SingleImage)) {
 			return; // should not happen
 		}
@@ -1034,7 +1082,7 @@ public class MapObjectDrawer {
 
 		SingleImage image = (SingleImage) unsafeimage;
 		// number of tiles in x direction, can be adjusted for performance
-		int tiles = 6;
+		int tiles = 10;
 
 		float toplineBottom = 1 - maskState;
 		float toplineTop = Math.max(0, toplineBottom - .1f);

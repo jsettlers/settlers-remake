@@ -69,7 +69,10 @@ public enum EMovableType {
 	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false, 0.6, 150f, 7f),
 
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
-	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
+	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
+
+	FERRY(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false),
+	CARGO_BOAT(EMaterialType.NO_MATERIAL, ESelectionType.SHIPS, false);
 
 	/**
 	 * All step durations will be multiplied with this speedup factor.
