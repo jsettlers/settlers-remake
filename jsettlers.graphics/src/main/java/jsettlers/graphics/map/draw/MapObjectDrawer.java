@@ -990,7 +990,7 @@ public class MapObjectDrawer {
 				if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
 					playMovableSound(movable);
 					if (movable.isSelected()) {
-						drawSelectionMark(viewX, viewY, movable.getHealth());
+						drawSelectionMark(viewX, viewY, movable.getHealth() / movable.getMovableType().getHealth());
 					}
 				}
 			}
