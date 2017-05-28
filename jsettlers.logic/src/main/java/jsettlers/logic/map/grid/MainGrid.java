@@ -912,13 +912,13 @@ public final class MainGrid implements Serializable {
 			return partitionsGrid.getPlayerIdAt(x, y);
 		}
 
-		private void destroyBuildingOrTakeOver(int x, int y, byte player) {
+		private void destroyBuildingOrTakeOver(int x, int y, byte playerId) {
 			if (flagsGrid.isBlocked(x, y)) {
-				partitionsGrid.changePlayerAt(x, y, player);
+				partitionsGrid.changePlayerAt(x, y, playerId);
 			}
 
 			Building building = objectsGrid.getBuildingAt(x, y);
-			if (building != null) {
+			if (building != null && building.getPlayerId() != playerId) {
 				building.kill();
 			}
 		}
