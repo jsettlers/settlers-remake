@@ -186,7 +186,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		case SPEED_FAST:
 			if (!multiplayer) {
-				clock.setGameSpeed(2.0f);
+				clock.setGameSpeed(5.0f);
 			}
 			break;
 		case SPEED_FASTER:
