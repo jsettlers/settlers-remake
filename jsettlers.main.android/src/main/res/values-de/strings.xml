@@ -95,5 +95,8 @@
     <string name="fast">Schnelle Geschwindigkeit</string>
     <string name="faster">Schneller</string>
     <string name="slower">Langsamer</string>
+    <string name="buildings">Gebäude</string>
+    <string name="goods">Waren</string>
+    <string name="settlers">Siedler</string>
 
 </resources>

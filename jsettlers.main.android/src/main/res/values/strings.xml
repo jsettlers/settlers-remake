@@ -124,4 +124,7 @@
     <string name="faster">Faster</string>
     <string name="slower">Slower</string>
     <string name="fast">Fast Speed</string>
+    <string name="buildings">Buildings</string>
+    <string name="goods">Goods</string>
+    <string name="settlers">Settlers</string>
 </resources>
