@@ -125,6 +125,10 @@ public class ShortPoint2D implements Serializable {
 		}
 	}
 
+	public static int getOnGridDist(int startX, int startY, int endX, int endY) {
+		return getOnGridDist(endX - startX, endY - startY);
+	}
+
 	public boolean equals(int x, int y) {
 		return this.x == x && this.y == y;
 	}
