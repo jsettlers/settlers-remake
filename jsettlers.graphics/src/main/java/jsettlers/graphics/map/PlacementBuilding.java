@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -21,6 +22,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -134,5 +136,10 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	@Override
 	public boolean cannotWork() {
 		return false;
+	}
+
+	@Override
+	public ArrayList<EMaterialType> getRemainingOrder() {
+		return this.getRemainingOrder();
 	}
 }

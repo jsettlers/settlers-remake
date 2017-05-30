@@ -14,6 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
@@ -22,13 +29,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
 
 /**
  * This class saves the state parts of the building that is displayed by the gui, to detect changes.
@@ -58,7 +58,7 @@ public class BuildingState {
 	 */
 	public static class StackState {
 		private final EMaterialType type;
-		private final int count;
+		private int count;
 		private final boolean offering;
 
 		/**
@@ -96,6 +96,10 @@ public class BuildingState {
 		 */
 		public int getCount() {
 			return count;
+		}
+
+		public void setCount(int count) {
+			this.count = count;
 		}
 
 		/**

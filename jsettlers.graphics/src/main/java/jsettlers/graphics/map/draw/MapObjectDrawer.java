@@ -211,7 +211,7 @@ public class MapObjectDrawer {
 			for (ImageLink link : images) {
 				ImageLink turnedLink = new OriginalImageLink(link.getType(), link.getFile(), link.getSequence(), direction.ordinal);
 				Image image = imageProvider.getImage(turnedLink);
-				drawWithConstructionMask(x+1, y+1, maskState, image, color); // the ship images differ in position...
+				drawWithConstructionMask(x+1, y+1, maskState, image, color); // TODO: the ship images differ in position, but not integer multiples of tiles
 			}
 		}
 		if (state > .5) {
@@ -224,6 +224,10 @@ public class MapObjectDrawer {
 					drawWithConstructionMask(x, y, maskState, image, color);
 				} else {
 					draw(image, x, y, color);
+					int sailSequence = ship.getMovableType() == EMovableType.FERRY ? 29 : 28; // TODO: sequence number of sail should come from xml file
+					ImageLink sailLink = new OriginalImageLink(link.getType(), link.getFile(), sailSequence, direction.ordinal);
+					Image sail = imageProvider.getImage(sailLink);
+					draw(sail, x, y, color); // TODO: the player color is missing in the sail overlay
 				}
 			}
 		}

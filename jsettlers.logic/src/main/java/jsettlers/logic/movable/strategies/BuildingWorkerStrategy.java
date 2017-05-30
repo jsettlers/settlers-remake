@@ -286,16 +286,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void requestAction() {
 		boolean pathFound = false;
 		if (building.getBuildingType() == EBuildingType.DOCKYARD && building.getDock() != null) {
-
-			// TODO - check ship orders
-			if (building.getOrderedMaterial() == null) {
-				EMaterialType[] order = new EMaterialType[4];
-				order[0] = EMaterialType.PLANK;
-				order[1] = EMaterialType.PLANK;
-				order[2] = EMaterialType.PLANK;
-				order[3] = EMaterialType.IRON;
-				building.setOrder(order);
-			}
 			ShortPoint2D stackPosition = building.whereIsMaterialAvailable(building.getOrderedMaterial());
 			if (stackPosition != null) pathFound = super.setPathTo(stackPosition);
 		}

@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.selection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
@@ -333,12 +333,14 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 
 		if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-			layout.background.removeChild(layout.workRadius);
-		} else if (building.getBuildingType().getWorkRadius() <= 0) {
-			layout.background.removeChild(layout.workRadius);
-			layout.background.removeChild(layout.dockPosition);
+			layout.background.removeChild(layout.buttonWorkRadius);
 		} else {
-			layout.background.removeChild(layout.dockPosition);
+			layout.background.removeChild(layout.buttonDockPosition);
+			layout.background.removeChild(layout.buttonMakeFerry);
+			layout.background.removeChild(layout.buttonMakeCargoBoat);
+			if (building.getBuildingType().getWorkRadius() <= 0) {
+				layout.background.removeChild(layout.buttonWorkRadius);
+			}
 		}
 
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
@@ -349,6 +351,15 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		} else if (building instanceof IBuilding.IResourceBuilding) {
 			IBuilding.IResourceBuilding resourceBuilding = (IBuilding.IResourceBuilding) building;
 			text = Labels.getString("productivity", (int) (resourceBuilding.getProductivity() * 100));
+		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+			ArrayList<EMaterialType> list = (building).getRemainingOrder();
+			text = Labels.getString("materials_required");
+			layout.materialText.setText(text);
+			if (list != null) {
+				addShipRequestStacks(layout.materialArea, list);
+			}
+			BuildingBackgroundPanel root = layout._root;
+			return root;
 		}
 		layout.materialText.setText(text);
 
@@ -375,6 +386,26 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 				materialArea.addChild(display, requestX, 0, requestX + buttonWidth, 1);
 				requestX += buttonSpace + buttonWidth;
 			}
+		}
+	}
+
+	private void addShipRequestStacks(UIPanel materialArea, ArrayList<EMaterialType> list) {
+		// hardcoded...
+		float buttonWidth = 18f / (127 - 9);
+		float buttonSpace = 12f / (127 - 9);
+
+		float requestX = buttonSpace;
+
+		while (list.size() > 0) {
+			EMaterialType material = list.get(0);
+			int count = 0;
+			while (list.size() > 0 && list.get(0) == material) {
+				count++;
+				list.remove(0);
+			}
+			MaterialDisplay display = new MaterialDisplay(material, count, -1);
+			materialArea.addChild(display, requestX, 0, requestX + buttonWidth, 1);
+			requestX += buttonSpace + buttonWidth;
 		}
 	}
 

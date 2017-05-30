@@ -31,6 +31,7 @@ import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.player.IPlayerable;
@@ -651,7 +652,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+	public ArrayList<EMaterialType> getRemainingOrder() {
+		return ((WorkerBuilding) this).getRemainingOrder();
+	}
+
+		public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
 			return new BigLivinghouse(player, position, buildingsGrid);

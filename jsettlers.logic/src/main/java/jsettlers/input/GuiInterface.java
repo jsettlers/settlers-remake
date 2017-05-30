@@ -26,6 +26,7 @@ import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -365,6 +366,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			gameStoppable.stopGame();
 			break;
 
+		case MAKE_FERRY:
+			makeFerry();
+			break;
+
+		case MAKE_CARGO_BOAT:
+			makeCargoBoat();
+			break;
+
 		default:
 			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
@@ -701,5 +710,35 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		constructionMarksCalculator.cancel();
 		connector.removeListener(this);
 		refreshSelectionTimer.cancel();
+	}
+
+	private void makeFerry() {
+		WorkerBuilding dockyard = (WorkerBuilding) currentSelection.get(0);
+		if (dockyard.getOrderedMaterial() != null) {
+			return;
+		}
+		EMaterialType[] material = new EMaterialType[5];
+		material[0] = EMaterialType.PLANK;
+		material[1] = EMaterialType.PLANK;
+		material[2] = EMaterialType.PLANK;
+		material[3] = EMaterialType.PLANK;
+		material[4] = EMaterialType.IRON;
+		dockyard.setOrder(material, EMovableType.FERRY);
+	}
+
+	private void makeCargoBoat() {
+		WorkerBuilding dockyard = (WorkerBuilding) currentSelection.get(0);
+		if (dockyard.getOrderedMaterial() != null) {
+			return;
+		}
+		EMaterialType[] material = new EMaterialType[7];
+		material[0] = EMaterialType.PLANK;
+		material[1] = EMaterialType.PLANK;
+		material[2] = EMaterialType.PLANK;
+		material[3] = EMaterialType.PLANK;
+		material[4] = EMaterialType.PLANK;
+		material[5] = EMaterialType.PLANK;
+		material[6] = EMaterialType.IRON;
+		dockyard.setOrder(material, EMovableType.CARGO_BOAT);
 	}
 }

@@ -45,6 +45,8 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private IManageableWorker worker;
 	private EMaterialType[] order = null;
 	private int orderPointer = 0;
+	private EMovableType orderedShipType = null;
+	private int shipBuildingSteps = 1;
 	private Movable ship = null;
 	private int[] dockPosition = null; // x, y, dx, dy
 
@@ -166,9 +168,26 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	public void setOrder(EMaterialType[] list) {
+	public void setOrder(EMaterialType[] list, EMovableType type) {
+		if (list == null) {
+			return;
+		}
 		this.order = list;
 		this.orderPointer = 0;
+		this.orderedShipType = type;
+		this.shipBuildingSteps = 6 * list.length;
+	}
+
+	@Override
+	public ArrayList<EMaterialType> getRemainingOrder() {
+		if (order == null) {
+			return null;
+		}
+		ArrayList<EMaterialType> list = new ArrayList<>();
+		for (int i = this.orderPointer; i < this.order.length; i++) {
+			list.add(this.order[i]);
+		}
+		return list;
 	}
 
 	@Override
@@ -182,15 +201,16 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			ShortPoint2D position = new ShortPoint2D
 					((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
 					(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
-			this.ship = new Movable(super.grid.getMovableGrid(), EMovableType.FERRY,
+			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType,
 					position, super.getPlayer());
 			EDirection direction = EDirection.getDirection
 					(this.dockPosition[2], this.dockPosition[3]).rotateRight(1);
 			this.ship.setDirection(direction);
 		} else {
-			this.ship.increaseStateProgress((float) (1./24.));
+			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
 			if (this.ship.getStateProgress() >= .99) {
 				this.ship = null;
+				this.order = null;
 			}
 		}
 	}
