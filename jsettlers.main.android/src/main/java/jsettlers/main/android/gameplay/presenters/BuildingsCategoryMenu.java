@@ -19,7 +19,9 @@ import android.util.Log;
 
 import java.util.List;
 
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
@@ -29,6 +31,8 @@ import jsettlers.main.android.core.controls.PositionChangedListener;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 22/11/2016.
@@ -50,7 +54,7 @@ public class BuildingsCategoryMenu implements PositionChangedListener {
 
 	public void start() {
 		positionControls.addPositionChangedListener(this);
-		view.setBuildings(getBuildingTypes());
+		positionChanged();
 	}
 
 	public void finish() {
@@ -68,21 +72,21 @@ public class BuildingsCategoryMenu implements PositionChangedListener {
 	 */
 	@Override
 	public void positionChanged() {
+		IBuildingCounts buildingCounts = null;
+
 		if (positionControls.isInPlayerPartition()) {
-			IPartitionData partitionData = positionControls.getCurrentPartitionData();
-			int underconst = partitionData.getBuildingCounts().buildingsInPartitionUnderConstruction(EBuildingType.FORESTER);
-			int built = partitionData.getBuildingCounts().buildingsInPartiton(EBuildingType.FORESTER);
-
-			Log.d("Settlers", "construction = " + underconst + " -------- built = " + built);
-		} else {
-
-			Log.d("Settlers", "not in player partition");
+			buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
 		}
+
+		view.setBuildings(buildings(buildingCounts));
 	}
 
 
 
-	private List<EBuildingType> getBuildingTypes() {
-		return buildingsCategory.buildingTypes;
+	private List<Building> buildings(IBuildingCounts buildingCounts) {
+
+		return stream(buildingsCategory.buildingTypes)
+				.map(buildingType -> new Building(buildingType, buildingCounts))
+				.collect(Collectors.toList());
 	}
 }

@@ -215,6 +215,9 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	 */
 	@Override
 	public boolean isInPlayerPartition() {
+		if (displayCenter == null)
+			return false;
+
 		return graphicsGrid.getPlayerIdAt(displayCenter.x, displayCenter.y) == player.getPlayerId();
 	}
 

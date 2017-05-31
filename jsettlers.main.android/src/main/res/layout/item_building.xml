@@ -1,24 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
-    android:background="?android:attr/selectableItemBackground"
-    android:focusable="true"
-    android:clickable="true"
-    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:columnCount="2"
     android:padding="8dp"
-    android:gravity="center">
+
+    android:focusable="true"
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        android:scaleType="fitCenter" />
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        android:layout_columnWeight="1"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="0dp"
+        android:scaleType="fitCenter"
+        android:layout_rowSpan="3" />
 
-    <!--<TextView-->
-    <!--android:id="@+id/text_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--tools:text="Building name" />-->
-</LinearLayout>
+    <TextView
+        android:id="@+id/text_view_building_count"
+        android:textColor="?android:textColorTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="16dp"
+        android:gravity="center_horizontal"
+        android:text="2" />
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_rowWeight="1"/>
+
+    <TextView
+        android:id="@+id/text_view_building_construction_count"
+        android:textColor="?android:textColorTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="16dp"
+        android:gravity="center_horizontal"
+        android:text="2" />
+
+    <TextView
+        android:id="@+id/text_view_building_name"
+        android:textColor="?android:textColorTertiary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Woodcutter"
+        android:layout_columnSpan="2"
+        android:gravity="center"/>
+
+</GridLayout>

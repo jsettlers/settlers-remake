@@ -20,11 +20,13 @@ import java.util.List;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
 import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.presenters.Building;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
 import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
@@ -37,6 +39,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * Created by tompr on 24/11/2016.
@@ -72,16 +75,21 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	/**
 	 * BuildingsCategoryView implementation
 	 */
+	@UiThread
 	@Override
-	public void setBuildings(List<EBuildingType> buildings) {
+	public void setBuildings(List<Building> buildings) {
 		if (adapter == null) {
 			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildings);
+		} else {
+			adapter.setBuildings(buildings);
 		}
 
 		if (recyclerView.getAdapter() == null) {
 			recyclerView.setHasFixedSize(true);
 			recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 			recyclerView.setAdapter(adapter);
+		} else {
+			adapter.notifyDataSetChanged();
 		}
 	}
 
@@ -93,18 +101,18 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 * Adapter
 	 */
 	private class BuildingsAdapter extends RecyclerView.Adapter<BuildingsCategoryFragment.BuildingViewHolder> {
-		private List<EBuildingType> buildingTypes;
+		private List<Building> buildings;
 
 		private LayoutInflater layoutInflater;
 
-		BuildingsAdapter(List<EBuildingType> buildingTypes) {
-			this.buildingTypes = buildingTypes;
+		BuildingsAdapter(List<Building> buildings) {
+			this.buildings = buildings;
 			layoutInflater = getActivity().getLayoutInflater();
 		}
 
 		@Override
 		public int getItemCount() {
-			return buildingTypes.size();
+			return buildings.size();
 		}
 
 		@Override
@@ -114,8 +122,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 			itemView.setOnClickListener(view -> {
 				int position = buildingViewHolder.getLayoutPosition();
-				EBuildingType buildingType = buildingTypes.get(position);
-				buildingSelected(buildingType);
+				buildingSelected(buildings.get(position).getBuildingType());
 			});
 
 			return buildingViewHolder;
@@ -123,21 +130,33 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 		@Override
 		public void onBindViewHolder(BuildingsCategoryFragment.BuildingViewHolder holder, int position) {
-			EBuildingType buildingType = buildingTypes.get(position);
-			holder.setBuildingType(buildingType);
+			holder.setBuilding(buildings.get(position));
+		}
+
+		public void setBuildings(List<Building> buildings) {
+			this.buildings = buildings;
 		}
 	}
 
 	private class BuildingViewHolder extends RecyclerView.ViewHolder {
 		private final ImageView imageView;
+		private final TextView nameTextView;
+		private final TextView buildingCountTextView;
+		private final TextView buildingConstructionCountTextView;
 
 		BuildingViewHolder(View itemView) {
 			super(itemView);
 			imageView = (ImageView) itemView.findViewById(R.id.image_view);
+			nameTextView = (TextView) itemView.findViewById(R.id.text_view_building_name);
+			buildingCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_count);
+			buildingConstructionCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_construction_count);
 		}
 
-		void setBuildingType(EBuildingType buildingType) {
-			OriginalImageProvider.get(buildingType).setAsImage(imageView);
+		void setBuilding(Building building) {
+			OriginalImageProvider.get(building.getBuildingType()).setAsImage(imageView);
+			nameTextView.setText(building.getName());
+			buildingCountTextView.setText(building.getCount());
+			buildingConstructionCountTextView.setText(building.getConstructionCount());
 		}
 	}
 }
