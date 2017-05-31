@@ -372,7 +372,7 @@ public final class Movable implements ILogicMovable {
 
 	private int doingNothingAction() {
 		if (this.isShip()) {
-			return animationDuration;
+			return flockDelay;
 		}
 		if (grid.isBlockedOrProtected(position.x, position.y)) {
 			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
@@ -1022,9 +1022,6 @@ public final class Movable implements ILogicMovable {
 	}
 
 	public boolean isShip() {
-		if (ships == null) {
-			return false;
-		}
 		return ships.contains(this.movableType);
 	}
 

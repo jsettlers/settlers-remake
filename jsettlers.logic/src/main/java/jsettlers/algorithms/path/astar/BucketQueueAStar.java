@@ -23,6 +23,7 @@ import jsettlers.algorithms.path.astar.queues.bucket.AbstractBucketQueue;
 import jsettlers.algorithms.path.astar.queues.bucket.ListMinBucketQueue;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.movable.Movable;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -71,6 +72,13 @@ public final class BucketQueueAStar extends AbstractAStar {
 	@Override
 	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty) {
 		final short blockedAtStartPartition;
+
+
+		int d=0;
+		if(requester instanceof Movable && (((Movable) requester).isShip()))
+			d++;
+
+
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
 		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)

@@ -206,6 +206,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			EDirection direction = EDirection.getDirection
 					(this.dockPosition[2], this.dockPosition[3]).rotateRight(1);
 			this.ship.setDirection(direction);
+			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
 		} else {
 			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
 			if (this.ship.getStateProgress() >= .99) {
@@ -215,18 +216,19 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		}
 	}
 
-	public void setDock(int[] position) {
+	public boolean setDock(int[] position) {
 		if (this.type != EBuildingType.DOCKYARD) {
-			return;
+			return false;
 		}
-		if (this.dockPosition != null) { // replace dock, kill ship
-			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		if (this.dockPosition != null) { // replace dock
 			if (this.ship != null) {
-				this.ship.kill();
+				return false; // do not change the dock when a ship is tied to it
 			}
+			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
 		}
 		this.dockPosition = position;
 		this.grid.setDock(position, true, this.getPlayerId());
+		return true;
 	}
 
 	public int[] getDock() {

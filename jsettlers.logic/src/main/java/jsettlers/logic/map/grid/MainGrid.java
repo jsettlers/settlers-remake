@@ -454,6 +454,9 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
+			if (requester instanceof Movable && ((Movable) requester).isShip()) {
+				return !isInsideWater((short)x, (short)y);
+			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
@@ -1232,6 +1235,11 @@ public final class MainGrid implements Serializable {
 			short y = position.y;
 
 			return isInBounds(x, y) && !flagsGrid.isBlocked(x, y) && movableGrid.hasNoMovableAt(x, y);
+		}
+
+		@Override
+		public boolean isFreeShipPosition(ShortPoint2D position) {
+			return isInsideWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
 		}
 
 		@Override

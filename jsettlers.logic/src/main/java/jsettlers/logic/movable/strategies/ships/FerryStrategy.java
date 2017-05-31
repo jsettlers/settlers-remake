@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,19 +12,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.algorithms.path;
+package jsettlers.logic.movable.strategies.ships;
 
-import java.io.Serializable;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.Movable;
 
-import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ILocatable;
+public final class FerryStrategy extends ShipStrategy {
+	private static final long serialVersionUID = 266630012941238716L;
 
-public interface IPathCalculatable extends IPlayerable, ILocatable, Serializable {
+	public FerryStrategy(Movable movable, EMovableType movableType) {
+		super(movable, movableType);
+	}
 
-	/**
-	 * 
-	 * @return true if this path requester can only walk on it's own players ground.<br>
-	 *         false if the requester can use everybody's ground.
-	 */
-	boolean needsPlayersGround();
 }

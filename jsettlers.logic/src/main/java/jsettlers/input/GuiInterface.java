@@ -431,7 +431,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				connector.playSound(116, 1); // this dock position is not accepted
 			} else {
 				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, ((Building) selected).getPos()));
-				((WorkerBuilding) selected).setDock(dockPosition);
+				if(!((WorkerBuilding) selected).setDock(dockPosition)) {
+					connector.playSound(116, 1); // dock cannot be moved when a ship is tied to it
+				}
 			}
 		}
 	}
