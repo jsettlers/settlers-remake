@@ -8,25 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v7.widget.ActionMenuView
-        android:id="@+id/action_menu_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right" />
-
-    <!-- Commented out action menu button is shifted down for translucent status bars -->
-    <!--<android.support.design.widget.CoordinatorLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_gravity="right"-->
-        <!--android:fitsSystemWindows="true"-->
-        <!--app:statusBarBackground="@android:color/transparent">-->
-
-        <!--<android.support.v7.widget.ActionMenuView-->
-            <!--android:id="@+id/action_menu_view"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content" />-->
-    <!--</android.support.design.widget.CoordinatorLayout>-->
+     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@android:color/transparent"/>
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_gravity="center_horizontal"
@@ -55,19 +41,19 @@
                     android:id="@+id/button_buildings_menu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Buildings" />
+                    android:text="@string/buildings" />
 
                 <Button
                     android:id="@+id/button_goods_menu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Goods" />
+                    android:text="@string/goods" />
 
                 <Button
                     android:id="@+id/button_settlers_menu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Settlers" />
+                    android:text="@string/settlers" />
 
             </LinearLayout>
 

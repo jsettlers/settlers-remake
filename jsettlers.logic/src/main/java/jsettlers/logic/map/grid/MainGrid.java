@@ -966,7 +966,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
+		public boolean canConstructAt(int x, int y, EBuildingType buildingType, byte playerId) {
 			RelativePoint[] buildingArea = buildingType.getBuildingArea();
 			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
@@ -1754,20 +1754,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId, boolean useNeighbors) {
-			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, playerId)) {
-				return pos;
-			} else if (useNeighbors) {
-				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
-					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, playerId)) {
-						return neighbour;
-					}
-				}
-				return null;
-
-			} else {
-				return null;
-			}
+		public final Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId) {
+			return MapCircle.stream(pos, Constants.BUILDING_PLACEMENT_MAX_SEARCH_RADIUS)
+					.filterBounds(width, height)
+					.filter((x, y) -> constructionMarksGrid.canConstructAt(x, y, type, playerId))
+					.min((x, y) -> ShortPoint2D.getOnGridDist(pos.x, pos.y, x, y));
 		}
 
 		@Override

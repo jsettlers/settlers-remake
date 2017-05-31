@@ -87,27 +87,37 @@ public class SettlersSoldiersFragment extends Fragment implements SettlersSoldie
 	 */
 	@Override
 	public void setStrengthText(String strengthText) {
-		soldierStrengthTextView.setText(strengthText);
+		if (soldierStrengthTextView != null) {
+			soldierStrengthTextView.setText(strengthText);
+		}
 	}
 
 	@Override
 	public void setPromotionText(String promotionText) {
-		soldierPromotionTextView.setText(promotionText);
+		if (soldierPromotionTextView != null) {
+			soldierPromotionTextView.setText(promotionText);
+		}
 	}
 
 	@Override
 	public void setSwordsmenPromotionEnabled(boolean enabled) {
-		swordsmenPromotionImageView.setEnabled(enabled);
+		if (swordsmenPromotionImageView != null) {
+			swordsmenPromotionImageView.setEnabled(enabled);
+		}
 	}
 
 	@Override
 	public void setBowmenPromotionEnabled(boolean enabled) {
-		bowmenPromotionImageView.setEnabled(enabled);
+		if (bowmenPromotionImageView != null) {
+			bowmenPromotionImageView.setEnabled(enabled);
+		}
 	}
 
 	@Override
 	public void setPikemenPromotionEnabled(boolean enabled) {
-		pikemenPromotionImageView.setEnabled(enabled);
+		if (pikemenPromotionImageView != null) {
+			pikemenPromotionImageView.setEnabled(enabled);
+		}
 	}
 
 	@Override
@@ -126,6 +136,10 @@ public class SettlersSoldiersFragment extends Fragment implements SettlersSoldie
 	}
 
 	private void setPromotionButtonImage(ImageView imageView, ImageLink imageLink) {
+		if (imageView == null) {
+			return;
+		}
+
 		if (imageLink == null) {
 			imageView.setImageDrawable(null);
 		} else {
