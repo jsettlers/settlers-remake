@@ -29,7 +29,7 @@ import android.support.v7.app.AlertDialog;
  */
 public class PausedDialog extends DialogFragment {
 	public interface Listener {
-		void onUnPause();
+		void onGameUnPause();
 	}
 
 	public static PausedDialog newInstance() {
@@ -50,6 +50,6 @@ public class PausedDialog extends DialogFragment {
 	public void onCancel(DialogInterface dialog) {
 		super.onCancel(dialog);
 		Listener listener = (Listener) getParentFragment();
-		listener.onUnPause();
+		listener.onGameUnPause();
 	}
 }

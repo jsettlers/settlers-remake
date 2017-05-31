@@ -27,6 +27,8 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
+import java8.util.Optional;
+
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
  *
@@ -55,12 +57,9 @@ public interface IGuiInputGrid {
 	 *            The type of the building
 	 * @param player
 	 *            The player that wants to construct the building.
-	 * @param useNeighbors
-	 *            If this is true, not only the given position is checked, if it can be used to construct a building, but also the neighbors.<br>
-	 *            If this is false, only the given position will be checked.
 	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ShortPoint2D getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player, boolean useNeighbors);
+	Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player);
 
 	/**
 	 * Saves the map with the given {@link UIState}.
@@ -107,10 +106,9 @@ public interface IGuiInputGrid {
 	 * @param materialType
 	 *            The {@link EMaterialType} of the material the given settings shall be used for.
 	 * @param probabilities
-	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings
-	 *            .getBuildingTypesRequestingMaterial(materialType).
+	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings .getBuildingTypesRequestingMaterial(materialType).
 	 */
-	void setMaterialDistributionSettings(ShortPoint2D managerPosition,			EMaterialType materialType, float[] probabilities);
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities);
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.

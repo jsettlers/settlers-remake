@@ -30,6 +30,7 @@ import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.android.core.AndroidPreferences;
@@ -48,6 +49,10 @@ import android.support.v4.content.LocalBroadcastManager;
 
 @EApplication
 public class MainApplication extends Application implements GameStarter, GameManager, IGameExitListener {
+	static { // configure game to be better usable on Android
+		Constants.BUILDING_PLACEMENT_MAX_SEARCH_RADIUS = 10;
+	}
+
 	private MapList mapList;
 	private IMultiplayerConnector multiplayerConnector;
 	private IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector;

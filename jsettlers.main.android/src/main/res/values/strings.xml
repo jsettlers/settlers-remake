@@ -3,7 +3,7 @@
     <string name="app_name">JSettlers</string>
     <string name="please_wait">Please wait</string>
 
-    <string name="f12_string">Skip one minute</string>
+    <string name="skip_1_minute">Skip one minute</string>
     <string name="save_string">Save</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Kill</string>
@@ -121,4 +121,10 @@
     <string name="resource_selection_dialog_title">Locate GFX and SND folders</string>
     <string name="empty_directory">This directory is empty</string>
     <string name="notification_game_in_progress">JSettlers game in progress</string>
+    <string name="faster">Faster</string>
+    <string name="slower">Slower</string>
+    <string name="fast">Fast Speed</string>
+    <string name="buildings">Buildings</string>
+    <string name="goods">Goods</string>
+    <string name="settlers">Settlers</string>
 </resources>

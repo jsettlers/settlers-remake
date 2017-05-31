@@ -29,7 +29,7 @@ import jsettlers.main.android.gameplay.navigation.GameNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
 import jsettlers.main.android.gameplay.ui.fragments.LoadingFragment;
-import jsettlers.main.android.gameplay.ui.fragments.MapFragment;
+import jsettlers.main.android.gameplay.ui.fragments.MapFragment_;
 import jsettlers.main.android.mainmenu.navigation.Actions;
 
 import android.os.Bundle;
@@ -95,7 +95,7 @@ public class GameActivity extends FullScreenAppCompatActivity implements GameNav
 	@Override
 	public void showMap() {
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frame_layout, MapFragment.newInstance(), TAG_FRAGMENT_MAP)
+				.replace(R.id.frame_layout, MapFragment_.builder().build(), TAG_FRAGMENT_MAP)
 				.commitNow();
 	}
 
