@@ -2,6 +2,7 @@ package jsettlers.main.android.gameplay.presenters;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
+import jsettlers.graphics.localization.Labels;
 
 /**
  * Created by tompr on 29/05/2017.
@@ -16,7 +17,7 @@ public class Building {
 
     public Building(EBuildingType buildingType, IBuildingCounts buildingCounts) {
         this.buildingType = buildingType;
-        this.name = buildingType.name();
+        this.name = Labels.getName(buildingType);
 
         if (buildingCounts != null) {
             this.count = Integer.toString(buildingCounts.buildingsInPartiton(buildingType));

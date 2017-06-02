@@ -50,6 +50,7 @@
         android:layout_height="wrap_content"
         android:text="Woodcutter"
         android:layout_columnSpan="2"
+        android:minLines="2"
         android:gravity="center"/>
 
 </GridLayout>

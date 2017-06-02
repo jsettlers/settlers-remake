@@ -15,14 +15,11 @@
 
 package jsettlers.main.android.gameplay.presenters;
 
-import android.util.Log;
-
 import java.util.List;
 
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
-import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;

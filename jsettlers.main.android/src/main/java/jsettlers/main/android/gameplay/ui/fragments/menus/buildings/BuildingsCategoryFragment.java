@@ -15,23 +15,6 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import java.util.List;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
-import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.presenters.Building;
-import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
-import jsettlers.main.android.gameplay.presenters.MenuFactory;
-import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
-import jsettlers.main.android.utils.OriginalImageProvider;
-
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.util.DiffUtil;
@@ -42,6 +25,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.presenters.Building;
+import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
+import jsettlers.main.android.gameplay.presenters.MenuFactory;
+import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.
