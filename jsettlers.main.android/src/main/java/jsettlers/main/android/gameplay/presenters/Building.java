@@ -48,4 +48,9 @@ public class Building {
     public String getConstructionCount() {
         return constructionCount;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Building && ((Building) obj).getBuildingType() == getBuildingType();
+    }
 }

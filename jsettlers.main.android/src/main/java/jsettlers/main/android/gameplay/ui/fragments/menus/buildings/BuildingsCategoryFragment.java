@@ -32,7 +32,9 @@ import jsettlers.main.android.gameplay.presenters.MenuFactory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -88,8 +90,6 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			recyclerView.setHasFixedSize(true);
 			recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 			recyclerView.setAdapter(adapter);
-		} else {
-			adapter.notifyDataSetChanged();
 		}
 	}
 
@@ -133,7 +133,19 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			holder.setBuilding(buildings.get(position));
 		}
 
+		@Override
+		public void onBindViewHolder(BuildingViewHolder holder, int position, List<Object> payloads) {
+			if (payloads == null || payloads.size() == 0) {
+				onBindViewHolder(holder, position);
+			} else {
+				holder.updateCounts(buildings.get(position));
+			}
+		}
+
 		public void setBuildings(List<Building> buildings) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildings, buildings));
+			diffResult.dispatchUpdatesTo(this);
+
 			this.buildings = buildings;
 		}
 	}
@@ -157,6 +169,53 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 			nameTextView.setText(building.getName());
 			buildingCountTextView.setText(building.getCount());
 			buildingConstructionCountTextView.setText(building.getConstructionCount());
+		}
+
+		void updateCounts(Building building) {
+			buildingCountTextView.setText(building.getCount());
+			buildingConstructionCountTextView.setText(building.getConstructionCount());
+		}
+	}
+
+	/**
+	 * Diff callback
+	 */
+	private class BuildingsDiffCallback extends DiffUtil.Callback  {
+
+		private final List<Building> oldBuildings;
+		private final List<Building> newBuildings;
+
+		BuildingsDiffCallback(List<Building> oldBuildings, List<Building> newBuildings) {
+			this.oldBuildings = oldBuildings;
+			this.newBuildings = newBuildings;
+		}
+
+		@Override
+		public int getOldListSize() {
+			return oldBuildings.size();
+		}
+
+		@Override
+		public int getNewListSize() {
+			return newBuildings.size();
+		}
+
+		@Override
+		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldBuildings.get(oldItemPosition).equals(newBuildings.get(newItemPosition));
+		}
+
+		@Override
+		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+			boolean constructedCountsEqual = oldBuildings.get(oldItemPosition).getCount().equals(newBuildings.get(newItemPosition).getCount());
+			boolean constructingCountsEqual = oldBuildings.get(oldItemPosition).getConstructionCount().equals(newBuildings.get(newItemPosition).getConstructionCount());
+			return constructedCountsEqual && constructingCountsEqual;
+		}
+
+		@Nullable
+		@Override
+		public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+			return true;
 		}
 	}
 }
