@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.mapcreator.tools.landscape;
 
 import java.awt.Color;
+import java.util.Locale;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
@@ -49,8 +50,7 @@ public class SetLandscapeTool extends AbstractTool {
 	 *            if this is a river
 	 */
 	public SetLandscapeTool(ELandscapeType type, boolean isRiver) {
-		super(new RectIcon(16, new Color(type.color.getARGB())),
-				String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));
+		super(new RectIcon(16, new Color(type.color.getARGB())), String.format(Locale.ENGLISH, EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape." + type)));
 		this.type = type;
 
 		shapeTypes.add(EShapeType.POINT);

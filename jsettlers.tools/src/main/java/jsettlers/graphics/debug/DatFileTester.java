@@ -14,6 +14,16 @@
  *******************************************************************************/
 package jsettlers.graphics.debug;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -23,15 +33,6 @@ import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import jsettlers.common.Color;
 import jsettlers.graphics.image.GuiImage;
@@ -317,7 +318,7 @@ public class DatFileTester {
 	}
 
 	private void reloadDatFile() {
-		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
+		File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", datFileIndex)));
 
 		reader = new AdvancedDatFileReader(file, TYPE);
 	}
@@ -341,7 +342,7 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file = new File(FILE.replace("%", String.format("%02d", i)));
+				File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
 
 				if (file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);

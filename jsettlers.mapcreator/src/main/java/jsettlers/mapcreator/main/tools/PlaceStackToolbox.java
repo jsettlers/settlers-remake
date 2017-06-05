@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,8 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.mapcreator.main.tools;
+
+import java.util.Locale;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.localization.Labels;
@@ -32,13 +34,13 @@ public class PlaceStackToolbox extends ToolBox {
 	 * 
 	 * @param type
 	 *            Type to place
-	 * @param maxcount
+	 * @param maxCount
 	 *            max count
 	 */
-	public PlaceStackToolbox(EMaterialType type, int maxcount) {
-		super(String.format(EditorLabels.getLabel("place_stacks"), Labels.getName(type, true)));
+	public PlaceStackToolbox(EMaterialType type, int maxCount) {
+		super(String.format(Locale.ENGLISH, EditorLabels.getLabel("place_stacks"), Labels.getName(type, true)));
 
-		for (int i = 0; i < maxcount; i++) {
+		for (int i = 0; i < maxCount; i++) {
 			add(new PlaceStackTool(type, i + 1));
 		}
 	}

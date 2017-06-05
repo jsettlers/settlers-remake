@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,6 +20,8 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
+
+import java.util.Locale;
 
 /**
  * Place buildings on the Map
@@ -50,7 +52,7 @@ public class PlaceBuildingTool extends PlaceMapObjectTool {
 		super(null);
 		this.type = type;
 		this.player = player;
-		this.translatedName = String.format(EditorLabels.getLabel("tool.building"), Labels.getName(type));
+		this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.building"), Labels.getName(type));
 	}
 
 	/**

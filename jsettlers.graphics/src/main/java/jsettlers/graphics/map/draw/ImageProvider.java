@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -304,7 +305,7 @@ public final class ImageProvider {
 	}
 
 	private AdvancedDatFileReader createFileReader(int fileIndex) {
-		String numberString = String.format("%02d", fileIndex);
+		String numberString = String.format(Locale.ENGLISH, "%02d", fileIndex);
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
 
