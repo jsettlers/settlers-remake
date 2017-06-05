@@ -112,7 +112,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		selectionControls = controlsResolver.getSelectionControls();
 		taskControls = controlsResolver.getTaskControls();
 		gameMenu = controlsResolver.getGameMenu();
-		selectionControls.addSelectionListener(this);
 		addMapViews(controlsResolver.getMapContent());
 	}
 
@@ -152,6 +151,12 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	public void onPause() {
 		super.onPause();
 		gameMenu.mute();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		selectionControls.addSelectionListener(this);
 	}
 
 	@Override
