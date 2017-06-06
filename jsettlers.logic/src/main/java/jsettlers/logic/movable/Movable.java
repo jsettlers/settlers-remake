@@ -150,6 +150,9 @@ public final class Movable implements ILogicMovable {
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
+		if (this.isShip() && this.getStateProgress() < 0.99) {
+			return;
+		}
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
 		}
@@ -290,6 +293,9 @@ public final class Movable implements ILogicMovable {
 				strategy.action(); // let the strategy work
 			}
 			if (state == EMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
+				if (this.isShip()) {
+					pushShips();
+				}
 				if (visible && enableNothingToDo) {
 					return doingNothingAction();
 				} else {
@@ -342,6 +348,34 @@ public final class Movable implements ILogicMovable {
 			} else if (movableAction == EMovableAction.NO_ACTION) {
 				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
 			} // else: push initiated our next step
+		}
+		if (this.isShip()) { // ships need more space
+			pushShips();
+		}
+	}
+
+	void pushShips() {
+		final int SHIP_PUSH_DISTANCE = 10;
+		ILogicMovable blockingMovable;
+		final byte[] xDeltaArray = EDirection.getXDeltaArray();
+		final byte[] yDeltaArray = EDirection.getYDeltaArray();
+		int x, y;
+		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+			for (int distance = 1; distance < SHIP_PUSH_DISTANCE; distance++) {
+				int xBegin = distance * xDeltaArray[direction];
+				int yBegin = distance * yDeltaArray[direction];
+				int nextDirection = (direction + 1) % EDirection.NUMBER_OF_DIRECTIONS;
+				int xEnd = distance * xDeltaArray[nextDirection];
+				int yEnd = distance * yDeltaArray[nextDirection];
+				for (int i = 0; i < distance; i++) {
+					x = this.getPos().x + xBegin + i * (xEnd - xBegin);
+					y = this.getPos().y + yBegin + i * (yEnd - yBegin);
+					blockingMovable = grid.getMovableAt(x, y);
+					if (blockingMovable != null) {
+						blockingMovable.push(this);
+					}
+				}
+			}
 		}
 	}
 

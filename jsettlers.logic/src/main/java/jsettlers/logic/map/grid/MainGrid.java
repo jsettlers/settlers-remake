@@ -439,6 +439,9 @@ public final class MainGrid implements Serializable {
 	}
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
+		if (pathCalculatable instanceof Movable && ((Movable) pathCalculatable).isShip()) {
+			return isInsideWater((short)x, (short)y);
+		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
 	}
@@ -1796,7 +1799,7 @@ public final class MainGrid implements Serializable {
 			int direction = 0;
 			boolean searching = true;
 			for (distance = 1; distance < 12 && searching; distance++) { // search coast
-				for (direction = 0; direction < 6; direction++) {
+				for (direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
 					dx = (short) (xDeltaArray[direction] * distance);
 					dy = (short) (yDeltaArray[direction] * distance);
 					if (MainGrid.this.isInBounds(x + dx, y + dy) && !isWaterSafe(x + dx, y + dy)) {

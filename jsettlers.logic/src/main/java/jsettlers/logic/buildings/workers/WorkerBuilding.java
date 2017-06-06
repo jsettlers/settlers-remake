@@ -201,6 +201,12 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			ShortPoint2D position = new ShortPoint2D
 					((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
 					(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
+			// push old ship
+			this.ship = (Movable) super.grid.getMovableGrid().getMovableAt(position.x, position.y);
+			if (this.ship != null) {
+				this.ship.leavePosition();
+			}
+			// make new ship
 			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType,
 					position, super.getPlayer());
 			EDirection direction = EDirection.getDirection

@@ -185,36 +185,50 @@ public class MapObjectDrawer {
 		EMovableType type = ship.getMovableType();
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
-			return; // break
+			return;
 		}
-		float color = getColor(fogstatus);
+		float shade = getColor(fogstatus);
 		float state = ship.getStateProgress();
-		float maskState = state * 2;
-		ImageLink[] images;
+		int imageFile = 36;
+		ImageLink shipLink;
+		int sequence;
+		Image image;
 		if (state < .95) {
-			images = ship.getBuildImages();
-			for (ImageLink link : images) {
-				ImageLink turnedLink = new OriginalImageLink(link.getType(), link.getFile(), link.getSequence(), direction.ordinal);
-				Image image = imageProvider.getImage(turnedLink);
-				drawWithConstructionMask(x+1, y+1, maskState, image, color); // TODO: the ship images differ in position, but not integer multiples of tiles
+			// draw ship construction
+			sequence = ship.getMovableType() == EMovableType.FERRY ? 7 : 3;
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+			image = imageProvider.getImage(shipLink);
+			drawWithConstructionMask(x, y, state, image, shade);
+		} else {
+			Color color = context.getPlayerColor(ship.getPlayerId());
+			float viewX;
+			float viewY;
+			if (ship.getAction() == EMovableAction.WALKING) {
+				int originX = x - ship.getDirection().getGridDeltaX();
+				int originY = y - ship.getDirection().getGridDeltaY();
+				viewX = betweenTilesX(originX, originY, x, y, ship.getMoveProgress());
+				viewY = betweenTilesY;
+			} else {
+				int height = context.getHeight(x, y);
+				viewX = context.getConverter().getViewX(x, y, height);
+				viewY = context.getConverter().getViewY(x, y, height);
 			}
-		}
-		if (state > .5) {
-			images = ship.getImages();
-			for (ImageLink link : images) {
-				ImageLink turnedLink = new OriginalImageLink(link.getType(), link.getFile(), link.getSequence(), direction.ordinal);
-				Image image = imageProvider.getImage(turnedLink);
-				if (state < .95) {
-					maskState %= 1;
-					drawWithConstructionMask(x, y, maskState, image, color);
-				} else {
-					draw(image, x, y, color);
-					int sailSequence = ship.getMovableType() == EMovableType.FERRY ? 29 : 28; // TODO: sequence number of sail should come from xml file
-					ImageLink sailLink = new OriginalImageLink(link.getType(), link.getFile(), sailSequence, direction.ordinal);
-					Image sail = imageProvider.getImage(sailLink);
-					draw(sail, x, y, color); // TODO: the player color is missing in the sail overlay
-				}
-			}
+			// draw ship body
+			sequence = ship.getMovableType() == EMovableType.FERRY ? 4 : 0;
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+			image = imageProvider.getImage(shipLink);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			// TODO - draw ship passengers or freight
+			// draw ship front
+			sequence = ship.getMovableType() == EMovableType.FERRY ? 6 : 2;
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+			image = imageProvider.getImage(shipLink);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			// draw sail
+			sequence = ship.getMovableType() == EMovableType.FERRY ? 29 : 28;
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+			Image sail = imageProvider.getImage(shipLink);
+			sail.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
 		}
 		if (state >= 0.95 && ship.isSelected()) {
 				drawSelectionMark(x, y, ship.getHealth());

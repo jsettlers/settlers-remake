@@ -16,6 +16,8 @@ package jsettlers.common.movable;
 
 import jsettlers.common.position.ShortPoint2D;
 
+import static java.lang.Math.abs;
+
 /**
  * Enumeration for directions that can be gone on the grid.
  *
@@ -171,17 +173,20 @@ public enum EDirection {
 	public static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
 		int steps;
 		if (dx != 0) {
-			steps = Math.abs(dx);
+			steps = abs(dx);
 		} else {
-			steps = Math.abs(dy);
+			steps = abs(dy);
 		}
 
 		return getDirection(dx / steps, dy / steps);
 	}
 
 	public static EDirection getDirection(int dx, int dy) {
+		int max = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+		int deltaX = max > 0 ? dx / max : dx;
+		int deltaY = max > 0 ? dy / max : dy;
 		for (EDirection currDir : VALUES) {
-			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
+			if (currDir.gridDeltaX == deltaX && currDir.gridDeltaY == deltaY) {
 				return currDir;
 			}
 		}
