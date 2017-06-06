@@ -50,6 +50,8 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
 
+import static jsettlers.common.movable.EMovableType.DEFAULT_HEALTH;
+
 /**
  * This class handles drawing of objects on the map.
  *
@@ -229,9 +231,9 @@ public class MapObjectDrawer {
 			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
 			Image sail = imageProvider.getImage(shipLink);
 			sail.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
-		}
-		if (state >= 0.95 && ship.isSelected()) {
-				drawSelectionMark(x, y, ship.getHealth());
+			if (state >= 0.95 && ship.isSelected()) {
+				drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
+			}
 		}
 	}
 
