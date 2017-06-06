@@ -370,9 +370,11 @@ public final class Movable implements ILogicMovable {
 				for (int i = 0; i < distance; i++) {
 					x = this.getPos().x + xBegin + i * (xEnd - xBegin);
 					y = this.getPos().y + yBegin + i * (yEnd - yBegin);
-					blockingMovable = grid.getMovableAt(x, y);
-					if (blockingMovable != null) {
-						blockingMovable.push(this);
+					if (grid.isInBounds(x, y)) {
+						blockingMovable = grid.getMovableAt(x, y);
+						if (blockingMovable != null && blockingMovable.isShip()) {
+							blockingMovable.push(this);
+						}
 					}
 				}
 			}
