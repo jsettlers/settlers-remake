@@ -43,7 +43,8 @@ public class JoinMultiPlayerSetupPresenterPop implements JoinMultiPlayerSetupPre
 	}
 
 	@Override
-	public void startGame() {
+	public boolean startGame() {
+		return false;
 	}
 
 	@Override

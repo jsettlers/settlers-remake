@@ -110,11 +110,7 @@ public class PresenterFactory {
 		MainMenuNavigator navigator = (MainMenuNavigator) activity;
 		GameStarter gameStarter = (GameStarter) activity.getApplication();
 
-		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = stream(maps)
-				.filter(x -> mapId.equals(x.getMapId()))
-				.findFirst()
-				.get();
+		MapLoader mapDefinition = getMapById(mapId, gameStarter);
 
 		return new NewSinglePlayerSetupPresenter(view, navigator, gameStarter, new AndroidPreferences(activity), mapDefinition);
 	}
@@ -124,11 +120,7 @@ public class PresenterFactory {
 		GameStarter gameStarter = (GameStarter) activity.getApplication();
 		IJoinPhaseMultiplayerGameConnector joinPhaseMultiplayerGameConnector = gameStarter.getJoinPhaseMultiplayerConnector();
 
-		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = stream(maps)
-				.filter(x -> mapId.equals(x.getMapId()))
-				.findFirst()
-				.get();
+		MapLoader mapDefinition = getMapById(mapId, gameStarter);
 
 		if (joinPhaseMultiplayerGameConnector == null || mapDefinition == null) {
 			return new NewMultiPlayerSetupPresenterPop(mainMenuNavigator);
@@ -143,16 +135,20 @@ public class PresenterFactory {
 		GameStarter gameStarter = (GameStarter) activity.getApplication();
 		IJoinPhaseMultiplayerGameConnector connector = gameStarter.getJoinPhaseMultiplayerConnector();
 
-		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
-		MapLoader mapDefinition = stream(maps)
-				.filter(x -> mapId.equals(x.getMapId()))
-				.findFirst()
-				.get();
+		MapLoader mapDefinition = getMapById(mapId, gameStarter);
 
 		if (connector == null/* || mapDefinition == null */) {
 			return new JoinMultiPlayerSetupPresenterPop(navigator);
 		} else {
 			return new JoinMultiPlayerSetupPresenterImpl(view, navigator, gameStarter, connector, new AndroidPreferences(activity), mapDefinition);
 		}
+	}
+
+	private static MapLoader getMapById(String mapId, GameStarter gameStarter) {
+		List<MapLoader> maps = gameStarter.getMapList().getFreshMaps().getItems();
+		return stream(maps)
+				.filter(x -> mapId.equals(x.getMapId()))
+				.findFirst()
+				.get();
 	}
 }
