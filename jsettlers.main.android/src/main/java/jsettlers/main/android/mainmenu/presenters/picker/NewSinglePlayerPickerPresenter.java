@@ -27,8 +27,7 @@ import jsettlers.main.android.mainmenu.views.MapPickerView;
 public class NewSinglePlayerPickerPresenter extends MapPickerPresenter {
 	private final MainMenuNavigator navigator;
 
-	public NewSinglePlayerPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
-			ChangingList<? extends MapLoader> changingMaps) {
+	public NewSinglePlayerPickerPresenter(MapPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
 		super(view, navigator, gameStarter, changingMaps);
 		this.navigator = navigator;
 	}

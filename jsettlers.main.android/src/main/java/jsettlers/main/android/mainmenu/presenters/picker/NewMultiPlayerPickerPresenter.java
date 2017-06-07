@@ -85,6 +85,7 @@ public class NewMultiPlayerPickerPresenter extends MapPickerPresenter implements
 	}
 
 	public void dispose() {
+		super.dispose();
 		if (joiningGame != null) {
 			joiningGame.setListener(null);
 		}
