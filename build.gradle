@@ -2,8 +2,15 @@
 apply plugin: 'java'
 
 ext {
-    androidAnnotationsVersion = '4.3.0'
     streamSupportVersion = '1.5.4'
+
+    androidAnnotationsVersion = '4.3.0'
+    androidSupportLibraryVersion = '25.3.1'
+
+    androidBuildToolsVersion = '25.0.2'
+    androidCompileSdkVersion = 25
+    androidMinSdkVersion = 19
+    androidTargetSdkVersion = 25
 }
 
 buildscript {
