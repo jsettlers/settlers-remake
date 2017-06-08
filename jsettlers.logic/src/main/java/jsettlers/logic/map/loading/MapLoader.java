@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,6 +24,8 @@ import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.map.loading.newmap.FreshMapLoader;
 import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.logic.map.loading.savegame.SavegameLoader;
+
+import java.util.Locale;
 
 /**
  * This is the base class that prvides support for loading maps and starting a new game from them.
@@ -63,7 +65,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 	public static boolean checkExtention(String filename, String Extention) {
 		if (filename == null)
 			return false;
-		return filename.toLowerCase().endsWith(Extention.toLowerCase());
+		return filename.toLowerCase(Locale.ENGLISH).endsWith(Extention.toLowerCase(Locale.ENGLISH));
 	}
 
 	public static boolean isExtensionKnown(String filename) {

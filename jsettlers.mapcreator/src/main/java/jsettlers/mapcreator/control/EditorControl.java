@@ -88,6 +88,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -192,7 +193,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 				Integer player = (Integer) value;
 				setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
-				setText(String.format(EditorLabels.getLabel("general.player_x"), player));
+				setText(String.format(Locale.ENGLISH, EditorLabels.getLabel("general.player_x"), player));
 
 				return this;
 			}

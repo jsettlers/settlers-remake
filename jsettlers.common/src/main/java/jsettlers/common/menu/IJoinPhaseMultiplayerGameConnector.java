@@ -24,8 +24,8 @@ import jsettlers.common.utils.collections.ChangingList;
  */
 public interface IJoinPhaseMultiplayerGameConnector {
 	/**
-	 * Sets the multiplayer listener that listens to game state changes. If the game has already started,
-	 * {@link IMultiplayerListener#gameIsStarting(IStartingGame)} is called immediately by this method.
+	 * Sets the multiplayer listener that listens to game state changes. If the game has already started, {@link IMultiplayerListener#gameIsStarting(IStartingGame)} is called immediately by this
+	 * method.
 	 * 
 	 * @param listener
 	 */
@@ -52,14 +52,14 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	void setReady(boolean ready);
 
 	/**
-	 * Starts the game. Calls the game listener as soon as it is starting.
+	 * Starts the game if all players are currently ready. Calls the game listener as soon as it is starting.
+	 * 
+	 * @return returns true if all players were ready and thus the game start has been triggered. false if the players weren't ready.
 	 */
-	void startGame();
+	boolean startGame();
 
 	/**
-	 * Called when the user exits the screen, to abort the multiplayer game. This method does not need to call the abort() method of the
-	 * {@link IMultiplayerListener}.
+	 * Called when the user exits the screen, to abort the multiplayer game. This method does not need to call the abort() method of the {@link IMultiplayerListener}.
 	 */
 	void abort();
-
 }

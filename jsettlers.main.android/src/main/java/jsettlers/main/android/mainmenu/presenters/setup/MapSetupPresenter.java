@@ -27,7 +27,7 @@ public interface MapSetupPresenter {
 
 	void dispose();
 
-	void startGame();
+	boolean startGame();
 
 	void playerCountSelected(PlayerCount item);
 

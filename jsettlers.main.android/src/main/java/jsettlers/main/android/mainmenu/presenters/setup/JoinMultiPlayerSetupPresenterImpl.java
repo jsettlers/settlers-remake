@@ -79,8 +79,8 @@ public class JoinMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl imp
 	}
 
 	@Override
-	public void startGame() {
-		connector.startGame();
+	public boolean startGame() {
+		return connector.startGame();
 	}
 
 	/**

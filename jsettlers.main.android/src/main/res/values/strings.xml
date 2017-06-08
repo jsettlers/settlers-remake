@@ -127,4 +127,5 @@
     <string name="buildings">Buildings</string>
     <string name="goods">Goods</string>
     <string name="settlers">Settlers</string>
+    <string name="multiplayer_not_all_players_ready">All players must be ready to start the match.</string>
 </resources>

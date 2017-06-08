@@ -98,5 +98,6 @@
     <string name="buildings">Gebäude</string>
     <string name="goods">Waren</string>
     <string name="settlers">Siedler</string>
+    <string name="multiplayer_not_all_players_ready">Alle Spieler müssen bereit sein um das Spiel zu starten.</string>
 
 </resources>

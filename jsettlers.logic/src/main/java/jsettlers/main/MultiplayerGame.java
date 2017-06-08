@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -227,8 +229,13 @@ public class MultiplayerGame {
 
 		return new IJoinPhaseMultiplayerGameConnector() {
 			@Override
-			public void startGame() {
-				networkClient.startMatch();
+			public boolean startGame() {
+				if (areAllPlayersReady()) {
+					networkClient.startMatch();
+					return true;
+				} else {
+					return false;
+				}
 			}
 
 			@Override
@@ -259,6 +266,13 @@ public class MultiplayerGame {
 			@Override
 			public void sendChatMessage(String chatMessage) {
 				networkClient.sendChatMessage(chatMessage);
+			}
+
+			private boolean areAllPlayersReady() {
+				return !stream(playersList.getItems())
+						.filter(player -> !player.isReady())
+						.findAny()
+						.isPresent();
 			}
 		};
 	}

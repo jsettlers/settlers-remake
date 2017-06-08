@@ -16,6 +16,7 @@ package jsettlers.graphics.localization;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
@@ -66,7 +67,7 @@ public final class Labels extends AbstractLabels {
 	 */
 	public static String getString(String string, Object... args) {
 		String parsedString = getString(string);
-		return String.format(INSTANCE.getUsedLocale(), parsedString, args);
+		return String.format(Locale.ENGLISH, parsedString, args);
 	}
 
 	/**
