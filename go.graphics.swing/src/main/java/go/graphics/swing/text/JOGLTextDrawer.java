@@ -31,16 +31,15 @@ import java.awt.geom.Rectangle2D;
  */
 public final class JOGLTextDrawer implements TextDrawer {
 
-	private static final String FONTNAME = "Arial";
+	private static final String FONT_NAME = "Arial";
 
 	private static final int DEFAULT_DPI_WIDTH = 1920;
-	private static float SCALING_FACTOR = 1;
+	private static final float SCALING_FACTOR;
 
 	static {
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		int width = gd.getDisplayMode().getWidth();
-		SCALING_FACTOR = (float)width / DEFAULT_DPI_WIDTH;
-		SCALING_FACTOR = Math.min(SCALING_FACTOR, 1);
+		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+		SCALING_FACTOR = Math.min((float) screenWidth / DEFAULT_DPI_WIDTH, 1);
 	}
 
 	private final TextRenderer renderer;
@@ -57,7 +56,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		this.drawContext = drawContext;
 		int scaledFontSize = Math.round(size.getSize() * SCALING_FACTOR);
-		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
+		Font font = new Font(FONT_NAME, Font.TRUETYPE_FONT, scaledFontSize);
 		this.renderer = new TextRenderer(font, true, true, null, true);
 	}
 
