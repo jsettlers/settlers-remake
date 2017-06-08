@@ -64,7 +64,6 @@ public class SwingManagedJSettlers {
 		setupResourceManagers(optionableProperties);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
-		JOGLTextDrawer.calculateScalingFactor();
 		handleStartOptions(optionableProperties, settlersFrame);
 	}
 

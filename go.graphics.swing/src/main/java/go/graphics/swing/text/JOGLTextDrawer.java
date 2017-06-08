@@ -19,7 +19,9 @@ import go.graphics.swing.opengl.JOGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -34,9 +36,9 @@ public final class JOGLTextDrawer implements TextDrawer {
 	private static final int DEFAULT_DPI_WIDTH = 1920;
 	private static float SCALING_FACTOR = 1;
 
-	public static void calculateScalingFactor() {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		double width = screenSize.getWidth();
+	static {
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int width = gd.getDisplayMode().getWidth();
 		SCALING_FACTOR = (float)width / DEFAULT_DPI_WIDTH;
 		SCALING_FACTOR = Math.min(SCALING_FACTOR, 1);
 	}
