@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,9 +26,15 @@ import jsettlers.common.statistics.IGameTimeProvider;
 public class FakeMapGame implements IStartedGame {
 
 	private final IGraphicsGrid map;
+	private final IInGamePlayer player;
 
 	public FakeMapGame(IGraphicsGrid map) {
+		this(map, null);
+	}
+
+	public FakeMapGame(IGraphicsGrid map, IInGamePlayer player) {
 		this.map = map;
+		this.player = player;
 	}
 
 	@Override
@@ -43,7 +49,7 @@ public class FakeMapGame implements IStartedGame {
 
 	@Override
 	public IInGamePlayer getInGamePlayer() {
-		return null;
+		return player;
 	}
 
 	@Override

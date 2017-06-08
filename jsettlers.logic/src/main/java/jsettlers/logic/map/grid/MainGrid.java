@@ -14,7 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
-import java8.util.Optional;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -33,6 +40,7 @@ import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.common.Color;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
@@ -102,21 +110,15 @@ import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java8.util.Optional;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -482,7 +484,7 @@ public final class MainGrid implements Serializable {
 			switch (searchType) {
 
 			case UNENFORCED_FOREIGN_GROUND:
-				return !flagsGrid.isProtected(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+				return !objectsGrid.isBuildingAt(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
 			case VALID_FREE_POSITION:
 				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
@@ -892,8 +894,12 @@ public final class MainGrid implements Serializable {
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
 		public final boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
-			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0
-					&& !partitionsGrid.isEnforcedByTower(x, y);
+			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && !landscapeGrid.isBlockedPartition(x, y) && !partitionsGrid.isEnforcedByTower(x, y);
+		}
+
+		@Override
+		public boolean isOfPlayerOrBlocked(int x, int y, byte playerId) {
+			return partitionsGrid.getPlayerIdAt(x, y) == playerId || landscapeGrid.isBlockedPartition(x, y);
 		}
 
 		@Override
@@ -902,13 +908,27 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final short getPartitionAt(int x, int y) {
-			return partitionsGrid.getPartitionIdAt(x, y);
+		public final byte getPlayerIdAt(int x, int y) {
+			return partitionsGrid.getPlayerIdAt(x, y);
+		}
+
+		private void destroyBuildingOrTakeOver(int x, int y, byte playerId) {
+			if (flagsGrid.isBlocked(x, y)) {
+				partitionsGrid.changePlayerAt(x, y, playerId);
+			}
+
+			Building building = objectsGrid.getBuildingAt(x, y);
+			if (building != null && building.getPlayerId() != playerId) {
+				building.kill();
+			}
 		}
 
 		@Override
-		public final void setPartitionAt(int x, int y, short partition) {
-			partitionsGrid.setPartitionAt(x, y, partition);
+		public IAreaVisitor getDestroyBuildingOrTakeOverVisitor(byte newPlayer) {
+			return (x, y) -> {
+				destroyBuildingOrTakeOver(x, y, newPlayer);
+				return true;
+			};
 		}
 
 		@Override
@@ -946,7 +966,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
+		public boolean canConstructAt(int x, int y, EBuildingType buildingType, byte playerId) {
 			RelativePoint[] buildingArea = buildingType.getBuildingArea();
 			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
@@ -1587,8 +1607,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
-			CoordinateStream positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
-			checkAllPositionsForEnclosedBlockedAreas(positions);
+			partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
 		}
 
 		@Override
@@ -1616,8 +1635,9 @@ public final class MainGrid implements Serializable {
 				float circleRadius = radius * circle / (float) numCircles;
 				float mapObjectProgress = (circle - 1) / (float) (numCircles - 1);
 
-				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius).forEach(
-						(x, y) -> addOrRemoveMarkObject(buildingPartition, draw, new ShortPoint2D(x, y), mapObjectProgress));
+				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius)
+						.filterBounds(width, height)
+						.forEach((x, y) -> addOrRemoveMarkObject(buildingPartition, draw, x, y, mapObjectProgress));
 			}
 		}
 
@@ -1645,14 +1665,14 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, ShortPoint2D pos, float progress) {
+		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, int x, int y, float progress) {
 			if (draw) {
 				// Only place an object if the position is the same as the one of the building.
-				if (partitionsGrid.getPartitionIdAt(pos.x, pos.y) == buildingPartition) {
-					mapObjectsManager.addBuildingWorkAreaObject(pos.x, pos.y, progress);
+				if (partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) {
+					mapObjectsManager.addBuildingWorkAreaObject(x, y, progress);
 				}
 			} else {
-				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
+				mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
 			}
 		}
 
@@ -1734,20 +1754,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId, boolean useNeighbors) {
-			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, playerId)) {
-				return pos;
-			} else if (useNeighbors) {
-				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
-					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, playerId)) {
-						return neighbour;
-					}
-				}
-				return null;
-
-			} else {
-				return null;
-			}
+		public final Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId) {
+			return MapCircle.stream(pos, Constants.BUILDING_PLACEMENT_MAX_SEARCH_RADIUS)
+					.filterBounds(width, height)
+					.filter((x, y) -> constructionMarksGrid.canConstructAt(x, y, type, playerId))
+					.min((x, y) -> ShortPoint2D.getOnGridDist(pos.x, pos.y, x, y));
 		}
 
 		@Override
@@ -1843,8 +1854,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	/**
-	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid
-	 * changes it's player.
+	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid changes it's player.
 	 *
 	 * @author Andreas Eberle
 	 */

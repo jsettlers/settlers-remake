@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.mapcreator.mapvalidator;
 
 import java.awt.event.ActionEvent;
+import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -79,7 +80,7 @@ public class ShowErrorsAction extends AbstractAction implements ValidationResult
 		if (count == 0) {
 			putValue(Action.NAME, EditorLabels.getLabel("action.show-" + name));
 		} else {
-			putValue(Action.NAME, String.format(EditorLabels.getLabel("action.show-" + name + "_n"), count));
+			putValue(Action.NAME, String.format(Locale.ENGLISH, EditorLabels.getLabel("action.show-" + name + "_n"), count));
 		}
 	}
 }

@@ -232,21 +232,17 @@ public final class PartitionsGrid implements Serializable {
 	 * 
 	 * @param pos
 	 *            The position of the tower.
-	 * @return
-	 */
-	public CoordinateStream removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+	  */
+	public void removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
 		if (tower == null) {
-			return CoordinateStream.EMPTY;
+			return ;
 		}
 
 		// reduce the tower counter
-		CoordinateStream towerStream = tower.area.stream();
-		changeTowerCounter(tower.playerId, towerStream, -1);
+		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
 		checkOtherTowersInArea(tower);
-
-		return towerStream;
 	}
 
 	/**
@@ -287,16 +283,20 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
-		int idx = position.x + position.y * width;
+		changePlayerAt(position.x, position.y, playerId);
+	}
+
+	public void changePlayerAt(int x, int y, byte playerId) {
+		int idx = x + y * width;
 		if (towers[idx] <= 0) {
 			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(position.x, position.y, newPartition);
-			notifyPlayerChangedListener(position.x, position.y, playerId);
+			changePartitionUncheckedAt(x, y, newPartition);
+			notifyPlayerChangedListener(x, y, playerId);
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.VALUES) {
-				borderVisitor.visit(position.x, position.y, currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+				borderVisitor.visit(x, y, currDir.gridDeltaX + x, currDir.gridDeltaY + y);
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());

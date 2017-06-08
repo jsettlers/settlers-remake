@@ -16,6 +16,7 @@
 package jsettlers.main.android.core.ui;
 
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -24,7 +25,17 @@ import android.support.v7.widget.Toolbar;
  */
 public class FragmentUtil {
 	public static void setActionBar(Fragment fragment, Toolbar toolbar) {
-		AppCompatActivity activity = (AppCompatActivity) fragment.getActivity();
-		activity.setSupportActionBar(toolbar);
+		getActivity(fragment).setSupportActionBar(toolbar);
+	}
+
+	private static AppCompatActivity getActivity(Fragment fragment) {
+		return (AppCompatActivity) fragment.getActivity();
+	}
+
+	public static void setDisplayShowTitleEnabled(Fragment fragment, boolean displayShowTitleEnabled) {
+		ActionBar toolbar = getActivity(fragment).getSupportActionBar();
+		if (toolbar != null) {
+			toolbar.setDisplayShowTitleEnabled(displayShowTitleEnabled);
+		}
 	}
 }

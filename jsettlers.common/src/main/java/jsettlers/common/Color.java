@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common;
 
+import java.util.Locale;
+
 /**
  * This class represents a color with an alpha value.
  * 
@@ -236,7 +238,7 @@ public final class Color {
 	 *            The 16 bit color in
 	 * @return The 32 bit color;
 	 */
-	public static  int convertTo32Bit(int color16bit) {
+	public static int convertTo32Bit(int color16bit) {
 		// TODO: Make faster
 		float red = (float) ((color16bit >> 11) & 0x1f) / 0x1f;
 		float green = (float) ((color16bit >> 6) & 0x1f) / 0x1f;
@@ -258,11 +260,11 @@ public final class Color {
 		}
 	}
 
-	private static  int convertColorChannel6to5(int c) {
+	private static int convertColorChannel6to5(int c) {
 		return table6to5[c];
 	}
 
-	public static  int convert565to555(int rgb565) {
+	public static int convert565to555(int rgb565) {
 		int r5 = (rgb565 & 0xf800) >> 11;
 		int g6 = (rgb565 & 0x07e0) >> 5;
 		int b5 = rgb565 & 0x001f;
@@ -318,15 +320,13 @@ public final class Color {
 	 * @see #toShortColor(float)
 	 */
 	public static Color fromShort(short s) {
-		return new Color((float) (s >> SHORT_SHIFT_RED & SHORT_FIELD_MAX) / SHORT_FIELD_MAX, (float) (s >> SHORT_SHIFT_GREEN & SHORT_FIELD_MAX)
-				/ SHORT_FIELD_MAX, (float) (s >> SHORT_SHIFT_BLUE & SHORT_FIELD_MAX)
-						/ SHORT_FIELD_MAX,
-				s & SHORT_MASK_ALPHA);
+		return new Color((float) (s >> SHORT_SHIFT_RED & SHORT_FIELD_MAX) / SHORT_FIELD_MAX,
+				(float) (s >> SHORT_SHIFT_GREEN & SHORT_FIELD_MAX) / SHORT_FIELD_MAX,
+				(float) (s >> SHORT_SHIFT_BLUE & SHORT_FIELD_MAX) / SHORT_FIELD_MAX, s & SHORT_MASK_ALPHA);
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[argb=" + String.format("%08x", getARGB()) + "]";
+		return getClass().getName() + "[argb=" + String.format(Locale.ENGLISH, "%08x", getARGB()) + "]";
 	}
-
 }

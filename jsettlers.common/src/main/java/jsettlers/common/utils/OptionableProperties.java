@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -62,7 +62,7 @@ public class OptionableProperties extends Properties {
 
 	private void loadEntry(Map.Entry<?, ?> e, String envPrefix) {
 		if (e.getKey().toString().startsWith(envPrefix)) {
-			String key = e.getKey().toString().substring(envPrefix.length()).toLowerCase();
+			String key = e.getKey().toString().substring(envPrefix.length()).toLowerCase(Locale.ENGLISH);
 			setProperty(key, e.getValue().toString());
 			System.out.println("Argument: " + key + " -> " + e.getValue().toString());
 		}
@@ -70,7 +70,7 @@ public class OptionableProperties extends Properties {
 
 	public boolean isOptionSet(String key) {
 		String value = super.getProperty(key);
-		return value != null && value.toLowerCase().equals("true");
+		return value != null && value.toLowerCase(Locale.ENGLISH).equals("true");
 	}
 
 	public void loadArguments(String[] args) {

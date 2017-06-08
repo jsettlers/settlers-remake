@@ -27,36 +27,30 @@ public class NewMultiPlayerSetupPresenterPop implements NewMultiPlayerSetupPrese
 
 	@Override
 	public void initView() {
-
 	}
 
 	@Override
 	public void updateViewTitle() {
-
 	}
 
 	@Override
 	public void viewFinished() {
-
 	}
 
 	@Override
 	public void dispose() {
-
 	}
 
 	@Override
-	public void startGame() {
-
+	public boolean startGame() {
+		return false;
 	}
 
 	@Override
 	public void playerCountSelected(PlayerCount item) {
-
 	}
 
 	@Override
 	public void startResourcesSelected(StartResources item) {
-
 	}
 }

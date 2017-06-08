@@ -54,7 +54,6 @@ public final class AreaTraversingAlgorithm {
 	 *         false if the visitor returned false at any position and therefore caused the traversing to be canceled.
 	 */
 	public static boolean traverseArea(IContainingProvider containingProvider, IAreaVisitor visitor, ShortPoint2D startPos, int width, int height) {
-
 		LinkedList<ShortPoint2D> stack = new LinkedList<>();
 		stack.push(startPos);
 		BitSet touched = new BitSet(width * height);

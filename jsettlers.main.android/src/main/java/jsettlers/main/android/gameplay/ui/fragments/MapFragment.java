@@ -18,8 +18,15 @@ package jsettlers.main.android.gameplay.ui.fragments;
 import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
 import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.Receiver;
+import org.androidannotations.annotations.ViewById;
+
 import go.graphics.android.GOSurfaceView;
-import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
@@ -36,6 +43,7 @@ import jsettlers.main.android.core.controls.SelectionControls;
 import jsettlers.main.android.core.controls.SelectionListener;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.core.navigation.BackPressedListener;
+import jsettlers.main.android.core.ui.FragmentUtil;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog;
 import jsettlers.main.android.core.ui.dialogs.ConfirmDialog_;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
@@ -49,25 +57,19 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsS
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.ActionMenuView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
+@EFragment(R.layout.fragment_map)
+@OptionsMenu(R.menu.game)
 public class MapFragment extends Fragment implements SelectionListener, BackPressedListener, PausedDialog.Listener, ConfirmDialog.ConfirmListener, MenuNavigator {
 	private static final String TAG_FRAGMENT_PAUSED_MENU = "com.jsettlers.pausedmenufragment";
 	private static final String TAG_FRAGMENT_SELECTION_MENU = "com.jsettlers.selectionmenufragment";
@@ -81,74 +83,57 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private SelectionControls selectionControls;
 	private TaskControls taskControls;
 	private GameMenu gameMenu;
-
-	private LocalBroadcastManager localBroadcastManager;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
 
-	public static MapFragment newInstance() {
-		return new MapFragment();
+	@ViewById(R.id.toolbar)
+	Toolbar toolbar;
+	@ViewById(R.id.frame_layout)
+	FrameLayout frameLayout;
+	@ViewById(R.id.bottom_sheet)
+	View bottomSheet;
+
+	@AfterViews
+	void setupToolbar() {
+		FragmentUtil.setActionBar(this, toolbar);
+		FragmentUtil.setDisplayShowTitleEnabled(this, false);
 	}
 
-	public MapFragment() {
-	}
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_map, container, false);
-
-		ActionMenuView actionMenuView = (ActionMenuView) view.findViewById(R.id.action_menu_view);
-		getActivity().getMenuInflater().inflate(R.menu.game, actionMenuView.getMenu());
-		actionMenuView.setOnMenuItemClickListener(menuItemClickListener);
-
-		View bottomSheet = view.findViewById(R.id.bottom_sheet);
+	@AfterViews
+	void setupBottomSheet() {
 		bottomSheetBehavior = ViewPagerBottomSheetBehavior.from(bottomSheet);
 		bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 		bottomSheetBehavior.setHideable(false);
-
-		View buildingsMenuButton = view.findViewById(R.id.button_buildings_menu);
-		buildingsMenuButton.setOnClickListener(view1 -> showBuildingsMenu());
-
-		View goodsMenuButton = view.findViewById(R.id.button_goods_menu);
-		goodsMenuButton.setOnClickListener(view12 -> showGoodsMenu());
-
-		View settlersMenuButton = view.findViewById(R.id.button_settlers_menu);
-		settlersMenuButton.setOnClickListener(view13 -> showSettlersMenu());
-
-		return view;
 	}
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	@AfterViews
+	void setupControls() {
 		ControlsResolver controlsResolver = new ControlsResolver(getActivity());
 		actionControls = controlsResolver.getActionControls();
 		selectionControls = controlsResolver.getSelectionControls();
 		taskControls = controlsResolver.getTaskControls();
 		gameMenu = controlsResolver.getGameMenu();
+		addMapViews(controlsResolver.getMapContent());
+	}
 
-		selectionControls.addSelectionListener(this);
+	private void addMapViews(MapContent mapContent) {
+		Region goRegion = new Region(Region.POSITION_CENTER);
+		goRegion.setContent(mapContent);
 
-		MapContent mapContent = controlsResolver.getMapContent();
-		addMapViews(mapContent);
+		Area goArea = new Area();
+		goArea.add(goRegion);
 
-		if (savedInstanceState == null) {
-			addBuildsingMenuFragment();
-		}
+		GOSurfaceView goView = new GOSurfaceView(getActivity(), goArea);
+		goView.setContextDestroyedListener(() -> ImageProvider.getInstance().invalidateAll());
+		frameLayout.addView(goView);
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(ACTION_PAUSE);
-		intentFilter.addAction(ACTION_UNPAUSE);
-		localBroadcastManager.registerReceiver(mapVisibleBroadcastReceiver, intentFilter);
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		if (savedInstanceState == null) {
+			addBuildingsMenuFragment();
+		}
 	}
 
 	@Override
@@ -169,14 +154,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-		localBroadcastManager.unregisterReceiver(mapVisibleBroadcastReceiver);
+	public void onStart() {
+		super.onStart();
+		selectionControls.addSelectionListener(this);
 	}
 
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+	public void onStop() {
+		super.onStop();
 		selectionControls.removeSelectionListener(this);
 	}
 
@@ -235,7 +220,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	 * PausedDialog.Listener implementation
 	 */
 	@Override
-	public void onUnPause() {
+	public void onGameUnPause() {
 		gameMenu.unPause();
 	}
 
@@ -293,12 +278,7 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	private void showBuildingsMenu() {
-		showMenu();
-		addBuildsingMenuFragment();
-	}
-
-	private void addBuildsingMenuFragment() {
+	private void addBuildingsMenuFragment() {
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_BUILDINGS_MENU) == null) {
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, BuildingsMenuFragment.newInstance(), TAG_FRAGMENT_BUILDINGS_MENU)
@@ -306,7 +286,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	private void showGoodsMenu() {
+	@Click(R.id.button_buildings_menu)
+	void showBuildingsMenu() {
+		showMenu();
+		addBuildingsMenuFragment();
+	}
+
+	@Click(R.id.button_goods_menu)
+	void showGoodsMenu() {
 		showMenu();
 
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_GOODS_MENU) == null) {
@@ -316,7 +303,8 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	private void showSettlersMenu() {
+	@Click(R.id.button_settlers_menu)
+	void showSettlersMenu() {
 		showMenu();
 
 		if (getChildFragmentManager().findFragmentByTag(TAG_FRAGMENT_SETTLERS_MENU) == null) {
@@ -327,7 +315,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	}
 
 	private void showSelectionMenu() {
-
 		switch (selectionControls.getCurrentSelection().getSelectionType()) {
 		case BUILDING:
 			showMenu();
@@ -358,72 +345,54 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		}
 	}
 
-	/**
-	 * GameMenu item click listener
-	 */
-	private final ActionMenuView.OnMenuItemClickListener menuItemClickListener = new ActionMenuView.OnMenuItemClickListener() {
-		@Override
-		public boolean onMenuItemClick(MenuItem item) {
-			switch (item.getItemId()) {
-			case R.id.menu_item_pause:
-				gameMenu.pause();
-				break;
-			case R.id.menu_item_save:
-				gameMenu.save();
-				break;
-			case R.id.menu_item_quit:
-				ConfirmDialog_.builder()
-						.requestCode(REQUEST_CODE_CONFIRM_QUIT)
-						.titleResId(R.string.game_menu_quit)
-						.confirmButtonTextResId(R.string.game_menu_quit)
-						.build()
-						.show(getChildFragmentManager(), null);
-				break;
-			case R.id.menu_item_faster:
-				actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
-				break;
-			case R.id.menu_item_slower:
-				actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
-				break;
-			case R.id.menu_item_fastest:
-				actionControls.fireAction(new Action(EActionType.SPEED_FAST));
-				break;
-			case R.id.menu_item_skip:
-				actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
-				break;
-			}
-			return true;
-		}
-	};
-
-	private void addMapViews(MapContent mapContent) {
-		FrameLayout frameLayout = (FrameLayout) getView().findViewById(R.id.frame_layout);
-
-		Region goRegion = new Region(Region.POSITION_CENTER);
-		goRegion.setContent(mapContent);
-
-		Area goArea = new Area();
-		goArea.add(goRegion);
-
-		GOSurfaceView goView = new GOSurfaceView(getActivity(), goArea);
-		goView.setContextDestroyedListener(contextDestroyedListener);
-		frameLayout.addView(goView);
+	@OptionsItem(R.id.menu_item_pause_game)
+	void pauseGameClicked() {
+		gameMenu.pause();
 	}
 
-	private final BroadcastReceiver mapVisibleBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			switch (intent.getAction()) {
-			case ACTION_PAUSE:
-				showPausedMenu();
-				break;
-			case ACTION_UNPAUSE:
-				gameMenu.unMute();
-				dismissPausedMenu();
-				break;
-			}
-		}
-	};
+	@OptionsItem(R.id.menu_item_save)
+	void saveClicked() {
+		gameMenu.save();
+	}
 
-	private IContextDestroyedListener contextDestroyedListener = () -> ImageProvider.getInstance().invalidateAll();
+	@OptionsItem(R.id.menu_item_quit)
+	void quitClicked() {
+		ConfirmDialog_.builder()
+				.requestCode(REQUEST_CODE_CONFIRM_QUIT)
+				.titleResId(R.string.game_menu_quit)
+				.confirmButtonTextResId(R.string.game_menu_quit)
+				.build()
+				.show(getChildFragmentManager(), null);
+	}
+
+	@OptionsItem(R.id.menu_item_faster)
+	void fasterClicked() {
+		actionControls.fireAction(new Action(EActionType.SPEED_FASTER));
+	}
+
+	@OptionsItem(R.id.menu_item_slower)
+	void slowerClicked() {
+		actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
+	}
+
+	@OptionsItem(R.id.menu_item_fast)
+	void fastClicked() {
+		actionControls.fireAction(new Action(EActionType.SPEED_FAST));
+	}
+
+	@OptionsItem(R.id.menu_item_skip_one_minute)
+	void skipOneMinuteClicked() {
+		actionControls.fireAction(new Action(EActionType.FAST_FORWARD));
+	}
+
+	@Receiver(actions = ACTION_PAUSE, local = true, registerAt = Receiver.RegisterAt.OnResumeOnPause)
+	void pauseGameReceived() {
+		showPausedMenu();
+	}
+
+	@Receiver(actions = ACTION_UNPAUSE, local = true, registerAt = Receiver.RegisterAt.OnStartOnStop)
+	void unPauseGameReceived() {
+		gameMenu.unMute();
+		dismissPausedMenu();
+	}
 }

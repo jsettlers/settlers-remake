@@ -21,6 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -124,7 +125,7 @@ public class OpenPanel extends JPanel {
 	 * Search has changed, update the list
 	 */
 	protected void searchChanged() {
-		String search = txtSearch.getText().toLowerCase();
+		String search = txtSearch.getText().toLowerCase(Locale.ENGLISH);
 
 		if (search.isEmpty()) {
 			listModelFiltered.clear();
@@ -151,13 +152,13 @@ public class OpenPanel extends JPanel {
 	 * @return true if yes, false if no
 	 */
 	private boolean matchesSearch(MapLoader m, String search) {
-		if (m.getMapName().toLowerCase().contains(search)) {
+		if (m.getMapName().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		if (m.getDescription().toLowerCase().contains(search)) {
+		if (m.getDescription().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		return m.getMapId().toLowerCase().contains(search);
+		return m.getMapId().toLowerCase(Locale.ENGLISH).contains(search);
 
 	}
 

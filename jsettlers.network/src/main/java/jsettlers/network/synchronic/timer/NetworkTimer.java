@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -387,6 +388,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		int minutes = (time / (1000 * 60)) % 60;
 		int seconds = (time / 1000) % 60;
 		int millis = time % 1000;
-		return String.format("lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
+		return String.format(Locale.ENGLISH, "lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
 	}
 }

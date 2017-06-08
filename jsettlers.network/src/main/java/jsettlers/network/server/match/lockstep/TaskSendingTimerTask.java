@@ -15,6 +15,7 @@
 package jsettlers.network.server.match.lockstep;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.TimerTask;
 
 import jsettlers.network.NetworkConstants;
@@ -78,7 +79,7 @@ public class TaskSendingTimerTask extends TimerTask {
 		leadSteps = (int) Math.ceil(((float) minimumLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		if (rtt > NetworkConstants.RTT_LOGGING_THRESHOLD || jitter > NetworkConstants.JITTER_LOGGING_THRESHOLD) {
-			logger.info(String.format("rtt/2: %5d   jitter: %d   min lead time: %4d   lead steps: %2d",					rtt / 2, jitter, minimumLeadTimeMs, leadSteps));
+			logger.info(String.format(Locale.ENGLISH, "rtt/2: %5d   jitter: %d   min lead time: %4d   lead steps: %2d",					rtt / 2, jitter, minimumLeadTimeMs, leadSteps));
 		}
 	}
 

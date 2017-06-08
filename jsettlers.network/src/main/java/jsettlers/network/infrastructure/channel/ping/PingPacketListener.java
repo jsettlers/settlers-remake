@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,6 +21,8 @@ import jsettlers.network.infrastructure.channel.GenericDeserializer;
 import jsettlers.network.infrastructure.channel.listeners.PacketChannelListener;
 import jsettlers.network.infrastructure.log.Logger;
 import jsettlers.network.infrastructure.utils.AveragingBoundedBuffer;
+
+import java.util.Locale;
 
 /**
  * {@link PacketChannelListener} to receive and send {@link PingPacket}s.
@@ -57,7 +59,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 		currRtt = new RoundTripTime(now, rtt, jitter, avgJitter.getAverage());
 
 		if (rtt > NetworkConstants.RTT_LOGGING_THRESHOLD || jitter > NetworkConstants.JITTER_LOGGING_THRESHOLD) {
-			logger.info(String.format("rtt: %5d   jitter: %3d   avgJitter: %3d", rtt, jitter, avgJitter.getAverage()));
+			logger.info(String.format(Locale.ENGLISH, "rtt: %5d   jitter: %3d   avgJitter: %3d", rtt, jitter, avgJitter.getAverage()));
 		}
 
 		sendPing(receivedPing.getSenderTime());

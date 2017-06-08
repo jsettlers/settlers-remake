@@ -14,14 +14,15 @@
  *******************************************************************************/
 package jsettlers.common.utils.coordinates;
 
-import java8.util.Optional;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.common.utils.mutables.MutableInt;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java8.util.Optional;
 
 /**
  * Created by Andreas Eberle on 12.01.2017.
@@ -48,10 +49,31 @@ public abstract class CoordinateStream implements Serializable {
 		return result.object;
 	}
 
+	public Optional<ShortPoint2D> min(IIntCoordinateFunction function) {
+		MutableInt bestX = new MutableInt(Integer.MIN_VALUE);
+		MutableInt bestY = new MutableInt();
+		MutableInt bestValue = new MutableInt(Integer.MAX_VALUE);
+
+		iterate((x, y) -> {
+			int currValue = function.apply(x, y);
+			if (currValue < bestValue.value) {
+				bestValue.value = currValue;
+				bestX.value = x;
+				bestY.value = y;
+			}
+			return true;
+		});
+
+		if (bestX.value != Integer.MIN_VALUE) {
+			return Optional.of(new ShortPoint2D(bestX.value, bestY.value));
+		} else {
+			return Optional.empty();
+		}
+	}
+
 	/**
 	 * @param function
-	 *            Function called for every value of the stream. If the function returns <code>true</code> the iteration is continued. If it returns
-	 *            <code>false</code> the iteration is stopped.
+	 *            Function called for every value of the stream. If the function returns <code>true</code> the iteration is continued. If it returns <code>false</code> the iteration is stopped.
 	 * @return <code>true</code> if the iteration has not been aborted (the function never returned <code>false</code>)
 	 */
 	public abstract boolean iterate(IBooleanCoordinateFunction function);
@@ -127,7 +149,7 @@ public abstract class CoordinateStream implements Serializable {
 
 	/**
 	 * Creates a frozen instance of this stream. The content of the frozen stream will not be changed in the future.
-	 * 
+	 *
 	 * @return
 	 */
 	public CoordinateStream freeze() {

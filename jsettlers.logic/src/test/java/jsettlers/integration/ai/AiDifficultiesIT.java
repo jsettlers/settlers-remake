@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,13 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.integration.ai;
+
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+import java.util.Locale;
+
+import org.junit.Test;
 
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
@@ -31,11 +38,6 @@ import jsettlers.main.replay.ReplayUtils;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.testutils.TestUtils;
 import jsettlers.testutils.map.MapUtils;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static org.junit.Assert.fail;
 
 /**
  * @author codingberlin
@@ -43,8 +45,7 @@ import static org.junit.Assert.fail;
 public class AiDifficultiesIT {
 	private static final int MINUTES = 1000 * 60;
 	private static final int JUMP_FORWARD = 2 * MINUTES;
-	private static final String LOW_PERFORMANCE_FAILURE_MESSAGE =
-			"%s's %s is higher than %d. It was %d\nSome code change caused the AI to have a worse runtime performance.";
+	private static final String LOW_PERFORMANCE_FAILURE_MESSAGE = "%s's %s is higher than %d. It was %d\nSome code change caused the AI to have a worse runtime performance.";
 
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
@@ -110,8 +111,7 @@ public class AiDifficultiesIT {
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
 				MapLoader savegame = MapUtils.saveMainGrid(
-						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte)
-								expectedLooserSlotId, null) });
+						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte) expectedLooserSlotId, null) });
 				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
@@ -130,12 +130,12 @@ public class AiDifficultiesIT {
 	private void ensureRuntimePerformance(String description, StatisticsStopWatch stopWatch, long median, int max) {
 		System.out.println(description + ": " + stopWatch);
 		if (stopWatch.getMedian() > median) {
-			String medianText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian());
+			String medianText = String.format(Locale.ENGLISH, LOW_PERFORMANCE_FAILURE_MESSAGE, description, "median", median, stopWatch.getMedian());
 			System.out.println(medianText);
 			fail(medianText);
 		}
 		if (stopWatch.getMax() > max) {
-			String maxText = String.format(LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax());
+			String maxText = String.format(Locale.ENGLISH, LOW_PERFORMANCE_FAILURE_MESSAGE, description, "max", max, stopWatch.getMax());
 			System.out.println(maxText);
 			fail(maxText);
 		}

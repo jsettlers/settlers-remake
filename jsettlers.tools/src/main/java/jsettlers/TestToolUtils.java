@@ -12,19 +12,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package jsettlers;
 
 import java.io.IOException;
 
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.menu.FakeMapGame;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.logic.player.Player;
+import jsettlers.logic.player.Team;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
@@ -32,7 +35,8 @@ import jsettlers.testutils.TestUtils;
 
 public class TestToolUtils extends TestUtils {
 	public static IMapInterfaceConnector openTestWindow(final IGraphicsGrid map) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
-		IStartedGame game = new FakeMapGame(map);
+		Player player = new Player((byte) 0, new Team((byte) 0), (byte) 42, EPlayerType.HUMAN, ECivilisation.ROMAN);
+		IStartedGame game = new FakeMapGame(map, player);
 		return openTestWindow(game);
 	}
 
