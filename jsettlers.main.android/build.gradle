@@ -67,7 +67,7 @@ dependencies {
     compile 'biz.laenger.android:vpbs:0.0.3'
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.yqritc:recyclerview-flexibledivider:1.4.0'
-    compile 'io.reactivex.rxjava2:rxjava:2.0.4'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     compile 'org.androidannotations:androidannotations-api:' + rootProject.ext.androidAnnotationsVersion
