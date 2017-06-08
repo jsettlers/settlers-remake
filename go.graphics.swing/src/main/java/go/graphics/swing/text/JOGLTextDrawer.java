@@ -19,17 +19,27 @@ import go.graphics.swing.opengl.JOGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
  * This class is a text drawer used to wrap the text renderer.
- * 
+ *
  * @author michael
  */
 public final class JOGLTextDrawer implements TextDrawer {
 
 	private static final String FONTNAME = "Arial";
+
+	private static final int DEFAULT_DPI_WIDTH = 1920;
+	private static float SCALING_FACTOR = 1;
+
+	public static void calculateScalingFactor() {
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double width = screenSize.getWidth();
+		SCALING_FACTOR = (float)width / DEFAULT_DPI_WIDTH;
+		SCALING_FACTOR = Math.min(SCALING_FACTOR, 1);
+	}
 
 	private final TextRenderer renderer;
 
@@ -37,14 +47,15 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	/**
 	 * Creates a new text drawer.
-	 * 
+	 *
 	 * @param size
 	 *            The size of the text.
 	 * @param drawContext
 	 */
 	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		this.drawContext = drawContext;
-		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
+		int scaledFontSize = Math.round(size.getSize() * SCALING_FACTOR);
+		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
 		this.renderer = new TextRenderer(font, true, true, null, true);
 	}
 

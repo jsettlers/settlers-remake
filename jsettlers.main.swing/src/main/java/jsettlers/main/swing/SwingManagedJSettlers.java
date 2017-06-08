@@ -22,6 +22,7 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import go.graphics.swing.text.JOGLTextDrawer;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.map.MapLoadException;
@@ -63,6 +64,7 @@ public class SwingManagedJSettlers {
 		setupResourceManagers(optionableProperties);
 
 		JSettlersFrame settlersFrame = createJSettlersFrame();
+		JOGLTextDrawer.calculateScalingFactor();
 		handleStartOptions(optionableProperties, settlersFrame);
 	}
 
