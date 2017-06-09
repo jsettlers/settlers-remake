@@ -115,8 +115,8 @@ public class NewMultiPlayerSetupPresenterImpl extends MapSetupPresenterImpl impl
 	}
 
 	@Override
-	public void startGame() {
-		connector.startGame();
+	public boolean startGame() {
+		return connector.startGame();
 	}
 
 	/**

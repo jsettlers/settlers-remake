@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -32,6 +33,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
@@ -316,7 +318,7 @@ public class DatFileTester {
 	}
 
 	private void reloadDatFile() {
-		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
+		File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", datFileIndex)));
 
 		reader = new AdvancedDatFileReader(file, TYPE);
 	}
@@ -340,7 +342,7 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file = new File(FILE.replace("%", String.format("%02d", i)));
+				File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
 
 				if (file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);

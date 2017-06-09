@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.ext.androidBuildToolsVersion
 
     defaultConfig {
         applicationId "jsettlers.main.android"
-        minSdkVersion 19
-        targetSdkVersion 25
+        minSdkVersion rootProject.ext.androidMinSdkVersion
+        targetSdkVersion rootProject.ext.androidTargetSdkVersion
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         versionCode 1
@@ -57,24 +57,26 @@ dependencies {
     compile project(':jsettlers.common')
     compile project(':jsettlers.network')
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:gridlayout-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:' + rootProject.ext.androidSupportLibraryVersion
+    compile 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
+    compile 'com.android.support:cardview-v7:' + rootProject.ext.androidSupportLibraryVersion
+    compile 'com.android.support:design:' + rootProject.ext.androidSupportLibraryVersion
+    compile 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
+    compile 'com.android.support:gridlayout-v7:' + rootProject.ext.androidSupportLibraryVersion
+
     compile 'biz.laenger.android:vpbs:0.0.3'
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.yqritc:recyclerview-flexibledivider:1.4.0'
-    compile 'io.reactivex.rxjava2:rxjava:2.0.4'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    annotationProcessor 'org.androidannotations:androidannotations:' + rootProject.ext.androidAnnotationsVersion
     compile 'org.androidannotations:androidannotations-api:' + rootProject.ext.androidAnnotationsVersion
+    annotationProcessor 'org.androidannotations:androidannotations:' + rootProject.ext.androidAnnotationsVersion
 
+    // test dependencies
     androidTestCompile project(':jsettlers.testutils')
+    androidTestCompile 'com.android.support:support-annotations:' + rootProject.ext.androidSupportLibraryVersion
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -208,7 +209,7 @@ public class OpenPanel extends JPanel {
 	 * Search has changed, update the list
 	 */
 	protected void searchChanged() {
-		String search = searchTextField.getText().toLowerCase();
+		String search = searchTextField.getText().toLowerCase(Locale.ENGLISH);
 
 		listModelFiltered.clear();
 
@@ -232,13 +233,13 @@ public class OpenPanel extends JPanel {
 			return true;
 		}
 
-		if (m.getMapName().toLowerCase().contains(search)) {
+		if (m.getMapName().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		if (m.getDescription().toLowerCase().contains(search)) {
+		if (m.getDescription().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		return m.getMapId().toLowerCase().contains(search);
+		return m.getMapId().toLowerCase(Locale.ENGLISH).contains(search);
 
 	}
 

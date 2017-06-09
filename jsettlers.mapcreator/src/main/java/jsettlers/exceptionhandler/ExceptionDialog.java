@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -98,7 +99,7 @@ public class ExceptionDialog extends JFrame {
 			try {
 				Desktop.getDesktop().browse(new URI(ERROR_URL));
 			} catch (IOException | URISyntaxException e1) {
-				JOptionPane.showMessageDialog(ExceptionDialog.this, String.format(ExceptionLabels.getLabel("dialog.open-failed"), ERROR_URL));
+				JOptionPane.showMessageDialog(ExceptionDialog.this, String.format(Locale.ENGLISH, ExceptionLabels.getLabel("dialog.open-failed"), ERROR_URL));
 			}
 		});
 		JButton btCloseDialog = new JButton(ExceptionLabels.getLabel("action.close"));
