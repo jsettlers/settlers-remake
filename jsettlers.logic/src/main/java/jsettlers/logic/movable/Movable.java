@@ -368,8 +368,8 @@ public final class Movable implements ILogicMovable {
 				int xEnd = distance * xDeltaArray[nextDirection];
 				int yEnd = distance * yDeltaArray[nextDirection];
 				for (int i = 0; i < distance; i++) {
-					x = this.getPos().x + xBegin + i * (xEnd - xBegin);
-					y = this.getPos().y + yBegin + i * (yEnd - yBegin);
+					x = this.getPos().x + xBegin + (xEnd - xBegin) / distance * i;
+					y = this.getPos().y + yBegin + (yEnd - yBegin) / distance * i;
 					if (grid.isInBounds(x, y)) {
 						blockingMovable = grid.getMovableAt(x, y);
 						if (blockingMovable != null && blockingMovable.isShip()) {
@@ -467,6 +467,9 @@ public final class Movable implements ILogicMovable {
 		if (state == EMovableState.DEAD) {
 			return false;
 		}
+		if (this.isShip() && this.getStateProgress() < 0.99) {
+			return false;
+		}
 
 		switch (state) {
 		case DOING_NOTHING:
@@ -560,10 +563,15 @@ public final class Movable implements ILogicMovable {
 	private boolean goToRandomDirection(ILogicMovable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
 		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+		if (pushedFromDir == null) {
+			return false;
+		}
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.VALUES[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
+			if (currDir != pushedFromDir && currDir != pushedFromDir.rotateRight(1)
+					&& currDir != pushedFromDir.rotateRight(EDirection.NUMBER_OF_DIRECTIONS - 1)
+					&& goInDirection(currDir, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE)) {
 				return true;
 			}
 		}

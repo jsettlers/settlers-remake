@@ -185,13 +185,14 @@ public enum EDirection {
 		int max = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
 		int deltaX = max > 0 ? dx / max : dx;
 		int deltaY = max > 0 ? dy / max : dy;
+		if (deltaX == -deltaY) deltaY = 0;
 		for (EDirection currDir : VALUES) {
 			if (currDir.gridDeltaX == deltaX && currDir.gridDeltaY == deltaY) {
 				return currDir;
 			}
 		}
 
-		return null;
+		return null; // if no direction is found, returning null will typically kill the movable
 	}
 
 	public final int getNextTileX(int x) {
