@@ -241,6 +241,14 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		return this.dockPosition;
 	}
 
+	public void removeDock() {
+		if (this.dockPosition == null) {
+			return;
+		}
+		this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		this.dockPosition = null;
+	}
+
 	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
 		for (IRequestStack stack : getStacks()) {
 			if (stack.getMaterialType() == material) {
