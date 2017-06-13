@@ -33,6 +33,7 @@ import java.util.ArrayList;
  */
 public final class JOGLTextDrawer implements TextDrawer {
 
+<<<<<<< HEAD
 	private static final int INTERVAL_SCALING_UPDATE = 10000;
 	private static final int DEFAULT_DPI = 96;
 	private static final String FONTNAME = "Arial";
@@ -52,6 +53,17 @@ public final class JOGLTextDrawer implements TextDrawer {
 				}
 			}
 		}, 0, INTERVAL_SCALING_UPDATE);
+=======
+	private static final String FONT_NAME = "Arial";
+
+	private static final int DEFAULT_DPI_WIDTH = 1920;
+	private static final float SCALING_FACTOR;
+
+	static {
+		GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
+		SCALING_FACTOR = Math.min((float) screenWidth / DEFAULT_DPI_WIDTH, 1);
+>>>>>>> 0381dce4d157ce2e7caf66db40ff9fbb1cb7ecfc
 	}
 
 
@@ -68,8 +80,13 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 */
 	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		this.drawContext = drawContext;
+<<<<<<< HEAD
 		int scaledFontSize = Math.round(size.getSize() * scalingFactor);
 		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, scaledFontSize);
+=======
+		int scaledFontSize = Math.round(size.getSize() * SCALING_FACTOR);
+		Font font = new Font(FONT_NAME, Font.TRUETYPE_FONT, scaledFontSize);
+>>>>>>> 0381dce4d157ce2e7caf66db40ff9fbb1cb7ecfc
 		this.renderer = new TextRenderer(font, true, true, null, true);
 		JOGLTextDrawers.add(this);
 	}
