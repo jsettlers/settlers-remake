@@ -14,12 +14,13 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import static java8.util.stream.StreamSupport.stream;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
@@ -52,9 +53,7 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  *
@@ -363,7 +362,11 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private boolean canMoveTo(ILogicMovable movable, int x, int y) {
-		return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
+		if (movable.isShip()) {
+			return true;
+		} else {
+			return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
+		}
 	}
 
 	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {
