@@ -360,6 +360,7 @@ public class JoinGamePanel extends BackgroundPanel {
 				IMultiplayerPlayer player = players.get(i);
 				playerSlot.setPlayerName(player.getName());
 				playerSlot.setReady(player.isReady());
+				playerSlot.setPlayerType(EPlayerType.HUMAN, false);
 				if (player.getId().equals(myId)) {
 					playerSlot.setReadyButtonEnabled(true);
 					playerSlot.informGameAboutReady(joinMultiPlayerMap);
