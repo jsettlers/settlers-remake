@@ -43,6 +43,7 @@ import jsettlers.input.tasks.SetTradingWaypointGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
@@ -310,12 +311,26 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 *            A list of the id's of the movables.
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
+		if (movableIds.isEmpty()) {
+			return;
+		}
+		if (!(Movable.getMovableByID(movableIds.get(0)).isShip())) {
+			FerryEntrance ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
+			if (ferryEntrance != null) { // enter a ferry
+				for (int movableId : movableIds) {
+					Movable movable = (Movable) (Movable.getMovableByID(movableId));
+					movable.moveTo(ferryEntrance.getEntrance());
+					movable.enterFerry(ferryEntrance.getFerry());
+				}
+				return;
+			}
+		}
 		if (movableIds.size() == 1) {
 			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
 			if (currMovable != null) {
 				currMovable.moveTo(targetPosition);
 			}
-		} else if (!movableIds.isEmpty()) {
+		} else {
 			sendMovablesNew(targetPosition, movableIds);
 		}
 	}

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -78,6 +79,7 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
@@ -117,8 +119,6 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
-
-import java8.util.Optional;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -1787,7 +1787,34 @@ public final class MainGrid implements Serializable {
 			return MainGrid.this.isInBounds(position.x, position.y);
 		}
 
-		public int[] findDockPosition(ShortPoint2D position, Player owner) {
+		public FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId) {
+			if (!isWaterSafe(position.x, position.y)) {
+				return null;
+			}
+			int x = position.x;
+			int y = position.y;
+			byte dx[] = EDirection.getXDeltaArray();
+			byte dy[] = EDirection.getYDeltaArray();
+			for (int i = -1; i < EDirection.NUMBER_OF_DIRECTIONS; i++) { // search ferry
+				if (i >= 0) {
+					x = position.x + dx[i];
+					y = position.y + dy[i];
+				}
+				ILogicMovable ship = getMovableGrid().getMovableAt(x, y);
+				if (ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
+					for (int j = 0; j < EDirection.NUMBER_OF_DIRECTIONS; j++) { // search ferry entrance
+						if (!this.isBlocked(x + 2 * dx[j], y + 2 * dy[j])) {
+							FerryEntrance boarding = new FerryEntrance((Movable) ship,
+									new ShortPoint2D(x + 2 * dx[j], y + 2 * dy[j]));
+							return boarding;
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		public int[] findDockPosition(ShortPoint2D position) {
 			short x = position.x;
 			short y = position.y;
 			if (!isWaterSafe(x, y)) {
@@ -1982,4 +2009,5 @@ public final class MainGrid implements Serializable {
 			return Building.getAllBuildings();
 		}
 	}
+
 }

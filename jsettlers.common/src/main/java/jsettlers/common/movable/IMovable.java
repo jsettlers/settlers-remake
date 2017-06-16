@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.common.movable;
 
+import java.util.ArrayList;
+
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
@@ -93,4 +95,8 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	ImageLink[] getBuildImages();
 
 	boolean isShip();
+
+	public ArrayList<IMovable> getPassengers();
+
+	public ArrayList<EMaterialType> getCargo();
 }

@@ -16,6 +16,7 @@ package jsettlers.logic.movable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Set;
@@ -30,6 +31,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
@@ -99,11 +101,12 @@ public final class Movable implements ILogicMovable {
 	// the following block of data only for ships
 	private ImageLink[] images = null;
 	private ImageLink[] buildImages = null;
-	private EMaterialType[] cargo = null;
-	private EMovableType[] passengers = null;
+	private ArrayList<EMaterialType> cargo = new ArrayList<>();
+	private ArrayList<IMovable> passengers = new ArrayList<>();
 	public static final Set<EMovableType> ships = EnumSet.of(
 			FERRY, CARGO_BOAT);
 
+	private Movable ferryToEnter = null;
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -313,6 +316,15 @@ public final class Movable implements ILogicMovable {
 			setState(EMovableState.DOING_NOTHING);
 			movableAction = EMovableAction.NO_ACTION;
 			path = null;
+			if (ferryToEnter != null) {
+				int distanceToFerry = this.getPos().getOnGridDistTo(ferryToEnter.getPos());
+				if (distanceToFerry < 4) {
+					ferryToEnter.addPassenger(this); // enter Ferry
+					grid.leavePosition(this.getPos(), this);
+					setState(EMovableState.ON_FERRY);
+				}
+				ferryToEnter = null;
+			}
 			return;
 		}
 
@@ -995,6 +1007,10 @@ public final class Movable implements ILogicMovable {
 		return strategy.isAttackable();
 	}
 
+	public void enterFerry(Movable ferry) {
+		this.ferryToEnter = ferry;
+	}
+
 	/**
 	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
 	 *
@@ -1049,6 +1065,7 @@ public final class Movable implements ILogicMovable {
 		DOING_NOTHING,
 		GOING_SINGLE_STEP,
 		WAITING,
+		ON_FERRY,
 
 		TAKE,
 		DROP,
@@ -1079,5 +1096,25 @@ public final class Movable implements ILogicMovable {
 
 	public final void setDirection(EDirection direction) {
 		this.direction = direction;
+	}
+
+	public boolean addPassenger(Movable movable) {
+		if (passengers.size() < 7) {
+			this.passengers.add(movable);
+			return true;
+		}
+		return false;
+	}
+
+	public void addCargo(EMaterialType material) {
+		this.cargo.add(material);
+	}
+
+	public ArrayList<IMovable> getPassengers() {
+		return this.passengers;
+	}
+
+	public ArrayList<EMaterialType> getCargo() {
+		return this.cargo;
 	}
 }

@@ -17,6 +17,7 @@ package jsettlers.input;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java8.util.Optional;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
@@ -24,10 +25,9 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
-
-import java8.util.Optional;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -134,5 +134,7 @@ public interface IGuiInputGrid {
 
 	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
 
-	int[] findDockPosition(ShortPoint2D position, Player player);
+	int[] findDockPosition(ShortPoint2D position);
+
+    FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
 }

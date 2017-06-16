@@ -521,7 +521,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		IMovable movable = map.getMovableAt(x, y);
 		if (movable != null) {
 			if (movable.isShip()) {
-				this.objectDrawer.drawShip(x, y, movable, movable.getDirection().rotateRight(3));
+				this.objectDrawer.drawShip(x, y, movable);
 			} else {
 				this.objectDrawer.draw(movable);
 			}

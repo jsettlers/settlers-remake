@@ -429,7 +429,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setDock(ShortPoint2D setDockPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
-			int[] dockPosition = grid.findDockPosition(setDockPosition, ((Building) selected).getPlayer());
+			int[] dockPosition = grid.findDockPosition(setDockPosition);
 			if (dockPosition == null) {
 				connector.playSound(116, 1); // this dock position is not accepted
 			} else {
