@@ -319,9 +319,10 @@ public final class Movable implements ILogicMovable {
 			if (ferryToEnter != null) {
 				int distanceToFerry = this.getPos().getOnGridDistTo(ferryToEnter.getPos());
 				if (distanceToFerry < 4) {
-					ferryToEnter.addPassenger(this); // enter Ferry
-					grid.leavePosition(this.getPos(), this);
-					setState(EMovableState.ON_FERRY);
+					if (ferryToEnter.addPassenger(this)) {
+						grid.leavePosition(this.getPos(), this);
+						setState(EMovableState.ON_FERRY);
+					}
 				}
 				ferryToEnter = null;
 			}
@@ -1007,7 +1008,7 @@ public final class Movable implements ILogicMovable {
 		return strategy.isAttackable();
 	}
 
-	public void enterFerry(Movable ferry) {
+	public void aimAtFerry(Movable ferry) {
 		this.ferryToEnter = ferry;
 	}
 

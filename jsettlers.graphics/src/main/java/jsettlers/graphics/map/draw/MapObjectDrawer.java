@@ -210,7 +210,7 @@ public class MapObjectDrawer {
 			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
 			image = imageProvider.getImage(shipLink);
 			drawWithConstructionMask(x, y, state, image, shade);
-		} else { // draw ship
+		} else {
 			// get drawing position
 			Color color = context.getPlayerColor(ship.getPlayerId());
 			float viewX;
@@ -251,11 +251,6 @@ public class MapObjectDrawer {
 					image.drawAt(gl, db, viewX + xShift, viewY + yShift + deckHeight, color, shade);
 				}
 			}
-			// draw ship front
-			sequence = (shipType == EMovableType.FERRY) ? 6 : 2;
-			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
-			image = imageProvider.getImage(shipLink);
-			image.drawAt(gl, db, viewX, viewY, color, shade);
 			// draw sail
 			sequence = (shipType == EMovableType.FERRY) ? 29 : 28;
 			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
@@ -272,6 +267,11 @@ public class MapObjectDrawer {
 					image.drawAt(gl, db, viewX + xShift, viewY + yShift + deckHeight, color, shade);
 				}
 			}
+			// draw ship front
+			sequence = (shipType == EMovableType.FERRY) ? 6 : 2;
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
+			image = imageProvider.getImage(shipLink);
+			image.drawAt(gl, db, viewX, viewY, color, shade);
 			if (state >= 0.95 && ship.isSelected()) {
 				drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
 			}

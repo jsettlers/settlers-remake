@@ -320,7 +320,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 				for (int movableId : movableIds) {
 					Movable movable = (Movable) (Movable.getMovableByID(movableId));
 					movable.moveTo(ferryEntrance.getEntrance());
-					movable.enterFerry(ferryEntrance.getFerry());
+					movable.aimAtFerry(ferryEntrance.getFerry());
 				}
 				return;
 			}
