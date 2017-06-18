@@ -375,9 +375,14 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 		actionControls.fireAction(new Action(EActionType.SPEED_SLOWER));
 	}
 
-	@OptionsItem(R.id.menu_item_fast)
-	void fastClicked() {
+	@OptionsItem(R.id.menu_item_fast_speed)
+	void fastSpeedClicked() {
 		actionControls.fireAction(new Action(EActionType.SPEED_FAST));
+	}
+
+	@OptionsItem(R.id.menu_item_normal_speed)
+	void normalSpeedClicked() {
+		actionControls.fireAction(new Action(EActionType.SPEED_NORMAL));
 	}
 
 	@OptionsItem(R.id.menu_item_skip_one_minute)
