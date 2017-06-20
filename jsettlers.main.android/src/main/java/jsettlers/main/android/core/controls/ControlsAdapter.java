@@ -35,6 +35,8 @@ import jsettlers.graphics.map.controls.IControls;
 
 import android.content.Context;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * Created by tompr on 14/01/2017.
  */
@@ -105,9 +107,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 	public void onDraw() {
 		synchronized (drawListeners) {
-			for (DrawListener listener : drawListeners) {
-				listener.draw();
-			}
+			stream(drawListeners).forEach(DrawListener::draw);
 		}
 	}
 
@@ -115,9 +115,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		this.displayCenter = displayCenter;
 
 		synchronized (positionChangedListeners) {
-			for (PositionChangedListener listener : positionChangedListeners) {
-				listener.positionChanged();
-			}
+			stream(positionChangedListeners).forEach(PositionChangedListener::positionChanged);
 		}
 	}
 
@@ -215,8 +213,9 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	 */
 	@Override
 	public boolean isInPlayerPartition() {
-		if (displayCenter == null)
+		if (displayCenter == null) {
 			return false;
+		}
 
 		return graphicsGrid.getPlayerIdAt(displayCenter.x, displayCenter.y) == player.getPlayerId();
 	}

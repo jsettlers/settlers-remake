@@ -18,7 +18,6 @@ package jsettlers.main.android.core.controls;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
-
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
@@ -142,10 +141,9 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
-		ShortPoint2D displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
-				+ screenArea.getLineLength() / 2, screenArea
-				.getLineY(screenArea.getLines() / 2));
-
+		int centerX = screenArea.getLineStartX(screenArea.getLines() / 2) + screenArea.getLineLength() / 2;
+		int centerY = screenArea.getLineY(screenArea.getLines() / 2);
+		ShortPoint2D displayCenter = new ShortPoint2D(centerX, centerY);
 		controlsAdapter.onPositionChanged(screenArea, displayCenter);
 	}
 
