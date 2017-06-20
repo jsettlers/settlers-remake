@@ -83,15 +83,15 @@ public class BuildingsCategoryMenu implements DrawListener {
 				buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
 			}
 
-			view.setBuildings(buildings(buildingCounts));
+			view.setBuildings(buildingTiles(buildingCounts));
 		}
 	}
 
 
-	private List<Building> buildings(IBuildingCounts buildingCounts) {
+	private List<BuildingTile> buildingTiles(IBuildingCounts buildingCounts) {
 
 		return stream(buildingsCategory.buildingTypes)
-				.map(buildingType -> new Building(buildingType, buildingCounts))
+				.map(buildingType -> new BuildingTile(buildingType, buildingCounts))
 				.collect(Collectors.toList());
 	}
 }

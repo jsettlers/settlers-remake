@@ -23,14 +23,14 @@ import jsettlers.graphics.localization.Labels;
  * Created by tompr on 29/05/2017.
  */
 
-public class Building {
+public class BuildingTile {
 
     private final EBuildingType buildingType;
     private final String name;
     private final String count;
     private final String constructionCount;
 
-    public Building(EBuildingType buildingType, IBuildingCounts buildingCounts) {
+    public BuildingTile(EBuildingType buildingType, IBuildingCounts buildingCounts) {
         this.buildingType = buildingType;
         this.name = Labels.getName(buildingType);
 
@@ -67,6 +67,6 @@ public class Building {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Building && ((Building) obj).getBuildingType() == getBuildingType();
+        return obj instanceof BuildingTile && ((BuildingTile) obj).getBuildingType() == getBuildingType();
     }
 }
