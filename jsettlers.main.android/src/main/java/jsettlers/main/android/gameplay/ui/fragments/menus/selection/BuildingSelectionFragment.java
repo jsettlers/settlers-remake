@@ -34,6 +34,7 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.Mat
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.OccupiedFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.PriorityFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.SelectionFeature;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.StockFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.TitleFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.WorkAreaFeature;
 
@@ -92,7 +93,12 @@ public class BuildingSelectionFragment extends SelectionFragment {
 			layoutInflater.inflate(R.layout.menu_selection_building_occupyable, rootView, true);
 			features.add(new OccupiedFeature(getView(), building, menuNavigator, actionControls, drawControls));
 
-			// } else if (building instanceof IBuilding.IStock) {
+		} else if (building instanceof IBuilding.IStock) {
+			layoutInflater.inflate(R.layout.menu_selection_building_stock, rootView, true);
+			features.add(new StockFeature(getView(), building, menuNavigator, drawControls));
+
+
+
 			// } else if (building instanceof IBuilding.ITrading) {
 		} else {
 			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);

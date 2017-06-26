@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+            android:id="@+id/image_view_priority"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/text_view_building_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="TextView" />
+
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+            android:id="@+id/image_view_destroy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+
+
+
+    <ImageView
+        android:id="@+id/image_view_building"
+        android:layout_width="64dp"
+        android:layout_height="64dp" />
+
+    <LinearLayout
+        android:id="@+id/layout_materials"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp" />
+
+
+</LinearLayout>
