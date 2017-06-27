@@ -34,12 +34,11 @@ import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
- * This general is named winner because his attacks and defence should be very hard for human enemies. This should be realized by creating locally
- * superiority. (You can kill 200 bowmen with just 100 bowmen if you fight 100 vs 20 in loops. This general should lay the focus on some swordsmen to
- * occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the strongest military unit. It upgrades bowmen
- * first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3 is reached
- * to get as many level3 bowmen as posibble. TODO: store bows until level3 is reached TODO: group soldiers in direction of enemy groups to defeat them
- * TODO: group soldiers in direction of enemy groups to attack them
+ * This general is named winner because his attacks and defence should be very hard for human enemies. This should be realized by creating locally superiority. (You can kill 200 bowmen with just 100
+ * bowmen if you fight 100 vs 20 in loops. This general should lay the focus on some swordsmen to occupy own towers, 20 spearmen to defeat rushes and the rest only bowmen because in mass this is the
+ * strongest military unit. It upgrades bowmen first because this is the main unit and the 20 defeating spearmen defeats with lv1 as well. This general should store bows until level3 is reached to get
+ * as many level3 bowmen as posibble. TODO: store bows until level3 is reached TODO: group soldiers in direction of enemy groups to defeat them TODO: group soldiers in direction of enemy groups to
+ * attack them
  *
  * @author codingberlin
  */
@@ -48,8 +47,8 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	private static final byte MIN_SWORDSMEN_COUNT = 10;
 	private static final byte MIN_PIKEMEN_COUNT = 20;
 	private static final int BOWMEN_COUNT_OF_KILLING_INFANTRY = 300;
-	private static final EBuildingType[] MIN_BUILDING_REQUIREMENTS_FOR_ATTACK =
-			{EBuildingType.COALMINE, EBuildingType.IRONMINE, EBuildingType.IRONMELT, EBuildingType.WEAPONSMITH, EBuildingType.BARRACK};
+	private static final EBuildingType[] MIN_BUILDING_REQUIREMENTS_FOR_ATTACK = { EBuildingType.COALMINE, EBuildingType.IRONMINE, EBuildingType.IRONMELT, EBuildingType.WEAPONSMITH,
+			EBuildingType.BARRACK };
 
 	private final AiStatistics aiStatistics;
 	private final Player player;
@@ -57,8 +56,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	private final MovableGrid movableGrid;
 	private float attackerCountFactor;
 
-	public ConfigurableGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler, float
-			attackerCountFactor) {
+	public ConfigurableGeneral(AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler, float attackerCountFactor) {
 		this.aiStatistics = aiStatistics;
 		this.player = player;
 		this.taskScheduler = taskScheduler;
@@ -93,9 +91,9 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		if (infantryWouldDie) {
 			effectiveAttackerCount = situation.bowmenPositions.size() * combatStrength;
 		} else {
-			effectiveAttackerCount = situation.soldiersCount() * combatStrength;
+			effectiveAttackerCount = situation.getSoldiersCount() * combatStrength;
 		}
-		return effectiveAttackerCount >= MIN_ATTACKER_COUNT && effectiveAttackerCount * attackerCountFactor > enemySituation.soldiersCount();
+		return effectiveAttackerCount >= MIN_ATTACKER_COUNT && effectiveAttackerCount * attackerCountFactor > enemySituation.getSoldiersCount();
 
 	}
 
@@ -144,7 +142,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 			setRatioOfMaterial(player.playerId, EMaterialType.SWORD, 0F);
 			setRatioOfMaterial(player.playerId, EMaterialType.SPEAR, 0.3F);
 			setRatioOfMaterial(player.playerId, EMaterialType.BOW, 1F);
-		} else if (bowmenCount * player.getCombatStrengthInformation().getCombatStrength(false) < BOWMEN_COUNT_OF_KILLING_INFANTRY){
+		} else if (bowmenCount * player.getCombatStrengthInformation().getCombatStrength(false) < BOWMEN_COUNT_OF_KILLING_INFANTRY) {
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SWORD, 0);
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.SPEAR, 0);
 			setNumberOfFutureProducedMaterial(player.playerId, EMaterialType.BOW, 0);
@@ -197,8 +195,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		if (infantryWouldDie) {
 			sendTroopsTo(situation.bowmenPositions, targetDoor, soldiersWithOrders);
 		} else {
-			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.pikemenPositions.size() + situation
-					.swordsmenPositions.size());
+			List<ShortPoint2D> soldiers = new ArrayList<>(situation.bowmenPositions.size() + situation.pikemenPositions.size() + situation.swordsmenPositions.size());
 			soldiers.addAll(situation.bowmenPositions);
 			soldiers.addAll(situation.pikemenPositions);
 			soldiers.addAll(situation.swordsmenPositions);
@@ -271,7 +268,8 @@ public class ConfigurableGeneral implements ArmyGeneral {
 		private final List<ShortPoint2D> swordsmenPositions = new Vector<>();
 		private final List<ShortPoint2D> bowmenPositions = new Vector<>();
 		private final List<ShortPoint2D> pikemenPositions = new Vector<>();
-		public int soldiersCount() {
+
+		int getSoldiersCount() {
 			return swordsmenPositions.size() + bowmenPositions.size() + pikemenPositions.size();
 		}
 	}
