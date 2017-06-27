@@ -14,10 +14,36 @@
  *******************************************************************************/
 package jsettlers.mapcreator.control;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -31,13 +57,14 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -67,30 +94,6 @@ import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.landscape.ResourceTool;
 import jsettlers.mapcreator.tools.objects.PlaceBuildingTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
-
-import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Controller for map editing
@@ -309,7 +312,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		// center on screen
 		window.setLocationRelativeTo(null);
 
-		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(), ETextDrawPosition.TOP_RIGHT,
+		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(SettingsManager.getInstance()), ETextDrawPosition.TOP_RIGHT,
 				new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = mapContent.getInterfaceConnector();
 		region.setContent(mapContent);

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,19 +11,19 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.menu;
+ */
+package jsettlers.main.swing.settings;
 
 /**
  * This class represents a player of the game.
  * 
  * @author Andreas Eberle
  */
-public class Player {
+public class UiPlayer {
 	private final String id;
 	private final String name;
 
-	public Player(String id, String name) {
+	public UiPlayer(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -59,7 +59,7 @@ public class Player {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Player other = (Player) obj;
+		UiPlayer other = (UiPlayer) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -75,6 +75,6 @@ public class Player {
 
 	@Override
 	public String toString() {
-		return "Player [id=" + id + ", name=" + name + "]";
+		return "UiPlayer [id=" + id + ", name=" + name + "]";
 	}
 }

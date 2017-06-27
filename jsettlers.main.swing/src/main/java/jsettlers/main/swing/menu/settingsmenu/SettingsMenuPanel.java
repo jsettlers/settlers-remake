@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
 
