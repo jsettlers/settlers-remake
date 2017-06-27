@@ -116,4 +116,5 @@
     <string name="multiplayer_not_all_players_ready">Alle Spieler müssen bereit sein um das Spiel zu starten.</string>
     <string name="normal">Normale Geschwindigkeit</string>
 
+    <string name="service_description">JSettlers Spiel-Service, welcher das aktuelle Spiel ausführt.</string>
 </resources>
