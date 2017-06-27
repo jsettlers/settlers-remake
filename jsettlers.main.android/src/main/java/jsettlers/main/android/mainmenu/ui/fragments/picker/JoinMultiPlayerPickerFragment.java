@@ -16,6 +16,7 @@
 package jsettlers.main.android.mainmenu.ui.fragments.picker;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -172,8 +173,9 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 	/**
 	 * RecyclerView Adapter for displaying list of maps
 	 */
-	private class JoinableGamesAdapter extends RecyclerView.Adapter<JoinableGameHolder> {
+	private class JoinableGamesAdapter extends RecyclerView.Adapter<JoinableGamesAdapter.JoinableGameHolder> {
 		private List<? extends IJoinableGame> joinableGames;
+		private final Semaphore limitImageLoadingSemaphore = new Semaphore(3, true);
 
 		public JoinableGamesAdapter(List<? extends IJoinableGame> joinableGames) {
 			this.joinableGames = joinableGames;
@@ -207,52 +209,52 @@ public class JoinMultiPlayerPickerFragment extends Fragment implements JoinMulti
 			this.joinableGames = joinableGames;
 			notifyDataSetChanged();
 		}
-	}
 
-	private class JoinableGameHolder extends RecyclerView.ViewHolder {
-		final TextView hostNameTextView;
-		final TextView mapNameTextView;
-		final TextView playerCountTextView;
-		final ImageView mapPreviewImageView;
+		class JoinableGameHolder extends RecyclerView.ViewHolder {
+			final TextView hostNameTextView;
+			final TextView mapNameTextView;
+			final TextView playerCountTextView;
+			final ImageView mapPreviewImageView;
 
-		Disposable subscription;
+			Disposable subscription;
 
-		public JoinableGameHolder(View itemView) {
-			super(itemView);
-			hostNameTextView = (TextView) itemView.findViewById(R.id.text_view_host_name);
-			mapNameTextView = (TextView) itemView.findViewById(R.id.text_view_map_name);
-			playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
-			mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
-		}
-
-		public void bind(IJoinableGame joinableGame) {
-			IMapDefinition mapDefinition = joinableGame.getMap();
-			if (mapDefinition == null)
-				return;
-
-			hostNameTextView.setText(joinableGame.getName());
-			mapNameTextView.setText(mapDefinition.getMapName());
-
-			playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
-
-			if (subscription != null) {
-				subscription.dispose();
+			public JoinableGameHolder(View itemView) {
+				super(itemView);
+				hostNameTextView = (TextView) itemView.findViewById(R.id.text_view_host_name);
+				mapNameTextView = (TextView) itemView.findViewById(R.id.text_view_map_name);
+				playerCountTextView = (TextView) itemView.findViewById(R.id.text_view_player_count);
+				mapPreviewImageView = (ImageView) itemView.findViewById(R.id.image_view_map_preview);
 			}
 
-			subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage())
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribeWith(new DisposableSingleObserver<Bitmap>() {
-						@Override
-						public void onSuccess(Bitmap bitmap) {
-							mapPreviewImageView.setImageBitmap(bitmap);
-						}
+			public void bind(IJoinableGame joinableGame) {
+				IMapDefinition mapDefinition = joinableGame.getMap();
+				if (mapDefinition == null)
+					return;
 
-						@Override
-						public void onError(Throwable e) {
-							mapPreviewImageView.setImageDrawable(null);
-						}
-					});
+				hostNameTextView.setText(joinableGame.getName());
+				mapNameTextView.setText(mapDefinition.getMapName());
+
+				playerCountTextView.setText(mapDefinition.getMinPlayers() + "-" + mapDefinition.getMaxPlayers());
+
+				if (subscription != null) {
+					subscription.dispose();
+				}
+
+				subscription = PreviewImageConverter.toBitmap(mapDefinition.getImage(), limitImageLoadingSemaphore)
+						.subscribeOn(Schedulers.io())
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribeWith(new DisposableSingleObserver<Bitmap>() {
+							@Override
+							public void onSuccess(Bitmap bitmap) {
+								mapPreviewImageView.setImageBitmap(bitmap);
+							}
+
+							@Override
+							public void onError(Throwable e) {
+								mapPreviewImageView.setImageDrawable(null);
+							}
+						});
+			}
 		}
 	}
 }

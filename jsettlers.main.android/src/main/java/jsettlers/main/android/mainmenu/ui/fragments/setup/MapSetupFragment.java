@@ -56,6 +56,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by tompr on 21/01/2017.
@@ -135,7 +136,9 @@ public abstract class MapSetupFragment<Presenter extends MapSetupPresenter> exte
 
 	@Click(R.id.button_start_game)
 	protected void onStartGameClicked() {
-		presenter.startGame();
+		if (!presenter.startGame()) {
+			Toast.makeText(this.getContext(), R.string.multiplayer_not_all_players_ready, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@ItemSelect(R.id.spinner_number_of_players)

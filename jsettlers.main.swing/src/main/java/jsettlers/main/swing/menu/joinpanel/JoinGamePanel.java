@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,7 +19,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -64,6 +63,8 @@ import jsettlers.main.swing.menu.joinpanel.slots.factories.ClientOfMultiplayerPl
 import jsettlers.main.swing.menu.joinpanel.slots.factories.HostOfMultiplayerPlayerSlotFactory;
 import jsettlers.main.swing.menu.joinpanel.slots.factories.IPlayerSlotFactory;
 import jsettlers.main.swing.menu.joinpanel.slots.factories.SinglePlayerSlotFactory;
+
+import java8.util.J8Arrays;
 
 /**
  * @author codingberlin
@@ -234,9 +235,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
 		});
-		setCancelButtonActionListener(e -> {
-			settlersFrame.showMainMenu();
-		});
+		setCancelButtonActionListener(e -> settlersFrame.showMainMenu());
 
 		prepareUiFor(mapLoader);
 	}
@@ -262,9 +261,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
 				SwingUtilities.invokeLater(() -> {
 					initializeChatFor(connector);
-					setStartButtonActionListener(e -> {
-						connector.startGame();
-					});
+					setStartButtonActionListener(e -> connector.startGame());
 					connector.getPlayers().setListener(changingPlayers -> onPlayersChanges(changingPlayers, connector));
 					connector.setMultiplayerListener(new IMultiplayerListener() {
 						@Override
@@ -279,7 +276,7 @@ public class JoinGamePanel extends BackgroundPanel {
 					});
 
 					onPlayersChanges(connector.getPlayers(), connector); // init the UI with the players
-					});
+				});
 			}
 		});
 
@@ -298,16 +295,12 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
 		setChatVisible(true);
-		cancelButton.addActionListener(e -> {
-			settlersFrame.showMainMenu();
-		});
+		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		startGameButton.setVisible(false);
 
 		prepareUiFor(mapLoader);
 
-		joinMultiPlayerMap.getPlayers().setListener(changingPlayers -> {
-			onPlayersChanges(changingPlayers, joinMultiPlayerMap);
-		});
+		joinMultiPlayerMap.getPlayers().setListener(changingPlayers -> onPlayersChanges(changingPlayers, joinMultiPlayerMap));
 		joinMultiPlayerMap.setMultiplayerListener(new IMultiplayerListener() {
 			@Override
 			public void gameIsStarting(IStartingGame game) {
@@ -343,8 +336,8 @@ public class JoinGamePanel extends BackgroundPanel {
 				chatInputField.setText("");
 			}
 		};
-		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
-		Arrays.asList(chatInputField.getActionListeners()).stream().forEach(chatInputField::removeActionListener);
+		J8Arrays.stream(sendChatMessageButton.getActionListeners()).forEach(sendChatMessageButton::removeActionListener);
+		J8Arrays.stream(chatInputField.getActionListeners()).forEach(chatInputField::removeActionListener);
 		sendChatMessageButton.addActionListener(sendChatMessage);
 		chatInputField.addActionListener(sendChatMessage);
 
@@ -367,6 +360,7 @@ public class JoinGamePanel extends BackgroundPanel {
 				IMultiplayerPlayer player = players.get(i);
 				playerSlot.setPlayerName(player.getName());
 				playerSlot.setReady(player.isReady());
+				playerSlot.setPlayerType(EPlayerType.HUMAN, false);
 				if (player.getId().equals(myId)) {
 					playerSlot.setReadyButtonEnabled(true);
 					playerSlot.informGameAboutReady(joinMultiPlayerMap);
@@ -391,7 +385,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
 		startResourcesComboBox.removeAllItems();
-		Arrays.asList(EMapStartResources.values()).stream()
+		J8Arrays.stream(EMapStartResources.values())
 				.map(MapStartResourcesUIWrapper::new)
 				.forEach(startResourcesComboBox::addItem);
 		startResourcesComboBox.setSelectedIndex(EMapStartResources.HIGH_GOODS.value - 1);
@@ -433,13 +427,13 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void setStartButtonActionListener(ActionListener actionListener) {
 		ActionListener[] actionListeners = startGameButton.getActionListeners();
-		Arrays.asList(actionListeners).stream().forEach(startGameButton::removeActionListener);
+		J8Arrays.stream(actionListeners).forEach(startGameButton::removeActionListener);
 		startGameButton.addActionListener(actionListener);
 	}
 
 	private void setCancelButtonActionListener(ActionListener actionListener) {
 		ActionListener[] actionListeners = cancelButton.getActionListeners();
-		Arrays.asList(actionListeners).stream().forEach(cancelButton::removeActionListener);
+		J8Arrays.stream(actionListeners).forEach(cancelButton::removeActionListener);
 		cancelButton.addActionListener(actionListener);
 	}
 
@@ -466,7 +460,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		}
 		SwingUtilities.updateComponentTreeUI(playerSlotsPanel);
 		SlotToggleGroup slotToggleGroup = new SlotToggleGroup();
-		playerSlots.stream().forEach(slotToggleGroup::add);
+		playerSlots.forEach(slotToggleGroup::add);
 	}
 
 	private void addPlayerSlotHeadline() {

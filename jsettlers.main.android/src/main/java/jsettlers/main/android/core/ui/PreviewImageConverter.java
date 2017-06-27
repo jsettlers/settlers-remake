@@ -18,11 +18,21 @@ import jsettlers.common.Color;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
 import android.graphics.Bitmap;
+
+import java.util.concurrent.Semaphore;
+
 import io.reactivex.Single;
 
 public class PreviewImageConverter {
-	public static Single<Bitmap> toBitmap(short[] data) {
-		return Single.create(e -> e.onSuccess(convert(data)));
+	public static Single<Bitmap> toBitmap(short[] data, Semaphore semaphore) {
+		return Single.create(e -> {
+			try {
+				semaphore.acquire();
+				e.onSuccess(convert(data));
+			} finally {
+				semaphore.release();
+			}
+		});
 	}
 
 	public static Bitmap convert(short[] data) {

@@ -56,7 +56,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 	}
 
 	@Override
-	public void startGame() {
+	public boolean startGame() {
 		List<PlayerSlotPresenter> playerSlotPresenters = getPlayerSlotPresenters();
 		PlayerSetting[] playerSettings = new PlayerSetting[playerSlotPresenters.size()];
 		byte humanPlayerId = playerSlotPresenters.get(0).getPlayerId();
@@ -81,6 +81,7 @@ public class NewSinglePlayerSetupPresenter extends MapSetupPresenterImpl {
 
 		gameStarter.setStartingGame(game.start());
 		navigator.showGame();
+		return true;
 	}
 
 	private static void setHumanSlotPlayerTypes(PlayerSlotPresenter playerSlotPresenter) {

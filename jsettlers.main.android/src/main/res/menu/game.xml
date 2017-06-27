@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/menu_item_pause"
+            android:id="@+id/menu_item_pause_game"
             android:title="@string/game_menu_pause"
             android:orderInCategory="10"
             app:showAsAction="never"/>
@@ -18,22 +18,27 @@
             app:showAsAction="never"/>
     <item
             android:id="@+id/menu_item_faster"
-            android:title="Faster"
+            android:title="@string/faster"
             android:orderInCategory="40"
             app:showAsAction="never"/>
     <item
             android:id="@+id/menu_item_slower"
-            android:title="Slower"
+            android:title="@string/slower"
             android:orderInCategory="40"
             app:showAsAction="never"/>
     <item
-            android:id="@+id/menu_item_fastest"
-            android:title="Fastest"
+            android:id="@+id/menu_item_fast_speed"
+            android:title="@string/fast"
             android:orderInCategory="50"
             app:showAsAction="never"/>
     <item
-            android:id="@+id/menu_item_skip"
-            android:title="Skip 1 minute"
+        android:id="@+id/menu_item_normal_speed"
+        android:title="@string/normal"
+        android:orderInCategory="50"
+        app:showAsAction="never"/>
+    <item
+            android:id="@+id/menu_item_skip_one_minute"
+            android:title="@string/skip_1_minute"
             android:orderInCategory="60"
             app:showAsAction="never"/>
 </menu>

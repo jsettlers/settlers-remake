@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -117,7 +118,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 				}
 			});
 
-			InputStream stream = EBuildingType.class.getResourceAsStream(String.format("%s.xml", buildingName.toLowerCase()));
+			String buildingFileName = buildingName.toLowerCase(Locale.ENGLISH) + ".xml";
+			InputStream stream = EBuildingType.class.getResourceAsStream(buildingFileName);
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
 			System.err.println("Error loading building file for " + buildingName + ":" + e.getMessage());
