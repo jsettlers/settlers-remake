@@ -144,4 +144,6 @@
     <string name="settlers">Settlers</string>
     <string name="multiplayer_not_all_players_ready">All players must be ready to start the match.</string>
     <string name="normal">Normal Speed</string>
+
+    <string name="service_description">JSettlers Game Service running the current game.</string>
 </resources>

@@ -22,7 +22,6 @@
         <activity android:name=".mainmenu.ui.activities.MainActivity_">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -35,7 +34,8 @@
         <service
             android:name=".core.GameService_"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false"
+            android:description="@string/service_description"/>
 
         <activity
             android:name=".mainmenu.ui.activities.SettingsActivity_"
