@@ -13,15 +13,20 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.ui.views;
+package jsettlers.main.android.core.controls;
 
-import java.util.List;
-
-import jsettlers.main.android.gameplay.presenters.BuildingTile;
+import jsettlers.common.map.partition.IPartitionData;
 
 /**
- * Created by tompr on 10/03/2017.
+ * Created by tompr on 27/05/2017.
  */
-public interface BuildingsCategoryView {
-	void setBuildings(List<BuildingTile> buildingTiles);
+
+public interface PositionControls {
+    boolean isInPlayerPartition();
+    
+    IPartitionData getCurrentPartitionData();
+
+    void addPositionChangedListener(PositionChangedListener positionChangedListener);
+
+    void removePositionChangedListener(PositionChangedListener positionChangedListener);
 }

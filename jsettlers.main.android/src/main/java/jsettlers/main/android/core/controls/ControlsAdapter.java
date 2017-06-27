@@ -19,10 +19,14 @@ import java.util.LinkedList;
 
 import go.graphics.android.AndroidSoundPlayer;
 
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.ETextDrawPosition;
@@ -31,22 +35,27 @@ import jsettlers.graphics.map.controls.IControls;
 
 import android.content.Context;
 
+import static java8.util.stream.StreamSupport.stream;
+
 /**
  * Created by tompr on 14/01/2017.
  */
-public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls {
+public class ControlsAdapter implements ActionControls, DrawControls, SelectionControls, TaskControls, PositionControls {
 	private static final int SOUND_THREADS = 6;
 
 	private final IInGamePlayer player;
 	private final AndroidControls androidControls;
 	private final MapContent mapContent;
 	private final GameMenu gameMenu;
+	private final IGraphicsGrid graphicsGrid;
 
 	private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
 	private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
+	private final LinkedList<PositionChangedListener> positionChangedListeners = new LinkedList<>();
 
 	private ISelectionSet selection;
+	private ShortPoint2D displayCenter;
 
 	public ControlsAdapter(Context context, IStartedGame game) {
 		this.player = game.getInGamePlayer();
@@ -55,6 +64,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		androidControls = new AndroidControls(this);
 		mapContent = new MapContent(game, soundPlayer, ETextDrawPosition.TOP_LEFT, androidControls);
 		gameMenu = new GameMenu(context, soundPlayer, this);
+		graphicsGrid = game.getMap();
 	}
 
 	public IControls getControls() {
@@ -97,9 +107,15 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 	public void onDraw() {
 		synchronized (drawListeners) {
-			for (DrawListener listener : drawListeners) {
-				listener.draw();
-			}
+			stream(drawListeners).forEach(DrawListener::draw);
+		}
+	}
+
+	public void onPositionChanged(MapRectangle screenArea, ShortPoint2D displayCenter) {
+		this.displayCenter = displayCenter;
+
+		synchronized (positionChangedListeners) {
+			stream(positionChangedListeners).forEach(PositionChangedListener::positionChanged);
 		}
 	}
 
@@ -189,5 +205,37 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	@Override
 	public void endTask() {
 		androidControls.endTask();
+	}
+
+
+	/**
+	 * ParitionControls inplementation
+	 */
+	@Override
+	public boolean isInPlayerPartition() {
+		if (displayCenter == null) {
+			return false;
+		}
+
+		return graphicsGrid.getPlayerIdAt(displayCenter.x, displayCenter.y) == player.getPlayerId();
+	}
+
+	@Override
+	public IPartitionData getCurrentPartitionData() {
+		return graphicsGrid.getPartitionData(displayCenter.x, displayCenter.y);
+	}
+
+	@Override
+	public void addPositionChangedListener(PositionChangedListener positionChangedListener) {
+		synchronized (positionChangedListeners) {
+			positionChangedListeners.add(positionChangedListener);
+		}
+	}
+
+	@Override
+	public void removePositionChangedListener(PositionChangedListener positionChangedListener) {
+		synchronized (positionChangedListeners) {
+			positionChangedListeners.remove(positionChangedListener);
+		}
 	}
 }

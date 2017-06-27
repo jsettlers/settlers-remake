@@ -13,15 +13,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.gameplay.ui.views;
-
-import java.util.List;
-
-import jsettlers.main.android.gameplay.presenters.BuildingTile;
+package jsettlers.main.android.core.controls;
 
 /**
- * Created by tompr on 10/03/2017.
+ * Created by tompr on 27/05/2017.
  */
-public interface BuildingsCategoryView {
-	void setBuildings(List<BuildingTile> buildingTiles);
+
+public interface PositionChangedListener {
+    void positionChanged();
 }
