@@ -117,13 +117,13 @@ public class OccupiedFeature extends SelectionFeature implements DrawListener {
 		removePikemanButton.setOnClickListener(new SingleSoldierClickListener(actionControls, EActionType.SOLDIERS_LESS, ESoldierType.PIKEMAN));
 
 		update();
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 	}
 
 	@Override
 	public void finish() {
 		super.finish();
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override

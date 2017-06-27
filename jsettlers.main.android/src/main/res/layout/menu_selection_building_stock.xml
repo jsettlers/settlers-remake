@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--<ScrollView--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_priority"
@@ -35,12 +37,25 @@
     </LinearLayout>
 
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layoutManager="GridLayoutManager"
+            app:spanCount="5" />
 
-    <ImageView
-        android:id="@+id/image_view_building"
-        android:layout_width="64dp"
-        android:layout_height="64dp" />
+        <ImageView
+            android:id="@+id/image_view_building"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/layout_materials"
@@ -49,5 +64,4 @@
         android:orientation="horizontal"
         android:padding="8dp" />
 
-
-</LinearLayout>
+</LinearLayout><!--</ScrollView>-->
