@@ -15,6 +15,8 @@
 
 package jsettlers.main.android.core.controls;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.LinkedList;
 
 import go.graphics.android.AndroidSoundPlayer;
@@ -34,8 +36,6 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.controls.IControls;
 
 import android.content.Context;
-
-import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 14/01/2017.
@@ -206,7 +206,6 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	public void endTask() {
 		androidControls.endTask();
 	}
-
 
 	/**
 	 * ParitionControls inplementation

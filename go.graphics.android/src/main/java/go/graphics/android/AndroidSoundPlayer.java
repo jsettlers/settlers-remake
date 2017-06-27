@@ -42,10 +42,10 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	}
 
 	@Override
-	public void playSound(int soundStart, float lvolume, float rvolume) {
+	public void playSound(int soundStart, float leftVolume, float rightVolume) {
 		try {
 			if (!paused) {
-				queue.offer(soundStart, lvolume, rvolume);
+				queue.offer(soundStart, leftVolume, rightVolume);
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

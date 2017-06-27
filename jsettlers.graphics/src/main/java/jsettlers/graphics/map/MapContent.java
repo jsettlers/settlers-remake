@@ -203,35 +203,33 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	/**
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
-	 *            The player
+	 * @param soundPlayer
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition) {
-		this(game, player, textDrawPosition, null);
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
+		this(game, soundPlayer, textDrawPosition, null);
 	}
 
 	/**
 	 * 
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
+	 * @param soundPlayer
 	 *            The player
 	 * @param controls
-	 *            The controls object to use as user interface. If it is <code>null</code> the original controls are overlayed.
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
-		this.soundmanager = new SoundManager(player);
+		this.soundmanager = new SoundManager(soundPlayer);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
@@ -726,7 +724,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param position
 	 *            The new mouse position.
 	 */
-	protected void changeMousePosition(UIPoint position) {
+	private void changeMousePosition(UIPoint position) {
 		mousePosition = position;
 
 		if (controls.containsPoint(position)) {
@@ -811,7 +809,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	protected void abortSelectionArea() {
+	private void abortSelectionArea() {
 		this.currentSelectionAreaStart = null;
 		this.currentSelectionAreaEnd = null;
 	}
@@ -957,7 +955,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		controls.stop();
 	}
 
-	protected void loadUIState(UIState state) {
+	void loadUIState(UIState state) {
 		if (state == null) {
 			return;
 		}

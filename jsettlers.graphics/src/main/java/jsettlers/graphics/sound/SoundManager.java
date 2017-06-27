@@ -28,7 +28,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.FileUtils;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.reader.bytereader.ByteReader;
-import jsettlers.graphics.startscreen.SettingsManager;
 
 /*
  * This class manages reading and playing of the sound file.
@@ -123,7 +122,7 @@ public class SoundManager {
 
 	private static File lookupPath;
 
-	private final SoundPlayer player;
+	private final SoundPlayer soundPlayer;
 	private final Random random = new Random();
 
 	/**
@@ -137,11 +136,11 @@ public class SoundManager {
 	/**
 	 * Creates a new sound manager.
 	 *
-	 * @param player
-	 * 		The player to play sounds at.
+	 * @param soundPlayer
+	 *            The soundPlayer to play sounds at.
 	 */
-	public SoundManager(SoundPlayer player) {
-		this.player = player;
+	public SoundManager(SoundPlayer soundPlayer) {
+		this.soundPlayer = soundPlayer;
 		initialize();
 	}
 
@@ -149,10 +148,10 @@ public class SoundManager {
 	 * Reads the start indexes of the sounds.
 	 *
 	 * @param reader
-	 * 		The reader to read from.
+	 *            The reader to read from.
 	 * @return An array of start indexes for each sound and it's variants.
 	 * @throws IOException
-	 * 		If the file could not be read.
+	 *             If the file could not be read.
 	 */
 	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
 		int[] sequenceHeaderStarts = new int[SEQUENCE_N];
@@ -179,7 +178,7 @@ public class SoundManager {
 	 *
 	 * @return The file reader.
 	 * @throws IOException
-	 * 		If the file could not be opened,
+	 *             If the file could not be opened,
 	 */
 	protected static ByteReader openSoundFile() throws IOException {
 		File sndFile = getSoundFile();
@@ -205,9 +204,9 @@ public class SoundManager {
 	 * Plays a given sound.
 	 *
 	 * @param soundId
-	 * 		The sound id to play.
+	 *            The sound id to play.
 	 * @param volume
-	 * 		The volume
+	 *            The volume
 	 */
 	public void playSound(int soundId, float volume) {
 		initialize();
@@ -216,8 +215,7 @@ public class SoundManager {
 			int[] alternatives = soundStarts[soundId];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
-				float soundVolume = SettingsManager.getInstance().getVolume() * volume;
-				player.playSound(alternatives[rand], soundVolume, soundVolume);
+				soundPlayer.playSound(alternatives[rand], volume, volume);
 			}
 		}
 	}
@@ -230,13 +228,13 @@ public class SoundManager {
 	 * Plays a given sound at a given coordinate
 	 *
 	 * @param soundId
-	 * 		The sound id to play
+	 *            The sound id to play
 	 * @param volume
-	 * 		The volume
+	 *            The volume
 	 * @param x
-	 * 		The x coordinate of the sound
+	 *            The x coordinate of the sound
 	 * @param y
-	 * 		The y coordinate of the sound
+	 *            The y coordinate of the sound
 	 */
 	public void playSound(int soundId, float volume, int x, int y) {
 		if (map == null || map.getVisibleStatus(x, y) <= CommonConstants.FOG_OF_WAR_EXPLORED) { // only play sounds when fog of war level is higher than explored
@@ -249,7 +247,7 @@ public class SoundManager {
 			int[] alternatives = soundStarts[soundId];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
-				float maxVolume = SettingsManager.getInstance().getVolume() * volume;
+
 				int maxA = area.getLineLength(); // get screen area
 				int maxB = area.getLines();
 				int b = y - area.getMinY();
@@ -259,14 +257,14 @@ public class SoundManager {
 					leftVolume = 0;
 					rightVolume = 0;
 				} else if (a < maxA / 4) {
-					leftVolume = maxVolume * 4f * a / maxA;
+					leftVolume = 4f * a / maxA;
 					rightVolume = 0;
 				} else if (a < 3 * maxA / 4) {
-					leftVolume = maxVolume * (2f * a / maxA - .5f);
-					rightVolume = maxVolume * (2f * (maxA - a) / maxA - .5f);
+					leftVolume = (2f * a / maxA - .5f);
+					rightVolume = (2f * (maxA - a) / maxA - .5f);
 				} else if (a < maxA) {
 					leftVolume = 0;
-					rightVolume = maxVolume * 4f * (maxA - a) / maxA;
+					rightVolume = 4f * (maxA - a) / maxA;
 				} else {
 					leftVolume = 0;
 					rightVolume = 0;
@@ -286,7 +284,7 @@ public class SoundManager {
 				}
 				leftVolume *= distanceVolume;
 				rightVolume *= distanceVolume;
-				player.playSound(alternatives[rand], leftVolume, rightVolume);
+				soundPlayer.playSound(alternatives[rand], leftVolume, rightVolume);
 			}
 		}
 	}
@@ -310,14 +308,14 @@ public class SoundManager {
 	private void loadSounds() throws IOException {
 		ByteReader reader = openSoundFile();
 		this.soundStarts = getSoundStarts(reader);
-		player.setSoundDataRetriever(new SoundDataRetriever(reader));
+		soundPlayer.setSoundDataRetriever(new SoundDataRetriever(reader));
 	}
 
 	/**
 	 * Sets the sound file lookup path.
 	 *
 	 * @param lookupPath
-	 * 		The file path.
+	 *            The file path.
 	 */
 	public static void setLookupPath(File lookupPath) {
 		SoundManager.lookupPath = lookupPath;
@@ -335,7 +333,7 @@ public class SoundManager {
 		 * Create a new {@link SoundDataRetriever}.
 		 *
 		 * @param reader
-		 * 		The byte reader.
+		 *            The byte reader.
 		 */
 		SoundDataRetriever(ByteReader reader) {
 			this.reader = reader;
@@ -351,12 +349,12 @@ public class SoundManager {
 	 * Reads the sound data from a byte reader.
 	 *
 	 * @param reader
-	 * 		The reader to read.
+	 *            The reader to read.
 	 * @param start
-	 * 		The sound start position.
+	 *            The sound start position.
 	 * @return The read sound data.
 	 * @throws IOException
-	 * 		If that sound could not be read.
+	 *             If that sound could not be read.
 	 */
 	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
 		reader.skipTo(start);
