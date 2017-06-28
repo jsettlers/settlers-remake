@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:columnCount="2"
     android:padding="8dp"
-
     android:focusable="true"
-    android:clickable="true">
+    android:clickable="true"
+    app:columnCount="2">
 
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="0dp"
         android:layout_height="72dp"
-        android:layout_columnWeight="1"
         android:paddingTop="4dp"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="0dp"
         android:scaleType="fitCenter"
-        android:layout_rowSpan="3" />
+        app:layout_rowSpan="3"
+        app:layout_columnWeight="1" />
 
     <TextView
         android:id="@+id/text_view_building_count"
@@ -32,7 +32,7 @@
     <Space
         android:layout_width="1dp"
         android:layout_height="0dp"
-        android:layout_rowWeight="1"/>
+        app:layout_rowWeight="1"/>
 
     <TextView
         android:id="@+id/text_view_building_construction_count"
@@ -49,8 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Woodcutter"
-        android:layout_columnSpan="2"
-        android:minLines="2"
-        android:gravity="center"/>
+        android:gravity="center"
+        app:layout_columnSpan="2" />
 
-</GridLayout>
+</android.support.v7.widget.GridLayout>
