@@ -91,8 +91,7 @@ public enum EBuildingType {
 	 * The number of buildings in the {@link #VALUES} array.
 	 */
 	public static final int NUMBER_OF_BUILDINGS = VALUES.length;
-	private static final EnumSet<EBuildingType> MILITARY_BUILDINGS = EnumSet.of(TOWER, BIG_TOWER, CASTLE);
-	private static final EnumSet<EBuildingType> MINE_BUILDINGS = EnumSet.of(GOLDMINE, IRONMINE, COALMINE);
+	public static final EnumSet<EBuildingType> MILITARY_BUILDINGS = EnumSet.of(TOWER, BIG_TOWER, CASTLE);
 
 	/**
 	 * The ordinal of this type. Yields more performance than using {@link #ordinal()}
@@ -436,15 +435,6 @@ public enum EBuildingType {
 	 */
 	public boolean isMilitaryBuilding() {
 		return MILITARY_BUILDINGS.contains(this);
-	}
-
-	/**
-	 * Gets an collection of all military buildings.
-	 * 
-	 * @return The buildings.
-	 */
-	public static EnumSet<EBuildingType> getMilitaryBuildings() {
-		return MILITARY_BUILDINGS;
 	}
 
 	public Set<ELandscapeType> getRequiredGroundTypeAt(int relativeX, int relativeY) {

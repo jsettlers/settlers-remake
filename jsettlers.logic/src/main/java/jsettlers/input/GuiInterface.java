@@ -625,11 +625,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		Set<EMovableType> selectableTypes;
 		if (selectedType.isSwordsman()) {
-			selectableTypes = EMovableType.swordsmen;
+			selectableTypes = EMovableType.SWORDSMEN;
 		} else if (selectedType.isPikeman()) {
-			selectableTypes = EMovableType.pikemen;
+			selectableTypes = EMovableType.PIKEMEN;
 		} else if (selectedType.isBowman()) {
-			selectableTypes = EMovableType.bowmen;
+			selectableTypes = EMovableType.BOWMEN;
 		} else {
 			selectableTypes = EnumSet.of(selectedType);
 		}
