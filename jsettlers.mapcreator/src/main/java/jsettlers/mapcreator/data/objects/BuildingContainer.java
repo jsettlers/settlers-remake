@@ -24,24 +24,27 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
 
 	private final BuildingMapDataObject buildingObject;
 	private final ShortPoint2D position;
+	private final IPlayer player;
 
 	public BuildingContainer(BuildingMapDataObject buildingObject, ShortPoint2D position) {
 		this.buildingObject = buildingObject;
 		this.position = position;
+		this.player = new IPlayer.DummyPlayer(buildingObject.getPlayerId());
 	}
 
 	@Override
@@ -70,8 +73,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public byte getPlayerId() {
-		return buildingObject.getPlayerId();
+	public IPlayer getPlayer() {
+		return player;
 	}
 
 	@Override

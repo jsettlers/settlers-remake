@@ -24,14 +24,24 @@ public interface IPlayer {
 	byte getTeamId();
 
 	class DummyPlayer implements IPlayer {
+		private final byte playerAndTeamid;
+
+		public DummyPlayer() {
+			this.playerAndTeamid = 0;
+		}
+
+		public DummyPlayer(byte playerAndTeamid) {
+			this.playerAndTeamid = playerAndTeamid;
+		}
+
 		@Override
 		public byte getPlayerId() {
-			return 0;
+			return playerAndTeamid;
 		}
 
 		@Override
 		public byte getTeamId() {
-			return 0;
+			return playerAndTeamid;
 		}
 	}
 }
