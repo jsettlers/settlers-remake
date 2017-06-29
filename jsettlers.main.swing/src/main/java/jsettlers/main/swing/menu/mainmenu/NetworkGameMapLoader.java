@@ -17,8 +17,8 @@ package jsettlers.main.swing.menu.mainmenu;
 import java.util.Date;
 import java.util.List;
 
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.IJoinableGame;
 import jsettlers.common.menu.ILoadableMapPlayer;
 import jsettlers.logic.map.loading.EMapStartResources;

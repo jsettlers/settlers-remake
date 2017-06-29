@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import java8.util.Comparators;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
@@ -49,11 +48,13 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.player.Player;
+
+import java8.util.Comparators;
 
 /**
  * This is a tower building that can request soldiers and let them defend the building.
@@ -153,7 +154,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	@Override
 	protected final void appearedEvent() {
 		occupyAreaIfNeeded();
-		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
+		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN); // FIXME WTF! List has other type!
 	}
 
 	@Override
@@ -311,7 +312,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		requestSoldier(occupier.place.getSoldierClass());
 	}
 
-	protected TowerOccupier removeSoldier() {
+	TowerOccupier removeSoldier() {
 		TowerOccupier removedSoldier = sortedOccupiers.removeFirst();
 
 		addInformableMapObject(removedSoldier, false);
@@ -343,11 +344,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	public ShortPoint2D getTowerBowmanSearchPosition(OccupierPlace place) {
 		ShortPoint2D pos = place.getPosition().calculatePoint(super.pos);
 		// FIXME @Andreas Eberle introduce new field in the buildings xml file
-		ShortPoint2D position = new ShortPoint2D(pos.x + 3, pos.y + 6);
-		return position;
+		return new ShortPoint2D(pos.x + 3, pos.y + 6);
 	}
 
-	private final void occupyAreaIfNeeded() {
+	private void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
 			MapCircle occupying = new MapCircle(super.pos, CommonConstants.TOWER_RADIUS);
 			super.grid.occupyAreaByTower(super.getPlayer(), occupying, getGroundArea());
@@ -524,12 +524,12 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	 *
 	 * @author Andreas Eberle
 	 */
-	public class AttackableTowerMapObject extends StandardMapObject implements IAttackable, IAttackableTowerMapObject {
+	private class AttackableTowerMapObject extends StandardMapObject implements IAttackable, IAttackableTowerMapObject {
 		private static final long serialVersionUID = -5137593316096740750L;
 		private TowerOccupier currDefender;
 
-		public AttackableTowerMapObject() {
-			super(EMapObjectType.ATTACKABLE_TOWER, false, OccupyingBuilding.this.getPlayerId());
+		AttackableTowerMapObject() {
+			super(EMapObjectType.ATTACKABLE_TOWER, false, OccupyingBuilding.this.getPlayer());
 		}
 
 		@Override
@@ -539,7 +539,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-			if(!OccupyingBuilding.this.isNotDestroyed()){
+			if (!OccupyingBuilding.this.isNotDestroyed()) {
 				return; // building is destroyed => do nothing
 			}
 
@@ -555,8 +555,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 					doorHealth = 0;
 					inFight = true;
 
-					OccupyingBuilding.this.grid.getMapObjectsManager()
-							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
+					OccupyingBuilding.this.grid.getMapObjectsManager().addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pullNewDefender(attackerPos);
 				}
@@ -663,7 +662,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 			this.place = place;
 		}
 
-		public ESearchType getSearchType() {
+		ESearchType getSearchType() {
 			if (soldierClass != null) {
 				switch (soldierClass) {
 				case INFANTRY:
@@ -684,11 +683,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 			throw new RuntimeException("Unknown soldier or search type");
 		}
 
-		public boolean isOfTypeOrClass(ESoldierType soldierType) {
+		boolean isOfTypeOrClass(ESoldierType soldierType) {
 			return this.soldierType == soldierType || soldierClass == soldierType.getSoldierClass();
 		}
 
-		public boolean isOfTypeOrClass(ESoldierClass soldierClass) {
+		boolean isOfTypeOrClass(ESoldierClass soldierClass) {
 			return this.soldierClass == soldierClass || (this.soldierType != null && this.soldierType.getSoldierClass() == soldierClass);
 		}
 	}

@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.tasks.error;
 
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.mapvalidator.result.fix.DeleteObjectFix;
@@ -45,7 +45,7 @@ public class ValidatePlayer extends AbstractValidationTask {
 
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
+				MapDataObject mapObject = data.getMapObject(x, y);
 				if (mapObject instanceof IPlayerable) {
 					int p = ((IPlayerable) mapObject).getPlayerId();
 					if (p >= playerCount) {

@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;

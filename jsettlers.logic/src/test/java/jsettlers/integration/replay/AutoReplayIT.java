@@ -19,7 +19,7 @@ import java.util.Collection;
 import java8.util.stream.Collectors;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.replay.ReplayUtils;

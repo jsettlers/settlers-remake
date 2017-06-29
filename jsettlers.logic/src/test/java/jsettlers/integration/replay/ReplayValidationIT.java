@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import jsettlers.testutils.TestUtils;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoader;

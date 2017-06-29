@@ -17,10 +17,10 @@ package jsettlers.mapcreator.stat;
 import javax.swing.table.AbstractTableModel;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.localization.Labels;
@@ -85,13 +85,13 @@ public class StatisticsTableModel extends AbstractTableModel {
 		}
 	}
 
-	private static int getRow(MapObject mapObject) {
-		if (mapObject instanceof BuildingObject) {
-			return BUILDING_START + ((BuildingObject) mapObject).getType().ordinal();
+	private static int getRow(MapDataObject mapObject) {
+		if (mapObject instanceof BuildingMapDataObject) {
+			return BUILDING_START + ((BuildingMapDataObject) mapObject).getType().ordinal();
 		} else if (mapObject instanceof MovableObject) {
 			return MOVABLE_START + ((MovableObject) mapObject).getType().ordinal();
-		} else if (mapObject instanceof StackObject) {
-			return BUILDING_START + ((StackObject) mapObject).getType().ordinal();
+		} else if (mapObject instanceof StackMapDataObject) {
+			return BUILDING_START + ((StackMapDataObject) mapObject).getType().ordinal();
 		}
 
 		return -1;

@@ -26,7 +26,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.input.PlayerState;

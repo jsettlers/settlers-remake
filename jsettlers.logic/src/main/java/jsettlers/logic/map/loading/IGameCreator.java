@@ -14,9 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading;
 
-import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.player.PlayerSetting;
 

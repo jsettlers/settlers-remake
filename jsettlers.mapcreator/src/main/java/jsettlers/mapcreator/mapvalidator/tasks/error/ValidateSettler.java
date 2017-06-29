@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.tasks.error;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MovableObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
@@ -46,7 +46,7 @@ public class ValidateSettler extends AbstractValidationTask {
 
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
+				MapDataObject mapObject = data.getMapObject(x, y);
 				if (mapObject instanceof MovableObject) {
 					testMoveableObject(x, y, (MovableObject) mapObject);
 				}

@@ -23,8 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.loading.EMapStartResources;
@@ -724,10 +724,10 @@ public class OriginalMapFileContentReader {
 			ShortPoint2D startPoint = mapData.getStartPoint(playerId);
 
 			// - add the start Tower for this player
-			mapData.setMapObject(startPoint.x, startPoint.y, new BuildingObject(EBuildingType.TOWER, playerId));
+			mapData.setMapObject(startPoint.x, startPoint.y, new BuildingMapDataObject(EBuildingType.TOWER, playerId));
 
 			// - list of all objects that have to be added for this player
-			List<MapObject> mapObjects = EMapStartResources.generateStackObjects(startResources);
+			List<MapDataObject> mapObjects = EMapStartResources.generateStackObjects(startResources);
 			mapObjects.addAll(EMapStartResources.generateMovableObjects(startResources, playerId));
 
 			// - blocking area of the tower
@@ -735,7 +735,7 @@ public class OriginalMapFileContentReader {
 
 			RelativePoint relativeMapObjectPoint = new RelativePoint(-3, 3);
 
-			for (MapObject currentMapObject : mapObjects) {
+			for (MapDataObject currentMapObject : mapObjects) {
 				do {
 					// - get next point
 					relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);

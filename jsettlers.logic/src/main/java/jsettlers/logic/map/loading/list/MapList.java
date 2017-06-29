@@ -24,7 +24,7 @@ import java.util.Collection;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.IMapData;
+import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;

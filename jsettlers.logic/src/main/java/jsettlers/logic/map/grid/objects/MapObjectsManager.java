@@ -25,6 +25,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.stack.IStackSizeSupplier;
@@ -56,9 +57,8 @@ import java8.util.Optional;
 
 /**
  * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public final class MapObjectsManager implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = 1833055351956872224L;
@@ -85,8 +85,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 		int gameTime = MatchConstants.clock().getTime();
 
-		TimeEvent curr = null;
-		curr = timingQueue.peek();
+		TimeEvent curr = timingQueue.peek();
 		while (curr != null && curr.isOutDated(gameTime)) {
 			timingQueue.poll();
 			if (curr.shouldRemoveObject()) {
@@ -137,8 +136,8 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	private boolean addRessourceSign(ShortPoint2D pos) {
-		EResourceType resourceType = grid.getRessourceTypeAt(pos.x, pos.y);
-		byte resourceAmount = grid.getRessourceAmountAt(pos.x, pos.y);
+		EResourceType resourceType = grid.getResourceTypeAt(pos.x, pos.y);
+		byte resourceAmount = grid.getResourceAmountAt(pos.x, pos.y);
 
 		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, resourceAmount
 				/ ((float) Constants.MAX_RESOURCE_AMOUNT_PER_POSITION));
@@ -227,11 +226,11 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return false;
 	}
 
-	private final boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
+	private boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
 		return addMapObject(pos.x, pos.y, mapObject);
 	}
 
-	private final boolean addMapObject(int x, int y, AbstractHexMapObject mapObject) {
+	private boolean addMapObject(int x, int y, AbstractHexMapObject mapObject) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
 			int currX = point.calculateX(x);
 			int currY = point.calculateY(y);
@@ -271,15 +270,15 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	/**
 	 * Adds an arrow object to the map flying from
-	 * 
+	 *
 	 * @param attackedPos
-	 *            Attacked position.
+	 * 		Attacked position.
 	 * @param shooterPos
-	 *            Position of the shooter.
+	 * 		Position of the shooter.
 	 * @param shooterPlayerId
-	 *            The player of the shooter.
+	 * 		The player of the shooter.
 	 * @param hitStrength
-	 *            Strength of the hit.
+	 * 		Strength of the hit.
 	 */
 	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength) {
 		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayerId, hitStrength);
@@ -289,7 +288,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, Player player) {
-		addMapObject(pos, new StandardMapObject(objectType, blocking, player != null ? player.playerId : -1));
+		addMapObject(pos, new StandardMapObject(objectType, blocking, player));
 	}
 
 	public void addBuildingWorkAreaObject(int x, int y, float radius) {
@@ -300,17 +299,16 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		addMapObject(pos, new WineBowlMapObject(wineStack));
 	}
 
-	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, Player player) {
+	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, IPlayer player) {
 		SelfDeletingMapObject object;
-		byte playerId = player != null ? player.playerId : -1;
 
 		switch (mapObjectType) {
 		case GHOST:
 		case BUILDING_DECONSTRUCTION_SMOKE:
-			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration, playerId);
+			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration, player);
 			break;
 		default:
-			object = new SelfDeletingMapObject(pos, mapObjectType, duration, playerId);
+			object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
 			break;
 		}
 		addMapObject(pos, object);
@@ -373,7 +371,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 	}
 
-	private final static StackMapObject getNextStackObject(StackMapObject stack) {
+	private static StackMapObject getNextStackObject(StackMapObject stack) {
 		AbstractHexMapObject next = stack.getNextObject();
 		if (next != null) {
 			return (StackMapObject) next.getMapObject(EMapObjectType.STACK_OBJECT);
@@ -413,7 +411,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	/**
 	 * Checks if there is no stack of another material at the given location and there is space on a stack of this material type.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param materialType
@@ -466,17 +464,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 	}
 
-	public final EMaterialType getMaterialTypeAt(short x, short y) {
-		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
-
-		if (stackObject == null) {
-			return null;
-		} else {
-			return stackObject.getMaterialType();
-		}
-	}
-
-	private final void removeStackObject(short x, short y, StackMapObject stackObject) {
+	private void removeStackObject(short x, short y, StackMapObject stackObject) {
 		removeMapObject(x, y, stackObject);
 		if (!grid.isBuildingAreaAt(x, y) && grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT) == null) {
 			grid.setProtected(x, y, false); // no other stack, so remove protected
@@ -544,7 +532,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return pig != null && pig.canBeCut();
 	}
 
-	public boolean feedDonkeyAt(ShortPoint2D position, byte playerId) {
+	public boolean feedDonkeyAt(ShortPoint2D position, Player player) {
 		AbstractHexMapObject object = grid.getMapObject(position.x, position.y, EMapObjectType.DONKEY);
 		DonkeyMapObject donkey;
 		boolean result;
@@ -552,14 +540,14 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			donkey = (DonkeyMapObject) object;
 			result = donkey.feed();
 		} else {
-			donkey = new DonkeyMapObject(position, playerId);
+			donkey = new DonkeyMapObject(position, player);
 			addMapObject(position, donkey);
 			result = true;
 		}
 
 		if (donkey.isFullyFed()) {
 			// release it to the world.
-			grid.spawnDonkey(position, playerId);
+			grid.spawnDonkey(position, player);
 			removeMapObjectType(position.x, position.y, EMapObjectType.DONKEY);
 		} else {
 			timingQueue.add(new TimeEvent(donkey, DonkeyMapObject.FEED_TIME, false));
@@ -583,20 +571,20 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		private final boolean shouldRemove;
 
 		/**
-		 * 
 		 * @param mapObject
+		 * 		map object
 		 * @param duration
-		 *            in seconds
+		 * 		in seconds
 		 * @param shouldRemove
-		 *            if true, the map object will be removed after this event
+		 * 		if true, the map object will be removed after this event
 		 */
-		protected TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
+		TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
 			this.mapObject = mapObject;
 			this.shouldRemove = shouldRemove;
 			this.eventTime = (int) (MatchConstants.clock().getTime() + duration * 1000);
 		}
 
-		public boolean isOutDated(int gameTime) {
+		boolean isOutDated(int gameTime) {
 			return gameTime > eventTime;
 		}
 
@@ -604,7 +592,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			return mapObject;
 		}
 
-		public boolean shouldRemoveObject() {
+		boolean shouldRemoveObject() {
 			return shouldRemove;
 		}
 
@@ -620,28 +608,26 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	/**
 	 * Adds an attackable tower map object to the grid.
-	 * 
+	 *
 	 * @param position
-	 *            Position the map object will be added.
+	 * 		Position the map object will be added.
 	 * @param attackableTowerMapObject
-	 *            The object to be added. NOTE: This object must be an instance of {@link IAttackableTowerMapObject}!
+	 * 		The object to be added. NOTE: This object must be an instance of {@link IAttackableTowerMapObject}!
 	 */
 	public void addAttackableTowerObject(ShortPoint2D position, AbstractHexMapObject attackableTowerMapObject) {
 		assert attackableTowerMapObject instanceof IAttackableTowerMapObject;
-
 		this.addMapObject(position, attackableTowerMapObject);
 	}
 
 	/**
 	 * Adds a map object that informs the given {@link IInformable} about attackable enemies in the area.
-	 * 
+	 *
 	 * @param position
-	 *            The position the object should be added.
+	 * 		The position the object should be added.
 	 * @param informable
-	 *            The {@link IInformable} that will be informed of enemies.
+	 * 		The {@link IInformable} that will be informed of enemies.
 	 */
 	public void addInformableMapObjectAt(ShortPoint2D position, IInformable informable) {
 		this.addMapObject(position, new InformableMapObject(informable));
 	}
-
 }

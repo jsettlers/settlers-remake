@@ -27,7 +27,7 @@ import java.util.Date;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IGameExitListener;

@@ -17,8 +17,8 @@ package jsettlers.logic.map.loading.savegame;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.EMapStartResources;

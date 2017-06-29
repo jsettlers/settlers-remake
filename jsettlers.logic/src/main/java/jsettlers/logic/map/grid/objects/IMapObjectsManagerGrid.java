@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,6 +21,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
+import jsettlers.logic.player.Player;
 
 public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
 	AbstractHexMapObject getMapObject(int x, int y, EMapObjectType mapObjectType);
@@ -45,14 +46,13 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	boolean isInBounds(int x, int y);
 
-	EResourceType getRessourceTypeAt(int x, int y);
+	EResourceType getResourceTypeAt(int x, int y);
 
-	byte getRessourceAmountAt(int x, int y);
+	byte getResourceAmountAt(int x, int y);
 
 	boolean isBuildingAreaAt(short x, short y);
 
 	boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes);
 
-	void spawnDonkey(ShortPoint2D position, byte playerId);
-
+	void spawnDonkey(ShortPoint2D position, Player player);
 }

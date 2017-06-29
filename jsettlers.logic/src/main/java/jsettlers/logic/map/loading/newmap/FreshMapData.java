@@ -16,8 +16,8 @@ package jsettlers.logic.map.loading.newmap;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -35,7 +35,7 @@ public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapDa
 
 	private byte[][] heights;
 	private ELandscapeType[][] landscapes;
-	private MapObject[][] mapObjects;
+	private MapDataObject[][] mapObjects;
 	private EResourceType[][] resourceTypes;
 	private byte[][] resourceAmount;
 	private short[][] blockedPartitions;
@@ -48,7 +48,7 @@ public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapDa
 		this.playerStarts = new ShortPoint2D[playerCount];
 		this.heights = new byte[width][height];
 		this.landscapes = new ELandscapeType[width][height];
-		this.mapObjects = new MapObject[width][height];
+		this.mapObjects = new MapDataObject[width][height];
 		this.resourceTypes = new EResourceType[width][height];
 		this.resourceAmount = new byte[width][height];
 		this.blockedPartitions = new short[width][height];
@@ -70,7 +70,7 @@ public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapDa
 	}
 
 	@Override
-	public void setMapObject(int x, int y, MapObject object) {
+	public void setMapObject(int x, int y, MapDataObject object) {
 		mapObjects[x][y] = object;
 	}
 
@@ -92,7 +92,7 @@ public class FreshMapData implements FreshMapSerializer.IMapDataReceiver, IMapDa
 	}
 
 	@Override
-	public MapObject getMapObject(int x, int y) {
+	public MapDataObject getMapObject(int x, int y) {
 		return mapObjects[x][y];
 	}
 

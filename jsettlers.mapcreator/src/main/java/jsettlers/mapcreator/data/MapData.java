@@ -29,14 +29,14 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
@@ -366,24 +366,24 @@ public class MapData implements IMapData {
 		this.backgroundListener = backgroundListener;
 	}
 
-	public void placeObject(MapObject object, int x, int y) {
+	public void placeObject(MapDataObject object, int x, int y) {
 		ObjectContainer container;
 		ProtectContainer protector = ProtectContainer.getInstance();
 		Set<ELandscapeType> landscapes = null;
 		if (object instanceof MapTreeObject) {
 			container = TreeObjectContainer.getInstance();
-		} else if (object instanceof MapStoneObject) {
-			container = new StoneObjectContainer((MapStoneObject) object);
+		} else if (object instanceof StoneMapDataObject) {
+			container = new StoneObjectContainer((StoneMapDataObject) object);
 		} else if (object instanceof MovableObject) {
 			container = new MovableObjectContainer((MovableObject) object, x, y);
-		} else if (object instanceof StackObject) {
-			container = new StackContainer((StackObject) object);
-		} else if (object instanceof BuildingObject) {
-			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
-			landscapes = ((BuildingObject) object).getType().getGroundTypes();
-			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType());
-		} else if (object instanceof MapDecorationObject) {
-			container = new MapObjectContainer((MapDecorationObject) object);
+		} else if (object instanceof StackMapDataObject) {
+			container = new StackContainer((StackMapDataObject) object);
+		} else if (object instanceof BuildingMapDataObject) {
+			container = new BuildingContainer((BuildingMapDataObject) object, new ShortPoint2D(x, y));
+			landscapes = ((BuildingMapDataObject) object).getType().getGroundTypes();
+			protector = new ProtectLandscapeConstraint(((BuildingMapDataObject) object).getType());
+		} else if (object instanceof DecorationMapDataObject) {
+			container = new MapObjectContainer((DecorationMapDataObject) object);
 		} else {
 			return; // error!
 		}
@@ -437,7 +437,7 @@ public class MapData implements IMapData {
 	}
 
 	@Override
-	public MapObject getMapObject(int x, int y) {
+	public MapDataObject getMapObject(int x, int y) {
 		ObjectContainer container = objects[x][y];
 		if (container != null) {
 			return container.getMapObject();
@@ -553,7 +553,7 @@ public class MapData implements IMapData {
 		}
 
 		@Override
-		public void setMapObject(int x, int y, MapObject object) {
+		public void setMapObject(int x, int y, MapDataObject object) {
 			data.placeObject(object, x, y);
 		}
 

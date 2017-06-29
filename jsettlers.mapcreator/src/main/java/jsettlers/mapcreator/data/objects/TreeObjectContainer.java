@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
@@ -23,7 +23,7 @@ import jsettlers.common.position.RelativePoint;
 public class TreeObjectContainer implements ObjectContainer, IMapObject {
 
 	@Override
-	public MapObject getMapObject() {
+	public MapDataObject getMapObject() {
 		return MapTreeObject.getInstance();
 	}
 

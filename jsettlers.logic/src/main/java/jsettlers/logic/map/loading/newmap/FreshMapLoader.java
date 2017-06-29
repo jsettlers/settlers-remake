@@ -17,8 +17,8 @@ package jsettlers.logic.map.loading.newmap;
 import java.io.IOException;
 import java.io.InputStream;
 
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.list.IListedMap;
 
 /**

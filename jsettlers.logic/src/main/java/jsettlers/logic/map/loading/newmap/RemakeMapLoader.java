@@ -25,8 +25,8 @@ import java.util.zip.ZipInputStream;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.ILoadableMapPlayer;
 import jsettlers.common.menu.UIState;
 import jsettlers.input.PlayerState;

@@ -99,6 +99,6 @@ public class ChangeTradingRequestGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	public String toString() {
 		return "ChangeTradingRequestGuiTask [material=" + material + ", amount=" + amount + ", relative=" + relative + ", getBuildingPos()="
-				+ getBuildingPos() + ", getGuiAction()=" + getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+				+ getBuildingPos() + ", getGuiAction()=" + getGuiAction() + ", getPlayer()=" + getPlayerId() + "]";
 	}
 }

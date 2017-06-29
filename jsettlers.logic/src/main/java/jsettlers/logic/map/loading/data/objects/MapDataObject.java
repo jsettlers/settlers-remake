@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,20 +11,9 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.mapcreator.tools.objects;
+ */
+package jsettlers.logic.map.loading.data.objects;
 
-import java.util.Locale;
+public interface MapDataObject {
 
-import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.localization.Labels;
-import jsettlers.mapcreator.localization.EditorLabels;
-
-public class PlaceStackTool extends PlaceMapObjectTool {
-
-	public PlaceStackTool(EMaterialType type, int count) {
-		super(new StackMapDataObject(type, count));
-		this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.place_n"), count, Labels.getName(type, count != 1));
-	}
 }

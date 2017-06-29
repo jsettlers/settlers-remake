@@ -24,7 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.object.BuildingObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
@@ -36,16 +36,16 @@ import jsettlers.mapcreator.data.LandscapeConstraint;
 
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
 
-	private final BuildingObject buildingObject;
+	private final BuildingMapDataObject buildingObject;
 	private final ShortPoint2D position;
 
-	public BuildingContainer(BuildingObject buildingObject, ShortPoint2D position) {
+	public BuildingContainer(BuildingMapDataObject buildingObject, ShortPoint2D position) {
 		this.buildingObject = buildingObject;
 		this.position = position;
 	}
 
 	@Override
-	public BuildingObject getMapObject() {
+	public BuildingMapDataObject getMapObject() {
 		return buildingObject;
 	}
 

@@ -16,10 +16,10 @@ package jsettlers.mapcreator.tools.objects;
 
 import java.util.Locale;
 
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -28,9 +28,9 @@ import jsettlers.mapcreator.tools.shapes.EShapeType;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class PlaceMapObjectTool extends AbstractTool {
-	private final MapObject object;
+	private final MapDataObject object;
 
-	public PlaceMapObjectTool(MapObject object) {
+	public PlaceMapObjectTool(MapDataObject object) {
 		super(null, null);
 		shapeTypes.add(EShapeType.POINT);
 		shapeTypes.add(EShapeType.GRID_CIRCLE);
@@ -42,12 +42,12 @@ public class PlaceMapObjectTool extends AbstractTool {
 			return;
 		}
 
-		if (object instanceof MapStoneObject) {
-			this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.stone"), ((MapStoneObject) object).getCapacity());
+		if (object instanceof StoneMapDataObject) {
+			this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.stone"), ((StoneMapDataObject) object).getCapacity());
 		} else if (object instanceof MapTreeObject) {
 			this.translatedName = EditorLabels.getLabel("tool.tree");
-		} else if (object instanceof MapDecorationObject) {
-			this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.place"), EditorLabels.getLabel("tool.object." + ((MapDecorationObject) object).getType()));
+		} else if (object instanceof DecorationMapDataObject) {
+			this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.place"), EditorLabels.getLabel("tool.object." + ((DecorationMapDataObject) object).getType()));
 		} else {
 			this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.place"), object.getClass().getSimpleName());
 		}
@@ -68,7 +68,7 @@ public class PlaceMapObjectTool extends AbstractTool {
 		}
 	}
 
-	public MapObject getObject() {
+	public MapDataObject getObject() {
 		return object;
 	}
 }

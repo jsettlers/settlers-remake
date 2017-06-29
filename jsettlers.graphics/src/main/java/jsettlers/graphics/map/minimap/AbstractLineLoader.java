@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,7 +37,7 @@ public abstract class AbstractLineLoader implements Runnable {
 	private static final int X_STEP_WIDTH = 5;
 	private static final int LINES_PER_RUN = 30;
 
-	private int currentline = 0;
+	private int currentLine = 0;
 	private boolean stopped;
 	private int workingMinimapWidth = -1;
 	private int workingMinimapHeight = -1;
@@ -81,16 +81,16 @@ public abstract class AbstractLineLoader implements Runnable {
 				workingMinimapHeight = height;
 				resizeBuffer(width, height);
 				resizeBackground(width, height);
-				currentline = 0;
+				currentLine = 0;
 				currXOffset = 0;
 				currYOffset = 0;
 			}
 
-			calculateLineData(currentline);
-			markLineUpdate(currentline);
+			calculateLineData(currentLine);
+			markLineUpdate(currentLine);
 
-			currentline += Y_STEP_HEIGHT;
-			if (currentline >= workingMinimapHeight) {
+			currentLine += Y_STEP_HEIGHT;
+			if (currentLine >= workingMinimapHeight) {
 				currYOffset++;
 				if (currYOffset >= Y_STEP_HEIGHT) {
 					currYOffset = 0;
@@ -98,7 +98,7 @@ public abstract class AbstractLineLoader implements Runnable {
 					currXOffset %= X_STEP_WIDTH;
 				}
 
-				currentline = currYOffset;
+				currentLine = currYOffset;
 			}
 		}
 	}
@@ -213,7 +213,7 @@ public abstract class AbstractLineLoader implements Runnable {
 				if (visible && displaySettlers != SettlersMode.NONE) {
 					IMovable settler = map.getMovableAt(x, y);
 					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isPlayerControllable())) {
-						settlerColor = context.getPlayerColor(settler.getPlayerId()).toShortColor(1);
+						settlerColor = context.getPlayerColor(settler.getPlayer().getPlayerId()).toShortColor(1);
 						// don't search any more.
 						displaySettlers = SettlersMode.NONE;
 					} else if (displaySettlers != SettlersMode.NONE) {
@@ -223,7 +223,7 @@ public abstract class AbstractLineLoader implements Runnable {
 						if (building instanceof IBuilding.IOccupied) {
 							IBuilding.IOccupied occupyed = (IBuilding.IOccupied) building;
 							if (occupyed.isOccupied()) {
-								settlerColor = context.getPlayerColor(occupyed.getPlayerId()).toShortColor(1);
+								settlerColor = context.getPlayerColor(occupyed.getPlayer().getPlayerId()).toShortColor(1);
 							}
 						}
 					}

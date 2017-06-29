@@ -15,6 +15,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 
@@ -23,9 +24,9 @@ public class StandardMapObject extends AbstractHexMapObject implements IPlayerab
 
 	private final EMapObjectType type;
 	private final boolean blocking;
-	private final byte player;
+	private final IPlayer player;
 
-	public StandardMapObject(EMapObjectType type, boolean blocking, byte player) {
+	public StandardMapObject(EMapObjectType type, boolean blocking, IPlayer player) {
 		this.type = type;
 		this.blocking = blocking;
 		this.player = player;
@@ -57,7 +58,7 @@ public class StandardMapObject extends AbstractHexMapObject implements IPlayerab
 	}
 
 	@Override
-	public byte getPlayerId() {
+	public IPlayer getPlayer() {
 		return player;
 	}
 }

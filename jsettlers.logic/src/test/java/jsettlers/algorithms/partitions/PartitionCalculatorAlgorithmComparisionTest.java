@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.MainGridDataAccessor;

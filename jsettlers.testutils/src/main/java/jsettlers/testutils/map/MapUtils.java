@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.ExtendedRandom;
 import jsettlers.logic.constants.MatchConstants;

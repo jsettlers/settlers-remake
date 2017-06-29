@@ -47,13 +47,13 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 				return 0;
 			} else {
 				IBuildingCounts counts = grid.getPartitionData(pos.x, pos.y).getBuildingCounts();
-				return construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartiton(buildingType);
+				return construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartition(buildingType);
 			}
 		}
 
 		public boolean isInPlayerPartition() {
 			// TODO: Check current player
-			// Tom-Pratt: I added getPlayerId to IInGamePlayer which may help here
+			// Tom-Pratt: I added getPlayer to IInGamePlayer which may help here
 			return grid != null && grid.getPlayerIdAt(pos.x, pos.y) >= 0;
 		}
 	}
