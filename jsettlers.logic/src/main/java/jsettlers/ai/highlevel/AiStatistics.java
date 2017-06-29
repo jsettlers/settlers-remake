@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static java8.util.stream.StreamSupport.stream;
 import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
 import static jsettlers.common.buildings.EBuildingType.CASTLE;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Vector;
 
 import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
@@ -48,6 +50,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
@@ -61,9 +64,11 @@ import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.player.Team;
 
 import java8.util.Comparators;
+import java8.util.J8Arrays;
+import java8.util.Objects;
+import java8.util.stream.Collectors;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read multiple times within one AiExecutor step triggerd by
@@ -76,12 +81,12 @@ public class AiStatistics {
 	private static final EBuildingType[] REFERENCE_POINT_FINDER_BUILDING_ORDER = { LUMBERJACK, TOWER, BIG_TOWER, CASTLE };
 	public static final int NEAR_STONE_DISTANCE = 5;
 
+	private final MainGrid mainGrid;
 	private final Queue<Building> buildings;
 	private final PlayerStatistic[] playerStatistics;
 	private final Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
 	private final AiPositions[] sortedResourceTypes;
 	private final AiPositions sortedRiversInDefaultPartition;
-	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
@@ -90,18 +95,19 @@ public class AiStatistics {
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
 	private final AiMapInformation aiMapInformation;
 	private final long[] resourceCountInDefaultPartition;
+	private final List<Player> players;
 
 	public AiStatistics(MainGrid mainGrid) {
-		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
-		this.landscapeGrid = mainGrid.getLandscapeGrid();
-		this.objectsGrid = mainGrid.getObjectsGrid();
-		this.partitionsGrid = mainGrid.getPartitionsGrid();
-		this.movableGrid = mainGrid.getMovableGrid();
-		this.flagsGrid = mainGrid.getFlagsGrid();
-		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
-		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
-		this.aiMapInformation = new AiMapInformation(partitionsGrid, landscapeGrid);
+		buildings = Building.getAllBuildings();
+		landscapeGrid = mainGrid.getLandscapeGrid();
+		objectsGrid = mainGrid.getObjectsGrid();
+		partitionsGrid = mainGrid.getPartitionsGrid();
+		movableGrid = mainGrid.getMovableGrid();
+		flagsGrid = mainGrid.getFlagsGrid();
+		constructionMarksGrid = mainGrid.getConstructionMarksGrid();
+		playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
+		aiMapInformation = new AiMapInformation(partitionsGrid, landscapeGrid);
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
@@ -112,6 +118,7 @@ public class AiStatistics {
 			sortedResourceTypes[i] = new AiPositions();
 		}
 		resourceCountInDefaultPartition = new long[EResourceType.VALUES.length];
+		players = J8Arrays.stream(partitionsGrid.getPlayers()).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -235,14 +242,15 @@ public class AiStatistics {
 				}
 				ILogicMovable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
-					byte movablePlayerId = movable.getPlayer().getPlayerId();
+					Player movablePlayer = movable.getPlayer();
+					byte movablePlayerId = movablePlayer.getPlayerId();
 					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
 					EMovableType movableType = movable.getMovableType();
 					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
 						movablePlayerStatistic.movablePositions.put(movableType, new Vector<>());
 					}
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
-					if (player != null && player.playerId != movablePlayerId && movableType.isSoldier() && getEnemiesOf(player.playerId).contains(movablePlayerId)) {
+					if (player != null && player.playerId != movablePlayerId && movableType.isSoldier() && getEnemiesOf(player).contains(movablePlayer)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}
 				}
@@ -384,7 +392,7 @@ public class AiStatistics {
 		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
 	}
 
-	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance, AiPositionFilter filter) {
+	ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId, int searchDistance, AiPositionFilter filter) {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId, searchDistance, filter);
 	}
 
@@ -409,7 +417,7 @@ public class AiStatistics {
 		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, searchDistance, (byte) -1, filter);
 	}
 
-	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, byte playerId, AiPositionFilter filter) {
+	private ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject, int searchDistance, byte playerId, AiPositionFilter filter) {
 		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		if (sortedResourcePoints == null) {
 			return null;
@@ -433,6 +441,11 @@ public class AiStatistics {
 		return playerStatistics[playerId].movablePositions.get(movableType);
 	}
 
+	public int getCountOfMovablesOfPlayer(IPlayer player, Set<EMovableType> types) {
+		byte playerId = player.getPlayerId();
+		return stream(types).mapToInt(type -> getMovablePositionsByTypeForPlayer(type, playerId).size()).sum();
+	}
+
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
 		return playerStatistics[playerId].totalBuildingsNumbers[type.ordinal];
 	}
@@ -445,11 +458,11 @@ public class AiStatistics {
 		return playerStatistics[playerId].buildingsNumbers[type.ordinal];
 	}
 
-	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
+	int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
 		return playerStatistics[playerId].numberOfNotFinishedBuildings;
 	}
 
-	public int getNumberOfTotalBuildingsForPlayer(byte playerId) {
+	int getNumberOfTotalBuildingsForPlayer(byte playerId) {
 		return playerStatistics[playerId].numberOfTotalBuildings;
 	}
 
@@ -521,7 +534,7 @@ public class AiStatistics {
 		return aiMapInformation.wasFishNearByAtGameStart.get(position.x * partitionsGrid.getWidth() + position.y);
 	}
 
-	public IMovable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
+	IMovable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
 		List<ShortPoint2D> soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L3, playerId);
 		if (soldierPositions.size() == 0) {
 			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L2, playerId);
@@ -549,7 +562,7 @@ public class AiStatistics {
 		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
 	}
 
-	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
+	private static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
 			return Collections.emptyList();
 		}
@@ -579,7 +592,7 @@ public class AiStatistics {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1, searchDistance, filter);
 	}
 
-	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {
+	int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {
 		return getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) - getNumberOfBuildingTypeForPlayer(buildingType, playerId);
 	}
 
@@ -587,29 +600,16 @@ public class AiStatistics {
 		return playerStatistics[playerId].rivers;
 	}
 
-	public List<Byte> getEnemiesOf(byte playerId) {
-		List<Byte> enemies = new ArrayList<>();
-		for (Team team : partitionsGrid.getTeams()) {
-			if (!team.isMember(playerId)) {
-				for (Player player : team.getMembers()) {
-					enemies.add(player.playerId);
-				}
-			}
-		}
-		return enemies;
+	private List<IPlayer> getEnemiesOf(IPlayer player) {
+		byte teamId = player.getTeamId();
+		return stream(players).filter(currPlayer -> currPlayer.getTeamId() != teamId).collect(Collectors.toList());
 	}
 
-	public List<Byte> getAliveEnemiesOf(byte playerId) {
-		List<Byte> aliveEnemies = new ArrayList<>();
-		for (byte enemyId : getEnemiesOf(playerId)) {
-			if (isAlive(enemyId)) {
-				aliveEnemies.add(enemyId);
-			}
-		}
-		return aliveEnemies;
+	public List<IPlayer> getAliveEnemiesOf(IPlayer player) {
+		return stream(getEnemiesOf(player)).filter(this::isAlive).collect(Collectors.toList());
 	}
 
-	public ShortPoint2D calculateAveragePointFromList(List<ShortPoint2D> points) {
+	public static ShortPoint2D calculateAveragePointFromList(List<ShortPoint2D> points) {
 		int averageX = 0;
 		int averageY = 0;
 		for (ShortPoint2D point : points) {
@@ -639,7 +639,11 @@ public class AiStatistics {
 		return playerStatistics[playerId].otherPartitionBorder;
 	}
 
-	public boolean isAlive(byte playerId) {
+	private boolean isAlive(IPlayer player) {
+		return isAlive(player.getPlayerId());
+	}
+
+	boolean isAlive(byte playerId) {
 		return playerStatistics[playerId].isAlive;
 	}
 
@@ -655,22 +659,22 @@ public class AiStatistics {
 		return playerStatistics[playerId].resourceCount[resourceType.ordinal];
 	}
 
-	public List<ShortPoint2D> threatenedBorderOf(byte playerId) {
+	List<ShortPoint2D> threatenedBorderOf(byte playerId) {
 		if (playerStatistics[playerId].threatenedBorder == null) {
 			AiPositions borderOfOtherPlayers = new AiPositions();
-			for (byte otherPlayerId = 0; otherPlayerId < playerStatistics.length; otherPlayerId++) {
-				if (otherPlayerId == playerId || !isAlive(otherPlayerId)) {
-					continue;
-				}
 
-				borderOfOtherPlayers.addAllNoCollision(getBorderOf(otherPlayerId));
-			}
+			stream(players)
+					.filter(currPlayer -> currPlayer.playerId != playerId)
+					.filter(this::isAlive)
+					.forEach(currPlayer -> borderOfOtherPlayers.addAllNoCollision(getBorderOf(currPlayer.playerId)));
+
 			playerStatistics[playerId].threatenedBorder = new ArrayList<>();
 			AiPositions myBorder = getBorderOf(playerId);
+
 			for (int i = 0; i < myBorder.size(); i += 10) {
 				ShortPoint2D myBorderPosition = myBorder.get(i);
-				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0 && borderOfOtherPlayers.getNearestPoint(myBorderPosition,
-						CommonConstants.TOWER_RADIUS) != null) {
+				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0
+						&& borderOfOtherPlayers.getNearestPoint(myBorderPosition, CommonConstants.TOWER_RADIUS) != null) {
 					playerStatistics[playerId].threatenedBorder.add(myBorderPosition);
 				}
 			}
@@ -691,7 +695,7 @@ public class AiStatistics {
 		final List<ShortPoint2D> farmWorkAreas = new Vector<>();
 		final List<ShortPoint2D> wineGrowerWorkAreas = new Vector<>();
 		short partitionIdToBuildOn;
-		public short blockedPartitionId;
+		short blockedPartitionId;
 		IPartitionData materials;
 		final AiPositions landToBuildOn = new AiPositions();
 		final AiPositions border = new AiPositions();

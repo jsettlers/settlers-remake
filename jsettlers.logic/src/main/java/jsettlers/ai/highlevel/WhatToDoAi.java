@@ -90,21 +90,22 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes care against lack of settlers and it builds a
  * toolsmith when needed but as late as possible. Furthermore it builds towers continously to spread the land. It destroys not needed living houses and stonecutters to get back building materials.
- * Which soldiers to levy and to command the soldiers is delegated to its armay general.
+ * Which SOLDIERS to levy and to command the SOLDIERS is delegated to its armay general.
  *
  * @author codingberling
  */
-public class WhatToDoAi implements IWhatToDoAi {
+class WhatToDoAi implements IWhatToDoAi {
 
-	public static final int NUMBER_OF_SMALL_LIVINGHOUSE_BEDS = 10;
-	public static final int NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS = 30;
-	public static final int NUMBER_OF_BIG_LIVINGHOUSE_BEDS = 100;
-	public static final int MINIMUM_NUMBER_OF_BEARERS = 10;
-	public static final int NUMBER_OF_BEARERSS_PER_HOUSE = 3;
-	public static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
-	public static final float WEAPON_SMITH_FACTOR = 7F;
-	public static final int RESOURCE_PIONEER_GROUP_COUNT = 20;
-	public static final int BROADEN_PIONEER_GROUP_COUNT = 40;
+	private static final int NUMBER_OF_SMALL_LIVING_HOUSE_BEDS = 10;
+	private static final int NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS = 30;
+	private static final int NUMBER_OF_BIG_LIVING_HOUSE_BEDS = 100;
+	private static final int MINIMUM_NUMBER_OF_BEARERS = 10;
+	private static final int NUMBER_OF_BEARERS_PER_HOUSE = 3;
+	private static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
+	private static final float WEAPON_SMITH_FACTOR = 7F;
+	private static final int RESOURCE_PIONEER_GROUP_COUNT = 20;
+	private static final int BROADEN_PIONEER_GROUP_COUNT = 40;
+
 	private final MainGrid mainGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -119,8 +120,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private PioneerGroup broadenerPioneers;
 	private AiPositions.AiPositionFilter[] geologistFilters = new AiPositions.AiPositionFilter[EResourceType.values().length];
 
-	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid,
-			ITaskScheduler taskScheduler) {
+	WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
@@ -196,8 +196,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private Set<Integer> occupyMilitaryBuildings() {
 		Set<Integer> soldiersWithOrders = new HashSet<>();
 
-		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(
-				EBuildingType.MILITARY_BUILDINGS, playerId)) {
+		for (ShortPoint2D militaryBuildingPosition : aiStatistics.getBuildingPositionsOfTypesForPlayer(EBuildingType.MILITARY_BUILDINGS, playerId)) {
 
 			OccupyingBuilding militaryBuilding = (OccupyingBuilding) aiStatistics.getBuildingAt(militaryBuildingPosition);
 			if (!militaryBuilding.isOccupied()) {
@@ -239,13 +238,13 @@ public class WhatToDoAi implements IWhatToDoAi {
 		// destroy livinghouses
 		if (economyMinister.automaticLivingHousesEnabled()) {
 			int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId)
-					* NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
-					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS
-					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
+					* NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
+					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS
+					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
 					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
-			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVINGHOUSE_BEDS + 1 && !destroyLivingHouse(SMALL_LIVINGHOUSE)) {
-				if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS + 1 && !destroyLivingHouse(MEDIUM_LIVINGHOUSE)) {
-					if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVINGHOUSE_BEDS + 1) {
+			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(SMALL_LIVINGHOUSE)) {
+				if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(MEDIUM_LIVINGHOUSE)) {
+					if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVING_HOUSE_BEDS + 1) {
 						destroyLivingHouse(BIG_LIVINGHOUSE);
 					}
 				}
@@ -469,7 +468,7 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private void fill(PioneerGroup pioneerGroup) {
 		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
 		int maxNewPioneersCount = bearers.size() - Math.max(
-				MINIMUM_NUMBER_OF_BEARERS, aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERSS_PER_HOUSE);
+				MINIMUM_NUMBER_OF_BEARERS, aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERS_PER_HOUSE);
 		if (maxNewPioneersCount > 0) {
 			pioneerGroup.fill(taskScheduler, aiStatistics, playerId, maxNewPioneersCount);
 		}
@@ -477,12 +476,12 @@ public class WhatToDoAi implements IWhatToDoAi {
 
 	private boolean buildLivingHouse() {
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVINGHOUSE_BEDS
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVINGHOUSE_BEDS
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVINGHOUSE_BEDS;
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
-						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERSS_PER_HOUSE > futureNumberOfBearers) {
+						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);
