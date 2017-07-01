@@ -15,12 +15,13 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
+import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ import jsettlers.main.android.utils.OriginalImageProvider;
 import static java8.util.J8Arrays.stream;
 
 /**
- * Created by tompr on 10/01/2017.
+ * Created by Tom Pratt on 10/01/2017.
  */
 public class StockFeature extends SelectionFeature implements DrawListener {
 	private final EMaterialType[] stockableMaterialStates = new EMaterialType[] {
@@ -85,7 +86,6 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 
 		buildingImageView = (ImageView) getView().findViewById(R.id.image_view_building);
 
-
 		materialsAdapter = new MaterialsAdapter();
 		recyclerView = (RecyclerView) getView().findViewById(R.id.recyclerView);
 		recyclerView.setHasFixedSize(true);
@@ -96,14 +96,8 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		super.initialize(buildingState);
 		drawControls.addInfrequentDrawListener(this);
 
-		List<MaterialState> materialStates = stream(stockableMaterialStates)
-				.map(eMaterialType -> new MaterialState(eMaterialType, getBuildingState()))
-				.collect(Collectors.toList());
-
-		materialsAdapter.setMaterialStates(materialStates);
+		materialsAdapter.setMaterialStates(materialStates());
 		recyclerView.setAdapter(materialsAdapter);
-
-		update();
 	}
 
 	@Override
@@ -121,7 +115,15 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		if (hasNewState() && getBuildingState().isStock()) {
 			recyclerView.setVisibility(View.VISIBLE);
 			buildingImageView.setVisibility(View.INVISIBLE);
+
+			materialsAdapter.setMaterialStates(materialStates());
 		}
+	}
+
+	private List<MaterialState> materialStates() {
+		return stream(stockableMaterialStates)
+				.map(eMaterialType -> new MaterialState(eMaterialType, getBuildingState()))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -153,9 +155,22 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 			holder.bind(materialState);
 		}
 
+		@Override
+		public void onBindViewHolder(MaterialViewHolder holder, int position, List<Object> payloads) {
+			if (payloads == null || payloads.size() == 0) {
+				onBindViewHolder(holder, position);
+			} else {
+				holder.updateState(materialStates.get(position));
+			}
+		}
+
 		public void setMaterialStates(List<MaterialState> materialStates) {
+			if (this.materialStates != null) {
+				DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MaterialsDiffCallback(this.materialStates, materialStates));
+				diffResult.dispatchUpdatesTo(this);
+			}
+
 			this.materialStates = materialStates;
-			notifyDataSetChanged();
 		}
 	}
 
@@ -169,18 +184,19 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		public MaterialViewHolder(View itemView) {
 			super(itemView);
 			imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-
-			itemView.setOnClickListener(v -> {
-				boolean shouldStock = !materialState.isStocked();
-				itemView.setSelected(shouldStock);
-                actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), shouldStock, false));
-            });
+			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), !materialState.isStocked(), false)));
 		}
 
 		void bind(MaterialState materialState) {
 			this.materialState = materialState;
 
 			OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
+			itemView.setSelected(materialState.isStocked());
+		}
+
+		public void updateState(MaterialState materialState) {
+			this.materialState = materialState;
+
 			itemView.setSelected(materialState.isStocked());
 		}
 	}
@@ -203,6 +219,46 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 
 		public boolean isStocked() {
 			return stocked;
+		}
+	}
+
+	/**
+	 * Diff callback
+	 */
+	private class MaterialsDiffCallback extends DiffUtil.Callback  {
+
+		private final List<MaterialState> oldStates;
+		private final List<MaterialState> newStates;
+
+		MaterialsDiffCallback(List<MaterialState> oldStates, List<MaterialState> newStates) {
+			this.oldStates = oldStates;
+			this.newStates = newStates;
+		}
+
+		@Override
+		public int getOldListSize() {
+			return oldStates.size();
+		}
+
+		@Override
+		public int getNewListSize() {
+			return newStates.size();
+		}
+
+		@Override
+		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldStates.get(oldItemPosition).getMaterialType().equals(newStates.get(newItemPosition).getMaterialType());
+		}
+
+		@Override
+		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldStates.get(oldItemPosition).isStocked() == newStates.get(newItemPosition).isStocked();
+		}
+
+		@Nullable
+		@Override
+		public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+			return true;
 		}
 	}
 }
