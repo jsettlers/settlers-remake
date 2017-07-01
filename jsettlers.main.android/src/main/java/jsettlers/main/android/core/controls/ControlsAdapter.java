@@ -47,7 +47,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> infrequentDrawListeners = new LinkedList<>();
 
-	private final int fireDrawListenerFrequency = 30;
+	private final int fireDrawListenerFrequency = 15;
 	private int fireDrawListenerCounter = -1;
 
 	private ISelectionSet selection;

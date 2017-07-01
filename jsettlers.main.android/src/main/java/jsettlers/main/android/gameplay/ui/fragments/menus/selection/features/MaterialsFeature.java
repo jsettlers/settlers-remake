@@ -60,13 +60,13 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 			update();
 		}
 
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 	}
 
 	@Override
 	public void finish() {
 		super.finish();
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override

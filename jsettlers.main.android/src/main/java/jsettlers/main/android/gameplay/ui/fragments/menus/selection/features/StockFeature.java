@@ -98,6 +98,8 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 
 		materialsAdapter.setMaterialStates(materialStates());
 		recyclerView.setAdapter(materialsAdapter);
+
+		update();
 	}
 
 	@Override
@@ -108,11 +110,13 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 
 	@Override
 	public void draw() {
-		getView().post(this::update);
+		if (hasNewState()) {
+			getView().post(this::update);
+		}
 	}
 
 	private void update() {
-		if (hasNewState() && getBuildingState().isStock()) {
+		if (getBuildingState().isStock()) {
 			recyclerView.setVisibility(View.VISIBLE);
 			buildingImageView.setVisibility(View.INVISIBLE);
 
@@ -225,7 +229,7 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	/**
 	 * Diff callback
 	 */
-	private class MaterialsDiffCallback extends DiffUtil.Callback  {
+	private class MaterialsDiffCallback extends DiffUtil.Callback {
 
 		private final List<MaterialState> oldStates;
 		private final List<MaterialState> newStates;

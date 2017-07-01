@@ -61,12 +61,12 @@ public class SettlersSoldiersMenu implements DrawListener {
 	}
 
 	public void start() {
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 		updateView();
 	}
 
 	public void finish() {
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	public void swordsmenPromotionClicked() {

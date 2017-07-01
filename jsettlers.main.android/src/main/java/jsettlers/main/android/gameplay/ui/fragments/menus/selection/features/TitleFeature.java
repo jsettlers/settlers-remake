@@ -51,7 +51,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 		String name = Labels.getName(getBuilding().getBuildingType());
 		if (getBuildingState().isConstruction()) {
 			name = Labels.getString("building-build-in-progress", name);
-			drawControls.addDrawListener(this);
+			drawControls.addInfrequentDrawListener(this);
 		}
 
 		nameTextView.setText(name);
@@ -61,7 +61,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 	@Override
 	public void finish() {
 		super.finish();
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class TitleFeature extends SelectionFeature implements DrawListener {
 				if (!getBuildingState().isConstruction()) {
 					String name = Labels.getName(getBuilding().getBuildingType());
 					nameTextView.setText(name);
-					drawControls.removeDrawListener(TitleFeature.this);
+					drawControls.removeInfrequentDrawListener(TitleFeature.this);
 				}
 			});
 		}
