@@ -15,24 +15,24 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
-import jsettlers.main.android.R;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
 import biz.laenger.android.vpbs.BottomSheetUtils;
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.main.android.R;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by tompr on 22/11/2016.
  */
-@EFragment(R.layout.menu_buildings)
+@EFragment(R.layout.menu_view_pager)
 public class BuildingsMenuFragment extends Fragment {
 	public static BuildingsMenuFragment newInstance() {
 		return new BuildingsMenuFragment_();
@@ -46,8 +46,8 @@ public class BuildingsMenuFragment extends Fragment {
 	@AfterViews
 	void setupBottomSheet() {
 		BottomSheetUtils.setupViewPager(viewPager);
-		circleIndicator.setViewPager(viewPager);
 		viewPager.setAdapter(new BuildingsPagerAdapter(getChildFragmentManager()));
+		circleIndicator.setViewPager(viewPager);
 	}
 
 	/**

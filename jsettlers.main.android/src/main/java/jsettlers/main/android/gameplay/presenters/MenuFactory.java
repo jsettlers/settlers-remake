@@ -39,7 +39,7 @@ public class MenuFactory {
 	}
 
 	public BuildingsCategoryMenu buildingsMenu(BuildingsCategoryView view, EBuildingsCategory buildingsCategory) {
-		return new BuildingsCategoryMenu(view, controlsAdapter, menuNavigator, buildingsCategory);
+		return new BuildingsCategoryMenu(view, controlsAdapter, controlsAdapter, controlsAdapter, menuNavigator, buildingsCategory);
 	}
 
 	public SettlersSoldiersMenu settlersSoldiersMenu(SettlersSoldiersView view) {

@@ -33,9 +33,9 @@ import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.Player;
+import jsettlers.main.swing.settings.UiPlayer;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.savegame.SavegameLoader;
@@ -112,9 +112,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	private void showNewMultiplayerGamePanel(MapLoader map) {
 		SettingsManager settingsManager = SettingsManager.getInstance();
-		Player player = settingsManager.getPlayer();
+		UiPlayer uiPlayer = settingsManager.getPlayer();
 		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER),
-				player.getId(), player.getName());
+				uiPlayer.getId(), uiPlayer.getName());
 		settlersFrame.showNewMultiPlayerGameMenu(map, connector);
 	}
 

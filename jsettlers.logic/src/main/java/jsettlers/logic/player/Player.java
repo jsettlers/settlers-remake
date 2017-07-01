@@ -82,6 +82,12 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 		}
 	}
 
+	@Override
+	public byte getPlayerId() {
+		return playerId;
+	}
+
+	@Override
 	public MannaInformation getMannaInformation() {
 		return mannaInformation;
 	}

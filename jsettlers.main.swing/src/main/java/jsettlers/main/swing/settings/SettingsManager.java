@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015, 2016
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,8 +11,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.startscreen;
+ */
+package jsettlers.main.swing.settings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +22,12 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 
+import go.graphics.swing.sound.ISoundSettingsProvider;
+
 import jsettlers.common.CommonConstants;
-import jsettlers.common.menu.Player;
 import jsettlers.common.resources.ResourceManager;
 
-public class SettingsManager {
+public class SettingsManager implements ISoundSettingsProvider {
 	private static final String FILE = ".jsettlers";
 	public static final String SETTING_UUID = "gid";
 	public static final String SETTING_USERNAME = "name";
@@ -86,14 +87,14 @@ public class SettingsManager {
 		return man;
 	}
 
-	public synchronized Player getPlayer() {
+	public synchronized UiPlayer getPlayer() {
 		String username = get(SETTING_USERNAME);
 		String id = get(SETTING_UUID);
 		if (id == null) {
 			id = UUID.randomUUID().toString();
 			set(SETTING_UUID, id);
 		}
-		return new Player(id, username);
+		return new UiPlayer(id, username);
 	}
 
 	public float getVolume() {
