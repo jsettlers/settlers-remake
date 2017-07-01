@@ -19,19 +19,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
-import java8.util.function.Function;
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
@@ -73,14 +72,16 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	};
 
 	private final DrawControls drawControls;
+	private final ActionControls actionControls;
 
 	private final MaterialsAdapter materialsAdapter;
 	private final RecyclerView recyclerView;
 	private final ImageView buildingImageView;
 
-	public StockFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls) {
+	public StockFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
 		super(view, building, menuNavigator);
 		this.drawControls = drawControls;
+		this.actionControls = actionControls;
 
 		buildingImageView = (ImageView) getView().findViewById(R.id.image_view_building);
 
@@ -162,20 +163,25 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	 * stock item viewholder
 	 */
 	class MaterialViewHolder extends RecyclerView.ViewHolder {
-		TextView textView;
+		private final ImageView imageView;
+		private MaterialState materialState;
 
 		public MaterialViewHolder(View itemView) {
 			super(itemView);
+			imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
 
-			 textView = (TextView) itemView.findViewById(R.id.test);
+			itemView.setOnClickListener(v -> {
+				boolean shouldStock = !materialState.isStocked();
+				itemView.setSelected(shouldStock);
+                actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), shouldStock, false));
+            });
 		}
 
 		void bind(MaterialState materialState) {
-			textView.setText(materialState.getMaterialType().name());
-		}
+			this.materialState = materialState;
 
-		void update() {
-
+			OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
+			itemView.setSelected(materialState.isStocked());
 		}
 	}
 
@@ -184,19 +190,19 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	 */
 	class MaterialState {
 		private final EMaterialType materialType;
-		private final boolean stored;
+		private final boolean stocked;
 
 		MaterialState(EMaterialType materialType, BuildingState state) {
 			this.materialType = materialType;
-			this.stored = state.stockAcceptsMaterial(materialType);
+			this.stocked = state.stockAcceptsMaterial(materialType);
 		}
 
 		public EMaterialType getMaterialType() {
 			return materialType;
 		}
 
-		public boolean isStored() {
-			return stored;
+		public boolean isStocked() {
+			return stocked;
 		}
 	}
 }

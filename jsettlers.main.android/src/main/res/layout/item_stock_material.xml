@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name" />
-</LinearLayout>
+    <ImageView
+        android:id="@+id/imageView_material"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/bg_material_stocked"
+        android:layout_gravity="top|left"/>
+</FrameLayout>

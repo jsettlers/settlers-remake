@@ -44,11 +44,12 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            android:layout_gravity="center_horizontal"
             app:layoutManager="GridLayoutManager"
-            app:spanCount="5" />
+            app:spanCount="7" />
 
         <ImageView
             android:id="@+id/image_view_building"
