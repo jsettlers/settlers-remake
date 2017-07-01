@@ -52,8 +52,8 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
 	private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
-	private final LinkedList<PositionChangedListener> positionChangedListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> infrequentDrawListeners = new LinkedList<>();
+	private final LinkedList<PositionChangedListener> positionChangedListeners = new LinkedList<>();
 
 	private final int fireDrawListenerFrequency = 15;
 	private int fireDrawListenerCounter = -1;
@@ -113,14 +113,6 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		synchronized (drawListeners) {
 			stream(drawListeners).forEach(DrawListener::draw);
 		}
-	}
-
-	public void onPositionChanged(MapRectangle screenArea, ShortPoint2D displayCenter) {
-		this.displayCenter = displayCenter;
-
-		synchronized (positionChangedListeners) {
-			stream(positionChangedListeners).forEach(PositionChangedListener::positionChanged);
-		}
 
 		fireDrawListenerCounter = (fireDrawListenerCounter + 1) % fireDrawListenerFrequency;
 
@@ -130,6 +122,14 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 					listener.draw();
 				}
 			}
+		}
+	}
+
+	public void onPositionChanged(MapRectangle screenArea, ShortPoint2D displayCenter) {
+		this.displayCenter = displayCenter;
+
+		synchronized (positionChangedListeners) {
+			stream(positionChangedListeners).forEach(PositionChangedListener::positionChanged);
 		}
 	}
 
