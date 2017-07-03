@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,12 +28,9 @@ import jsettlers.testutils.map.MapUtils;
  * Created by michael on 24.04.16.
  */
 public class AutoReplaySetting {
-	static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
-
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
-				new AutoReplaySetting("fullproduction", 10, 20, 40, 90, 150)
-		);
+				new AutoReplaySetting("fullproduction", 10, 20, 40, 65));
 	}
 
 	private final String typeName;
@@ -86,7 +83,6 @@ public class AutoReplaySetting {
 				", timeMinutes=" + Arrays.toString(timeMinutes) +
 				'}';
 	}
-
 
 	public void compareSaveGamesAndDelete(MapLoader[] actualSaveGames) throws MapLoadException, IOException, ClassNotFoundException {
 		for (int i = 0; i < actualSaveGames.length; i++) {

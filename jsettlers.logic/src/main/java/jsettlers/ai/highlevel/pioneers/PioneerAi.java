@@ -19,11 +19,11 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.ai.highlevel.pioneers.target.AbstractPioneerTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.ConnectPartitionsTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.FishTargetFinder;
-import jsettlers.ai.highlevel.pioneers.target.TreesForLumberJackTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.MineTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.NearStonesTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.RiverTargetFinder;
 import jsettlers.ai.highlevel.pioneers.target.StoneCutterTargetFinder;
+import jsettlers.ai.highlevel.pioneers.target.TreesForLumberJackTargetFinder;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.position.ShortPoint2D;
@@ -37,7 +37,7 @@ public class PioneerAi {
 	private final AiStatistics aiStatistics;
 	private final byte playerId;
 	private final int searchDistance;
-	private final AbstractPioneerTargetFinder[] targetFinders = new AbstractPioneerTargetFinder[9];
+	private final AbstractPioneerTargetFinder[] targetFinders;
 	private ShortPoint2D lastResourceTarget;
 
 	public PioneerAi(AiStatistics aiStatistics, byte playerId) {
@@ -45,15 +45,18 @@ public class PioneerAi {
 		this.playerId = playerId;
 		this.searchDistance = aiStatistics.getMainGrid().getWidth() / 2;
 		this.lastResourceTarget = aiStatistics.getPositionOfPartition(playerId);
-		targetFinders[0] = new TreesForLumberJackTargetFinder(aiStatistics, playerId, searchDistance, 10);
-		targetFinders[1] = new NearStonesTargetFinder(aiStatistics, playerId, searchDistance);
-		targetFinders[2] = new StoneCutterTargetFinder(aiStatistics, playerId, searchDistance, 6);
-		targetFinders[3] = new ConnectPartitionsTargetFinder(aiStatistics, playerId, searchDistance);
-		targetFinders[4] = new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.COAL, EBuildingType.COALMINE);
-		targetFinders[5] = new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.IRONORE, EBuildingType.IRONMINE);
-		targetFinders[6] = new RiverTargetFinder(aiStatistics, playerId, searchDistance);
-		targetFinders[7] = new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.GOLDORE, EBuildingType.GOLDMINE);
-		targetFinders[8] = new FishTargetFinder(aiStatistics, playerId, searchDistance);
+
+		this.targetFinders = new AbstractPioneerTargetFinder[] {
+				new TreesForLumberJackTargetFinder(aiStatistics, playerId, searchDistance, 10),
+				new NearStonesTargetFinder(aiStatistics, playerId, searchDistance),
+				new StoneCutterTargetFinder(aiStatistics, playerId, searchDistance, 6),
+				new ConnectPartitionsTargetFinder(aiStatistics, playerId, searchDistance),
+				new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.COAL, EBuildingType.COALMINE),
+				new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.IRONORE, EBuildingType.IRONMINE),
+				new RiverTargetFinder(aiStatistics, playerId, searchDistance),
+				new MineTargetFinder(aiStatistics, playerId, searchDistance, EResourceType.GOLDORE, EBuildingType.GOLDMINE),
+				new FishTargetFinder(aiStatistics, playerId, searchDistance)
+		};
 	}
 
 	public ShortPoint2D findResourceTarget() {
@@ -82,11 +85,9 @@ public class PioneerAi {
 		return null;
 	}
 
-
 	public ShortPoint2D findBroadenTarget() {
 		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
-		ShortPoint2D target = myBorder.getNearestPoint(centroid(), searchDistance);
-		return target;
+		return myBorder.getNearestPoint(centroid(), searchDistance);
 	}
 
 	private ShortPoint2D centroid() {
@@ -101,5 +102,4 @@ public class PioneerAi {
 		int divisor = landForPlayer.size() / 50;
 		return new ShortPoint2D((int) (x / divisor), (int) (y / divisor));
 	}
-
 }

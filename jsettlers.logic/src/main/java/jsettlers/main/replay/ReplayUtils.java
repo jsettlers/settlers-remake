@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.resources.ResourceManager;
@@ -31,6 +30,7 @@ import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
@@ -169,8 +169,7 @@ public class ReplayUtils {
 		return startingGameListener.waitForGameStartup();
 	}
 
-	private static JSettlersGame loadGameFromReplay(IReplayStreamProvider replayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation) throws MapLoadException {
+	private static JSettlersGame loadGameFromReplay(IReplayStreamProvider replayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation) throws MapLoadException {
 		System.out.println("Found loadable jsettlers.integration.replay file. Started loading it: " + replayFile);
 		return JSettlersGame.loadFromReplayFile(replayFile, networkConnector, replayStartInformation);
 	}
@@ -178,8 +177,8 @@ public class ReplayUtils {
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile, IGameClock gameClock) throws IOException {
 		System.out.println("Creating new jsettlers.integration.replay file (" + newReplayFile + ")...");
 
-		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
-				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings());
+		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(), newSavegame.getMapId(), replayStartInformation.getPlayerId(),
+				replayStartInformation.getPlayerSettings());
 
 		DataOutputStream dos = new DataOutputStream(ResourceManager.writeUserFile(newReplayFile));
 		replayInfo.serialize(dos);

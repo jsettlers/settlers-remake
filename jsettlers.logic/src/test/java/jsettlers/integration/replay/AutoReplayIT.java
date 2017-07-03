@@ -66,5 +66,4 @@ public class AutoReplayIT {
 			setting.compareSaveGamesAndDelete(actualSaveGames);
 		}
 	}
-
 }
