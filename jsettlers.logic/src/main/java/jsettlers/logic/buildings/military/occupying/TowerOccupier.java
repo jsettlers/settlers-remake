@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,26 +11,40 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.movable;
+ */
+
+package jsettlers.logic.buildings.military.occupying;
+
+import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.buildings.OccupierPlace;
+import jsettlers.common.movable.IMovable;
+import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
+
+import java.io.Serializable;
 
 /**
- * @author codingberlin
- * @author Andreas Eberle
+ * Created by Andreas Eberle on 03.07.2017.
  */
-public enum ESoldierType {
-	BOWMAN(ESoldierClass.BOWMAN),
-	SWORDSMAN(ESoldierClass.INFANTRY),
-	PIKEMAN(ESoldierClass.INFANTRY);
+final class TowerOccupier implements IBuildingOccupier, Serializable {
+	final OccupierPlace place;
+	final IBuildingOccupyableMovable soldier;
 
-	public static final ESoldierType[] VALUES = ESoldierType.values();
-	public static final int NUMBER_OF_VALUES = VALUES.length;
+	TowerOccupier(OccupierPlace place, IBuildingOccupyableMovable soldier) {
+		this.place = place;
+		this.soldier = soldier;
+	}
 
-	public final int ordinal;
-	public final ESoldierClass soldierClass;
+	@Override
+	public OccupierPlace getPlace() {
+		return place;
+	}
 
-	ESoldierType(ESoldierClass soldierClass) {
-		this.soldierClass = soldierClass;
-		this.ordinal = ordinal();
+	@Override
+	public IMovable getMovable() {
+		return soldier.getMovable();
+	}
+
+	public IBuildingOccupyableMovable getSoldier() {
+		return soldier;
 	}
 }

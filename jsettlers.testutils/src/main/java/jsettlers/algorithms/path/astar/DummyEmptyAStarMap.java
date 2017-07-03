@@ -15,7 +15,6 @@
 package jsettlers.algorithms.path.astar;
 
 import jsettlers.algorithms.path.IPathCalculatable;
-import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.common.Color;
 
 /**
@@ -44,12 +43,10 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 
 	@Override
 	public void markAsOpen(int x, int y) {
-
 	}
 
 	@Override
 	public void markAsClosed(int x, int y) {
-
 	}
 
 	public void setBlocked(int x, int y, boolean b) {
