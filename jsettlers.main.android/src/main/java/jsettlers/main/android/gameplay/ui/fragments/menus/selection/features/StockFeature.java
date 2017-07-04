@@ -188,7 +188,7 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		public MaterialViewHolder(View itemView) {
 			super(itemView);
 			imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), !materialState.isStocked(), false)));
+			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), !materialState.isStocked(), true)));
 		}
 
 		void bind(MaterialState materialState) {
