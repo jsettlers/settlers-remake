@@ -15,28 +15,33 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.buildings;
 
-import java.util.List;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
-import jsettlers.main.android.R;
-import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
-import jsettlers.main.android.gameplay.presenters.MenuFactory;
-import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
-import jsettlers.main.android.utils.OriginalImageProvider;
-
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
+import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.presenters.BuildingTile;
+import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;
+import jsettlers.main.android.gameplay.presenters.MenuFactory;
+import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.
@@ -63,13 +68,22 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 		buildingsMenu.start();
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		buildingsMenu.finish();
+	}
+
 	/**
 	 * BuildingsCategoryView implementation
 	 */
+	@UiThread
 	@Override
-	public void setBuildings(List<EBuildingType> buildings) {
+	public void setBuildings(List<BuildingTile> buildingTiles) {
 		if (adapter == null) {
-			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildings);
+			adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTiles);
+		} else {
+			adapter.setBuildingTiles(buildingTiles);
 		}
 
 		if (recyclerView.getAdapter() == null) {
@@ -87,18 +101,18 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 	 * Adapter
 	 */
 	private class BuildingsAdapter extends RecyclerView.Adapter<BuildingsCategoryFragment.BuildingViewHolder> {
-		private List<EBuildingType> buildingTypes;
+		private List<BuildingTile> buildingTiles;
 
 		private LayoutInflater layoutInflater;
 
-		BuildingsAdapter(List<EBuildingType> buildingTypes) {
-			this.buildingTypes = buildingTypes;
+		BuildingsAdapter(List<BuildingTile> buildingTiles) {
+			this.buildingTiles = buildingTiles;
 			layoutInflater = getActivity().getLayoutInflater();
 		}
 
 		@Override
 		public int getItemCount() {
-			return buildingTypes.size();
+			return buildingTiles.size();
 		}
 
 		@Override
@@ -108,8 +122,7 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 			itemView.setOnClickListener(view -> {
 				int position = buildingViewHolder.getLayoutPosition();
-				EBuildingType buildingType = buildingTypes.get(position);
-				buildingSelected(buildingType);
+				buildingSelected(buildingTiles.get(position).getBuildingType());
 			});
 
 			return buildingViewHolder;
@@ -117,21 +130,92 @@ public class BuildingsCategoryFragment extends Fragment implements BuildingsCate
 
 		@Override
 		public void onBindViewHolder(BuildingsCategoryFragment.BuildingViewHolder holder, int position) {
-			EBuildingType buildingType = buildingTypes.get(position);
-			holder.setBuildingType(buildingType);
+			holder.setBuilding(buildingTiles.get(position));
+		}
+
+		@Override
+		public void onBindViewHolder(BuildingViewHolder holder, int position, List<Object> payloads) {
+			if (payloads == null || payloads.size() == 0) {
+				onBindViewHolder(holder, position);
+			} else {
+				holder.updateCounts(buildingTiles.get(position));
+			}
+		}
+
+		public void setBuildingTiles(List<BuildingTile> buildingTiles) {
+			DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new BuildingsDiffCallback(this.buildingTiles, buildingTiles));
+			diffResult.dispatchUpdatesTo(this);
+
+			this.buildingTiles = buildingTiles;
 		}
 	}
 
 	private class BuildingViewHolder extends RecyclerView.ViewHolder {
 		private final ImageView imageView;
+		private final TextView nameTextView;
+		private final TextView buildingCountTextView;
+		private final TextView buildingConstructionCountTextView;
 
 		BuildingViewHolder(View itemView) {
 			super(itemView);
 			imageView = (ImageView) itemView.findViewById(R.id.image_view);
+			nameTextView = (TextView) itemView.findViewById(R.id.text_view_building_name);
+			buildingCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_count);
+			buildingConstructionCountTextView = (TextView) itemView.findViewById(R.id.text_view_building_construction_count);
 		}
 
-		void setBuildingType(EBuildingType buildingType) {
-			OriginalImageProvider.get(buildingType).setAsImage(imageView);
+		void setBuilding(BuildingTile buildingTile) {
+			OriginalImageProvider.get(buildingTile.getBuildingType()).setAsImage(imageView);
+			nameTextView.setText(buildingTile.getName());
+			buildingCountTextView.setText(buildingTile.getCount());
+			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		}
+
+		void updateCounts(BuildingTile buildingTile) {
+			buildingCountTextView.setText(buildingTile.getCount());
+			buildingConstructionCountTextView.setText(buildingTile.getConstructionCount());
+		}
+	}
+
+	/**
+	 * Diff callback
+	 */
+	private class BuildingsDiffCallback extends DiffUtil.Callback  {
+
+		private final List<BuildingTile> oldBuildingTiles;
+		private final List<BuildingTile> newBuildingTiles;
+
+		BuildingsDiffCallback(List<BuildingTile> oldBuildingTiles, List<BuildingTile> newBuildingTiles) {
+			this.oldBuildingTiles = oldBuildingTiles;
+			this.newBuildingTiles = newBuildingTiles;
+		}
+
+		@Override
+		public int getOldListSize() {
+			return oldBuildingTiles.size();
+		}
+
+		@Override
+		public int getNewListSize() {
+			return newBuildingTiles.size();
+		}
+
+		@Override
+		public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+			return oldBuildingTiles.get(oldItemPosition).equals(newBuildingTiles.get(newItemPosition));
+		}
+
+		@Override
+		public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+			boolean constructedCountsEqual = oldBuildingTiles.get(oldItemPosition).getCount().equals(newBuildingTiles.get(newItemPosition).getCount());
+			boolean constructingCountsEqual = oldBuildingTiles.get(oldItemPosition).getConstructionCount().equals(newBuildingTiles.get(newItemPosition).getConstructionCount());
+			return constructedCountsEqual && constructingCountsEqual;
+		}
+
+		@Nullable
+		@Override
+		public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+			return true;
 		}
 	}
 }

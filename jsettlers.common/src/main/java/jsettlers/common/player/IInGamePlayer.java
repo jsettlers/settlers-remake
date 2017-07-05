@@ -18,6 +18,7 @@ package jsettlers.common.player;
  * @author codingberlin
  */
 public interface IInGamePlayer {
+	byte getPlayerId();
 
 	IMannaInformation getMannaInformation();
 

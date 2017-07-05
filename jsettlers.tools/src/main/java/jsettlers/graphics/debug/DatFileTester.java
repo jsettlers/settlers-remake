@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,6 +23,7 @@ import java.util.Locale;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
@@ -35,6 +36,10 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import jsettlers.common.Color;
+import jsettlers.common.resources.SettlersFolderChecker;
+import jsettlers.common.utils.FileUtils;
+import jsettlers.common.utils.OptionableProperties;
+import jsettlers.common.utils.mutables.Mutable;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
@@ -45,37 +50,44 @@ import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.swing.utils.ImageUtils;
+import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 
 public class DatFileTester {
-	private static final DatFileType TYPE = DatFileType.RGB555;
-	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%" + TYPE.getFileSuffix();
+	private static final int DAT_FILE_INDEX = 14;
+	private static final DatFileType TYPE = DatFileType.RGB565;
+
+	private static final String FILE_NAME_PATTERN = "siedler3_%02d" + TYPE.getFileSuffix();
+	private static final String FILE_NAME = String.format(Locale.ENGLISH, FILE_NAME_PATTERN, DAT_FILE_INDEX);
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
-	// private static final String FILE =
-	// "D:/Games/Siedler3/GFX/siedler3_%.f8007e01f.dat";
 
-	private static int datFileIndex = 14;
+	private final AdvancedDatFileReader reader;
+	private final Region region;
 
-	private AdvancedDatFileReader reader;
+	private DatFileTester() throws IOException {
+		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
+		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
+		File settlersGfxFolder = settlersFolderInfo.gfxFolder;
 
-	private Region region;
-
-	private DatFileTester() {
-		reloadDatFile();
+		File file = findFileIgnoringCase(settlersGfxFolder, FILE_NAME);
+		reader = new AdvancedDatFileReader(file, TYPE);
 
 		region = new Region(Region.POSITION_CENTER);
 		region.setContent(new Content());
+	}
 
-		Area area = new Area();
-		area.add(region);
-		AreaContainer glcanvas = new AreaContainer(area);
+	private File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
+		String fileNameLowercase = fileName.toLowerCase();
 
-		JFrame frame = new JFrame("Opengl image test: " + datFileIndex);
-		frame.getContentPane().add(glcanvas);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(new Dimension(400, 400));
-		frame.setVisible(true);
+		Mutable<File> graphicsFile = new Mutable<>();
 
+		FileUtils.iterateChildren(settlersGfxFolder, currentFile -> {
+			if(currentFile.isFile() && fileNameLowercase.equalsIgnoreCase(currentFile.getName())){
+				graphicsFile.object = currentFile;
+			}
+		});
+
+		return graphicsFile.object;
 	}
 
 	/**
@@ -83,126 +95,17 @@ public class DatFileTester {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		new DatFileTester();
-		//
-		// long intime = System.nanoTime();
-		// int images = 0;
-		//
-		// int y = offsetY;
-		// int seqIndex = 0;
-		// for (Sequence<SettlerImage> seq : reader.getSettlers()) {
-		// int x = offsetX;
-		// System.out.println("next sequence: " + seqIndex);
-		//
-		// for (SettlerImage image : seq) {
-		// gl.glEnable(GL.GL_TEXTURE_2D);
-		// gl.glColor3f(1, 1, 1);
-		// image.drawAt(gl, x - image.getOffsetX(),
-		// y + image.getHeight() + image.getOffsetY(),
-		// colors[images % colors.length]);
-		//
-		// gl.glDisable(GL.GL_TEXTURE_2D);
-		// gl.glColor3f(1, 0, 0);
-		// gl.glBegin(GL.GL_LINE_STRIP);
-		// gl.glVertex2i(x, y);
-		// gl.glVertex2i(x,
-		// y + image.getHeight() + image.getOffsetY());
-		// gl.glVertex2i(x - image.getOffsetX(),
-		// y + image.getHeight() + image.getOffsetY());
-		// gl.glEnd();
-		// drawPoint(gl, x, y);
-		// drawPoint(gl, x + image.getWidth(), y);
-		// drawPoint(gl, x + image.getWidth(),
-		// y + image.getHeight());
-		// drawPoint(gl, x, y + image.getHeight());
-		//
-		// System.out.println("image sizes: " + image.getWidth()
-		// + "x" + image.getHeight());
-		//
-		// x += 100;
-		// images++;
-		// }
-		//
-		// gl.glColor3f(0, 0, 0);
-		// gl.glRasterPos2i(20, y + 20);
-		// glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, seqIndex
-		// + ":");
-		//
-		// seqIndex++;
-		// y -= 200;
-		// }
-		//
-		// y = offsetY;
-		// int landImageIndex = 0;
-		// for (Sequence<LandscapeImage> seq : reader.getLandscapes()) {
-		// LandscapeImage image = seq.getImage(0);
-		// gl.glEnable(GL.GL_TEXTURE_2D);
-		// image.bind(gl);
-		// gl.glColor3f(1, 1, 1);
-		// gl.glBegin(GL2.GL_QUADS);
-		// gl.glTexCoord2f(0, 0);
-		// gl.glVertex2f(50, y);
-		// gl.glTexCoord2f(0, 1);
-		// gl.glVertex2f(50, y + 32);
-		// gl.glTexCoord2f(1, 1);
-		// gl.glVertex2f(82, y + 32);
-		// gl.glTexCoord2f(1, 0);
-		// gl.glVertex2f(82, y);
-		// gl.glEnd();
-		// gl.glDisable(GL.GL_TEXTURE_2D);
-		//
-		// gl.glColor3f(0, 0, 0);
-		// gl.glRasterPos2i(20, y + 20);
-		// glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12,
-		// landImageIndex + ":");
-		//
-		// if (image.isContinuous()) {
-		// gl.glRasterPos2i(100, y + 20);
-		// glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, "big");
-		// }
-		// images++;
-		// landImageIndex++;
-		// y -= 40;
-		// }
-		//
-		// y = offsetY;
-		// int guiImageIndex = 0;
-		// for (Sequence<GuiImage> seq : reader.getGuis()) {
-		// GuiImage image = seq.getImage(0);
-		// System.out.println("next gui image: " + guiImageIndex + " "
-		// + image.getWidth() + "x" + image.getHeight()
-		// + " px");
-		// gl.glEnable(GL.GL_TEXTURE_2D);
-		// image.drawAt(gl, 100, y);
-		// gl.glDisable(GL.GL_TEXTURE_2D);
-		//
-		// gl.glColor3f(0, 0, 0);
-		// gl.glRasterPos2i(20, y + 20);
-		// glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12,
-		// guiImageIndex + ":");
-		//
-		// images++;
-		// guiImageIndex++;
-		// y -= image.getHeight() + 20;
-		// }
-		//
-		// System.out.println("Nanotime: " + (System.nanoTime() - intime)
-		// + " for " + images + " images");
-		// gl.glFlush();
-		//
-		// }
-		//
-		// private void drawPoint(GL2 gl, int x, int y) {
-		// gl.glColor3f(0, 0, 1);
-		// gl.glBegin(GL2.GL_QUADS);
-		// gl.glVertex2i(x + 2, y + 2);
-		// gl.glVertex2i(x + 2, y - 2);
-		// gl.glVertex2i(x - 2, y - 2);
-		// gl.glVertex2i(x - 2, y + 2);
-		// gl.glEnd();
-		// gl.glColor3f(1, 1, 1);
-		// }
-		// });
+		DatFileTester datFileTester = new DatFileTester();
+
+		Area area = new Area();
+		area.add(datFileTester.region);
+		AreaContainer glCanvas = new AreaContainer(area);
+
+		JFrame frame = new JFrame("Opengl image test: " + DAT_FILE_INDEX);
+		frame.getContentPane().add(glCanvas);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setSize(new Dimension(400, 400));
+		frame.setVisible(true);
 	}
 
 	private class Content implements RegionContent {
@@ -317,12 +220,6 @@ public class DatFileTester {
 		}
 	}
 
-	private void reloadDatFile() {
-		File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", datFileIndex)));
-
-		reader = new AdvancedDatFileReader(file, TYPE);
-	}
-
 	protected void export() {
 		final JFileChooser fc = new JFileChooser();
 
@@ -342,7 +239,7 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file = new File(FILE.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
+				File file = new File(FILE_NAME_PATTERN.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
 
 				if (file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);

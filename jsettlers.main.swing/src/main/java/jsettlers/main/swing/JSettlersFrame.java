@@ -14,30 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
-import go.graphics.area.Area;
-import go.graphics.region.Region;
-import go.graphics.sound.SoundPlayer;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
-import jsettlers.common.CommitInfo;
-import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
-import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMultiplayerConnector;
-import jsettlers.common.menu.IStartedGame;
-import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.Player;
-import jsettlers.graphics.map.ETextDrawPosition;
-import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.main.MultiplayerConnector;
-import jsettlers.main.swing.menu.joinpanel.JoinGamePanel;
-import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
-import jsettlers.main.swing.menu.startinggamemenu.StartingGamePanel;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -47,6 +23,32 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
+import go.graphics.area.Area;
+import go.graphics.region.Region;
+import go.graphics.sound.SoundPlayer;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
+
+import jsettlers.common.CommitInfo;
+import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.IMultiplayerConnector;
+import jsettlers.common.menu.IStartedGame;
+import jsettlers.common.menu.IStartingGame;
+import jsettlers.graphics.map.ETextDrawPosition;
+import jsettlers.graphics.map.MapContent;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.main.MultiplayerConnector;
+import jsettlers.main.swing.menu.joinpanel.JoinGamePanel;
+import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
+import jsettlers.main.swing.menu.startinggamemenu.StartingGamePanel;
+import jsettlers.main.swing.settings.SettingsManager;
+import jsettlers.main.swing.settings.UiPlayer;
 
 /**
  * @author codingberlin
@@ -58,7 +60,7 @@ public class JSettlersFrame extends JFrame {
 	private final MainMenuPanel mainPanel;
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
-	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
+	private final SoundPlayer soundPlayer = new SwingSoundPlayer(SettingsManager.getInstance());
 
 	private Timer redrawTimer;
 	private boolean fullScreen = false;
@@ -68,8 +70,8 @@ public class JSettlersFrame extends JFrame {
 
 		SettingsManager settingsManager = SettingsManager.getInstance();
 
-		Player player = settingsManager.getPlayer();
-		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
+		UiPlayer uiPlayer = settingsManager.getPlayer();
+		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), uiPlayer.getId(), uiPlayer.getName());
 		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
 
 		showMainMenu();

@@ -15,43 +15,83 @@
 
 package jsettlers.main.android.gameplay.presenters;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.List;
 
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 
 /**
  * Created by tompr on 22/11/2016.
  */
-public class BuildingsCategoryMenu {
+public class BuildingsCategoryMenu implements DrawListener {
 	private final BuildingsCategoryView view;
-	private final ActionFireable actionFireable;
+	private final ActionControls actionControls;
+	private final DrawControls drawControls;
+	private final PositionControls positionControls;
 	private final MenuNavigator menuNavigator;
 	private final EBuildingsCategory buildingsCategory;
 
-	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionFireable actionFireable, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
+	private final int updateLimit = 30;
+	private int updateCounter = -1;
+
+	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionControls actionControls, DrawControls drawControls, PositionControls positionControls, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
 		this.view = view;
-		this.actionFireable = actionFireable;
+		this.actionControls = actionControls;
+		this.drawControls = drawControls;
+		this.positionControls = positionControls;
 		this.menuNavigator = menuNavigator;
 		this.buildingsCategory = buildingsCategory;
 	}
 
 	public void start() {
-		view.setBuildings(getBuildingTypes());
+		drawControls.addDrawListener(this);
+	}
+
+	public void finish() {
+		drawControls.removeDrawListener(this);
 	}
 
 	public void buildingSelected(EBuildingType buildingType) {
 		Action action = new ShowConstructionMarksAction(buildingType);
-		actionFireable.fireAction(action);
+		actionControls.fireAction(action);
 		menuNavigator.dismissMenu();
 	}
 
-	private List<EBuildingType> getBuildingTypes() {
-		return buildingsCategory.buildingTypes;
+	/**
+	 * DrawListener implementation
+	 */
+	@Override
+	public void draw() {
+		updateCounter = (updateCounter + 1) % updateLimit;
+
+		if (updateCounter == 0) {
+			IBuildingCounts buildingCounts = null;
+
+			if (positionControls.isInPlayerPartition()) {
+				buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
+			}
+
+			view.setBuildings(buildingTiles(buildingCounts));
+		}
+	}
+
+
+	private List<BuildingTile> buildingTiles(IBuildingCounts buildingCounts) {
+
+		return stream(buildingsCategory.buildingTypes)
+				.map(buildingType -> new BuildingTile(buildingType, buildingCounts))
+				.collect(Collectors.toList());
 	}
 }

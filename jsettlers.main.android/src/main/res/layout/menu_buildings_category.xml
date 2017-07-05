@@ -9,7 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:padding="8dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay" />
 
