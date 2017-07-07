@@ -28,6 +28,7 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.loading.EMapStartResources;
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * @author Thomas Zeugner
@@ -714,6 +715,9 @@ public class OriginalMapFileContentReader {
 	}
 
 	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
+		addStartTowerMaterialsAndSettlers(startResources, null);
+	}
+	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources, PlayerSetting[] playerSettings) {
 		// - only if there are no buildings
 		if (hasBuildings)
 			return;
@@ -721,6 +725,7 @@ public class OriginalMapFileContentReader {
 		int playerCount = mapData.getPlayerCount();
 
 		for (byte playerId = 0; playerId < playerCount; playerId++) {
+			if(playerSettings != null && !playerSettings[playerId].isAvailable()) continue;
 			ShortPoint2D startPoint = mapData.getStartPoint(playerId);
 
 			// - add the start Tower for this player
