@@ -15,7 +15,6 @@
 package jsettlers.main.swing.lookandfeel.ui;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -28,7 +27,6 @@ import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 
 import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
-import sun.swing.SwingUtilities2;
 
 /**
  * Stone toggle Button UI
@@ -132,18 +130,19 @@ public class ButtonUiStone extends BasicToggleButtonUI {
 
 	@Override
 	protected void paintText(Graphics g, AbstractButton b, Rectangle textRect, String text) {
-		FontMetrics fm = SwingUtilities2.getFontMetrics(b, g);
-		int mnemonicIndex = b.getDisplayedMnemonicIndex();
-
-		g.setColor(Color.BLACK);
-		SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-				textRect.x + getTextShiftOffset() + 1,
-				textRect.y + fm.getAscent() + getTextShiftOffset() + 1);
-
-		g.setColor(b.getForeground());
-		SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-				textRect.x + getTextShiftOffset(),
-				textRect.y + fm.getAscent() + getTextShiftOffset());
+		// TODO !!!!!!!
+		// FontMetrics fm = SwingUtilities2.getFontMetrics(b, g);
+		// int mnemonicIndex = b.getDisplayedMnemonicIndex();
+		//
+		// g.setColor(Color.BLACK);
+		// SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
+		// textRect.x + getTextShiftOffset() + 1,
+		// textRect.y + fm.getAscent() + getTextShiftOffset() + 1);
+		//
+		// g.setColor(b.getForeground());
+		// SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
+		// textRect.x + getTextShiftOffset(),
+		// textRect.y + fm.getAscent() + getTextShiftOffset());
 	}
 
 	@Override
