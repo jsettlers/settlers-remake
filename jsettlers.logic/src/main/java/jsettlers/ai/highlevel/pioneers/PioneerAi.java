@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -62,7 +62,7 @@ public class PioneerAi {
 	public ShortPoint2D findResourceTarget() {
 		ShortPoint2D newTarget = findResourceTargetNearLastTarget();
 		if (newTarget == null) {
-			AiPositions border = aiStatistics.getBorderOf(playerId);
+			AiPositions border = aiStatistics.getBorderIngestibleByPioneersOf(playerId);
 			if (border.size() > 1) {
 				lastResourceTarget = border.get(MatchConstants.aiRandom().nextInt(border.size()));
 			}
@@ -73,7 +73,7 @@ public class PioneerAi {
 	}
 
 	private ShortPoint2D findResourceTargetNearLastTarget() {
-		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
+		AiPositions myBorder = aiStatistics.getBorderIngestibleByPioneersOf(playerId);
 
 		for (AbstractPioneerTargetFinder targetFinder : targetFinders) {
 			ShortPoint2D target = targetFinder.findTarget(myBorder, lastResourceTarget);
@@ -86,7 +86,7 @@ public class PioneerAi {
 	}
 
 	public ShortPoint2D findBroadenTarget() {
-		AiPositions myBorder = aiStatistics.getBorderOf(playerId);
+		AiPositions myBorder = aiStatistics.getBorderIngestibleByPioneersOf(playerId);
 		return myBorder.getNearestPoint(centroid(), searchDistance);
 	}
 

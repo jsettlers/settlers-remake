@@ -148,4 +148,8 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 	public void setCivilisation(ECivilisation civilisation) {
 		this.civilisation = civilisation;
 	}
+
+	public boolean hasSameTeam(Player player) {
+		return player != null && this.team == player.team;
+	}
 }

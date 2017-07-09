@@ -411,7 +411,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void commandPioneers() {
-		if (aiStatistics.getBorderOf(playerId).size() == 0 || aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
+		if (aiStatistics.getBorderIngestibleByPioneersOf(playerId).isEmpty() || !aiStatistics.getEnemiesInTownOf(playerId).isEmpty()) {
 			releaseAllPioneers();
 		} else if (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) >= 4) {
 			sendOutPioneers();

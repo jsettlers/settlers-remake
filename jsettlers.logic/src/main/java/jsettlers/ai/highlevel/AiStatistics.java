@@ -45,6 +45,7 @@ import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -259,9 +260,9 @@ public class AiStatistics {
 				} else if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn) {
 					updatePlayerLand(x, y, player);
 				}
-				if (player != null && isBorderOf(x, y, player.playerId)) {
+				if (player != null && hasNeighborIngestibleByPioneersOf(x, y, player)) {
 					if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistics[player.playerId].partitionIdToBuildOn) {
-						playerStatistics[player.playerId].border.add(x, y);
+						playerStatistics[player.playerId].borderIngestibleByPioneers.add(x, y);
 					} else {
 						playerStatistics[player.playerId].otherPartitionBorder.add(x, y);
 					}
@@ -283,13 +284,18 @@ public class AiStatistics {
 		return playerId;
 	}
 
-	private boolean isBorderOf(int x, int y, byte playerId) {
-		return isIngestibleBy(x + 1, y + 1, playerId) || isIngestibleBy(x + 1, y - 1, playerId) || isIngestibleBy(x - 1, y + 1, playerId) || isIngestibleBy(x - 1, y - 1, playerId);
+	private boolean hasNeighborIngestibleByPioneersOf(int x, int y, Player player) {
+		return !MapNeighboursArea.stream(x, y)
+				.filterBounds(mainGrid.getWidth(), mainGrid.getHeight())
+				.filter((currX, currY) -> isIngestibleByPioneersOf(currX, currY, player))
+				.isEmpty();
 	}
 
-	private boolean isIngestibleBy(int x, int y, byte playerId) {
-		return mainGrid.isInBounds(x, y) && partitionsGrid.getPlayerIdAt(x, y) != playerId && !mainGrid.getLandscapeGrid().getLandscapeTypeAt(x, y).isBlocking && !partitionsGrid.isEnforcedByTower(x,
-				y);
+	private boolean isIngestibleByPioneersOf(int x, int y, Player player) {
+		Player otherPlayer = partitionsGrid.getPlayerAt(x, y);
+		return !player.hasSameTeam(otherPlayer)
+				&& !landscapeGrid.getLandscapeTypeAt(x, y).isBlocking
+				&& !partitionsGrid.isEnforcedByTower(x, y);
 	}
 
 	private void updatePlayerLand(short x, short y, Player player) {
@@ -631,8 +637,8 @@ public class AiStatistics {
 		return playerStatistics[playerId].referencePosition;
 	}
 
-	public AiPositions getBorderOf(byte playerId) {
-		return playerStatistics[playerId].border;
+	public AiPositions getBorderIngestibleByPioneersOf(byte playerId) {
+		return playerStatistics[playerId].borderIngestibleByPioneers;
 	}
 
 	public AiPositions getOtherPartitionBorderOf(byte playerId) {
@@ -666,14 +672,14 @@ public class AiStatistics {
 			stream(players)
 					.filter(currPlayer -> currPlayer.playerId != playerId)
 					.filter(this::isAlive)
-					.forEach(currPlayer -> borderOfOtherPlayers.addAllNoCollision(getBorderOf(currPlayer.playerId)));
+					.forEach(currPlayer -> borderOfOtherPlayers.addAllNoCollision(getBorderIngestibleByPioneersOf(currPlayer.playerId)));
 
 			playerStatistics[playerId].threatenedBorder = new ArrayList<>();
-			AiPositions myBorder = getBorderOf(playerId);
+			AiPositions myBorder = getBorderIngestibleByPioneersOf(playerId);
 
 			for (int i = 0; i < myBorder.size(); i += 10) {
 				ShortPoint2D myBorderPosition = myBorder.get(i);
-				if (mainGrid.getPartitionsGrid().getTowerCountAt(myBorderPosition.x, myBorderPosition.y) == 0
+				if (!partitionsGrid.isEnforcedByTower(myBorderPosition.x, myBorderPosition.y)
 						&& borderOfOtherPlayers.getNearestPoint(myBorderPosition, CommonConstants.TOWER_RADIUS) != null) {
 					playerStatistics[playerId].threatenedBorder.add(myBorderPosition);
 				}
@@ -698,7 +704,7 @@ public class AiStatistics {
 		short blockedPartitionId;
 		IPartitionData materials;
 		final AiPositions landToBuildOn = new AiPositions();
-		final AiPositions border = new AiPositions();
+		final AiPositions borderIngestibleByPioneers = new AiPositions();
 		final AiPositions otherPartitionBorder = new AiPositions();
 		final Map<EMovableType, List<ShortPoint2D>> movablePositions = new HashMap<>();
 		final AiPositions stones = new AiPositions();
@@ -728,7 +734,7 @@ public class AiStatistics {
 			trees.clear();
 			rivers.clear();
 			landToBuildOn.clear();
-			border.clear();
+			borderIngestibleByPioneers.clear();
 			otherPartitionBorder.clear();
 			movablePositions.clear();
 			farmWorkAreas.clear();
