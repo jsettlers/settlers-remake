@@ -331,8 +331,10 @@ public enum EActionType {
 	 * @see PointAction
 	 */
 	SET_DOCK,
+
 	MAKE_FERRY,
 	MAKE_CARGO_BOAT,
+	UNLOAD_FERRIES,
 
 	/**
 	 * Changes the amount of materials that should be traded from the current trading building.

@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -77,13 +79,11 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java8.util.Optional;
-import java8.util.stream.Collectors;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -366,6 +366,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case MAKE_CARGO_BOAT:
 			makeCargoBoat();
+			break;
+
+		case UNLOAD_FERRIES:
+			unloadFerries();
 			break;
 
 		default:
@@ -746,5 +750,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		material[5] = EMaterialType.PLANK;
 		material[6] = EMaterialType.IRON;
 		dockyard.setOrder(material, EMovableType.CARGO_BOAT);
+	}
+
+	private void unloadFerries() {
+		for (int i = 0; i < currentSelection.getSize(); i++) {
+			Movable ship = (Movable) currentSelection.get(0);
+			if (ship.getMovableType() == EMovableType.FERRY) {
+				ShortPoint2D position = grid.getUnloadPosition(ship.getPos());
+				if (position != null){
+					ship.unload(position);
+				}
+			}
+		}
 	}
 }

@@ -47,8 +47,6 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
-import static jsettlers.common.movable.EMovableType.CARGO_BOAT;
-import static jsettlers.common.movable.EMovableType.FERRY;
 
 /**
  * Central Movable class of JSettlers.
@@ -103,9 +101,10 @@ public final class Movable implements ILogicMovable {
 	private ImageLink[] buildImages = null;
 	private ArrayList<EMaterialType> cargo = new ArrayList<>();
 	private ArrayList<IMovable> passengers = new ArrayList<>();
-	public static final Set<EMovableType> ships = EnumSet.of(
-			FERRY, CARGO_BOAT);
+	public static final Set<EMovableType> ships = EnumSet.of(EMovableType.FERRY, EMovableType.CARGO_BOAT);
+	private ShortPoint2D unloadingPosition = null;
 
+	// the following data only for ship passengers
 	private Movable ferryToEnter = null;
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
@@ -187,6 +186,15 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public int timerEvent() {
+
+
+		if(this.getMovableType() == EMovableType.MAGE) {
+			int i = 0;
+			i++;
+		}
+
+
+
 		if (state == EMovableState.DEAD) {
 			return -1;
 		}
@@ -217,13 +225,22 @@ public final class Movable implements ILogicMovable {
 		case WAITING:
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
+			setState(EMovableState.DOING_NOTHING); // the action is finished, as the time passed
 			movableAction = EMovableAction.NO_ACTION;
 
 		case PATHING:
 		case DOING_NOTHING:
 			if (visible) {
 				checkPlayerOfCurrentPosition();
+			}
+			break;
+
+		case UNLOADING:
+			if (passengers.size() > 0) {
+				((Movable) (passengers.get(0))).leaveFerryAtPosition(this.unloadingPosition);
+				passengers.remove(0);
+			} else {
+				setState(EMovableState.DOING_NOTHING);
 			}
 			break;
 
@@ -403,6 +420,12 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public ShortPoint2D getPos() {
 		return this.position;
+	}
+
+	public void leaveFerryAtPosition(ShortPoint2D position) {
+		this.position = position;
+		this.setState(EMovableState.DOING_NOTHING);
+		grid.enterPosition(position, this, true);
 	}
 
 	@Override
@@ -1070,6 +1093,7 @@ public final class Movable implements ILogicMovable {
 
 		TAKE,
 		DROP,
+		UNLOADING,
 
 		DEAD,
 
@@ -1117,5 +1141,19 @@ public final class Movable implements ILogicMovable {
 
 	public ArrayList<EMaterialType> getCargo() {
 		return this.cargo;
+	}
+
+	public boolean unload(ShortPoint2D position) {
+		if (this.getMovableType() != EMovableType.FERRY) {
+			return false;
+		}
+		if (position == null) {
+			return false;
+		}
+		this.unloadingPosition = position;
+		if (this.passengers.size() > 0) {
+			setState(EMovableState.UNLOADING);
+		}
+		return true;
 	}
 }

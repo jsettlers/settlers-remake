@@ -1814,6 +1814,32 @@ public final class MainGrid implements Serializable {
 			return null;
 		}
 
+		public ShortPoint2D getUnloadPosition(ShortPoint2D position) {
+			int x = position.x;
+			int y = position.y;
+			int dx = 0;
+			int dy = 0;
+			final byte[] xDeltaArray = EDirection.getXDeltaArray();
+			final byte[] yDeltaArray = EDirection.getYDeltaArray();
+			int distance = 2;
+			int direction;
+			boolean searching = true;
+			for (direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+				dx = (short) (xDeltaArray[direction] * distance) + x;
+				dy = (short) (yDeltaArray[direction] * distance) + y;
+				if (isInBounds(new ShortPoint2D(dx, dy)) && !isWaterSafe(dx, dy)
+						&& !landscapeGrid.isBlocked(dx, dy)) {
+					searching = false;
+					break;
+				}
+			}
+			if (searching) {
+				return null; // no coast near by
+			} else {
+				return new ShortPoint2D(dx, dy); // coast found, return point for unloading
+			}
+		}
+
 		public int[] findDockPosition(ShortPoint2D position) {
 			short x = position.x;
 			short y = position.y;

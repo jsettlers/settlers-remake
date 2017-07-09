@@ -137,4 +137,6 @@ public interface IGuiInputGrid {
 	int[] findDockPosition(ShortPoint2D position);
 
     FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
+
+	ShortPoint2D getUnloadPosition(ShortPoint2D position);
 }
