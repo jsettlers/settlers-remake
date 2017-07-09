@@ -99,8 +99,11 @@ class WhatToDoAi implements IWhatToDoAi {
 	private static final int NUMBER_OF_SMALL_LIVING_HOUSE_BEDS = 10;
 	private static final int NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS = 30;
 	private static final int NUMBER_OF_BIG_LIVING_HOUSE_BEDS = 100;
+
 	private static final int MINIMUM_NUMBER_OF_BEARERS = 10;
-	private static final int MINIMUM_NUMBER_OF_JOBLESS_BEARERS = 5;
+	private static final int MINIMUM_NUMBER_OF_JOBLESS_BEARERS = 10;
+	private static final float MINIMUM_NUMBER_OF_JOBLESS_BEARERS_PER_BUILDING = 1.2f;
+
 	private static final int NUMBER_OF_BEARERS_PER_HOUSE = 3;
 	private static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	private static final float WEAPON_SMITH_FACTOR = 7F;
@@ -470,7 +473,8 @@ class WhatToDoAi implements IWhatToDoAi {
 		int numberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size();
 		int numberOfJoblessBearers = aiStatistics.getPositionsOfJoblessBearersForPlayer(playerId).size();
 
-		int maxNewPioneersCount = Math.min(numberOfBearers - MINIMUM_NUMBER_OF_BEARERS, numberOfJoblessBearers - MINIMUM_NUMBER_OF_JOBLESS_BEARERS);
+		int minRequiredJoblessBearers = Math.max(MINIMUM_NUMBER_OF_JOBLESS_BEARERS, (int) (MINIMUM_NUMBER_OF_JOBLESS_BEARERS_PER_BUILDING * aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId)));
+		int maxNewPioneersCount = Math.min(numberOfBearers - MINIMUM_NUMBER_OF_BEARERS, numberOfJoblessBearers - minRequiredJoblessBearers);
 
 		if (maxNewPioneersCount > 0) {
 			pioneerGroup.fill(taskScheduler, aiStatistics, playerId, maxNewPioneersCount);
@@ -484,7 +488,7 @@ class WhatToDoAi implements IWhatToDoAi {
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
-				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
+						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);
