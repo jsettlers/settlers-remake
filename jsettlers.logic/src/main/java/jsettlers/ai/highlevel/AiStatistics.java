@@ -22,6 +22,7 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_GROWING;
+import static jsettlers.common.movable.EMovableType.BEARER;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
@@ -49,6 +50,7 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayer;
@@ -68,6 +70,7 @@ import jsettlers.logic.player.Player;
 
 import java8.util.Comparators;
 import java8.util.J8Arrays;
+import java8.util.Maps;
 import java8.util.Objects;
 import java8.util.stream.Collectors;
 
@@ -244,13 +247,14 @@ public class AiStatistics {
 				ILogicMovable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
 					Player movablePlayer = movable.getPlayer();
-					byte movablePlayerId = movablePlayer.getPlayerId();
+					byte movablePlayerId = movablePlayer.playerId;
 					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
 					EMovableType movableType = movable.getMovableType();
-					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
-						movablePlayerStatistic.movablePositions.put(movableType, new Vector<>());
+					Maps.computeIfAbsent(movablePlayerStatistic.movablePositions, movableType, key -> new ArrayList<>()).add(movable.getPosition());
+
+					if (movableType == BEARER && movable.getAction() == EMovableAction.NO_ACTION) {
+						playerStatistics[movablePlayerId].joblessBearerPositions.add(movable.getPosition());
 					}
-					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
 					if (player != null && player.playerId != movablePlayerId && movableType.isSoldier() && getEnemiesOf(player).contains(movablePlayer)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.addNoCollission(movable.getPos().x, movable.getPos().y);
 					}
@@ -440,16 +444,20 @@ public class AiStatistics {
 		return landscapeGrid.getBlockedPartitionAt(x, y) == playerStatistics[playerId].blockedPartitionId;
 	}
 
-	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
+	public List<ShortPoint2D> getPositionsOfMovablesWithTypeForPlayer(EMovableType movableType, byte playerId) {
 		if (!playerStatistics[playerId].movablePositions.containsKey(movableType)) {
 			return Collections.emptyList();
 		}
 		return playerStatistics[playerId].movablePositions.get(movableType);
 	}
 
+	public List<ShortPoint2D> getPositionsOfJoblessBearersForPlayer(byte playerId) {
+		return playerStatistics[playerId].joblessBearerPositions;
+	}
+
 	public int getCountOfMovablesOfPlayer(IPlayer player, Set<EMovableType> types) {
 		byte playerId = player.getPlayerId();
-		return stream(types).mapToInt(type -> getMovablePositionsByTypeForPlayer(type, playerId).size()).sum();
+		return stream(types).mapToInt(type -> getPositionsOfMovablesWithTypeForPlayer(type, playerId).size()).sum();
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -541,12 +549,12 @@ public class AiStatistics {
 	}
 
 	IMovable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
-		List<ShortPoint2D> soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L3, playerId);
+		List<ShortPoint2D> soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L3, playerId);
 		if (soldierPositions.size() == 0) {
-			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L2, playerId);
+			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L2, playerId);
 		}
 		if (soldierPositions.size() == 0) {
-			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L1, playerId);
+			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L1, playerId);
 		}
 		if (soldierPositions.size() == 0) {
 			return null;
@@ -707,6 +715,7 @@ public class AiStatistics {
 		final AiPositions borderIngestibleByPioneers = new AiPositions();
 		final AiPositions otherPartitionBorder = new AiPositions();
 		final Map<EMovableType, List<ShortPoint2D>> movablePositions = new HashMap<>();
+		final List<ShortPoint2D> joblessBearerPositions = new ArrayList<>();
 		final AiPositions stones = new AiPositions();
 		final AiPositions stonesNearBy = new AiPositions();
 		final AiPositions trees = new AiPositions();
@@ -737,6 +746,7 @@ public class AiStatistics {
 			borderIngestibleByPioneers.clear();
 			otherPartitionBorder.clear();
 			movablePositions.clear();
+			joblessBearerPositions.clear();
 			farmWorkAreas.clear();
 			wineGrowerWorkAreas.clear();
 			threatenedBorder = null;

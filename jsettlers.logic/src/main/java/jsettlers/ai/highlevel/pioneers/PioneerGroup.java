@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,12 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel.pioneers;
 
+import static java8.util.stream.StreamSupport.stream;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
@@ -24,9 +30,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java8.util.stream.Collectors;
 
 /**
  * @author codingberlin
@@ -63,47 +67,43 @@ public class PioneerGroup {
 		pioneerIds.removeAll(idsToRemove);
 	}
 
-	public boolean isFull() {
-		return pioneerIds.size() >= targetSize;
-	}
-
 	public void fill(ITaskScheduler taskScheduler, AiStatistics aiStatistics, byte playerId, int maxNewPioneersCount) {
 		if (isFull()) {
 			return;
 		}
 
-		List<Integer> newPioneerIds = new ArrayList<>(targetSize - pioneerIds.size());
 		MovableGrid movableGrid = aiStatistics.getMainGrid().getMovableGrid();
-		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
-		for (ShortPoint2D bearerPosition : bearers) {
-			if (newPioneerIds.size() >= maxNewPioneersCount || isFull()) {
-				break;
-			}
-			ILogicMovable bearer = movableGrid.getMovableAt(bearerPosition.x, bearerPosition.y);
-			if (bearer.getAction() == EMovableAction.NO_ACTION) {
-				newPioneerIds.add(bearer.getID());
-				pioneerIds.add(bearer.getID());
-			}
-		}
+		List<ShortPoint2D> joblessBearers = aiStatistics.getPositionsOfJoblessBearersForPlayer(playerId);
+
+		int newPioneers = Math.min(getMissingPioneers(), maxNewPioneersCount);
+
+		List<Integer> newPioneerIds = stream(joblessBearers)
+				.limit(newPioneers)
+				.map(position -> movableGrid.getMovableAt(position.x, position.y))
+				.map(ILogicMovable::getID)
+				.collect(Collectors.toList());
 
 		if (newPioneerIds.size() > 0) {
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, newPioneerIds, EMovableType.PIONEER));
+			pioneerIds.addAll(newPioneerIds);
 		}
 	}
 
 	public PioneerGroup getPioneersWithNoAction() {
-		List<Integer> pioneerIdsWithNoAction = new ArrayList<>(pioneerIds.size());
-		for (Integer pioneerId : pioneerIds) {
-			if (Movable.getMovableByID(pioneerId).getAction() == EMovableAction.NO_ACTION) {
-				pioneerIdsWithNoAction.add(pioneerId);
-			}
-		}
-
-		return new PioneerGroup(pioneerIdsWithNoAction);
+		List<Integer> pioneersWithNoAction = stream(pioneerIds).filter(pioneerId -> Movable.getMovableByID(pioneerId).getAction() == EMovableAction.NO_ACTION).collect(Collectors.toList());
+		return new PioneerGroup(pioneersWithNoAction);
 	}
 
 	public List<Integer> getPioneerIds() {
 		return pioneerIds;
+	}
+
+	public int getMissingPioneers() {
+		return Math.max(0, targetSize - pioneerIds.size());
+	}
+
+	public boolean isFull() {
+		return pioneerIds.size() >= targetSize;
 	}
 
 	public boolean isNotEmpty() {

@@ -100,6 +100,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private static final int NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS = 30;
 	private static final int NUMBER_OF_BIG_LIVING_HOUSE_BEDS = 100;
 	private static final int MINIMUM_NUMBER_OF_BEARERS = 10;
+	private static final int MINIMUM_NUMBER_OF_JOBLESS_BEARERS = 5;
 	private static final int NUMBER_OF_BEARERS_PER_HOUSE = 3;
 	private static final int MAXIMUM_STONECUTTER_WORK_RADIUS_FACTOR = 2;
 	private static final float WEAPON_SMITH_FACTOR = 7F;
@@ -155,8 +156,8 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void sendGeologists() {
-		int geologistsCount = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.GEOLOGIST, playerId).size();
-		List<ShortPoint2D> bearersPositions = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
+		int geologistsCount = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.GEOLOGIST, playerId).size();
+		List<ShortPoint2D> bearersPositions = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId);
 		int bearersCount = bearersPositions.size();
 		int stoneCutterCount = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
 		if (geologistsCount == 0 && stoneCutterCount >= 1 && bearersCount - 3 > MINIMUM_NUMBER_OF_BEARERS) {
@@ -241,7 +242,7 @@ class WhatToDoAi implements IWhatToDoAi {
 					* NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
-					- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
+					- aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size();
 			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(SMALL_LIVINGHOUSE)) {
 				if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(MEDIUM_LIVINGHOUSE)) {
 					if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVING_HOUSE_BEDS + 1) {
@@ -421,7 +422,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private void releaseAllPioneers() {
 		broadenerPioneers.clear();
 		resourcePioneers.clear();
-		List<ShortPoint2D> pioneers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIONEER, playerId);
+		List<ShortPoint2D> pioneers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIONEER, playerId);
 		if (!pioneers.isEmpty()) {
 			List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
 			for (ShortPoint2D pioneerPosition : pioneers) {
@@ -466,22 +467,24 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void fill(PioneerGroup pioneerGroup) {
-		List<ShortPoint2D> bearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId);
-		int maxNewPioneersCount = bearers.size() - Math.max(
-				MINIMUM_NUMBER_OF_BEARERS, aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * NUMBER_OF_BEARERS_PER_HOUSE);
+		int numberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size();
+		int numberOfJoblessBearers = aiStatistics.getPositionsOfJoblessBearersForPlayer(playerId).size();
+
+		int maxNewPioneersCount = Math.min(numberOfBearers - MINIMUM_NUMBER_OF_BEARERS, numberOfJoblessBearers - MINIMUM_NUMBER_OF_JOBLESS_BEARERS);
+
 		if (maxNewPioneersCount > 0) {
 			pioneerGroup.fill(taskScheduler, aiStatistics, playerId, maxNewPioneersCount);
 		}
 	}
 
 	private boolean buildLivingHouse() {
-		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
+		int futureNumberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size()
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
 				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
-						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
+				playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);

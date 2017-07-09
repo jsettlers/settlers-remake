@@ -26,11 +26,11 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -110,8 +110,8 @@ public class AiDifficultiesIT {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapLoader savegame = MapUtils.saveMainGrid(
-						startingGame.getMainGrid(), new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte) expectedLooserSlotId, null) });
+				MapLoader savegame = MapUtils.saveMainGrid(startingGame.getMainGrid(),
+						new PlayerState[] { new PlayerState((byte) expectedWinnerSlotId, null), new PlayerState((byte) expectedLooserSlotId, null) });
 				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
