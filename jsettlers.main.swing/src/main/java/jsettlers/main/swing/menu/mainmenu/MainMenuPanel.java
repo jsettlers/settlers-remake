@@ -14,14 +14,16 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.mainmenu;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
@@ -58,7 +60,16 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	private final JPanel emptyPanel = new JPanel();
 	private final OpenPanel joinMultiPlayerGamePanel;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+
+	/**
+	 * Panel with the selection Buttons
+	 */
 	private final JPanel buttonPanel = new JPanel();
+
+	/**
+	 * Panel with the main buttons at top, and the exit button at bottom
+	 */
+	private final JPanel mainButtonPanel = new JPanel();
 
 	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
@@ -77,7 +88,6 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		});
 		registerMenu("start-newmultiplayer", e -> setCenter("start-newmultiplayer-start", newMultiPlayerGamePanel));
 		registerMenu("start-joinmultiplayer", e -> setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel));
-		registerMenu("main-panel-exit-button", e -> settlersFrame.exit());
 
 		initButtonPanel();
 		SwingUtilities.updateComponentTreeUI(this);
@@ -85,8 +95,18 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	}
 
 	private void initButtonPanel() {
-		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 20, 20));
-		add(buttonPanel);
+		buttonPanel.setLayout(new GridLayout(0, 1, 20, 20));
+
+		mainButtonPanel.setLayout(new BorderLayout());
+		mainButtonPanel.add(buttonPanel, BorderLayout.NORTH);
+
+		JButton btExit = new JButton(Labels.getString("main-panel-exit-button"));
+		btExit.addActionListener(e -> settlersFrame.exit());
+		btExit.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+
+		mainButtonPanel.add(btExit, BorderLayout.SOUTH);
+
+		add(mainButtonPanel);
 		add(emptyPanel);
 		getTitleLabel().setVisible(false);
 	}
@@ -169,6 +189,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	}
 
 	private void setCenter(final JPanel panelToBeSet) {
+		SwingUtilities.updateComponentTreeUI(panelToBeSet);
 		remove(2);
 		add(panelToBeSet);
 		settlersFrame.revalidate();

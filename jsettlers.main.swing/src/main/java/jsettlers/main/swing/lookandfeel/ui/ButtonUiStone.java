@@ -15,137 +15,181 @@
 package jsettlers.main.swing.lookandfeel.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicToggleButtonUI;
+import javax.swing.plaf.basic.BasicButtonUI;
 
+import jsettlers.main.swing.lookandfeel.DrawHelper;
 import jsettlers.main.swing.lookandfeel.ui.img.UiImageLoader;
 
 /**
- * Stone toggle Button UI
- * 
+ * Button UI Implementation
+ *
  * @author Andreas Butti
  */
-public class ButtonUiStone extends BasicToggleButtonUI {
-
-	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET = "ButtonUiStone.randomBackgroundXOffset";
-	private static final String CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET = "ButtonUiStone.randomBackgroundYOffset";
+public class ButtonUiStone extends BasicButtonUI {
 
 	/**
 	 * Background Image
 	 */
-	private final BufferedImage backgroundImage = UiImageLoader.get("granit_texture1.png");
+	private final BufferedImage backgroundImage = UiImageLoader.get("sr_ui_button/sr_ui_button-bg.png");
 
 	/**
-	 * Button down
+	 * Border images if the Button is not pressed
 	 */
-	private final Border borderDown;
+	private final BufferedImage[] BORDER_NORMAL = { UiImageLoader.get("sr_ui_button/sr_ui_button-corner-upper-left.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-border-top.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-upper-right.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-border-right.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-border-bottom.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("sr_ui_button/sr_ui_button-border-left.png")
+	};
 
 	/**
-	 * Button up
+	 * Border images if the Button is pressed
 	 */
-	private final Border borderUp;
+	private final BufferedImage[] BORDER_DOWN = BORDER_NORMAL;
 
 	/**
-	 * Offset
+	 * Scale factor of the border
 	 */
-	private int shiftOffset = 0;
+	private final float scale;
+
+	/**
+	 * Text padding
+	 */
+	private int textPadding;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param borderUp
-	 *            Button up
-	 * @param borderDown
-	 *            Button down
+	 * @param scale
+	 *            Scale factor of the border
 	 */
-	public ButtonUiStone(Border borderUp, Border borderDown) {
-		this.borderUp = borderUp;
-		this.borderDown = borderDown;
+	public ButtonUiStone(float scale, int textPadding) {
+		this.scale = scale;
+		this.textPadding = textPadding;
 	}
 
 	@Override
-	public void installUI(JComponent c) {
-		super.installUI(c);
-		c.setOpaque(false);
-		c.setBorder(borderUp);
-		c.setFont(UIDefaults.FONT_PLAIN);
-		c.setForeground(UIDefaults.LABEL_TEXT_COLOR);
+	public void installDefaults(AbstractButton button) {
+		button.setFont(UIDefaults.FONT);
+		button.setForeground(UIDefaults.LABEL_TEXT_COLOR);
 	}
 
 	@Override
-	public void update(Graphics graphics, JComponent component) {
-		int width = component.getWidth();
-		int height = component.getHeight();
+	public void uninstallDefaults(AbstractButton b) {
+	}
 
-		Integer randomBackgroundXOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET);
-		Integer randomBackgroundYOffset = (Integer) component.getClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET);
+	@Override
+	public void paint(Graphics g1, JComponent c) {
+		Graphics2D g = DrawHelper.enableAntialiasing(g1);
 
-		if (randomBackgroundXOffset == null || randomBackgroundYOffset == null) {
-			randomBackgroundXOffset = (int) (Math.random() * backgroundImage.getWidth());
-			randomBackgroundYOffset = (int) (Math.random() * backgroundImage.getHeight());
-			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_X_OFFSET, randomBackgroundXOffset);
-			component.putClientProperty(CLIENT_PROPERTY_RANDOM_BACKGROUND_Y_OFFSET, randomBackgroundYOffset);
-		}
-
-		for (int x = -randomBackgroundXOffset; x < component.getWidth(); x += backgroundImage.getWidth()) {
-			for (int y = -randomBackgroundYOffset; y < component.getHeight(); y += backgroundImage.getHeight()) {
-				graphics.drawImage(backgroundImage, x, y, component);
-			}
-		}
+		AbstractButton b = (AbstractButton) c;
+		ButtonModel model = b.getModel();
 
 		boolean down;
-		if (component instanceof JToggleButton) {
-			down = ((JToggleButton) component).isSelected();
+		if (c instanceof JToggleButton) {
+			down = ((JToggleButton) c).isSelected();
 		} else {
-			AbstractButton b = (AbstractButton) component;
-			ButtonModel model = b.getModel();
 			down = model.isArmed() && model.isPressed();
 		}
 
+		// Draw background
+		g.drawImage(backgroundImage, 0, 0, c);
+
+		BufferedImage[] border;
 		if (down) {
-			component.setBorder(borderDown);
-			graphics.setColor(new Color(0, 0, 0, 90));
-			graphics.fillRect(2, 2, width - 4, height - 4);
-			shiftOffset = 1;
+			border = BORDER_DOWN;
 		} else {
-			component.setBorder(borderUp);
-			shiftOffset = 0;
+			border = BORDER_NORMAL;
 		}
 
-		super.update(graphics, component);
+		drawBorder(g1, c, border);
+
+		FontMetrics fm = g.getFontMetrics();
+		int y = (b.getHeight() - fm.getAscent() - fm.getDescent()) / 2 + fm.getAscent();
+		int x = textPadding;
+
+		if (down) {
+			x += 1;
+			y += 1;
+		}
+
+		g.setFont(c.getFont());
+
+		// draw shadow
+		g.setColor(Color.BLACK);
+		g.drawString(b.getText(), x + 1, y + 1);
+		g.setColor(c.getForeground());
+		g.drawString(b.getText(), x, y);
 	}
 
 	@Override
-	protected int getTextShiftOffset() {
-		return shiftOffset;
+	public Dimension getPreferredSize(JComponent c) {
+		Dimension size = super.getPreferredSize(c);
+		size.width += textPadding * 2;
+		size.height += textPadding * 2;
+		return size;
 	}
 
-	@Override
-	protected void paintText(Graphics g, AbstractButton b, Rectangle textRect, String text) {
-		// TODO !!!!!!!
-		// FontMetrics fm = SwingUtilities2.getFontMetrics(b, g);
-		// int mnemonicIndex = b.getDisplayedMnemonicIndex();
-		//
-		// g.setColor(Color.BLACK);
-		// SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-		// textRect.x + getTextShiftOffset() + 1,
-		// textRect.y + fm.getAscent() + getTextShiftOffset() + 1);
-		//
-		// g.setColor(b.getForeground());
-		// SwingUtilities2.drawStringUnderlineCharAt(b, g, text, mnemonicIndex,
-		// textRect.x + getTextShiftOffset(),
-		// textRect.y + fm.getAscent() + getTextShiftOffset());
+	/**
+	 * Draw the border
+	 * 
+	 * @param g
+	 *            Graphics
+	 * @param c
+	 *            Component
+	 * @param border
+	 *            Border
+	 */
+	private void drawBorder(Graphics g, JComponent c, BufferedImage[] border) {
+		final int width = c.getWidth();
+		final int height = c.getHeight();
+
+		float scale = this.scale;
+
+		// top-left
+		drawImage(g, c, scale, border[0], 0, 0);
+
+		// top
+		drawScaled(g, c, border[1], (int) (border[0].getWidth() * scale), (int) (width - scale * border[2].getWidth()), 0, (int) (scale * border[1].getHeight()));
+
+		// top-right
+		drawImage(g, c, scale, border[2], (int) (width - border[2].getWidth() * scale), 0);
+
+		// right
+		drawScaled(g, c, border[3], (int) (width - border[3].getWidth() * scale), width, (int) (border[2].getHeight() * scale), (int) (height - border[4].getHeight() * scale));
+
+		// bottom-right
+		drawImage(g, c, scale, border[4], (int) (width - border[4].getWidth() * scale), (int) (height - border[4].getWidth() * scale));
+
+		// bottom
+		drawScaled(g, c, border[5], (int) (border[0].getWidth() * scale), (int) (width - border[2].getWidth() * scale), (int) (height - border[5].getHeight() * scale), height);
+
+		// bottom-left
+		drawImage(g, c, scale, border[6], 0, (int) (height - border[6].getWidth() * scale));
+
+		// left
+		drawScaled(g, c, border[7], 0, (int) (border[7].getWidth() * scale), (int) (border[0].getHeight() * scale), (int) (height - border[6].getHeight() * scale));
 	}
 
-	@Override
-	protected void paintButtonPressed(Graphics g, AbstractButton b) {
+	private void drawImage(Graphics g, JComponent c, float scale, BufferedImage img, int x, int y) {
+		g.drawImage(img, x, y, (int) (x + img.getWidth() * scale), (int) (y + img.getHeight() * scale), 0, 0, img.getWidth(), img.getHeight(), c);
 	}
+
+	private void drawScaled(Graphics g, JComponent c, BufferedImage img, int x, int x2, int y, int y2) {
+		g.drawImage(img, x, y, x2, y2, 0, 0, img.getWidth(), img.getHeight(), c);
+	}
+
 }

@@ -18,9 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 
 import jsettlers.main.swing.lookandfeel.ELFStyle;
-import jsettlers.main.swing.lookandfeel.ui.BorderButton;
 import jsettlers.main.swing.lookandfeel.ui.ButtonUiStone;
-import jsettlers.main.swing.lookandfeel.ui.ButtonUiStonePattern;
 
 /**
  * Button UI factory
@@ -37,12 +35,12 @@ public final class ButtonUiFactory {
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	static final ButtonUiStone STONE_UI_SMALL = new ButtonUiStone(BorderButton.BUTTON_UP_4PX, BorderButton.BUTTON_DOWN_4PX);
+	static final ButtonUiStone STONE_UI_SMALL = new ButtonUiStone(0.2f, 8);
 
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	static final ButtonUiStonePattern MENU_UI = new ButtonUiStonePattern();
+	static final ButtonUiStone MENU_UI = new ButtonUiStone(0.6f, 20);
 
 	/**
 	 * This is only a factory so no objects need to be created.
