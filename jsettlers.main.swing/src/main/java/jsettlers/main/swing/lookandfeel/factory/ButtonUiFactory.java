@@ -35,12 +35,12 @@ public final class ButtonUiFactory {
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	static final ButtonUiStone STONE_UI_SMALL = new ButtonUiStone(0.2f, 8);
+	static final ButtonUiStone STONE_UI_SMALL = new ButtonUiStone(0.3f, 8, 18);
 
 	/**
 	 * Instance of the UI, for all Button the same instance
 	 */
-	static final ButtonUiStone MENU_UI = new ButtonUiStone(0.6f, 20);
+	static final ButtonUiStone MENU_UI = new ButtonUiStone(0.6f, 20, 20);
 
 	/**
 	 * This is only a factory so no objects need to be created.

@@ -15,12 +15,14 @@
 package jsettlers.main.swing.menu.openpanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -182,7 +184,11 @@ public class OpenPanel extends JPanel {
 	 */
 	private void initFilter() {
 		JLabel filterLabel = new JLabel(Labels.getString("mapfilter.title"));
-		filterLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		// filterLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		filterLabel.setOpaque(true);
+		filterLabel.setBackground(Color.LIGHT_GRAY);
+		filterLabel.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
 		filterPanel.add(filterLabel);
 
 		boolean first = true;

@@ -58,7 +58,15 @@ public class ButtonUiStone extends BasicButtonUI {
 	/**
 	 * Border images if the Button is pressed
 	 */
-	private final BufferedImage[] BORDER_DOWN = BORDER_NORMAL;
+	private final BufferedImage[] BORDER_DOWN = { UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-upper-left.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-top.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-upper-right.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-right.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-bottom-right.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-bottom.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-corner-bottom_left.png"),
+			UiImageLoader.get("sr_ui_button_down/sr_ui_button-border-left.png")
+	};
 
 	/**
 	 * Scale factor of the border
@@ -68,17 +76,27 @@ public class ButtonUiStone extends BasicButtonUI {
 	/**
 	 * Text padding
 	 */
-	private int textPadding;
+	private int textPaddingTopBottom;
+
+	/**
+	 * Text padding
+	 */
+	private int textPaddingLeftRight;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param scale
 	 *            Scale factor of the border
+	 * @param textPaddingTopBottom
+	 *            Text padding
+	 * @param textPaddingLeftRight
+	 *            Text padding
 	 */
-	public ButtonUiStone(float scale, int textPadding) {
+	public ButtonUiStone(float scale, int textPaddingTopBottom, int textPaddingLeftRight) {
 		this.scale = scale;
-		this.textPadding = textPadding;
+		this.textPaddingTopBottom = textPaddingTopBottom;
+		this.textPaddingLeftRight = textPaddingLeftRight;
 	}
 
 	@Override
@@ -109,17 +127,20 @@ public class ButtonUiStone extends BasicButtonUI {
 		g.drawImage(backgroundImage, 0, 0, c);
 
 		BufferedImage[] border;
+		float scale = this.scale;
+
 		if (down) {
 			border = BORDER_DOWN;
+			scale /= 2;
 		} else {
 			border = BORDER_NORMAL;
 		}
 
-		drawBorder(g1, c, border);
+		drawBorder(g1, c, border, scale);
 
 		FontMetrics fm = g.getFontMetrics();
 		int y = (b.getHeight() - fm.getAscent() - fm.getDescent()) / 2 + fm.getAscent();
-		int x = textPadding;
+		int x = textPaddingLeftRight;
 
 		if (down) {
 			x += 1;
@@ -138,8 +159,8 @@ public class ButtonUiStone extends BasicButtonUI {
 	@Override
 	public Dimension getPreferredSize(JComponent c) {
 		Dimension size = super.getPreferredSize(c);
-		size.width += textPadding * 2;
-		size.height += textPadding * 2;
+		size.width += textPaddingLeftRight * 2;
+		size.height += textPaddingTopBottom * 2;
 		return size;
 	}
 
@@ -152,12 +173,12 @@ public class ButtonUiStone extends BasicButtonUI {
 	 *            Component
 	 * @param border
 	 *            Border
+	 * @param scale
+	 *            Border scale factor
 	 */
-	private void drawBorder(Graphics g, JComponent c, BufferedImage[] border) {
+	private void drawBorder(Graphics g, JComponent c, BufferedImage[] border, float scale) {
 		final int width = c.getWidth();
 		final int height = c.getHeight();
-
-		float scale = this.scale;
 
 		// top-left
 		drawImage(g, c, scale, border[0], 0, 0);
