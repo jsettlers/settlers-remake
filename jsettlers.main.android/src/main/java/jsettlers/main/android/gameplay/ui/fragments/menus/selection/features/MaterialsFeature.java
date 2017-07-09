@@ -60,47 +60,47 @@ public class MaterialsFeature extends SelectionFeature implements DrawListener {
 			update();
 		}
 
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
+
+		update();
 	}
 
 	@Override
 	public void finish() {
 		super.finish();
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override
 	public void draw() {
 		// TODO would be more efficient to compare the stacks rather than the entire building state to avoid unnecessary work
 		if (hasNewState()) {
-			getView().post(() -> {
-				if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
-					update();
-				} else {
-					materialsLayout.setVisibility(View.GONE);
-				}
-			});
+			getView().post(this::update);
 		}
 	}
 
 	private void update() {
-		materialsLayout.setVisibility(View.VISIBLE);
-		materialsLayout.removeAllViews();
+		if (getBuildingState().isConstruction() || hasPostConstructionMaterials) {
+			materialsLayout.setVisibility(View.VISIBLE);
+			materialsLayout.removeAllViews();
 
-		for (BuildingState.StackState materialStackState : getBuildingState().getStackStates()) {
+			for (BuildingState.StackState materialStackState : getBuildingState().getStackStates()) {
 
-			View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
-			ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view_material);
-			TextView textView = (TextView) materialItemView.findViewById(R.id.text_view_material_count);
+				View materialItemView = layoutInflater.inflate(R.layout.view_material, materialsLayout, false);
+				ImageView imageView = (ImageView) materialItemView.findViewById(R.id.image_view_material);
+				TextView textView = (TextView) materialItemView.findViewById(R.id.text_view_material_count);
 
-			textView.setText(materialStackState.getCount() + "");
-			OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
+				textView.setText(materialStackState.getCount() + "");
+				OriginalImageProvider.get(materialStackState.getType()).setAsImage(imageView);
 
-			if (materialStackState.isOffering()) {
-				materialsLayout.addView(materialItemView);
-			} else {
-				materialsLayout.addView(materialItemView, 0);
+				if (materialStackState.isOffering()) {
+					materialsLayout.addView(materialItemView);
+				} else {
+					materialsLayout.addView(materialItemView, 0);
+				}
 			}
+		} else {
+			materialsLayout.setVisibility(View.GONE);
 		}
 	}
 }

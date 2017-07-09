@@ -85,6 +85,7 @@ public enum EMaterialType {
 	 */
 	public static final EMaterialType[] DROPPABLE_MATERIALS;
 	public static final int NUMBER_OF_DROPPABLE_MATERIALS;
+	public static final EMaterialType[] STOCK_MATERIALS;
 
 	static {
 		// calculate the number of droppable materials and build up an array in
@@ -102,6 +103,8 @@ public enum EMaterialType {
 				DROPPABLE_MATERIALS[VALUES[i].defaultPrioIdx] = VALUES[i];
 			}
 		}
+
+		STOCK_MATERIALS = DROPPABLE_MATERIALS;
 	}
 
 	public static final EnumSet<EMaterialType> WEAPONS = EnumSet.of(
@@ -154,7 +157,6 @@ public enum EMaterialType {
 	}
 
 	/**
-	 *
 	 * @return Returns true if this material can be dropped.
 	 */
 	public boolean isDroppable() {

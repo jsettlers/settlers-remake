@@ -66,14 +66,14 @@ public class PriorityFeature extends SelectionFeature implements ActionListener,
 		}
 
 		actionControls.addActionListener(this);
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 	}
 
 	@Override
 	public void finish() {
 		super.finish();
 		actionControls.removeActionListener(this);
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	@Override

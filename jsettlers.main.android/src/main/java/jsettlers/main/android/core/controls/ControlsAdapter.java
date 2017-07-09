@@ -52,7 +52,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	private final LinkedList<SelectionListener> selectionListeners = new LinkedList<>();
 	private final LinkedList<ActionListener> actionListeners = new LinkedList<>();
 	private final LinkedList<DrawListener> drawListeners = new LinkedList<>();
+	private final LinkedList<DrawListener> infrequentDrawListeners = new LinkedList<>();
 	private final LinkedList<PositionChangedListener> positionChangedListeners = new LinkedList<>();
+
+	private final int fireDrawListenerFrequency = 15;
+	private int fireDrawListenerCounter = -1;
 
 	private ISelectionSet selection;
 	private ShortPoint2D displayCenter;
@@ -109,6 +113,16 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 		synchronized (drawListeners) {
 			stream(drawListeners).forEach(DrawListener::draw);
 		}
+
+		fireDrawListenerCounter = (fireDrawListenerCounter + 1) % fireDrawListenerFrequency;
+
+		if (fireDrawListenerCounter == 0) {
+			synchronized (infrequentDrawListeners) {
+				for (DrawListener listener : infrequentDrawListeners) {
+					listener.draw();
+				}
+			}
+		}
 	}
 
 	public void onPositionChanged(MapRectangle screenArea, ShortPoint2D displayCenter) {
@@ -160,6 +174,20 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	public void removeDrawListener(DrawListener drawListener) {
 		synchronized (drawListeners) {
 			drawListeners.remove(drawListener);
+		}
+	}
+
+	@Override
+	public void addInfrequentDrawListener(DrawListener drawListener) {
+		synchronized (infrequentDrawListeners) {
+			infrequentDrawListeners.add(drawListener);
+		}
+	}
+
+	@Override
+	public void removeInfrequentDrawListener(DrawListener drawListener) {
+		synchronized (infrequentDrawListeners) {
+			infrequentDrawListeners.remove(drawListener);
 		}
 	}
 

@@ -22,4 +22,8 @@ public interface DrawControls {
 	void addDrawListener(DrawListener drawListener);
 
 	void removeDrawListener(DrawListener drawListener);
+
+	void addInfrequentDrawListener(DrawListener drawListener);
+
+	void removeInfrequentDrawListener(DrawListener drawListener);
 }
