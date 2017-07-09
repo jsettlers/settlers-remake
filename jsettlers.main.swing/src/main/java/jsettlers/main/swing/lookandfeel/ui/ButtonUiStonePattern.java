@@ -15,6 +15,7 @@
 package jsettlers.main.swing.lookandfeel.ui;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -100,8 +101,9 @@ public class ButtonUiStonePattern extends BasicButtonUI {
 
 		drawBorder(g1, c, border);
 
-		int y = b.getHeight() / 2 + (g.getFontMetrics().getAscent() / 2);
-		int x = 10;
+		FontMetrics fm = g.getFontMetrics();
+		int y = (b.getHeight() - fm.getAscent() - fm.getDescent()) / 2 + fm.getAscent();
+		int x = 20;
 
 		if (down) {
 			x += 1;
@@ -131,53 +133,39 @@ public class ButtonUiStonePattern extends BasicButtonUI {
 		final int width = c.getWidth();
 		final int height = c.getHeight();
 
+		float scale = 0.5f;
+
 		// top-left
-		g.drawImage(border[0], 0, 0, c);
+		drawImage(g, c, scale, border[0], 0, 0);
 
 		// top
-		drawScaled(g, c, border[1], border[0].getWidth(), width - border[2].getWidth(), 0, border[1].getHeight());
+		drawScaled(g, c, border[1], (int) (border[0].getWidth() * scale), (int) (width - scale * border[2].getWidth()), 0, (int) (scale * border[1].getHeight()));
 
 		// top-right
-		g.drawImage(border[2], width - border[2].getWidth(), 0, c);
+		drawImage(g, c, scale, border[2], (int) (width - border[2].getWidth() * scale), 0);
 
 		// right
-		drawScaled(g, c, border[3], width - border[3].getWidth(), width, border[2].getHeight(), height - border[4].getHeight());
+		drawScaled(g, c, border[3], (int) (width - border[3].getWidth() * scale), width, (int) (border[2].getHeight() * scale), (int) (height - border[4].getHeight() * scale));
 
 		// bottom-right
-		g.drawImage(border[4], width - border[4].getWidth(), height - border[4].getWidth(), c);
+		drawImage(g, c, scale, border[4], (int) (width - border[4].getWidth() * scale), (int) (height - border[4].getWidth() * scale));
 
 		// bottom
-		drawScaled(g, c, border[5], border[0].getWidth(), width - border[2].getWidth(), height - border[5].getHeight(), height);
+		drawScaled(g, c, border[5], (int) (border[0].getWidth() * scale), (int) (width - border[2].getWidth() * scale), (int) (height - border[5].getHeight() * scale), height);
 
 		// bottom-left
-		g.drawImage(border[6], 0, height - border[6].getWidth(), c);
+		drawImage(g, c, scale, border[6], 0, (int) (height - border[6].getWidth() * scale));
 
 		// left
-		drawScaled(g, c, border[7], 0, border[7].getWidth(), border[0].getHeight(), height - border[6].getHeight());
+		drawScaled(g, c, border[7], 0, (int) (border[7].getWidth() * scale), (int) (border[0].getHeight() * scale), (int) (height - border[6].getHeight() * scale));
 	}
 
-	/**
-	 * Draw an image scaled
-	 * 
-	 * @param g
-	 *            Graphics
-	 * @param c
-	 *            Component
-	 * @param img
-	 *            Image to draw
-	 * @param x
-	 *            Start X
-	 * @param x2
-	 *            End X
-	 * @param y
-	 *            Start Y
-	 * @param y2
-	 *            End Y
-	 */
+	private void drawImage(Graphics g, JComponent c, float scale, BufferedImage img, int x, int y) {
+		g.drawImage(img, x, y, (int) (x + img.getWidth() * scale), (int) (y + img.getHeight() * scale), 0, 0, img.getWidth(), img.getHeight(), c);
+	}
+
 	private void drawScaled(Graphics g, JComponent c, BufferedImage img, int x, int x2, int y, int y2) {
 		g.drawImage(img, x, y, x2, y2, 0, 0, img.getWidth(), img.getHeight(), c);
-		// g.setColor(Color.RED);
-		// g.fillRect(x, y, x2 - x, y2 - y);
 	}
 
 }

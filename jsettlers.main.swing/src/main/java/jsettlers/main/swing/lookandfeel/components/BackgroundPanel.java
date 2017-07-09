@@ -14,9 +14,12 @@
  *******************************************************************************/
 package jsettlers.main.swing.lookandfeel.components;
 
+import java.awt.Graphics;
 import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
+
+import jsettlers.main.swing.lookandfeel.ui.BackgroundPanelUi;
 
 /**
  * Panel with background texture and Border
@@ -43,6 +46,14 @@ public class BackgroundPanel extends JPanel {
 		if (getComponentCount() >= 1) {
 			getComponent(0).setBounds(50, 70, getWidth() - 100, getHeight() - 140);
 		}
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+
+		BackgroundPanelUi ui = (BackgroundPanelUi) getUI();
+		ui.paintForeground(g, this);
 	}
 
 	@Override

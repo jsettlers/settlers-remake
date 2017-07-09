@@ -38,7 +38,7 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 	/**
 	 * Split position
 	 */
-	private final int splitPosition = 300;
+	private final int splitPosition = 330;
 
 	/**
 	 * Constructor

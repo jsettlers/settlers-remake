@@ -15,10 +15,10 @@
 package jsettlers.main.swing.menu.mainmenu;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 import javax.swing.ButtonGroup;
@@ -54,8 +54,6 @@ import jsettlers.main.swing.settings.UiPlayer;
 public class MainMenuPanel extends SplitedBackgroundPanel {
 	private static final long serialVersionUID = -6745474019479693347L;
 
-	private static final Dimension PREFERRED_WEST_PANEL_SIZE = new Dimension(300, 300);
-
 	private final JSettlersFrame settlersFrame;
 	private final JPanel emptyPanel = new JPanel();
 	private final OpenPanel joinMultiPlayerGamePanel;
@@ -68,7 +66,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		OpenPanel openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), map -> settlersFrame.showNewSinglePlayerGameMenu(map));
 		OpenPanel openSaveGamePanel = new OpenPanel(MapList.getDefaultList().getSavedMaps(), this::loadSavegame);
 		OpenPanel newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
-		joinMultiPlayerGamePanel = new OpenPanel(new Vector<>(), this::showJoinMultiplayerGamePanel);
+		joinMultiPlayerGamePanel = new OpenPanel(Collections.emptyList(), this::showJoinMultiplayerGamePanel);
 		SettingsMenuPanel settingsPanel = new SettingsMenuPanel(this);
 
 		registerMenu("main-panel-new-single-player-game-button", e -> setCenter("main-panel-new-single-player-game-button", openSinglePlayerPanel));
@@ -81,9 +79,16 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		registerMenu("start-joinmultiplayer", e -> setCenter("start-joinmultiplayer-start", joinMultiPlayerGamePanel));
 		registerMenu("main-panel-exit-button", e -> settlersFrame.exit());
 
-		createStructure();
+		initButtonPanel();
 		SwingUtilities.updateComponentTreeUI(this);
 		addListener(multiPlayerConnector);
+	}
+
+	private void initButtonPanel() {
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 20, 20));
+		add(buttonPanel);
+		add(emptyPanel);
+		getTitleLabel().setVisible(false);
 	}
 
 	private void registerMenu(String translationKey, ActionListener listener) {
@@ -92,6 +97,7 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		buttonGroup.add(bt);
 		bt.addActionListener(listener);
 		buttonPanel.add(bt);
+		bt.setPreferredSize(new Dimension(230, 60));
 	}
 
 	private void loadSavegame(MapLoader map) {
@@ -148,14 +154,6 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 							.collect(Collectors.toList());
 					SwingUtilities.invokeLater(() -> joinMultiPlayerGamePanel.setMapLoaders(mapLoaders));
 				});
-	}
-
-	private void createStructure() {
-		buttonPanel.setLayout(new GridLayout(0, 1, 20, 20));
-		add(buttonPanel);
-		add(emptyPanel);
-		getTitleLabel().setVisible(false);
-		buttonPanel.setPreferredSize(PREFERRED_WEST_PANEL_SIZE);
 	}
 
 	public void reset() {

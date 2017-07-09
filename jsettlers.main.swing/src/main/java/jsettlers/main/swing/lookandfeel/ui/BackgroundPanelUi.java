@@ -59,6 +59,11 @@ public class BackgroundPanelUi extends PanelUI {
 	 */
 	private BufferedImage cachedBackground = null;
 
+	/**
+	 * Current foreground cache
+	 */
+	private BufferedImage cachedForeground = null;
+
 	@Override
 	public void installUI(JComponent c) {
 		super.installUI(c);
@@ -79,6 +84,18 @@ public class BackgroundPanelUi extends PanelUI {
 	}
 
 	/**
+	 * Paint the leaves in the foreground
+	 * 
+	 * @param graphics
+	 *            Graphics
+	 * @param component
+	 *            Component
+	 */
+	public void paintForeground(Graphics graphics, JComponent component) {
+		graphics.drawImage(cachedForeground, 0, 0, component);
+	}
+
+	/**
 	 * Recreate the cached background image, if needed
 	 * 
 	 * @param component
@@ -88,7 +105,8 @@ public class BackgroundPanelUi extends PanelUI {
 		final int width = component.getWidth();
 		final int height = component.getHeight();
 
-		cachedBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		cachedBackground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		cachedForeground = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D graphics = cachedBackground.createGraphics();
 
@@ -105,7 +123,12 @@ public class BackgroundPanelUi extends PanelUI {
 			border.drawVertical(((SplitedBackgroundPanel) component).getSplitPosition(), true);
 		}
 
-		float factor = width / 3840f * 1.6f;
+		graphics.dispose();
+
+		graphics = cachedForeground.createGraphics();
+
+		float factor = height / 2160f * 1.2f;
+		factor = Math.min(factor, 0.535f);
 		int w = (int) (leavesRight.getWidth() * factor);
 		int h = (int) (leavesRight.getHeight() * factor);
 		graphics.drawImage(leavesRight, width - w, 0, w, h, component);
