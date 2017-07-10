@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static java8.util.stream.StreamSupport.stream;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRON_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.FARM_TO_BAKER_RATIO;
@@ -86,6 +87,8 @@ import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import java8.util.stream.Collectors;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes care against lack of settlers and it builds a
@@ -182,8 +185,8 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void sendGeologistToNearest(ILogicMovable geologist, EResourceType resourceType) {
-		ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType,
-				playerId, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
+		ShortPoint2D resourcePoint = aiStatistics.getNearestResourcePointForPlayer(aiStatistics.getPositionOfPartition(playerId), resourceType, playerId, Integer.MAX_VALUE,
+				geologistFilters[resourceType.ordinal]);
 		if (resourcePoint == null) {
 			resourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(
 					aiStatistics.getPositionOfPartition(playerId), resourceType, Integer.MAX_VALUE, geologistFilters[resourceType.ordinal]);
@@ -263,16 +266,15 @@ class WhatToDoAi implements IWhatToDoAi {
 					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, foresters.get(i)));
 				}
 			}
-			for (ShortPoint2D lumberJackPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId)) {
-				if (aiStatistics.getBuildingAt(lumberJackPosition).cannotWork()) {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition));
-				}
+
+			stream(aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId))
+					.filter(lumberJackPosition -> aiStatistics.getBuildingAt(lumberJackPosition).cannotWork())
+					.forEach(lumberJackPosition -> taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition)));
+
+			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId)) {
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
-			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(
-					LUMBERJACK, playerId)) {
-				taskScheduler.scheduleTask(
-						new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
-			}
+
 			for (ShortPoint2D bigTemple : aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
 			}
@@ -346,10 +348,8 @@ class WhatToDoAi implements IWhatToDoAi {
 		}
 		int stockCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STOCK, playerId);
 		int goldCount = aiStatistics.getNumberOfMaterialTypeForPlayer(GOLD, playerId);
-		if (stockCount * 6 * 8 - 32 < goldCount) {
-			return construct(STOCK);
-		}
-		return false;
+
+		return stockCount * 6 * 8 - 32 < goldCount && construct(STOCK);
 	}
 
 	private void buildEconomy() {
@@ -427,10 +427,7 @@ class WhatToDoAi implements IWhatToDoAi {
 		resourcePioneers.clear();
 		List<ShortPoint2D> pioneers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIONEER, playerId);
 		if (!pioneers.isEmpty()) {
-			List<Integer> pioneerIds = new ArrayList<>(pioneers.size());
-			for (ShortPoint2D pioneerPosition : pioneers) {
-				pioneerIds.add(mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID());
-			}
+			List<Integer> pioneerIds = stream(pioneers).map(pioneerPosition -> mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID()).collect(Collectors.toList());
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
 			// pioneers which can not be converted shall walk into player's land to be converted the next tic
 			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), pioneerIds));
@@ -487,8 +484,8 @@ class WhatToDoAi implements IWhatToDoAi {
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS;
 		if (futureNumberOfBearers < MINIMUM_NUMBER_OF_BEARERS
-				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH,
-						playerId) * WEAPON_SMITH_FACTOR) * NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
+				|| (aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) + aiStatistics.getNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) * WEAPON_SMITH_FACTOR)
+						* NUMBER_OF_BEARERS_PER_HOUSE > futureNumberOfBearers) {
 			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
 					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 1) {
 				return construct(SMALL_LIVINGHOUSE);
@@ -523,5 +520,4 @@ class WhatToDoAi implements IWhatToDoAi {
 	public String toString() {
 		return "Player " + playerId + " with " + economyMinister.toString() + " and " + armyGeneral.toString();
 	}
-
 }
