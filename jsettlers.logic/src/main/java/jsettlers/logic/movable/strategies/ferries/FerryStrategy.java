@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.movable.strategies.ships;
+package jsettlers.logic.movable.strategies.ferries;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -20,14 +20,14 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
-public abstract class ShipStrategy extends MovableStrategy {
+public class FerryStrategy extends MovableStrategy {
 	private static final long serialVersionUID = 8360707186573364992L;
 
 	private final EMovableType movableType;
 
-	public ShipStrategy(Movable movable, EMovableType movableType) {
+	public FerryStrategy(Movable movable) {
 		super(movable);
-		this.movableType = movableType;
+		this.movableType = movable.getMovableType();
 	}
 
 	@Override

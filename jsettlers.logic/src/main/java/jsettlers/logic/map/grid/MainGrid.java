@@ -439,7 +439,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
-		if (pathCalculatable instanceof Movable && ((Movable) pathCalculatable).isShip()) {
+		if (pathCalculatable.isShip()) {
 			return isInsideWater((short)x, (short)y);
 		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
@@ -459,7 +459,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
-			if (requester instanceof Movable && ((Movable) requester).isShip()) {
+			if (requester.isShip()) {
 				return !isInsideWater((short)x, (short)y);
 			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
@@ -1736,7 +1736,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround,
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target,
+				final boolean needsPlayersGround, final boolean isShip,
 				final byte playerId, short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
@@ -1754,6 +1755,11 @@ public final class MainGrid implements Serializable {
 				@Override
 				public boolean needsPlayersGround() {
 					return needsPlayersGround;
+				}
+
+				@Override
+				public boolean isShip() {
+					return isShip;
 				}
 			}, target.x, target.y, targetRadius, ESearchType.VALID_FREE_POSITION);
 

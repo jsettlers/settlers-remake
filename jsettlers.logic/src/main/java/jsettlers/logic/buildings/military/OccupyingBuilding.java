@@ -269,6 +269,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 	}
 
 	@Override
+	public boolean isShip() {
+		return false;
+	}
+
+	@Override
 	public final OccupierPlace addSoldier(IBuildingOccupyableMovable soldier) {
 		SoldierRequest soldierRequest = comingSoldiers.remove(soldier);
 		OccupierPlace place = soldierRequest.place;

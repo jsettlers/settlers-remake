@@ -12,16 +12,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.movable.strategies.ships;
+package jsettlers.logic.movable.strategies.trading;
 
-import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.Movable;
+import java.io.Serializable;
+import java.util.Iterator;
 
-public final class CargoBoatStrategy extends ShipStrategy {
-	private static final long serialVersionUID = 3056398946621110609L;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ShortPoint2D;
 
-	public CargoBoatStrategy(Movable movable, EMovableType movableType) {
-		super(movable, movableType);
-	}
+/**
+ *
+ * @author Rudolf Polzer
+ */
+public interface IShipHarbor extends ILocatable, Serializable {
+    boolean needsShip();
 
+    ShortPoint2D getShipWayStart();
+
+    int tryToTakeFurtherMaterial(EMaterialType materialType, int requestedNumber);
+
+    EMaterialType tryToTakeShipMaterial();
+
+    Iterator<ShortPoint2D> getWaypointsIterator();
 }

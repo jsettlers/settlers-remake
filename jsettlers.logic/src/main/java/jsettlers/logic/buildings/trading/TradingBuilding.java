@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
@@ -30,10 +34,6 @@ import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
 
@@ -42,6 +42,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 
 	private final boolean isSeaTrading;
+	private int[] dockPosition = null; // x, y, dx, dy
+	private ShortPoint2D shipWayStart = null;
 
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
@@ -99,6 +101,9 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	public void setWaypoint(EWaypointType waypointType, ShortPoint2D position) {
+		if (this.isSeaTrading && dockPosition == null) {
+			return;
+		}
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
@@ -121,6 +126,9 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 
 	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
 		ShortPoint2D waypointBefore = this.pos;
+		if (this.isSeaTrading) {
+			waypointBefore = this.shipWayStart;
+		}
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {
 				waypointBefore = waypoints[index];
@@ -128,7 +136,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			}
 		}
 
-		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, (byte) 0, WAYPOINT_SEARCH_RADIUS);
+		return grid.getClosestReachablePosition(waypointBefore, targetPosition,
+				false, this.isSeaTrading, (byte) 0, WAYPOINT_SEARCH_RADIUS);
 	}
 
 	protected boolean isTargetSet() {
@@ -150,11 +159,21 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
+		if (dockPosition != null) {
+			removeDock();
+		}
 		super.kill();
 	}
 
 	private void drawWaypointLine(boolean draw) {
-		super.grid.drawTradingPathLine(super.pos, waypoints, draw);
+		if (this.isSeaTrading) {
+			if (this.dockPosition == null) {
+				return;
+			}
+			super.grid.drawTradingPathLine(this.shipWayStart, waypoints, draw);
+		} else {
+			super.grid.drawTradingPathLine(super.pos, waypoints, draw);
+		}
 	}
 
 	@Override
@@ -173,5 +192,48 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	@Override
 	public EPriority[] getSupportedPriorities() {
 		return SUPPORTED_PRIORITIES;
+	}
+
+	public boolean setDock(int[] position) {
+		if (this.type != EBuildingType.HARBOR) {
+			return false;
+		}
+		if (this.dockPosition != null) { // replace dock
+			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		}
+		this.dockPosition = position;
+		this.grid.setDock(position, true, this.getPlayerId());
+		this.shipWayStart = new ShortPoint2D
+				((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
+				(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
+		return true;
+	}
+
+	public int[] getDock() {
+		return this.dockPosition;
+	}
+
+	public void removeDock() {
+		if (this.dockPosition == null) {
+			return;
+		}
+		this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		this.dockPosition = null;
+		this.shipWayStart = null;
+	}
+
+	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
+		for (IRequestStack stack : getStacks()) {
+			if (stack.getMaterialType() == material) {
+				if (stack.hasMaterial()) {
+					return stack.getPos();
+				}
+			}
+		}
+		return null;
+	}
+
+	public ShortPoint2D getShipWayStart() {
+		return this.shipWayStart;
 	}
 }

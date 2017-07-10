@@ -49,8 +49,8 @@ import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
+import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
-import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
@@ -716,7 +716,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new MarketBuilding(type, player, position, buildingsGrid);
 
 		case HARBOR:
-			return new TradingBuilding(type, player, position, buildingsGrid, true);
+			return new HarborBuilding(type, player, position, buildingsGrid);
 
 		case BIG_TEMPLE:
 			return new BigTemple(player, position, buildingsGrid);

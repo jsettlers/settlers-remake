@@ -27,4 +27,6 @@ public interface IPathCalculatable extends IPlayerable, ILocatable, Serializable
 	 *         false if the requester can use everybody's ground.
 	 */
 	boolean needsPlayersGround();
+
+	boolean isShip();
 }

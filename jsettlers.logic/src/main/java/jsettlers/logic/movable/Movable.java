@@ -186,15 +186,6 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public int timerEvent() {
-
-
-		if(this.getMovableType() == EMovableType.MAGE) {
-			int i = 0;
-			i++;
-		}
-
-
-
 		if (state == EMovableState.DEAD) {
 			return -1;
 		}

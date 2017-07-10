@@ -77,6 +77,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
@@ -224,7 +225,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			final PointAction moveToAction = (PointAction) action;
 
 			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
-				if (((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.DOCKYARD) {
+				if (((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.DOCKYARD
+						|| ((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.HARBOR) {
 					setDock(moveToAction.getPosition());
 				} else {
 					setBuildingWorkArea(moveToAction.getPosition());
@@ -437,9 +439,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			if (dockPosition == null) {
 				connector.playSound(116, 1); // this dock position is not accepted
 			} else {
-				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, ((Building) selected).getPos()));
-				if(!((WorkerBuilding) selected).setDock(dockPosition)) {
-					connector.playSound(116, 1); // dock cannot be moved when a ship is tied to it
+				Building building = (Building) selected;
+				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, building.getPos()));
+				if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+					if(!((WorkerBuilding) building).setDock(dockPosition)) {
+						connector.playSound(116, 1); // dock cannot be moved when a ship is tied to it
+					}
+				} else if (building.getBuildingType() == EBuildingType.HARBOR) {
+					((TradingBuilding) building).setDock(dockPosition);
 				}
 			}
 		}
