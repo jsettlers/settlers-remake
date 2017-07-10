@@ -24,7 +24,6 @@ import org.junit.Test;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.player.ECivilisation;
@@ -90,8 +89,8 @@ public class AiDifficultiesIT {
 	}
 
 	private void holdBattleBetween(EPlayerType expectedWinner, EPlayerType expectedLooser, int maximumTimeToWin) throws MapLoadException {
-		int expectedWinnerSlotId = 7;
-		int expectedLooserSlotId = 9;
+		byte expectedWinnerSlotId = 7;
+		byte expectedLooserSlotId = 9;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
 		playerSettings[expectedWinnerSlotId] = new PlayerSetting(expectedWinner, ECivilisation.ROMAN, (byte) 0);
 		playerSettings[expectedLooserSlotId] = new PlayerSetting(expectedLooser, ECivilisation.ROMAN, (byte) 1);
@@ -105,18 +104,18 @@ public class AiDifficultiesIT {
 			targetGameTime += JUMP_FORWARD;
 			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
-			if (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) expectedWinnerSlotId) == 0) {
+			if (!aiStatistics.isAlive(expectedWinnerSlotId)) {
 				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapLoader savegame = MapUtils.saveMainGrid(startingGame.getMainGrid());
+				MapLoader savegame = MapUtils.saveMainGrid(startingGame.getMainGrid(), expectedLooserSlotId, null);
 				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
 						+ "the maximumTimeToWin.", startedGame);
 			}
-		} while (aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, (byte) expectedLooserSlotId) > 0);
+		} while (aiStatistics.isAlive(expectedLooserSlotId));
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
 				" minutes.");
 		ReplayUtils.awaitShutdown(startedGame);

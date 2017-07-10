@@ -78,10 +78,6 @@ public final class MapUtils {
 		}
 	}
 
-	public static MapLoader saveMainGrid(MainGrid mainGrid) {
-		return saveMainGrid(mainGrid, null, null);
-	}
-
 	public static MapLoader saveMainGrid(MainGrid mainGrid, Byte playerId, UIState uiState) {
 		try {
 			System.out.println("Writing savegame with final state of failed test.");

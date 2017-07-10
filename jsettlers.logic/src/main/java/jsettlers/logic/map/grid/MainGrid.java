@@ -348,6 +348,9 @@ public final class MainGrid implements Serializable {
 			playerStates[currPlayerId] = new PlayerState(currPlayerId, currUIState);
 		}
 		if (playerId != null) {
+			if (uiState == null) {
+				uiState = calculateUiStateByTower(playerId);
+			}
 			playerStates[playerId] = new PlayerState(playerId, uiState, fogOfWar);
 		}
 		return playerStates;

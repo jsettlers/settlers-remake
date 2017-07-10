@@ -657,7 +657,7 @@ public class AiStatistics {
 		return isAlive(player.getPlayerId());
 	}
 
-	boolean isAlive(byte playerId) {
+	public boolean isAlive(byte playerId) {
 		return playerStatistics[playerId].isAlive;
 	}
 
