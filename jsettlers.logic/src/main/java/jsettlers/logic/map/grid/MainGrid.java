@@ -60,6 +60,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.UIState;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -75,6 +76,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -314,7 +316,53 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public MapFileHeader generateSaveHeader() {
+	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
+		for (int i = 0; i < count; i++) {
+			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
+		}
+	}
+
+	public void save(Byte playerId, UIState uiState) throws IOException {
+		boolean savedPausingState = MatchConstants.clock().isPausing();
+		MatchConstants.clock().setPausing(true);
+		try {
+			Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		PlayerState[] playerStates = calculatePlayerStates(playerId, uiState);
+		MapFileHeader header = generateSaveHeader(playerId);
+		MapList list = MapList.getDefaultList();
+		list.saveMap(playerStates, header, MainGrid.this);
+
+		MatchConstants.clock().setPausing(savedPausingState);
+	}
+
+	private PlayerState[] calculatePlayerStates(Byte playerId, UIState uiState) {
+		byte numberOfPlayers = partitionsGrid.getNumberOfPlayers();
+		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
+		for (byte currPlayerId = 0; currPlayerId < numberOfPlayers; currPlayerId++) {
+			// find a tower of the player
+			UIState currUIState = calculateUiStateByTower(currPlayerId);
+			playerStates[currPlayerId] = new PlayerState(currPlayerId, currUIState);
+		}
+		if (playerId != null) {
+			playerStates[playerId] = new PlayerState(playerId, uiState, fogOfWar);
+		}
+		return playerStates;
+	}
+
+	private UIState calculateUiStateByTower(byte currPlayerId) {
+		for (Building building : Building.getAllBuildings()) {
+			if (building.getPlayer().playerId == currPlayerId && building instanceof OccupyingBuilding) {
+				return new UIState(building.getPos());
+			}
+		}
+		return null;
+	}
+
+	public MapFileHeader generateSaveHeader(Byte playerId) {
 		// TODO: description
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 				landscapeGrid.getPreviewImageDataSupplier());
@@ -334,20 +382,16 @@ public final class MainGrid implements Serializable {
 
 		return new MapFileHeader(
 				MapType.SAVED_SINGLE,
-				mapName, mapId,
+				mapName,
+				mapId,
 				"TODO: description",
 				width,
 				height,
 				(short) 1,
 				playerConfigurations,
 				new Date(),
-				bgImage);
-	}
-
-	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
-		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
-		}
+				bgImage,
+				playerId);
 	}
 
 	public ConstructionMarksGrid getConstructionMarksGrid() {
@@ -744,10 +788,11 @@ public final class MainGrid implements Serializable {
 				return landscapeGrid.getDebugColor(x, y);
 			case MARKS_AND_OBJECTS:
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB()
+								: (objectsGrid
+										.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+												: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+														: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1767,19 +1812,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void save(PlayerState[] playerStates) throws IOException, InterruptedException {
-			boolean savedPausingState = MatchConstants.clock().isPausing();
-			MatchConstants.clock().setPausing(true);
-			try {
-				Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			MapList list = MapList.getDefaultList();
-			list.saveMap(playerStates, MainGrid.this);
-
-			MatchConstants.clock().setPausing(savedPausingState);
+		public final void save(Byte playerId, UIState uiState) throws IOException, InterruptedException {
+			MainGrid.this.save(playerId, uiState);
 		}
 
 		@Override
@@ -1840,11 +1874,6 @@ public final class MainGrid implements Serializable {
 		@Override
 		public byte getNumberOfPlayers() {
 			return partitionsGrid.getNumberOfPlayers();
-		}
-
-		@Override
-		public FogOfWar getFogOfWar() {
-			return fogOfWar;
 		}
 
 		@Override

@@ -21,14 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
-import jsettlers.logic.map.loading.MapLoadException;
-import jsettlers.input.PlayerState;
+import jsettlers.common.menu.UIState;
 import jsettlers.logic.constants.ExtendedRandom;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.MapLoadException;
+import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.RemakeMapLoader;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.replay.ReplayUtils;
@@ -78,10 +78,14 @@ public final class MapUtils {
 		}
 	}
 
-	public static MapLoader saveMainGrid(MainGrid mainGrid, PlayerState[] playerStates) {
+	public static MapLoader saveMainGrid(MainGrid mainGrid) {
+		return saveMainGrid(mainGrid, null, null);
+	}
+
+	public static MapLoader saveMainGrid(MainGrid mainGrid, Byte playerId, UIState uiState) {
 		try {
 			System.out.println("Writing savegame with final state of failed test.");
-			MapList.getDefaultList().saveMap(playerStates, mainGrid);
+			mainGrid.save(playerId, uiState);
 			return ReplayUtils.getNewestSavegame();
 		} catch (IOException e) {
 			System.err.println("Tried to create a savegame but failed:");

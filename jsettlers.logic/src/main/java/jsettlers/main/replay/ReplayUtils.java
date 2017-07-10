@@ -189,9 +189,8 @@ public class ReplayUtils {
 		System.out.println("New jsettlers.integration.replay file successfully created!");
 	}
 
-	public static PlayMapResult playMapToTargetTimes(MapLoader map, final int... targetTimeMinutes) throws IOException {
+	public static PlayMapResult playMapToTargetTimes(MapLoader map, byte playerId, final int... targetTimeMinutes) throws IOException {
 		OfflineNetworkConnector networkConnector = ReplayUtils.createPausingOfflineNetworkConnector();
-		byte playerId = (byte) 0;
 		JSettlersGame game = new JSettlersGame(map, 0L, networkConnector, playerId,
 				PlayerSetting.createDefaultSettings(playerId, (byte) map.getMaxPlayers())) {
 			@Override

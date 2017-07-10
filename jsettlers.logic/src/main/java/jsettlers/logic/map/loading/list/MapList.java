@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,13 +24,13 @@ import java.util.Collection;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.logic.map.loading.list.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.loading.newmap.FreshMapSerializer;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
@@ -170,8 +170,7 @@ public class MapList implements IMapListerCallable {
 	 * @param data
 	 *            The data to save.
 	 * @param out
-	 *            This parameter is optional. If it is not null, the stream is used to save the map to this location. If it is null, the map is saved
-	 *            in the default location.
+	 *            This parameter is optional. If it is not null, the stream is used to save the map to this location. If it is null, the map is saved in the default location.
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
@@ -197,9 +196,8 @@ public class MapList implements IMapListerCallable {
 	 * @param grid
 	 * @throws IOException
 	 */
-	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
+	public synchronized void saveMap(PlayerState[] playerStates, MapFileHeader header, MainGrid grid) throws IOException {
 		MilliStopWatch watch = new MilliStopWatch();
-		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = saveDirectory.getOutputStream(header);
 
 		header.writeTo(outStream);
@@ -274,8 +272,6 @@ public class MapList implements IMapListerCallable {
 		public Collection<IMapLister> getMapListers() {
 			return directories;
 		}
-
-
 
 		public void addMapDirectory(IMapLister dir) {
 			this.directories.add(dir);
