@@ -327,10 +327,17 @@ public enum EActionType {
 
 	/**
 	 * Set the dock position.
-	 * 
+	 *
 	 * @see PointAction
 	 */
 	SET_DOCK,
+
+	/**
+	 * Ask to set the dock position.
+	 *
+	 * @see PointAction
+	 */
+	ASK_SET_DOCK,
 
 	MAKE_FERRY,
 	MAKE_CARGO_BOAT,

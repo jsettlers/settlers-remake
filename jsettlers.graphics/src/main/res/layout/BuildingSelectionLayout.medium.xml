@@ -21,7 +21,7 @@
 
 	<element class="SimpleActionButton" x="83" y="221" maxx="101"
 			 maxy="239" id="buttonDockPosition">
-		<action action="SET_DOCK" />
+		<action action="ASK_SET_DOCK" />
 		<image type="GUI" file="3" sequence="201" />
 		<image type="GUI" file="3" sequence="201" />
 	</element>

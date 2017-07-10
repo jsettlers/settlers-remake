@@ -24,6 +24,7 @@ import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
@@ -104,24 +105,47 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (this.isSeaTrading && dockPosition == null) {
 			return;
 		}
-		if (isSelected()) {
-			drawWaypointLine(false);
-		}
-
 		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = EWaypointType.DESTINATION;
+		}
+		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
+		if (this.isSeaTrading && waypointType == EWaypointType.DESTINATION) {
+			if (!coastIsReachable(position)) {
+				return;
+			}
+		}
+		if (isSelected()) {
+			drawWaypointLine(false);
 		}
 		if (waypointType == EWaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
-
-		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
-
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
-
 		if (isSelected()) {
 			drawWaypointLine(true);
 		}
+	}
+
+	private boolean coastIsReachable(ShortPoint2D position) {
+		boolean waterFound = false;
+		boolean landFound = false;
+		short x = position.x;
+		short y = position.y;
+		final byte[] xDeltaArray = EDirection.getXDeltaArray();
+		final byte[] yDeltaArray = EDirection.getYDeltaArray();
+		int distance = 5;
+		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+			int dx = x + xDeltaArray[direction] * distance;
+			int dy = y + yDeltaArray[direction] * distance;
+			if (grid.getMovableGrid().isInBounds(dx, dy)) {
+				if (grid.getMovableGrid().isWaterSafe(dx, dy)) {
+					waterFound = true;
+				} else {
+					landFound = true;
+				}
+			}
+		}
+		return waterFound && landFound;
 	}
 
 	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
@@ -165,7 +189,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		super.kill();
 	}
 
-	private void drawWaypointLine(boolean draw) {
+	public void drawWaypointLine(boolean draw) {
 		if (this.isSeaTrading) {
 			if (this.dockPosition == null) {
 				return;

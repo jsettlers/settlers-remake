@@ -279,12 +279,14 @@ public final class MainGrid implements Serializable {
 	}
 
 	private boolean isInsideWater(short x, short y) {
+		AbstractHexMapObject object = objectsGrid.getObjectsAt(x, y);
 		return isWaterSafe(x - 1, y - 1) && isWaterSafe(x, y - 1) && isWaterSafe(x - 1, y) && isWaterSafe(x, y)
 				&& isWaterSafe(x + 1, y) && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
-				&& objectsGrid.getObjectsAt(x, y) == null;
+				&& (object == null || (object.getObjectType() != EMapObjectType.CARGO_BOAT &&
+				object.getObjectType() != EMapObjectType.FERRY));
 	}
 
-	private boolean isWaterSafe(int x, int y) {
+	public boolean isWaterSafe(int x, int y) {
 		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
 	}
 
@@ -1319,6 +1321,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public boolean isWaterSafe(int x, int y) {
+			return MainGrid.this.isWaterSafe(x, y);
+		}
+
+		@Override
 		public boolean fitsSearchType(IPathCalculatable pathCalculable, int x, int y, ESearchType searchType) {
 			return pathfinderGrid.fitsSearchType(x, y, searchType, pathCalculable);
 		}
@@ -1847,13 +1854,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		public int[] findDockPosition(ShortPoint2D position) {
-			short x = position.x;
-			short y = position.y;
+			int x = position.x;
+			int y = position.y;
 			if (!isWaterSafe(x, y)) {
 				return null; // requested position is not in water
 			}
-			short dx = 0;
-			short dy = 0;
+			int dx = 0;
+			int dy = 0;
 			final byte[] xDeltaArray = EDirection.getXDeltaArray();
 			final byte[] yDeltaArray = EDirection.getYDeltaArray();
 			int distance;
@@ -1861,8 +1868,8 @@ public final class MainGrid implements Serializable {
 			boolean searching = true;
 			for (distance = 1; distance < 12 && searching; distance++) { // search coast
 				for (direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
-					dx = (short) (xDeltaArray[direction] * distance);
-					dy = (short) (yDeltaArray[direction] * distance);
+					dx = xDeltaArray[direction] * distance;
+					dy = yDeltaArray[direction] * distance;
 					if (MainGrid.this.isInBounds(x + dx, y + dy) && !isWaterSafe(x + dx, y + dy)) {
 						searching = false;
 						break;
@@ -1876,8 +1883,8 @@ public final class MainGrid implements Serializable {
 			x += dx;
 			y += dy;
 			for (distance = 1; distance < 6 && searching; distance++) { // check water width
-				dx = (short) (xDeltaArray[direction] * distance);
-				dy = (short) (yDeltaArray[direction] * distance);
+				dx = xDeltaArray[direction] * distance;
+				dy = yDeltaArray[direction] * distance;
 				if (!isWaterSafe(x - dx, y - dy)) {
 					searching = false;
 				}
@@ -1886,8 +1893,8 @@ public final class MainGrid implements Serializable {
 				return null; // water width not sufficient to build ships
 			}
 			int[] dockPosition = new int[5];
-			dx = (short) (xDeltaArray[direction]);
-			dy = (short) (yDeltaArray[direction]);
+			dx = xDeltaArray[direction];
+			dy = yDeltaArray[direction];
 			dockPosition[0] = x - dx; // dock position at coast
 			dockPosition[1] = y - dy;
 			dockPosition[2] = -dx; // step to next dock position

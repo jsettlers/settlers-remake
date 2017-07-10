@@ -27,6 +27,7 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.SetDockAction;
 import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.graphics.localization.Labels;
@@ -292,17 +293,18 @@ public class MainPanel extends UIPanel {
 		case MOVE_TO:
 		case SET_TRADING_WAYPOINT:
 		case SET_WORK_AREA:
+        case SET_DOCK:
 			if (activeContent instanceof SelectPointMessage) {
 				goBack();
 			}
 			return action;
-		case SET_DOCK:
+		case ASK_SET_DOCK:
 			goBackContent = activeContent;
 			setContent(new SelectPointMessage(
-					Labels.getString("action_SET_DOCK")) {
+					Labels.getString("action_ASK_SET_DOCK")) {
 				@Override
 				public PointAction getSelectAction(ShortPoint2D position) {
-					return new PointAction(EActionType.SET_DOCK, position);
+					return new SetDockAction(position);
 				}
 			});
 			return null;

@@ -96,7 +96,11 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 
 	boolean isShip();
 
-	public ArrayList<IMovable> getPassengers();
+	ArrayList<IMovable> getPassengers();
 
-	public ArrayList<EMaterialType> getCargo();
+	int getNumberOfStacks();
+
+	EMaterialType getCargoType(int stack);
+
+	int getCargoCount(int stack);
 }

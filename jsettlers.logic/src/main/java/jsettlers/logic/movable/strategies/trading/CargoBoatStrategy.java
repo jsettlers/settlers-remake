@@ -41,13 +41,6 @@ public class CargoBoatStrategy extends MovableStrategy {
     private IShipHarbor harbor;
     private Iterator<ShortPoint2D> waypoints;
 
-    private EMaterialType materialType1;
-    private EMaterialType materialType2;
-    private EMaterialType materialType3;
-    private int materialCount1 = 0;
-    private int materialCount2 = 0;
-    private int materialCount3 = 0;
-
     private Movable ship;
 
     public CargoBoatStrategy(Movable movable) {
@@ -77,25 +70,21 @@ public class CargoBoatStrategy extends MovableStrategy {
                 break;
 
             case GOING_TO_HARBOR:
-                if (this.materialCount1 == 0) {
-                    this.materialType1 = harbor.tryToTakeShipMaterial();
-                    if (this.materialType1 != null) {
-                        this.materialCount1 = 1 + harbor.tryToTakeFurtherMaterial(this.materialType1, 7);
+                int cargoTotal = 0;
+                int cargoCount;
+                EMaterialType material;
+                for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
+                    if (ship.getCargoCount(stack) == 0) {
+                        material = harbor.tryToTakeShipMaterial();
+                        if (material != null) {
+                            ship.setCargoType(material, stack);
+                            cargoCount = 1 + harbor.tryToTakeFurtherMaterial(material, 7);
+                            ship.setCargoCount(cargoCount, stack);
+                            cargoTotal += cargoCount;
+                        }
                     }
                 }
-                if (this.materialCount2 == 0) {
-                    this.materialType2 = harbor.tryToTakeShipMaterial();
-                    if (this.materialType2 != null) {
-                        this.materialCount2 = 1 + harbor.tryToTakeFurtherMaterial(this.materialType2, 7);
-                    }
-                }
-                if (this.materialCount3 == 0) {
-                    this.materialType3 = harbor.tryToTakeShipMaterial();
-                    if (this.materialType3 != null) {
-                        this.materialCount3 = 1 + harbor.tryToTakeFurtherMaterial(this.materialType3, 7);
-                    }
-                }
-                if (this.materialCount1 + this.materialCount2 + this.materialCount3 == 0) {
+                if (cargoTotal == 0) {
                     reset();
                     break;
                 } else {
@@ -136,16 +125,16 @@ public class CargoBoatStrategy extends MovableStrategy {
     }
 
     private void dropMaterialIfPossible() {
-        if (this.materialCount1 > 0) {
-            for (; this.materialCount1 > 0; this.materialCount1--) {
-                super.getGrid().dropMaterial(movable.getPos(), materialType1, true, true);
+        int cargoCount;
+        EMaterialType material;
+        for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
+            cargoCount = ship.getCargoCount(stack);
+            material = ship.getCargoType(stack);
+            while (cargoCount > 0) {
+                super.getGrid().dropMaterial(movable.getPos(), material, true, true);
+                cargoCount--;
             }
-            for (; this.materialCount2 > 0; this.materialCount2--) {
-                super.getGrid().dropMaterial(movable.getPos(), materialType2, true, true);
-            }
-            for (; this.materialCount3 > 0; this.materialCount3--) {
-                super.getGrid().dropMaterial(movable.getPos(), materialType3, true, true);
-            }
+            ship.setCargoCount(0, stack);
         }
     }
 

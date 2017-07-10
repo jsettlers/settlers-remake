@@ -50,6 +50,7 @@ import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetDockAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.action.SetMaterialProductionAction;
@@ -62,7 +63,6 @@ import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.DockGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
@@ -333,16 +333,26 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
-		case SET_TRADING_WAYPOINT: {
-			final ISelectable selected = currentSelection.getSingle();
-			if (selected instanceof Building) {
-				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
-				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
-						a.getWaypointType(), a.getPosition()));
+			case SET_TRADING_WAYPOINT: {
+				final ISelectable selected = currentSelection.getSingle();
+				if (selected instanceof Building) {
+					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
+							a.getWaypointType(), a.getPosition()));
+				}
+				break;
 			}
-		}
 
-		case SOLDIERS_ALL:
+			case SET_DOCK: {
+				final ISelectable selected = currentSelection.getSingle();
+				if (selected instanceof Building) {
+					final SetDockAction a = (SetDockAction) action;
+					setDock(a.getPosition());
+				}
+				break;
+			}
+
+			case SOLDIERS_ALL:
 			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
 			break;
 		case SOLDIERS_ONE:
@@ -432,21 +442,31 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-	private void setDock(ShortPoint2D setDockPosition) {
+	public void setDock(ShortPoint2D setDockPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
 			int[] dockPosition = grid.findDockPosition(setDockPosition);
 			if (dockPosition == null) {
-				connector.playSound(116, 1); // this dock position is not accepted
+				connector.playSound(116, 1); // this dock position is not at the coast
 			} else {
 				Building building = (Building) selected;
-				scheduleTask(new DockGuiTask(EGuiAction.SET_DOCK, playerId, dockPosition, building.getPos()));
-				if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-					if(!((WorkerBuilding) building).setDock(dockPosition)) {
-						connector.playSound(116, 1); // dock cannot be moved when a ship is tied to it
-					}
-				} else if (building.getBuildingType() == EBuildingType.HARBOR) {
-					((TradingBuilding) building).setDock(dockPosition);
+				if (MapCircle.getDistance(building.getPos().x, building.getPos().y, dockPosition[0], dockPosition[1]) > 15) {
+					connector.playSound(116, 1); // this dock position would be too far away
+				} else {
+					if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+						if (!((WorkerBuilding) building).setDock(dockPosition)) {
+							connector.playSound(116, 1); // the dock cannot be moved when a ship is tied to it
+						}
+					} else if (building.getBuildingType() == EBuildingType.HARBOR) {
+						TradingBuilding harbor = (TradingBuilding) building;
+						if (harbor.isSelected()) {
+							harbor.drawWaypointLine(false);
+						}
+						harbor.setDock(dockPosition);
+						if (harbor.isSelected()) {
+							harbor.drawWaypointLine(true);
+						}
+ 					}
 				}
 			}
 		}

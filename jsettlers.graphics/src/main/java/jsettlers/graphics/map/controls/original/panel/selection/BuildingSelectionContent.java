@@ -232,7 +232,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			if (step >= 0) {
 				return getActionForStep(step);
 			} else {
-				return new Action(EActionType.SET_DOCK);
+				return new Action(EActionType.ASK_SET_DOCK);
 			}
 		}
 	}

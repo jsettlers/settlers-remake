@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,25 +12,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.menu;
+package jsettlers.graphics.action;
 
-import jsettlers.common.menu.action.IAction;
+import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This is a map interface listener. <h2>Registering listeners</h2> At first you have to get the connector when adding the map va
- * {@link JOGLPanel#showHexMap(jsettlers.graphics.map.IHexMap)} Then you should add a listener to the connector with
- * {@link MapInterfaceConnector#addListener(MapInterfaceListener)}.
- * 
- * @author Michael Zangl
+ * Sets the dock position for the selected building.
+ *
+ * @author Rudolf Polzer
+ *
  */
-public interface IMapInterfaceListener {
-	/**
-	 * This method gets called when the user performed an action.
-	 * 
-	 * @param action
-	 *            The action the user performed.
-	 */
-	void action(IAction action);
+public class SetDockAction extends PointAction {
 
+    /**
+     * Creates a new {@link SetDockAction}.
+     *
+     * @param position
+     *            The position to set it at.
+     */
+    public SetDockAction(ShortPoint2D position) {
+        super(EActionType.SET_DOCK, position);
+    }
 }

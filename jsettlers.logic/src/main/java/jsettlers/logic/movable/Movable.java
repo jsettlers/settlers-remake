@@ -99,13 +99,16 @@ public final class Movable implements ILogicMovable {
 	// the following block of data only for ships
 	private ImageLink[] images = null;
 	private ImageLink[] buildImages = null;
-	private ArrayList<EMaterialType> cargo = new ArrayList<>();
 	private ArrayList<IMovable> passengers = new ArrayList<>();
 	public static final Set<EMovableType> ships = EnumSet.of(EMovableType.FERRY, EMovableType.CARGO_BOAT);
 	private ShortPoint2D unloadingPosition = null;
+	private final int cargoStacks = 3;
+	private EMaterialType cargoType[] = new EMaterialType[cargoStacks];
+	private int cargoCount[] = new int[cargoStacks];
 
 	// the following data only for ship passengers
 	private Movable ferryToEnter = null;
+
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -127,6 +130,10 @@ public final class Movable implements ILogicMovable {
 			BuildingFile file = new BuildingFile(this.movableType.toString());
 			this.images = file.getImages();
 			this.buildImages = file.getBuildImages();
+			for (int i = 0; i < this.cargoStacks; i++) {
+				this.cargoType[i] = null;
+				this.cargoCount[i] = 0;
+			}
 		}
 
 		grid.enterPosition(position, this, true);
@@ -227,9 +234,10 @@ public final class Movable implements ILogicMovable {
 			break;
 
 		case UNLOADING:
-			if (passengers.size() > 0) {
-				((Movable) (passengers.get(0))).leaveFerryAtPosition(this.unloadingPosition);
-				passengers.remove(0);
+			int numberOfPassengers = passengers.size();
+			if (numberOfPassengers > 0) {
+				((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
+				passengers.remove(numberOfPassengers - 1);
 			} else {
 				setState(EMovableState.DOING_NOTHING);
 			}
@@ -1122,16 +1130,8 @@ public final class Movable implements ILogicMovable {
 		return false;
 	}
 
-	public void addCargo(EMaterialType material) {
-		this.cargo.add(material);
-	}
-
 	public ArrayList<IMovable> getPassengers() {
 		return this.passengers;
-	}
-
-	public ArrayList<EMaterialType> getCargo() {
-		return this.cargo;
 	}
 
 	public boolean unload(ShortPoint2D position) {
@@ -1146,5 +1146,46 @@ public final class Movable implements ILogicMovable {
 			setState(EMovableState.UNLOADING);
 		}
 		return true;
+	}
+
+	private boolean checkStackNumber(int stack) {
+		return stack >= 0 && stack < this.cargoStacks;
+	}
+
+	public void setCargoType(EMaterialType cargo, int stack) {
+		if (checkStackNumber(stack)) {
+			this.cargoType[stack] = cargo;
+		}
+	}
+
+	public EMaterialType getCargoType(int stack) {
+		if (checkStackNumber(stack)) {
+			return this.cargoType[stack];
+		} else {
+			return null;
+		}
+	}
+
+	public void setCargoCount(int count, int stack) {
+		if (checkStackNumber(stack)) {
+			this.cargoCount[stack] = count;
+			if (this.cargoCount[stack] < 0) {
+				this.cargoCount[stack] = 0;
+			} else if (this.cargoCount[stack] > 8) {
+				this.cargoCount[stack] = 8;
+			}
+		}
+	}
+
+	public int getCargoCount(int stack) {
+		if (checkStackNumber(stack) && this.cargoType[stack] != null) {
+			return this.cargoCount[stack];
+		} else {
+			return 0;
+		}
+	}
+
+	public int getNumberOfStacks() {
+		return this.cargoStacks;
 	}
 }
