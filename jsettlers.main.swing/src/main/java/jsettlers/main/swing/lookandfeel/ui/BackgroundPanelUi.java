@@ -127,7 +127,7 @@ public class BackgroundPanelUi extends PanelUI {
 
 		graphics = cachedForeground.createGraphics();
 
-		float factor = height / 2160f * 1.2f;
+		float factor = height / 2160f * 0.9f;
 		factor = Math.min(factor, 0.535f);
 		int w = (int) (leavesRight.getWidth() * factor);
 		int h = (int) (leavesRight.getHeight() * factor);
