@@ -105,7 +105,7 @@ public class AiMapInformation {
 		return calculateBuildingCounts(maxSmiths, maxFishermen, maxGoldMelts, 3, 1, playersAndNeverlandGrass);
 	}
 
-	private int[] calculateBuildingCounts(int numberOfWeaponSmiths, int maxFishermen, int maxGoldMelts, int maxWineGrower, int maxBigTemples, long grassTiles) {
+	private int[] calculateBuildingCounts(int numberOfWeaponSmiths, int maxFishermen, int maxGoldMelts, int maxWineGrowers, int maxBigTemples, long grassTiles) {
 		int[] buildingCounts = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 		for (int i = 0; i < buildingCounts.length; i++) {
 			buildingCounts[i] = 0;
@@ -147,35 +147,41 @@ public class AiMapInformation {
 			buildingCounts[EBuildingType.BIG_TEMPLE.ordinal] = maxBigTemples;
 		}
 
-		if (maxWineGrower > 0) {
-			buildingCounts[EBuildingType.WINEGROWER.ordinal] = maxWineGrower;
-			buildingCounts[EBuildingType.TEMPLE.ordinal] = maxWineGrower;
+		if (maxWineGrowers > 0) {
+			buildingCounts[EBuildingType.WINEGROWER.ordinal] = maxWineGrowers;
+			buildingCounts[EBuildingType.TEMPLE.ordinal] = maxWineGrowers;
 		}
 
 		if (isEnoughSpace(buildingCounts, grassTiles)) {
 			return buildingCounts;
 		} else if (numberOfWeaponSmiths > MIN_SMITHS_BEFORE_WINE_AND_GOLD_REDUCTION) {
-			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, maxBigTemples, grassTiles);
-		} else if (maxWineGrower > MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grassTiles);
+			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrowers, maxBigTemples, grassTiles);
+		} else if (maxWineGrowers > MIN_WINE_GROWER_BEFORE_GOLD_REDUCTION) {
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrowers - 1, maxBigTemples, grassTiles);
 		} else if (maxGoldMelts > 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrower, maxBigTemples, grassTiles);
-		} else if (maxWineGrower > 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower - 1, maxBigTemples, grassTiles);
-		} else if (maxBigTemples == 1) {
-			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrower, 0, grassTiles);
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts - 1, maxWineGrowers, maxBigTemples, grassTiles);
+		} else if (maxWineGrowers > 1) {
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrowers - 1, maxBigTemples, grassTiles);
+		} else if (maxBigTemples > 1) {
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrowers, 0, grassTiles);
+		} else if (maxWineGrowers > 0) {
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen, maxGoldMelts, maxWineGrowers - 1, 0, grassTiles);
+		} else if (maxFishermen > 0) {
+			return calculateBuildingCounts(numberOfWeaponSmiths, maxFishermen - 1, maxGoldMelts, maxWineGrowers, 0, grassTiles);
+		} else if (numberOfWeaponSmiths > 0) {
+			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrowers, 0, grassTiles);
 		} else {
-			return calculateBuildingCounts(numberOfWeaponSmiths - 1, maxFishermen, maxGoldMelts, maxWineGrower, 0, grassTiles);
+			return new int[EBuildingType.NUMBER_OF_BUILDINGS];
 		}
 	}
 
-	private boolean isEnoughSpace(int[] buildingCounts, long grasTiles) {
-		long grasTilesWithoutBuffer = Math.round(grasTiles / 3F);
+	private boolean isEnoughSpace(int[] buildingCounts, long grassTiles) {
+		long grassTilesWithoutBuffer = Math.round(grassTiles / 3F);
 		for (int i = 0; i < buildingCounts.length; i++) {
 			EBuildingType buildingType = EBuildingType.VALUES[i];
 			if (!buildingType.isMine()) {
-				grasTilesWithoutBuffer -= EBuildingType.VALUES[i].getProtectedTiles().length * buildingCounts[i];
-				if (grasTilesWithoutBuffer < 0) {
+				grassTilesWithoutBuffer -= EBuildingType.VALUES[i].getProtectedTiles().length * buildingCounts[i];
+				if (grassTilesWithoutBuffer < 0) {
 					return false;
 				}
 			}
