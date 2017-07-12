@@ -95,7 +95,7 @@ public class BuildingSelectionFragment extends SelectionFragment {
 
 		} else if (building instanceof IBuilding.IStock) {
 			layoutInflater.inflate(R.layout.menu_selection_building_stock, rootView, true);
-			features.add(new StockFeature(getView(), building, menuNavigator, drawControls, actionControls));
+			features.add(new StockFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls));
 
 
 
