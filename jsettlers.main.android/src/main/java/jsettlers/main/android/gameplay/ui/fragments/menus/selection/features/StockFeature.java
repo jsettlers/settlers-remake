@@ -20,6 +20,7 @@ import static java8.util.J8Arrays.stream;
 import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
@@ -99,8 +100,10 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private List<StockMaterialState> materialStates() {
+		IStockSettings stockSettings = ((IBuilding.IStock) getBuilding()).getStockSettings();
+
 		return stream(EMaterialType.STOCK_MATERIALS)
-				.map(eMaterialType -> new StockMaterialState(eMaterialType, getBuildingState()))
+				.map(eMaterialType -> new StockMaterialState(eMaterialType, stockSettings))
 				.collect(Collectors.toList());
 	}
 

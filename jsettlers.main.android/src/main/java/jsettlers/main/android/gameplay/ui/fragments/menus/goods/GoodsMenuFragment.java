@@ -57,7 +57,7 @@ public class GoodsMenuFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return 4;
+			return 5;
 		}
 
 		@Override
@@ -71,6 +71,8 @@ public class GoodsMenuFragment extends Fragment {
 				return GoodsDistributionFragment.newInstance();
 			case 3:
 				return GoodsPrioritiesFragment.newInstance();
+			case 4:
+				return GoodsStockFragment_.builder().build();
 			default:
 				throw new RuntimeException("PagerAdapter count doesn't match available number of Goods menu fragments");
 			}
