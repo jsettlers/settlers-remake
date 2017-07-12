@@ -4,8 +4,8 @@ package jsettlers.main.android.gameplay.viewstates;
  * Created by Tom Pratt on 12/07/2017.
  */
 
+import jsettlers.common.map.partition.IStockSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 
 /**
  * Model for stock item
@@ -14,9 +14,9 @@ public class StockMaterialState {
     private final EMaterialType materialType;
     private final boolean stocked;
 
-    public StockMaterialState(EMaterialType materialType, BuildingState state) {
+    public StockMaterialState(EMaterialType materialType, IStockSettings stockSettings) {
         this.materialType = materialType;
-        this.stocked = state.stockAcceptsMaterial(materialType);
+        this.stocked = stockSettings.isAccepted(materialType);
     }
 
     public EMaterialType getMaterialType() {

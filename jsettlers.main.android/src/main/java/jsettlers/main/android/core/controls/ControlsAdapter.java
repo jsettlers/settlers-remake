@@ -253,6 +253,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	}
 
 	@Override
+	public ShortPoint2D getCurrentPosition() {
+		return displayCenter;
+	}
+
+	@Override
 	public void addPositionChangedListener(PositionChangedListener positionChangedListener) {
 		synchronized (positionChangedListeners) {
 			positionChangedListeners.add(positionChangedListener);

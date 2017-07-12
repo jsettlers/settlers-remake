@@ -146,4 +146,5 @@
     <string name="normal">Normal Speed</string>
 
     <string name="service_description">JSettlers Game Service running the current game.</string>
+    <string name="goods_stock_title">Global storage</string>
 </resources>
