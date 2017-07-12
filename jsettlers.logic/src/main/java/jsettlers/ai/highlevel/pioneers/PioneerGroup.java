@@ -94,6 +94,10 @@ public class PioneerGroup {
 		return new PioneerGroup(pioneersWithNoAction);
 	}
 
+	public void addAll(List<Integer> pioneerIds) {
+		this.pioneerIds.addAll(pioneerIds);
+	}
+
 	public List<Integer> getPioneerIds() {
 		return pioneerIds;
 	}

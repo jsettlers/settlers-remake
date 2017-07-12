@@ -85,6 +85,7 @@ import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
@@ -114,6 +115,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private static final int BROADEN_PIONEER_GROUP_COUNT = 40;
 
 	private final MainGrid mainGrid;
+	private final MovableGrid movableGrid;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
@@ -130,6 +132,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	WhatToDoAi(byte playerId, AiStatistics aiStatistics, EconomyMinister economyMinister, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
+		this.movableGrid = mainGrid.getMovableGrid();
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
 		this.armyGeneral = armyGeneral;
@@ -138,6 +141,15 @@ class WhatToDoAi implements IWhatToDoAi {
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
 		resourcePioneers = new PioneerGroup(RESOURCE_PIONEER_GROUP_COUNT);
 		broadenerPioneers = new PioneerGroup(BROADEN_PIONEER_GROUP_COUNT);
+		List<Integer> allPioneers = stream(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIONEER))
+				.map(pos -> movableGrid.getMovableAt(pos.x, pos.y))
+				.map(ILogicMovable::getID)
+				.collect(Collectors.toList());
+
+		int resourcePioneersNumber = Math.min(allPioneers.size(), RESOURCE_PIONEER_GROUP_COUNT);
+		resourcePioneers.addAll(allPioneers.subList(0, resourcePioneersNumber));
+		broadenerPioneers.addAll(allPioneers.subList(resourcePioneersNumber, allPioneers.size()));
+
 		for (EResourceType resourceType : EResourceType.VALUES) {
 			geologistFilters[resourceType.ordinal] = new AiPositions.CombinedAiPositionFilter(
 					new SurroundedByResourcesFilter(mainGrid, mainGrid.getLandscapeGrid(), resourceType),
@@ -162,8 +174,8 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void sendGeologists() {
-		int geologistsCount = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.GEOLOGIST, playerId).size();
-		List<ShortPoint2D> bearersPositions = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId);
+		int geologistsCount = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.GEOLOGIST).size();
+		List<ShortPoint2D> bearersPositions = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BEARER);
 		int bearersCount = bearersPositions.size();
 		int stoneCutterCount = aiStatistics.getNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
 		if (geologistsCount == 0 && stoneCutterCount >= 1 && bearersCount - 3 > MINIMUM_NUMBER_OF_BEARERS) {
@@ -248,7 +260,7 @@ class WhatToDoAi implements IWhatToDoAi {
 					* NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS
 					+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
-					- aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size();
+					- aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BEARER).size();
 			if (numberOfFreeBeds >= NUMBER_OF_SMALL_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(SMALL_LIVINGHOUSE)) {
 				if (numberOfFreeBeds >= NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS + 1 && !destroyLivingHouse(MEDIUM_LIVINGHOUSE)) {
 					if (numberOfFreeBeds >= NUMBER_OF_BIG_LIVING_HOUSE_BEDS + 1) {
@@ -425,7 +437,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private void releaseAllPioneers() {
 		broadenerPioneers.clear();
 		resourcePioneers.clear();
-		List<ShortPoint2D> pioneers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIONEER, playerId);
+		List<ShortPoint2D> pioneers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIONEER);
 		if (!pioneers.isEmpty()) {
 			List<Integer> pioneerIds = stream(pioneers).map(pioneerPosition -> mainGrid.getMovableGrid().getMovableAt(pioneerPosition.x, pioneerPosition.y).getID()).collect(Collectors.toList());
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, pioneerIds, EMovableType.BEARER));
@@ -467,7 +479,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void fill(PioneerGroup pioneerGroup) {
-		int numberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size();
+		int numberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BEARER).size();
 		int numberOfJoblessBearers = aiStatistics.getPositionsOfJoblessBearersForPlayer(playerId).size();
 
 		int minRequiredJoblessBearers = Math.max(MINIMUM_NUMBER_OF_JOBLESS_BEARERS, (int) (MINIMUM_NUMBER_OF_JOBLESS_BEARERS_PER_BUILDING * aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId)));
@@ -479,7 +491,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean buildLivingHouse() {
-		int futureNumberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BEARER, playerId).size()
+		int futureNumberOfBearers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BEARER).size()
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * NUMBER_OF_BIG_LIVING_HOUSE_BEDS
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * NUMBER_OF_SMALL_LIVING_HOUSE_BEDS
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * NUMBER_OF_MEDIUM_LIVING_HOUSE_BEDS;

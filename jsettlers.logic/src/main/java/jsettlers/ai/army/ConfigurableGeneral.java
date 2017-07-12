@@ -227,15 +227,15 @@ public class ConfigurableGeneral implements ArmyGeneral {
 
 	private SoldierPositions calculateSituation(byte playerId) {
 		SoldierPositions soldierPositions = new SoldierPositions();
-		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.SWORDSMAN_L1, playerId));
-		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.SWORDSMAN_L2, playerId));
-		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.SWORDSMAN_L3, playerId));
-		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BOWMAN_L1, playerId));
-		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BOWMAN_L2, playerId));
-		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.BOWMAN_L3, playerId));
-		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIKEMAN_L1, playerId));
-		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIKEMAN_L2, playerId));
-		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(EMovableType.PIKEMAN_L3, playerId));
+		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.SWORDSMAN_L1));
+		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.SWORDSMAN_L2));
+		soldierPositions.swordsmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.SWORDSMAN_L3));
+		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BOWMAN_L1));
+		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BOWMAN_L2));
+		soldierPositions.bowmenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.BOWMAN_L3));
+		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIKEMAN_L1));
+		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIKEMAN_L2));
+		soldierPositions.pikemenPositions.addAll(aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, EMovableType.PIKEMAN_L3));
 		return soldierPositions;
 	}
 

@@ -444,7 +444,7 @@ public class AiStatistics {
 		return landscapeGrid.getBlockedPartitionAt(x, y) == playerStatistics[playerId].blockedPartitionId;
 	}
 
-	public List<ShortPoint2D> getPositionsOfMovablesWithTypeForPlayer(EMovableType movableType, byte playerId) {
+	public List<ShortPoint2D> getPositionsOfMovablesWithTypeForPlayer(byte playerId, EMovableType movableType) {
 		if (!playerStatistics[playerId].movablePositions.containsKey(movableType)) {
 			return Collections.emptyList();
 		}
@@ -457,7 +457,7 @@ public class AiStatistics {
 
 	public int getCountOfMovablesOfPlayer(IPlayer player, Set<EMovableType> types) {
 		byte playerId = player.getPlayerId();
-		return stream(types).mapToInt(type -> getPositionsOfMovablesWithTypeForPlayer(type, playerId).size()).sum();
+		return stream(types).mapToInt(type -> getPositionsOfMovablesWithTypeForPlayer(playerId, type).size()).sum();
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -549,12 +549,12 @@ public class AiStatistics {
 	}
 
 	IMovable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
-		List<ShortPoint2D> soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L3, playerId);
+		List<ShortPoint2D> soldierPositions = getPositionsOfMovablesWithTypeForPlayer(playerId, SWORDSMAN_L3);
 		if (soldierPositions.size() == 0) {
-			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L2, playerId);
+			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(playerId, SWORDSMAN_L2);
 		}
 		if (soldierPositions.size() == 0) {
-			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(SWORDSMAN_L1, playerId);
+			soldierPositions = getPositionsOfMovablesWithTypeForPlayer(playerId, SWORDSMAN_L1);
 		}
 		if (soldierPositions.size() == 0) {
 			return null;
