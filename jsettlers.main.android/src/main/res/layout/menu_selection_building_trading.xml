@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+                android:id="@+id/image_view_priority"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/image_view_building"
+                android:layout_width="64dp"
+                android:layout_height="64dp" />
+
+            <TextView
+                android:id="@+id/text_view_building_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"/>
+
+            <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+                android:id="@+id/image_view_destroy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+            android:id="@+id/image_view_waypoints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <FrameLayout
+            android:id="@+id/layout_material_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_materials"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:paddingTop="0dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:clipToPadding="false"
+                android:scrollbarStyle="outsideOverlay" />
+
+            <LinearLayout
+                android:id="@+id/layout_materials"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:layout_gravity="bottom" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</ScrollView>

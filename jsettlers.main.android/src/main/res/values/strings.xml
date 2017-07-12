@@ -22,6 +22,7 @@
     <string name="save_string">Save</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Kill</string>
+    <string name="unload_string">Unload</string>
     <string name="load_string">Load game</string>
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
@@ -70,6 +71,7 @@
     <!-- Selection Menus -->
     <!-- Common -->
     <string name="halt">Halt</string>
+    <string name="ask_destroy">Destroy this building?</string>
 
     <!-- Carriers Selection -->
     <string name="convert_all">Convert all</string>
@@ -146,4 +148,6 @@
     <string name="normal">Normal Speed</string>
 
     <string name="service_description">JSettlers Game Service running the current game.</string>
+    <string name="dock">Dock</string>
+    <string name="destination">Dest.</string>
 </resources>

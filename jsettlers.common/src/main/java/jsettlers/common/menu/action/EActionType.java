@@ -41,6 +41,11 @@ public enum EActionType {
 	DESTROY,
 
 	/**
+	 * Unload ferries.
+	 */
+	UNLOAD,
+
+	/**
 	 * Select a point on the map.
 	 * 
 	 * @see PointAction

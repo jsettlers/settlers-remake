@@ -15,8 +15,15 @@
 
 package jsettlers.main.android.gameplay.ui.fragments;
 
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
-import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -26,10 +33,10 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.ViewById;
 
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -52,21 +59,14 @@ import jsettlers.main.android.gameplay.ui.fragments.menus.buildings.BuildingsMen
 import jsettlers.main.android.gameplay.ui.fragments.menus.goods.GoodsMenuFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.BuildingSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.CarriersSelectionFragment;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.ShipsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SoldiersSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.SpecialistsSelectionFragment;
 import jsettlers.main.android.gameplay.ui.fragments.menus.settlers.SettlersMenuFragment;
 import jsettlers.main.android.mainmenu.ui.activities.MainActivity_;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
-import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_PAUSE;
+import static jsettlers.main.android.mainmenu.navigation.Actions.ACTION_UNPAUSE;
 
 @EFragment(R.layout.fragment_map)
 @OptionsMenu(R.menu.game)
