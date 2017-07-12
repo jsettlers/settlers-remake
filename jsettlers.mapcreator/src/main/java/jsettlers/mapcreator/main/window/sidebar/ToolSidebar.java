@@ -24,9 +24,9 @@ import javax.swing.tree.TreePath;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -119,21 +119,21 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.objects"), new ToolNode[] {
 					new PlaceMapObjectTool(MapTreeObject.getInstance()),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(0)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(2)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(4)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(6)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(8)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(11)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(12)),
-					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
-					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION))
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(0)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(1)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(2)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(3)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(4)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(5)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(6)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(7)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(8)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(9)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(10)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(11)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(12)),
+					new PlaceMapObjectTool(new DecorationMapDataObject(EMapObjectType.PLANT_DECORATION)),
+					new PlaceMapObjectTool(new DecorationMapDataObject(EMapObjectType.DESERT_DECORATION))
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.settlers"), new ToolNode[] {
 					new ToolBox(EditorLabels.getLabel("tools.category.worker"), new ToolNode[] {

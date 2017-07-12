@@ -109,20 +109,20 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		List<? extends IBuildingOccupier> getOccupiers();
 
 		/**
-		 * Gets the number of currently searched soldiers.
+		 * Gets the number of currently searched SOLDIERS.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier.
-		 * @return The number of soldiers currently searched.
+		 * @return The number of SOLDIERS currently searched.
 		 */
 		int getSearchedSoldiers(ESoldierClass soldierClass);
 
 		/**
-		 * Gets the number of soldiers that are currently comming.
+		 * Gets the number of SOLDIERS that are currently comming.
 		 * 
 		 * @param soldierClass
 		 *            The class of soldier
-		 * @return The number of soldiers comming.
+		 * @return The number of SOLDIERS comming.
 		 */
 		int getComingSoldiers(ESoldierClass soldierClass);
 	}

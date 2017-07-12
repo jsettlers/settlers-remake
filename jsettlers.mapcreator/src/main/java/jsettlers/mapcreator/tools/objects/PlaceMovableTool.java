@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.tools.objects;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MovableObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.control.IPlayerSetter;
@@ -36,7 +36,7 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 	}
 
 	@Override
-	public MapObject getObject() {
+	public MapDataObject getObject() {
 		return new MovableObject(type, (byte) player.getActivePlayer());
 	}
 }

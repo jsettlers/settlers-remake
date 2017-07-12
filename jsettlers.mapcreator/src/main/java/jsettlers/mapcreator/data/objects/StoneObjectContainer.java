@@ -14,25 +14,25 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
 
 public class StoneObjectContainer implements ObjectContainer, IMapObject {
-	private final MapStoneObject peer;
+	private final StoneMapDataObject peer;
 
 	public StoneObjectContainer(int stones) {
-		this(MapStoneObject.getInstance(stones));
+		this(StoneMapDataObject.getInstance(stones));
 	}
 
-	public StoneObjectContainer(MapStoneObject object) {
+	public StoneObjectContainer(StoneMapDataObject object) {
 		this.peer = object;
 	}
 
 	@Override
-	public MapObject getMapObject() {
+	public MapDataObject getMapObject() {
 		return peer;
 	}
 

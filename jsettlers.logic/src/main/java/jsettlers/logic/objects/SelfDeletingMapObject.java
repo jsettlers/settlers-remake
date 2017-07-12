@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -25,24 +26,10 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  */
 public class SelfDeletingMapObject extends ProgressingObject implements IPlayerable {
-	private static final long serialVersionUID = 261552015645456635L;
-
 	private final EMapObjectType type;
-	private final byte player;
+	private final IPlayer player;
 
-	/**
-	 * Creates and positions this map object on the map.
-	 * 
-	 * @param pos
-	 *            position the map object should be on the grid
-	 * @param type
-	 *            type to be returned to jsettlers.graphics
-	 */
-	public SelfDeletingMapObject(ShortPoint2D pos, EMapObjectType type, float duration) {
-		this(pos, type, duration, (byte) -1);
-	}
-
-	public SelfDeletingMapObject(ShortPoint2D pos, EMapObjectType type, float duration, byte player) {
+	public SelfDeletingMapObject(ShortPoint2D pos, EMapObjectType type, float duration, IPlayer player) {
 		super(pos);
 		this.player = player;
 		this.type = type;
@@ -70,7 +57,7 @@ public class SelfDeletingMapObject extends ProgressingObject implements IPlayera
 	}
 
 	@Override
-	public byte getPlayerId() {
+	public IPlayer getPlayer() {
 		return player;
 	}
 

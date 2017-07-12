@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,34 +11,27 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.map;
-
-/**
- * This is an eception that occured during loading/creation of the map.
- * 
- * @author michael
  */
-public class MapLoadException extends Exception {
+package jsettlers.logic.map.loading.data.objects;
 
-	/**
-     * 
-     */
-	private static final long serialVersionUID = -8884862905101040114L;
+import jsettlers.common.material.EMaterialType;
 
-	public MapLoadException() {
+public class StackMapDataObject implements MapDataObject {
+
+	private final int count;
+	private final EMaterialType type;
+
+	public StackMapDataObject(EMaterialType type, int count) {
+		this.type = type;
+		this.count = count;
 	}
 
-	public MapLoadException(String arg0) {
-		super(arg0);
+	public EMaterialType getType() {
+		return type;
 	}
 
-	public MapLoadException(Throwable arg0) {
-		super(arg0);
-	}
-
-	public MapLoadException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public int getCount() {
+		return count;
 	}
 
 }

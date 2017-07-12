@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,13 +21,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIterator;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 
 /**
- * This class holds the fog of war for a given map and player.
+ * This class holds the fog of war for a given map and team.
  * 
  * @author Andreas Eberle
  */
@@ -36,27 +37,23 @@ public final class FogOfWar implements Serializable {
 	/**
 	 * Longest distance any unit may look
 	 */
-	static final byte MAX_VIEWDISTANCE = 65;
+	private static final byte MAX_VIEW_DISTANCE = 65;
 	static final int PADDING = 10;
 
-	private final byte player;
+	private final byte team;
 
-	final short width;
-	final short height;
-	byte[][] sight;
+	private final short width;
+	private final short height;
+	private byte[][] sight;
 
 	private transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
 	private transient IFogOfWarGrid grid;
 	private transient boolean canceled;
 
-	public FogOfWar(short width, short height) {
-		this(width, height, (byte) 0);
-	}
-
-	public FogOfWar(short width, short height, byte player) {
+	public FogOfWar(short width, short height, IPlayer player) {
 		this.width = width;
 		this.height = height;
-		this.player = player;
+		this.team = player.getTeamId();
 		this.sight = new byte[width][height];
 	}
 
@@ -88,8 +85,8 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	private final boolean isPlayerOK(IPlayerable playerable) {
-		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
+	private boolean isPlayerOK(IPlayerable playerable) {
+		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayer().getTeamId() == team));
 	}
 
 	public final void toggleEnabled() {
@@ -128,7 +125,7 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private final void rebuildSight() {
+		private void rebuildSight() {
 			drawer.setBuffer(buffer);
 
 			for (int x = 0; x < width; x++) {
@@ -159,7 +156,7 @@ public final class FogOfWar implements Serializable {
 			buffer = temp;
 		}
 
-		private final void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
+		private void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
 			for (IViewDistancable curr : objects) {
 				if (isPlayerOK(curr)) {
 					short distance = curr.getViewDistance();
@@ -172,7 +169,7 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private final void mySleep(int ms) {
+		private void mySleep(int ms) {
 			try {
 				Thread.sleep(ms);
 			} catch (InterruptedException e) {
@@ -184,15 +181,14 @@ public final class FogOfWar implements Serializable {
 
 	final class CircleDrawer {
 		private byte[][] buffer;
-		private final CachedViewCircle[] cachedCircles = new CachedViewCircle[MAX_VIEWDISTANCE];
+		private final CachedViewCircle[] cachedCircles = new CachedViewCircle[MAX_VIEW_DISTANCE];
 
 		public final void setBuffer(byte[][] buffer) {
 			this.buffer = buffer;
 		}
 
 		/**
-		 * Draws a circle to the buffer line. Each point is only brightened and onlydrawn if its x coordinate is in [0, mapWidth - 1] and its computed
-		 * y coordinate is bigger than 0.
+		 * Draws a circle to the buffer line. Each point is only brightened and onlydrawn if its x coordinate is in [0, mapWidth - 1] and its computed y coordinate is bigger than 0.
 		 */
 		final void drawCircleToBuffer(int bufferX, int bufferY, int viewDistance) {
 			CachedViewCircle circle = getCachedCircle(viewDistance);
@@ -215,7 +211,7 @@ public final class FogOfWar implements Serializable {
 		}
 
 		private CachedViewCircle getCachedCircle(int viewDistance) {
-			int radius = Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE - 1);
+			int radius = Math.min(viewDistance + PADDING, MAX_VIEW_DISTANCE - 1);
 			if (cachedCircles[radius] == null) {
 				cachedCircles[radius] = new CachedViewCircle(radius);
 			}

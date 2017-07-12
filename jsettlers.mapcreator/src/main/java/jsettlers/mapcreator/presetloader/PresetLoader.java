@@ -22,7 +22,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.presetloader.jaxb.Building;
@@ -107,7 +107,7 @@ public class PresetLoader {
 		}
 
 		for (Object o : p.getObject()) {
-			list.add(new TemplateObject(o.getDx(), o.getDy(), new StackObject(o.getType(), o.getCount())));
+			list.add(new TemplateObject(o.getDx(), o.getDy(), new StackMapDataObject(o.getType(), o.getCount())));
 		}
 
 		return list.toArray(new TemplateObject[] {});

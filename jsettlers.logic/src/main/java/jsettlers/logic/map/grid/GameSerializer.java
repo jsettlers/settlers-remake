@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
