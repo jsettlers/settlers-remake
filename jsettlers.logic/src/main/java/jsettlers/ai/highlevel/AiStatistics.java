@@ -298,7 +298,7 @@ public class AiStatistics {
 	private boolean isIngestibleByPioneersOf(int x, int y, Player player) {
 		Player otherPlayer = partitionsGrid.getPlayerAt(x, y);
 		return !player.hasSameTeam(otherPlayer)
-				&& !landscapeGrid.getLandscapeTypeAt(x, y).isBlocking
+				&& !flagsGrid.isBlocked(x, y)
 				&& !partitionsGrid.isEnforcedByTower(x, y);
 	}
 
