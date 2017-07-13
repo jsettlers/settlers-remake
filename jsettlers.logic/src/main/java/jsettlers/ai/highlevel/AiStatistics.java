@@ -160,7 +160,7 @@ public class AiStatistics {
 		if (!playerStatistic.buildingPositions.containsKey(type)) {
 			playerStatistic.buildingPositions.put(type, new ArrayList<>());
 		}
-		playerStatistic.buildingPositions.get(type).add(building.getPos());
+		playerStatistic.buildingPositions.get(type).add(building.getPosition());
 
 		if (type == EBuildingType.WINEGROWER) {
 			playerStatistic.wineGrowerWorkAreas.add(((WorkAreaBuilding) building).getWorkAreaCenter());

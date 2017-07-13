@@ -147,11 +147,6 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public ShortPoint2D getPosition() {
-		return position;
-	}
-
-	@Override
 	public int getStackSize() {
 		return grid.getStackSize(position, materialType);
 	}

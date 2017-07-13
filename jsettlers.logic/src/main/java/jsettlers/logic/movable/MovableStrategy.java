@@ -210,7 +210,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	public final ShortPoint2D getPos() {
-		return movable.getPos();
+		return movable.getPosition();
 	}
 
 	protected final void abortPath() {

@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.datastructures;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import java8.util.function.Consumer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -93,7 +93,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		T currBest = null;
 
 		for (T currEntry : data) {
-			int currDist = MathUtils.squareHypot(position, currEntry.getPos());
+			int currDist = MathUtils.squareHypot(position, currEntry.getPosition());
 
 			if (bestDistance > currDist) {
 				bestDistance = currDist;

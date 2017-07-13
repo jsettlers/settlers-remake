@@ -362,7 +362,7 @@ public final class MainGrid implements Serializable {
 	private UIState calculateUiStateByTower(byte currPlayerId) {
 		for (Building building : Building.getAllBuildings()) {
 			if (building.getPlayer().playerId == currPlayerId && building instanceof OccupyingBuilding) {
-				return new UIState(building.getPos());
+				return new UIState(((OccupyingBuilding) building).getPosition());
 			}
 		}
 		return null;

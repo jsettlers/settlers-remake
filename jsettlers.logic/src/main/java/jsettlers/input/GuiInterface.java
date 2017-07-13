@@ -327,7 +327,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			final ISelectable selected = currentSelection.getSingle();
 			if (selected instanceof Building) {
 				final ChangeTradingRequestAction a = (ChangeTradingRequestAction) action;
-				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPos(), a.getMaterial(),
+				scheduleTask(new ChangeTradingRequestGuiTask(EGuiAction.CHANGE_TRADING, playerId, ((Building) selected).getPosition(), a.getMaterial(),
 						a.getAmount(), a.isRelative()));
 			}
 			break;
@@ -337,7 +337,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				final ISelectable selected = currentSelection.getSingle();
 				if (selected instanceof Building) {
 					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
-					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPos(),
+					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
 							a.getWaypointType(), a.getPosition()));
 				}
 				break;
@@ -402,7 +402,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		ISelectable selectable = currentSelection.getSingle();
 		if (selectable instanceof OccupyingBuilding) {
 			OccupyingBuilding building = ((OccupyingBuilding) selectable);
-			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPos(), taskType, soldierType));
+			scheduleTask(new ChangeTowerSoldiersGuiTask(playerId, building.getPosition(), taskType, soldierType));
 		}
 	}
 
@@ -450,7 +450,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				connector.playSound(116, 1); // this dock position is not at the coast
 			} else {
 				Building building = (Building) selected;
-				if (MapCircle.getDistance(building.getPos().x, building.getPos().y, dockPosition[0], dockPosition[1]) > 15) {
+				if (MapCircle.getDistance(building.getPosition().x, building.getPosition().y, dockPosition[0], dockPosition[1]) > 15) {
 					connector.playSound(116, 1); // this dock position would be too far away
 				} else {
 					if (building.getBuildingType() == EBuildingType.DOCKYARD) {
@@ -475,7 +475,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
-			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
+			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPosition()));
 		}
 	}
 
@@ -524,7 +524,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos()));
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition()));
 		} else {
 			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, playerId, getIDsOfSelected()));
 		}
@@ -534,7 +534,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setBuildingPriority(EPriority newPriority) {
 		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
 			taskScheduler
-					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos(), newPriority));
+					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition(), newPriority));
 		}
 	}
 
