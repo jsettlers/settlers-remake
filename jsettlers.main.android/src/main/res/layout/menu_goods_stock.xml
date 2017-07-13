@@ -25,6 +25,17 @@
             android:layout_gravity="center"
             app:layoutManager="GridLayoutManager"
             app:spanCount="7" />
+
+        <TextView
+            android:id="@+id/textView_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="96dp"
+            android:layout_marginRight="96dp"
+            android:paddingBottom="16dp"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="@string/global_stock_message" />
     </FrameLayout>
 
 </LinearLayout>
