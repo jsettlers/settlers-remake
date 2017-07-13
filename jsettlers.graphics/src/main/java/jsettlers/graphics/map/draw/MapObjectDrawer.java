@@ -217,7 +217,7 @@ public class MapObjectDrawer {
 			drawWithConstructionMask(x, y, state, image, shade);
 		} else {
 			// get drawing position
-			Color color = context.getPlayerColor(ship.getPlayerId());
+			Color color = context.getPlayerColor(ship.getPlayer().getPlayerId());
 			float viewX;
 			float viewY;
 			if (ship.getAction() == EMovableAction.WALKING) {

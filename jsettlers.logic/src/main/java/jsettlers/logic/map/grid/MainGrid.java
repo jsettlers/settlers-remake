@@ -512,7 +512,7 @@ public final class MainGrid implements Serializable {
 			if (requester.isShip()) {
 				return !isInsideWater((short)x, (short)y);
 			}
-			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
+			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
 		@Override
@@ -1799,7 +1799,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target,
 				final boolean needsPlayersGround, final boolean isShip,
-				final byte playerId, short targetRadius) {
+				final IPlayer player, short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
 

@@ -165,7 +165,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 
 		return grid.getClosestReachablePosition(waypointBefore, targetPosition,
-				false, this.isSeaTrading, (byte) 0, WAYPOINT_SEARCH_RADIUS);
+				false, this.isSeaTrading, null, WAYPOINT_SEARCH_RADIUS);
 	}
 
 	boolean isTargetSet() {
