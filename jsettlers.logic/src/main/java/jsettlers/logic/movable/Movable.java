@@ -417,7 +417,7 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return this.position;
 	}
 

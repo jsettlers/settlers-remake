@@ -108,7 +108,6 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = EWaypointType.DESTINATION;
 		}
-		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
 		if (this.isSeaTrading && waypointType == EWaypointType.DESTINATION) {
 			if (!coastIsReachable(position)) {
 				return;
@@ -152,7 +151,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return waterFound && landFound;
 	}
 
-	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
+	private ShortPoint2D findClosestReachablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
 		ShortPoint2D waypointBefore = this.pos;
 		if (this.isSeaTrading) {
 			waypointBefore = this.shipWayStart;
