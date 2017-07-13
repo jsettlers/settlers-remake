@@ -26,6 +26,7 @@ import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
@@ -97,7 +98,7 @@ public interface IBuildingsGrid {
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
-	void setDock(int[] position, boolean place, Player player);
+	void setDock(DockPosition dockPosition, boolean place, Player player);
 
 	/**
 	 * @return dijkstra algorithm to be used by buildings.

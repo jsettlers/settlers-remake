@@ -299,10 +299,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void gotoDockAction() {
 		if (!done) {
 			this.done = true;
-			int x = building.getDock()[0] + 2 * building.getDock()[2];
-			int y = building.getDock()[1] + 2 * building.getDock()[3];
-			ShortPoint2D position = new ShortPoint2D(x, y);
-			if (!super.goToPos(position)) {
+			ShortPoint2D point = building.getDock().getPosition();
+			EDirection direction = building.getDock().getDirection();
+			if (!super.goToPos(direction.getNextHexPoint(point, 2))) {
 				jobFailed();
 			}
 		} else {

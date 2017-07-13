@@ -15,6 +15,7 @@
 package jsettlers.graphics.map.draw;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 
 import go.graphics.GLDrawContext;
@@ -61,11 +62,11 @@ public class MapObjectDrawer {
 
 	private static final int[] PASSENGER_POSITION_TO_FRONT = {2, -2, -2, 1, 1, -1, -1};
 	private static final int[] PASSENGER_POSITION_TO_RIGHT = {0, 1, -1, -1, 1, 1, -1};
-	private final int maxNumberOfPassengers = 7;
+	private final int maxNumberOfPassengers = PASSENGER_POSITION_TO_FRONT.length;
 	private final int passengerDeckHeight = 10;
 	private static final int[] CARGO_POSITION_TO_FRONT = {0, 3, -2};
 	private static final int[] CARGO_POSITION_TO_RIGHT = {0, 0, 0};
-	private final int maxNumberOfStacks = 3;
+	private final int maxNumberOfStacks = CARGO_POSITION_TO_FRONT.length;
 	private final int cargoDeckHeight = 18;
 
 	private static final int SOUND_MILL = 42;
@@ -207,12 +208,12 @@ public class MapObjectDrawer {
 		float state = ship.getStateProgress();
 		final int imageFile = 36;
 		ImageLink shipLink;
-		int sequence;
+		int baseSequence = (shipType == EMovableType.FERRY) ? 4 : 0;
+		int sailSequence = (shipType == EMovableType.FERRY) ? 29 : 28;
 		Image image;
 		if (state < .95) {
 			// draw ship under construction
-			sequence = (shipType == EMovableType.FERRY) ? 7 : 3;
-			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
+			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, baseSequence + 3, shipDirection.ordinal);
 			image = imageProvider.getImage(shipLink);
 			drawWithConstructionMask(x, y, state, image, shade);
 		} else {
@@ -230,10 +231,7 @@ public class MapObjectDrawer {
 				viewY = mc.getViewY(x, y, 0);
 			}
 			// draw ship body
-			sequence = (shipType == EMovableType.FERRY) ? 4 : 0;
-			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
-			image = imageProvider.getImage(shipLink);
-			image.drawAt(gl, db, viewX, viewY, color, shade);
+			drawShipLink(imageFile, baseSequence, shipDirection, gl, db, viewX, viewY, color, shade);
 			// prepare freight drawing
 			ArrayList<IMovable> passengerList = ship.getPassengers();
 			byte[] dx = EDirection.getXDeltaArray();
@@ -246,8 +244,7 @@ public class MapObjectDrawer {
 			int yRight = y + dy[direction.rotateRight(1).ordinal] + dy[direction.rotateRight(2).ordinal];
 			float xShiftRight = (mc.getViewX(xRight, yRight, 0) - baseViewX) / 2;
 			float yShiftRight = (mc.getViewY(xRight, yRight, 0) - baseViewY) / 2;
-			ArrayList<Float> yPosition = new ArrayList<>();
-			ArrayList<Integer> drawSequence = new ArrayList<>();
+			ArrayList<FloatIntObject> freightY = new ArrayList<>();
 			int numberOfFreight;
 			// get freight positions
 			if (shipType == EMovableType.FERRY) {
@@ -256,8 +253,8 @@ public class MapObjectDrawer {
 					numberOfFreight = maxNumberOfPassengers;
 				}
 				for (int i = 0; i < numberOfFreight; i++) {
-					yPosition.add(PASSENGER_POSITION_TO_FRONT[i] * yShiftForward + PASSENGER_POSITION_TO_RIGHT[i] * yShiftRight);
-					drawSequence.add(i);
+					freightY.add(new FloatIntObject(PASSENGER_POSITION_TO_FRONT[i] * yShiftForward
+							+ PASSENGER_POSITION_TO_RIGHT[i] * yShiftRight, i));
 				}
 			} else {
 				numberOfFreight = ship.getNumberOfStacks();
@@ -265,28 +262,19 @@ public class MapObjectDrawer {
 					numberOfFreight = maxNumberOfStacks;
 				}
 				for (int i = 0; i < numberOfFreight; i++) {
-					yPosition.add(CARGO_POSITION_TO_FRONT[i] * yShiftForward + CARGO_POSITION_TO_RIGHT[i] * yShiftRight);
-					drawSequence.add(i);
+					freightY.add(new FloatIntObject(CARGO_POSITION_TO_FRONT[i] * yShiftForward
+							+ CARGO_POSITION_TO_RIGHT[i] * yShiftRight, i));
 				}
 			}
 			// sort freight by view y
-			for (int i = 0; i < numberOfFreight - 1; i++) {
-				for (int j = i + 1; j < numberOfFreight; j++) {
-					if (yPosition.get(i) < yPosition.get(j)) {
-						int number = drawSequence.get(i);
-						float yPos = yPosition.get(i);
-						drawSequence.set(i, drawSequence.get(j));
-						yPosition.set(i, yPosition.get(j));
-						drawSequence.set(j, number);
-						yPosition.set(j, yPos);
-					}
-				}
+			if (freightY.size() > 0) {
+				Collections.sort(freightY, freightY.get(0));
 			}
 			if (shipType == EMovableType.FERRY) {
 				// draw passengers behind the sail
 				for (int i = 0; i < numberOfFreight; i++) {
-					int j = drawSequence.get(i);
-					float yShift = yPosition.get(i);
+					int j = freightY.get(i).getInt();
+					float yShift = freightY.get(i).getFloat();
 					if (yShift >= 0) {
 						float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 						IMovable passenger = passengerList.get(j);
@@ -298,8 +286,8 @@ public class MapObjectDrawer {
 			} else {
 				// draw stacks behind the sail
 				for (int i = 0; i < numberOfFreight; i++) {
-					int j = drawSequence.get(i);
-					float yShift = yPosition.get(i);
+					int j = freightY.get(i).getInt();
+					float yShift = freightY.get(i).getFloat();
 					if (yShift >= 0) {
 						float xShift = CARGO_POSITION_TO_FRONT[j] * xShiftForward + CARGO_POSITION_TO_RIGHT[j] * xShiftRight;
 						EMaterialType material = ship.getCargoType(j);
@@ -314,15 +302,12 @@ public class MapObjectDrawer {
 				}
 			}
 			// draw sail
-			sequence = (shipType == EMovableType.FERRY) ? 29 : 28;
-			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
-			image = imageProvider.getImage(shipLink);
-			image.drawAt(gl, db, viewX, viewY, color, shade);
+			drawShipLink(imageFile, sailSequence, shipDirection, gl, db, viewX, viewY, color, shade);
 			if (shipType == EMovableType.FERRY) {
 				// draw passengers in front of the sail
 				for (int i = 0; i < numberOfFreight; i++) {
-					int j = drawSequence.get(i);
-					float yShift = yPosition.get(i);
+					int j = freightY.get(i).getInt();
+					float yShift = freightY.get(i).getFloat();
 					if (yShift < 0) {
 						float xShift = PASSENGER_POSITION_TO_FRONT[j] * xShiftForward + PASSENGER_POSITION_TO_RIGHT[j] * xShiftRight;
 						IMovable passenger = passengerList.get(j);
@@ -334,8 +319,8 @@ public class MapObjectDrawer {
 			} else {
 				// draw stacks in front of the sail
 				for (int i = 0; i < numberOfFreight; i++) {
-					int j = drawSequence.get(i);
-					float yShift = yPosition.get(i);
+					int j = freightY.get(i).getInt();
+					float yShift = freightY.get(i).getFloat();
 					if (yShift < 0) {
 						float xShift = CARGO_POSITION_TO_FRONT[j] * xShiftForward + CARGO_POSITION_TO_RIGHT[j] * xShiftRight;
 						EMaterialType material = ship.getCargoType(j);
@@ -350,14 +335,18 @@ public class MapObjectDrawer {
 				}
 			}
 			// draw ship front
-			sequence = (shipType == EMovableType.FERRY) ? 6 : 2;
-			shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, shipDirection.ordinal);
-			image = imageProvider.getImage(shipLink);
-			image.drawAt(gl, db, viewX, viewY, color, shade);
+			drawShipLink(imageFile, baseSequence + 2, shipDirection, gl, db, viewX, viewY, color, shade);
 			if (state >= 0.95 && ship.isSelected()) {
 				drawSelectionMark(viewX, viewY, ship.getHealth() / DEFAULT_HEALTH);
 			}
 		}
+	}
+
+	private void drawShipLink(int imageFile, int sequence, EDirection direction, GLDrawContext gl,
+							  DrawBuffer db, float viewX, float viewY, Color color, float shade) {
+		ImageLink shipLink = new OriginalImageLink(EImageLinkType.SETTLER, imageFile, sequence, direction.ordinal);
+		Image image = imageProvider.getImage(shipLink);
+		image.drawAt(gl, db, viewX, viewY, color, shade);
 	}
 
 	private void drawObject(int x, int y, IMapObject object, float color) {

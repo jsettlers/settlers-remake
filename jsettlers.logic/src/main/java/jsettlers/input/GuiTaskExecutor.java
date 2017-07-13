@@ -298,24 +298,26 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		if (movableIds.isEmpty()) {
 			return;
 		}
-		if (!(Movable.getMovableByID(movableIds.get(0)).isShip())) {
-			FerryEntrance ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
-			if (ferryEntrance != null) { // enter a ferry
-				for (int movableId : movableIds) {
-					Movable movable = (Movable) (Movable.getMovableByID(movableId));
-					movable.moveTo(ferryEntrance.getEntrance());
-					movable.aimAtFerry(ferryEntrance.getFerry());
-				}
-				return;
-			}
+		FerryEntrance ferryEntrance = null;
+		if (!(Movable.getMovableByID(movableIds.get(0)).isShip()) &&
+				grid.isBlocked(targetPosition.x, targetPosition.y)) {
+			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
 		}
-		if (movableIds.size() == 1) {
-			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
-			if (currMovable != null) {
-				currMovable.moveTo(targetPosition);
+		if (ferryEntrance != null) { // enter a ferry
+			for (int movableId : movableIds) {
+				Movable movable = (Movable) (Movable.getMovableByID(movableId));
+				movable.moveTo(ferryEntrance.getEntrance());
+				movable.aimAtFerry(ferryEntrance.getFerry());
 			}
 		} else {
-			sendMovablesNew(targetPosition, movableIds);
+			if (movableIds.size() == 1) {
+				ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
+				if (currMovable != null) {
+					currMovable.moveTo(targetPosition);
+				}
+			} else {
+				sendMovablesNew(targetPosition, movableIds);
+			}
 		}
 	}
 

@@ -28,6 +28,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.Movable;
@@ -48,7 +49,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private EMovableType orderedShipType = null;
 	private int shipBuildingSteps = 1;
 	private Movable ship = null;
-	private int[] dockPosition = null; // x, y, dx, dy
+	private DockPosition dockPosition = null;
 
 	/**
 	 * Points where we need to clean up pigs or donkeys.
@@ -198,9 +199,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public void buildShipAction() {
 		if (this.ship == null) {
-			ShortPoint2D position = new ShortPoint2D
-					((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
-					(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
+			ShortPoint2D position = this.dockPosition.getDirection().getNextHexPoint(this.dockPosition.getPosition(), 5);
 			// push old ship
 			this.ship = (Movable) super.grid.getMovableGrid().getMovableAt(position.x, position.y);
 			if (this.ship != null) {
@@ -209,8 +208,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			// make new ship
 			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType,
 					position, super.getPlayer());
-			EDirection direction = EDirection.getDirection
-					(this.dockPosition[2], this.dockPosition[3]).rotateRight(1);
+			EDirection direction = dockPosition.getDirection().rotateRight(1);
 			this.ship.setDirection(direction);
 			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
 		} else {
@@ -222,7 +220,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		}
 	}
 
-	public boolean setDock(int[] position) {
+	public boolean setDock(DockPosition dockPosition) {
 		if (this.type != EBuildingType.DOCKYARD) {
 			return false;
 		}
@@ -232,12 +230,12 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 			this.grid.setDock(this.dockPosition, false, this.getPlayer());
 		}
-		this.dockPosition = position;
-		this.grid.setDock(position, true, this.getPlayer());
+		this.dockPosition = dockPosition;
+		this.grid.setDock(dockPosition, true, this.getPlayer());
 		return true;
 	}
 
-	public int[] getDock() {
+	public DockPosition getDock() {
 		return this.dockPosition;
 	}
 

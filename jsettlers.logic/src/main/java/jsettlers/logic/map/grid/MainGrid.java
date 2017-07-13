@@ -81,6 +81,7 @@ import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.stack.multi.StockSettings;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -1517,28 +1518,23 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setDock(int[] position, boolean place, Player player) {
+		public void setDock(DockPosition dockPosition, boolean place, Player player) {
+			ShortPoint2D point;
 			if (place) { // place dock
-				int x = position[0];
-				int y = position[1];
-				short partition = landscapeGrid.getBlockedPartitionAt(x - position[2], y - position[3]);
+				point = dockPosition.getDirection().rotateRight(3).getNextHexPoint(dockPosition.getPosition());
+				short partition = landscapeGrid.getBlockedPartitionAt(point.x, point.y);
 				for (int i = 0; i < 3; i++) {
-					ShortPoint2D point = new ShortPoint2D(x, y);
+					point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
 					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, player);
-					flagsGrid.setBlockedAndProtected(x, y, false);
+					flagsGrid.setBlockedAndProtected(point.x, point.y, false);
 					partitionsGrid.changePlayerAt(point, player.getPlayerId());
-					landscapeGrid.setBlockedPartition((short)x, (short)y, partition);
-					x += position[2];
-					y += position[3];
+					landscapeGrid.setBlockedPartition(point.x, point.y, partition);
 				}
 			} else { // remove dock
-				int x = position[0];
-				int y = position[1];
 				for (int i = 0; i < 3; i++) {
-					mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.DOCK);
-					flagsGrid.setBlockedAndProtected(x, y, true);
-					x += position[2];
-					y += position[3];
+					point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
+					mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
+					flagsGrid.setBlockedAndProtected(point.x, point.y, true);
 				}
 			}
 		}
@@ -1858,44 +1854,40 @@ public final class MainGrid implements Serializable {
 			if (!isWaterSafe(position.x, position.y)) {
 				return null;
 			}
-			int x = position.x;
-			int y = position.y;
-			byte dx[] = EDirection.getXDeltaArray();
-			byte dy[] = EDirection.getYDeltaArray();
-			for (int i = -1; i < EDirection.NUMBER_OF_DIRECTIONS; i++) { // search ferry
-				if (i >= 0) {
-					x = position.x + dx[i];
-					y = position.y + dy[i];
+			ShortPoint2D ferryPosition = position;
+			ShortPoint2D entrance = position;
+			boolean searching = true;
+			ILogicMovable ship = null;
+			EDirection direction = EDirection.getDirection(0, 1);
+			for (int r1 = -1; r1 < EDirection.NUMBER_OF_DIRECTIONS && searching; r1++) { // search ferry
+				if (r1 >= 0) {
+					ferryPosition = direction.rotateRight(r1).getNextHexPoint(position);
 				}
-				ILogicMovable ship = getMovableGrid().getMovableAt(x, y);
+				ship = getMovableGrid().getMovableAt(ferryPosition.x, ferryPosition.y);
 				if (ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
-					for (int j = 0; j < EDirection.NUMBER_OF_DIRECTIONS; j++) { // search ferry entrance
-						if (!this.isBlocked(x + 2 * dx[j], y + 2 * dy[j])) {
-							FerryEntrance boarding = new FerryEntrance((Movable) ship,
-									new ShortPoint2D(x + 2 * dx[j], y + 2 * dy[j]));
-							return boarding;
+					for (int r2 = 0; r2 < EDirection.NUMBER_OF_DIRECTIONS && searching; r2++) { // search ferry entrance
+						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 2);
+						if (!this.isBlocked(entrance.x, entrance.y)) {
+							searching = false;
 						}
 					}
 				}
 			}
-			return null;
+			if (searching) {
+				return null;
+			}
+			return new FerryEntrance((Movable) ship, entrance);
 		}
 
 		public ShortPoint2D getUnloadPosition(ShortPoint2D position) {
-			int x = position.x;
-			int y = position.y;
-			int dx = 0;
-			int dy = 0;
-			final byte[] xDeltaArray = EDirection.getXDeltaArray();
-			final byte[] yDeltaArray = EDirection.getYDeltaArray();
 			int distance = 2;
-			int direction;
+			EDirection direction = EDirection.getDirection(0, 1);
 			boolean searching = true;
-			for (direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
-				dx = (short) (xDeltaArray[direction] * distance) + x;
-				dy = (short) (yDeltaArray[direction] * distance) + y;
-				if (isInBounds(new ShortPoint2D(dx, dy)) && !isWaterSafe(dx, dy)
-						&& !landscapeGrid.isBlocked(dx, dy)) {
+			ShortPoint2D point = null;
+			for (int rotate = 0; rotate < EDirection.NUMBER_OF_DIRECTIONS; rotate++) {
+				point = direction.rotateRight(rotate).getNextHexPoint(position, distance);
+				if (isInBounds(point) && !isWaterSafe(point.x, point.y)
+						&& !landscapeGrid.isBlocked(point.x, point.y)) {
 					searching = false;
 					break;
 				}
@@ -1903,30 +1895,24 @@ public final class MainGrid implements Serializable {
 			if (searching) {
 				return null; // no coast near by
 			} else {
-				return new ShortPoint2D(dx, dy); // coast found, return point for unloading
+				return point; // coast found, return point for unloading
 			}
 		}
 
-		public int[] findDockPosition(ShortPoint2D position) {
-			int x = position.x;
-			int y = position.y;
-			if (!isWaterSafe(x, y)) {
+		public DockPosition findDockPosition(ShortPoint2D requestedPosition) {
+			if (!isWaterSafe(requestedPosition.x, requestedPosition.y)) {
 				return null; // requested position is not in water
 			}
-			int dx = 0;
-			int dy = 0;
-			final byte[] xDeltaArray = EDirection.getXDeltaArray();
-			final byte[] yDeltaArray = EDirection.getYDeltaArray();
 			int distance;
-			int direction = 0;
 			boolean searching = true;
+			ShortPoint2D point = null;
+			EDirection direction = EDirection.getDirection(1, 0);
 			for (distance = 1; distance < 12 && searching; distance++) { // search coast
-				for (direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
-					dx = xDeltaArray[direction] * distance;
-					dy = yDeltaArray[direction] * distance;
-					if (MainGrid.this.isInBounds(x + dx, y + dy) && !isWaterSafe(x + dx, y + dy)) {
+				for (int rotate = 0; rotate < EDirection.NUMBER_OF_DIRECTIONS && searching; rotate++) {
+					point = direction.rotateRight(rotate).getNextHexPoint(requestedPosition, distance);
+					if (MainGrid.this.isInBounds(point.x, point.y) && !isWaterSafe(point.x, point.y)) {
 						searching = false;
-						break;
+						direction = direction.rotateRight(rotate + 3);
 					}
 				}
 			}
@@ -1934,26 +1920,17 @@ public final class MainGrid implements Serializable {
 				return null; // no coast found
 			}
 			searching = true;
-			x += dx;
-			y += dy;
+			point = direction.getNextHexPoint(point);
+			DockPosition dockPosition = new DockPosition(point, direction);
 			for (distance = 1; distance < 6 && searching; distance++) { // check water width
-				dx = xDeltaArray[direction] * distance;
-				dy = yDeltaArray[direction] * distance;
-				if (!isWaterSafe(x - dx, y - dy)) {
+				point = direction.getNextHexPoint(point);
+				if (!isWaterSafe(point.x, point.y)) {
 					searching = false;
 				}
 			}
 			if (!searching) {
 				return null; // water width not sufficient to build ships
 			}
-			int[] dockPosition = new int[5];
-			dx = xDeltaArray[direction];
-			dy = yDeltaArray[direction];
-			dockPosition[0] = x - dx; // dock position at coast
-			dockPosition[1] = y - dy;
-			dockPosition[2] = -dx; // step to next dock position
-			dockPosition[3] = -dy;
-			dockPosition[4] = direction;
 			return dockPosition;
 		}
 

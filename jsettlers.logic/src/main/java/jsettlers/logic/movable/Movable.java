@@ -1150,6 +1150,8 @@ public final class Movable implements ILogicMovable {
 	public void setCargoType(EMaterialType cargo, int stack) {
 		if (checkStackNumber(stack)) {
 			this.cargoType[stack] = cargo;
+		} else {
+			throw new IllegalArgumentException("Empty stack cannot be used as ship cargo");
 		}
 	}
 

@@ -77,6 +77,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.MatchConstants;
@@ -442,15 +443,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-	public void setDock(ShortPoint2D setDockPosition) {
+	public void setDock(ShortPoint2D requestedDockPosition) {
 		final ISelectable selected = currentSelection.getSingle();
 		if (selected instanceof Building) {
-			int[] dockPosition = grid.findDockPosition(setDockPosition);
+			DockPosition dockPosition = grid.findDockPosition(requestedDockPosition);
 			if (dockPosition == null) {
 				connector.playSound(116, 1); // this dock position is not at the coast
 			} else {
 				Building building = (Building) selected;
-				if (MapCircle.getDistance(building.getPosition().x, building.getPosition().y, dockPosition[0], dockPosition[1]) > 15) {
+				if (MapCircle.getDistance(building.getPosition().x, building.getPosition().y,
+						dockPosition.getPosition().x, dockPosition.getPosition().y) > 15) {
 					connector.playSound(116, 1); // this dock position would be too far away
 				} else {
 					if (building.getBuildingType() == EBuildingType.DOCKYARD) {
@@ -754,12 +756,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (dockyard.getOrderedMaterial() != null) {
 			return;
 		}
-		EMaterialType[] material = new EMaterialType[5];
-		material[0] = EMaterialType.PLANK;
-		material[1] = EMaterialType.PLANK;
-		material[2] = EMaterialType.PLANK;
-		material[3] = EMaterialType.PLANK;
-		material[4] = EMaterialType.IRON;
+		EMaterialType[] material = new EMaterialType[] {
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.IRON};
 		dockyard.setOrder(material, EMovableType.FERRY);
 	}
 
@@ -768,14 +770,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (dockyard.getOrderedMaterial() != null) {
 			return;
 		}
-		EMaterialType[] material = new EMaterialType[7];
-		material[0] = EMaterialType.PLANK;
-		material[1] = EMaterialType.PLANK;
-		material[2] = EMaterialType.PLANK;
-		material[3] = EMaterialType.PLANK;
-		material[4] = EMaterialType.PLANK;
-		material[5] = EMaterialType.PLANK;
-		material[6] = EMaterialType.IRON;
+		EMaterialType[] material = new EMaterialType[] {
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.PLANK,
+				EMaterialType.IRON};
 		dockyard.setOrder(material, EMovableType.CARGO_BOAT);
 	}
 

@@ -27,6 +27,7 @@ import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
@@ -43,7 +44,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 
 	private final boolean isSeaTrading;
-	private int[] dockPosition = null; // x, y, dx, dy
+	private DockPosition dockPosition = null;
 	private ShortPoint2D shipWayStart = null;
 
 	/**
@@ -137,7 +138,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		final byte[] xDeltaArray = EDirection.getXDeltaArray();
 		final byte[] yDeltaArray = EDirection.getYDeltaArray();
 		int distance = 5;
-		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS; direction++) {
+		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS
+				&& (!waterFound || !landFound); direction++) {
 			int dx = x + xDeltaArray[direction] * distance;
 			int dy = y + yDeltaArray[direction] * distance;
 			if (grid.getMovableGrid().isInBounds(dx, dy)) {
@@ -221,22 +223,20 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return SUPPORTED_PRIORITIES;
 	}
 
-	public boolean setDock(int[] position) {
+	public boolean setDock(DockPosition dockPosition) {
 		if (this.type != EBuildingType.HARBOR) {
 			return false;
 		}
 		if (this.dockPosition != null) { // replace dock
 			this.grid.setDock(this.dockPosition, false, this.getPlayer());
 		}
-		this.dockPosition = position;
-		this.grid.setDock(position, true, this.getPlayer());
-		this.shipWayStart = new ShortPoint2D
-				((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
-				(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
+		this.dockPosition = dockPosition;
+		this.grid.setDock(dockPosition, true, this.getPlayer());
+		this.shipWayStart = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), 5);
 		return true;
 	}
 
-	public int[] getDock() {
+	public DockPosition getDock() {
 		return this.dockPosition;
 	}
 
@@ -251,10 +251,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 
 	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
 		for (IRequestStack stack : getStacks()) {
-			if (stack.getMaterialType() == material) {
-				if (stack.hasMaterial()) {
-					return stack.getPosition();
-				}
+			if (stack.getMaterialType() == material && stack.hasMaterial()) {
+				return stack.getPosition();
 			}
 		}
 		return null;
