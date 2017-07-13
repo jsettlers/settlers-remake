@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
@@ -55,6 +57,9 @@ public class GoodsStockFragment extends Fragment implements DrawListener {
 
 	@ViewById(R.id.recyclerView)
 	RecyclerView recyclerView;
+	@ViewById(R.id.textView_message)
+	TextView textViewMessage;
+
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -73,6 +78,8 @@ public class GoodsStockFragment extends Fragment implements DrawListener {
 		recyclerView.setAdapter(materialsAdapter);
 
 		drawControls.addInfrequentDrawListener(this);
+
+		update();
 	}
 
 	@Override
@@ -83,7 +90,18 @@ public class GoodsStockFragment extends Fragment implements DrawListener {
 
 	@Override
 	public void draw() {
-		getView().post(() -> materialsAdapter.setMaterialStates(materialStates()));
+		getView().post(this::update);
+	}
+
+	private void update() {
+		if (positionControls.isInPlayerPartition()) {
+			materialsAdapter.setMaterialStates(materialStates());
+			recyclerView.setVisibility(View.VISIBLE);
+			textViewMessage.setVisibility(View.INVISIBLE);
+		} else {
+			recyclerView.setVisibility(View.INVISIBLE);
+			textViewMessage.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void materSelected(StockMaterialState stockMaterialState) {
