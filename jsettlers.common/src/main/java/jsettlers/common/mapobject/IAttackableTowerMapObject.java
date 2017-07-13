@@ -14,11 +14,10 @@
  *******************************************************************************/
 package jsettlers.common.mapobject;
 
-import jsettlers.common.map.object.MapObject;
 import jsettlers.common.movable.IMovable;
 
 /**
- * Interface for {@link MapObject}.ATTACKABLE_TOWER objects.
+ * Interface for {@link IMapObject}.ATTACKABLE_TOWER objects.
  * 
  * @author Andreas Eberle
  * 

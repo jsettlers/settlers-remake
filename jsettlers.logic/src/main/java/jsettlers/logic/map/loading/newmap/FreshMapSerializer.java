@@ -23,13 +23,13 @@ import java.io.OutputStream;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -121,21 +121,21 @@ public class FreshMapSerializer {
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				MapObject object = data.getMapObject(x, y);
+				MapDataObject object = data.getMapObject(x, y);
 				if (object instanceof MapTreeObject) {
 					writeObject(stream, x, y, TYPE_TREE, "");
-				} else if (object instanceof MapStoneObject) {
-					int capacity = ((MapStoneObject) object).getCapacity();
+				} else if (object instanceof StoneMapDataObject) {
+					int capacity = ((StoneMapDataObject) object).getCapacity();
 					writeObject(stream, x, y, TYPE_STONE, Integer.toString(capacity));
-				} else if (object instanceof BuildingObject) {
-					int player = ((BuildingObject) object).getPlayerId();
-					writeObject(stream, x, y, TYPE_BUILDING, ((BuildingObject) object).getType() + "," + player);
+				} else if (object instanceof BuildingMapDataObject) {
+					int player = ((BuildingMapDataObject) object).getPlayerId();
+					writeObject(stream, x, y, TYPE_BUILDING, ((BuildingMapDataObject) object).getType() + "," + player);
 				} else if (object instanceof MovableObject) {
 					int player = ((MovableObject) object).getPlayerId();
 					writeObject(stream, x, y, TYPE_MOVABLE, ((MovableObject) object).getType() + "," + player);
-				} else if (object instanceof StackObject) {
-					int capacity = ((StackObject) object).getCount();
-					writeObject(stream, x, y, TYPE_STACK, ((StackObject) object).getType() + "," + capacity);
+				} else if (object instanceof StackMapDataObject) {
+					int capacity = ((StackMapDataObject) object).getCount();
+					writeObject(stream, x, y, TYPE_STACK, ((StackMapDataObject) object).getType() + "," + capacity);
 				}
 			}
 		}
@@ -215,7 +215,7 @@ public class FreshMapSerializer {
 				int y = stream.readShort();
 				int type = stream.readByte();
 				String string = stream.readUTF();
-				MapObject object = getObject(type, string);
+				MapDataObject object = getObject(type, string);
 				if (object != null) {
 					data.setMapObject(x, y, object);
 				}
@@ -225,17 +225,17 @@ public class FreshMapSerializer {
 		}
 	}
 
-	private static MapObject getObject(int type, String string) {
+	private static MapDataObject getObject(int type, String string) {
 		switch (type) {
 		case TYPE_TREE:
 			return MapTreeObject.getInstance();
 
 		case TYPE_STONE:
-			return MapStoneObject.getInstance(Integer.parseInt(string));
+			return StoneMapDataObject.getInstance(Integer.parseInt(string));
 
 		case TYPE_STACK: {
 			String[] parts = string.split(",");
-			return new StackObject(EMaterialType.valueOf(parts[0]), Integer.valueOf(parts[1]));
+			return new StackMapDataObject(EMaterialType.valueOf(parts[0]), Integer.valueOf(parts[1]));
 		}
 
 		case TYPE_MOVABLE: {
@@ -245,7 +245,7 @@ public class FreshMapSerializer {
 
 		case TYPE_BUILDING: {
 			String[] parts = string.split(",");
-			return new BuildingObject(EBuildingType.valueOf(parts[0]), Byte.valueOf(parts[1]));
+			return new BuildingMapDataObject(EBuildingType.valueOf(parts[0]), Byte.valueOf(parts[1]));
 		}
 
 		default:
@@ -271,7 +271,7 @@ public class FreshMapSerializer {
 
 		void setLandscape(int x, int y, ELandscapeType type);
 
-		void setMapObject(int x, int y, MapObject object);
+		void setMapObject(int x, int y, MapDataObject object);
 
 		void setResources(int x, int y, EResourceType type, byte amount);
 	}

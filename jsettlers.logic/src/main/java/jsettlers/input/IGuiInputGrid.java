@@ -14,12 +14,10 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java8.util.Optional;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
@@ -64,12 +62,12 @@ public interface IGuiInputGrid {
 	/**
 	 * Saves the map with the given {@link UIState}.
 	 *
-	 * @param playerStates
-	 * @throws FileNotFoundException
+	 * @param playerId
+	 * @param uiState
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	void save(PlayerState[] playerStates) throws IOException, InterruptedException;
+	void save(Byte playerId, UIState uiState) throws IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -127,8 +125,6 @@ public interface IGuiInputGrid {
 	Player getPlayer(byte playerId);
 
 	byte getNumberOfPlayers();
-
-	FogOfWar getFogOfWar();
 
 	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
 

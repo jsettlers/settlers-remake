@@ -76,8 +76,6 @@ public final class PartitionsGrid implements Serializable {
 	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
-	private final Team[] teams;
-
 	final short[] partitions;
 	private final byte[] towers;
 
@@ -93,6 +91,7 @@ public final class PartitionsGrid implements Serializable {
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
+
 		Map<Byte, Team> teams = new HashMap<>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
@@ -104,8 +103,6 @@ public final class PartitionsGrid implements Serializable {
 				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
 		}
-		Team[] teamsArray = new Team[teams.size()];
-		this.teams = teams.values().toArray(teamsArray);
 
 		this.partitions = new short[width * height];
 		this.towers = new byte[width * height];
@@ -729,10 +726,6 @@ public final class PartitionsGrid implements Serializable {
 
 	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
 		return getPartitionAt(x, y).getPartitionData();
-	}
-
-	public Team[] getTeams() {
-		return teams;
 	}
 
 	public PartitionManagerSettings getPartitionSettings(ShortPoint2D position) {

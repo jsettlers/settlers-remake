@@ -36,7 +36,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
-import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
@@ -881,11 +881,6 @@ public final class Movable implements ILogicMovable {
 		allMovables.remove(this);
 
 		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
-	}
-
-	@Override
-	public final byte getPlayerId() {
-		return player.playerId;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.data;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.logic.buildings.Building;
@@ -26,26 +28,24 @@ class BuildingCounts implements IBuildingCounts {
 	private final int[] buildings = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 
 	public BuildingCounts(byte playerId, short partitionId) {
-		for (Building building : Building.getAllBuildings()) {
-			if (building.getPlayerId() == playerId) {
-				int buildingTypeIdx = building.getBuildingType().ordinal;
-				boolean finishedConstruction = building.isConstructionFinished();
+		stream(Building.getAllBuildings()).filter(building -> building.getPlayer().getPlayerId() == playerId).forEach(building -> {
+			int buildingTypeIdx = building.getBuildingType().ordinal;
+			boolean finishedConstruction = building.isConstructionFinished();
 
+			if (finishedConstruction) {
+				buildings[buildingTypeIdx]++;
+			} else {
+				buildingsUnderConstruction[buildingTypeIdx]++;
+			}
+
+			if (building.getPartitionId() == partitionId) {
 				if (finishedConstruction) {
-					buildings[buildingTypeIdx]++;
+					buildingsInPartition[buildingTypeIdx]++;
 				} else {
-					buildingsUnderConstruction[buildingTypeIdx]++;
-				}
-
-				if (building.getPartitionId() == partitionId) {
-					if (finishedConstruction) {
-						buildingsInPartition[buildingTypeIdx]++;
-					} else {
-						buildingsInPartitionUnderConstruction[buildingTypeIdx]++;
-					}
+					buildingsInPartitionUnderConstruction[buildingTypeIdx]++;
 				}
 			}
-		}
+		});
 	}
 
 	@Override
@@ -54,7 +54,7 @@ class BuildingCounts implements IBuildingCounts {
 	}
 
 	@Override
-	public int buildingsInPartiton(EBuildingType buildingType) {
+	public int buildingsInPartition(EBuildingType buildingType) {
 		return buildingsInPartition[buildingType.ordinal];
 	}
 

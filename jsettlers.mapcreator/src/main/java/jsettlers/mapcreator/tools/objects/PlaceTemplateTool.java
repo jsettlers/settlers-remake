@@ -15,9 +15,9 @@
 package jsettlers.mapcreator.tools.objects;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MovableObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.control.IPlayerSetter;
@@ -48,9 +48,9 @@ public class PlaceTemplateTool extends AbstractTool {
 	public static class TemplateObject {
 		private final int dx;
 		private final int dy;
-		private final MapObject object;
+		private final MapDataObject object;
 
-		public TemplateObject(int dx, int dy, MapObject object) {
+		public TemplateObject(int dx, int dy, MapDataObject object) {
 			this.dx = dx;
 			this.dy = dy;
 			this.object = object;
@@ -71,7 +71,7 @@ public class PlaceTemplateTool extends AbstractTool {
 		 *            The current player
 		 * @return
 		 */
-		public MapObject getObject(byte player) {
+		public MapDataObject getObject(byte player) {
 			return object;
 		}
 	}
@@ -85,8 +85,8 @@ public class PlaceTemplateTool extends AbstractTool {
 		}
 
 		@Override
-		public MapObject getObject(byte player) {
-			return new BuildingObject(type, player);
+		public MapDataObject getObject(byte player) {
+			return new BuildingMapDataObject(type, player);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class PlaceTemplateTool extends AbstractTool {
 		}
 
 		@Override
-		public MapObject getObject(byte player) {
+		public MapDataObject getObject(byte player) {
 			return new MovableObject(type, player);
 		}
 	}

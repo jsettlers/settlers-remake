@@ -352,7 +352,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				break;
 			}
 
-			case SOLDIERS_ALL:
+		case SOLDIERS_ALL:
 			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);
 			break;
 		case SOLDIERS_ONE:
@@ -422,7 +422,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (currBuilding == building) {
 					buildingFound = true;
 				} else {
-					if (currBuilding.getBuildingType() == buildingType && currBuilding.getPlayerId() == playerId) {
+					if (currBuilding.getBuildingType() == buildingType && currBuilding.getPlayer().getPlayerId() == playerId) {
 						if (first == null) {
 							first = currBuilding;
 						}
@@ -590,11 +590,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		action.getArea().stream().filterBounds(grid.getWidth(), grid.getHeight()).forEach((x, y) -> {
 			final IGuiMovable movable = grid.getMovable(x, y);
-			if (movable != null && canSelectPlayer(movable.getPlayerId())) {
+			if (movable != null && canSelectPlayer(movable.getPlayer().getPlayerId())) {
 				selectionSet.add(movable);
 			}
 			final IBuilding building = grid.getBuildingAt(x, y);
-			if (building != null && canSelectPlayer(building.getPlayerId())) {
+			if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
 				selectionSet.add(building);
 			}
 		});
@@ -641,7 +641,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			} else {
 				// search buildings
 				final IBuilding building = grid.getBuildingAt(pos.x, pos.y);
-				if (building != null && canSelectPlayer(building.getPlayerId())) {
+				if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
 					return building;
 				} else {
 					return null;
@@ -658,13 +658,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		final IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
 		final IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
-		if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
+		if (m1 != null && canSelectPlayer(m1.getPlayer().getPlayerId())) {
 			return m1;
-		} else if (m2 != null && canSelectPlayer(m2.getPlayerId())) {
+		} else if (m2 != null && canSelectPlayer(m2.getPlayer().getPlayerId())) {
 			return m2;
-		} else if (m3 != null && canSelectPlayer(m3.getPlayerId())) {
+		} else if (m3 != null && canSelectPlayer(m3.getPlayer().getPlayerId())) {
 			return m3;
-		} else if (m4 != null && canSelectPlayer(m4.getPlayerId())) {
+		} else if (m4 != null && canSelectPlayer(m4.getPlayer().getPlayerId())) {
 			return m4;
 		} else {
 			return null;
@@ -681,15 +681,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		EMovableType selectedType = selectedMovable.getMovableType();
-		byte selectedPlayerId = selectedMovable.getPlayerId();
+		byte selectedPlayerId = selectedMovable.getPlayer().getPlayerId();
 
 		Set<EMovableType> selectableTypes;
 		if (selectedType.isSwordsman()) {
-			selectableTypes = EMovableType.swordsmen;
+			selectableTypes = EMovableType.SWORDSMEN;
 		} else if (selectedType.isPikeman()) {
-			selectableTypes = EMovableType.pikemen;
+			selectableTypes = EMovableType.PIKEMEN;
 		} else if (selectedType.isBowman()) {
-			selectableTypes = EMovableType.bowmen;
+			selectableTypes = EMovableType.BOWMEN;
 		} else {
 			selectableTypes = EnumSet.of(selectedType);
 		}
@@ -700,7 +700,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				.filterBounds(grid.getWidth(), grid.getHeight())
 				.forEach((x, y) -> {
 					final IGuiMovable movable = grid.getMovable(x, y);
-					if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
+					if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayer().getPlayerId()) {
 						selected.add(movable);
 					}
 				});
@@ -726,7 +726,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (!currentSelection.isEmpty()) {
 			SelectionSet newSelection = new SelectionSet(currentSelection.stream()
 					.filter(ISelectable::isSelected)
-					.filter(selected -> canSelectPlayer(selected.getPlayerId()))
+					.filter(selected -> canSelectPlayer(selected.getPlayer().getPlayerId()))
 					.collect(Collectors.toList()));
 
 			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {

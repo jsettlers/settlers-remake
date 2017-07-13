@@ -23,8 +23,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.testutils.DebugImagesHelper;
 import jsettlers.common.utils.coordinates.ICoordinatePredicate;

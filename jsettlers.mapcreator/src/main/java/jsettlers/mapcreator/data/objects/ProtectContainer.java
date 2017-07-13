@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.position.RelativePoint;
 
 public class ProtectContainer implements ObjectContainer {
@@ -22,7 +22,7 @@ public class ProtectContainer implements ObjectContainer {
 	private static ProtectContainer instance;
 
 	@Override
-	public MapObject getMapObject() {
+	public MapDataObject getMapObject() {
 		return null;
 	}
 

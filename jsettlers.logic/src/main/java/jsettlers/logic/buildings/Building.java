@@ -39,7 +39,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.Barrack;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.others.TempleBuilding;
@@ -333,15 +333,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return type;
 	}
 
-	@Override
-	public byte getPlayerId() {
-		return player.playerId;
-	}
-
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
 
+	@Override
 	public final Player getPlayer() {
 		return player;
 	}

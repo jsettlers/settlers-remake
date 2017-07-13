@@ -16,8 +16,8 @@ package jsettlers.mapcreator.mapvalidator.tasks.error;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
@@ -49,9 +49,9 @@ public class ValidateBuildings extends AbstractValidationTask {
 
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof BuildingObject) {
-					testBuilding(x, y, (BuildingObject) mapObject);
+				MapDataObject mapObject = data.getMapObject(x, y);
+				if (mapObject instanceof BuildingMapDataObject) {
+					testBuilding(x, y, (BuildingMapDataObject) mapObject);
 				}
 			}
 		}
@@ -67,7 +67,7 @@ public class ValidateBuildings extends AbstractValidationTask {
 	 * @param buildingObject
 	 *            Building
 	 */
-	private void testBuilding(int x, int y, BuildingObject buildingObject) {
+	private void testBuilding(int x, int y, BuildingMapDataObject buildingObject) {
 		EBuildingType type = buildingObject.getType();
 		int height = data.getLandscapeHeight(x, y);
 		ShortPoint2D start = new ShortPoint2D(x, y);

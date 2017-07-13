@@ -120,7 +120,11 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (waypointType == EWaypointType.DESTINATION) {
 			Arrays.fill(waypoints, null);
 		}
+
+		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
+
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
+
 		if (isSelected()) {
 			drawWaypointLine(true);
 		}
@@ -164,11 +168,11 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 				false, this.isSeaTrading, (byte) 0, WAYPOINT_SEARCH_RADIUS);
 	}
 
-	protected boolean isTargetSet() {
+	boolean isTargetSet() {
 		return waypoints[waypoints.length - 1] != null;
 	}
 
-	protected ShortPoint2D[] getWaypoints() {
+	ShortPoint2D[] getWaypoints() {
 		return waypoints;
 	}
 

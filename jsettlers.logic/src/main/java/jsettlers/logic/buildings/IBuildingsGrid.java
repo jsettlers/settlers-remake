@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
@@ -119,8 +120,7 @@ public interface IBuildingsGrid {
 	void freeAreaOccupiedByTower(ShortPoint2D towerPosition);
 
 	/**
-	 * Changes the player of the tower at the given position to the given new player. The given groundArea will always become occupied by the new
-	 * player.
+	 * Changes the player of the tower at the given position to the given new player. The given groundArea will always become occupied by the new player.
 	 * 
 	 * @param towerPosition
 	 * @param newPlayer

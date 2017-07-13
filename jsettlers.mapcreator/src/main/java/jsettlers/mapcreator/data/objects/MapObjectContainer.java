@@ -14,22 +14,22 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
 
 public class MapObjectContainer implements ObjectContainer, IMapObject {
 
-	private final MapDecorationObject object;
+	private final DecorationMapDataObject object;
 
-	public MapObjectContainer(MapDecorationObject object) {
+	public MapObjectContainer(DecorationMapDataObject object) {
 		this.object = object;
 	}
 
 	@Override
-	public MapObject getMapObject() {
+	public MapDataObject getMapObject() {
 		return object;
 	}
 

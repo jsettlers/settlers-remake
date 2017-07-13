@@ -15,19 +15,20 @@
 
 package jsettlers.main.android.mainmenu.presenters.picker;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.List;
 
-import java8.util.stream.Collectors;
-import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.android.core.GameStarter;
 import jsettlers.main.android.mainmenu.navigation.MainMenuNavigator;
 import jsettlers.main.android.mainmenu.views.LoadSinglePlayerPickerView;
 
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.stream.Collectors;
 
 /**
  * Created by tompr on 22/01/2017.
@@ -37,8 +38,7 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 	private final GameStarter gameStarter;
 	private final MainMenuNavigator navigator;
 
-	public LoadSinglePlayerPickerPresenter(LoadSinglePlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter,
-			ChangingList<? extends MapLoader> changingMaps) {
+	public LoadSinglePlayerPickerPresenter(LoadSinglePlayerPickerView view, MainMenuNavigator navigator, GameStarter gameStarter, ChangingList<? extends MapLoader> changingMaps) {
 		super(view, navigator, gameStarter, changingMaps);
 		this.view = view;
 		this.navigator = navigator;
@@ -47,18 +47,10 @@ public class LoadSinglePlayerPickerPresenter extends MapPickerPresenter {
 
 	@Override
 	public void itemSelected(MapLoader mapLoader) {
-		PlayerSetting[] playerSettings = mapLoader.getFileHeader().getPlayerSettings();
-
-		byte playerId = 0; // find playerId of HUMAN player
-		for (byte i = 0; i < playerSettings.length; i++) {
-			if (playerSettings[i].getPlayerType() == EPlayerType.HUMAN) {
-				playerId = i;
-				break;
-			}
-		}
-
+		MapFileHeader mapFileHeader = mapLoader.getFileHeader();
+		PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
+		byte playerId = mapFileHeader.getPlayerId();
 		JSettlersGame game = new JSettlersGame(mapLoader, 4711L, playerId, playerSettings);
-
 		gameStarter.setStartingGame(game.start());
 		navigator.showGame();
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,6 +15,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
@@ -30,13 +31,13 @@ public class DonkeyMapObject extends AbstractObjectsManagerObject implements IPl
 	public static final float FEED_TIME = 60;
 	private static final byte FEED_TIMES = 4;
 
-	private final byte playerId;
+	private final IPlayer player;
 	private boolean feedable;
 	private byte feedTimes;
 
-	public DonkeyMapObject(ShortPoint2D pos, byte playerId) {
+	public DonkeyMapObject(ShortPoint2D pos, IPlayer player) {
 		super(pos);
-		this.playerId = playerId;
+		this.player = player;
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class DonkeyMapObject extends AbstractObjectsManagerObject implements IPl
 	}
 
 	@Override
-	public byte getPlayerId() {
-		return playerId;
+	public IPlayer getPlayer() {
+		return player;
 	}
 }
