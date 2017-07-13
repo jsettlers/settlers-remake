@@ -253,7 +253,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		for (IRequestStack stack : getStacks()) {
 			if (stack.getMaterialType() == material) {
 				if (stack.hasMaterial()) {
-					return stack.getPos();
+					return stack.getPosition();
 				}
 			}
 		}

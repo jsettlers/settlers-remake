@@ -147,7 +147,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return position;
 	}
 

@@ -544,8 +544,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		int count = 0;
 		for (final ISelectable member : currentSelection) {
 			if (member instanceof ILocatable) {
-				x += ((ILocatable) member).getPos().x;
-				y += ((ILocatable) member).getPos().y;
+				x += ((ILocatable) member).getPosition().x;
+				y += ((ILocatable) member).getPosition().y;
 				count++;
 			}
 		}
@@ -783,7 +783,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		for (int i = 0; i < currentSelection.getSize(); i++) {
 			Movable ship = (Movable) currentSelection.get(0);
 			if (ship.getMovableType() == EMovableType.FERRY) {
-				ShortPoint2D position = grid.getUnloadPosition(ship.getPos());
+				ShortPoint2D position = grid.getUnloadPosition(ship.getPosition());
 				if (position != null){
 					ship.unload(position);
 				}

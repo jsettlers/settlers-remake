@@ -47,7 +47,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				iterator.remove();
 				return curr;
 			}
@@ -64,7 +64,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 	 */
 	public T getObjectAt(ShortPoint2D position) {
 		for (T curr : data) {
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				return curr;
 			}
 		}
@@ -135,7 +135,7 @@ public class PositionableList<T extends ILocatable> implements Serializable {
 		Iterator<T> iterator = data.iterator();
 		while (iterator.hasNext()) {
 			T curr = iterator.next();
-			if (curr.getPos().equals(position)) {
+			if (curr.getPosition().equals(position)) {
 				iterator.remove();
 				movedVisitor.accept(curr);
 				newList.data.add(curr);

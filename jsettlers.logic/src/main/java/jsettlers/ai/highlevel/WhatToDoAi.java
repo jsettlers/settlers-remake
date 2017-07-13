@@ -14,6 +14,41 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import java8.util.stream.Collectors;
+import jsettlers.ai.army.ArmyGeneral;
+import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.economy.EconomyMinister;
+import jsettlers.ai.highlevel.pioneers.PioneerAi;
+import jsettlers.ai.highlevel.pioneers.PioneerGroup;
+import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
+import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.movable.MovableGrid;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
+import jsettlers.network.client.interfaces.ITaskScheduler;
+
 import static java8.util.stream.StreamSupport.stream;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_IRON_MINE_RATIO;
 import static jsettlers.ai.highlevel.AiBuildingConstants.COAL_MINE_TO_SMITH_RATIO;
@@ -54,42 +89,6 @@ import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import jsettlers.ai.army.ArmyGeneral;
-import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
-import jsettlers.ai.economy.EconomyMinister;
-import jsettlers.ai.highlevel.pioneers.PioneerAi;
-import jsettlers.ai.highlevel.pioneers.PioneerGroup;
-import jsettlers.ai.highlevel.pioneers.target.SameBlockedPartitionLikePlayerFilter;
-import jsettlers.ai.highlevel.pioneers.target.SurroundedByResourcesFilter;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
-import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.map.grid.movable.MovableGrid;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
-import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import java8.util.stream.Collectors;
 
 /**
  * This WhatToDoAi is a high level KI. It delegates the decision which building is build next to its economy minister. However this WhatToDoAi takes care against lack of settlers and it builds a
@@ -221,7 +220,7 @@ class WhatToDoAi implements IWhatToDoAi {
 			if (!militaryBuilding.isOccupied()) {
 				ShortPoint2D door = militaryBuilding.getDoor();
 				IMovable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				if (soldier != null && militaryBuilding.getPos().getOnGridDistTo(soldier.getPos()) > TOWER_SEARCH_RADIUS) {
+				if (soldier != null && militaryBuilding.getPosition().getOnGridDistTo(soldier.getPosition()) > TOWER_SEARCH_RADIUS) {
 					soldiersWithOrders.add(soldier.getID());
 					sendMovableTo(soldier, door);
 				}

@@ -243,7 +243,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		Iterator<T> iter = fromList.iterator();
 		while (iter.hasNext()) {
 			T curr = iter.next();
-			if (curr.getPos().equals(pos)) {
+			if (curr.getPosition().equals(pos)) {
 				iter.remove();
 				if (newHasSamePlayer) {
 					toList.offer(curr);
@@ -320,7 +320,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		EMaterialType tool = movableType.getTool();
 
 		if (tool != EMaterialType.NO_MATERIAL) { // try to create a worker with a tool
-			MaterialOffer offer = materialOffers.getOfferCloseTo(tool, EOfferPriority.LOWEST, workerCreationRequest.getPos());
+			MaterialOffer offer = materialOffers.getOfferCloseTo(tool, EOfferPriority.LOWEST, workerCreationRequest.getPosition());
 
 			if (offer != null) {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
@@ -337,7 +337,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 			}
 
 		} else { // create worker without a tool
-			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerCreationRequest.getPos());
+			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerCreationRequest.getPosition());
 			if (manageableBearer != null) {
 				return manageableBearer.becomeWorker(this, workerCreationRequest);
 			} else {

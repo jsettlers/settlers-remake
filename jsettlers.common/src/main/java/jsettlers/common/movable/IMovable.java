@@ -63,7 +63,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * 
 	 * @return position on grid
 	 */
-	@Override ShortPoint2D getPos();
+	@Override ShortPoint2D getPosition();
 
 	/**
 	 * Used to get health of a movable.

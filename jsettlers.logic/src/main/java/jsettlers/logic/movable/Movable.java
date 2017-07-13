@@ -333,10 +333,10 @@ public final class Movable implements ILogicMovable {
 			movableAction = EMovableAction.NO_ACTION;
 			path = null;
 			if (ferryToEnter != null) {
-				int distanceToFerry = this.getPos().getOnGridDistTo(ferryToEnter.getPos());
+				int distanceToFerry = this.getPosition().getOnGridDistTo(ferryToEnter.getPosition());
 				if (distanceToFerry < 4) {
 					if (ferryToEnter.addPassenger(this)) {
-						grid.leavePosition(this.getPos(), this);
+						grid.leavePosition(this.getPosition(), this);
 						setState(EMovableState.ON_FERRY);
 					}
 				}
@@ -397,8 +397,8 @@ public final class Movable implements ILogicMovable {
 				int xEnd = distance * xDeltaArray[nextDirection];
 				int yEnd = distance * yDeltaArray[nextDirection];
 				for (int i = 0; i < distance; i++) {
-					x = this.getPos().x + xBegin + (xEnd - xBegin) / distance * i;
-					y = this.getPos().y + yBegin + (yEnd - yBegin) / distance * i;
+					x = this.getPosition().x + xBegin + (xEnd - xBegin) / distance * i;
+					y = this.getPosition().y + yBegin + (yEnd - yBegin) / distance * i;
 					if (grid.isInBounds(x, y)) {
 						blockingMovable = grid.getMovableAt(x, y);
 						if (blockingMovable != null && blockingMovable.isShip()) {
@@ -520,8 +520,8 @@ public final class Movable implements ILogicMovable {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 
 				} else if (pushingMovable.getMovableType().isPlayerControllable()
-						|| strategy.isValidPosition(pushingMovable.getPos())) { // exchange positions
-					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
+						|| strategy.isValidPosition(pushingMovable.getPosition())) { // exchange positions
+					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPosition());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 					return true;
@@ -538,7 +538,7 @@ public final class Movable implements ILogicMovable {
 
 			if (animationStartTime + animationDuration <= MatchConstants.clock().getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
-				if (pushingMovable.getPos() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
+				if (pushingMovable.getPosition() == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 
@@ -597,7 +597,7 @@ public final class Movable implements ILogicMovable {
 
 	private boolean goToRandomDirection(ILogicMovable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+		EDirection pushedFromDir = EDirection.getDirection(this.getPosition(), pushingMovable.getPosition());
 		if (pushedFromDir == null) {
 			return false;
 		}

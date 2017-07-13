@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials;
 
+import java.io.Serializable;
+
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
@@ -26,8 +28,6 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMat
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
-
-import java.io.Serializable;
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
@@ -106,7 +106,7 @@ public final class MaterialsManager implements Serializable {
 			return; // no offers => return
 		}
 
-		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
+		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPosition());
 
 		assert offer != null : "The offer can't be null here!";
 

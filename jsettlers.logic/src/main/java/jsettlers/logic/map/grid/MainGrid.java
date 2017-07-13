@@ -1804,7 +1804,7 @@ public final class MainGrid implements Serializable {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public ShortPoint2D getPos() {
+				public ShortPoint2D getPosition() {
 					return start;
 				}
 

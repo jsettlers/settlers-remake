@@ -598,8 +598,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			i.setState(state);
 		}
 
-		layout.stock_accept.configure(selectionManager::getSelected, building::getPos, true, true);
-		layout.stock_reject.configure(selectionManager::getSelected, building::getPos, false, true);
+		layout.stock_accept.configure(selectionManager::getSelected, building::getPosition, true, true);
+		layout.stock_reject.configure(selectionManager::getSelected, building::getPosition, false, true);
 
 		return layout._root;
 	}

@@ -77,7 +77,7 @@ public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
 
 	@Override
 	public ShortPoint2D calculatePoint(IBuilding building) {
-		return super.calculatePoint(building.getPos());
+		return super.calculatePoint(building.getPosition());
 	}
 
 	@Override

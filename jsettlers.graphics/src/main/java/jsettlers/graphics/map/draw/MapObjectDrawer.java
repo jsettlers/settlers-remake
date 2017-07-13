@@ -612,7 +612,7 @@ public class MapObjectDrawer {
 	public void draw(IMovable movable) {
 		forceSetup();
 
-		final ShortPoint2D pos = movable.getPos();
+		final ShortPoint2D pos = movable.getPosition();
 		drawMovableAt(movable, pos.x, pos.y);
 
 		playMovableSound(movable);
@@ -622,10 +622,10 @@ public class MapObjectDrawer {
 		if (!movable.isSoundPlayed()) {
 			final EMovableAction action = movable.getAction();
 			if (action == EMovableAction.ACTION1) {
-				playSoundAction1(movable.getMovableType(), movable.getPos());
+				playSoundAction1(movable.getMovableType(), movable.getPosition());
 				movable.setSoundPlayed();
 			} else if (action == EMovableAction.ACTION2) {
-				playSoundAction2(movable.getMovableType(), movable.getPos());
+				playSoundAction2(movable.getMovableType(), movable.getPosition());
 				movable.setSoundPlayed();
 			}
 		}

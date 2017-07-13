@@ -161,7 +161,7 @@ public final class FogOfWar implements Serializable {
 				if (isPlayerOK(curr)) {
 					short distance = curr.getViewDistance();
 					if (distance > 0) {
-						ShortPoint2D pos = curr.getPos();
+						ShortPoint2D pos = curr.getPosition();
 						if (pos != null)
 							drawer.drawCircleToBuffer(pos.x, pos.y, distance);
 					}

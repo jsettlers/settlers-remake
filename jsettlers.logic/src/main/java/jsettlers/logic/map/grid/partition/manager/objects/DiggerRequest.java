@@ -35,7 +35,7 @@ public final class DiggerRequest extends WorkerCreationRequest implements ILocat
 
 	@Override
 	public final ShortPoint2D getPos() {
-		return requester.getPos();
+		return requester.getPosition();
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public final class DijkstraAlgorithm {
 	}
 
 	private final Path findPathTo(IPathCalculatable requester, short tx, short ty) {
-		ShortPoint2D pos = requester.getPos();
+		ShortPoint2D pos = requester.getPosition();
 		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
 	}
 

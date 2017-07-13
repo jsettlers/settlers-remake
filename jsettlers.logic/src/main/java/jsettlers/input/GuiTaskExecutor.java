@@ -23,7 +23,6 @@ import java8.util.Optional;
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
@@ -365,7 +364,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		if (movable.isShip()) {
 			return true;
 		} else {
-			return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
+			return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPosition().x, movable.getPosition().y) == grid.getBlockedPartition(x, y);
 		}
 	}
 
