@@ -15,10 +15,17 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
-import static java8.util.J8Arrays.stream;
+import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.List;
 
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
@@ -30,14 +37,7 @@ import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
-import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import java8.util.stream.Collectors;
+import static java8.util.J8Arrays.stream;
 
 /**
  * Created by Tom Pratt on 10/01/2017.
@@ -159,7 +159,7 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		MaterialViewHolder(View itemView) {
 			super(itemView);
 			imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
-			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), materialState.getMaterialType(), !materialState.isStocked(), true)));
+			itemView.setOnClickListener(v -> actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPosition(), materialState.getMaterialType(), !materialState.isStocked(), true)));
 		}
 
 		void bind(MaterialState materialState) {

@@ -1517,7 +1517,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setDock(int[] position, boolean place, IPlayer player) {
+		public void setDock(int[] position, boolean place, Player player) {
 			if (place) { // place dock
 				int x = position[0];
 				int y = position[1];
