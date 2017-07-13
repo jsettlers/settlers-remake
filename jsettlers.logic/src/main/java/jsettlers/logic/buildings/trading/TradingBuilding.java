@@ -227,10 +227,10 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			return false;
 		}
 		if (this.dockPosition != null) { // replace dock
-			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+			this.grid.setDock(this.dockPosition, false, this.getPlayer().getPlayerId());
 		}
 		this.dockPosition = position;
-		this.grid.setDock(position, true, this.getPlayerId());
+		this.grid.setDock(position, true, this.getPlayer().getPlayerId());
 		this.shipWayStart = new ShortPoint2D
 				((short) (this.dockPosition[0] + 5 * this.dockPosition[2]),
 				(short) (this.dockPosition[1] + 5 * this.dockPosition[3]));
@@ -245,7 +245,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (this.dockPosition == null) {
 			return;
 		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		this.grid.setDock(this.dockPosition, false, this.getPlayer().getPlayerId());
 		this.dockPosition = null;
 		this.shipWayStart = null;
 	}

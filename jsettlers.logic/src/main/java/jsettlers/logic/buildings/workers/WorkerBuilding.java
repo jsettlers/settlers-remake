@@ -230,10 +230,10 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			if (this.ship != null) {
 				return false; // do not change the dock when a ship is tied to it
 			}
-			this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+			this.grid.setDock(this.dockPosition, false, this.getPlayer().getPlayerId());
 		}
 		this.dockPosition = position;
-		this.grid.setDock(position, true, this.getPlayerId());
+		this.grid.setDock(position, true, this.getPlayer().getPlayerId());
 		return true;
 	}
 
@@ -245,7 +245,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		if (this.dockPosition == null) {
 			return;
 		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayerId());
+		this.grid.setDock(this.dockPosition, false, this.getPlayer().getPlayerId());
 		this.dockPosition = null;
 	}
 
