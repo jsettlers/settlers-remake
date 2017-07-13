@@ -229,7 +229,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		}
 
 		if (attackableTowerObject != null && attackableTowerObject.currDefender != null) {
-			attackableTowerObject.currDefender.soldier.leaveOccupyableBuilding(attackableTowerObject.getPos());
+			attackableTowerObject.currDefender.soldier.leaveOccupyableBuilding(attackableTowerObject.getPosition());
 		}
 
 		setAttackableTowerObject(false);
@@ -512,7 +512,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		}
 
 		@Override
-		public ShortPoint2D getPos() {
+		public ShortPoint2D getPosition() {
 			return occupyingBuilding.getDoor();
 		}
 
@@ -534,7 +534,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 					occupyingBuilding.doorHealth = 0;
 					occupyingBuilding.inFight = true;
 
-					occupyingBuilding.grid.getMapObjectsManager().addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
+					occupyingBuilding.grid.getMapObjectsManager().addSelfDeletingMapObject(getPosition(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pullNewDefender(attackerPos);
 				}
@@ -559,7 +559,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 				occupyingBuilding.changePlayerTo(attackerPos);
 			} else {
 				currDefender = occupyingBuilding.removeSoldier();
-				currDefender.getSoldier().setDefendingAt(getPos());
+				currDefender.getSoldier().setDefendingAt(getPosition());
 			}
 		}
 

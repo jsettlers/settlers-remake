@@ -131,7 +131,7 @@ public class CargoBoatStrategy extends MovableStrategy {
             cargoCount = ship.getCargoCount(stack);
             material = ship.getCargoType(stack);
             while (cargoCount > 0) {
-                super.getGrid().dropMaterial(movable.getPos(), material, true, true);
+                super.getGrid().dropMaterial(movable.getPosition(), material, true, true);
                 cargoCount--;
             }
             ship.setCargoCount(0, stack);

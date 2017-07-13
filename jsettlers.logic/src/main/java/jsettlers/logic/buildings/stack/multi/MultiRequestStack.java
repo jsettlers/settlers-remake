@@ -172,7 +172,7 @@ public class MultiRequestStack implements IRequestStack {
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public ShortPoint2D getPosition() {
 		return position;
 	}
 
@@ -192,7 +192,7 @@ public class MultiRequestStack implements IRequestStack {
 		}
 
 		@Override
-		public ShortPoint2D getPos() {
+		public ShortPoint2D getPosition() {
 			return position;
 		}
 

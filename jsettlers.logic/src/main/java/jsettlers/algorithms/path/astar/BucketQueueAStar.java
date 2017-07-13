@@ -64,7 +64,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 
 	@Override
 	public final Path findPath(IPathCalculatable requester, ShortPoint2D target) {
-		ShortPoint2D pos = requester.getPos();
+		ShortPoint2D pos = requester.getPosition();
 		return findPath(requester, pos.x, pos.y, target.x, target.y);
 	}
 

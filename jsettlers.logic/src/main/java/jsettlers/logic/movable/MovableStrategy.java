@@ -209,7 +209,7 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.grid.isValidPosition(movable, x, y);
 	}
 
-	public final ShortPoint2D getPos() {
+	public final ShortPoint2D getPosition() {
 		return movable.getPosition();
 	}
 

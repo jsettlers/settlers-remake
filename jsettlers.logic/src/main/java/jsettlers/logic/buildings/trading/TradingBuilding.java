@@ -253,7 +253,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		for (IRequestStack stack : getStacks()) {
 			if (stack.getMaterialType() == material) {
 				if (stack.hasMaterial()) {
-					return stack.getPos();
+					return stack.getPosition();
 				}
 			}
 		}

@@ -364,7 +364,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void executeAction() {
 		clearMark();
-		if (super.getGrid().executeSearchType(movable, movable.getPos(), currentJob.getSearchType())) {
+		if (super.getGrid().executeSearchType(movable, movable.getPosition(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -427,7 +427,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = movable.getDirection();
-			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPos()), EResourceType.FISH);
+			return super.getGrid().tryTakingRecource(fishDirection.getNextHexPoint(movable.getPosition()), EResourceType.FISH);
 		case COALMINE:
 		case IRONMINE:
 		case GOLDMINE:
@@ -464,7 +464,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void lookAtSearched() {
-		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPos(), currentJob.getSearchType());
+		EDirection direction = super.getGrid().getDirectionOfSearched(movable.getPosition(), currentJob.getSearchType());
 		if (direction != null) {
 			super.lookInDirection(direction);
 			jobFinished();
@@ -500,7 +500,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private void dropCurrentMaterial() {
 		EMaterialType material = movable.getMaterial();
 		if (material.isDroppable()) {
-			super.getGrid().dropMaterial(movable.getPos(), material, true, false);
+			super.getGrid().dropMaterial(movable.getPosition(), material, true, false);
 		}
 		super.setMaterial(EMaterialType.NO_MATERIAL);
 	}

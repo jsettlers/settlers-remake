@@ -64,14 +64,14 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
 
-			if (!movable.getPos().equals(offer.getPos())) { // if we are not at the offers position, go to it.
-				if (!super.goToPos(offer.getPos())) {
+			if (!movable.getPosition().equals(offer.getPosition())) { // if we are not at the offers position, go to it.
+				if (!super.goToPos(offer.getPosition())) {
 					handleJobFailed(true);
 				}
 				break;
 			}
 		case GOING_TO_OFFER:
-			if (movable.getPos().equals(offer.getPos())) {
+			if (movable.getPosition().equals(offer.getPosition())) {
 				state = EBearerState.TAKING;
 				if (!super.take(materialType, true)) {
 					handleJobFailed(true);
@@ -89,14 +89,14 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			} else {
 				offer = null;
 				state = EBearerState.GOING_TO_REQUEST;
-				if (!movable.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
+				if (!movable.getPosition().equals(request.getPosition()) && !super.goToPos(request.getPosition())) {
 					handleJobFailed(true);
 				}
 			}
 			break;
 
 		case GOING_TO_REQUEST:
-			if (movable.getPos().equals(request.getPos())) {
+			if (movable.getPosition().equals(request.getPosition())) {
 				state = EBearerState.DROPPING;
 				super.drop(materialType);
 			} else {
@@ -149,7 +149,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	@Override
 	public boolean droppingMaterial() {
 		if (request != null) {
-			if (request.isActive() && request.getPos().equals(movable.getPos())) {
+			if (request.isActive() && request.getPosition().equals(movable.getPosition())) {
 				request.deliveryFulfilled();
 				request = null;
 				return false;
@@ -182,7 +182,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			if (request != null) {
 				boolean offerMaterial = droppingMaterial();
 				super.setMaterial(EMaterialType.NO_MATERIAL);
-				super.getGrid().dropMaterial(super.getPos(), materialType, offerMaterial, false);
+				super.getGrid().dropMaterial(super.getPosition(), materialType, offerMaterial, false);
 			}
 			break;
 
@@ -207,7 +207,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			super.getGrid().dropMaterial(movable.getPos(), materialType, true, false);
+			super.getGrid().dropMaterial(movable.getPosition(), materialType, true, false);
 		}
 
 		offer = null;

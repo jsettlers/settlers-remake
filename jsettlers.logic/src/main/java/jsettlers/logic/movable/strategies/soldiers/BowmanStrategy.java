@@ -44,7 +44,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
 		ShortPoint2D pos = getAttackPosition();
-		ShortPoint2D enemyPos = enemy.getPos();
+		ShortPoint2D enemyPos = enemy.getPosition();
 
 		int distance = pos.getOnGridDistTo(enemyPos);
 
@@ -58,7 +58,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	@Override
 	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EMovableAction.ACTION1, BOWMAN_ATTACK_DURATION);
-		super.getGrid().addArrowObject(enemy.getPos(), movable.getPos(), movable.getPlayer().playerId,
+		super.getGrid().addArrowObject(enemy.getPosition(), movable.getPosition(), movable.getPlayer().playerId,
 				getMovableType().getStrength() * getCombatStrength());
 	}
 

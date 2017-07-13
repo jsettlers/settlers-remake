@@ -14,17 +14,17 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.requests;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.Iterator;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
 import jsettlers.logic.constants.MatchConstants;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * This class is an advanced priority queue for material requests. The requests are served according to the settings. The settings specify the
@@ -138,7 +138,7 @@ public final class MaterialsForBuildingsRequestPriorityQueue extends AbstractMat
 				Iterator<MaterialRequestObject> iterator = priorityQueue[queueIdx].iterator();
 				while (iterator.hasNext()) {
 					MaterialRequestObject curr = iterator.next();
-					if (curr.getPos().equals(position)) {
+					if (curr.getPosition().equals(position)) {
 						iterator.remove();
 						newQueue.queues[priorityIndex][queueIdx].pushEnd(curr);
 						curr.requestQueue = newQueue;

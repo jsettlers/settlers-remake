@@ -1517,16 +1517,16 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setDock(int[] position, boolean place, byte playerId) {
+		public void setDock(int[] position, boolean place, IPlayer player) {
 			if (place) { // place dock
 				int x = position[0];
 				int y = position[1];
 				short partition = landscapeGrid.getBlockedPartitionAt(x - position[2], y - position[3]);
 				for (int i = 0; i < 3; i++) {
 					ShortPoint2D point = new ShortPoint2D(x, y);
-					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, null);
+					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, player);
 					flagsGrid.setBlockedAndProtected(x, y, false);
-					partitionsGrid.changePlayerAt(point, playerId);
+					partitionsGrid.changePlayerAt(point, player.getPlayerId());
 					landscapeGrid.setBlockedPartition((short)x, (short)y, partition);
 					x += position[2];
 					y += position[3];
