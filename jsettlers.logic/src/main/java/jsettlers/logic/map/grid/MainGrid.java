@@ -73,6 +73,7 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
@@ -81,7 +82,6 @@ import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.stack.multi.StockSettings;
-import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
@@ -284,10 +284,14 @@ public final class MainGrid implements Serializable {
 
 	private boolean isInsideWater(short x, short y) {
 		AbstractHexMapObject object = objectsGrid.getObjectsAt(x, y);
+		EMapObjectType type = null;
+		if (object != null) {
+			type = object.getObjectType();
+		}
 		return isWaterSafe(x - 1, y - 1) && isWaterSafe(x, y - 1) && isWaterSafe(x - 1, y) && isWaterSafe(x, y)
 				&& isWaterSafe(x + 1, y) && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
-				&& (object == null || (object.getObjectType() != EMapObjectType.CARGO_BOAT &&
-				object.getObjectType() != EMapObjectType.FERRY));
+				&& (object == null || type != EMapObjectType.CARGO_BOAT &&
+				type != EMapObjectType.FERRY && type != EMapObjectType.DOCK);
 	}
 
 	public boolean isWaterSafe(int x, int y) {

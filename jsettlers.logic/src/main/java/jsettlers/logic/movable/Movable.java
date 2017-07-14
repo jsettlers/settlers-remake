@@ -236,8 +236,13 @@ public final class Movable implements ILogicMovable {
 		case UNLOADING:
 			int numberOfPassengers = passengers.size();
 			if (numberOfPassengers > 0) {
-				((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
-				passengers.remove(numberOfPassengers - 1);
+				Movable movable = (Movable) grid.getMovableAt(unloadingPosition.x, unloadingPosition.y);
+				if (movable != null) {
+					grid.leavePosition(position, movable); // passengers need free space to leave ferry
+				} else {
+					((Movable) (passengers.get(numberOfPassengers - 1))).leaveFerryAtPosition(this.unloadingPosition);
+					passengers.remove(numberOfPassengers - 1);
+				}
 			} else {
 				setState(EMovableState.DOING_NOTHING);
 			}

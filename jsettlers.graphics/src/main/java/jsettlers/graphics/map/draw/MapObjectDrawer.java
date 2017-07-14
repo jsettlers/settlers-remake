@@ -16,6 +16,7 @@ package jsettlers.graphics.map.draw;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 
 import go.graphics.GLDrawContext;
@@ -62,12 +63,12 @@ public class MapObjectDrawer {
 
 	private static final int[] PASSENGER_POSITION_TO_FRONT = {2, -2, -2, 1, 1, -1, -1};
 	private static final int[] PASSENGER_POSITION_TO_RIGHT = {0, 1, -1, -1, 1, 1, -1};
-	private final int maxNumberOfPassengers = PASSENGER_POSITION_TO_FRONT.length;
-	private final int passengerDeckHeight = 10;
+	private static final int maxNumberOfPassengers = PASSENGER_POSITION_TO_FRONT.length;
+	private static final int passengerDeckHeight = 10;
 	private static final int[] CARGO_POSITION_TO_FRONT = {0, 3, -2};
 	private static final int[] CARGO_POSITION_TO_RIGHT = {0, 0, 0};
-	private final int maxNumberOfStacks = CARGO_POSITION_TO_FRONT.length;
-	private final int cargoDeckHeight = 18;
+	private static final int maxNumberOfStacks = CARGO_POSITION_TO_FRONT.length;
+	private static final int cargoDeckHeight = 18;
 
 	private static final int SOUND_MILL = 42;
 	private static final int SOUND_BUILDING_DESTROYED = 93;
@@ -268,7 +269,18 @@ public class MapObjectDrawer {
 			}
 			// sort freight by view y
 			if (freightY.size() > 0) {
-				Collections.sort(freightY, freightY.get(0));
+				Collections.sort(freightY, new Comparator<FloatIntObject>() {
+					@Override
+					public int compare(FloatIntObject o1, FloatIntObject o2) {
+						if (o1.getFloat() > o2.getFloat()) {
+							return -1;
+						} else if (o1.getFloat() == o2.getFloat()) {
+							return 0;
+						} else {
+							return 1;
+						}
+					}
+				});
 			}
 			if (shipType == EMovableType.FERRY) {
 				// draw passengers behind the sail
