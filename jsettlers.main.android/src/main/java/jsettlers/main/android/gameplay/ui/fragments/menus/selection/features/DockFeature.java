@@ -87,7 +87,7 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private void materialSelected(StockMaterialState stockMaterialState) {
-		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPos(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
+		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPosition(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
 	}
 
 	private void update() {
