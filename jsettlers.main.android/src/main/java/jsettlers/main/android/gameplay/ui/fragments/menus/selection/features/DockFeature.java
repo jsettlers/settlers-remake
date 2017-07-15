@@ -15,60 +15,62 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
-import static java8.util.J8Arrays.stream;
-
-import java.util.List;
+import android.app.Activity;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.partition.IStockSettings;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.IAction;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ActionListener;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.ui.adapters.MaterialsAdapter;
-import jsettlers.main.android.gameplay.viewstates.StockMaterialState;
+import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
-import android.app.Activity;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ImageView;
-import java8.util.stream.Collectors;
+import static jsettlers.common.menu.action.EActionType.ABORT;
 
 /**
  * Created by Tom Pratt on 10/01/2017.
  */
-public class StockFeature extends SelectionFeature implements DrawListener {
+public class DockFeature extends SelectionFeature implements DrawListener, ActionListener {
 	private final DrawControls drawControls;
 	private final ActionControls actionControls;
+	private final TaskControls taskControls;
 
-	private final MaterialsAdapter materialsAdapter;
-	private final RecyclerView recyclerView;
-	private final ImageView buildingImageView;
+	private InGameButton placeDockButton;
 
-	public StockFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
+	private Snackbar snackbar;
+
+	//this.buttonDockPosition = new jsettlers.graphics.ui.SimpleActionButton(
+	// jsettlers.common.menu.action.EActionType.ASK_SET_DOCK,
+	// jsettlers.common.images.ImageLink.fromName("original_3_GUI_201", 0),
+	// jsettlers.common.images.ImageLink.fromName("original_3_GUI_201", 0));
+
+	public DockFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls, TaskControls taskControls) {
 		super(view, building, menuNavigator);
 		this.drawControls = drawControls;
 		this.actionControls = actionControls;
+		this.taskControls = taskControls;
 
-		buildingImageView = (ImageView) getView().findViewById(R.id.image_view_building);
-
-		materialsAdapter = new MaterialsAdapter(activity);
-		materialsAdapter.setItemClickListener(this::materialSelected);
-		recyclerView = (RecyclerView) getView().findViewById(R.id.recyclerView);
-		recyclerView.setHasFixedSize(true);
+		placeDockButton = (InGameButton) getView().findViewById(R.id.imageView_placeDock);
+		placeDockButton.setVisibility(View.VISIBLE);
+		placeDockButton.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK)));
+		//		OriginalImageProvider.get(ImageLink.fromName("original_3_GUI_201", 0)).setAsImage(placeDockButton.getImageView());
 	}
 
 	@Override
 	public void initialize(BuildingState buildingState) {
 		super.initialize(buildingState);
 		drawControls.addInfrequentDrawListener(this);
-
-		materialsAdapter.setMaterialStates(materialStates());
-		recyclerView.setAdapter(materialsAdapter);
+		actionControls.addActionListener(this);
 
 		update();
 	}
@@ -77,6 +79,24 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	public void finish() {
 		super.finish();
 		drawControls.removeInfrequentDrawListener(this);
+		actionControls.removeActionListener(this);
+		dismissSnackbar();
+	}
+
+	@Override
+	public void actionFired(IAction action) {
+		switch (action.getActionType()) {
+			case ASK_SET_DOCK:
+				snackbar = Snackbar
+						.make(getView(), "Choose dock position", Snackbar.LENGTH_INDEFINITE)
+						.setAction("Cancel", view -> taskControls.endTask());
+				snackbar.show();
+				break;
+			case SET_DOCK:
+			case ABORT:
+				dismissSnackbar();
+		}
+
 	}
 
 	@Override
@@ -86,26 +106,13 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 		}
 	}
 
-	private void materialSelected(StockMaterialState stockMaterialState) {
-		actionControls.fireAction(new SetAcceptedStockMaterialAction(getBuilding().getPosition(), stockMaterialState.getMaterialType(), !stockMaterialState.isStocked(), true));
+	private void update() {
 	}
 
-	private void update() {
-		if (getBuildingState().isStock()) {
-			recyclerView.setVisibility(View.VISIBLE);
-			buildingImageView.setVisibility(View.INVISIBLE);
-
-			materialsAdapter.setMaterialStates(materialStates());
+	private void dismissSnackbar() {
+		if (snackbar != null) {
+			snackbar.dismiss();
+			snackbar = null;
 		}
 	}
-
-	private List<StockMaterialState> materialStates() {
-		IStockSettings stockSettings = ((IBuilding.IStock) getBuilding()).getStockSettings();
-
-		return stream(EMaterialType.STOCK_MATERIALS)
-				.map(eMaterialType -> new StockMaterialState(eMaterialType, stockSettings))
-				.collect(Collectors.toList());
-	}
-
-
 }

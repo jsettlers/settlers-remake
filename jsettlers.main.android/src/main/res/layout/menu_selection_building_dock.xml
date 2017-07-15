@@ -16,11 +16,13 @@
             android:visibility="invisible" />
 
         <jsettlers.main.android.gameplay.ui.customviews.InGameButton
-            android:id="@+id/image_view_work_area"
+            android:id="@+id/imageView_placeDock"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+
+            android:background="#ff0000"/>
 
         <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_destroy"
