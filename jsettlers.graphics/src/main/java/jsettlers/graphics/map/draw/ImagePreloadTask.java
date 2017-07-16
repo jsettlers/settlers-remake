@@ -24,14 +24,8 @@ public class ImagePreloadTask implements Runnable {
 	private static final int FILE_ROMAN_WORKER = 11;
 	private static final int FILE_ROMAN_SOLDIER = 12;
 
-	private static boolean wasRunning = false;
-
 	@Override
 	public void run() {
-		if (wasRunning) {
-			throw new IllegalStateException("Can only preload once.");
-		}
-		wasRunning = true;
 		ImageProvider.traceImageLoad("Image preload task starting");
 		SettlerImageMap.getInstance();
 
