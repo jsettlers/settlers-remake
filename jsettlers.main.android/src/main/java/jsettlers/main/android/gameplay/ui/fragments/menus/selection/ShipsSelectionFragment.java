@@ -28,7 +28,11 @@ import android.widget.TextView;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.ViewsById;
 
+import java.util.List;
+
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.main.android.R;
@@ -40,57 +44,48 @@ import jsettlers.main.android.utils.OriginalImageProvider;
 /**
  * Created by Rudolf Polzer
  */
-@EFragment(R.layout.menu_selection_soldiers)
+@EFragment(R.layout.menu_selection_ships)
 public class ShipsSelectionFragment extends SelectionFragment {
     private static final EMovableType[] shipTypes = new EMovableType[] {
             EMovableType.FERRY,
             EMovableType.CARGO_BOAT,
     };
 
-    public static Fragment newInstance() {
-        return new ShipsSelectionFragment_();
-    }
+    private static final ImageLink[] shipImageLinks = new ImageLink[] {
+            ImageLink.fromName("original_14_GUI_272", 0),
+            ImageLink.fromName("original_14_GUI_278", 0)
+    };
 
-    @ViewById(R.id.layout_ships)
-    LinearLayout shipsLayout;
+    @ViewsById({R.id.layout_ferries, R.id.layout_tradeShips})
+    List<LinearLayout> shipLayouts;
+    @ViewsById({R.id.textView_ferriesCount, R.id.textView_tradeShipsCount})
+    List<TextView> countTextViews;
+    @ViewsById({R.id.imageView_ferry, R.id.imageView_tradeShip})
+    List<ImageView> shipImageViews;
 
     private ActionControls actionControls;
+
+
+    public static Fragment newInstance() {
+        return ShipsSelectionFragment_.builder().build();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         actionControls = new ControlsResolver(getActivity()).getActionControls();
 
-        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-
-        for (EMovableType movableType : shipTypes) {
-            int count = getSelection().getMovableCount(movableType);
+        for (int i = 0; i < shipTypes.length; i++) {
+            EMovableType shipType = shipTypes[i];
+            int count = getSelection().getMovableCount(shipType);
 
             if (count > 0) {
-                LinearLayout shipsLayout = getLevelLayout(movableType);
-
-                View view = layoutInflater.inflate(R.layout.view_specialist, shipsLayout, false);
-                ImageView imageView = (ImageView) view.findViewById(R.id.image_view_specialist);
-                TextView textView = (TextView) view.findViewById(R.id.text_view_specialist_count);
-
-                OriginalImageProvider.get(ImageLinkFactory.get(movableType)).setAsImage(imageView);
-                textView.setText(count + "");
-
-                shipsLayout.addView(view);
+                OriginalImageProvider.get(shipImageLinks[i]).setAsImage(shipImageViews.get(i));
+                countTextViews.get(i).setText(count + "");
+            } else {
+                shipLayouts.get(i).setVisibility(View.GONE);
             }
         }
-
-        goneIfEmpty(shipsLayout);
-    }
-
-    private void goneIfEmpty(LinearLayout linearLayout) {
-        if (linearLayout.getChildCount() == 0) {
-            linearLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private LinearLayout getLevelLayout(EMovableType movableType) {
-        return shipsLayout;
     }
 
     @Click(R.id.button_unload)
@@ -100,7 +95,7 @@ public class ShipsSelectionFragment extends SelectionFragment {
 
     @Click(R.id.button_kill)
     void killClicked() {
-        Snackbar.make(getView(), R.string.confirm_kill, Snackbar.LENGTH_SHORT)
+        Snackbar.make(getView(), R.string.confirm_destory_ships, Snackbar.LENGTH_SHORT)
                 .setAction(R.string.yes, view1 -> actionControls.fireAction(EActionType.DESTROY))
                 .show();
     }

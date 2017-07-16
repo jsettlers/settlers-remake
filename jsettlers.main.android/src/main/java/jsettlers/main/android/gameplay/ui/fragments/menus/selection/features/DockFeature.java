@@ -18,6 +18,7 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 import android.app.Activity;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.widget.ImageView;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
@@ -45,7 +46,9 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	private final ActionControls actionControls;
 	private final TaskControls taskControls;
 
-	private InGameButton placeDockButton;
+	private final InGameButton placeDockButton;
+	private final ImageView ferryImageShip;
+	private final ImageView tradeShipImageView;
 
 	private Snackbar snackbar;
 
@@ -64,6 +67,14 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		placeDockButton.setVisibility(View.VISIBLE);
 		placeDockButton.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK)));
 		//		OriginalImageProvider.get(ImageLink.fromName("original_3_GUI_201", 0)).setAsImage(placeDockButton.getImageView());
+
+		ferryImageShip = (ImageView) getView().findViewById(R.id.imageView_ferry);
+		ferryImageShip.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_FERRY)));
+		OriginalImageProvider.get(ImageLink.fromName("original_14_GUI_272", 0)).setAsImage(ferryImageShip);
+
+		tradeShipImageView = (ImageView) getView().findViewById(R.id.imageView_tradeShip);
+		tradeShipImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_CARGO_BOAT)));
+		OriginalImageProvider.get(ImageLink.fromName("original_14_GUI_278", 0)).setAsImage(tradeShipImageView);
 	}
 
 	@Override
