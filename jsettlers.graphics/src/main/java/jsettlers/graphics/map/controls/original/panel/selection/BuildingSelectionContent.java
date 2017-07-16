@@ -50,6 +50,7 @@ import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
+import jsettlers.graphics.ui.layout.DockyardSelectionLayout;
 import jsettlers.graphics.ui.layout.OccupiableSelectionLayout;
 import jsettlers.graphics.ui.layout.StockSelectionLayout;
 import jsettlers.graphics.ui.layout.TradingSelectionLayout;
@@ -314,6 +315,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			root = createStockBuildingContent(state);
 		} else if (state.isTrading()) {
 			root = createTradingBuildingContent(state);
+		} else if (state.isDockyard() && !state.isConstruction()) {
+			root = createDockyardBuildingContent(state);
 		} else {
 			root = createNormalBuildingContent(state);
 		}
@@ -325,48 +328,35 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	private BuildingBackgroundPanel createNormalBuildingContent(BuildingState state) {
 		BuildingSelectionLayout layout = new BuildingSelectionLayout();
 
-		EPriority[] supported = state.getSupportedPriorities();
-		if (supported.length < 2) {
-			layout.background.removeChild(layout.priority);
-		} else {
-			layout.priority.setPriority(supported, building.getPriority());
-		}
+		loadPriorityButton(layout.background, layout.priority, state);
 
-		if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+		if (building.getBuildingType().getWorkRadius() <= 0) {
 			layout.background.removeChild(layout.buttonWorkRadius);
-		} else {
-			layout.background.removeChild(layout.buttonDockPosition);
-			layout.background.removeChild(layout.buttonMakeFerry);
-			layout.background.removeChild(layout.buttonMakeCargoBoat);
-			if (building.getBuildingType().getWorkRadius() <= 0) {
-				layout.background.removeChild(layout.buttonWorkRadius);
-			}
 		}
 
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
 
 		String text = "";
-		if (building.getStateProgress() < 1) {
+		if (state.isConstruction()) {
 			text = Labels.getString("materials_required");
 		} else if (building instanceof IBuilding.IResourceBuilding) {
 			IBuilding.IResourceBuilding resourceBuilding = (IBuilding.IResourceBuilding) building;
 			text = Labels.getString("productivity", (int) (resourceBuilding.getProductivity() * 100));
-		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-			ArrayList<EMaterialType> list = (building).getRemainingOrder();
-			text = Labels.getString("materials_required");
-			layout.materialText.setText(text);
-			if (list != null) {
-				addShipRequestStacks(layout.materialArea, list);
-			}
-			BuildingBackgroundPanel root = layout._root;
-			return root;
 		}
 		layout.materialText.setText(text);
 
 		addRequestAndOfferStacks(layout.materialArea, state);
 
-		BuildingBackgroundPanel root = layout._root;
-		return root;
+		return layout._root;
+	}
+
+	private void loadPriorityButton(BuildingBackgroundPanel background, PriorityButton priority, BuildingState state) {
+		EPriority[] supported = state.getSupportedPriorities();
+		if (supported.length < 2) {
+			background.removeChild(priority);
+		} else {
+			priority.setPriority(supported, building.getPriority());
+		}
 	}
 
 	private void addRequestAndOfferStacks(UIPanel materialArea, BuildingState state) {
@@ -636,6 +626,19 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		layout.tradeLess5.relative = true;
 		layout.tradeLess5.amount = -TRADING_MULTIPLE_STEP_INCREASE;
 
+		return layout._root;
+	}
+	
+	private BuildingBackgroundPanel createDockyardBuildingContent(BuildingState state) {
+		DockyardSelectionLayout layout = new DockyardSelectionLayout();
+		loadPriorityButton(layout.background, layout.priority, state);
+		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
+
+		ArrayList<EMaterialType> list = building.getRemainingOrder();
+		if (list != null) {
+			layout.materialText.setText(Labels.getString("materials_required"));
+			addShipRequestStacks(layout.materialArea, list);
+		}
 		return layout._root;
 	}
 

@@ -19,27 +19,6 @@
 		<image type="GUI" file="3" sequence="201" />
 	</element>
 
-	<element class="SimpleActionButton" x="83" y="221" maxx="101"
-			 maxy="239" id="buttonDockPosition">
-		<action action="ASK_SET_DOCK" />
-		<image type="GUI" file="3" sequence="201" />
-		<image type="GUI" file="3" sequence="201" />
-	</element>
-
-	<element class="SimpleActionButton" x="11" y="245" maxx="38"
-			 maxy="263" id="buttonMakeFerry">
-		<action action="MAKE_FERRY" />
-		<image type="GUI" file="14" sequence="272" />
-		<image type="GUI" file="14" sequence="272" />
-	</element>
-
-	<element class="SimpleActionButton" x="11" y="269" maxx="38"
-			 maxy="287" id="buttonMakeCargoBoat">
-		<action action="MAKE_CARGO_BOAT" />
-		<image type="GUI" file="14" sequence="278" />
-		<image type="GUI" file="14" sequence="278" />
-	</element>
-
 	<element class="SimpleActionButton" x="107" y="221" maxx="125"
 		maxy="239">
 		<action action="ASK_DESTROY" />
