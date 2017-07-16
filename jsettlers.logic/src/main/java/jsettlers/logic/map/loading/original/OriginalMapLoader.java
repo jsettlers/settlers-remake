@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -21,8 +21,8 @@ import java.util.List;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.ILoadableMapPlayer;
 import jsettlers.common.menu.UIState;
 import jsettlers.input.PlayerState;
@@ -157,7 +157,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() {
-		return new ArrayList<ILoadableMapPlayer>(); // - ToDo
+		return new ArrayList<>(); // - ToDo
 	}
 
 	// ----------------------------//
@@ -209,7 +209,7 @@ public class OriginalMapLoader extends MapLoader {
 			playerSettings = new PlayerSetting[numberOfPlayers];
 
 			for (int i = 0; i < numberOfPlayers; i++) {
-				playerSettings[i] = new PlayerSetting(true, (byte) i);
+				playerSettings[i] = new PlayerSetting((byte) i);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,74 +15,52 @@
 package jsettlers.algorithms.landmarks;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Thread to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of
- * the lake.
+ * Algorithm to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of the lake.
  * 
  * @author Andreas Eberle
  * 
  */
 public final class EnclosedBlockedAreaFinderAlgorithm {
 
-	public static final void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D startPos) {
-		final short startX = startPos.x;
-		final short startY = startPos.y;
-
-		if (grid.isBlocked(startX, startY))
+	public static void checkLandmark(IEnclosedBlockedAreaFinderGrid grid, int startX, int startY) {
+		if (grid.isPioneerBlockedAndWithoutTowerProtection(startX, startY)) {
 			return;
+		}
 
-		short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
+		final IContainingProvider containingProvider = grid::isPioneerBlockedAndWithoutTowerProtection;
+		final byte startPlayer = grid.getPlayerIdAt(startX, startY);
 
 		for (EDirection currDir : EDirection.VALUES) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(startX, startY);
 
-			if (grid.isBlocked(currPos.x, currPos.y)) {
-				if (needsRelabel(grid, containingProvider, currPos, startPartition)) {
-					// System.out.println("relabel needed at " + currX + "|" + currY + " with startPartition: " + startPartition);
-					relabel(grid, containingProvider, currPos, startPartition);
+			if (grid.isPioneerBlockedAndWithoutTowerProtection(currPos.x, currPos.y)) {
+				if (needsRelabel(grid, containingProvider, currPos, startPlayer)) {
+					destroyBuildingsOrTakeOver(grid, containingProvider, currPos, startPlayer);
 				}
 			}
 		}
 	}
 
-	private static void relabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos,
-			final short newPartition) {
-		ITraversingVisitor visitor = new ITraversingVisitor() {
-			@Override
-			public boolean visit(int x, int y) {
-				grid.setPartitionAt(x, y, newPartition);
-				return true;
-			}
-		};
-		AreaTraversingAlgorithm.traverseArea(containingProvider, visitor, blockedStartPos, grid.getWidth(), grid.getHeight());
+	private static void destroyBuildingsOrTakeOver(IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos, byte newPlayer) {
+		AreaTraversingAlgorithm.traverseArea(containingProvider, grid.getDestroyBuildingOrTakeOverVisitor(newPlayer), blockedStartPos, grid.getWidth(), grid.getHeight());
 	}
 
 	/**
 	 * Checks if the blocked partition given by the coordinates blockedX and blockedY is surrounded by the given partition.
 	 * 
-	 * @param containingProvider2
-	 * @param grid2
-	 * 
-	 * @param blockedX
-	 * @param blockedY
-	 * @param partition
+	 * @param grid
+	 * @param containingProvider
 	 * @param blockedStartPos
 	 * @return
 	 */
-	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider,
-			ShortPoint2D blockedStartPos,
-			final short partition) {
-		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new ITraversingVisitor() {
-			@Override
-			public boolean visit(int x, int y) {
-				return grid.getPartitionAt((short) x, (short) y) == partition;
-			}
-		}, true);
+	private static boolean needsRelabel(IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos, byte player) {
+		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos,
+				(insideX, insideY, outsideX, outsideY) -> grid.isOfPlayerOrBlocked(outsideX, outsideY, player), true);
 	}
 }

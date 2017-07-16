@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,8 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.ai.highlevel;
+
+import static java8.util.stream.StreamSupport.stream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ public class AiExecutor implements INetworkTimerable {
 	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
 		aiStatistics.updateStatistics();
-		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		this.whatToDoAis = new ArrayList<>();
 		WhatToDoAiFactory aiFactory = new WhatToDoAiFactory();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[playerId];
@@ -61,9 +63,7 @@ public class AiExecutor implements INetworkTimerable {
 		aiStatistics.updateStatistics();
 		updateStatisticsStopWatch.stop("computerplayer:updateStatistics()");
 		applyRulesStopWatch.restart();
-		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-			whatToDoAi.applyRules();
-		}
+		stream(whatToDoAis).forEach(IWhatToDoAi::applyRules);
 		applyRulesStopWatch.stop("computerplayer:applyRules()");
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,7 +16,11 @@ package jsettlers.main.swing;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,20 +33,22 @@ import go.graphics.region.Region;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommitInfo;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.Player;
+import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
-import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.MultiplayerConnector;
 import jsettlers.main.swing.menu.joinpanel.JoinGamePanel;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
 import jsettlers.main.swing.menu.startinggamemenu.StartingGamePanel;
+import jsettlers.main.swing.settings.SettingsManager;
+import jsettlers.main.swing.settings.UiPlayer;
 
 /**
  * @author codingberlin
@@ -54,22 +60,59 @@ public class JSettlersFrame extends JFrame {
 	private final MainMenuPanel mainPanel;
 	private final StartingGamePanel startingGamePanel = new StartingGamePanel(this);
 	private final JoinGamePanel joinGamePanel = new JoinGamePanel(this);
-	private final SoundPlayer soundPlayer = new SwingSoundPlayer();
+	private final SoundPlayer soundPlayer = new SwingSoundPlayer(SettingsManager.getInstance());
+
 	private Timer redrawTimer;
+	private boolean fullScreen = false;
 
 	JSettlersFrame() throws HeadlessException {
 		setTitle("JSettlers - Version: " + CommitInfo.COMMIT_HASH_SHORT);
 
 		SettingsManager settingsManager = SettingsManager.getInstance();
-		Player player = settingsManager.getPlayer();
-		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), player.getId(), player.getName());
+
+		UiPlayer uiPlayer = settingsManager.getPlayer();
+		multiPlayerConnector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER), uiPlayer.getId(), uiPlayer.getName());
 		mainPanel = new MainMenuPanel(this, multiPlayerConnector);
+
 		showMainMenu();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(1200, 800));
 		pack();
 		setLocationRelativeTo(null);
+
+		fullScreen = settingsManager.getFullScreenMode();
+		updateFullScreenMode();
+
+		KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		keyboardFocusManager.addKeyEventDispatcher(e -> {
+			if (e.getID() == KeyEvent.KEY_PRESSED) {
+				if (e.isAltDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+					toogleFullScreenMode();
+					return true; // consume this key event.
+				}
+			}
+			return false;
+		});
+	}
+
+	private void toogleFullScreenMode() {
+		fullScreen = !fullScreen;
+		SettingsManager.getInstance().setFullScreenMode(fullScreen);
+		updateFullScreenMode();
+	}
+
+	private void updateFullScreenMode() {
+		dispose();
+
+		setResizable(!fullScreen);
+		setUndecorated(fullScreen);
+
+		pack();
 		setVisible(true);
+
+		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+		graphicsDevice.setFullScreenWindow(fullScreen ? this : null);
 	}
 
 	private void abortRedrawTimerIfPresent() {
@@ -146,7 +189,7 @@ public class JSettlersFrame extends JFrame {
 	}
 
 	public IMapInterfaceConnector showStartedGame(IStartedGame startedGame) {
-		MapContent content = new MapContent(startedGame, soundPlayer);
+		MapContent content = new MapContent(startedGame, soundPlayer, ETextDrawPosition.TOP_RIGHT);
 		SwingUtilities.invokeLater(() -> setContent(content));
 		startedGame.setGameExitListener(exitGame -> SwingUtilities.invokeLater(this::showMainMenu));
 		return content.getInterfaceConnector();

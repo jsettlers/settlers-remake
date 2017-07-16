@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -43,14 +43,7 @@ public interface IPartitionSettings {
 	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
 	 * @return Returns the {@link EMaterialType} with the given priority.
 	 */
-	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+	EMaterialType getMaterialTypeForPriority(int priorityIdx);
 
-	/**
-	 * Checks if stock buildings accept this material in this partiton.
-	 * 
-	 * @param material
-	 *            The material.
-	 * @return <code>true</code> if they accept this material.
-	 */
-	boolean getStockAcceptsMaterial(EMaterialType material);
+	IStockSettings getStockSettings();
 }

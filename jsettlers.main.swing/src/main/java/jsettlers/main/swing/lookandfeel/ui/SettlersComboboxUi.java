@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -38,7 +38,7 @@ public class SettlersComboboxUi extends BasicComboBoxUI {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		protected void setValue(JList<? extends Object> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		protected void setValue(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			setText(String.valueOf(value));
 		}
 	}

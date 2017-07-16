@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -30,7 +30,9 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
+import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.AnimationSequence;
@@ -41,7 +43,6 @@ import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -77,8 +78,8 @@ import jsettlers.graphics.sound.SoundManager;
 /**
  * This is the main map content class. It manages the map drawing on the screen region.
  * <p>
- * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for
- * settlers, and other map objects. Then the interface is drawn above everything else.
+ * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for settlers, and other map objects. Then the interface
+ * is drawn above everything else.
  * <p>
  * The objects and background are drawn with the map draw context.
  * <p>
@@ -107,7 +108,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private static final float UI_OVERLAY_Z = .95f;
 
 	private final class ZoomEventHandler implements GOModalEventHandler {
-		float startzoom = context.getScreen().getZoom();
+		float startZoom = context.getScreen().getZoom();
 
 		@Override
 		public void phaseChanged(GOEvent event) {
@@ -115,22 +116,22 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void finished(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
 		@Override
 		public void aborted(GOEvent event) {
-			eventDataChanged(1);
+			eventDataChanged(1, null);
 		}
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
-		private void eventDataChanged(float zoomFactor) {
-			float newZoom = startzoom * zoomFactor;
-			setZoom(newZoom);
+		private void eventDataChanged(float zoomFactor, UIPoint p) {
+			float newZoom = startZoom * zoomFactor;
+			setZoom(newZoom, p);
 		}
 	}
 
@@ -138,9 +139,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final float MESSAGE_OFFSET_X = 300;
 	private static final int MESSAGE_OFFSET_Y = 30;
-	private static final int MESSAGE_LINEHIEGHT = 18;
+	private static final int MESSAGE_LINE_HEIGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
 	private static final long DOUBLE_CLICK_TIME = 500;
+	/**
+	 * Sound ID when we are attacked.
+	 */
+	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
 
@@ -155,29 +160,33 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	private final MapInterfaceConnector connector;
 
-	private FloatRectangle oldScreen;
+	private final FramerateComputer framerate = new FramerateComputer();
+
+	private final Messenger messenger;
+	private final SoundManager soundmanager;
+	private final BackgroundSound backgroundSound;
+
+	private final ReplaceableTextDrawer textDrawer;
+	private final IGameTimeProvider gameTimeProvider;
+
+	private final ETextDrawPosition textDrawPosition;
 
 	/**
 	 * The controls that represent the interface.
 	 */
 	private final IControls controls;
+
+	private FloatRectangle oldScreen;
 	private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private int windowWidth = 1;
 	private int windowHeight = 1;
-
-	private final Messenger messenger;
-	private final SoundManager soundmanager;
-	private final BackgroundSound backgroundSound;
 
 	private ShortPoint2D scrollMarker;
 	private long scrollMarkerTime;
 
 	private ShortPoint2D moveToMarker;
 	private long moveToMarkerTime;
-
-	private final ReplaceableTextDrawer textDrawer;
-	private final IGameTimeProvider gameTimeProvider;
 
 	private String tooltipString = "";
 
@@ -190,36 +199,37 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private long lastSelectPointTime = 0;
 	private ShortPoint2D lastSelectPointPos = null;
 
+	private UIPoint currentSelectionAreaStart;
+
 	/**
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
-	 *            The player
+	 * @param soundPlayer
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player) {
-		this(game, player, null);
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
+		this(game, soundPlayer, textDrawPosition, null);
 	}
 
 	/**
 	 * 
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
+	 * @param soundPlayer
 	 *            The player
 	 * @param controls
-	 *            The controls object to use as user interface. If it is <code>null</code> the original controls are overlayed.
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
+		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
-		this.soundmanager = new SoundManager(player);
+		this.soundmanager = new SoundManager(soundPlayer);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
@@ -231,7 +241,6 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.controls = controls;
 		}
 		this.controls.setDrawContext(this, context);
-		// controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
@@ -253,6 +262,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		try {
+			framerate.nextFrame();
+
 			// TODO: Do only check once.
 			if (textDrawer.getTextDrawer(gl, EFontSize.NORMAL).getWidth("a") == 0) {
 				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
@@ -268,10 +279,9 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			this.context.begin(gl);
 			long start = System.currentTimeMillis();
 
-			FloatRectangle screen = this.context.getScreen().getPosition()
-					.bigger(SCREEN_PADDING);
+			FloatRectangle screen = this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
 			drawBackground(screen);
-			long bgtime = System.currentTimeMillis() - start;
+			long backgroundDuration = System.currentTimeMillis() - start;
 
 			start = System.currentTimeMillis();
 			drawMain(screen);
@@ -284,7 +294,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 
 			this.context.end();
-			long foregroundtime = System.currentTimeMillis() - start;
+			long foregroundDuration = System.currentTimeMillis() - start;
 
 			start = System.currentTimeMillis();
 			gl.glTranslatef(0, 0, UI_OVERLAY_Z);
@@ -292,16 +302,16 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			controls.drawAt(gl);
 			drawMessages(gl);
 
-			drawFramerate(gl);
+			drawFramerateTimeAndHash(gl);
+
 			if (actionThreadIsSlow) {
 				drawActionThreadSlow(gl);
 			}
 			drawTooltip(gl);
-			long uitime = System.currentTimeMillis() - start;
+			long uiTime = System.currentTimeMillis() - start;
 
 			if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
-				System.out.println("Background: " + bgtime + "ms, Foreground: "
-						+ foregroundtime + "ms, UI: " + uitime + "ms");
+				System.out.println("Background: " + backgroundDuration + "ms, Foreground: " + foregroundDuration + "ms, UI: " + uiTime + "ms");
 			}
 		} catch (Throwable t) {
 			System.err.println("Main draw handler cought throwable:");
@@ -310,31 +320,29 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawGotoMarker() {
-		long timediff = System.currentTimeMillis() - scrollMarkerTime;
-		if (timediff > GOTO_MARK_TIME) {
+		long timeDifference = System.currentTimeMillis() - scrollMarkerTime;
+		if (timeDifference > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			ImageLink image = GOTO_ANIMATION.getImage(timediff < GOTO_MARK_TIME / 2 ? 0 : 1);
+			ImageLink image = GOTO_ANIMATION.getImage(timeDifference < GOTO_MARK_TIME / 2 ? 0 : 1);
 			objectDrawer.drawGotoMarker(scrollMarker, ImageProvider.getInstance().getImage(image));
 		}
 	}
 
 	private void drawMoveToMarker() {
-		long timediff = System.currentTimeMillis() - moveToMarkerTime;
-		if (timediff >= GOTO_MARK_TIME) {
+		long timeDifference = System.currentTimeMillis() - moveToMarkerTime;
+		if (timeDifference >= GOTO_MARK_TIME) {
 			moveToMarker = null;
 		} else {
-			objectDrawer.drawMoveToMarker(moveToMarker, timediff
-					/ GOTO_MARK_TIME);
+			objectDrawer.drawMoveToMarker(moveToMarker, timeDifference / GOTO_MARK_TIME);
 		}
 	}
 
 	private float messageAlpha(IMessage m) {
-		int age = (int) m.getAge();
+		int age = m.getAge();
 		return age < 1500
-				? Math.min(1,  age/1000f)
-				: Math.max(0,
-					1f - (float)age / IMessage.MESSAGE_TTL);
+				? Math.min(1, age / 1000f)
+				: Math.max(0, 1f - (float) age / IMessage.MESSAGE_TTL);
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -343,22 +351,22 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		messenger.doTick();
 		for (IMessage m : messenger.getMessages()) {
 			float x = MESSAGE_OFFSET_X;
-			int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+			int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINE_HEIGHT;
 			float a = messageAlpha(m);
 			if (m.getSender() >= 0) {
 				String name = getPlayername(m.getSender()) + ":";
 				Color color = context.getPlayerColor(m.getSender());
-				float width = (float) drawer.getWidth(name);
+				float width = drawer.getWidth(name);
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
-					drawer.setColor(1, 1, 1, a/2);
+					drawer.setColor(1, 1, 1, a / 2);
 				} else if (bright < 2f) {
 					// bad visibility
-					drawer.setColor(0, 0, 0, a/2);
+					drawer.setColor(0, 0, 0, a / 2);
 				}
-				for (int i=-1; i<3; i++) {
-					drawer.drawString(x+i, y-1, name);
+				for (int i = -1; i < 3; i++) {
+					drawer.drawString(x + i, y - 1, name);
 				}
 				drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), a);
 				drawer.drawString(x, y, name);
@@ -380,57 +388,74 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void adaptScreenSize() {
 		FloatRectangle newScreen = context.getScreen().getPosition();
 		if (!newScreen.equals(oldScreen)) {
-			getInterfaceConnector().fireAction(
-					new ScreenChangeAction(context.getScreenArea()));
+			getInterfaceConnector().fireAction(new ScreenChangeAction(context.getScreenArea()));
 		}
 		oldScreen = newScreen;
 	}
 
 	private void drawSelectionHint(GLDrawContext gl) {
-		if (this.currentSelectionAreaStart != null
-				&& this.currentSelectionAreaEnd != null) {
+		if (this.currentSelectionAreaStart != null && this.currentSelectionAreaEnd != null) {
 			float x1 = (float) this.currentSelectionAreaStart.getX();
 			float y1 = (float) this.currentSelectionAreaStart.getY();
 			float x2 = (float) this.currentSelectionAreaEnd.getX();
 			float y2 = (float) this.currentSelectionAreaEnd.getY();
 
 			gl.color(1, 1, 1, 1);
-			gl.drawLine(new float[] {
-					x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0
-			}, true);
+			gl.drawLine(new float[] { x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0 }, true);
 		}
 	}
 
-	private UIPoint currentSelectionAreaStart;
-	private final FramerateComputer framerate = new FramerateComputer();
+	private void drawFramerateTimeAndHash(GLDrawContext gl) {
+		if (textDrawPosition == ETextDrawPosition.NONE) {
+			return;
+		}
 
-	private void drawFramerate(GLDrawContext gl) {
-		framerate.nextFrame();
 		String fps = Labels.getString("map-fps", framerate.getRate());
-		long gametime = gameTimeProvider.getGameTime() / 1000;
-		String timeString = Labels.getString("map-time", gametime / 60 / 60,
-				(gametime / 60) % 60, (gametime) % 60);
+		long gameTime = gameTimeProvider.getGameTime() / 1000;
+		String timeString = Labels.getString("map-time", gameTime / 60 / 60, (gameTime / 60) % 60, (gameTime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-		double spacing = drawer.getWidth("_");
-		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - 9 * (float) spacing, y, fps);
-		drawer.drawString(windowWidth - 23 * (float) spacing, y, timeString);
+		float letterWidth = getLetterWidth(drawer);
+		float textLineHeight = getTextLineHeight(drawer);
+
+		float yFirstLine = windowHeight - 1.5f * textLineHeight;
+		float ySecondLine = windowHeight - 3.0f * textLineHeight;
+
+		float sideXOffset = 2 * letterWidth;
+
+		drawer.drawString(getConfiguredX(sideXOffset, windowWidth, 7 * letterWidth), yFirstLine, fps);
+		drawer.drawString(getConfiguredX(sideXOffset + 9 * letterWidth, windowWidth, 9 * letterWidth), yFirstLine, timeString);
+		drawer.drawString(getConfiguredX(sideXOffset, windowWidth, 7 * letterWidth), ySecondLine, CommitInfo.COMMIT_HASH_SHORT);
+	}
+
+	private float getConfiguredX(float borderDistance, int windowWidth, float fixedTextLength) {
+		if (textDrawPosition == ETextDrawPosition.TOP_LEFT) {
+			return borderDistance;
+		} else {
+			return windowWidth - (borderDistance + fixedTextLength);
+		}
+	}
+
+	private float getLetterWidth(TextDrawer drawer) {
+		return drawer.getWidth("X");
+	}
+
+	private float getTextLineHeight(TextDrawer drawer) {
+		return drawer.getHeight("X");
 	}
 
 	private void drawTooltip(GLDrawContext gl) {
 		if (!tooltipString.isEmpty()) {
 			TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-			drawer.drawString((int) mousePosition.getX(),
-					(int) mousePosition.getY(), tooltipString);
+			drawer.drawString((int) mousePosition.getX(), (int) mousePosition.getY(), tooltipString);
 		}
 	}
 
 	private void drawActionThreadSlow(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		String string = Labels.getString("action_firerer_slow");
-		float x = windowWidth - (float) drawer.getWidth(string) - 5;
-		float y = windowHeight - 3 * (float) drawer.getHeight(string);
+		float x = windowWidth - drawer.getWidth(string) - 5;
+		float y = windowHeight - 3 * drawer.getHeight(string);
 		drawer.drawString(x, y, string);
 	}
 
@@ -442,10 +467,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		short width = map.getWidth();
 		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
 
-		double bottomdrawy = screen.getMinY() - OVERDRAW_BOTTOM_PX;
+		double bottomDrawY = screen.getMinY() - OVERDRAW_BOTTOM_PX;
 
-		boolean linePartuallyVisible = true;
-		for (int line = 0; line < area.getLines() + 50 && linePartuallyVisible; line++) {
+		boolean linePartiallyVisible = true;
+		for (int line = 0; line < area.getLines() + 50 && linePartiallyVisible; line++) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
@@ -453,16 +478,16 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (y >= height) {
 				break;
 			}
-			linePartuallyVisible = false;
+			linePartiallyVisible = false;
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
 			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
 				drawTile(x, y);
-				if (!linePartuallyVisible) {
-					double drawspacey = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
-					if (drawspacey > bottomdrawy) {
-						linePartuallyVisible = true;
+				if (!linePartiallyVisible) {
+					double drawSpaceY = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
+					if (drawSpaceY > bottomDrawY) {
+						linePartiallyVisible = true;
 					}
 				}
 			}
@@ -504,57 +529,23 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private void drawDebugColors() {
-		try {
-			IMapArea tiles = new MapShapeFilter(context.getScreenArea(), map.getWidth(),
-					map.getHeight());
-			GLDrawContext gl = this.context.getGl();
+		GLDrawContext gl = this.context.getGl();
 
-			float[] shape = new float[] {
-					0,
-					4,
-					.5f,
-					0,
-					0,
-					-3,
-					2,
-					.5f,
-					0,
-					0,
-					-3,
-					-2,
-					.5f,
-					0,
-					0,
-					0,
-					-4,
-					.5f,
-					0,
-					0,
-					0,
-					-4,
-					.5f,
-					0,
-					0,
-					3,
-					-2,
-					.5f,
-					0,
-					0,
-					3,
-					2,
-					.5f,
-					0,
-					0,
-					0,
-					4,
-					.5f,
-					0,
-					0,
-			};
+		// @formatter:off
+		float[] shape = new float[] {
+									  0,  4, .5f,  0,  0,
+									 -3,  2, .5f,  0,  0,
+									 -3, -2, .5f,  0,  0,
+									  0, -4, .5f,  0,  0,
+									  0, -4, .5f,  0,  0,
+									  3, -2, .5f,  0,  0,
+									  3,  2, .5f,  0,  0,
+									  0,  4, .5f,  0,  0
+									};
+		// @formatter:on
 
-			for (ShortPoint2D pos : tiles) {
-				short x = pos.x;
-				short y = pos.y;
+		context.getScreenArea().stream().filterBounds(map.getWidth(), map.getHeight()).forEach((x, y) -> {
+			try {
 				int argb = map.getDebugColorAt(x, y, debugColorMode);
 				if (argb != 0) {
 					this.context.beginTileContext(x, y);
@@ -565,18 +556,17 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 					gl.drawQuadWithTexture(null, shape);
 					context.endTileContext();
 				}
+			} catch (IllegalBufferException e) {
+				// TODO: Create a crash report
+				// This should never happen since we only use texture 0 (no texture)
 			}
-		} catch (IllegalBufferException e) {
-			// TODO: Create a crash report
-			// This should never happen since we only use texture 0 (no texture)
-		}
+		});
 	}
 
 	/**
 	 * Draws the background.
 	 *
-	 * @param gl
-	 * @param screen2
+	 * @param screen
 	 */
 	private void drawBackground(FloatRectangle screen) {
 		this.background.drawMapContent(this.context, screen);
@@ -623,7 +613,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomIn() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom * 1.3f);
+			setZoom(zoom * 1.3f, null);
 		}
 	}
 
@@ -633,7 +623,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomOut() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom / 1.3f);
+			setZoom(zoom / 1.3f, null);
 		}
 	}
 
@@ -642,7 +632,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	public void zoom100() {
 		if (context != null) {
-			setZoom(1.0f);
+			setZoom(1.0f, null);
 		}
 	}
 
@@ -734,7 +724,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param position
 	 *            The new mouse position.
 	 */
-	protected void changeMousePosition(UIPoint position) {
+	private void changeMousePosition(UIPoint position) {
 		mousePosition = position;
 
 		if (controls.containsPoint(position)) {
@@ -770,15 +760,13 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private final GOEventHandler drawSelectionHandler = new GOModalEventHandler() {
-
 		@Override
 		public void phaseChanged(GOEvent event) {
 		}
 
 		@Override
 		public void finished(GOEvent event) {
-			updateSelectionArea(
-					((GODrawEvent) event).getDrawPosition(), true);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), true);
 		}
 
 		@Override
@@ -788,14 +776,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			updateSelectionArea(
-					((GODrawEvent) event).getDrawPosition(), false);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), false);
 		}
-
 	};
 
-	private Action handleCommandOnMap(GOCommandEvent commandEvent,
-			UIPoint position) {
+	private Action handleCommandOnMap(GOCommandEvent commandEvent, UIPoint position) {
 
 		float x = (float) position.getX();
 		float y = (float) position.getY();
@@ -813,21 +798,18 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private Action handleSelectCommand(ShortPoint2D onMap) {
-		Action action;
 		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME
-				&& onMap.equals(lastSelectPointPos)) {
+		if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME && onMap.equals(lastSelectPointPos)) {
 			lastSelectPointTime = 0;
-			action = new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
+			return new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
 		} else {
 			lastSelectPointTime = currentTime;
 			lastSelectPointPos = onMap;
-			action = new PointAction(EActionType.SELECT_POINT, onMap);
+			return new PointAction(EActionType.SELECT_POINT, onMap);
 		}
-		return action;
 	}
 
-	protected void abortSelectionArea() {
+	private void abortSelectionArea() {
 		this.currentSelectionAreaStart = null;
 		this.currentSelectionAreaEnd = null;
 	}
@@ -903,12 +885,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			break;
 		case ZOOM_IN:
 			if (context.getScreen().getZoom() < 1.1) {
-				setZoom(context.getScreen().getZoom() * 2);
+				setZoom(context.getScreen().getZoom() * 2, null);
 			}
 			break;
 		case ZOOM_OUT:
 			if (context.getScreen().getZoom() > 0.6) {
-				setZoom(context.getScreen().getZoom() / 2);
+				setZoom(context.getScreen().getZoom() / 2, null);
 			}
 			break;
 		case MOVE_TO:
@@ -927,8 +909,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void setZoom(float f) {
-		context.getScreen().setZoom(f);
+	private void setZoom(float newZoom, UIPoint pointingPosition) {
+		context.getScreen().setZoom(newZoom, pointingPosition);
 		reapplyContentSizes();
 	}
 
@@ -937,15 +919,17 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		synchronized (messenger) {
 			printMsg = messenger.addMessage(message);
 		}
-		if (printMsg)
+
+		if (printMsg) {
 			switch (message.getType()) {
 			case ATTACKED:
-				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+				soundmanager.playSound(NOTIFY_ATTACKED_SOUND_ID, 1);
 				break;
 
 			default:
 				break;
 			}
+		}
 	}
 
 	@Override
@@ -962,8 +946,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	@Override
-	public void actionThreadCoughtException(Throwable e) {
-		// This is currently ignroed. TODO: Where to catch exceptions?
+	public void actionThreadCaughtException(Throwable e) {
+		// This is currently ignored. TODO: Where to catch exceptions?
 	}
 
 	public void stop() {
@@ -971,7 +955,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		controls.stop();
 	}
 
-	protected void loadUIState(UIState state) {
+	void loadUIState(UIState state) {
 		if (state == null) {
 			return;
 		}
@@ -979,16 +963,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (state.getStartPoint() != null) {
 			scrollTo(state.getStartPoint(), false);
 		} else {
-			setZoom(state.getZoom());
-			context.getScreen().setScreenCenter(state.getScreenCenterX(),
-					state.getScreenCenterY());
+			setZoom(state.getZoom(), null);
+			context.getScreen().setScreenCenter(state.getScreenCenterX(), state.getScreenCenterY());
 		}
 	}
 
 	protected UIState getUIState() {
 		ScreenPosition screen = context.getScreen();
-		return new UIState(screen.getScreenCenterX(),
-				screen.getScreenCenterY(), screen.getZoom());
+		return new UIState(screen.getScreenCenterX(), screen.getScreenCenterY(), screen.getZoom());
 	}
 
 	/**
@@ -1001,5 +983,4 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public Color getPlayerColor(byte player) {
 		return context.getPlayerColor(player);
 	}
-
 }

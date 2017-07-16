@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd">
-<building worker="MINER" workradius="0">
-    <ground groundtype="MOUNTAIN" />
+<building worker="MINER" mine="true">
+	<ground groundtype="MOUNTAIN" />
+	<ground groundtype="MOUNTAINBORDER" />
+	<ground groundtype="MOUNTAINBORDEROUTER" />
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
 
 	<blocked dx="1" dy="2" block="true" />
 	<blocked dx="2" dy="1" block="true" />

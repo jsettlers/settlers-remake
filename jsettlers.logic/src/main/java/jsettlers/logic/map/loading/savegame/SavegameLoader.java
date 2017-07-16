@@ -17,8 +17,8 @@ package jsettlers.logic.map.loading.savegame;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.EMapStartResources;
@@ -53,6 +53,7 @@ public class SavegameLoader extends RemakeMapLoader {
 			PlayerState[] playerStates = (PlayerState[]) ois.readObject();
 			GameSerializer gameSerializer = new GameSerializer();
 			MainGrid mainGrid = gameSerializer.load(ois);
+			mainGrid.initWithPlayerSettings(playerSettings);
 			RescheduleTimer.loadFrom(ois);
 
 			ois.close();

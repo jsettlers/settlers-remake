@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,40 +14,46 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
-import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.shapes.FilteredMapArea;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.material.EMaterialType;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.MutableInt;
 import jsettlers.common.utils.Tuple;
-import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.collections.ISerializablePredicate;
-import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
-import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
+import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
+
+import java8.util.Lists;
+import java8.util.Maps;
 
 /**
  * This class handles the partitions of the map.
@@ -55,7 +61,7 @@ import jsettlers.logic.player.Team;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsGrid implements Serializable, IBlockingChangedListener {
+public final class PartitionsGrid implements Serializable {
 	private static final long serialVersionUID = 8919380724171427679L;
 
 	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 3000;
@@ -70,47 +76,48 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
-	private final Team[] teams;
-
 	final short[] partitions;
 	private final byte[] towers;
 
+	private final short[] blockedPartitionsForPlayers;
 	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 
-	private final short[] blockedPartitionsForPlayers;
-
-	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
-	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IPartitionsGridBlockingProvider blockingProvider) {
+	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IBlockingProvider blockingProvider) {
 		this.width = width;
 		this.height = height;
 		this.blockingProvider = blockingProvider;
-		blockingProvider.registerBlockingChangedListener(this);
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
-		Map<Byte,Team> teams = new HashMap<Byte,Team>();
+
+		Map<Byte, Team> teams = new HashMap<>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
-			if (teams.get(playerSetting.getTeamId()) == null) {
-				teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
+			if (playerSetting.isAvailable()) {
+				Maps.computeIfAbsent(teams, playerSetting.getTeamId(), Team::new);
+				Team team = teams.get(playerSetting.getTeamId());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(), playerSetting.getCivilisation());
+				team.registerPlayer(this.players[playerId]);
+				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
-			Team team = teams.get(playerSetting.getTeamId());
-			this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length);
-			team.registerPlayer(this.players[playerId]);
-			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
-		Team[] teamsArray = new Team[teams.size()];
-		this.teams = teams.values().toArray(teamsArray);
 
 		this.partitions = new short[width * height];
 		this.towers = new byte[width * height];
 
 		// the no player partition (the manager won't be started)
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
+	}
 
-		initAdditionalFields();
+	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && playerSettings[i].isAvailable()) {
+				players[i].setPlayerType(playerSettings[i].getPlayerType());
+				players[i].setCivilisation(playerSettings[i].getCivilisation());
+			}
+		}
 	}
 
 	public short getWidth() {
@@ -129,11 +136,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		initAdditionalFields();
-	}
-
-	private void initAdditionalFields() {
-		partitionsWriteLock = new Object();
 	}
 
 	public boolean isDefaultPartition(short partitionId) {
@@ -174,6 +176,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return getPartitionAt(x, y).playerId;
 	}
 
+	public Player[] getPlayers() {
+		return players;
+	}
+
 	public Player getPlayer(int playerId) {
 		return players[playerId];
 	}
@@ -210,14 +216,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 *            The ground area of the tower.
 	 */
 	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea, FreeMapArea groundArea) {
-		IMapArea filteredArea = new FilteredMapArea(influencingArea, new ISerializablePredicate<ShortPoint2D>() {
-			private static final long serialVersionUID = -6460916149912865762L;
-
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				return 0 <= pos.x && pos.x < width && 0 <= pos.y && pos.y < height;
-			}
-		});
+		IMapArea filteredArea = new MapShapeFilter(influencingArea, width, height);
 
 		PartitionOccupyingTower tower = new PartitionOccupyingTower(playerId, influencingArea.getCenter(), groundArea, filteredArea,
 				influencingArea.getBorders(), (int) influencingArea.getRadius());
@@ -230,37 +229,31 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * 
 	 * @param pos
 	 *            The position of the tower.
-	 * @return
-	 */
-	public Iterable<ShortPoint2D> removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+	  */
+	public void removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
 		if (tower == null) {
-			return new LinkedList<ShortPoint2D>();
+			return ;
 		}
 
 		// reduce the tower counter
-		changeTowerCounter(tower.playerId, tower.area, -1);
-
+		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
 		checkOtherTowersInArea(tower);
-
-		return tower.area;
 	}
 
 	/**
-	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the
-	 * new player.
+	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the new player.
 	 * 
 	 * @param towerPosition
 	 * @param newPlayerId
-	 * @param groundArea
 	 * @return
 	 */
-	public Iterable<ShortPoint2D> changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId) {
-		// get the tower object and the informations of it.
+	public CoordinateStream changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId) {
+		// get the tower object and the information of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(towerPosition);
 		if (tower == null) {
-			return new LinkedList<ShortPoint2D>(); // return if no tower has been found
+			return CoordinateStream.EMPTY; // return if no tower has been found
 		}
 
 		// reduce the tower counter
@@ -270,35 +263,37 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		checkOtherTowersInArea(tower);
 
 		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower);
-		return occupyAreaOfTower(newTower);
+		occupyAreaOfTower(newTower);
+		return newTower.area.stream();
 	}
 
-	private IMapArea occupyAreaOfTower(PartitionOccupyingTower tower) {
+	private void occupyAreaOfTower(PartitionOccupyingTower tower) {
 		// set the tower counter of the groundArea to 0 => the ground area will be occupied
-		for (ShortPoint2D currPos : tower.groundArea) {
-			towers[currPos.x + currPos.y * width] = 0;
-		}
+		tower.groundArea.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
 		// occupy the area for the new player
-		occupyAreaByTower(tower.playerId, tower.area, tower.areaBorders);
+		occupyAreaByTower(tower.playerId, tower.area.stream(), tower.areaBorders);
 		occupyingTowers.add(tower);
 
 		// recalculate the tower counter for the ground area
 		recalculateTowerCounter(tower, tower.groundArea);
-		return tower.area;
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
-		int idx = position.x + position.y * width;
+		changePlayerAt(position.x, position.y, playerId);
+	}
+
+	public void changePlayerAt(int x, int y, byte playerId) {
+		int idx = x + y * width;
 		if (towers[idx] <= 0) {
 			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(position.x, position.y, newPartition);
-			notifyPlayerChangedListener(position.x, position.y, playerId);
+			changePartitionUncheckedAt(x, y, newPartition);
+			notifyPlayerChangedListener(x, y, playerId);
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.VALUES) {
-				borderVisitor.visit(currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+				borderVisitor.visit(x, y, currDir.gridDeltaX + x, currDir.gridDeltaY + y);
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
@@ -308,34 +303,19 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	/**
 	 * Recalculates the tower counter for the given area. <br>
 	 * NOTE: The given area must completely belong to the given player!
-	 * 
+	 *
+	 * @param tower
+	 * @param tower
 	 * @param area
-	 * @param playerId
 	 */
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
-		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius);
+		area.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
-		for (ShortPoint2D curr : area) {
-			towers[curr.x + curr.y * width] = 0;
-		}
-
-		for (Tuple<Integer, PartitionOccupyingTower> currTower : towersInRange) {
-			if (currTower.e2.playerId == tower.playerId) {
-				final IMapArea currArea = currTower.e2.area;
-
-				// define the positions that need to get their towers count increased.
-				IteratorFilter<ShortPoint2D> increasePositions = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
-					@Override
-					public boolean evaluate(ShortPoint2D position) {
-						return currArea.contains(position);
-					}
-				});
-
-				for (ShortPoint2D curr : increasePositions) {
-					towers[curr.x + curr.y * width]++;
-				}
-			}
-		}
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius, currTower -> currTower.playerId == tower.playerId);
+		stream(towersInRange)
+				.forEach(currTower -> area.stream()
+						.filter(currTower.e2.area::contains)
+						.forEach((x, y) -> towers[x + y * width]++));
 	}
 
 	/**
@@ -344,51 +324,31 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param tower
 	 */
 	private void checkOtherTowersInArea(PartitionOccupyingTower tower) {
-		// get the positions that may change their owner.
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				final int idx = pos.x + pos.y * width;
-				return towers[idx] <= 0;
-			}
-		};
-		// save the free positions in the list because the list must not change during the otherTowers loop
-		ArrayList<ShortPoint2D> freedPositions = new IteratorFilter<ShortPoint2D>(tower.area, predicate).toList();
+		// Get the positions that may change their owner (tower counter <= 0)
+		// Save these positions in the list because the list must not change during the loop over the other towers
+		CoordinateStream freedPositions = tower.area.stream().filter((x, y) -> towers[x + y * width] <= 0).freeze();
 
+		// if at least one position may change the player
 		// check if other towers occupy the area
-		if (!freedPositions.isEmpty()) { // if at least one position may change the player
+		if (!freedPositions.isEmpty()) {
 			List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position,
-					tower.radius);
+					tower.radius, currTower -> currTower.playerId != tower.playerId);
+
 			// sort the towers by their distance to the removed tower
-			Collections.sort(towersInRange, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
+			Lists.sort(towersInRange, Tuple.getE1Comparator());
 
 			for (Tuple<Integer, PartitionOccupyingTower> curr : towersInRange) {
-				if (curr.e2.playerId == tower.playerId) {
-					continue; // only work on towers of other players.
-				}
-
 				final PartitionOccupyingTower currTower = curr.e2;
-
 				final IMapArea currArea = currTower.area;
 
-				IteratorFilter<ShortPoint2D> area = new IteratorFilter<ShortPoint2D>(freedPositions, new IPredicate<ShortPoint2D>() {
-					@Override
-					public boolean evaluate(ShortPoint2D object) {
-						return currArea.contains(object);
-					}
-				});
-
+				CoordinateStream area = freedPositions.filter(currArea::contains);
 				occupyAreaByTower(currTower.playerId, area, currTower.areaBorders);
 
 				PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 				final FreeMapArea groundArea = currTower.groundArea;
 				ShortPoint2D upperLeftGroundAreaPosition = groundArea.getUpperLeftPosition();
-				BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
-					@Override
-					public boolean contains(int x, int y) {
-						return groundArea.contains(x, y);
-					}
-				}, upperLeftGroundAreaPosition, borderVisitor, true);
+
+				BorderTraversingAlgorithm.traverseBorder(groundArea::contains, upperLeftGroundAreaPosition, borderVisitor, true);
 				checkMergesAndDividesOnPartitionsList(currTower.playerId,
 						getPartitionIdAt(upperLeftGroundAreaPosition.x, upperLeftGroundAreaPosition.y), borderVisitor.getPartitionsList());
 			}
@@ -399,19 +359,14 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * Occupies the given area for the given playerId.
 	 * 
 	 * @param playerId
-	 * @param filteredInfluencingArea
+	 * @param influencingArea
 	 * @param borders
 	 */
-	private void occupyAreaByTower(final byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				int index = pos.x + pos.y * width;
-				return towers[index] <= 0 && partitionObjects[partitions[index]].playerId != playerId;
-			}
-		};
-
-		Iterable<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate).toList();
+	private void occupyAreaByTower(final byte playerId, CoordinateStream influencingArea, SRectangle borders) {
+		CoordinateStream filtered = influencingArea.filter((x, y) -> {
+			int index = x + y * width;
+			return towers[index] <= 0 && partitionObjects[partitions[index]].playerId != playerId;
+		}).freeze();
 
 		// create PartitionCalculator
 		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, blockingProvider, borders.xMin, borders.yMin,
@@ -427,9 +382,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		// increase the tower counter
 		changeTowerCounter(playerId, influencingArea, +1);
 
-		for (ShortPoint2D curr : filtered) {
-			notifyPlayerChangedListener(curr.x, curr.y, playerId);
-		}
+		filtered.forEach((x, y) -> notifyPlayerChangedListener(x, y, playerId));
 	}
 
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
@@ -438,56 +391,48 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
-			if (blockingProvider.isBlocked(pos.x, pos.y)) {
-				continue; // do not check the blocked partition
-			}
+			short innerPartition = newPartitionsMap[i];
 
-			final short innerPartition = newPartitionsMap[i];
+			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos, borderVisitor, true);
 
-			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
-				@Override
-				public boolean contains(int x, int y) {
-					return partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition];
-				}
-			}, pos, borderVisitor, true);
-
-			// get the partitions around the partition.
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = borderVisitor.getPartitionsList();
-
-			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, partitionsList);
+			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
 	}
 
-	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
-			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList) {
+	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition, LinkedList<BorderPartitionInfo> partitionsList) {
 		if (partitionsList.isEmpty()) {
 			return; // nothing to do
 		}
 
 		// check for divides
-		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Short currPartitionId = currPartition.e1;
-			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartitionId);
-			if (existingPartitionPos != null) {
-				checkIfDividePartition(currPartitionId, currPartition.e2, existingPartitionPos);
-				// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
-				// happen with partitions which also have currPartitionId.
-				if (getPartitionIdAt(existingPartitionPos.x, existingPartitionPos.y) != currPartitionId) {
-					foundPartitionsSet.put(currPartitionId, currPartition.e2);
+		HashMap<Short, BorderPartitionInfo> foundPartitionsSet = new HashMap<>();
+		for (BorderPartitionInfo currPartitionInfo : partitionsList) {
+			Short currPartitionId = currPartitionInfo.partitionId;
+			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
+			if (existingPartitionInfo != null) {
+				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other player's positions
+					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
+
+					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
+					// happen with partitions which also have currPartitionId.
+					short newPartitionIdOfExistingPartition = getPartitionIdAt(existingPartitionInfo.positionOfPartition.x,
+							existingPartitionInfo.positionOfPartition.y);
+					if (newPartitionIdOfExistingPartition != currPartitionId) {
+						foundPartitionsSet.put(currPartitionId, currPartitionInfo);
+					}
 				}
 			} else {
-				foundPartitionsSet.put(currPartitionId, currPartition.e2);
+				foundPartitionsSet.put(currPartitionId, currPartitionInfo);
 			}
 		}
 
 		// check if partitions need to be merged
 		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
 
-		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			Partition currPartitionObject = partitionObjects[currPartition.e1];
-			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.e1] != partitionObjects[innerPartition]) {
-				mergePartitions(currPartition.e1, innerPartition);
+		for (BorderPartitionInfo currPartition : partitionsList) {
+			Partition currPartitionObject = partitionObjects[currPartition.partitionId];
+			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.partitionId] != partitionObjects[innerPartition]) {
+				mergePartitions(currPartition.partitionId, innerPartition);
 			}
 		}
 	}
@@ -495,20 +440,23 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	/**
 	 * Checks if the given partitions is divided and the both given positions are on separated parts of the partition.
 	 * 
-	 * @param partition
-	 * @param pos1
-	 * @param pos2
+	 * @param partitionInfo1
+	 * @param partitionInfo2
 	 */
-	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
+	private void checkIfDividePartition(BorderPartitionInfo partitionInfo1, BorderPartitionInfo partitionInfo2) {
+		assert partitionInfo1.partitionId == partitionInfo2.partitionId;
+
+		final short partition = partitionInfo1.partitionId;
+
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
+
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
-						partition2Size, partition)) {
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2, partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
-				dividePartition(partition, pos1, pos2);
+				dividePartition(partition, partitionInfo1.positionOfPartition, partitionInfo2.positionOfPartition);
 			} else {
-				dividePartition(partition, pos2, pos1);
+				dividePartition(partition, partitionInfo2.positionOfPartition, partitionInfo1.positionOfPartition);
 			}
 		}
 	}
@@ -544,19 +492,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return newPartitionsMap;
 	}
 
-	private void changeTowerCounter(final byte playerId, Iterable<ShortPoint2D> influencingArea, int delta) {
-		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				return partitionObjects[partitions[pos.x + pos.y * width]].playerId == playerId;
-			}
-		};
-
-		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
-
-		for (ShortPoint2D pos : filtered) {
-			towers[pos.x + pos.y * width] += delta;
-		}
+	private void changeTowerCounter(final byte playerId, CoordinateStream influencingArea, int delta) {
+		influencingArea
+				.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
+				.forEach((x, y) -> towers[x + y * width] += delta);
 	}
 
 	/**
@@ -581,8 +520,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		smallerPartition = partitionObjects[smallerPartition].partitionId;
 
 		assert biggerPartition != smallerPartition : "the partitions can not be the same!";
-
-		// System.out.println("merging partitions: " + biggerPartition + " and " + smallerPartition);
 
 		Partition biggerPartitionObject = partitionObjects[biggerPartition];
 		Partition smallerPartitionObject = partitionObjects[smallerPartition];
@@ -617,8 +554,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	/**
-	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and
-	 * shall be divided. NOTE: There will be no check if the partition is really divided!
+	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and shall be divided. NOTE: There will be no check if the
+	 * partition is really divided!
 	 * 
 	 * @param oldPartition
 	 *            The original partition that now needs to be divided.
@@ -648,26 +585,17 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param oldPartition
 	 *            The id of the old partition.
 	 * @param relabelStartPos
-	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be
-	 *            relabeled.
+	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be relabeled.
 	 * @param newPartition
 	 *            The id of the new partition.
 	 */
 	private void relabelArea(final short oldPartition, ShortPoint2D relabelStartPos, final short newPartition) {
 		// relabel the partition
-		IContainingProvider containingProvider = new IContainingProvider() {
-			@Override
-			public boolean contains(int x, int y) {
-				return partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
-			}
-		};
+		IContainingProvider containingProvider = (x, y) -> partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
 
-		ITraversingVisitor relabelAreaVisitor = new ITraversingVisitor() {
-			@Override
-			public boolean visit(int x, int y) {
-				changePartitionUncheckedAt(x, y, newPartition);
-				return true;
-			}
+		IAreaVisitor relabelAreaVisitor = (x, y) -> {
+			changePartitionUncheckedAt(x, y, newPartition);
+			return true;
 		};
 		AreaTraversingAlgorithm.traverseArea(containingProvider, relabelAreaVisitor, relabelStartPos, width, height);
 	}
@@ -690,7 +618,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		Partition newPartitionObject = partitionObjects[newPartition];
 
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			partitions[idx] = newPartition;
 		}
 
@@ -711,7 +639,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			int length = partitionObjects.length;
 
 			if (newPartitionId >= length) {
-				synchronized (partitionsWriteLock) {
+				synchronized (this) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
 
@@ -734,42 +662,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		if (getPartitionAt(x, y) != partitionObjects[newPartition]) {
 			byte playerId = changePartitionUncheckedAt(x, y, newPartition);
 			notifyPlayerChangedListener(x, y, playerId);
-		}
-	}
-
-	@Override
-	public void blockingChanged(int x, int y, boolean newBlockingValue) {
-		if (newBlockingValue) {// if the value changed to blocking, ignore it
-			return;
-		}
-
-		int idx = x + y * width;
-		short currPartition = partitions[idx];
-
-		// if the position has a player
-		if (currPartition != NO_PLAYER_PARTITION_ID) {
-			// create a new partition for the given position and add the position to the partition
-			byte playerId = partitionObjects[currPartition].playerId;
-			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(x, y, newPartition);
-
-			// check all neighbors for merges
-			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-				int currNeighborX = x + EDirection.VALUES[i].gridDeltaX;
-				int currNeighborY = y + EDirection.VALUES[i].gridDeltaY;
-
-				// if the neighbor is not blocked (if it is blocked, we can not merge)
-				if (!blockingProvider.isBlocked(currNeighborX, currNeighborY)) {
-
-					short neighborPartition = partitions[currNeighborX + currNeighborY * width];
-					byte neighborPlayer = partitionObjects[neighborPartition].playerId;
-
-					// if the position and the neighbor are from the same player, then merge the partitions
-					if (playerId == neighborPlayer && partitionObjects[newPartition] != partitionObjects[neighborPartition]) {
-						mergePartitions(newPartition, neighborPartition);
-					}
-				}
-			}
 		}
 	}
 
@@ -812,7 +704,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// normalize the partitions
 		for (int y = 0; y < height; y++) {
-			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+			synchronized (this) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
 				for (int x = 0; x < width; x++) {
 					int idx = x + y * width;
 					this.partitions[idx] = this.partitionObjects[this.partitions[idx]].partitionId;
@@ -821,7 +713,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		// clear the partition objects
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			for (int i = 1; i < maxPartitions; i++) {
 				if (stoppedManagers.get(i)) {
 					this.partitionObjects[i] = null;
@@ -833,20 +725,14 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
-		Partition partition = getPartitionAt(x, y);
-		return new PartitionDataSupplier(partition.getPlayerId(), partition.partitionId, partition.getPartitionSettings(),
-				partition.getMaterialCounts());
+		return getPartitionAt(x, y).getPartitionData();
 	}
 
-	public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
-		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialDistributionSettings(materialType, probabilities);
+	public PartitionManagerSettings getPartitionSettings(ShortPoint2D position) {
+		return getPartitionSettings(position.x, position.y);
 	}
 
-	public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
-		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialPrioritiesSettings(materialTypeForPriority);
-	}
-
-	public Team[] getTeams() {
-		return teams;
+	public PartitionManagerSettings getPartitionSettings(int x, int y) {
+		return getPartitionAt(x, y).getPartitionSettings();
 	}
 }

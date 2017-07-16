@@ -24,7 +24,7 @@ package go.graphics.sound;
 public class ForgettingQueue<T> {
 	private T current = null;
 	private float lvolume;
-	private float rvolume;;
+	private float rvolume;
 
 	public synchronized void offer(T e, float lvolume, float rvolume) {
 		current = e;
@@ -37,7 +37,7 @@ public class ForgettingQueue<T> {
 		while (current == null) {
 			this.wait();
 		}
-		Sound<T> r = new Sound<T>(current, lvolume, rvolume);
+		Sound<T> r = new Sound<>(current, lvolume, rvolume);
 		current = null;
 		return r;
 	}

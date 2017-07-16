@@ -30,6 +30,6 @@ public enum EShapeProperty {
 	/**
 	 * Inner radius property
 	 */
-	INNER;
+	INNER
 
 }

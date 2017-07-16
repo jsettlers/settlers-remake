@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -27,6 +27,28 @@ public final class MathUtils {
 	}
 
 	/**
+	 * Calculates sqrt(dx*dx+dy*dy) (Math.hypot() )
+	 *
+	 * @param dx
+	 * @param dy
+	 * @return
+	 */
+	public static double hypot(float dx, float dy) {
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	/**
+	 * Calculates sqrt(dx*dx+dy*dy) (Math.hypot() )
+	 *
+	 * @param dx
+	 * @param dy
+	 * @return
+	 */
+	public static double hypot(int dx, int dy) {
+		return Math.sqrt(squareHypot(dx, dy));
+	}
+
+	/**
 	 * Calculates dx*dx+dy*dy (the square of Math.hypot() )
 	 * 
 	 * @param dx
@@ -40,8 +62,8 @@ public final class MathUtils {
 	/**
 	 * Calculates the square of Math.hypot()
 	 * 
-	 * @param dx
-	 * @param dy
+	 * @param pos1
+	 * @param pos2
 	 * @return
 	 */
 	public static int squareHypot(ShortPoint2D pos1, ShortPoint2D pos2) {

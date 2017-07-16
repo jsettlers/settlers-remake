@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,9 +19,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.NetworkConstants.ENetworkKey;
@@ -29,10 +32,6 @@ import jsettlers.network.TestUtils;
 import jsettlers.network.infrastructure.channel.listeners.BufferingPacketListener;
 import jsettlers.network.infrastructure.channel.packet.EmptyPacket;
 import jsettlers.network.infrastructure.channel.reject.RejectPacket;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Test for class {@link Channel}.
@@ -140,12 +139,7 @@ public class ChannelTest {
 	public void testChannelClosedListener() throws InterruptedException {
 		final int[] closed = new int[1];
 
-		c1.setChannelClosedListener(new IChannelClosedListener() {
-			@Override
-			public void channelClosed() {
-				closed[0]++;
-			}
-		});
+		c1.setChannelClosedListener(() -> closed[0]++);
 
 		assertEquals(0, closed[0]);
 		c1.close();
@@ -208,14 +202,10 @@ public class ChannelTest {
 
 	@Test
 	public void testReadNotAllFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
-				new IDeserializingable<TestPacket>() {
-					@Override
-					public TestPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
-						dis.readInt();
-
-						return new TestPacket();
-					}
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
+				(key, dis) -> {
+					dis.readInt();
+					return new TestPacket();
 				});
 
 		c2.registerListener(listener);
@@ -231,17 +221,14 @@ public class ChannelTest {
 
 	@Test
 	public void testReadMoreFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
-				new IDeserializingable<TestPacket>() {
-					@Override
-					public TestPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
-						TestPacket packet = new TestPacket();
-						packet.deserialize(dis);
-						dis.readInt(); // try to read some more bytes
-						dis.readUTF();
-						dis.readInt();
-						return packet;
-					}
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<>(ENetworkKey.TEST_PACKET,
+				(key, dis) -> {
+					TestPacket packet = new TestPacket();
+					packet.deserialize(dis);
+					dis.readInt(); // try to read some more bytes
+					dis.readUTF();
+					dis.readInt();
+					return packet;
 				});
 
 		c2.registerListener(listener);
@@ -258,9 +245,7 @@ public class ChannelTest {
 	@Test
 	public void testRejectSendingForUnlistenedPackets() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(
-				NetworkConstants.ENetworkKey.REJECT_PACKET,
-				new GenericDeserializer<RejectPacket>(RejectPacket.class));
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<>(NetworkConstants.ENetworkKey.REJECT_PACKET, new GenericDeserializer<>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 
 		// send the packet for an unconnected key from the channel with a reject listener
@@ -277,9 +262,7 @@ public class ChannelTest {
 	@Test
 	public void testRejectSendingForUnlistenedPacketsLoopProtection() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(
-				NetworkConstants.ENetworkKey.REJECT_PACKET,
-				new GenericDeserializer<RejectPacket>(RejectPacket.class));
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<>(NetworkConstants.ENetworkKey.REJECT_PACKET, new GenericDeserializer<>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 
 		// send the packet for an unconnected key from the channel without a reject listener

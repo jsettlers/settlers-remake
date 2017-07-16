@@ -14,14 +14,12 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
-import java.io.File;
-
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.exceptionhandler.ExceptionHandler;

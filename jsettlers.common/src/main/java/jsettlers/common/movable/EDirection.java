@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,7 +18,7 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Enumeration for directions that can be gone on the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public enum EDirection {
@@ -75,7 +75,7 @@ public enum EDirection {
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static final EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
+	public static EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
 		return getDirection(first.x, first.y, second.x, second.y);
 	}
 
@@ -83,14 +83,18 @@ public enum EDirection {
 	 * LIMITATION: the given ISPosition objects need to be direct neighbors and can not be the same object!! <br>
 	 * calculates the direction between the two given ShortPoint2D objects.
 	 * 
-	 * @param first
-	 *            one ShortPoint2D object
-	 * @param second
-	 *            another ISPisition2D object
+	 * @param sx
+	 *            x of first coordinate
+	 * @param sy
+	 *            y of first coordinate
+	 * @param tx
+	 *            x of second coordinate
+	 * @param ty
+	 *            y of second coordinate
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static final EDirection getDirection(short sx, short sy, short tx, short ty) {
+	public static EDirection getDirection(short sx, short sy, short tx, short ty) {
 		byte dx = (byte) (tx - sx);
 		byte dy = (byte) (ty - sy);
 
@@ -164,7 +168,7 @@ public enum EDirection {
 
 	}
 
-	public final static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
+	public static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
 		int steps;
 		if (dx != 0) {
 			steps = Math.abs(dx);
@@ -175,7 +179,7 @@ public enum EDirection {
 		return getDirection(dx / steps, dy / steps);
 	}
 
-	public final static EDirection getDirection(int dx, int dy) {
+	public static EDirection getDirection(int dx, int dy) {
 		for (EDirection currDir : VALUES) {
 			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
 				return currDir;
@@ -185,12 +189,20 @@ public enum EDirection {
 		return null;
 	}
 
-	public final short getNextTileX(int x) {
-		return (short) (x + gridDeltaX);
+	public final int getNextTileX(int x) {
+		return x + gridDeltaX;
 	}
 
-	public final short getNextTileY(int y) {
-		return (short) (y + gridDeltaY);
+	public final int getNextTileY(int y) {
+		return y + gridDeltaY;
+	}
+
+	public final int getNextTileX(int x, int steps) {
+		return x + gridDeltaX * steps;
+	}
+
+	public final int getNextTileY(int y, int steps) {
+		return y + gridDeltaY * steps;
 	}
 
 	/**
@@ -215,7 +227,7 @@ public enum EDirection {
 	}
 
 	public ShortPoint2D getNextHexPoint(ShortPoint2D pos, int steps) {
-		return new ShortPoint2D(pos.x + gridDeltaX * steps, pos.y + gridDeltaY * steps);
+		return new ShortPoint2D(getNextTileX(pos.x, steps), getNextTileY(pos.y, steps));
 	}
 
 	/**
@@ -251,5 +263,4 @@ public enum EDirection {
 	public final boolean isHorizontal() {
 		return isHorizontal;
 	}
-
 }

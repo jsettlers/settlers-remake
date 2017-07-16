@@ -35,7 +35,7 @@ public class JoinMatchListener extends PacketChannelListener<IdPacket> {
 	private final Player player;
 
 	public JoinMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH, new GenericDeserializer<IdPacket>(IdPacket.class));
+		super(NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH, new GenericDeserializer<>(IdPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

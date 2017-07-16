@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -65,13 +65,12 @@ public final class Constants {
 
 	/**
 	 * Defines the percentage used to calculate the payback of materials when a building is destroyed.<br>
-	 * The formula defines that you get back {@value #BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR} of the materials already invested in the
-	 * building.
+	 * The formula defines that you get back {@value #BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR} of the materials already invested in the building.
 	 */
 	public static final float BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR = 0.5f;
 	/**
-	 * Defines the factor that is used to calculate the maximum allowed distance from a building to it's work area center. The maximum distance is
-	 * calculated as the work radius of the building multiplied by this factor.
+	 * Defines the factor that is used to calculate the maximum allowed distance from a building to it's work area center. The maximum distance is calculated as the work radius of the building
+	 * multiplied by this factor.
 	 */
 	public static final short BUILDINGS_MAX_WORKRADIUS_FACTOR = 4;
 
@@ -92,4 +91,5 @@ public final class Constants {
 	public static final short MOVABLE_FLEEING_DIJKSTRA_RADIUS = 9;
 	public static final short MOVABLE_FLEEING_MAX_RADIUS = TOWER_SEARCH_RADIUS;
 
+	public static  int BUILDING_PLACEMENT_MAX_SEARCH_RADIUS = 3;
 }

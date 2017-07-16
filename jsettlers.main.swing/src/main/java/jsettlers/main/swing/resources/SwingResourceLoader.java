@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,16 +15,16 @@
 package jsettlers.main.swing.resources;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.resources.SettlersFolderChecker;
+import jsettlers.common.resources.SettlersFolderChecker.SettlersFolderInfo;
 import jsettlers.common.utils.OptionableProperties;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
-import jsettlers.main.swing.resources.SettlersFolderChecker.SettlersFolderInfo;
 
 /**
  * This class just loads the resources and sets up paths needed for jsettlers when used with a swing UI.
@@ -50,14 +50,14 @@ public class SwingResourceLoader {
 
 		// setup image and sound provider
 		ImageProvider.getInstance().addLookupPath(settlersFolderInfo.gfxFolder);
-		SoundManager.addLookupPath(settlersFolderInfo.sndFolder);
+		SoundManager.setLookupPath(settlersFolderInfo.sndFolder);
 
 		// Set the resources directory.
 		File resources = options.getAppHome();
 		ResourceManager.setProvider(new SwingResourceProvider(resources));
 
 		// Setup map load paths
-		setupMapListFactory(options, settlersFolderInfo);
+		setupMapListFactory(options.getProperty("maps"), settlersFolderInfo.mapsFolder);
 	}
 
 	private static SettlersFolderInfo getPathOfOriginalSettlers(OptionableProperties options) throws ResourceSetupException {
@@ -67,23 +67,22 @@ public class SwingResourceLoader {
 		}
 
 		SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(originalGamePath);
-		if(!settlersFolderInfo.isValidSettlersFolder()){
+		if (!settlersFolderInfo.isValidSettlersFolder()) {
 			throw new ResourceSetupException("Path to original Settlers III installation not valid.");
 		}
 
 		return settlersFolderInfo;
 	}
 
-	private static void setupMapListFactory(OptionableProperties options, SettlersFolderInfo settlersFolderInfo) {
+	public static void setupMapListFactory(String additionalMaps, File originalMapsFolder) {
 		DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
 		loadDefaultMapFolders(mapListFactory);
 
 		// now add original maps
-		if(settlersFolderInfo.mapsFolder != null 	){
-			mapListFactory.addMapDirectory(settlersFolderInfo.mapsFolder.getAbsolutePath(), false);
+		if (originalMapsFolder != null) {
+			mapListFactory.addMapDirectory(originalMapsFolder.getAbsolutePath(), false);
 		}
 
-		String additionalMaps = options.getProperty("maps");
 		if (additionalMaps != null) {
 			mapListFactory.addMapDirectory(additionalMaps, false);
 		}

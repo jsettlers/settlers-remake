@@ -15,5 +15,5 @@
 package jsettlers.common.movable;
 
 public interface IIDable {
-	public int getID();
+	int getID();
 }

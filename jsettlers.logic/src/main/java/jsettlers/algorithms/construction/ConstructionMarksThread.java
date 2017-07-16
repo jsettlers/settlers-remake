@@ -68,8 +68,7 @@ public final class ConstructionMarksThread implements Runnable {
 
 						EBuildingType buildingType = this.buildingType;
 						if (buildingType != null && mapArea != null) { // if the task has already been canceled
-							algorithm.calculateConstructMarks(mapArea, buildingType.getBuildingAreaBitSet(), buildingType.getGroundTypes(),
-									buildingType.getBuildingArea(), !buildingType.needsFlattenedGround());
+							algorithm.calculateConstructMarks(mapArea, buildingType);
 						}
 
 						watch.stop("calculation of construction marks");

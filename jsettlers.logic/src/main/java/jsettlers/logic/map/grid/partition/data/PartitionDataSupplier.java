@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,10 +24,11 @@ public final class PartitionDataSupplier implements IPartitionData {
 	private final byte playerId;
 	private final short partitionId;
 	private final IPartitionSettings settings;
-	private final IMaterialCounts materialCounts;
+	private final MaterialCounts materialCounts;
+
 	private IBuildingCounts buildingCounts;
 
-	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, IMaterialCounts materialCounts) {
+	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, MaterialCounts materialCounts) {
 		this.playerId = playerId;
 		this.partitionId = partitionId;
 		this.settings = settings;

@@ -21,10 +21,8 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 
 import jsettlers.common.utils.MainUtils;
-import jsettlers.common.utils.OptionableProperties;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.testutils.TestUtils;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.sound.SoundManager;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.others;
 
-import java.util.List;
-
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -24,6 +22,8 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.player.Player;
+
+import java.util.List;
 
 /**
  *
@@ -51,7 +51,7 @@ public final class TempleBuilding extends Building {
 		IRequestStack wineStack = getWineStack();
 
 		if (wineStack.pop()) {
-			getPlayer().getManaInformation().increaseMana();
+			getPlayer().getMannaInformation().increaseManna();
 			return CONSUME_DELAY;
 		} else {
 			return CHECK_DELAY;
@@ -59,7 +59,7 @@ public final class TempleBuilding extends Building {
 	}
 
 	private IRequestStack getWineStack() {
-		List<IRequestStack> stacks = super.getStacks();
+		List<? extends IRequestStack> stacks = super.getStacks();
 		assert stacks.size() == 1;
 
 		IRequestStack wineStack = stacks.get(0);

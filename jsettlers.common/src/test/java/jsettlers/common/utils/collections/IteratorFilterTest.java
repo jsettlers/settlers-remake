@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,7 +28,7 @@ public class IteratorFilterTest {
 
 	@Before
 	public void setUp() throws Exception {
-		list = new LinkedList<Integer>();
+		list = new LinkedList<>();
 		list.add(1);
 		list.add(6);
 		list.add(12);
@@ -41,61 +41,46 @@ public class IteratorFilterTest {
 
 	@Test
 	public void testFilterUneven() {
-		LinkedList<Integer> expected = new LinkedList<Integer>();
+		LinkedList<Integer> expected = new LinkedList<>();
 		for (Integer curr : list) {
 			if (curr % 2 != 0)
 				expected.add(curr);
 		}
 
-		assertEqualality(expected, new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
-			@Override
-			public boolean evaluate(Integer object) {
-				return object % 2 != 0;
-			}
-		}));
+		assertEqualality(expected, new IteratorFilter<>(list, object -> object % 2 != 0));
 	}
 
 	@Test
 	public void testFilterEven() {
-		LinkedList<Integer> expected = new LinkedList<Integer>();
+		LinkedList<Integer> expected = new LinkedList<>();
 		for (Integer curr : list) {
 			if (curr % 2 == 0)
 				expected.add(curr);
 		}
 
-		assertEqualality(expected, new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
-			@Override
-			public boolean evaluate(Integer object) {
-				return object % 2 == 0;
-			}
-		}));
+		assertEqualality(expected, new IteratorFilter<>(list, object -> object % 2 == 0));
 	}
 
 	@Test
 	public void testUseFilterTwoTimes() {
-		IteratorFilter<Integer> filter = new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
-			@Override
-			public boolean evaluate(Integer object) {
-				return true;
-			}
-		});
+		IteratorFilter<Integer> filter = new IteratorFilter<>(list, object -> true);
 
 		assertEqualality(list, filter);
 		assertEqualality(list, filter);
 	}
 
 	private void assertEqualality(LinkedList<Integer> expectedList, IteratorFilter<Integer> iteratorFilter) {
-		Iterator<Integer> expectedIter = expectedList.iterator();
+		Iterator<Integer> expectedIterator = expectedList.iterator();
 
 		Iterator<Integer> filterIterator = iteratorFilter.iterator();
 
-		while (expectedIter.hasNext() && filterIterator.hasNext()) {
-			Integer expected = expectedIter.next();
+		while (expectedIterator.hasNext() && filterIterator.hasNext()) {
+			Integer expected = expectedIterator.next();
 			Integer filtered = filterIterator.next();
 
 			assertEquals(expected, filtered);
 		}
 
-		assertEquals(expectedIter.hasNext(), filterIterator.hasNext());
+		assertEquals(expectedIterator.hasNext(), filterIterator.hasNext());
 	}
 }

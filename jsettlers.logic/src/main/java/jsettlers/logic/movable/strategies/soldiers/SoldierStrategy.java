@@ -21,11 +21,11 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
-import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
@@ -36,7 +36,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	 * 
 	 * @author Andreas Eberle
 	 */
-	private static enum ESoldierState {
+	private enum ESoldierState {
 		AGGRESSIVE,
 
 		SEARCH_FOR_ENEMIES,
@@ -147,9 +147,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		case GOING_TO_TOWER:
 			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
 				OccupierPlace place = building.addSoldier(this);
-				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
-				super.enableNothingToDoAction(false);
 				super.setVisible(false);
+				super.setPosition(place.getPosition().calculatePoint(building.getPos()));
+				super.enableNothingToDoAction(false);
 
 				if (isBowman()) {
 					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
@@ -330,32 +330,47 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			EDirection direction = EDirection.getDirection(position, path.getNextPos());
 
-			AbstractMovableGrid grid = super.getGrid();
-			EDirection leftDir = direction.getNeighbor(-1);
-			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-			EDirection rightDir = direction.getNeighbor(1);
+			EDirection rightDir = direction.getNeighbor(-1);
 			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+			EDirection leftDir = direction.getNeighbor(1);
+			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 
-			if (grid.isFreePosition(leftPos)) {
-				return new Path(leftPos);
-			} else if (grid.isFreePosition(rightPos)) {
-				return new Path(rightPos);
+			ShortPoint2D freePosition = getRandomFreePosition(rightPos, leftPos);
+
+			if (freePosition != null) {
+				return new Path(freePosition);
+
 			} else {
-				EDirection twoLeftDir = direction.getNeighbor(-2);
-				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
-				EDirection twoRightDir = direction.getNeighbor(2);
+				EDirection twoRightDir = direction.getNeighbor(-2);
 				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
+				EDirection twoLeftDir = direction.getNeighbor(2);
+				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
 
-				if (grid.isFreePosition(twoLeftPos)) {
-					return new Path(twoLeftPos);
-				} else if (grid.isFreePosition(twoRightPos)) {
-					return new Path(twoRightPos);
+				freePosition = getRandomFreePosition(twoRightPos, twoLeftPos);
+
+				if (freePosition != null) {
+					return new Path(freePosition);
 				} else {
 					return path;
 				}
 			}
 		} else {
 			return super.findWayAroundObstacle(position, path);
+		}
+	}
+
+	private ShortPoint2D getRandomFreePosition(ShortPoint2D pos1, ShortPoint2D pos2) {
+		boolean pos1Free = getGrid().isFreePosition(pos1);
+		boolean pos2Free = getGrid().isFreePosition(pos2);
+
+		if (pos1Free && pos2Free) {
+			return MatchConstants.random().nextBoolean() ? pos1 : pos2;
+		} else if (pos1Free) {
+			return pos1;
+		} else if (pos2Free) {
+			return pos2;
+		} else {
+			return null;
 		}
 	}
 

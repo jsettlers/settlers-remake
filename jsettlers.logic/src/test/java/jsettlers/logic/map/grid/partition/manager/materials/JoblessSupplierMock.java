@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,12 +20,13 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 
 public class JoblessSupplierMock implements IJoblessSupplier {
 	private static final long serialVersionUID = -4698558305428775896L;
 
-	private LinkedList<IManagerBearer> jobless = new LinkedList<IManagerBearer>();
+	private LinkedList<IManagerBearer> jobless = new LinkedList<>();
 
 	public void addJoblessAt(final ShortPoint2D pos) {
 		jobless.add(new IManagerBearer() {
@@ -37,10 +38,11 @@ public class JoblessSupplierMock implements IJoblessSupplier {
 			}
 
 			@Override
-			public boolean deliver(EMaterialType materialType, ShortPoint2D offerPosition, IMaterialRequest request) {
+			public void deliver(EMaterialType materialType, IMaterialOffer offer, IMaterialRequest request) {
+				offer.distributionAccepted();
+				offer.offerTaken();
 				request.deliveryAccepted();
 				request.deliveryFulfilled();
-				return true;
 			}
 		});
 	}

@@ -21,6 +21,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.player.Player;
 
 /**
@@ -52,7 +53,7 @@ public abstract class SpawnBuilding extends Building {
 	@Override
 	protected int subTimerEvent() {
 		int rescheduleDelay;
-		Movable movableAtDoor = super.grid.getMovable(super.getDoor());
+		ILogicMovable movableAtDoor = super.grid.getMovable(super.getDoor());
 
 		if (movableAtDoor == null) {
 			movableAtDoor = new Movable(super.grid.getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());

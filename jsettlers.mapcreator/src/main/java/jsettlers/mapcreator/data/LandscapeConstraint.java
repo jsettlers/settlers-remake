@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data;
 
+import java.util.Set;
+
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
-
-import java.util.Set;
 
 /**
  * Placeholder object with harder constraints on the landscape.

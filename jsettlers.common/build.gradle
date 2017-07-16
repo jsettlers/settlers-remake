@@ -69,3 +69,7 @@ compileGeneratedJava {
 clean {
     delete commitFile
 }
+
+dependencies {
+    testCompile project(':jsettlers.testutils')
+}

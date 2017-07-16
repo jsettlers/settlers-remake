@@ -137,8 +137,6 @@ public class SetMaterialDistributionSettingsGuiTask extends SimpleGuiTask {
 			return false;
 		if (materialType != other.materialType)
 			return false;
-		if (!Arrays.equals(probabilities, other.probabilities))
-			return false;
-		return true;
+		return Arrays.equals(probabilities, other.probabilities);
 	}
 }

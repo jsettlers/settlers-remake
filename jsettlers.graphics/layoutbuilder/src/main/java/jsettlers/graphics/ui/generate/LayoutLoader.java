@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -16,7 +16,6 @@ package jsettlers.graphics.ui.generate;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -25,7 +24,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -100,7 +98,7 @@ public class LayoutLoader {
 
 	private File dtdDirectory = new File("");
 
-	public LayoutSourceGenerator loadFromXML(String layoutName, File file) throws FileNotFoundException, IOException {
+	public LayoutSourceGenerator loadFromXML(String layoutName, File file) throws IOException {
 		return new LayoutSourceGenerator(layoutName, loadLayoutFromXML(file));
 	}
 
@@ -118,20 +116,16 @@ public class LayoutLoader {
 			XMLReader xmlReader = saxParser.getXMLReader();
 			LayoutXmlHandler xmlHandler = new LayoutXmlHandler();
 			xmlReader.setContentHandler(xmlHandler);
-			xmlReader.setEntityResolver(new EntityResolver() {
-				@Override
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-					if (systemId.contains("layout.dtd")) {
-						return new InputSource(new FileInputStream(new File(dtdDirectory, "layout.dtd")));
-					} else {
-						return null;
-					}
+			xmlReader.setEntityResolver((publicId, systemId) -> {
+				if (systemId.contains("layout.dtd")) {
+					return new InputSource(new FileInputStream(new File(dtdDirectory, "layout.dtd")));
+				} else {
+					return null;
 				}
 			});
 			xmlReader.parse(new InputSource(is));
 
-			LayoutPanel root = xmlHandler.getRootPanel();
-			return root;
+			return xmlHandler.getRootPanel();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IOException(e);

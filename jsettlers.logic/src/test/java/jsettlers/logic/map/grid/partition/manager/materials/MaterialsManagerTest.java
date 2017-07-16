@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,15 +14,15 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials;
 
-import java.io.IOException;
-
-import jsettlers.testutils.TestUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
-
+import jsettlers.testutils.TestUtils;
 import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * This is a test for the {@link MaterialsManager} class.
@@ -37,11 +37,11 @@ public class MaterialsManagerTest {
 
 	@Test
 	public void testSerialization() throws IOException, ClassNotFoundException {
-		offersList.addOffer(pos(20, 20), EMaterialType.PLANK);
-		offersList.addOffer(pos(20, 20), EMaterialType.PLANK);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
-		offersList.addOffer(pos(20, 20), EMaterialType.STONE);
+		offersList.addOffer(pos(20, 20), EMaterialType.PLANK, EOfferPriority.OFFER_TO_ALL);
+		offersList.addOffer(pos(20, 20), EMaterialType.PLANK, EOfferPriority.OFFER_TO_ALL);
+		offersList.addOffer(pos(20, 20), EMaterialType.STONE, EOfferPriority.OFFER_TO_ALL);
+		offersList.addOffer(pos(20, 20), EMaterialType.STONE, EOfferPriority.OFFER_TO_ALL);
+		offersList.addOffer(pos(20, 20), EMaterialType.STONE, EOfferPriority.OFFER_TO_ALL);
 
 		joblessSupplier.addJoblessAt(new ShortPoint2D(10, 10));
 

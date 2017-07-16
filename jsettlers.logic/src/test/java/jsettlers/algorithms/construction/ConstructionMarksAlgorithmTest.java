@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,14 +19,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 import java.util.Set;
 
+import org.junit.Test;
+
 import jsettlers.common.buildings.BuildingAreaBitSet;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.jsettlers.common.buildings.BuildingAreaUtils;
-
-import org.junit.Test;
 
 /**
  * Test for class {@link NewConstructionMarksAlgorithm}.
@@ -51,18 +50,13 @@ public class ConstructionMarksAlgorithmTest {
 				{ false, false, false, false, false, false, false, false, false, false, false, false },
 				{ false, false, false, false, false, false, false, false, false, false, false, false } };
 
-		boolean[][] buildingMask = {
-				{ false, false, true, false, false },
-				{ true, true, true, true, true },
-				{ false, false, false, false, false } };
-
 		MapRectangle mapArea = new MapRectangle(-15, -15, 30, 30);
 
-		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(BuildingAreaUtils.createRelativePoints(buildingMask));
+		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(EBuildingType.TOWER.getBuildingArea());
 
 		TestMap map = new TestMap(blocked);
 		NewConstructionMarksAlgorithm algorithm = new NewConstructionMarksAlgorithm(map, (byte) 0);
-		algorithm.calculateConstructMarks(mapArea, buildingSet, null, null, false);
+		algorithm.calculateConstructMarks(mapArea, EBuildingType.TOWER);
 
 		// print(map, blocked, buildingSet);
 
@@ -202,12 +196,12 @@ public class ConstructionMarksAlgorithmTest {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
+		public boolean canConstructAt(int x, int y, EBuildingType type, byte playerId) {
 			throw new UnsupportedOperationException("not mocked");
-		};
+		}
 
 		@Override
-		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		public byte calculateConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			throw new UnsupportedOperationException("not mocked");
 		}
 

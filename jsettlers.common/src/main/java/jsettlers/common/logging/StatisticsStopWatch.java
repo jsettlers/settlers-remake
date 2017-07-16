@@ -26,7 +26,7 @@ import java.util.Vector;
  */
 public class StatisticsStopWatch extends StopWatch {
 
-	private final List<Long> measurements = new Vector<Long>();
+	private final List<Long> measurements = new Vector<>();
 
 	@Override
 	public long now() {
@@ -46,6 +46,9 @@ public class StatisticsStopWatch extends StopWatch {
 
 	@Override
 	public String toString() {
+		if (measurements.isEmpty()) {
+			return " -> no measurements taken yet";
+		}
 		return " -> number of measurements: " + measurements.size()
 				+ ", min: " + measurements.get(0) + " " + getUnit()
 				+ ", average: " + calculateAverage(measurements) + " " + getUnit()

@@ -128,7 +128,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 		constructionSite.bricklayerRequestFailed(bricklayerTargetPos, lookDirection);
 	}
 
-	private static enum EBricklayerState {
+	private enum EBricklayerState {
 		JOBLESS,
 		INIT_JOB,
 		GOING_TO_POS,

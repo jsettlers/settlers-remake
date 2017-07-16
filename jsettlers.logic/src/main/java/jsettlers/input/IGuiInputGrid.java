@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,11 +14,9 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
@@ -27,9 +25,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
+import java8.util.Optional;
+
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
- * 
+ *
  * @author Andreas Eberle
  */
 public interface IGuiInputGrid {
@@ -38,40 +38,36 @@ public interface IGuiInputGrid {
 
 	short getHeight();
 
-	IBuilding getBuildingAt(short x, short y);
+	IBuilding getBuildingAt(int x, int y);
 
 	boolean isInBounds(ShortPoint2D position);
 
 	void resetDebugColors();
 
-	IGuiMovable getMovable(short x, short y);
+	IGuiMovable getMovable(int x, int y);
 
 	/**
 	 * Gets a position where the building can be constructed some points around pos.
-	 * 
+	 *
 	 * @param position
 	 *            THe position
 	 * @param type
 	 *            The type of the building
 	 * @param player
 	 *            The player that wants to construct the building.
-	 * @param useNeighborPositionsForConstruction
-	 *            If this is true, not only the given position is checked, if it can be used to construct a building, but also the neighbors.<br>
-	 *            If this is false, only the given position will be checked.
 	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ShortPoint2D getConstructablePosition(ShortPoint2D position,
-			EBuildingType type, byte player, boolean useNeighbors);
+	Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player);
 
 	/**
 	 * Saves the map with the given {@link UIState}.
-	 * 
-	 * @param playerStates
-	 * @throws FileNotFoundException
+	 *
+	 * @param playerId
+	 * @param uiState
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException;
+	void save(Byte playerId, UIState uiState) throws IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -79,7 +75,7 @@ public interface IGuiInputGrid {
 
 	/**
 	 * Positions a new building of the given type at the given position.
-	 * 
+	 *
 	 * @param position
 	 *            Position the new building will be placed. <br>
 	 *            NOTE: There will be no validation if this position is allowed! This must be done prior to this call.
@@ -92,48 +88,45 @@ public interface IGuiInputGrid {
 
 	/**
 	 * This method can be used to print debug output when the given position is clicked by the user.
-	 * 
+	 *
 	 * @param x
 	 *            x coordinate of the position.
 	 * @param y
 	 *            y coordinate of the position.
 	 */
-	void positionClicked(short x, short y);
+	void positionClicked(int x, int y);
 
 	/**
 	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.
-	 * 
+	 *
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialType
 	 *            The {@link EMaterialType} of the material the given settings shall be used for.
 	 * @param probabilities
-	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings
-	 *            .getBuildingTypesRequestingMaterial(materialType).
+	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings .getBuildingTypesRequestingMaterial(materialType).
 	 */
-	void setMaterialDistributionSettings(ShortPoint2D managerPosition,
-			EMaterialType materialType, float[] probabilities);
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities);
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.
-	 * 
+	 *
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialTypeForPriority
 	 *            The {@link EMaterialType}s for the priorities. The first element has the highest priority, the last one has the lowest.
 	 */
-	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
-			EMaterialType[] materialTypeForPriority);
+	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority);
 
-	short getBlockedPartition(ShortPoint2D pos);
+	short getBlockedPartition(int x, int y);
 
-	boolean isBlocked(ShortPoint2D potentialTargetPos);
+	boolean isBlocked(int x, int y);
 
 	Player getPlayer(byte playerId);
 
 	byte getNumberOfPlayers();
 
-	FogOfWar getFogOfWar();
-
 	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
+
+	void setAcceptedStockMaterial(ShortPoint2D position, EMaterialType materialType, boolean accepted);
 }

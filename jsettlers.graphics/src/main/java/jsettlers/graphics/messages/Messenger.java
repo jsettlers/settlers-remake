@@ -27,7 +27,7 @@ import jsettlers.common.statistics.IGameTimeProvider;
  */
 public class Messenger {
 
-	private final LinkedList<IMessage> messages = new LinkedList<IMessage>();
+	private final LinkedList<IMessage> messages = new LinkedList<>();
 	private final IGameTimeProvider gameTimeProvider;
 	private int latestTickTime;
 	private int focusedMessageIndex = 0;

@@ -112,7 +112,7 @@ public class SimpleBuildingJob implements BuildingJob {
 			throw new IllegalArgumentException("Start job is null.");
 		}
 		Hashtable<String, SimpleBuildingJob> converted =
-				new Hashtable<String, SimpleBuildingJob>();
+				new Hashtable<>();
 
 		fillHashtableWithUnlinked(provider, startJob, converted);
 
@@ -141,7 +141,7 @@ public class SimpleBuildingJob implements BuildingJob {
 			BuildingJobDataProvider provider, String startJob,
 			Hashtable<String, SimpleBuildingJob> converted) {
 		ConcurrentLinkedQueue<String> toBuild =
-				new ConcurrentLinkedQueue<String>();
+				new ConcurrentLinkedQueue<>();
 		toBuild.offer(startJob);
 		while (!toBuild.isEmpty()) {
 			String currentName = toBuild.poll();

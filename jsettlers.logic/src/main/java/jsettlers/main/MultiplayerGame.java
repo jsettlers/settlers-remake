@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,8 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.main;
+
+import static java8.util.stream.StreamSupport.stream;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,8 +31,8 @@ import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.MapLoader;
+import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
@@ -41,7 +43,6 @@ import jsettlers.network.common.packets.MapInfoPacket;
 import jsettlers.network.common.packets.MatchInfoUpdatePacket;
 import jsettlers.network.common.packets.MatchStartPacket;
 import jsettlers.network.common.packets.PlayerInfoPacket;
-import jsettlers.network.infrastructure.channel.reject.RejectPacket;
 import jsettlers.network.server.match.EPlayerState;
 
 /**
@@ -52,7 +53,7 @@ import jsettlers.network.server.match.EPlayerState;
 public class MultiplayerGame {
 
 	private final AsyncNetworkClientConnector networkClientFactory;
-	private final ChangingList<IMultiplayerPlayer> playersList = new ChangingList<IMultiplayerPlayer>();
+	private final ChangingList<IMultiplayerPlayer> playersList = new ChangingList<>();
 	private INetworkClient networkClient;
 
 	private IJoiningGameListener joiningGameListener;
@@ -110,33 +111,26 @@ public class MultiplayerGame {
 	}
 
 	private IPacketReceiver<ChatMessagePacket> generateChatMessageReceiver() {
-		return new IPacketReceiver<ChatMessagePacket>() {
-			@Override
-			public void receivePacket(ChatMessagePacket packet) {
-				if (chatMessageListener != null) {
-					chatMessageListener.chatMessageReceived(packet.getAuthorId(), packet.getMessage());
-				}
+		return packet -> {
+			if (chatMessageListener != null) {
+				chatMessageListener.chatMessageReceived(packet.getAuthorId(), packet.getMessage());
 			}
 		};
 	}
 
 	private IPacketReceiver<MatchStartPacket> generateMatchStartedListener() {
-		return new IPacketReceiver<MatchStartPacket>() {
-			@Override
-			public void receivePacket(MatchStartPacket packet) {
-				updatePlayersList(packet.getMatchInfo().getPlayers());
+		return packet -> {
+			updatePlayersList(packet.getMatchInfo().getPlayers());
 
-				MapLoader mapLoader = MapList.getDefaultList().getMapById(packet.getMatchInfo().getMapInfo().getId());
-				long randomSeed = packet.getRandomSeed();
-				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
-				byte ownPlayerId = calculatePlayerInfos(availablePlayers);
-				PlayerSetting[] playerSettings = determinePlayerSettings(availablePlayers);
+			MapLoader mapLoader = MapList.getDefaultList().getMapById(packet.getMatchInfo().getMapInfo().getId());
+			long randomSeed = packet.getRandomSeed();
+			boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
+			byte ownPlayerId = calculatePlayerInfos(availablePlayers);
+			PlayerSetting[] playerSettings = determinePlayerSettings(availablePlayers);
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, playerSettings);
+			JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, playerSettings);
 
-				multiplayerListener.gameIsStarting(game.start());
-			}
-
+			multiplayerListener.gameIsStarting(game.start());
 		};
 	}
 
@@ -145,13 +139,13 @@ public class MultiplayerGame {
 
 		byte i = 0;
 		for (; i < playersList.getItems().size(); i++) {
-			playerSettings[i] = new PlayerSetting(true, i);
+			playerSettings[i] = new PlayerSetting(i);
 		}
 
 		EPlayerType aiType = iAmTheHost ? EPlayerType.AI_VERY_HARD : EPlayerType.HUMAN;
 
 		for (; i < availablePlayers.length; i++) {
-			playerSettings[i] = new PlayerSetting(true, aiType, ECivilisation.ROMAN, i);
+			playerSettings[i] = new PlayerSetting(aiType, ECivilisation.ROMAN, i);
 		}
 
 		return playerSettings;
@@ -180,23 +174,19 @@ public class MultiplayerGame {
 	}
 
 	private IPacketReceiver<MatchInfoUpdatePacket> generateMatchInfoUpdatedListener() {
-		return new IPacketReceiver<MatchInfoUpdatePacket>() {
-			@Override
-			public void receivePacket(MatchInfoUpdatePacket packet) {
-				if (joiningGameListener != null) {
-					joiningGameListener.gameJoined(generateJoinPhaseGameConnector());
-					joiningGameListener = null;
-				}
-
-				updatePlayersList(packet.getMatchInfo().getPlayers());
-				receiveSystemMessage(new MultiplayerPlayer(packet.getUpdatedPlayer()), getNetworkMessageById(packet.getUpdateReason()));
+		return packet -> {
+			if (joiningGameListener != null) {
+				joiningGameListener.gameJoined(generateJoinPhaseGameConnector());
+				joiningGameListener = null;
 			}
 
+			updatePlayersList(packet.getMatchInfo().getPlayers());
+			receiveSystemMessage(new MultiplayerPlayer(packet.getUpdatedPlayer()), getNetworkMessageById(packet.getUpdateReason()));
 		};
 	}
 
 	void updatePlayersList(PlayerInfoPacket[] playerInfoPackets) {
-		List<IMultiplayerPlayer> players = new LinkedList<IMultiplayerPlayer>();
+		List<IMultiplayerPlayer> players = new LinkedList<>();
 		for (PlayerInfoPacket playerInfoPacket : playerInfoPackets) {
 			players.add(new MultiplayerPlayer(playerInfoPacket));
 		}
@@ -232,18 +222,20 @@ public class MultiplayerGame {
 	}
 
 	private IJoinPhaseMultiplayerGameConnector generateJoinPhaseGameConnector() {
-		networkClient.registerRejectReceiver(new IPacketReceiver<RejectPacket>() {
-			@Override
-			public void receivePacket(RejectPacket packet) {
-				receiveSystemMessage(null, getNetworkMessageById(packet.getErrorMessageId()));
-				System.out.println("Received reject packet: rejectedKey: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
-			}
+		networkClient.registerRejectReceiver(packet -> {
+			receiveSystemMessage(null, getNetworkMessageById(packet.getErrorMessageId()));
+			System.out.println("Received reject packet: rejectedKey: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
 		});
 
 		return new IJoinPhaseMultiplayerGameConnector() {
 			@Override
-			public void startGame() {
-				networkClient.startMatch();
+			public boolean startGame() {
+				if (areAllPlayersReady()) {
+					networkClient.startMatch();
+					return true;
+				} else {
+					return false;
+				}
 			}
 
 			@Override
@@ -274,6 +266,13 @@ public class MultiplayerGame {
 			@Override
 			public void sendChatMessage(String chatMessage) {
 				networkClient.sendChatMessage(chatMessage);
+			}
+
+			private boolean areAllPlayersReady() {
+				return !stream(playersList.getItems())
+						.filter(player -> !player.isReady())
+						.findAny()
+						.isPresent();
 			}
 		};
 	}

@@ -16,21 +16,22 @@ package jsettlers.integration.replay;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java8.util.stream.Collectors;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.replay.ReplayUtils;
 import jsettlers.testutils.TestUtils;
-import jsettlers.testutils.map.MapUtils;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import static java8.util.stream.StreamSupport.stream;
 
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
@@ -49,7 +50,7 @@ public class AutoReplayIT {
 
 	@Parameters(name = "{index}: {0}")
 	public static Collection<Object[]> replaySets() {
-		return AutoReplaySetting.getDefaultSettings().stream().map(s -> new Object[] {s}).collect(Collectors.toList());
+		return stream( AutoReplaySetting.getDefaultSettings()).map(s -> new Object[] { s }).collect(Collectors.toList());
 	}
 
 	private final AutoReplaySetting setting;
@@ -61,11 +62,8 @@ public class AutoReplayIT {
 	@Test
 	public void testReplay() throws IOException, MapLoadException, ClassNotFoundException {
 		synchronized (ONLY_ONE_TEST_AT_A_TIME_LOCK) {
-			MapLoader actualSavegame = ReplayUtils.replayAndCreateSavegame(setting.getReplayFile(), setting.getTimeMinutes(), AutoReplaySetting.REMAINING_REPLAY_FILENAME);
-			MapLoader expectedSavegame = setting.getReferenceSavegame();
-
-			MapUtils.compareMapFiles(expectedSavegame, actualSavegame);
-			actualSavegame.getListedMap().delete();
+			MapLoader[] actualSaveGames = ReplayUtils.replayAndCreateSavegames(setting.getReplayFile(), setting.getTimeMinutes());
+			setting.compareSaveGamesAndDelete(actualSaveGames);
 		}
 	}
 }

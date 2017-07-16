@@ -14,7 +14,7 @@ public enum ESoldierClass {
 
 	public final int ordinal;
 
-	private ESoldierClass() {
+	ESoldierClass() {
 		this.ordinal = ordinal();
 	}
 }

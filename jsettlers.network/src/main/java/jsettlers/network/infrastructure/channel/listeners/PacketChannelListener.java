@@ -34,7 +34,7 @@ import jsettlers.network.infrastructure.channel.packet.Packet;
 public abstract class PacketChannelListener<T extends Packet> implements IChannelListener {
 
 	private final ENetworkKey[] keys;
-	private final Hashtable<ENetworkKey, IDeserializingable<T>> deserializers = new Hashtable<ENetworkKey, IDeserializingable<T>>();
+	private final Hashtable<ENetworkKey, IDeserializingable<T>> deserializers = new Hashtable<>();
 
 	public PacketChannelListener(ENetworkKey key, IDeserializingable<T> deserializer) {
 		this.keys = new ENetworkKey[] { key };

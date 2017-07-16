@@ -4,11 +4,6 @@ apply plugin: 'application'
 // ./gradlew :jsettlers.tools:run -DMAIN_CLASS=jsettlers.graphics.debug.ImagePreloadAnalyzer
 mainClassName = System.getProperty("MAIN_CLASS");
 
-compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
-
 dependencies {
     compile 'junit:junit:4.12'
     compile project(':go.graphics')

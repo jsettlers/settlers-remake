@@ -32,7 +32,7 @@ import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
  * @author Michael Zangl
  */
 public class InventoryPanel extends AbstractContentProvider {
-	public static interface IPartitionDataLoadable {
+	public interface IPartitionDataLoadable {
 		void loadFromData(IPartitionData data);
 	}
 

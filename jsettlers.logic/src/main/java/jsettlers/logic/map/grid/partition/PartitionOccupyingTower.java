@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,14 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import java.io.Serializable;
-
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.io.Serializable;
 
 /**
  * This class holds the data of a tower occupying an area on the {@link PartitionsGrid}.
@@ -58,14 +57,7 @@ final class PartitionOccupyingTower implements Serializable {
 		this(newPlayerId, tower.position, tower.groundArea, tower.area, tower.areaBorders, tower.radius);
 	}
 
-	public Iterable<ShortPoint2D> getAreaWithoutGround() {
-		IteratorFilter<ShortPoint2D> areaWithoutGround = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
-			@Override
-			public boolean evaluate(ShortPoint2D pos) {
-				return !groundArea.contains(pos);
-			}
-		});
-		return areaWithoutGround;
+	public CoordinateStream getAreaWithoutGround() {
+		return area.stream().filter((x, y) -> !groundArea.contains(x, y));
 	}
-
 }

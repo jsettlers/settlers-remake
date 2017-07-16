@@ -45,7 +45,7 @@ public abstract class EditorControlBase {
 		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
 				mapData.getPreviewImageDataSupplier()).getPreviewImage();
 		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getBaseMapId(), header.getDescription(),
-				header.getWidth(), header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
+				header.getWidth(), header.getHeight(), header.getMinPlayers(), header.getMaxPlayers(), new Date(), image);
 		return imagedHeader;
 	}
 
@@ -57,7 +57,7 @@ public abstract class EditorControlBase {
 	 */
 	protected void createNewHeaderWithName(String name) {
 		setHeader(new MapFileHeader(header.getType(), name, null, header.getDescription(), header.getWidth(),
-				header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), header.getBgimage().clone()));
+				header.getHeight(), header.getMinPlayers(), header.getMaxPlayers(), new Date(), header.getPreviewImage().clone()));
 	}
 
 	/**

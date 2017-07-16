@@ -32,7 +32,7 @@ public class TaskPacketListener extends PacketChannelListener<SyncTasksPacket> {
 	private final ISyncTasksPacketScheduler receiver;
 
 	public TaskPacketListener(ISyncTasksPacketScheduler receiver) {
-		super(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, new GenericDeserializer<SyncTasksPacket>(SyncTasksPacket.class));
+		super(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, new GenericDeserializer<>(SyncTasksPacket.class));
 		this.receiver = receiver;
 	}
 

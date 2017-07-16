@@ -28,7 +28,7 @@ import android.media.AudioTrack;
 public class AndroidSoundPlayer implements SoundPlayer {
 	private static final int SAMPLERATE = 22050;
 
-	private final ForgettingQueue<Integer> queue = new ForgettingQueue<Integer>();
+	private final ForgettingQueue<Integer> queue = new ForgettingQueue<>();
 
 	private ISoundDataRetriever soundDataRetriever;
 
@@ -42,10 +42,10 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	}
 
 	@Override
-	public void playSound(int soundStart, float lvolume, float rvolume) {
+	public void playSound(int soundStart, float leftVolume, float rightVolume) {
 		try {
 			if (!paused) {
-				queue.offer(soundStart, lvolume, rvolume);
+				queue.offer(soundStart, leftVolume, rightVolume);
 			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
@@ -65,10 +65,10 @@ public class AndroidSoundPlayer implements SoundPlayer {
 						Sound<Integer> sound = queue.take();
 						long start = System.currentTimeMillis();
 						short[] data = soundDataRetriever.getSoundData(sound.getData());
-						System.out.println("loading sound data took: " + (System.currentTimeMillis() - start) + " ms");
+						//System.out.println("loading sound data took: " + (System.currentTimeMillis() - start) + " ms");
 
 						track.setStereoVolume(sound.getLvolume(), sound.getRvolume());
-						System.out.println("sound: playing " + data.length + " samples");
+						//System.out.println("sound: playing " + data.length + " samples");
 						track.write(data, 0, data.length);
 					} catch (IOException e) {
 						e.printStackTrace();

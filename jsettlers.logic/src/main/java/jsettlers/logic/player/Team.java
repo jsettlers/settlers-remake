@@ -22,7 +22,7 @@ public class Team implements Serializable {
 	private static final long serialVersionUID = 8051219906193296800L;
 
 	private final byte teamId;
-	private final LinkedList<Player> members = new LinkedList<Player>();
+	private final LinkedList<Player> members = new LinkedList<>();
 
 	public Team(byte teamId) {
 		this.teamId = teamId;

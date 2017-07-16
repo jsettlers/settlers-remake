@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,39 +14,40 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.Iterator;
+
 public class MapCircleIterator implements Iterator<ShortPoint2D> {
-	protected int currenty;
-
-	protected float currentLineHalfWidth;
-	// x from vertical center line of circle.
-	protected float currentx;
-
-	protected final float radius;
-
-	protected final short centerx;
-
-	protected final short centery;
 
 	private final MapCircle circle;
+	protected final short centerX;
+	protected final short centerY;
+	protected final float radius;
+
+	/**
+	 * x from vertical center line of circle.
+	 */
+	protected float currentX;
+	protected int currentY;
+
+	protected float currentLineHalfWidth;
+
 
 	public MapCircleIterator(MapCircle circle) {
 		this.circle = circle;
 		radius = circle.getRadius();
-		currenty = -(int) (radius / MapCircle.Y_SCALE);
-		currentLineHalfWidth = circle.getHalfLineWidth(currenty);
-		currentx = -currentLineHalfWidth;
+		currentY = -(int) (radius / MapCircle.Y_SCALE);
+		currentLineHalfWidth = circle.getHalfLineWidth(currentY);
+		currentX = -currentLineHalfWidth;
 
-		centerx = circle.getCenterX();
-		centery = circle.getCenterY();
+		centerX = circle.getCenterX();
+		centerY = circle.getCenterY();
 	}
 
 	@Override
 	public final boolean hasNext() {
-		return currenty < radius / MapCircle.Y_SCALE;
+		return currentY < radius / MapCircle.Y_SCALE;
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class MapCircleIterator implements Iterator<ShortPoint2D> {
 	 * @return gives the x of the current iterator position
 	 */
 	public final int nextY() {
-		return currenty + centery;
+		return currentY + centerY;
 	}
 
 	/**
@@ -69,21 +70,21 @@ public class MapCircleIterator implements Iterator<ShortPoint2D> {
 
 	@Override
 	public ShortPoint2D next() {
-		int y = currenty + centery;
+		int y = currentY + centerY;
 		int x = computeNextXAndProgress();
 
 		return new ShortPoint2D(x, y);
 	}
 
 	private final int computeNextXAndProgress() {
-		int x = (int) Math.ceil(.5f * currenty + currentx) + centerx;
+		int x = (int) Math.ceil(.5f * currentY + currentX) + centerX;
 
-		currentx++;
-		if (currentx > currentLineHalfWidth) {
+		currentX++;
+		if (currentX > currentLineHalfWidth) {
 			// next line
-			currenty++;
-			currentLineHalfWidth = circle.getHalfLineWidth(currenty);
-			currentx = -currentLineHalfWidth;
+			currentY++;
+			currentLineHalfWidth = circle.getHalfLineWidth(currentY);
+			currentX = -currentLineHalfWidth;
 		}
 		return x;
 	}

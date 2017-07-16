@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,11 +32,10 @@ import jsettlers.common.menu.IJoiningGame;
 import jsettlers.common.menu.IJoiningGameListener;
 import jsettlers.common.menu.IMultiplayerConnector;
 import jsettlers.common.menu.IStartingGame;
-import jsettlers.common.menu.Player;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.savegame.SavegameLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -46,6 +45,8 @@ import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.lookandfeel.components.SplitedBackgroundPanel;
 import jsettlers.main.swing.menu.openpanel.OpenPanel;
 import jsettlers.main.swing.menu.settingsmenu.SettingsMenuPanel;
+import jsettlers.main.swing.settings.SettingsManager;
+import jsettlers.main.swing.settings.UiPlayer;
 
 /**
  * @author codingberlin
@@ -73,10 +74,10 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 	public MainMenuPanel(JSettlersFrame settlersFrame, IMultiplayerConnector multiPlayerConnector) {
 		this.settlersFrame = settlersFrame;
 
-		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showdNewSingleplayerGamePanel);
+		openSinglePlayerPanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewSingleplayerGamePanel);
 		openSaveGamePanel = new OpenPanel(MapList.getDefaultList().getSavedMaps(), this::loadSavegame);
 		newMultiPlayerGamePanel = new OpenPanel(MapList.getDefaultList().getFreshMaps().getItems(), this::showNewMultiplayerGamePanel);
-		joinMultiPlayerGamePanel = new OpenPanel(new Vector<MapLoader>(), this::showJoinMultiplayerGamePanel);
+		joinMultiPlayerGamePanel = new OpenPanel(new Vector<>(), this::showJoinMultiplayerGamePanel);
 		settingsPanel = new SettingsMenuPanel(this);
 
 		createStructure();
@@ -87,26 +88,26 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 
 	private void loadSavegame(MapLoader map) {
 		SavegameLoader savegameLoader = (SavegameLoader) map;
+
 		if (savegameLoader != null) {
-			// TODO: read playersettings out of savegame file
-			long randomSeed = 4711L;
-			byte playerId = 0;
-			PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) savegameLoader.getMaxPlayers());
-			JSettlersGame game = new JSettlersGame(savegameLoader, randomSeed, playerId, playerSettings);
+			MapFileHeader mapFileHeader = savegameLoader.getFileHeader();
+			PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
+			byte playerId = mapFileHeader.getPlayerId();
+			JSettlersGame game = new JSettlersGame(savegameLoader, -1, playerId, playerSettings);
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
 		}
 	}
 
-	private void showdNewSingleplayerGamePanel(MapLoader map) {
+	private void showNewSingleplayerGamePanel(MapLoader map) {
 		settlersFrame.showNewSinglePlayerGameMenu(map);
 	}
 
 	private void showNewMultiplayerGamePanel(MapLoader map) {
 		SettingsManager settingsManager = SettingsManager.getInstance();
-		Player player = settingsManager.getPlayer();
+		UiPlayer uiPlayer = settingsManager.getPlayer();
 		IMultiplayerConnector connector = new MultiplayerConnector(settingsManager.get(SettingsManager.SETTING_SERVER),
-				player.getId(), player.getName());
+				uiPlayer.getId(), uiPlayer.getName());
 		settlersFrame.showNewMultiPlayerGameMenu(map, connector);
 	}
 
@@ -209,6 +210,5 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		add(panelToBeSet);
 		settlersFrame.revalidate();
 		settlersFrame.repaint();
-
 	}
 }

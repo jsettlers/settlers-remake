@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -13,6 +13,8 @@
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
 package jsettlers.common.material;
+
+import java.util.EnumSet;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -36,10 +38,8 @@ public enum EMaterialType {
 	GOLD((short) 37, 3, 135, true, 24, false),
 	GOLDORE((short) 36, 3, 150, true, 23, false),
 	HAMMER((short) 51, 3, 126, true, 17, false),
-	HONEY((short) 89, 14, 129, true, 26, true),
 	IRON((short) 42, 3, 132, true, 3, true),
 	IRONORE((short) 39, 3, 147, true, 4, false),
-	MEAD((short) 90, 14, 126, true, 27, true),
 	MEAT((short) 52, 3, 162, true, 8, true),
 	PICK((short) 53, 3, 129, true, 19, false),
 	PIG((short) 73, 3, 159, true, 11, false),
@@ -53,27 +53,30 @@ public enum EMaterialType {
 	WATER((short) 77, 3, 156, true, 12, false),
 	WINE((short) 69, 14, 123, true, 25, false),
 
-	// No the non-droppable materials
+	// Now the non-droppable materials
 
 	NO_MATERIAL((short) 0, 0, 0, false, -1, false),
 
-	GEMS((short) 79, (short) 24, (short) 120, false, -1, false),
-	SULFUR((short) 80, (short) 34, (short) 126, false, -1, false),
-	RICE((short) 78, (short) 34, (short) 129, false, -1, false),
-	KEG((short) 70, (short) 34, (short) 132, false, -1, false),
-	BOX((short) 82, (short) 0, (short) 0, false, -1, false),
+	MEAD((short) 90, 14, 126, false, -1, true),
+	HONEY((short) 89, 14, 129, false, -1, true),
+	GEMS((short) 79, 24, 120, false, -1, false),
+	SULFUR((short) 80, 34, 126, false, -1, false),
+	RICE((short) 78, 34, 129, false, -1, false),
+	KEG((short) 70, 34, 132, false, -1, false),
+	BOX((short) 82, 0, 0, false, -1, false),
 
 	// ammo for cannon (6 frames instead of 8)
-	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),
+	CANNON_AMMO((short) 86, 0, 0, false, -1, false),
 	// ammo for ballista (6 frames instead of 8)
-	BALLISTA_AMMO((short) 87, (short) 0, (short) 0, false, -1, false),
+	BALLISTA_AMMO((short) 87, 0, 0, false, -1, false),
 	// ammo for catapult (6 frames instead of 8)
-	CATAPULT_AMMO((short) 88, (short) 0, (short) 0, false, -1, false),
+	CATAPULT_AMMO((short) 88, 0, 0, false, -1, false),
 
-	WHITE_BREAD((short) 0, (short) 0, (short) 0, false, -1, false),
-	BASKET((short) 0, (short) 0, (short) 0, false, -1, false),
-	TREE((short) 0, (short) 0, (short) 0, false, -1, false),
-	PLANT((short) 0, (short) 0, (short) 0, false, -1, false);
+	WHITE_BREAD((short) 0, 0, 0, false, -1, false),
+	BASKET((short) 0, 0, 0, false, -1, false),
+	TREE((short) 0, 0, 0, false, -1, false),
+	PLANT((short) 0, 0, 0, false, -1, false),
+	EMPTY_BUCKET((short) 0, 0, 0, false, -1, false);
 
 	public static final EMaterialType[] VALUES = EMaterialType.values();
 	public static final int NUMBER_OF_MATERIALS = VALUES.length;
@@ -82,6 +85,7 @@ public enum EMaterialType {
 	 */
 	public static final EMaterialType[] DROPPABLE_MATERIALS;
 	public static final int NUMBER_OF_DROPPABLE_MATERIALS;
+	public static final EMaterialType[] STOCK_MATERIALS;
 
 	static {
 		// calculate the number of droppable materials and build up an array in
@@ -99,7 +103,22 @@ public enum EMaterialType {
 				DROPPABLE_MATERIALS[VALUES[i].defaultPrioIdx] = VALUES[i];
 			}
 		}
+
+		STOCK_MATERIALS = DROPPABLE_MATERIALS;
 	}
+
+	public static final EnumSet<EMaterialType> WEAPONS = EnumSet.of(
+			EMaterialType.SWORD,
+			EMaterialType.SPEAR,
+			EMaterialType.BOW);
+	public static final EnumSet<EMaterialType> TOOLS = EnumSet.of(
+			EMaterialType.HAMMER,
+			EMaterialType.BLADE,
+			EMaterialType.PICK,
+			EMaterialType.AXE,
+			EMaterialType.SAW,
+			EMaterialType.SCYTHE,
+			EMaterialType.FISHINGROD);
 
 	public final byte ordinal;
 
@@ -138,7 +157,6 @@ public enum EMaterialType {
 	}
 
 	/**
-	 *
 	 * @return Returns true if this material can be dropped.
 	 */
 	public boolean isDroppable() {

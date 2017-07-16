@@ -82,7 +82,7 @@ public class Presets {
 	 */
 	public List<Preset> getPreset() {
 		if (preset == null) {
-			preset = new ArrayList<Preset>();
+			preset = new ArrayList<>();
 		}
 		return this.preset;
 	}

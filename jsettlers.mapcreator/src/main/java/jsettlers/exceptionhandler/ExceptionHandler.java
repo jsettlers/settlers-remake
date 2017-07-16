@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.exceptionhandler;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.SwingUtilities;
@@ -49,13 +48,7 @@ public class ExceptionHandler {
 	 * Set Up an exception handler for uncatcht exception, call this method once from main
 	 */
 	public static void setupDefaultExceptionHandler() {
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
-			@Override
-			public void uncaughtException(final Thread t, final Throwable e) {
-				ExceptionHandler.displayError(e, "Unhandled error in Thread " + t.getName());
-			}
-		});
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> ExceptionHandler.displayError(e, "Unhandled error in Thread " + t.getName()));
 	}
 
 	/**
@@ -82,12 +75,7 @@ public class ExceptionHandler {
 	 */
 	public static void displayError(final Throwable e, final String description, final Thread t) {
 		if (!SwingUtilities.isEventDispatchThread()) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					displayError(e, description, t);
-				}
-			});
+			SwingUtilities.invokeLater(() -> displayError(e, description, t));
 			return;
 		}
 
@@ -104,5 +92,4 @@ public class ExceptionHandler {
 		ExceptionDialog dlg = new ExceptionDialog(e, description, t);
 		dlg.setVisible(true);
 	}
-
 }

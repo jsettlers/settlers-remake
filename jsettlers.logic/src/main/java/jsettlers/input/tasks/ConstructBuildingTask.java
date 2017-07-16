@@ -85,8 +85,6 @@ public class ConstructBuildingTask extends SimpleGuiTask {
 				return false;
 		} else if (!position.equals(other.position))
 			return false;
-		if (type != other.type)
-			return false;
-		return true;
+		return type == other.type;
 	}
 }

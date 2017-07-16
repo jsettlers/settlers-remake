@@ -55,7 +55,7 @@ public class MovableGuiTask extends SimpleGuiTask {
 		super.deserializeTask(dis);
 
 		int numberOfElements = dis.readInt();
-		selection = new ArrayList<Integer>(numberOfElements);
+		selection = new ArrayList<>(numberOfElements);
 		for (int i = 0; i < numberOfElements; i++) {
 			selection.add(dis.readInt());
 		}

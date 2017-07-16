@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -32,50 +32,6 @@ import jsettlers.graphics.utils.UIUpdater;
 import jsettlers.graphics.utils.UIUpdater.IDataProvider;
 
 public class BuildingBuildContent extends AbstractContentProvider implements IDataProvider<BuildingCountState> {
-	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
-			EBuildingType.LUMBERJACK,
-			EBuildingType.SAWMILL,
-			EBuildingType.STONECUTTER,
-			EBuildingType.FORESTER,
-			EBuildingType.IRONMINE,
-			EBuildingType.IRONMELT,
-			EBuildingType.GOLDMINE,
-			EBuildingType.GOLDMELT,
-			EBuildingType.COALMINE,
-			EBuildingType.TOOLSMITH,
-			EBuildingType.CHARCOAL_BURNER
-	};
-	public static final EBuildingType[] foodBuildings = new EBuildingType[] {
-			EBuildingType.FISHER,
-			EBuildingType.FARM,
-			EBuildingType.PIG_FARM,
-			EBuildingType.MILL,
-			EBuildingType.SLAUGHTERHOUSE,
-			EBuildingType.BAKER,
-			EBuildingType.WATERWORKS,
-			EBuildingType.DONKEY_FARM,
-			EBuildingType.WINEGROWER
-	};
-	public static final EBuildingType[] militaryBuildings = new EBuildingType[] {
-			EBuildingType.TOWER,
-			EBuildingType.BIG_TOWER,
-			EBuildingType.CASTLE,
-			EBuildingType.LOOKOUT_TOWER,
-			EBuildingType.WEAPONSMITH,
-			EBuildingType.BARRACK,
-			EBuildingType.DOCKYARD,
-			EBuildingType.HOSPITAL
-	};
-	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
-			EBuildingType.SMALL_LIVINGHOUSE,
-			EBuildingType.MEDIUM_LIVINGHOUSE,
-			EBuildingType.BIG_LIVINGHOUSE,
-			EBuildingType.STOCK,
-			EBuildingType.MARKET_PLACE,
-			EBuildingType.HARBOR,
-			EBuildingType.TEMPLE,
-			EBuildingType.BIG_TEMPLE
-	};
 
 	public static class BuildingCountState {
 		private final IGraphicsGrid grid;
@@ -91,12 +47,13 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 				return 0;
 			} else {
 				IBuildingCounts counts = grid.getPartitionData(pos.x, pos.y).getBuildingCounts();
-				return construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartiton(buildingType);
+				return construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartition(buildingType);
 			}
 		}
 
 		public boolean isInPlayerPartition() {
 			// TODO: Check current player
+			// Tom-Pratt: I added getPlayer to IInGamePlayer which may help here
 			return grid != null && grid.getPlayerIdAt(pos.x, pos.y) >= 0;
 		}
 	}
@@ -106,27 +63,28 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	private final UIPanel panel;
 
-	private final ArrayList<BuildingButton> buttons = new ArrayList<BuildingButton>();
+	private final ArrayList<BuildingButton> buttons = new ArrayList<>();
 	private EBuildingType activeBuilding;
 
 	private final UIUpdater<BuildingCountState> updater;
 	private BuildingCountState buildingCount = new BuildingCountState(null, null);
 
-	private BuildingBuildContent(EBuildingType[] buildings) {
+	public BuildingBuildContent(EBuildingsCategory buildingsCategory) {
 		panel = new UIPanel();
 
 		float colWidth = 1f / COLUMNS;
 		float rowHeight = 1f / ROWS;
 
-		for (int i = 0; i < buildings.length; i++) {
-			BuildingButton button = new BuildingButton(buildings[i]);
+		int i = 0;
+		for (EBuildingType buildingType : buildingsCategory.buildingTypes) {
+			BuildingButton button = new BuildingButton(buildingType);
 			int row = i / COLUMNS;
 			int col = i % COLUMNS;
-			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight,
-					(col + 1) * colWidth, 1 - row * rowHeight);
+			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight, (col + 1) * colWidth, 1 - row * rowHeight);
 			buttons.add(button);
+			i++;
 		}
-		updater = UIUpdater.<BuildingCountState> getUpdater(this, buttons);
+		updater = UIUpdater.getUpdater(this, buttons);
 	}
 
 	/**
@@ -168,21 +126,7 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 		return ESecondaryTabType.BUILD;
 	}
 
-	public static BuildingBuildContent getNormal() {
-		return new BuildingBuildContent(normalBuildings);
-	}
 
-	public static BuildingBuildContent getFood() {
-		return new BuildingBuildContent(foodBuildings);
-	}
-
-	public static BuildingBuildContent getMilitary() {
-		return new BuildingBuildContent(militaryBuildings);
-	}
-
-	public static BuildingBuildContent getSocial() {
-		return new BuildingBuildContent(socialBuildings);
-	}
 
 	@Override
 	public IAction catchAction(IAction action) {

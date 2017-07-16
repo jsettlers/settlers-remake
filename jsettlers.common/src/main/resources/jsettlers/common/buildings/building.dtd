@@ -41,7 +41,8 @@
 	WHITE_BREAD|
 	BASKET|
 	TREE|
-	PLANT)
+	PLANT|
+	EMPTY_BUCKET)
 ">
 <!ENTITY % jobtype "(
 	WAIT|
@@ -107,16 +108,18 @@
 	RIVER2|
 	RIVER3|
 	RIVER4|
-	MOUNTAINBORDER
+	MOUNTAINBORDER|
+	MOUNTAINBORDEROUTER
 )">
 <!ENTITY % boolean "(true|false)">
 
 <!ELEMENT building (ground+, blocked+, door, constructionStack+, requestStack*, offerStack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
-   worker CDATA #REQUIRED
-   workradius CDATA #IMPLIED
-   viewdistance CDATA #IMPLIED
+   	worker CDATA #REQUIRED
+	workradius CDATA #IMPLIED
+	viewdistance CDATA #IMPLIED
+	mine (true|false) "false"
 >
 
 <!ELEMENT ground EMPTY>

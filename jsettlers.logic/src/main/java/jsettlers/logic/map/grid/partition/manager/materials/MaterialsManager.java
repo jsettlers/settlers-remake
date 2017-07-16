@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,25 +14,25 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials;
 
-import java.io.Serializable;
-
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMaterialRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPrioQueue;
+import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
+
+import java.io.Serializable;
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public final class MaterialsManager implements Serializable {
 	private static final long serialVersionUID = 6395951461349453696L;
@@ -45,13 +45,13 @@ public final class MaterialsManager implements Serializable {
 
 	/**
 	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
-	 * 
+	 *
 	 * @param joblessSupplier
-	 *            {@link IJoblessSupplier} providing the jobless bearers.
+	 * 		{@link IJoblessSupplier} providing the jobless bearers.
 	 * @param offersList
-	 *            {@link OffersList} providing the offered materials.
+	 * 		{@link OffersList} providing the offered materials.
 	 * @param settings
-	 *            {@link IPartitionSettings} providing the settings of the partition.
+	 * 		{@link IPartitionSettings} providing the settings of the partition.
 	 */
 	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IPartitionSettings settings) {
 		this.joblessSupplier = joblessSupplier;
@@ -62,7 +62,7 @@ public final class MaterialsManager implements Serializable {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			EMaterialType materialType = EMaterialType.VALUES[i];
 			if (materialType.isDistributionConfigurable()) {
-				requestQueues[i] = new MaterialsForBuildingsRequestPrioQueue(settings.getDistributionSettings(materialType));
+				requestQueues[i] = new MaterialsForBuildingsRequestPriorityQueue(settings.getDistributionSettings(materialType));
 			} else {
 				requestQueues[i] = new SimpleMaterialRequestPriorityQueue();
 			}
@@ -71,11 +71,11 @@ public final class MaterialsManager implements Serializable {
 
 	/**
 	 * Adds the given {@link MaterialRequestObject} as requester for the given material.
-	 * 
+	 *
 	 * @param material
-	 *            The material that is requested.
+	 * 		The material that is requested.
 	 * @param requestObject
-	 *            The {@link MaterialRequestObject} object that specifies the amount of needed material.
+	 * 		The {@link MaterialRequestObject} object that specifies the amount of needed material.
 	 */
 	public void addRequestObject(EMaterialType material, MaterialRequestObject requestObject) {
 		requestQueues[material.ordinal].insertRequest(requestObject);
@@ -83,21 +83,30 @@ public final class MaterialsManager implements Serializable {
 
 	public void distributeJobs() {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS && !joblessSupplier.isEmpty(); i++) {
-			distributeJobForMaterial(settings.getMaterialTypeForPrio(i));
+			if (joblessSupplier.isEmpty()) // no jobless? just return
+				break;
+
+			distributeJobForMaterial(settings.getMaterialTypeForPriority(i));
 		}
 	}
 
 	private void distributeJobForMaterial(EMaterialType materialType) {
-		if (offersList.isEmpty(materialType) || joblessSupplier.isEmpty()) // no offers? or no jobless? just return
+		if (offersList.isEmpty(materialType, EOfferPriority.LOWEST)) {
 			return;
+		}
 
 		AbstractMaterialRequestPriorityQueue requestQueue = requestQueues[materialType.ordinal];
 		MaterialRequestObject request = requestQueue.getHighestRequest();
 
-		if (request == null) // no request, return
+		if (request == null) // no request => return
 			return;
 
-		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, request.getPos());
+		EOfferPriority minimumIncludedOfferPriority = request.getMinimumAcceptedOfferPriority();
+		if (offersList.isEmpty(materialType, minimumIncludedOfferPriority)) {
+			return; // no offers => return
+		}
+
+		MaterialOffer offer = offersList.getOfferCloseTo(materialType, minimumIncludedOfferPriority, request.getPos());
 
 		assert offer != null : "The offer can't be null here!";
 
@@ -105,9 +114,7 @@ public final class MaterialsManager implements Serializable {
 
 		assert jobless != null : "The jobless can't be null here!";
 
-		if (!jobless.deliver(materialType, offer.getPos(), request)) {
-			offersList.addOffer(offer.getPos(), materialType);
-		}
+		jobless.deliver(materialType, offer, request);
 	}
 
 	public void movePositionTo(ShortPoint2D position, MaterialsManager newManager) {

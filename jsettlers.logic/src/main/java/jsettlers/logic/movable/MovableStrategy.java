@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,15 +14,13 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -36,6 +34,9 @@ import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
+
+import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
  * Abstract super class of all movable strategies.
@@ -180,11 +181,19 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected final boolean fitsSearchType(ShortPoint2D pos, ESearchType searchType) {
-		return movable.grid.fitsSearchType(movable, pos, searchType);
+		return movable.grid.fitsSearchType(movable, pos.x, pos.y, searchType);
+	}
+
+	protected final boolean fitsSearchType(int x, int y, ESearchType searchType) {
+		return movable.grid.fitsSearchType(movable, x, y, searchType);
 	}
 
 	protected final boolean isValidPosition(ShortPoint2D position) {
-		return movable.grid.isValidPosition(movable, position);
+		return movable.grid.isValidPosition(movable, position.x, position.y);
+	}
+
+	protected final boolean isValidPosition(int x, int y) {
+		return movable.grid.isValidPosition(movable, x, y);
 	}
 
 	public final ShortPoint2D getPos() {
@@ -258,42 +267,42 @@ public abstract class MovableStrategy implements Serializable {
 
 		AbstractMovableGrid grid = movable.grid;
 
-		EDirection leftDir = direction.getNeighbor(-1);
-		EDirection rightDir = direction.getNeighbor(1);
+		EDirection rightDir = direction.getNeighbor(-1);
+		EDirection leftDir = direction.getNeighbor(1);
 
 		ShortPoint2D straightPos = direction.getNextHexPoint(position);
 		ShortPoint2D twoStraightPos = direction.getNextHexPoint(position, 2);
-
-		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
-		ShortPoint2D straightLeftPos = leftDir.getNextHexPoint(straightPos);
 
 		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
 		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
 		ShortPoint2D straightRightPos = rightDir.getNextHexPoint(straightPos);
 
+		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
+		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
+		ShortPoint2D straightLeftPos = leftDir.getNextHexPoint(straightPos);
+
 		ShortPoint2D overNextPos = path.getOverNextPos();
 
-		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<ShortPoint2D[]>();
+		LinkedList<ShortPoint2D[]> possiblePaths = new LinkedList<>();
 
 		if (twoStraightPos.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
-				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
-			} else if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
+			if (isValidPosition(rightPos) && isValidPosition(rightStraightPos)) {
 				possiblePaths.add(new ShortPoint2D[] { rightPos, rightStraightPos });
+			} else if (isValidPosition(leftPos) && isValidPosition(leftStraightPos)) {
+				possiblePaths.add(new ShortPoint2D[] { leftPos, leftStraightPos });
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
 		}
 
-		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
-			possiblePaths.add(new ShortPoint2D[] { leftPos });
-		}
 		if (rightStraightPos.equals(overNextPos) && isValidPosition(rightPos)) {
 			possiblePaths.add(new ShortPoint2D[] { rightPos });
 		}
+		if (leftStraightPos.equals(overNextPos) && isValidPosition(leftPos)) {
+			possiblePaths.add(new ShortPoint2D[] { leftPos });
+		}
 
-		if ((straightLeftPos.equals(overNextPos) || straightRightPos.equals(overNextPos))
+		if ((straightRightPos.equals(overNextPos) || straightLeftPos.equals(overNextPos))
 				&& isValidPosition(straightPos) && grid.hasNoMovableAt(straightPos.x, straightPos.y)) {
 			possiblePaths.add(new ShortPoint2D[] { straightPos });
 
@@ -304,7 +313,7 @@ public abstract class MovableStrategy implements Serializable {
 		// try to find a way without a movable or with a pushable movable.
 		for (ShortPoint2D[] pathPrefix : possiblePaths) { // check if any of the paths is free of movables
 			ShortPoint2D firstPosition = pathPrefix[0];
-			Movable movable = grid.getMovableAt(firstPosition.x, firstPosition.y);
+			ILogicMovable movable = grid.getMovableAt(firstPosition.x, firstPosition.y);
 			if (movable == null || movable.isProbablyPushable(this.movable)) {
 				path.goToNextStep();
 				return new Path(path, pathPrefix);
@@ -351,5 +360,8 @@ public abstract class MovableStrategy implements Serializable {
 	 */
 	protected boolean receiveHit() {
 		return true;
+	}
+
+	protected void tookMaterial() {
 	}
 }

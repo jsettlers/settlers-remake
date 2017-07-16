@@ -61,3 +61,6 @@ All the options above can also be specified as command line options. For this, y
 
 ## Developer's Guide
 The [Developer's Guide](https://github.com/jsettlers/settlers-remake/wiki/Developer's%20Guide) can be found in our wiki.
+
+## Getting in Touch
+Besides the possibility to report bugs on Github you can also join our [JSettlers Discord](https://discord.gg/2hVV4u6). Here you can discuss on development questions and find other players to meet with. 

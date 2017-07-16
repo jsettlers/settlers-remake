@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -44,7 +44,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new FilteredIterator<T>(iterable.iterator(), predicate);
+		return new FilteredIterator<>(iterable.iterator(), predicate);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 	 * @return A list containing all elements of this iterator.
 	 */
 	public ArrayList<T> toList() {
-		ArrayList<T> resultList = new ArrayList<T>();
+		ArrayList<T> resultList = new ArrayList<>();
 		for (T curr : this) {
 			resultList.add(curr);
 		}
@@ -60,12 +60,12 @@ public class IteratorFilter<T> implements Iterable<T> {
 	}
 
 	public static class FilteredIterator<T> implements Iterator<T> {
-		private final Iterator<? extends T> iter;
+		private final Iterator<? extends T> iterator;
 		private final IPredicate<T> predicate;
 		private T next;
 
-		public FilteredIterator(Iterator<? extends T> iter, IPredicate<T> predicate) {
-			this.iter = iter;
+		public FilteredIterator(Iterator<? extends T> iterator, IPredicate<T> predicate) {
+			this.iterator = iterator;
 			this.predicate = predicate;
 
 			findNext();
@@ -80,8 +80,8 @@ public class IteratorFilter<T> implements Iterable<T> {
 		}
 
 		private void findNext() {
-			while (iter.hasNext()) {
-				T curr = iter.next();
+			while (iterator.hasNext()) {
+				T curr = iterator.next();
 				if (predicate.evaluate(curr)) {
 					this.next = curr;
 					break;
@@ -99,7 +99,7 @@ public class IteratorFilter<T> implements Iterable<T> {
 		@Override
 		public void remove() {
 			assert this.next == null : "remove may only be called after next() and before hasNext()";
-			iter.remove();
+			iterator.remove();
 		}
 	}
 }

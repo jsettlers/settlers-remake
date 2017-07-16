@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,11 +14,18 @@
  *******************************************************************************/
 package jsettlers.common.buildings.loader;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.OccupierPlace;
@@ -36,14 +43,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.RelativePoint;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 /**
  * This class represents a building's xml file.
  * 
@@ -53,7 +52,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private static final String BUILDING_DTD = "building.dtd";
 
-	private static final String DATA_DIR = "buildings/";
 	private static final String TAG_BUILDING = "building";
 	private static final String TAG_JOB = "job";
 	private static final String TAG_STARTJOB = "startjob";
@@ -76,9 +74,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_IMAGE = "image";
 	private static final String TAG_GROUNDTYE = "ground";
 
-	private final ArrayList<RelativePoint> blocked = new ArrayList<RelativePoint>();
+	private final ArrayList<RelativePoint> blocked = new ArrayList<>();
 
-	private final ArrayList<RelativePoint> protectedTiles = new ArrayList<RelativePoint>();
+	private final ArrayList<RelativePoint> protectedTiles = new ArrayList<>();
 
 	private final Hashtable<String, JobElementWrapper> jobElements = new Hashtable<>();
 
@@ -95,14 +93,15 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<RelativeBricklayer> bricklayers = new ArrayList<>();
 
 	private int workradius;
+	private boolean mine;
 	private RelativePoint workCenter = new RelativePoint(0, 0);
 	private RelativePoint flag = new RelativePoint(0, 0);
-	private ArrayList<RelativePoint> buildmarks = new ArrayList<RelativePoint>();
+	private ArrayList<RelativePoint> buildmarks = new ArrayList<>();
 	private ImageLink guiimage = new OriginalImageLink(EImageLinkType.GUI, 1, 0, 0);
-	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
-	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
-	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
-	private ArrayList<OccupierPlace> occupyerplaces = new ArrayList<OccupierPlace>();
+	private ArrayList<ImageLink> images = new ArrayList<>();
+	private ArrayList<ImageLink> buildImages = new ArrayList<>();
+	private ArrayList<ELandscapeType> groundtypes = new ArrayList<>();
+	private ArrayList<OccupierPlace> occupyerplaces = new ArrayList<>();
 	private short viewdistance = 0;
 	private final String buildingName;
 
@@ -111,18 +110,16 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			xr.setContentHandler(new SaxHandler());
-			xr.setEntityResolver(new EntityResolver() {
-				@Override
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(EBuildingType.class.getResourceAsStream(BUILDING_DTD));
-					} else {
-						return null;
-					}
+			xr.setEntityResolver((publicId, systemId) -> {
+				if (systemId.contains(BUILDING_DTD)) {
+					return new InputSource(EBuildingType.class.getResourceAsStream(BUILDING_DTD));
+				} else {
+					return null;
 				}
 			});
 
-			InputStream stream = EBuildingType.class.getResourceAsStream(String.format("%s.xml", buildingName.toLowerCase()));
+			String buildingFileName = buildingName.toLowerCase(Locale.ENGLISH) + ".xml";
+			InputStream stream = EBuildingType.class.getResourceAsStream(buildingFileName);
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
 			System.err.println("Error loading building file for " + buildingName + ":" + e.getMessage());
@@ -133,8 +130,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private class SaxHandler extends DefaultHandler {
 
 		@Override
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-			String tagName = qName;
+		public void startElement(String uri, String localName, String tagName, Attributes attributes) throws SAXException {
 			if (TAG_BUILDING.equals(tagName)) {
 				readAttributes(attributes);
 			} else if (TAG_JOB.equals(tagName)) {
@@ -247,8 +243,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 		String imageStr = attributes.getValue("image");
 		int image = imageStr != null ? Integer.parseInt(imageStr) : 0;
 		EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
-		OriginalImageLink imageLink = new OriginalImageLink(type, file, sequence, image);
-		return imageLink;
+		return new OriginalImageLink(type, file, sequence, image);
 	}
 
 	private void readRelativeBricklayer(Attributes attributes) {
@@ -337,6 +332,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 		if (viewdistance != null && viewdistance.matches("\\d+")) {
 			this.viewdistance = Short.parseShort(viewdistance);
 		}
+
+		this.mine = Boolean.valueOf(attributes.getValue("mine"));
 	}
 
 	public IBuildingJob getStartJob() {
@@ -395,6 +392,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public short getWorkradius() {
 		return (short) workradius;
+	}
+
+	public boolean isMine() {
+		return mine;
 	}
 
 	public RelativePoint getWorkcenter() {

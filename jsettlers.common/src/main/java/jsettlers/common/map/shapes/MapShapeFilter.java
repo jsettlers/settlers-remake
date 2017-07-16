@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.util.Iterator;
 
 /**
  * This filter creates the union of an other shape with the map.
@@ -52,62 +53,27 @@ public class MapShapeFilter implements IMapArea {
 	 */
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		if (inMap(position)) {
-			return base.contains(position);
-		} else {
-			return false;
-		}
+		return inMap(position) && base.contains(position);
 	}
 
-	private boolean inMap(ShortPoint2D position) {
+	@Override
+	public boolean contains(int x, int y) {
+		return 0 <= x && x < width && 0 <= y && y < height && base.contains(x, y);
+	}
+
+	boolean inMap(ShortPoint2D position) {
 		int x = position.x;
 		int y = position.y;
-		return x >= 0 && x < width && y >= 0 && y < height;
+		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
 	@Override
 	public Iterator<ShortPoint2D> iterator() {
-		return new FilteredIterator();
+		return new IteratorFilter.FilteredIterator<>(base.iterator(), this::inMap);
 	}
 
-	private class FilteredIterator implements Iterator<ShortPoint2D> {
-		private ShortPoint2D next;
-		private Iterator<ShortPoint2D> iterator;
-
-		public FilteredIterator() {
-			iterator = base.iterator();
-			searchNext();
-		}
-
-		private void searchNext() {
-			do {
-				if (iterator.hasNext()) {
-					next = iterator.next();
-				} else {
-					next = null;
-				}
-			} while (next != null && !inMap(next));
-		}
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			if (next == null) {
-				throw new NoSuchElementException();
-			}
-			ShortPoint2D result = next;
-			searchNext();
-			return result;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	public CoordinateStream stream() {
+		return base.stream().filterBounds(width, height);
 	}
-
 }

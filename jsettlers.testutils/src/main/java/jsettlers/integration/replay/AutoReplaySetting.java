@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,36 +18,25 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.main.replay.ReplayUtils;
+import jsettlers.main.replay.ReplayUtils.IReplayStreamProvider;
 import jsettlers.testutils.map.MapUtils;
 
 /**
  * Created by michael on 24.04.16.
  */
 public class AutoReplaySetting {
-	static final String REMAINING_REPLAY_FILENAME = "out/remainingReplay.log";
-
 	public static Collection<AutoReplaySetting> getDefaultSettings() {
 		return Arrays.asList(
-				new AutoReplaySetting("basicproduction", 15),
-
-				new AutoReplaySetting("fullproduction", 10),
-				new AutoReplaySetting("fullproduction", 20),
-				new AutoReplaySetting("fullproduction", 30),
-				new AutoReplaySetting("fullproduction", 40),
-				new AutoReplaySetting("fullproduction", 50),
-				new AutoReplaySetting("fullproduction", 69),
-
-				new AutoReplaySetting("fighting", 8));
+				new AutoReplaySetting("fullproduction", 10, 20, 40, 65));
 	}
 
 	private final String typeName;
-	private final int timeMinutes;
+	private final int[] timeMinutes;
 
-	public AutoReplaySetting(String typeName, int timeMinutes) {
+	public AutoReplaySetting(String typeName, int... timeMinutes) {
 		this.typeName = typeName;
 		this.timeMinutes = timeMinutes;
 	}
@@ -56,12 +45,12 @@ public class AutoReplaySetting {
 		return typeName;
 	}
 
-	public int getTimeMinutes() {
+	public int[] getTimeMinutes() {
 		return timeMinutes;
 	}
 
-	public String getPath() {
-		return getTypeName() + "/savegame-" + getTimeMinutes() + "m.zmap";
+	public String getPath(int index) {
+		return getTypeName() + "/savegame-" + timeMinutes[index] + "m.zmap";
 	}
 
 	public MapLoader getMap() throws MapLoadException {
@@ -72,26 +61,36 @@ public class AutoReplaySetting {
 		return getTypeName() + "/replay.log";
 	}
 
-	ReplayUtils.IReplayStreamProvider getReplayFile() throws MapLoadException {
+	public IReplayStreamProvider getReplayFile() throws MapLoadException {
 		return MapUtils.createReplayForResource(getClass(), getReplayName(), getMap());
 	}
 
-	MapLoader getReferenceSavegame() throws MapLoadException, IOException {
-		String replayPath = getReplayPath();
+	MapLoader getReferenceSavegame(int index) throws MapLoadException, IOException {
+		String replayPath = getReplayPath(index);
 
 		System.out.println("Using reference file: " + replayPath);
 		return MapLoader.getLoaderForListedMap(new MapList.ListedResourceMap(replayPath));
 	}
 
-	public String getReplayPath() {
-		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath();
+	public String getReplayPath(int index) {
+		return "/" + getClass().getPackage().getName().replace('.', '/') + "/" + getPath(index);
 	}
 
 	@Override
 	public String toString() {
 		return "AutoReplaySetting{" +
 				"typeName='" + typeName + '\'' +
-				", timeMinutes=" + timeMinutes +
+				", timeMinutes=" + Arrays.toString(timeMinutes) +
 				'}';
+	}
+
+	public void compareSaveGamesAndDelete(MapLoader[] actualSaveGames) throws MapLoadException, IOException, ClassNotFoundException {
+		for (int i = 0; i < actualSaveGames.length; i++) {
+			MapLoader actualSaveGame = actualSaveGames[i];
+			MapLoader expectedSaveGame = getReferenceSavegame(i);
+
+			MapUtils.compareMapFiles(expectedSaveGame, actualSaveGame);
+			actualSaveGame.getListedMap().delete();
+		}
 	}
 }

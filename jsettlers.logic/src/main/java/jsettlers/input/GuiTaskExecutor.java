@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -14,16 +14,17 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java.io.FileNotFoundException;
+import static java8.util.stream.StreamSupport.stream;
+
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
@@ -32,6 +33,7 @@ import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
@@ -41,11 +43,18 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
+import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
+
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  *
@@ -81,20 +90,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case SET_WORK_AREA: {
 			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;
 			setWorkArea(task.getPosition(), task.getBuildingPos().x, task.getBuildingPos().y);
-		}
 			break;
+		}
 
 		case BUILD: {
 			ConstructBuildingTask task = (ConstructBuildingTask) guiTask;
 			grid.constructBuildingAt(task.getPosition(), task.getType(), task.getPlayerId());
-		}
 			break;
+		}
 
 		case MOVE_TO: {
 			MoveToGuiTask task = (MoveToGuiTask) guiTask;
 			moveSelectedTo(task.getPosition(), task.getSelection());
-		}
 			break;
+		}
 
 		case QUICK_SAVE:
 			save();
@@ -106,8 +115,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building != null) {
 				building.kill();
 			}
-		}
 			break;
+		}
 
 		case DESTROY_MOVABLES:
 			killSelectedMovables(((MovableGuiTask) guiTask).getSelection());
@@ -129,8 +138,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			SetMaterialDistributionSettingsGuiTask task = (SetMaterialDistributionSettingsGuiTask) guiTask;
 			grid.setMaterialDistributionSettings(task.getManagerPosition(), task.getMaterialType(), task.getProbabilities());
-		}
 			break;
+		}
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesGuiTask task = (SetMaterialPrioritiesGuiTask) guiTask;
@@ -140,9 +149,9 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
-			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getSoldierType());
-		}
+			grid.getPlayer(task.getPlayerId()).getMannaInformation().upgrade(task.getSoldierType());
 			break;
+		}
 
 		case CHANGE_TRADING: {
 			ChangeTradingRequestGuiTask task = (ChangeTradingRequestGuiTask) guiTask;
@@ -151,8 +160,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building instanceof TradingBuilding) {
 				((TradingBuilding) building).changeRequestedMaterial(task.getMaterial(), task.getAmount(), task.isRelative());
 			}
-		}
 			break;
+		}
 
 		case SET_TRADING_WAYPOINT: {
 			SetTradingWaypointGuiTask task = (SetTradingWaypointGuiTask) guiTask;
@@ -161,23 +170,25 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (building instanceof TradingBuilding) {
 				((TradingBuilding) building).setWaypoint(task.getWaypointType(), task.getPosition());
 			}
-		}
 			break;
+		}
 
 		case SET_MATERIAL_PRODUCTION: {
 			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
+			MaterialProductionSettings materialProduction = grid.getMaterialProductionAt(task.getPosition());
+
 			switch (task.getProductionType()) {
 			case INCREASE:
-				grid.getMaterialProductionAt(task.getPosition()).increaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.increaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case DECREASE:
-				grid.getMaterialProductionAt(task.getPosition()).decreaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.decreaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case SET_PRODUCTION:
-				grid.getMaterialProductionAt(task.getPosition()).setNumberOfFutureProducedMaterial(task.getMaterialType(), (int) task.getRatio());
+				materialProduction.setAbsoluteProductionRequest(task.getMaterialType(), (int) task.getRatio());
 				break;
 			case SET_RATIO:
-				grid.getMaterialProductionAt(task.getPosition()).setRatioOfMaterial(task.getMaterialType(), task.getRatio());
+				materialProduction.setRelativeProductionRequest(task.getMaterialType(), task.getRatio());
 				break;
 			}
 			break;
@@ -185,6 +196,11 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case CHANGE_TOWER_SOLDIERS:
 			changeTowerSoldiers((ChangeTowerSoldiersGuiTask) guiTask);
+			break;
+
+		case SET_ACCEPTED_STOCK_MATERIAL:
+			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask) guiTask);
+			break;
 
 		default:
 			break;
@@ -192,49 +208,45 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		}
 	}
 
+	private void setAcceptedStockMaterial(SetAcceptedStockMaterialGuiTask guiTask) {
+		ShortPoint2D taskPosition = guiTask.getPosition();
+
+		if (guiTask.isLocal()) {
+			IBuilding building = grid.getBuildingAt(taskPosition.x, taskPosition.y);
+			if (building != null && building instanceof StockBuilding) {
+				StockBuilding stock = (StockBuilding) building;
+				stock.setAcceptedMaterial(guiTask.getMaterialType(), guiTask.isAccepted());
+			}
+
+		} else {
+			grid.setAcceptedStockMaterial(taskPosition, guiTask.getMaterialType(), guiTask.isAccepted());
+		}
+	}
+
 	private void changeTowerSoldiers(ChangeTowerSoldiersGuiTask soldierTask) {
 		ShortPoint2D buildingPosition = soldierTask.getBuildingPos();
 		OccupyingBuilding occupyingBuilding = (OccupyingBuilding) grid.getBuildingAt(buildingPosition.x, buildingPosition.y);
 
-		switch(soldierTask.getTaskType()) {
-			case FULL:
-				occupyingBuilding.requestSoldiers();
-				break;
-			case MORE:
-				occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
-				break;
-			case ONE:
-				occupyingBuilding.releaseSoldiers();
-				break;
-			case LESS:
-				occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
-				break;
+		switch (soldierTask.getTaskType()) {
+		case FULL:
+			occupyingBuilding.requestSoldiers();
+			break;
+		case MORE:
+			occupyingBuilding.requestSoldier(soldierTask.getSoldierType());
+			break;
+		case ONE:
+			occupyingBuilding.releaseSoldiers();
+			break;
+		case LESS:
+			occupyingBuilding.releaseSoldier(soldierTask.getSoldierType());
+			break;
 		}
 	}
 
 	private void save() {
 		try {
-			byte numberOfPlayers = grid.getNumberOfPlayers();
-			PlayerState[] playerStates = new PlayerState[numberOfPlayers];
-			for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
-				// find a tower of the player
-				UIState uiState = null;
-				for (Building building : Building.getAllBuildings()) {
-					if (building.getPlayer().playerId == playerId && building instanceof OccupyingBuilding) {
-						uiState = new UIState(building.getPos());
-						break;
-					}
-				}
-
-				playerStates[playerId] = new PlayerState(playerId, uiState);
-			}
-			playerStates[playerId] = new PlayerState(this.playerId, guiInterface.getUIState(), grid.getFogOfWar());
-			grid.save(playerStates);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+			grid.save(playerId, guiInterface.getUIState());
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -249,7 +261,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void convertMovables(ConvertGuiTask guiTask) {
 		for (Integer currID : guiTask.getSelection()) {
-			Movable movable = Movable.getMovableByID(currID);
+			ILogicMovable movable = Movable.getMovableByID(currID);
 			if (movable != null) {
 				movable.convertTo(guiTask.getTargetType());
 			}
@@ -259,7 +271,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
 		for (Integer currID : selectedMovables) {
-			Movable movable = Movable.getMovableByID(currID);
+			ILogicMovable movable = Movable.getMovableByID(currID);
 			if (movable != null) {
 				movable.stopOrStartWorking(stop);
 			}
@@ -268,7 +280,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
-			Movable curr = Movable.getMovableByID(currID);
+			ILogicMovable curr = Movable.getMovableByID(currID);
 			if (curr != null) {
 				curr.kill();
 			}
@@ -285,57 +297,58 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		if (movableIds.size() == 1) {
-			Movable currMovable = Movable.getMovableByID(movableIds.get(0));
-			if (currMovable != null)
+			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
+			if (currMovable != null) {
 				currMovable.moveTo(targetPosition);
-		} else if (!movableIds.isEmpty()) {
-			short radius = 1;
-			short ringsWithoutSuccessCtr = 0; // used to stop the loop
-			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
-
-			LinkedList<Movable> movables = new LinkedList<>();
-			for (Integer currMovableId : movableIds) {
-				Movable currMovable = Movable.getMovableByID(currMovableId);
-				if (currMovable != null) {
-					movables.add(currMovable);
-				}
 			}
+		} else if (!movableIds.isEmpty()) {
+			sendMovablesNew(targetPosition, movableIds);
+		}
+	}
 
-			while (!movables.isEmpty()) {
-				ShortPoint2D currTargetPos;
+	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds) {
+		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
+		if (movables.isEmpty()) {
+			return;
+		}
 
-				do {
-					posIterator.next();
-					if (!posIterator.hasNext()) {
-						ringsWithoutSuccessCtr++;
-						if (ringsWithoutSuccessCtr > 5) {
-							return; // the rest of the movables can't be sent to the target.
-						}
+		for (int radius = 1, ringsWithoutSuccessCtr = 0; ringsWithoutSuccessCtr <= 5 && !movables.isEmpty(); radius++) {
+			MutableInt numberOfSendMovables = new MutableInt(0);
 
-						radius++;
-						posIterator = new HexBorderArea(targetPosition, radius).iterator();
-					}
+			HexGridArea
+					.streamBorder(targetPosition.x, targetPosition.y, radius)
+					.filterBounds(grid.getWidth(), grid.getHeight())
+					.getEvery(2)
+					.forEach((x, y) -> {
+						Optional<ILogicMovable> movableOptional = removeMovableThatCanMoveTo(movables, x, y);
 
-					currTargetPos = posIterator.next();
+						movableOptional.ifPresent(movable -> {
+							movable.moveTo(new ShortPoint2D(x, y));
+							numberOfSendMovables.value++;
+						});
+					});
 
-					// test all movables for this position.
-					for (Iterator<Movable> iterator = movables.iterator(); iterator.hasNext();) {
-						Movable movable = iterator.next();
-						if (canMoveTo(movable, currTargetPos)) {
-							ringsWithoutSuccessCtr = 0;
-							movable.moveTo(currTargetPos);
-							iterator.remove();
-							break;
-						}
-					}
-				} while (true);
+			if (numberOfSendMovables.value > 0) {
+				ringsWithoutSuccessCtr = 0;
+			} else {
+				ringsWithoutSuccessCtr++;
 			}
 		}
 	}
 
-	private boolean canMoveTo(Movable movable, ShortPoint2D potentialTargetPos) {
-		return grid.isInBounds(potentialTargetPos) && !grid.isBlocked(potentialTargetPos)
-				&& grid.getBlockedPartition(movable.getPos()) == grid.getBlockedPartition(potentialTargetPos);
+	private Optional<ILogicMovable> removeMovableThatCanMoveTo(List<ILogicMovable> movables, int x, int y) {
+		for (Iterator<ILogicMovable> iterator = movables.iterator(); iterator.hasNext();) {
+			ILogicMovable movable = iterator.next();
+			if (canMoveTo(movable, x, y)) {
+				iterator.remove();
+				return Optional.of(movable);
+			}
+		}
+		return Optional.empty();
+	}
+
+	private boolean canMoveTo(ILogicMovable movable, int x, int y) {
+		return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPos().x, movable.getPos().y) == grid.getBlockedPartition(x, y);
 	}
 
 	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {
@@ -345,5 +358,4 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			building.setWorkAreaCenter(pos);
 		}
 	}
-
 }

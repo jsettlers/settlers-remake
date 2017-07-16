@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,14 +14,13 @@
  *******************************************************************************/
 package go.graphics.swing.text;
 
+import com.jogamp.opengl.util.awt.TextRenderer;
 import go.graphics.swing.opengl.JOGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
-
-import com.jogamp.opengl.util.awt.TextRenderer;
 
 /**
  * This class is a text drawer used to wrap the text renderer.
@@ -88,14 +87,14 @@ public final class JOGLTextDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getWidth(String string) {
+	public float getWidth(String string) {
 		Rectangle2D textBounds = this.renderer.getBounds(string);
-		return textBounds.getWidth();
+		return (float) textBounds.getWidth();
 	}
 
 	@Override
-	public double getHeight(String string) {
+	public float getHeight(String string) {
 		Rectangle2D textBounds = this.renderer.getBounds(string);
-		return textBounds.getHeight();
+		return (float) textBounds.getHeight();
 	}
 }

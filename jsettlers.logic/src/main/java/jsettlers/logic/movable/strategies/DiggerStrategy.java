@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -97,7 +97,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		} else if (allPositionsFlattened()) { // all positions are flattened => building is finished
 			reportJobless();
 
-		} // else {  not all positions are finished, so wait if one becomes unmarked or all are finished => do nothing
+		} // else { not all positions are finished, so wait if one becomes unmarked or all are finished => do nothing
 	}
 
 	private boolean allPositionsFlattened() {
@@ -194,7 +194,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		requester.diggerRequestFailed();
 	}
 
-	private static enum EDiggerState {
+	private enum EDiggerState {
 		JOBLESS,
 		INIT_JOB,
 		GOING_TO_POS,

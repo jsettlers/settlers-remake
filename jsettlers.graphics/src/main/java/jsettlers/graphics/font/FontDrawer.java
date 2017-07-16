@@ -57,7 +57,7 @@ public class FontDrawer implements TextDrawer {
 
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
-		drawString(cx - (float) getWidth(text) / 2, cy - (float) getHeight(text) / 2, text);
+		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
 	}
 
 	private int getCharIndex(char c) {
@@ -100,7 +100,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getWidth(String string) {
+	public float getWidth(String string) {
 		float w = 0;
 		for (int i = 0; i < string.length(); i++) {
 			int idx = getCharIndex(string.charAt(i));
@@ -110,7 +110,7 @@ public class FontDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getHeight(String string) {
+	public float getHeight(String string) {
 		return size.getSize();
 	}
 

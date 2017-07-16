@@ -122,7 +122,7 @@ public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
 		if (startJob == null) {
 			throw new IllegalArgumentException("Start job is null.");
 		}
-		Hashtable<String, SimpleBuildingJob> converted = new Hashtable<String, SimpleBuildingJob>();
+		Hashtable<String, SimpleBuildingJob> converted = new Hashtable<>();
 
 		fillHashtableWithUnlinked(provider, startJob, converted);
 
@@ -147,7 +147,7 @@ public class SimpleBuildingJob extends RelativePoint implements IBuildingJob {
 	}
 
 	private static void fillHashtableWithUnlinked(BuildingJobDataProvider provider, String startJob, Hashtable<String, SimpleBuildingJob> converted) {
-		ConcurrentLinkedQueue<String> toBuild = new ConcurrentLinkedQueue<String>();
+		ConcurrentLinkedQueue<String> toBuild = new ConcurrentLinkedQueue<>();
 		toBuild.offer(startJob);
 		while (!toBuild.isEmpty()) {
 			String currentName = toBuild.poll();

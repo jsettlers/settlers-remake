@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,7 +24,6 @@ import javax.swing.SwingUtilities;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.ai.EPlayerType;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.menu.IStartingGame;
@@ -37,6 +36,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.DirectoryMapLister;
 import jsettlers.logic.player.PlayerSetting;
@@ -80,8 +80,8 @@ public class SwingManagedJSettlers {
 			CommonConstants.FIXED_AI_TYPE = EPlayerType.valueOf(options.getProperty("fixed-ai-type"));
 		}
 
-		if (options.isOptionSet("localhost")) {
-			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
+		if (options.containsKey("server")) {
+			CommonConstants.DEFAULT_SERVER_ADDRESS = options.getProperty("server");
 		}
 
 		if (options.containsKey("locale")) {
@@ -97,8 +97,7 @@ public class SwingManagedJSettlers {
 
 	/**
 	 * Sets up the {@link ResourceManager} by using a configuration file. <br>
-	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
-	 * file. <br>
+	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 *
 	 * @param options
@@ -126,12 +125,7 @@ public class SwingManagedJSettlers {
 		}
 
 		final SelectSettlersFolderDialog folderChooser = new SelectSettlersFolderDialog();
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				folderChooser.setVisible(true);
-			}
-		});
+		SwingUtilities.invokeLater(() -> folderChooser.setVisible(true));
 
 		File selectedFolder = folderChooser.waitForUserInput();
 		if (selectedFolder == null) {
@@ -155,12 +149,11 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void handleStartOptions(OptionableProperties options, JSettlersFrame settlersFrame) throws IOException, MapLoadException {
-		String mapfile = null;
 		long randomSeed = 0;
 		ReplayUtils.ReplayFile loadableReplayFile = null;
 		int targetGameTime = 0;
 
-		mapfile = options.getProperty("mapfile");
+		String mapfile = options.getProperty("mapfile");
 		if (options.containsKey("random")) {
 			randomSeed = Long.parseLong(options.getProperty("random"));
 		}
@@ -185,6 +178,8 @@ public class SwingManagedJSettlers {
 				byte playerId = 0;
 				PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
 				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
+			} else if (options.isOptionSet("all-ai-replay")) {
+				game = JSettlersGame.loadFromReplayFileAllAi(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}

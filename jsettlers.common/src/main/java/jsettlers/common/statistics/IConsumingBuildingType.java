@@ -30,5 +30,5 @@ public interface IConsumingBuildingType extends IConsuming {
 	 * 
 	 * @return The building type.
 	 */
-	public EBuildingType getBuildingType();
+	EBuildingType getBuildingType();
 }

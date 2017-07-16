@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,9 +17,9 @@ package jsettlers.algorithms;
 import java.io.IOException;
 
 import jsettlers.TestToolUtils;
-import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -29,31 +29,24 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.EActionType;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.main.swing.lookandfeel.JSettlersLookAndFeelExecption;
 import jsettlers.main.swing.resources.SwingResourceLoader;
 
 public class LandmarksThreadTester {
-	protected static final int WIDTH = 20;
-	protected static final int HEIGHT = 20;
+	private static final int WIDTH = 20;
+	private static final int HEIGHT = 20;
 	private static Map map;
 
 	public static void main(String args[]) throws JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		map = new Map();
 
 		IMapInterfaceConnector connector = TestToolUtils.openTestWindow(map);
-		connector.addListener(new IMapInterfaceListener() {
-
-			@Override
-			public void action(IAction action) {
-				if (action.getActionType() == EActionType.SELECT_POINT) {
-					System.out.println("clicked: " + ((PointAction) action).getPosition());
-				}
+		connector.addListener(action -> {
+			if (action.getActionType() == EActionType.SELECT_POINT) {
+				System.out.println("clicked: " + ((PointAction) action).getPosition());
 			}
 		});
 
@@ -65,14 +58,14 @@ public class LandmarksThreadTester {
 		map.setBlocked(8, 11, true);
 		map.setBlocked(8, 13, true);
 
-		setPartition(7, 11, 1);
-		setPartition(7, 10, 1);
-		setPartition(8, 10, 1);
-		setPartition(9, 11, 1);
-		setPartition(9, 12, 1);
-		setPartition(8, 12, 1);
+		setPlayer(7, 11, 1);
+		setPlayer(7, 10, 1);
+		setPlayer(8, 10, 1);
+		setPlayer(9, 11, 1);
+		setPlayer(9, 12, 1);
+		setPlayer(8, 12, 1);
 
-		setPartition(7, 12, 1);
+		setPlayer(7, 12, 1);
 	}
 
 	private static void test1() {
@@ -82,32 +75,26 @@ public class LandmarksThreadTester {
 			}
 		}
 
-		setPartition(2, 4, 1);
-		setPartition(2, 5, 1);
-		setPartition(2, 6, 1);
+		setPlayer(2, 4, 1);
+		setPlayer(2, 5, 1);
+		setPlayer(2, 6, 1);
 
-		setPartition(6, 5, 1);
-		setPartition(6, 6, 1);
-		setPartition(6, 7, 1);
+		setPlayer(6, 5, 1);
+		setPlayer(6, 6, 1);
+		setPlayer(6, 7, 1);
 
-		setPartition(3, 4, 1);
-		setPartition(4, 4, 1);
-		setPartition(5, 4, 1);
+		setPlayer(3, 4, 1);
+		setPlayer(4, 4, 1);
+		setPlayer(5, 4, 1);
 
-		setPartition(3, 7, 1);
-		setPartition(4, 7, 1);
-		setPartition(5, 7, 1);
+		setPlayer(3, 7, 1);
+		setPlayer(4, 7, 1);
+		setPlayer(5, 7, 1);
 	}
 
-	private static void setPartition(int x, int y, int partition) {
-		map.setPartitionAt((short) x, (short) y, (short) partition);
-		ShortPoint2D pos = new ShortPoint2D(x, y);
-		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, new IContainingProvider() {
-			@Override
-			public boolean contains(int x, int y) {
-				return map.blocked[x][y];
-			}
-		}, pos);
+	private static void setPlayer(int x, int y, int partition) {
+		map.setPlayerAt((short) x, (short) y, (byte) partition);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, x, y);
 	}
 
 	// private static void printMap(Map map) {
@@ -115,12 +102,12 @@ public class LandmarksThreadTester {
 	// printSpaces(y * 10);
 	// for (short x = 0; x < WIDTH; x++) {
 	// System.out.print(" (" + x + "|" + y + ")");
-	// if (map.isBlocked(x, y)) {
+	// if (map.isPioneerBlockedAndWithoutTowerProtection(x, y)) {
 	// System.out.print("b");
 	// } else {
 	// System.out.print(" ");
 	// }
-	// System.out.print("|" + map.getPartitionAt(x, y) + " ");
+	// System.out.print("|" + map.getPlayerIdAt(x, y) + " ");
 	// }
 	// System.out.println();
 	// }
@@ -133,12 +120,11 @@ public class LandmarksThreadTester {
 	// }
 
 	private static class Map implements IEnclosedBlockedAreaFinderGrid, IGraphicsGrid {
-		short[][] partitions = new short[WIDTH][HEIGHT];
+		byte[][] players = new byte[WIDTH][HEIGHT];
 		boolean[][] blocked = new boolean[WIDTH][HEIGHT];
 
-		@Override
-		public void setPartitionAt(int x, int y, short partition) {
-			this.partitions[x][y] = partition;
+		public void setPlayerAt(int x, int y, byte player) {
+			this.players[x][y] = player;
 		}
 
 		@Override
@@ -147,13 +133,13 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public boolean isBlocked(int x, int y) {
+		public boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
 			return blocked[x][y];
 		}
 
 		@Override
-		public short getPartitionAt(int x, int y) {
-			return partitions[x][y];
+		public byte getPlayerIdAt(int x, int y) {
+			return players[x][y];
 		}
 
 		void setBlocked(int x, int y, boolean blocked) {
@@ -168,6 +154,21 @@ public class LandmarksThreadTester {
 		@Override
 		public short getWidth() {
 			return WIDTH;
+		}
+
+		@Override
+		public boolean isOfPlayerOrBlocked(int x, int y, byte playerId) {
+			return players[x][y] == playerId || blocked[x][y];
+		}
+
+		@Override
+		public IAreaVisitor getDestroyBuildingOrTakeOverVisitor(byte newPlayer) {
+			return (x, y) -> {
+				if (blocked[x][y]) {
+					players[x][y] = newPlayer;
+				}
+				return true;
+			};
 		}
 
 		@Override
@@ -192,7 +193,8 @@ public class LandmarksThreadTester {
 
 		@Override
 		public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
-			return Color.getARGB(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
+			return Color.getARGB(isPioneerBlockedAndWithoutTowerProtection((short) x, (short) y) ? 1 : 0, 0,
+					getPlayerIdAt((short) x, (short) y) / 2f, 1);
 		}
 
 		@Override
@@ -203,11 +205,6 @@ public class LandmarksThreadTester {
 		@Override
 		public int nextDrawableX(int x, int y, int maxX) {
 			return x + 1;
-		}
-
-		@Override
-		public byte getPlayerIdAt(int x, int y) {
-			return 0;
 		}
 
 		@Override

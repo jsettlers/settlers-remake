@@ -26,10 +26,10 @@ public interface ToolNode {
 	/**
 	 * @return Name to display
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * @return Icon to display in the tree
 	 */
-	public Icon getIcon();
+	Icon getIcon();
 }

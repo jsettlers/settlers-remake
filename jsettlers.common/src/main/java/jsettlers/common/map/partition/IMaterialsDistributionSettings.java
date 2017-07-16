@@ -29,12 +29,12 @@ public interface IMaterialsDistributionSettings {
 	 * 
 	 * @return Returns the number of buildings that can request the material this setting is used for.
 	 */
-	int getNumberOfBuildings();
+	int getNumberOfBuildingTypes();
 
 	/**
 	 * 
 	 * @param index
-	 *            Index in the interval [0, {@link #getNumberOfBuildings()} - 1].
+	 *            Index in the interval [0, {@link #getNumberOfBuildingTypes()} - 1].
 	 * @return Returns the {@link EBuildingType} represented by the given index.
 	 */
 	EBuildingType getBuildingType(int index);
@@ -42,7 +42,7 @@ public interface IMaterialsDistributionSettings {
 	/**
 	 * 
 	 * @param index
-	 *            Index of the {@link EBuildingType}. The index has to be in the interval [0, {@link #getNumberOfBuildings()} - 1]. <br>
+	 *            Index of the {@link EBuildingType}. The index has to be in the interval [0, {@link #getNumberOfBuildingTypes()} - 1]. <br>
 	 *            To get the {@link EBuildingType} call {@link #getBuildingType(index)}
 	 * @return Returns the probability that a material should be send to a requester of the {@link EBuildingType} represented by the given index. <br>
 	 * 

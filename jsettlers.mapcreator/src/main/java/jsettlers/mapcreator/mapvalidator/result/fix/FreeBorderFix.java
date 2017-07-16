@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,19 +14,16 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.result.fix;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.mapcreator.localization.EditorLabels;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Delete invalid resources
@@ -52,13 +49,7 @@ public class FreeBorderFix extends AbstractFix implements IMapArea {
 	 */
 	public FreeBorderFix() {
 		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.free-borders"));
-		menuFix.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				autoFix();
-			}
-		});
+		menuFix.addActionListener(e -> autoFix());
 		menu.add(menuFix);
 	}
 
@@ -95,8 +86,17 @@ public class FreeBorderFix extends AbstractFix implements IMapArea {
 	}
 
 	@Override
+	public boolean contains(int x, int y) {
+		return stream().contains(x, y);
+	}
+
+	@Override
 	public Iterator<ShortPoint2D> iterator() {
 		return points.iterator();
 	}
 
+	@Override
+	public CoordinateStream stream() {
+		return CoordinateStream.fromList(points);
+	}
 }

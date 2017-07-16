@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.mapcreator.mapvalidator.result.fix;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,13 +52,7 @@ public class InvalidResourceFix extends AbstractFix {
 	public JPopupMenu getPopupMenu() {
 		JPopupMenu menu = new JPopupMenu();
 		JMenuItem menuFix = new JMenuItem(EditorLabels.getLabel("fix.delete-invalid-resources"));
-		menuFix.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				autoFix();
-			}
-		});
+		menuFix.addActionListener(e -> autoFix());
 		menu.add(menuFix);
 		return menu;
 	}
@@ -85,5 +77,4 @@ public class InvalidResourceFix extends AbstractFix {
 	public void addInvalidResource(ShortPoint2D point) {
 		list.add(point);
 	}
-
 }

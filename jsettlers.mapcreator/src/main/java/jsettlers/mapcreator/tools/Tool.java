@@ -34,7 +34,7 @@ public interface Tool extends ToolNode {
 	 * 
 	 * @return Read only list
 	 */
-	public Set<EShapeType> getSupportedShapes();
+	Set<EShapeType> getSupportedShapes();
 
 	/**
 	 * Editing
@@ -45,7 +45,7 @@ public interface Tool extends ToolNode {
 	 * @param end
 	 * @param uidx
 	 */
-	public void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx);
+	void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx);
 
 	/**
 	 * Start the editing
@@ -54,5 +54,5 @@ public interface Tool extends ToolNode {
 	 * @param shape
 	 * @param pos
 	 */
-	public void start(MapData data, ShapeType shape, ShortPoint2D pos);
+	void start(MapData data, ShapeType shape, ShortPoint2D pos);
 }

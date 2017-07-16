@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -91,9 +91,9 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 
 		@Override
 		public void uiUpdate(RowUiData rowUiData) {
-			quantity = rowUiData.getMaterialProduction().numberOfFutureProducedMaterial(type);
+			quantity = rowUiData.getMaterialProduction().getAbsoluteProductionRequest(type);
 			lblQuantity.setText(Integer.toString(quantity));
-			barFill.setBarFill(rowUiData.getMaterialProduction().configuredRatioOfMaterial(type),
+			barFill.setBarFill(rowUiData.getMaterialProduction().getRelativeProductionRequest(type),
 					rowUiData.getMaterialProduction().resultingRatioOfMaterial(type));
 		}
 	}
@@ -151,7 +151,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		for (int r = 0; r < WEAPONS_ROWS; r++, top -= rowHeight) {
 			panel.addChild(rows[itemIdx++], marginH, top - rowHeight, 1f - marginH, top);
 		}
-		updater = UIUpdater.<RowUiData> getUpdater(this, Arrays.asList(rows));
+		updater = UIUpdater.getUpdater(this, Arrays.asList(rows));
 	}
 
 	@Override

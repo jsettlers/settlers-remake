@@ -53,10 +53,10 @@ public class TestMap implements IGraphicsGrid {
 	private static final int STONES_IN_GROUP = 10;
 	private static final int STONEGROUPS = 15;
 
-	private ArrayList<TestTile> tiles = new ArrayList<TestTile>();
+	private ArrayList<TestTile> tiles = new ArrayList<>();
 
-	private ArrayList<TestSettler> settlers = new ArrayList<TestSettler>();
-	private ArrayList<TestBuilding> buildings = new ArrayList<TestBuilding>();
+	private ArrayList<TestSettler> settlers = new ArrayList<>();
+	private ArrayList<TestBuilding> buildings = new ArrayList<>();
 
 	// only for direction, ... calculations, not for displaying.
 	// MapDrawContext context = new MapDrawContext(this);

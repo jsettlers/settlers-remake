@@ -34,5 +34,5 @@ public interface RegionContent extends GOEventHandlerProvider {
 	 * @param height
 	 *            The height of the region.
 	 */
-	public void drawContent(GLDrawContext gl2, int width, int height);
+	void drawContent(GLDrawContext gl2, int width, int height);
 }

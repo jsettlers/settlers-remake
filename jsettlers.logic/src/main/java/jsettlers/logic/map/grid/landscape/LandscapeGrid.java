@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -33,15 +33,15 @@ import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListen
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.
- * 
+ *
  * @author Andreas Eberle
  */
-public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener {
+public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener, IBlockingProvider {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	/**
 	 * This class is used as null object to get rid of a lot of null checks
-	 * 
+	 *
 	 * @author Andreas Eberle
 	 */
 	private static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
@@ -96,7 +96,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	private final void initDebugColors() {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			this.debugColors = new int[width * height];
 		} else {
 			this.debugColors = null;
@@ -121,24 +121,23 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return false;
 	}
 
-	public boolean areAllNeighborsOf(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
-		for (ShortPoint2D currPos : new HexGridArea(x, y, minRadius, maxRadius)) {
-			if (!isLandscapeOf(currPos.x, currPos.y, landscapeTypes)) {
-				return false;
-			}
-		}
-		return true;
+	public boolean isHexAreaOfType(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
+		boolean isOfType = HexGridArea
+				.stream(x, y, minRadius, maxRadius)
+				.filter((currX, currY) -> !isLandscapeOf(currX, currY, landscapeTypes))
+				.isEmpty();
+		return isOfType;
 	}
 
 	@Override
 	public final void setDebugColor(int x, int y, int argb) {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			debugColors[x + y * width] = argb;
 		}
 	}
 
 	public final int getDebugColor(int x, int y) {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			return debugColors[x + y * width];
 		} else {
 			return 0;
@@ -146,7 +145,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final void resetDebugColors() {
-		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+		if (MatchConstants.ENABLE_DEBUG_COLORS) {
 			for (int i = 0; i < debugColors.length; i++) {
 				debugColors[i] = 0;
 			}
@@ -192,10 +191,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	/**
 	 * gets the resource amount at the given position
-	 * 
+	 *
 	 * @param x
 	 * @param y
-	 * @return The amount of resources, where 0 is no resources and {@link Byte.MAX_VALUE} means full resources.
+	 * @return The amount of resources, where 0 is no resources and @link Byte.MAX_VALUE means full resources.
 	 */
 	public final byte getResourceAmountAt(int x, int y) {
 		return resourceAmount[x + y * width];
@@ -239,12 +238,12 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	/**
 	 * Sets the landscape to flattened after a settler walked on it.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
 	private void flatten(int x, int y) {
-		if (areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.FLATTENED)) {
+		if (isHexAreaOfType(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.FLATTENED)) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
 		}
 	}
@@ -283,6 +282,15 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return this.blockedPartitions[x + y * width];
 	}
 
+	public boolean isBlockedPartition(int x, int y) {
+		return isBlocked(x, y);
+	}
+
+	@Override
+	public boolean isBlocked(int x, int y) {
+		return getBlockedPartitionAt(x, y) == 0;
+	}
+
 	public IPreviewImageDataSupplier getPreviewImageDataSupplier() {
 		return new IPreviewImageDataSupplier() {
 			@Override
@@ -299,11 +307,11 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	/**
 	 * This method activates the unflattening process. This causes a flattened position to be turned into grass after a while.
-	 * 
+	 *
 	 * @param x
-	 *            X coordinate of the position.
+	 * 		X coordinate of the position.
 	 * @param y
-	 *            Y coordinate of the position.
+	 * 		Y coordinate of the position.
 	 */
 	private void activateUnflattening(int x, int y) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);

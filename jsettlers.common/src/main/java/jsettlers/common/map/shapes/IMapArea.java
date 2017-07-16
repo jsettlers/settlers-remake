@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,11 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+
 import java.io.Serializable;
 import java.util.Iterator;
-
-import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This defines an area on the map of a given shape.
@@ -37,6 +38,8 @@ public interface IMapArea extends Iterable<ShortPoint2D>, Serializable {
 	 */
 	boolean contains(ShortPoint2D position);
 
+	boolean contains(int x, int y);
+
 	/**
 	 * Gets an iterator for the shape that returns all tiles that are contained by this shape.
 	 * <p>
@@ -45,5 +48,7 @@ public interface IMapArea extends Iterable<ShortPoint2D>, Serializable {
 	 * @return An Iterator over the area in the shape.
 	 */
 	@Override
-	public Iterator<ShortPoint2D> iterator();
+	Iterator<ShortPoint2D> iterator();
+
+	CoordinateStream stream();
 }

@@ -51,12 +51,12 @@ public class ConfigurationPropertiesFile {
 		return properties.getProperty(SETTLERS_FOLDER);
 	}
 
-	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {
+	public void setSettlersFolder(File newSettlersFolder) throws IOException {
 		properties.setProperty(SETTLERS_FOLDER, newSettlersFolder.getAbsolutePath());
 		saveConfigFile("Updated settlers-folder with dialog.");
 	}
 
-	private void saveConfigFile(String updateMessage) throws IOException, FileNotFoundException {
+	private void saveConfigFile(String updateMessage) throws IOException {
 		properties.store(new FileOutputStream(configFile), updateMessage);
 	}
 }

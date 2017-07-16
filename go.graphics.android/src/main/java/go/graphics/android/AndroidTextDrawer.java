@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,12 +14,12 @@
  *******************************************************************************/
 package go.graphics.android;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import go.graphics.TextureHandle;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -33,11 +33,10 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static final int TEXTURE_HEIGHT = 512;
 	private static final int TEXTURE_WIDTH = 512;
 
-	private static AndroidTextDrawer[] instances =
-			new AndroidTextDrawer[EFontSize.values().length];
+	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
-	private final AndroidContext context;
+	private final AndroidDrawContext context;
 	private TextureHandle texture = null;
 	/**
 	 * The number of lines we use on our texture.
@@ -100,7 +99,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			0,
 	};
 
-	private AndroidTextDrawer(EFontSize size, AndroidContext context) {
+	private AndroidTextDrawer(EFontSize size, AndroidDrawContext context) {
 		this.size = size;
 		this.context = context;
 		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
@@ -132,8 +131,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
 		// TODO: we may want to optimize this.
-		drawString(cx - (float) getWidth(text) / 2, cy
-				- (float) getHeight(text) / 2, text);
+		drawString(cx - getWidth(text) / 2, cy - getHeight(text) / 2, text);
 	}
 
 	@Override
@@ -204,8 +202,8 @@ public class AndroidTextDrawer implements TextDrawer {
 		renderer.setText(string);
 
 		int firstLine = findLineToUse();
-		System.out.println("string cache miss for " + string +
-				", allocating new line: " + firstLine);
+		// System.out.println("string cache miss for " + string +
+		// ", allocating new line: " + firstLine);
 		int lastLine = firstLine;
 
 		for (int x = 0; x < width; x += TEXTURE_WIDTH) {
@@ -213,7 +211,6 @@ public class AndroidTextDrawer implements TextDrawer {
 				line = firstLine;
 			} else {
 				line = findLineToUse();
-				System.out.println("Using multiple lines: " + line);
 				nextTile[lastLine] = line;
 				linestrings[line] = null;
 				linewidths[line] = -1;
@@ -224,9 +221,7 @@ public class AndroidTextDrawer implements TextDrawer {
 			nextTile[line] = -1;
 
 			// render the new text to that line.
-			Bitmap bitmap =
-					Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
-							Bitmap.Config.ALPHA_8);
+			Bitmap bitmap = Bitmap.createBitmap(TEXTURE_WIDTH, lineheight, Bitmap.Config.ALPHA_8);
 			Canvas canvas = new Canvas(bitmap);
 			renderer.layout(0, 0, width, lineheight);
 			canvas.translate(-x, 0);
@@ -249,8 +244,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	private void initialize() {
 		if (texture == null || !texture.isValid()) {
-			texture =
-					context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+			texture = context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 			lineheight = (int) (getScaledSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];
@@ -266,7 +260,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	}
 
 	@Override
-	public double getWidth(String string) {
+	public float getWidth(String string) {
 		int index = findExistingString(string);
 		if (index < 0) {
 			return computeWidth(string);
@@ -275,14 +269,14 @@ public class AndroidTextDrawer implements TextDrawer {
 		}
 	}
 
-	private double computeWidth(String string) {
+	private float computeWidth(String string) {
 		Paint paint = new Paint();
 		paint.setTextSize(getScaledSize());
 		return paint.measureText(string);
 	}
 
 	@Override
-	public double getHeight(String string) {
+	public float getHeight(String string) {
 		return getScaledSize();
 	}
 
@@ -295,7 +289,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		context.color(red, green, blue, alpha);
 	}
 
-	public static TextDrawer getInstance(EFontSize size, AndroidContext context) {
+	public static TextDrawer getInstance(EFontSize size, AndroidDrawContext context) {
 		int ordinal = size.ordinal();
 		if (instances[ordinal] == null) {
 			instances[ordinal] = new AndroidTextDrawer(size, context);

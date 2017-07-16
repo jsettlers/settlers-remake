@@ -32,10 +32,10 @@ import jsettlers.network.server.packets.ServersideTaskPacket;
  * 
  */
 public class TaskCollectingListener extends PacketChannelListener<ServersideTaskPacket> {
-	private List<ServersideTaskPacket> currTasksList = new LinkedList<ServersideTaskPacket>();
+	private List<ServersideTaskPacket> currTasksList = new LinkedList<>();
 
 	public TaskCollectingListener() {
-		super(ENetworkKey.SYNCHRONOUS_TASK, new GenericDeserializer<ServersideTaskPacket>(ServersideTaskPacket.class));
+		super(ENetworkKey.SYNCHRONOUS_TASK, new GenericDeserializer<>(ServersideTaskPacket.class));
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class TaskCollectingListener extends PacketChannelListener<ServersideTask
 	 */
 	public List<ServersideTaskPacket> getAndResetTasks() {
 		List<ServersideTaskPacket> temp = currTasksList;
-		currTasksList = new LinkedList<ServersideTaskPacket>();
+		currTasksList = new LinkedList<>();
 		return temp;
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,17 +19,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.mutables.MutableBoolean;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.landscape.IWalkableGround;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
@@ -39,7 +40,7 @@ import jsettlers.logic.movable.interfaces.IAttackable;
 public final class MovableGrid implements Serializable {
 	private static final long serialVersionUID = 7003522358013103962L;
 
-	private transient Movable[] movableGrid;
+	private transient ILogicMovable[] movableGrid;
 	private final IWalkableGround ground;
 	private final short width;
 
@@ -49,7 +50,7 @@ public final class MovableGrid implements Serializable {
 		this.width = width;
 		this.height = height;
 		this.ground = ground;
-		this.movableGrid = new Movable[width * height];
+		this.movableGrid = new ILogicMovable[width * height];
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -59,14 +60,14 @@ public final class MovableGrid implements Serializable {
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		movableGrid = SerializationUtils.readSparseArray(ois, Movable.class);
+		movableGrid = SerializationUtils.readSparseArray(ois, ILogicMovable.class);
 	}
 
-	public final Movable getMovableAt(int x, int y) {
+	public final ILogicMovable getMovableAt(int x, int y) {
 		return this.movableGrid[x + y * width];
 	}
 
-	public final void movableLeft(ShortPoint2D position, Movable movable) {
+	public final void movableLeft(ShortPoint2D position, ILogicMovable movable) {
 		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {
 			this.movableGrid[idx] = null;
@@ -81,7 +82,7 @@ public final class MovableGrid implements Serializable {
 	 * @param movable
 	 *            Movable that enters the position.
 	 */
-	public final void movableEntered(ShortPoint2D position, Movable movable) {
+	public final void movableEntered(ShortPoint2D position, ILogicMovable movable) {
 		final short x = position.x;
 		final short y = position.y;
 
@@ -103,36 +104,31 @@ public final class MovableGrid implements Serializable {
 	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
 	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	public void informMovables(Movable movable, short x, short y, boolean informFullArea) {
+	public void informMovables(ILogicMovable movable, short x, short y, boolean informFullArea) {
 		// inform all movables of the given movable
-		IMapArea area;
+		CoordinateStream area;
 		if (informFullArea) {
-			area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+			area = HexGridArea.stream(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 		} else {
-			area = new HexBorderArea(x, y, (short) (Constants.SOLDIER_SEARCH_RADIUS - 1));
+			area = HexGridArea.streamBorder(x, y, Constants.SOLDIER_SEARCH_RADIUS - 1);
 		}
 
-		boolean foundOne = false;
-		byte movablePlayer = movable.getPlayerId();
+		MutableBoolean foundOne = new MutableBoolean();
+		IPlayer movablePlayer = movable.getPlayer();
 
-		for (ShortPoint2D curr : area) {
-			short currX = curr.x;
-			short currY = curr.y;
-			if (0 <= currX && currX < width && 0 <= currY && currY < height) {
-				Movable currMovable = getMovableAt(currX, currY);
-				if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
-					currMovable.informAboutAttackable(movable);
+		area.filterBounds(width, height).forEach((currX, currY) -> {
+			ILogicMovable currMovable = getMovableAt(currX, currY);
+			if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
+				currMovable.informAboutAttackable(movable);
 
-					if (!foundOne) { // the first found movable is the one closest to the given movable.
-						movable.informAboutAttackable(currMovable);
-						foundOne = true;
-					}
+				if (!foundOne.value) { // the first found movable is the one closest to the given movable.
+					movable.informAboutAttackable(currMovable);
+					foundOne.value = true;
 				}
 			}
-		}
+		});
 	}
 
-	// FIXME @Andreas Eberle replace player everywhere by an object with team and player and move this method to the new class
 	/**
 	 * 
 	 * @param player
@@ -142,8 +138,8 @@ public final class MovableGrid implements Serializable {
 	 * 
 	 * @return
 	 */
-	public static boolean isEnemy(byte player, IAttackable otherAttackable) {
-		return otherAttackable.getPlayerId() != player && otherAttackable.isAttackable();
+	public static boolean isEnemy(IPlayer player, IAttackable otherAttackable) {
+		return otherAttackable.getPlayer().getTeamId() != player.getTeamId() && otherAttackable.isAttackable();
 	}
 
 	public boolean hasNoMovableAt(int x, int y) {

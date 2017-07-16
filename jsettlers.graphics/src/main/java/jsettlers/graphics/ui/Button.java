@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -25,14 +25,19 @@ import jsettlers.graphics.action.Action;
  * @author michael
  */
 public class Button extends UIPanel {
+	private final ImageLink activeImage;
+	private final String description;
+
 	private boolean active = false;
 	private Action action;
-	private final String description;
 	private ImageLink image;
-	private final ImageLink activeImage;
 
 	public Button(ImageLink image) {
 		this(null, image, image, "");
+	}
+
+	public Button(ImageLink image, String description) {
+		this(null, image, image, description);
 	}
 
 	public Button(Action action, ImageLink image, ImageLink active, String description) {
@@ -57,6 +62,10 @@ public class Button extends UIPanel {
 
 	public Action getAction() {
 		return action;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 	@Override

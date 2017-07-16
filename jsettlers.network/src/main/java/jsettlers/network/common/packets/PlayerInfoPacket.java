@@ -109,9 +109,7 @@ public class PlayerInfoPacket extends Packet {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (ready != other.ready)
-			return false;
-		return true;
+		return ready == other.ready;
 	}
 
 }

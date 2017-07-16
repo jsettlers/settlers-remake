@@ -18,27 +18,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.OptionableProperties;
-import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
-import jsettlers.main.swing.resources.ResourceMapLister;
-import jsettlers.main.swing.resources.SwingResourceLoader;
-import jsettlers.logic.map.loading.MapLoader;
-import jsettlers.logic.map.loading.list.IListedMap;
-import jsettlers.logic.map.loading.list.IMapLister;
 import jsettlers.logic.map.loading.list.MapList;
-import jsettlers.logic.map.loading.newmap.MapFileHeader;
+import jsettlers.logic.map.loading.list.MapList.DefaultMapListFactory;
+import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.resources.SwingResourceProvider;
+import jsettlers.testutils.map.DebugMapLister;
 
 /**
  * Utility class holding methods needed by serveral test classes.
@@ -77,11 +67,12 @@ public class TestUtils {
 			File tempDirectory = Files.createTempDirectory("saves").toFile();
 			tempDirectory.deleteOnExit();
 			System.out.println("Using temp resource manager with directory: " + tempDirectory);
-			
+
 			ResourceManager.setProvider(new SwingResourceProvider(tempDirectory));
 
 			DefaultMapListFactory mapListFactory = new DefaultMapListFactory();
 			mapListFactory.addResourcesDirectory(tempDirectory);
+			mapListFactory.addSaveDirectory(new DebugMapLister(new File(tempDirectory, "save"), true));
 			MapList.setDefaultListFactory(mapListFactory);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

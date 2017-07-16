@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,15 +19,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-//import jsettlers.common.images.TextureMap;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageIndexFile;
@@ -53,9 +52,6 @@ public final class ImageProvider {
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
 
-	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
-	private ImageIndexFile indexFile = null;
-
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
 		@Override
 		public SequenceList<Image> getSettlers() {
@@ -74,12 +70,12 @@ public final class ImageProvider {
 
 		@Override
 		public Sequence<LandscapeImage> getLandscapes() {
-			return new ArraySequence<LandscapeImage>(new LandscapeImage[0]);
+			return new ArraySequence<>(new LandscapeImage[0]);
 		}
 
 		@Override
 		public Sequence<GuiImage> getGuis() {
-			return new ArraySequence<GuiImage>(new GuiImage[0]);
+			return new ArraySequence<>(new GuiImage[0]);
 		}
 	};
 
@@ -90,7 +86,9 @@ public final class ImageProvider {
 
 	private static ImageProvider instance;
 
-	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<Integer, AdvancedDatFileReader>();
+	private final Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<>();
+	private final Hashtable<Integer, AdvancedDatFileReader> readers = new Hashtable<>();
+	private ImageIndexFile indexFile = null;
 
 	/**
 	 * The lookup paths for the dat files.
@@ -114,15 +112,14 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Adds a new path to look for dat files.
+	 * Sets the path to look for dat files.
 	 *
 	 * @param path
 	 *            The directory. It may not exist, but must not be null.
-	 * @return this
 	 */
-	public ImageProvider addLookupPath(File path) {
-		this.lookupPaths.add(path);
-		return this;
+	public void addLookupPath(File path) {
+		lookupPaths.add(path);
+		startPreloading();
 	}
 
 	/**
@@ -133,7 +130,7 @@ public final class ImageProvider {
 	 * @return The content as set or <code> null </code>
 	 */
 	public synchronized AdvancedDatFileReader getFileReader(int file) {
-		Integer integer = Integer.valueOf(file);
+		Integer integer = file;
 		AdvancedDatFileReader set = this.readers.get(integer);
 		if (set == null) {
 			set = createFileReader(file);
@@ -191,10 +188,9 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Returns a GUI or SETTLER type image and if available a higher resolution version. This is also based on whether the image's dimensions in
-	 * pixels will fit into both the specified width and height. This is so that an image is always scaled up as downsizing an image can introduce
-	 * artifacts and it would be wasteful to be calculating the translation of excess pixels from a large image to a smaller one. However should the
-	 * smallest image be oversized it will still be returned.
+	 * Returns a GUI or SETTLER type image and if available a higher resolution version. This is also based on whether the image's dimensions in pixels will fit into both the specified width and
+	 * height. This is so that an image is always scaled up as downsizing an image can introduce artifacts and it would be wasteful to be calculating the translation of excess pixels from a large
+	 * image to a smaller one. However should the smallest image be oversized it will still be returned.
 	 */
 	private Image getDetailedImage(OriginalImageLink link, float width, float height) {
 		Image image = getSequencedImage(link, 0);
@@ -234,7 +230,7 @@ public final class ImageProvider {
 			indexFile = new ImageIndexFile();
 		}
 
-		int index = 0; //TextureMap.getIndex(link.getName());
+		int index = 0; // TextureMap.getIndex(link.getName());
 		return indexFile.getImage(index);
 	}
 
@@ -305,17 +301,19 @@ public final class ImageProvider {
 	}
 
 	private File findFileInPaths(String fileName) {
-		for (File path : this.lookupPaths) {
-			File searched = new File(path, fileName);
-			if (searched.isFile() && searched.canRead()) {
-				return searched;
+		for (File lookupPath : lookupPaths) {
+			for (File currentFile : lookupPath.listFiles()) {
+				if (currentFile.isFile() && currentFile.canRead() &&
+						currentFile.getName().equalsIgnoreCase(fileName)) {
+					return currentFile;
+				}
 			}
 		}
 		return null;
 	}
 
 	private AdvancedDatFileReader createFileReader(int fileIndex) {
-		String numberString = String.format("%02d", fileIndex);
+		String numberString = String.format(Locale.ENGLISH, "%02d", fileIndex);
 		for (DatFileType type : DatFileType.values()) {
 			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
 			if (TRACE_IMAGE_LOADING) {

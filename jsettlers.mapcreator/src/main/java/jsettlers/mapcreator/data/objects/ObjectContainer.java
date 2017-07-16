@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.position.RelativePoint;
 
 public interface ObjectContainer {
-	public MapObject getMapObject();
+	MapDataObject getMapObject();
 
-	public RelativePoint[] getProtectedArea();
+	RelativePoint[] getProtectedArea();
 }

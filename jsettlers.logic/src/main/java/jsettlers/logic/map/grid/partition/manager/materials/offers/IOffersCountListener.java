@@ -14,18 +14,16 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.materials.offers;
 
-import java.io.Serializable;
-
 import jsettlers.common.material.EMaterialType;
 
+import java.io.Serializable;
+
 /**
- * 
  * @author Andreas Eberle
- *
  */
 public interface IOffersCountListener extends Serializable {
 
-	public static final IOffersCountListener DEFAULT_IMPLEMENTATION = new IOffersCountListener() {
+	IOffersCountListener DEFAULT_IMPLEMENTATION = new IOffersCountListener() {
 		private static final long serialVersionUID = 7842646893654546055L;
 
 		@Override

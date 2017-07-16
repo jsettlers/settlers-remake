@@ -68,9 +68,7 @@ public class TimeSyncPacket extends Packet {
 		if (getClass() != obj.getClass())
 			return false;
 		TimeSyncPacket other = (TimeSyncPacket) obj;
-		if (time != other.time)
-			return false;
-		return true;
+		return time == other.time;
 	}
 
 	public int getTime() {

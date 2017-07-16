@@ -34,7 +34,7 @@ public class TimeSyncForwardingListener extends PacketChannelListener<TimeSyncPa
 	private final Player player;
 
 	public TimeSyncForwardingListener(IServerManager serverManager, Player player) {
-		super(ENetworkKey.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
+		super(ENetworkKey.TIME_SYNC, new GenericDeserializer<>(TimeSyncPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

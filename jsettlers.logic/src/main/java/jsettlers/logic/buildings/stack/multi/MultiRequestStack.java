@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
- *
+ * Copyright (c) 2015 - 2017
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -27,38 +27,37 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialReq
 /**
  * A stack that is capable of requesting multiple materials at the same time. When one of the requested materials will be delivered, the stack only
  * requests that materials as long as it holds any of that material.
- * <p />
+ * <p/>
  * Therefore the stack can only hold a single type of material.
- * 
- * @author Andreas Eberle
  *
+ * @author Andreas Eberle
  */
 public class MultiRequestStack implements IRequestStack {
 	private static final long serialVersionUID = 1735769845576581676L;
 
-	private final IRequestsStackGrid grid;
-	private final ShortPoint2D position;
+	protected final IRequestsStackGrid grid;
+	protected final ShortPoint2D position;
 	private final EBuildingType buildingType;
 
 	private final MultiRequestStackSharedData sharedData;
-	private final MaterialRequestObject[] materialRequests = new MaterialRequestObject[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	protected final RequestOfMultiRequestStack[] materialRequests = new RequestOfMultiRequestStack[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 
-	private EMaterialType currentMaterialType;
+	protected EMaterialType currentMaterialType;
 	private short popped;
 
-	private boolean released;
+	protected boolean released;
 
 	/**
 	 * Creates a new bounded {@link MultiRequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
-	 * 
+	 *
 	 * @param grid
-	 *            The {@link IRequestsStackGrid} to be used as base for this {@link AbstractRequestStack}.
+	 * 		The {@link IRequestsStackGrid} to be used as base for this {@link IRequestStack}.
 	 * @param position
-	 *            The position the stack will be.
+	 * 		The position the stack will be.
 	 * @param buildingType
+	 * 		Type of the building using this stack.
 	 */
-	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority,
-			MultiRequestStackSharedData sharedData) {
+	public MultiRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EBuildingType buildingType, EPriority priority, MultiRequestStackSharedData sharedData) {
 		this.grid = grid;
 		this.position = position;
 		this.buildingType = buildingType;
@@ -67,9 +66,13 @@ public class MultiRequestStack implements IRequestStack {
 
 		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
 			EMaterialType materialType = EMaterialType.DROPPABLE_MATERIALS[i];
-			materialRequests[materialType.ordinal] = new RequestStackOfMultiRequestStack(materialType);
+			materialRequests[materialType.ordinal] = createRequestForMaterial(priority, materialType);
 			grid.request(materialType, materialRequests[materialType.ordinal]);
 		}
+	}
+
+	protected RequestOfMultiRequestStack createRequestForMaterial(EPriority priority, EMaterialType materialType) {
+		return new RequestOfMultiRequestStack(materialType, priority);
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public class MultiRequestStack implements IRequestStack {
 
 	/**
 	 * Pops a material from this stack. The material is of the type returned by {@link #getMaterialType()} and specified in the constructor.
-	 * 
+	 *
 	 * @return <code>true</code> if there was a material to be popped from this stack. False otherwise.
 	 */
 	@Override
@@ -93,7 +96,7 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	void checkIfCurrentMaterialShouldBeReset() {
+	protected void checkIfCurrentMaterialShouldBeReset() {
 		if (currentMaterialType != null && materialRequests[currentMaterialType.ordinal].getInDelivery() <= 0 && getStackSize() == 0) {
 			sharedData.unregisterHandlingStack(currentMaterialType, this);
 			currentMaterialType = null;
@@ -102,10 +105,10 @@ public class MultiRequestStack implements IRequestStack {
 
 	/**
 	 * This method gives the number of popped materials.
-	 * <p />
+	 * <p/>
 	 * Due to the size of the variable, this method should only be used on limited stacks. Unlimited stacks my run into an overflow of the popped
 	 * value.
-	 * 
+	 *
 	 * @return Returns the number of materials popped from this stack.
 	 */
 	@Override
@@ -115,12 +118,12 @@ public class MultiRequestStack implements IRequestStack {
 
 	/**
 	 * Checks if all needed materials have been delivered. Therefore this method is only useful with bounded request stacks.
-	 * 
+	 *
 	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
-	 *         false otherwise.
+	 * false otherwise.
 	 */
 	@Override
-	public boolean isFullfilled() {
+	public boolean isFulfilled() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -131,9 +134,9 @@ public class MultiRequestStack implements IRequestStack {
 
 	@Override
 	public void releaseRequests() {
-		for (EMaterialType materialType : EMaterialType.DROPPABLE_MATERIALS) {
-			sharedData.requestedMaterials[materialType.ordinal] = 0;
-			grid.createOffersForAvailableMaterials(position, materialType);
+		for (RequestOfMultiRequestStack materialRequest : materialRequests) {
+			materialRequest.updatePriority(EPriority.STOPPED);
+			grid.createOffersForAvailableMaterials(position, materialRequest.materialType);
 		}
 		released = true;
 	}
@@ -155,9 +158,13 @@ public class MultiRequestStack implements IRequestStack {
 		}
 	}
 
-	boolean canAcceptMoreDeliveries() {
-		MaterialRequestObject activeRequest = materialRequests[currentMaterialType.ordinal];
-		return getInDeliveryable() - activeRequest.getInDelivery() > 0;
+	boolean canAcceptMoreDeliveriesOf(EMaterialType materialType) {
+		if (materialType != null && materialType == currentMaterialType) {
+			MaterialRequestObject activeRequest = materialRequests[currentMaterialType.ordinal];
+			return getInDeliveryable() - activeRequest.getInDelivery() > 0;
+		} else {
+			return false;
+		}
 	}
 
 	private int getInDeliveryable() {
@@ -174,12 +181,13 @@ public class MultiRequestStack implements IRequestStack {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 
-	private class RequestStackOfMultiRequestStack extends MaterialRequestObject {
+	protected class RequestOfMultiRequestStack extends MaterialRequestObject {
 		private static final long serialVersionUID = -7139074965376516629L;
 
-		private final EMaterialType materialType;
+		protected final EMaterialType materialType;
 
-		RequestStackOfMultiRequestStack(EMaterialType materialType) {
+		RequestOfMultiRequestStack(EMaterialType materialType, EPriority priority) {
+			super(priority);
 			this.materialType = materialType;
 		}
 
@@ -205,9 +213,7 @@ public class MultiRequestStack implements IRequestStack {
 
 		@Override
 		protected void materialDelivered() {
-			if (sharedData.requestedMaterials[materialType.ordinal] != Short.MAX_VALUE) {
-				sharedData.requestedMaterials[materialType.ordinal]--;
-			}
+			sharedData.requestSettings.updateRequested(materialType, -1);
 		}
 
 		@Override
@@ -254,5 +260,4 @@ public class MultiRequestStack implements IRequestStack {
 			return super.canTakeMoreOffers();
 		}
 	}
-
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,15 +17,16 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 
 import jsettlers.TestToolUtils;
+import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
-import jsettlers.common.menu.IMapInterfaceListener;
-import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
@@ -34,8 +35,8 @@ import jsettlers.main.swing.resources.SwingResourceLoader;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
-	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1);
-	private final Movable movable;
+	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), (byte) 1, EPlayerType.HUMAN, ECivilisation.ROMAN);
+	private final ILogicMovable movable;
 
 	public static void main(String args[]) throws InterruptedException, JSettlersLookAndFeelExecption, IOException, SwingResourceLoader.ResourceSetupException {
 		new MovableTestWindow();
@@ -53,25 +54,22 @@ public class MovableTestWindow {
 
 		connector.setSelection(new SelectionSet(movable));
 
-		connector.addListener(new IMapInterfaceListener() {
-			@Override
-			public void action(IAction action) {
-				switch (action.getActionType()) {
-				case MOVE_TO:
-					movable.moveTo(((PointAction) action).getPosition());
-					break;
-				case SPEED_FASTER:
-					MatchConstants.clock().multiplyGameSpeed(1.2f);
-					break;
-				case SPEED_SLOWER:
-					MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
-					break;
-				case FAST_FORWARD:
-					MatchConstants.clock().fastForward();
-					break;
-				default:
-					break;
-				}
+		connector.addListener(action -> {
+			switch (action.getActionType()) {
+			case MOVE_TO:
+				movable.moveTo(((PointAction) action).getPosition());
+				break;
+			case SPEED_FASTER:
+				MatchConstants.clock().multiplyGameSpeed(1.2f);
+				break;
+			case SPEED_SLOWER:
+				MatchConstants.clock().multiplyGameSpeed(1 / 1.2f);
+				break;
+			case FAST_FORWARD:
+				MatchConstants.clock().fastForward();
+				break;
+			default:
+				break;
 			}
 		});
 
@@ -96,9 +94,9 @@ public class MovableTestWindow {
 		{
 			Thread.sleep(3000);
 			// circle of three movables blocking each others path
-			Movable m1 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), PLAYER_0);
-			Movable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
-			Movable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
+			ILogicMovable m1 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), PLAYER_0);
+			ILogicMovable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
+			ILogicMovable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
 
 			m1.moveTo(new ShortPoint2D(52, 65));
 			m2.moveTo(new ShortPoint2D(49, 63));

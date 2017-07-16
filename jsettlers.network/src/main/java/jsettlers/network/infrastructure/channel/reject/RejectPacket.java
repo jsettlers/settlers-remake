@@ -80,8 +80,6 @@ public class RejectPacket extends Packet {
 		RejectPacket other = (RejectPacket) obj;
 		if (errorMessage != other.errorMessage)
 			return false;
-		if (rejectedKey != other.rejectedKey)
-			return false;
-		return true;
+		return rejectedKey == other.rejectedKey;
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -90,6 +90,20 @@ public class ShortPoint2D implements Serializable {
 	}
 
 	/**
+	 * Gets the number of tiles a movable must at least walk to get from this to the other position.
+	 *
+	 * @param x
+	 *            x coordinate of the other position.
+	 * @param y
+	 *            y coordinate of the other position.
+	 * 
+	 * @return The distance a movable needs to walk to get from this to the other position.
+	 */
+	public int getOnGridDistTo(int x, int y) {
+		return getOnGridDist(this.x - x, this.y - y);
+	}
+
+	/**
 	 * Gets the number of tiles a movable must at least walk to get from (0|0) to (dx|dy).
 	 * 
 	 * @param dx
@@ -109,6 +123,10 @@ public class ShortPoint2D implements Serializable {
 		} else {
 			return absDx + absDy;
 		}
+	}
+
+	public static int getOnGridDist(int startX, int startY, int endX, int endY) {
+		return getOnGridDist(endX - startX, endY - startY);
 	}
 
 	public boolean equals(int x, int y) {

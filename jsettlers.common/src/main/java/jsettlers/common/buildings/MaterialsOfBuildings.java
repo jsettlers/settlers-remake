@@ -33,7 +33,7 @@ public final class MaterialsOfBuildings {
 		@SuppressWarnings({ "unchecked" })
 		LinkedList<EBuildingType>[] buildingsForMaterials = new LinkedList[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			buildingsForMaterials[i] = new LinkedList<EBuildingType>();
+			buildingsForMaterials[i] = new LinkedList<>();
 		}
 
 		for (EBuildingType buildingType : EBuildingType.VALUES) {

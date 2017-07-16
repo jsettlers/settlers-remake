@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -29,6 +29,7 @@ import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
+import jsettlers.logic.buildings.stack.multi.MultiMaterialRequestSettings;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
@@ -45,7 +46,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
 	 */
-	private final short[] requestedMaterials = new short[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	private final MultiMaterialRequestSettings requestedMaterials = new MultiMaterialRequestSettings();
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[EWaypointType.VALUES.length];
 
 	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
@@ -74,8 +75,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	@Override
-	public int getRequestedTradingFor(EMaterialType material) {
-		return requestedMaterials[material.ordinal];
+	public int getRequestedTradingFor(EMaterialType materialType) {
+		return requestedMaterials.getRequestedAmount(materialType);
 	}
 
 	@Override
@@ -83,10 +84,10 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return isSeaTrading;
 	}
 
-	public void changeRequestedMaterial(EMaterialType material, int amount, boolean relative) {
+	public void changeRequestedMaterial(EMaterialType materialType, int amount, boolean relative) {
 		long newValue = amount;
 		if (relative) {
-			int old = requestedMaterials[material.ordinal];
+			int old = requestedMaterials.getRequestedAmount(materialType);
 			if (old == Integer.MAX_VALUE) {
 				// infinity stays infinity.
 				return;
@@ -94,7 +95,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			newValue += old;
 		}
 
-		requestedMaterials[material.ordinal] = (short) Math.max(0, Math.min(Short.MAX_VALUE, newValue));
+		requestedMaterials.setRequestedAmount(materialType, (short) Math.max(0, Math.min(Short.MAX_VALUE, newValue)));
 	}
 
 	public void setWaypoint(EWaypointType waypointType, ShortPoint2D position) {
@@ -109,7 +110,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			Arrays.fill(waypoints, null);
 		}
 
-		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
+		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
 
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
 
@@ -118,7 +119,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 	}
 
-	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
+	private ShortPoint2D findClosestReachablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
 		ShortPoint2D waypointBefore = this.pos;
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {
@@ -127,16 +128,14 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			}
 		}
 
-		ShortPoint2D closestReachableLocation = grid.getClosestReachablePosition(waypointBefore, targetPosition, false, (byte) 0,
-				WAYPOINT_SEARCH_RADIUS);
-		return closestReachableLocation;
+		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, null, WAYPOINT_SEARCH_RADIUS);
 	}
 
-	protected boolean isTargetSet() {
+	boolean isTargetSet() {
 		return waypoints[waypoints.length - 1] != null;
 	}
 
-	protected ShortPoint2D[] getWaypoints() {
+	ShortPoint2D[] getWaypoints() {
 		return waypoints;
 	}
 
@@ -160,7 +159,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 
 	@Override
 	protected List<IRequestStack> createWorkStacks() {
-		List<IRequestStack> newStacks = new LinkedList<IRequestStack>();
+		List<IRequestStack> newStacks = new LinkedList<>();
 
 		MultiRequestStackSharedData sharedData = new MultiRequestStackSharedData(requestedMaterials);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,16 +14,13 @@
  *******************************************************************************/
 package jsettlers.algorithms.construction;
 
-import java.util.BitSet;
-import java.util.Set;
-
 import jsettlers.common.buildings.BuildingAreaBitSet;
-import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.common.position.ShortPoint2D;
+
+import java.util.BitSet;
 
 /**
  * Algorithm to calculate the construction marks for the user.
@@ -42,11 +39,14 @@ public final class NewConstructionMarksAlgorithm {
 		this.playerId = player;
 	}
 
-	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final Set<ELandscapeType> landscapeTypes,
-			RelativePoint[] flattenPositions, boolean binaryConstructionMarkValues) {
+	public void calculateConstructMarks(final MapRectangle mapArea, EBuildingType buildingType) {
 		if (lastArea != null) {
 			removeConstructionMarks(lastArea, mapArea);
 		}
+
+		BuildingAreaBitSet buildingArea = buildingType.getBuildingAreaBitSet();
+		boolean binaryConstructionMarkValues = !buildingType.needsFlattenedGround();
+		RelativePoint[] positionsToBeFlattened = buildingType.getBuildingArea();
 
 		// declare local variables
 		final short[] xJumps = buildingArea.xJumps;
@@ -84,7 +84,7 @@ public final class NewConstructionMarksAlgorithm {
 					partitionId = map.getPartitionIdAt(firstPosX, firstPosY);
 
 					if (!map.canPlayerConstructOnPartition(playerId, partitionId)) {
-						continue DX_LOOP;
+						continue;
 					}
 				}
 
@@ -93,10 +93,14 @@ public final class NewConstructionMarksAlgorithm {
 					for (int buildingDy = buildingAreaHeight - 1; buildingDy >= 0; buildingDy--) {
 						int index = buildingDx + buildingDy * buildingAreaWidth;
 
+						// relative position regarding the building
+						int buildingPositionX = buildingDx + xOffsetForBuilding;
+						int buildingPositionY = buildingDy + yOffsetForBuilding;
+
 						// if the position must be free, but isn't
 						if (xJumps[index] != 0
-								&& !map.canUsePositionForConstruction(x + buildingDx + xOffsetForBuilding, y + buildingDy + yOffsetForBuilding,
-										landscapeTypes, partitionId)) {
+								&& !map.canUsePositionForConstruction(x + buildingPositionX, y + buildingPositionY,
+										buildingType.getRequiredGroundTypeAt(buildingPositionX, buildingPositionY), partitionId)) {
 
 							map.setConstructMarking(x, y, false, binaryConstructionMarkValues, null);
 
@@ -109,7 +113,6 @@ public final class NewConstructionMarksAlgorithm {
 									}
 
 									doneSet.set((dx + pruneX) + (line + pruneY) * lineLength);
-
 									map.setConstructMarking(x + pruneX, y + pruneY, false, binaryConstructionMarkValues, null);
 								}
 							}
@@ -120,7 +123,7 @@ public final class NewConstructionMarksAlgorithm {
 				}
 
 				// no bad position found, so set the construction mark
-				map.setConstructMarking(x, y, true, binaryConstructionMarkValues, flattenPositions);
+				map.setConstructMarking(x, y, true, binaryConstructionMarkValues, positionsToBeFlattened);
 			}
 		}
 
@@ -130,13 +133,12 @@ public final class NewConstructionMarksAlgorithm {
 
 	/**
 	 * Removes all construction marks on the screen.
-	 * 
 	 */
 	public void removeConstructionMarks() {
 		if (lastArea != null) {
-			for (ShortPoint2D pos : new MapShapeFilter(lastArea, map.getWidth(), map.getHeight())) {
-				map.setConstructMarking(pos.x, pos.y, false, false, null);
-			}
+			lastArea.stream()
+					.filterBounds(map.getWidth(), map.getHeight())
+					.forEach((x, y) -> map.setConstructMarking(x, y, false, false, null));
 			lastArea = null;
 		}
 	}
@@ -150,10 +152,9 @@ public final class NewConstructionMarksAlgorithm {
 	 *            The area of marks that should be skipped.
 	 */
 	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
-		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
-			if (!notIn.contains(pos)) {
-				map.setConstructMarking(pos.x, pos.y, false, false, null);
-			}
-		}
+		area.stream()
+				.filterBounds(map.getWidth(), map.getHeight())
+				.filter((x, y) -> !notIn.contains(x, y))
+				.forEach((x, y) -> map.setConstructMarking(x, y, false, false, null));
 	}
 }

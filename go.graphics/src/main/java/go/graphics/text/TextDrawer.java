@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -40,9 +40,9 @@ public interface TextDrawer {
 	 */
 	void drawString(float x, float y, String string);
 
-	double getWidth(String string);
+	float getWidth(String string);
 
-	double getHeight(String string);
+	float getHeight(String string);
 
 	void setColor(float red, float green, float blue, float alpha);
 }

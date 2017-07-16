@@ -28,11 +28,11 @@ import jsettlers.common.sound.ISoundable;
  * 
  */
 public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable, IIDable {
-	public EMovableType getMovableType();
+	EMovableType getMovableType();
 
-	public EMovableAction getAction();
+	EMovableAction getAction();
 
-	public EDirection getDirection();
+	EDirection getDirection();
 
 	/**
 	 * In general this method returns the progress of doing the action specified by {@link #getAction()}
@@ -42,7 +42,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * 
 	 * @return The value is in the range of [0,1)
 	 */
-	public float getMoveProgress();
+	float getMoveProgress();
 
 	/**
 	 * This method returns the material the IMovable is currently carrying.
@@ -53,22 +53,21 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * 
 	 * @return
 	 */
-	public EMaterialType getMaterial();
+	EMaterialType getMaterial();
 
 	/**
 	 * Get Position of a movable
 	 * 
 	 * @return position on grid
 	 */
-	@Override
-	public ShortPoint2D getPos();
+	@Override ShortPoint2D getPos();
 
 	/**
 	 * Used to get health of a movable.
 	 * 
 	 * @return health of a movable
 	 */
-	public float getHealth();
+	float getHealth();
 
 	/**
 	 * Returns alternating true and false on every step.

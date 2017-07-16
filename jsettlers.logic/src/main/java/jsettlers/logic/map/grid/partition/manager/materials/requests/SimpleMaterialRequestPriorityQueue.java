@@ -39,8 +39,8 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 	}
 
 	@Override
-	protected MaterialRequestObject getRequestForPrio(int prio) {
-		return super.findRequestInQueue(queues[prio]);
+	protected MaterialRequestObject getRequestForPriority(int priority) {
+		return super.findRequestInQueue(queues[priority]);
 	}
 
 	@Override
@@ -95,8 +95,6 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		if (getClass() != obj.getClass())
 			return false;
 		SimpleMaterialRequestPriorityQueue other = (SimpleMaterialRequestPriorityQueue) obj;
-		if (!Arrays.equals(queues, other.queues))
-			return false;
-		return true;
+		return Arrays.equals(queues, other.queues);
 	}
 }

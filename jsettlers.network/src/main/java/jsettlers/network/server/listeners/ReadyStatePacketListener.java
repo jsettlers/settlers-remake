@@ -34,7 +34,7 @@ public class ReadyStatePacketListener extends PacketChannelListener<BooleanMessa
 	private final Player player;
 
 	public ReadyStatePacketListener(IServerManager serverManager, Player player) {
-		super(ENetworkKey.CHANGE_READY_STATE, new GenericDeserializer<BooleanMessagePacket>(BooleanMessagePacket.class));
+		super(ENetworkKey.CHANGE_READY_STATE, new GenericDeserializer<>(BooleanMessagePacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

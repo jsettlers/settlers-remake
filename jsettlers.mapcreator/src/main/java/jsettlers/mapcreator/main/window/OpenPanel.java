@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,8 +20,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -71,10 +71,10 @@ public class OpenPanel extends JPanel {
 	/**
 	 * Constructor
 	 * 
-	 * @param doubleclickListener
+	 * @param doubleClickListener
 	 *            Gets called when an entry is double clicked, can be <code>null</code>
 	 */
-	public OpenPanel(final ActionListener doubleclickListener) {
+	public OpenPanel(final ActionListener doubleClickListener) {
 		setLayout(new BorderLayout());
 
 		sortMaps();
@@ -100,14 +100,14 @@ public class OpenPanel extends JPanel {
 		});
 
 		this.mapsAvailable = maps.toArray(new MapLoader[maps.size()]);
-		this.mapList = new JList<MapLoader>(listModelFiltered);
+		this.mapList = new JList<>(listModelFiltered);
 		mapList.setCellRenderer(new MapListCellRenderer());
 		mapList.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					if (doubleclickListener != null) {
-						doubleclickListener.actionPerformed(new ActionEvent(e, 0, "dblclick"));
+					if (doubleClickListener != null) {
+						doubleClickListener.actionPerformed(new ActionEvent(e, 0, "dblclick"));
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public class OpenPanel extends JPanel {
 	 * Search has changed, update the list
 	 */
 	protected void searchChanged() {
-		String search = txtSearch.getText().toLowerCase();
+		String search = txtSearch.getText().toLowerCase(Locale.ENGLISH);
 
 		if (search.isEmpty()) {
 			listModelFiltered.clear();
@@ -152,32 +152,26 @@ public class OpenPanel extends JPanel {
 	 * @return true if yes, false if no
 	 */
 	private boolean matchesSearch(MapLoader m, String search) {
-		if (m.getMapName().toLowerCase().contains(search)) {
+		if (m.getMapName().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		if (m.getDescription().toLowerCase().contains(search)) {
+		if (m.getDescription().toLowerCase(Locale.ENGLISH).contains(search)) {
 			return true;
 		}
-		if (m.getMapId().toLowerCase().contains(search)) {
-			return true;
-		}
+		return m.getMapId().toLowerCase(Locale.ENGLISH).contains(search);
 
-		return false;
 	}
 
 	/**
 	 * Order the maps
 	 */
 	protected void sortMaps() {
-		Collections.sort(maps, new Comparator<MapLoader>() {
-			@Override
-			public int compare(MapLoader mapLoader1, MapLoader mapLoader2) {
-				int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
-				if (nameComp != 0) {
-					return nameComp;
-				} else {
-					return mapLoader1.toString().compareTo(mapLoader2.toString());
-				}
+		Collections.sort(maps, (mapLoader1, mapLoader2) -> {
+			int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
+			if (nameComp != 0) {
+				return nameComp;
+			} else {
+				return mapLoader1.toString().compareTo(mapLoader2.toString());
 			}
 		});
 	}
@@ -188,5 +182,4 @@ public class OpenPanel extends JPanel {
 	public MapLoader getSelectedMap() {
 		return mapList.getSelectedValue();
 	}
-
 }

@@ -14,13 +14,14 @@
  *******************************************************************************/
 package jsettlers.common.map.shapes;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class gives a fast lookup (in O(1)) for contains if a MapArea is given by a list of n positions.<br>
@@ -99,7 +100,7 @@ public final class FreeMapArea implements IMapArea {
 	}
 
 	private final static ArrayList<ShortPoint2D> convertRelative(ShortPoint2D pos, RelativePoint[] relativePoints) {
-		ArrayList<ShortPoint2D> list = new ArrayList<ShortPoint2D>();
+		ArrayList<ShortPoint2D> list = new ArrayList<>();
 
 		for (RelativePoint relative : relativePoints) {
 			list.add(relative.calculatePoint(pos));
@@ -228,6 +229,11 @@ public final class FreeMapArea implements IMapArea {
 			iterator.remove();
 			freeMapArea.setPosition(currPos, false);
 		}
-
 	}
+
+	@Override
+	public CoordinateStream stream() {
+		return CoordinateStream.fromList(positions);
+	}
+
 }

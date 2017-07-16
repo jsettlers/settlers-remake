@@ -15,7 +15,7 @@
 package jsettlers.main.swing.menu.joinpanel.slots.factories;
 
 import jsettlers.common.ai.EPlayerType;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.main.swing.menu.joinpanel.slots.PlayerSlot;
 
@@ -39,7 +39,7 @@ public class HostOfMultiplayerPlayerSlotFactory implements IPlayerSlotFactory {
 					EPlayerType.HUMAN,
 					EPlayerType.AI_VERY_HARD
 			});
-			playerSlot.setPlayerType(EPlayerType.AI_VERY_HARD);
+			playerSlot.setPlayerType(EPlayerType.AI_VERY_HARD, false);
 			playerSlot.setReadyButtonEnabled(false);
 			playerSlot.setReady(true);
 		}

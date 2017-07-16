@@ -1,10 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2015 - 2017
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *******************************************************************************/
 package jsettlers.ai.highlevel;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.coordinates.CoordinateStream;
+import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * This is a set of points on the map. It is optimized for range queries.
@@ -27,7 +43,22 @@ public class AiPositions implements IMapArea {
 	 *
 	 */
 	public interface AiPositionFilter {
-		public boolean contains(int x, int y);
+		boolean contains(int x, int y);
+	}
+
+	public static class CombinedAiPositionFilter implements AiPositionFilter {
+		private AiPositionFilter firstFilter;
+		private AiPositionFilter secondFilter;
+
+		public CombinedAiPositionFilter(AiPositionFilter firstFilter, AiPositionFilter secondFilter) {
+			this.firstFilter = firstFilter;
+			this.secondFilter = secondFilter;
+		}
+
+		@Override
+		public boolean contains(int x, int y) {
+			return firstFilter.contains(x, y) && secondFilter.contains(x, y);
+		}
 	}
 
 	/**
@@ -37,7 +68,7 @@ public class AiPositions implements IMapArea {
 	 *
 	 */
 	public interface PositionRater {
-		public static final int RATE_INVALID = Integer.MAX_VALUE;
+		int RATE_INVALID = Integer.MAX_VALUE;
 
 		/**
 		 * Rates a given position.
@@ -48,7 +79,7 @@ public class AiPositions implements IMapArea {
 		 *            The best rating found so far, you can return {@link #RATE_INVALID} if yours is worse.
 		 * @return The rating or {@link #RATE_INVALID} if this position is not possible.
 		 */
-		public abstract int rate(int x, int y, int currentBestRating);
+		int rate(int x, int y, int currentBestRating);
 	}
 
 	private class PositionsIterator implements Iterator<ShortPoint2D> {
@@ -70,7 +101,6 @@ public class AiPositions implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-
 	}
 
 	private boolean sorted = false;
@@ -99,6 +129,16 @@ public class AiPositions implements IMapArea {
 		sorted = false;
 	}
 
+	public void addAllNoCollision(AiPositions otherAiPositions) {
+		int newSize = size + otherAiPositions.size;
+		if (newSize > points.length) {
+			resizeTo(newSize * 2);
+		}
+		System.arraycopy(otherAiPositions.points, 0, points, size, otherAiPositions.size);
+		size = newSize;
+		sorted = false;
+	}
+
 	public void remove(int x, int y) {
 		ensureSorted();
 		int index = indexOf(x, y);
@@ -117,7 +157,8 @@ public class AiPositions implements IMapArea {
 		return contains(position.x, position.y);
 	}
 
-	private boolean contains(int x, int y) {
+	@Override
+	public boolean contains(int x, int y) {
 		ensureSorted();
 		return indexOf(x, y) >= 0;
 	}
@@ -160,11 +201,12 @@ public class AiPositions implements IMapArea {
 		points = new int[MIN_SIZE];
 	}
 
-	public ShortPoint2D getNearestPoint(ShortPoint2D point) {
-		return getNearestPoint(point, Integer.MAX_VALUE, null);
+	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance) {
+		return getNearestPoint(center, maxDistance, null);
 	}
 
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
+		ensureSorted();
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
 		if (median >= size) {
@@ -201,12 +243,20 @@ public class AiPositions implements IMapArea {
 		return resY >= 0 ? new ShortPoint2D(resX, resY) : null;
 	}
 
+	public ShortPoint2D get(int index) {
+		return new ShortPoint2D(unpackX(points[index]), unpackY(points[index]));
+	}
+
 	private int findClosestIndex(int x, int y) {
 		return Math.abs(indexOf(x, y));
 	}
 
 	public int size() {
 		return size;
+	}
+
+	public boolean isEmpty() {
+		return size <= 0;
 	}
 
 	@Override
@@ -244,5 +294,23 @@ public class AiPositions implements IMapArea {
 		}
 
 		return currentBest;
+	}
+
+	public CoordinateStream stream() {
+		return new CoordinateStream() {
+			@Override
+			public boolean iterate(IBooleanCoordinateFunction function) {
+				for (int i = 0; i < size; i++) {
+					int packedCoordinate = points[i];
+					int x = unpackX(packedCoordinate);
+					int y = unpackY(packedCoordinate);
+
+					if (!function.apply(x, y)) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
 	}
 }

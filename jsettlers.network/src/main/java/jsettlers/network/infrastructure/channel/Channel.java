@@ -56,7 +56,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final ByteArrayOutputStream byteBufferOutStream = new ByteArrayOutputStream();
 	private final DataOutputStream bufferDataOutStream = new DataOutputStream(byteBufferOutStream);
 
-	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<ENetworkKey, IChannelListener>();
+	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<>();
 
 	private final PingPacketListener pingPacketListener;
 
@@ -76,7 +76,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		this(new ConsoleLogger(socket.toString()), socket);
 	}
 
-	public Channel(String host, int port) throws UnknownHostException, IOException {
+	public Channel(String host, int port) throws IOException {
 		this(ISocketFactory.DEFAULT_FACTORY.generateSocket(host, port));
 	}
 

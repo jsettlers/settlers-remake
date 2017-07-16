@@ -28,12 +28,12 @@ public interface IBuildingOccupier {
 	 * 
 	 * @return The type.
 	 */
-	public IMovable getMovable();
+	IMovable getMovable();
 
 	/**
 	 * The place the occupyer was placed
 	 * 
 	 * @return The place, as given by the building type.
 	 */
-	public OccupierPlace getPlace();
+	OccupierPlace getPlace();
 }

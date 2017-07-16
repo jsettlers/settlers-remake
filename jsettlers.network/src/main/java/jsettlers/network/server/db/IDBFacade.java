@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.network.server.db;
 
+import java.util.Collection;
 import java.util.List;
 
 import jsettlers.network.server.match.EPlayerState;

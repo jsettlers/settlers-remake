@@ -20,7 +20,7 @@ package jsettlers.common.menu;
  * @author michael
  */
 public interface IJoiningGameListener {
-	public void joinProgressChanged(EProgressState state, float progress);
+	void joinProgressChanged(EProgressState state, float progress);
 
 	void gameJoined(IJoinPhaseMultiplayerGameConnector connector);
 }

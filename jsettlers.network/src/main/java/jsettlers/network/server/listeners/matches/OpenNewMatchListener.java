@@ -39,7 +39,7 @@ public class OpenNewMatchListener extends PacketChannelListener<OpenNewMatchPack
 	private final Player player;
 
 	public OpenNewMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new GenericDeserializer<OpenNewMatchPacket>(OpenNewMatchPacket.class));
+		super(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new GenericDeserializer<>(OpenNewMatchPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

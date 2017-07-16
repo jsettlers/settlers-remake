@@ -1,9 +1,5 @@
 apply plugin: 'application'
 
-compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
 
 startScripts {
     applicationName = "MapCreator"
@@ -16,6 +12,8 @@ jar {
         attributes 'Main-Class': mainClassName
     }
 }
+
+
 
 task releaseJar(type: Jar) {
     baseName = 'MapCreator'

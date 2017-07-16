@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015, 2016
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,6 +37,13 @@ public final class MatchConstants {
 	public static boolean ENABLE_ALL_PLAYER_SELECTION = false;
 
 	public static boolean ENABLE_FOG_OF_WAR_DISABLING = false;
+
+	/**
+	 * NOTE: this value has only an effect if it's changed before the MainGrid is created! IT MUSTN'T BE CHANGED AFTER A MAIN GRID HAS BEEN CREATED <br>
+	 * if false, no debug coloring is possible (but saves memory) <br>
+	 * if true, debug coloring is possible.
+	 */
+	public static boolean ENABLE_DEBUG_COLORS = true;
 
 	private MatchConstants() {
 	}

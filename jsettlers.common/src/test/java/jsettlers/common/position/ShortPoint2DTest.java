@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.common.position;
 
-import static org.junit.Assert.assertEquals;
-import jsettlers.common.map.shapes.HexBorderArea;
-
+import jsettlers.common.map.shapes.HexGridArea;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ShortPoint2DTest {
 
@@ -25,13 +25,11 @@ public class ShortPoint2DTest {
 	public void testGetOnGridDist() {
 		ShortPoint2D center = new ShortPoint2D(100, 100);
 
-		for (short i = 1; i < 30; i++) {
-			HexBorderArea border = new HexBorderArea(center, i);
-
-			for (ShortPoint2D pos : border) {
-				assertEquals(i, pos.getOnGridDistTo(center));
-				assertEquals(pos.getOnGridDistTo(center), i);
-			}
+		for (int radius = 1; radius < 30; radius++) {
+			int expectedRadius = radius;
+			HexGridArea.streamBorder(center.x,center.y, radius).forEach((x,y)->{
+				assertEquals(expectedRadius, center.getOnGridDistTo(x,y));
+			});
 		}
 	}
 

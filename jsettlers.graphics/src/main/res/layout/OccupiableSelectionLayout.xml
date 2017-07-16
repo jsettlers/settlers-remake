@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE element SYSTEM "layout.dtd">
-<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuidlingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
+<element class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.BuildingBackgroundPanel" x="9" y="219" maxx="127" maxy="435" id="background">
 	<element class="SimpleActionButton" x="107" y="221" maxx="125" maxy="239">
 		<action action="ASK_DESTROY" />
 		<image type="GUI" file="3" sequence="198" />

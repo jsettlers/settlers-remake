@@ -81,14 +81,12 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 				return false;
 		} else if (!position.equals(other.position))
 			return false;
-		if (waypointType != other.waypointType)
-			return false;
-		return true;
+		return waypointType == other.waypointType;
 	}
 
 	@Override
 	public String toString() {
 		return "SetTradingWaypointGuiTask [waypointType=" + waypointType + ", position=" + position + ", getBuildingPos()=" + getBuildingPos()
-				+ ", getGuiAction()=" + getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+				+ ", getGuiAction()=" + getGuiAction() + ", getPlayer()=" + getPlayerId() + "]";
 	}
 }

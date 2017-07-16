@@ -28,7 +28,7 @@ import jsettlers.network.infrastructure.channel.IDeserializingable;
  */
 public class EmptyPacket extends Packet {
 
-	public static final IDeserializingable<EmptyPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<EmptyPacket>(EmptyPacket.class);
+	public static final IDeserializingable<EmptyPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<>(EmptyPacket.class);
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {

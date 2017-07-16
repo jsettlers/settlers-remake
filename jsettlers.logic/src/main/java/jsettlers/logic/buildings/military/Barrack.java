@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -30,7 +30,7 @@ import jsettlers.logic.player.Player;
 
 /**
  * This is the barrack building. It requests weapons and bearers to make them to soldiers.
- * 
+ *
  * @author Andreas Eberle
  */
 public final class Barrack extends WorkAreaBuilding implements IBarrack, IRequestStackListener {
@@ -60,15 +60,19 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 	}
 
 	private EMovableType getSoldierType(EMaterialType materialType) {
+		return getPlayer().getMannaInformation().getSoldierMovableFor(getSoldierTypeForMaterialType(materialType));
+	}
+
+	private ESoldierType getSoldierTypeForMaterialType(EMaterialType materialType) {
 		switch (materialType) {
-		case SWORD:
-			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.SWORDSMAN);
-		case BOW:
-			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.BOWMAN);
-		case SPEAR:
-			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.PIKEMAN);
-		default:
-			return null;
+			case SWORD:
+				return ESoldierType.SWORDSMAN;
+			case BOW:
+				return ESoldierType.BOWMAN;
+			case SPEAR:
+				return ESoldierType.PIKEMAN;
+			default:
+				throw new IllegalArgumentException("MaterialType: " + materialType + " is not a tool of a soldier.");
 		}
 	}
 
