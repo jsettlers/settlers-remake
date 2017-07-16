@@ -379,26 +379,6 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		}
 	}
 
-	private void addShipRequestStacks(UIPanel materialArea, ArrayList<EMaterialType> list) {
-		// hardcoded...
-		float buttonWidth = 18f / (127 - 9);
-		float buttonSpace = 12f / (127 - 9);
-
-		float requestX = buttonSpace;
-
-		while (list.size() > 0) {
-			EMaterialType material = list.get(0);
-			int count = 0;
-			while (list.size() > 0 && list.get(0) == material) {
-				count++;
-				list.remove(0);
-			}
-			MaterialDisplay display = new MaterialDisplay(material, count, -1);
-			materialArea.addChild(display, requestX, 0, requestX + buttonWidth, 1);
-			requestX += buttonSpace + buttonWidth;
-		}
-	}
-
 	/**
 	 * A button with a number of materials below it.
 	 *
@@ -634,10 +614,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		loadPriorityButton(layout.background, layout.priority, state);
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
 
-		ArrayList<EMaterialType> list = building.getRemainingOrder();
-		if (list != null) {
+		if (state.isWorkingDockyard()) {
 			layout.materialText.setText(Labels.getString("materials_required"));
-			addShipRequestStacks(layout.materialArea, list);
+			addRequestAndOfferStacks(layout.materialArea, state);
 		}
 		return layout._root;
 	}

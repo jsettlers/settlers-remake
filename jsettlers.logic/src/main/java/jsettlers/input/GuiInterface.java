@@ -27,7 +27,6 @@ import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.menu.IMapInterfaceConnector;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -79,7 +78,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.trading.TradingBuilding;
-import jsettlers.logic.buildings.workers.WorkerBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IDebugable;
@@ -454,21 +453,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (MapCircle.getDistance(building.getPosition().x, building.getPosition().y,
 						dockPosition.getPosition().x, dockPosition.getPosition().y) > 15) {
 					connector.playSound(116, 1); // this dock position would be too far away
-				} else {
-					if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-						if (!((WorkerBuilding) building).setDock(dockPosition)) {
-							connector.playSound(116, 1); // the dock cannot be moved when a ship is tied to it
-						}
-					} else if (building.getBuildingType() == EBuildingType.HARBOR) {
-						TradingBuilding harbor = (TradingBuilding) building;
-						if (harbor.isSelected()) {
-							harbor.drawWaypointLine(false);
-						}
-						harbor.setDock(dockPosition);
-						if (harbor.isSelected()) {
-							harbor.drawWaypointLine(true);
-						}
- 					}
+				} else if (building instanceof DockyardBuilding) {
+					if (!((DockyardBuilding) building).setDock(dockPosition)) {
+						connector.playSound(116, 1); // the dock cannot be moved when a ship is tied to it
+					}
+				} else if (building.getBuildingType() == EBuildingType.HARBOR) {
+					TradingBuilding harbor = (TradingBuilding) building;
+					if (harbor.isSelected()) {
+						harbor.drawWaypointLine(false);
+					}
+					harbor.setDock(dockPosition);
+					if (harbor.isSelected()) {
+						harbor.drawWaypointLine(true);
+					}
 				}
 			}
 		}
@@ -752,33 +749,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void makeFerry() {
-		WorkerBuilding dockyard = (WorkerBuilding) currentSelection.get(0);
-		if (dockyard.getOrderedMaterial() != null) {
-			return;
-		}
-		EMaterialType[] material = new EMaterialType[] {
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.IRON};
-		dockyard.setOrder(material, EMovableType.FERRY);
+		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
+		dockyard.orderFerry();
 	}
 
 	private void makeCargoBoat() {
-		WorkerBuilding dockyard = (WorkerBuilding) currentSelection.get(0);
-		if (dockyard.getOrderedMaterial() != null) {
-			return;
-		}
-		EMaterialType[] material = new EMaterialType[] {
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.PLANK,
-				EMaterialType.IRON};
-		dockyard.setOrder(material, EMovableType.CARGO_BOAT);
+		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
+		dockyard.orderCargoBoat();
 	}
 
 	private void unloadFerries() {

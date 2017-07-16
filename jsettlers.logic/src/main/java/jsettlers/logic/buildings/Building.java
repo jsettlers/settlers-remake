@@ -31,7 +31,6 @@ import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.player.IPlayerable;
@@ -51,6 +50,7 @@ import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.buildings.trading.HarborBuilding;
 import jsettlers.logic.buildings.trading.MarketBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.ResourceBuilding;
@@ -94,7 +94,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private short remainingMaterialActions = 0;
 	private List<? extends IRequestStack> stacks;
-	private ShortPoint2D workingCenter = null;
 
 	private transient boolean selected;
 
@@ -443,8 +442,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		System.out.println("building killed");
 
 		if (grid != null) {
-			if (this.type == EBuildingType.DOCKYARD && ((WorkerBuilding) this).getDock() != null) {
-				((WorkerBuilding) this).removeDock();
+			if (this.type == EBuildingType.DOCKYARD && ((DockyardBuilding) this).getDock() != null) {
+				((DockyardBuilding) this).removeDock();
 			}
 			grid.removeBuildingAt(pos);
 			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
@@ -651,11 +650,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	public ArrayList<EMaterialType> getRemainingOrder() {
-		return ((WorkerBuilding) this).getRemainingOrder();
-	}
-
-		public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+    public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
 			return new BigLivinghouse(player, position, buildingsGrid);
@@ -680,8 +675,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case WEAPONSMITH:
 		case WATERWORKS:
 		case WINEGROWER:
-		case DOCKYARD:
 			return new WorkerBuilding(type, player, position, buildingsGrid);
+
+		case DOCKYARD:
+			return new DockyardBuilding(type, player, position, buildingsGrid);
 
 		case MILL:
 			return new MillBuilding(type, player, position, buildingsGrid);

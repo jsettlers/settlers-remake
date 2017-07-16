@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.common.buildings;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.map.partition.IStockSettings;
@@ -81,13 +80,6 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * @return Return true if this building cannot work.
 	 */
 	boolean cannotWork();
-
-	/**
-	 * Gives the remaining material necessary to fulfill the ship building order.
-	 *
-	 * @return Return list of required material.
-	 */
-	ArrayList<EMaterialType> getRemainingOrder();
 
 	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.

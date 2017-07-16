@@ -340,7 +340,17 @@ public class BuildingState {
 		return isSeaTrading;
 	}
 
+	/**
+	 * @return <code>true</code> if this is a dockyard building
+	 */
 	public boolean isDockyard() {
+		return isDockyard;
+	}
+
+	/**
+	 * @return <code>true</code> if this dockyard is currently building a ship.
+	 */
+	public boolean isWorkingDockyard() {
 		return isDockyard;
 	}
 }

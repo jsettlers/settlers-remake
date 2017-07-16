@@ -20,8 +20,6 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EDirection;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.IBuildingsGrid;
@@ -31,7 +29,6 @@ import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 /**
@@ -44,12 +41,6 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	private static final long serialVersionUID = 7050284039312172046L;
 
 	private IManageableWorker worker;
-	private EMaterialType[] order = null;
-	private int orderPointer = 0;
-	private EMovableType orderedShipType = null;
-	private int shipBuildingSteps = 1;
-	private Movable ship = null;
-	private DockPosition dockPosition = null;
 
 	/**
 	 * Points where we need to clean up pigs or donkeys.
@@ -160,93 +151,6 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		cleanupPositions.add(new Tuple<>(pos, objectType));
 	}
 
-	@Override
-	public EMaterialType getOrderedMaterial() {
-		if (this.order != null && this.orderPointer < this.order.length) {
-			return this.order[this.orderPointer];
-		}
-		return null;
-	}
-
-	@Override
-	public void setOrder(EMaterialType[] list, EMovableType type) {
-		if (list == null) {
-			return;
-		}
-		this.order = list;
-		this.orderPointer = 0;
-		this.orderedShipType = type;
-		this.shipBuildingSteps = 6 * list.length;
-	}
-
-	@Override
-	public ArrayList<EMaterialType> getRemainingOrder() {
-		if (order == null) {
-			return null;
-		}
-		ArrayList<EMaterialType> list = new ArrayList<>();
-		for (int i = this.orderPointer; i < this.order.length; i++) {
-			list.add(this.order[i]);
-		}
-		return list;
-	}
-
-	@Override
-	public void reduceOrder() {
-		this.orderPointer++;
-	}
-
-	@Override
-	public void buildShipAction() {
-		if (this.ship == null) {
-			ShortPoint2D position = this.dockPosition.getDirection().getNextHexPoint(this.dockPosition.getPosition(), 5);
-			// push old ship
-			this.ship = (Movable) super.grid.getMovableGrid().getMovableAt(position.x, position.y);
-			if (this.ship != null) {
-				this.ship.leavePosition();
-			}
-			// make new ship
-			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType,
-					position, super.getPlayer());
-			EDirection direction = dockPosition.getDirection().rotateRight(1);
-			this.ship.setDirection(direction);
-			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
-		} else {
-			this.ship.increaseStateProgress((float) (1./shipBuildingSteps));
-			if (this.ship.getStateProgress() >= .99) {
-				this.ship = null;
-				this.order = null;
-			}
-		}
-	}
-
-	public boolean setDock(DockPosition dockPosition) {
-		if (this.type != EBuildingType.DOCKYARD) {
-			return false;
-		}
-		if (this.dockPosition != null) { // replace dock
-			if (this.ship != null) {
-				return false; // do not change the dock when a ship is tied to it
-			}
-			this.grid.setDock(this.dockPosition, false, this.getPlayer());
-		}
-		this.dockPosition = dockPosition;
-		this.grid.setDock(dockPosition, true, this.getPlayer());
-		return true;
-	}
-
-	public DockPosition getDock() {
-		return this.dockPosition;
-	}
-
-	public void removeDock() {
-		if (this.dockPosition == null) {
-			return;
-		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayer());
-		this.dockPosition = null;
-	}
-
 	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
 		for (IRequestStack stack : getStacks()) {
 			if (stack.getMaterialType() == material) {
@@ -256,5 +160,19 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public DockPosition getDock() {
+		return null;
+	}
+
+	@Override
+	public EMaterialType getOrderedMaterial() {
+		return null;
+	}
+
+	@Override
+	public void reduceOrder() {
 	}
 }
