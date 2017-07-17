@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -142,7 +141,7 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	}
 
 	@Override
-	public ArrayList<EMaterialType> getRemainingOrder() {
+	public List<EMaterialType> getRemainingOrder() {
 		return this.getRemainingOrder();
 	}
 }
