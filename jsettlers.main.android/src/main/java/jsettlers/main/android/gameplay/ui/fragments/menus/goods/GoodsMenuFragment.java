@@ -48,6 +48,9 @@ public class GoodsMenuFragment extends Fragment {
 		BottomSheetUtils.setupViewPager(viewPager);
 		viewPager.setAdapter(new GoodsPagerAdapter(getChildFragmentManager()));
 		circleIndicator.setViewPager(viewPager);
+
+		// temporary fix to show the global stock menu first as the others havent been implemented yet
+		viewPager.setCurrentItem(4);
 	}
 
 	private class GoodsPagerAdapter extends FragmentPagerAdapter {
