@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.newmap;
 
-import jsettlers.logic.player.PlayerSetting;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,6 +21,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
+
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This is a map file header.
@@ -54,7 +54,8 @@ public class MapFileHeader {
 	private static final short VERSION_MAP_ID_INTRODUCED = 2;
 	private static final short VERSION_DATE_ALWAYS_SAVED = 3;
 	private static final short VERSION_PLAYER_CONFIGURATIONS = 4;
-	private static final short VERSION = 4;
+	private static final short VERSION_PLAYER_ID = 5;
+	private static final short VERSION = 5;
 
 	private static final byte[] START_BYTES = new byte[] {
 			'M', 'A', 'P', ' '
@@ -73,6 +74,7 @@ public class MapFileHeader {
 	private final PlayerSetting[] playerSettings;
 	private final Date creationDate;
 	private final short[] previewImage;
+	private final Byte playerId;
 
 	/**
 	 * The content type of a map file.
@@ -84,19 +86,18 @@ public class MapFileHeader {
 		SAVED_SINGLE
 	}
 
-	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
-			short maxPlayers, Date date, short[] previewImage) {
+	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers, short maxPlayers, Date date, short[] previewImage) {
 		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, PlayerSetting.getUnspecifiedPlayerSettings(maxPlayers),
-				date, previewImage);
+				date, previewImage, null);
 	}
 
-	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers,
-						 PlayerSetting[] playerConfigurations, Date date, short[] previewImage) {
-		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, previewImage);
+	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minPlayers, PlayerSetting[] playerConfigurations, Date date,
+			short[] previewImage, Byte playerId) {
+		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minPlayers, playerConfigurations, date, previewImage, playerId);
 	}
 
-	private MapFileHeader(MapType type, String name, String mapId, String baseMapId, String description, short width, short height, short minPlayers,
-			PlayerSetting[] playerSettings, Date date, short[] previewImage) {
+	private MapFileHeader(MapType type, String name, String mapId, String baseMapId, String description, short width, short height, short minPlayers, PlayerSetting[] playerSettings, Date date,
+			short[] previewImage, Byte playerId) {
 		if (previewImage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
 			throw new IllegalArgumentException("bg image has wrong size.");
 		}
@@ -111,6 +112,7 @@ public class MapFileHeader {
 		this.playerSettings = playerSettings;
 		this.creationDate = date;
 		this.previewImage = previewImage;
+		this.playerId = playerId;
 	}
 
 	public MapType getType() {
@@ -153,6 +155,10 @@ public class MapFileHeader {
 		return playerSettings;
 	}
 
+	public Byte getPlayerId() {
+		return playerId;
+	}
+
 	public void writeTo(OutputStream stream) throws IOException {
 		DataOutputStream out = new DataOutputStream(stream);
 		out.write(START_BYTES);
@@ -168,8 +174,8 @@ public class MapFileHeader {
 		out.writeShort(minPlayers);
 
 		out.writeShort(playerSettings.length);
-		for (int i = 0; i < playerSettings.length; i++) {
-			playerSettings[i].writeTo(out);
+		for (PlayerSetting playerSetting : playerSettings) {
+			playerSetting.writeTo(out);
 		}
 
 		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
@@ -177,6 +183,7 @@ public class MapFileHeader {
 		}
 
 		out.writeLong(creationDate.getTime());
+		out.writeByte(playerId == null ? -1 : playerId);
 		out.flush();
 	}
 
@@ -184,7 +191,7 @@ public class MapFileHeader {
 	 * Reads a new file header from the stream.
 	 *
 	 * @param stream
-	 *            The stream to read from.
+	 * 		The stream to read from.
 	 * @return
 	 */
 	public static MapFileHeader readFromStream(InputStream stream) throws IOException {
@@ -241,7 +248,13 @@ public class MapFileHeader {
 				date = new Date(in.readLong());
 			}
 
-			return new MapFileHeader(type, mapName, mapId, baseMapId, description, width, height, minPlayers, playerConfigurations, date, bgImage);
+			Byte playerId = null;
+			if (version >= VERSION_PLAYER_ID) {
+				byte bytePlayerId = in.readByte();
+				playerId = bytePlayerId == -1 ? null : bytePlayerId;
+			}
+
+			return new MapFileHeader(type, mapName, mapId, baseMapId, description, width, height, minPlayers, playerConfigurations, date, bgImage, playerId);
 
 		} catch (Throwable t) {
 			if (t instanceof IOException) {

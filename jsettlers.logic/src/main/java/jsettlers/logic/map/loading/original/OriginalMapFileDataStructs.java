@@ -20,12 +20,12 @@ import java.util.Vector;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -131,82 +131,82 @@ public class OriginalMapFileDataStructs {
 			return EMapStartResources.HIGH_GOODS;
 		}
 
-		public static List<MapObject> generateStackObjects(EMapStartResources mapStartResources) {
-			List<MapObject> goods = new Vector<>();
+		public static List<MapDataObject> generateStackObjects(EMapStartResources mapStartResources) {
+			List<MapDataObject> goods = new Vector<>();
 			switch (mapStartResources) {
 			case LOW_GOODS:
-				goods.add(new StackObject(EMaterialType.PLANK, 6));
-				goods.add(new StackObject(EMaterialType.PLANK, 6));
-				goods.add(new StackObject(EMaterialType.STONE, 6));
-				goods.add(new StackObject(EMaterialType.STONE, 6));
-				goods.add(new StackObject(EMaterialType.BLADE, 5));
-				goods.add(new StackObject(EMaterialType.HAMMER, 6));
-				goods.add(new StackObject(EMaterialType.AXE, 3));
-				goods.add(new StackObject(EMaterialType.PICK, 2));
-				goods.add(new StackObject(EMaterialType.SAW, 1));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.BLADE, 5));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 6));
+				goods.add(new StackMapDataObject(EMaterialType.AXE, 3));
+				goods.add(new StackMapDataObject(EMaterialType.PICK, 2));
+				goods.add(new StackMapDataObject(EMaterialType.SAW, 1));
 				break;
 			case MEDIUM_GOODS:
-				goods.add(new StackObject(EMaterialType.PLANK, 7));
-				goods.add(new StackObject(EMaterialType.PLANK, 6));
-				goods.add(new StackObject(EMaterialType.PLANK, 6));
-				goods.add(new StackObject(EMaterialType.PLANK, 6));
-				goods.add(new StackObject(EMaterialType.STONE, 7));
-				goods.add(new StackObject(EMaterialType.STONE, 6));
-				goods.add(new StackObject(EMaterialType.STONE, 6));
-				goods.add(new StackObject(EMaterialType.STONE, 6));
-				goods.add(new StackObject(EMaterialType.COAL, 8));
-				goods.add(new StackObject(EMaterialType.COAL, 7));
-				goods.add(new StackObject(EMaterialType.IRONORE, 5));
-				goods.add(new StackObject(EMaterialType.FISH, 3));
-				goods.add(new StackObject(EMaterialType.BREAD, 7));
-				goods.add(new StackObject(EMaterialType.MEAT, 5));
-				goods.add(new StackObject(EMaterialType.BLADE, 5));
-				goods.add(new StackObject(EMaterialType.BLADE, 5));
-				goods.add(new StackObject(EMaterialType.HAMMER, 8));
-				goods.add(new StackObject(EMaterialType.HAMMER, 7));
-				goods.add(new StackObject(EMaterialType.AXE, 6));
-				goods.add(new StackObject(EMaterialType.PICK, 4));
-				goods.add(new StackObject(EMaterialType.SAW, 2));
-				goods.add(new StackObject(EMaterialType.SCYTHE, 1));
-				goods.add(new StackObject(EMaterialType.FISHINGROD, 1));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 7));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 7));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 8));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 7));
+				goods.add(new StackMapDataObject(EMaterialType.IRONORE, 5));
+				goods.add(new StackMapDataObject(EMaterialType.FISH, 3));
+				goods.add(new StackMapDataObject(EMaterialType.BREAD, 7));
+				goods.add(new StackMapDataObject(EMaterialType.MEAT, 5));
+				goods.add(new StackMapDataObject(EMaterialType.BLADE, 5));
+				goods.add(new StackMapDataObject(EMaterialType.BLADE, 5));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 8));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 7));
+				goods.add(new StackMapDataObject(EMaterialType.AXE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.PICK, 4));
+				goods.add(new StackMapDataObject(EMaterialType.SAW, 2));
+				goods.add(new StackMapDataObject(EMaterialType.SCYTHE, 1));
+				goods.add(new StackMapDataObject(EMaterialType.FISHINGROD, 1));
 				break;
 			default:
-				goods.add(new StackObject(EMaterialType.PLANK, 8));
-				goods.add(new StackObject(EMaterialType.PLANK, 8));
-				goods.add(new StackObject(EMaterialType.PLANK, 7));
-				goods.add(new StackObject(EMaterialType.PLANK, 7));
-				goods.add(new StackObject(EMaterialType.STONE, 8));
-				goods.add(new StackObject(EMaterialType.STONE, 8));
-				goods.add(new StackObject(EMaterialType.STONE, 8));
-				goods.add(new StackObject(EMaterialType.STONE, 7));
-				goods.add(new StackObject(EMaterialType.COAL, 7));
-				goods.add(new StackObject(EMaterialType.COAL, 7));
-				goods.add(new StackObject(EMaterialType.COAL, 6));
-				goods.add(new StackObject(EMaterialType.COAL, 6));
-				goods.add(new StackObject(EMaterialType.IRONORE, 6));
-				goods.add(new StackObject(EMaterialType.IRONORE, 6));
-				goods.add(new StackObject(EMaterialType.FISH, 7));
-				goods.add(new StackObject(EMaterialType.BREAD, 8));
-				goods.add(new StackObject(EMaterialType.BREAD, 7));
-				goods.add(new StackObject(EMaterialType.MEAT, 8));
-				goods.add(new StackObject(EMaterialType.BLADE, 8));
-				goods.add(new StackObject(EMaterialType.BLADE, 7));
-				goods.add(new StackObject(EMaterialType.HAMMER, 7));
-				goods.add(new StackObject(EMaterialType.HAMMER, 6));
-				goods.add(new StackObject(EMaterialType.HAMMER, 6));
-				goods.add(new StackObject(EMaterialType.HAMMER, 6));
-				goods.add(new StackObject(EMaterialType.AXE, 8));
-				goods.add(new StackObject(EMaterialType.PICK, 5));
-				goods.add(new StackObject(EMaterialType.SAW, 3));
-				goods.add(new StackObject(EMaterialType.SCYTHE, 3));
-				goods.add(new StackObject(EMaterialType.FISHINGROD, 2));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 8));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 8));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 7));
+				goods.add(new StackMapDataObject(EMaterialType.PLANK, 7));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 8));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 8));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 8));
+				goods.add(new StackMapDataObject(EMaterialType.STONE, 7));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 7));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 7));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 6));
+				goods.add(new StackMapDataObject(EMaterialType.COAL, 6));
+				goods.add(new StackMapDataObject(EMaterialType.IRONORE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.IRONORE, 6));
+				goods.add(new StackMapDataObject(EMaterialType.FISH, 7));
+				goods.add(new StackMapDataObject(EMaterialType.BREAD, 8));
+				goods.add(new StackMapDataObject(EMaterialType.BREAD, 7));
+				goods.add(new StackMapDataObject(EMaterialType.MEAT, 8));
+				goods.add(new StackMapDataObject(EMaterialType.BLADE, 8));
+				goods.add(new StackMapDataObject(EMaterialType.BLADE, 7));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 7));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 6));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 6));
+				goods.add(new StackMapDataObject(EMaterialType.HAMMER, 6));
+				goods.add(new StackMapDataObject(EMaterialType.AXE, 8));
+				goods.add(new StackMapDataObject(EMaterialType.PICK, 5));
+				goods.add(new StackMapDataObject(EMaterialType.SAW, 3));
+				goods.add(new StackMapDataObject(EMaterialType.SCYTHE, 3));
+				goods.add(new StackMapDataObject(EMaterialType.FISHINGROD, 2));
 				break;
 			}
 			return goods;
 		}
 
-		public static List<MapObject> generateMovableObjects(EMapStartResources mapStartResources, byte playerId) {
-			List<MapObject> movables = new Vector<>();
+		public static List<MapDataObject> generateMovableObjects(EMapStartResources mapStartResources, byte playerId) {
+			List<MapDataObject> movables = new Vector<>();
 			switch (mapStartResources) {
 			case LOW_GOODS:
 				for (byte i = 0; i < 2; i++)
@@ -958,7 +958,7 @@ public class OriginalMapFileDataStructs {
 			return EObjectType.values()[type];
 		}
 
-		public MapObject getNewInstance() {
+		public MapDataObject getNewInstance() {
 			if (type == null)
 				return null;
 
@@ -970,10 +970,10 @@ public class OriginalMapFileDataStructs {
 					return null;
 
 				// - TODO: does not work?!
-				return new MapDecorationObject(EMapObjectType.values()[style]);
+				return new DecorationMapDataObject(EMapObjectType.values()[style]);
 
 			case STONE:
-				return MapStoneObject.getInstance(style);
+				return StoneMapDataObject.getInstance(style);
 
 			case TREE:
 				return MapTreeObject.getInstance();

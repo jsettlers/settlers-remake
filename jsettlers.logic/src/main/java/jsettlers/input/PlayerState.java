@@ -20,9 +20,9 @@ import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.menu.UIState;
 
 /**
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public class PlayerState implements Serializable {
 	private static final long serialVersionUID = -1077800774789265575L;

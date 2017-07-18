@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,22 +11,40 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.common.map.object;
+ */
 
-public class MapStoneObject implements MapObject {
+package jsettlers.logic.buildings.military.occupying;
 
-	private final int capacity;
+import jsettlers.common.buildings.IBuildingOccupier;
+import jsettlers.common.buildings.OccupierPlace;
+import jsettlers.common.movable.IMovable;
+import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 
-	private MapStoneObject(int capacity) {
-		this.capacity = capacity;
+import java.io.Serializable;
+
+/**
+ * Created by Andreas Eberle on 03.07.2017.
+ */
+final class TowerOccupier implements IBuildingOccupier, Serializable {
+	final OccupierPlace place;
+	final IBuildingOccupyableMovable soldier;
+
+	TowerOccupier(OccupierPlace place, IBuildingOccupyableMovable soldier) {
+		this.place = place;
+		this.soldier = soldier;
 	}
 
-	public int getCapacity() {
-		return capacity;
+	@Override
+	public OccupierPlace getPlace() {
+		return place;
 	}
 
-	public static MapStoneObject getInstance(int capacity) {
-		return new MapStoneObject(capacity);
+	@Override
+	public IMovable getMovable() {
+		return soldier.getMovable();
+	}
+
+	public IBuildingOccupyableMovable getSoldier() {
+		return soldier;
 	}
 }

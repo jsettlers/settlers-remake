@@ -25,6 +25,7 @@ import jsettlers.common.menu.messages.IMessenger;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.player.ICombatStrengthInformation;
 import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.ISettlerInformation;
 import jsettlers.logic.map.grid.partition.data.MaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountListener;
@@ -34,7 +35,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
  *
  * @author Andreas Eberle
  */
-public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
+public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener, IPlayer {
 	private static final long serialVersionUID = 1L;
 
 	public final byte playerId;
@@ -146,5 +147,9 @@ public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersC
 
 	public void setCivilisation(ECivilisation civilisation) {
 		this.civilisation = civilisation;
+	}
+
+	public boolean hasSameTeam(Player player) {
+		return player != null && this.team == player.team;
 	}
 }

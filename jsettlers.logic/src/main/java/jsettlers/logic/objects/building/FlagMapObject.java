@@ -15,6 +15,7 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 
@@ -22,13 +23,12 @@ public final class FlagMapObject extends AbstractHexMapObject implements IPlayer
 	private static final long serialVersionUID = 3898658161529753794L;
 
 	private final EMapObjectType flagType;
-	private final byte player;
+	private final IPlayer player;
 
-	public FlagMapObject(EMapObjectType flagType, byte player) {
+	public FlagMapObject(EMapObjectType flagType, IPlayer player) {
 		this.flagType = flagType;
 		this.player = player;
 		assert flagType == EMapObjectType.FLAG_DOOR || flagType == EMapObjectType.FLAG_ROOF : "flag must be a flag";
-
 	}
 
 	@Override
@@ -57,8 +57,7 @@ public final class FlagMapObject extends AbstractHexMapObject implements IPlayer
 	}
 
 	@Override
-	public byte getPlayerId() {
+	public IPlayer getPlayer() {
 		return player;
 	}
-
 }

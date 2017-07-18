@@ -16,8 +16,8 @@ package jsettlers.mapcreator.mapvalidator.tasks;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -38,16 +38,16 @@ public class ValidateDrawBuildingCircle extends AbstractValidationTask {
 	public void doTest() {
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
-				MapObject mapObject = data.getMapObject(x, y);
-				if (mapObject instanceof BuildingObject) {
-					BuildingObject buildingObject = (BuildingObject) mapObject;
+				MapDataObject mapObject = data.getMapObject(x, y);
+				if (mapObject instanceof BuildingMapDataObject) {
+					BuildingMapDataObject buildingObject = (BuildingMapDataObject) mapObject;
 					drawBuildingCircle(x, y, buildingObject);
 				}
 			}
 		}
 	}
 
-	private void drawBuildingCircle(int x, int y, BuildingObject buildingObject) {
+	private void drawBuildingCircle(int x, int y, BuildingMapDataObject buildingObject) {
 		byte player = buildingObject.getPlayerId();
 		EBuildingType type = buildingObject.getType();
 		if (type == EBuildingType.TOWER || type == EBuildingType.BIG_TOWER || type == EBuildingType.CASTLE) {

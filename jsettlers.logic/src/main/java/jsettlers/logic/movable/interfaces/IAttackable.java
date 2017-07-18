@@ -15,6 +15,7 @@
 package jsettlers.logic.movable.interfaces;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -43,11 +44,11 @@ public interface IAttackable extends ILocatable, IInformable {
 	float getHealth();
 
 	/**
-	 * Gets the Player of this {@link IAttackable}.
-	 * 
-	 * @return Player of this {@link IAttackable}.
+	 * Gets the UiPlayer of this {@link IAttackable}.
+	 *
+	 * @return UiPlayer of this {@link IAttackable}.
 	 */
-	byte getPlayerId();
+	IPlayer getPlayer();
 
 	/**
 	 * 

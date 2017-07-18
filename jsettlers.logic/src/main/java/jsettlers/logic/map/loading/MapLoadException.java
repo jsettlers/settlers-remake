@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,23 +11,34 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.buildingcreator.job;
+ */
+package jsettlers.logic.map.loading;
 
 /**
- * This interface specifies a method do access a name d building job which has a named next and fail-job.
- * <p>
- * It is sort of an abstraction framework used by the job creator to generate static list of jobs for a building.
+ * This is an eception that occured during loading/creation of the map.
  * 
  * @author michael
  */
-public interface BuildingJobDataProvider {
+public class MapLoadException extends Exception {
+
 	/**
-	 * Gets the data for a given job.
-	 * 
-	 * @param name
-	 *            The name of the job.
-	 * @return The data or <code>null</code>
-	 */
-	BuildingJobData getJobData(String name);
+     * 
+     */
+	private static final long serialVersionUID = -8884862905101040114L;
+
+	public MapLoadException() {
+	}
+
+	public MapLoadException(String arg0) {
+		super(arg0);
+	}
+
+	public MapLoadException(Throwable arg0) {
+		super(arg0);
+	}
+
+	public MapLoadException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
 }

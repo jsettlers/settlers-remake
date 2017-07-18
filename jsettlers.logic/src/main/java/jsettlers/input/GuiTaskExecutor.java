@@ -44,7 +44,7 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
@@ -245,22 +245,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void save() {
 		try {
-			byte numberOfPlayers = grid.getNumberOfPlayers();
-			PlayerState[] playerStates = new PlayerState[numberOfPlayers];
-			for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
-				// find a tower of the player
-				UIState uiState = null;
-				for (Building building : Building.getAllBuildings()) {
-					if (building.getPlayer().playerId == playerId && building instanceof OccupyingBuilding) {
-						uiState = new UIState(building.getPos());
-						break;
-					}
-				}
-
-				playerStates[playerId] = new PlayerState(playerId, uiState);
-			}
-			playerStates[playerId] = new PlayerState(this.playerId, guiInterface.getUIState(), grid.getFogOfWar());
-			grid.save(playerStates);
+			grid.save(playerId, guiInterface.getUIState());
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}

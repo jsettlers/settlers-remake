@@ -15,8 +15,8 @@
 package jsettlers.mapcreator.tools.objects;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.control.IPlayerSetter;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -63,7 +63,7 @@ public class PlaceBuildingTool extends PlaceMapObjectTool {
 	}
 
 	@Override
-	public MapObject getObject() {
-		return new BuildingObject(type, (byte) player.getActivePlayer());
+	public MapDataObject getObject() {
+		return new BuildingMapDataObject(type, (byte) player.getActivePlayer());
 	}
 }
