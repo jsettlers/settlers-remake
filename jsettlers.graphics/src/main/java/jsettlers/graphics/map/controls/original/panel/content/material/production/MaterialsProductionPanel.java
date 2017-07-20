@@ -103,6 +103,38 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 		}
 	}
 
+	private class MaterialProductionProvider extends UiStateProvider<MaterialProductionProvider> {
+		private ShortPoint2D position;
+		private IGraphicsGrid grid;
+		private IMaterialProductionSettings materialProduction;
+
+		IMaterialProductionSettings getMaterialProduction() {
+			return materialProduction;
+		}
+
+		boolean shouldDisplay() {
+			return materialProduction != null;
+		}
+
+		void updatePosition(ShortPoint2D position, IGraphicsGrid grid) {
+			this.position = position;
+			this.grid = grid;
+			updateMaterialProduction();
+		}
+
+		private void updateMaterialProduction() {
+			if (grid != null && position != null) {
+				this.materialProduction = grid.getPartitionData(position.x, position.y).getPartitionSettings().getMaterialProductionSettings();
+				notifyLiseners();
+			}
+		}
+
+		@Override
+		public void updateUi() {
+			updateMaterialProduction();
+		}
+	}
+
 	private final Row[] rows = {
 			new Row(EMaterialType.HAMMER),
 			new Row(EMaterialType.BLADE),
@@ -136,10 +168,9 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 	private static final float weaponsTitleMarginTop = weaponsTitleMarginTop_px / contentHeight_px;
 	private static final float weaponsTitleMarginBottom = weaponsTitleMarginBottom_px / contentHeight_px;
 
-	private UIPanel panel;
-
-	private final UIUpdater uiUpdater;
-	private MaterialProductionProvider materialProductionProvider = new MaterialProductionProvider();
+	private final UIPanel panel;
+	private final MaterialProductionProvider materialProductionProvider = new MaterialProductionProvider();
+	private final UIUpdater uiUpdater = UIUpdater.getUpdater(materialProductionProvider);
 
 	public MaterialsProductionPanel() {
 		panel = new UIPanel();
@@ -161,7 +192,6 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 		}
 
 		materialProductionProvider.addListeners(Arrays.asList(rows));
-		uiUpdater = UIUpdater.getUpdater(materialProductionProvider);
 	}
 
 	@Override
@@ -193,33 +223,4 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 		uiUpdater.stop();
 	}
 
-	private class MaterialProductionProvider extends UiStateProvider<MaterialProductionProvider> implements UIUpdater.IUpdateReceiver {
-		private ShortPoint2D position;
-		private IGraphicsGrid grid;
-		private IMaterialProductionSettings materialProduction;
-
-		IMaterialProductionSettings getMaterialProduction() {
-			return materialProduction;
-		}
-
-		boolean shouldDisplay() {
-			return materialProduction != null;
-		}
-
-		void updatePosition(ShortPoint2D position, IGraphicsGrid grid) {
-			this.position = position;
-			this.grid = grid;
-			updateMaterialProduction();
-		}
-
-		private void updateMaterialProduction() {
-			this.materialProduction = grid.getPartitionData(position.x, position.y).getPartitionSettings().getMaterialProductionSettings();
-			notifyLiseners();
-		}
-
-		@Override
-		public void updateUi() {
-			updateMaterialProduction();
-		}
-	}
 }

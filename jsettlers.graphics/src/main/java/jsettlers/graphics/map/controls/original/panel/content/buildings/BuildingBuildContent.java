@@ -14,7 +14,8 @@
  */
 package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
-import java8.util.Optional;
+import java.util.ArrayList;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IBuildingCounts;
@@ -31,11 +32,11 @@ import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
 import jsettlers.graphics.utils.UiStateProvider;
 
-import java.util.ArrayList;
+import java8.util.Optional;
 
 public class BuildingBuildContent extends AbstractContentProvider {
 
-	public static class BuildingCountStateProvider extends UiStateProvider<BuildingCountStateProvider> implements UIUpdater.IUpdateReceiver {
+	public static class BuildingCountStateProvider extends UiStateProvider<BuildingCountStateProvider> {
 
 		private ShortPoint2D position;
 		private IGraphicsGrid grid;
@@ -84,12 +85,11 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	private static final int COLUMNS = 2;
 
 	private final UIPanel panel;
+	private final BuildingCountStateProvider buildingCounts = new BuildingCountStateProvider();
+	private final UIUpdater uiUpdater = UIUpdater.getUpdater(buildingCounts);
 
 	private final ArrayList<BuildingButton> buttons = new ArrayList<>();
 	private EBuildingType activeBuilding;
-
-	private final UIUpdater uiUpdater;
-	private final BuildingCountStateProvider buildingCounts = new BuildingCountStateProvider();
 
 	public BuildingBuildContent(EBuildingsCategory buildingsCategory) {
 		panel = new UIPanel();
@@ -107,14 +107,13 @@ public class BuildingBuildContent extends AbstractContentProvider {
 			buildingCounts.addListener(button);
 			i++;
 		}
-		uiUpdater = UIUpdater.getUpdater(buildingCounts);
 	}
 
 	/**
 	 * Sets the active building the user wants to build.
 	 *
 	 * @param type
-	 * 		The type. May be <code>null</code>
+	 *            The type. May be <code>null</code>
 	 */
 	private void setActiveBuilding(EBuildingType type) {
 		activeBuilding = null;

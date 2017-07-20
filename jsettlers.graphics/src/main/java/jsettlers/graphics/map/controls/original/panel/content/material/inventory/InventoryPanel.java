@@ -14,19 +14,25 @@
  */
 package jsettlers.graphics.map.controls.original.panel.content.material.inventory;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import go.graphics.text.EFontSize;
+
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
-import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
+import jsettlers.graphics.utils.UIUpdater;
+import jsettlers.graphics.utils.UiStateProvider;
+import jsettlers.graphics.utils.UiStateProvider.IUiStateListener;
 
 /**
  * This is a statistics panel that displays the number of items the user has on the current partition.
@@ -34,9 +40,6 @@ import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
  * @author Michael Zangl
  */
 public class InventoryPanel extends AbstractContentProvider {
-	public interface IPartitionDataLoadable {
-		void loadFromData(IPartitionData data);
-	}
 
 	/**
 	 * This label displays the number of items in the current area.
@@ -44,7 +47,7 @@ public class InventoryPanel extends AbstractContentProvider {
 	 * @author Michael Zangl
 	 *
 	 */
-	public static class InventoryCount extends Label implements IPartitionDataLoadable {
+	public static class InventoryCount extends Label implements IUiStateListener<PartitionDataProvider> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -60,8 +63,8 @@ public class InventoryPanel extends AbstractContentProvider {
 		}
 
 		@Override
-		public void loadFromData(IPartitionData data) {
-			int amountOf = data.getAmountOf(material);
+		public void update(PartitionDataProvider partitionDataProvider) {
+			int amountOf = partitionDataProvider.getPartitionData().getAmountOf(material);
 			plural = amountOf != 1;
 			setText(amountOf + "");
 		}
@@ -72,7 +75,7 @@ public class InventoryPanel extends AbstractContentProvider {
 	 * 
 	 * @author Michael Zangl
 	 */
-	public static class MaterialButton extends Button implements IPartitionDataLoadable {
+	public static class MaterialButton extends Button implements IUiStateListener<PartitionDataProvider> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -88,29 +91,57 @@ public class InventoryPanel extends AbstractContentProvider {
 		}
 
 		@Override
-		public void loadFromData(IPartitionData data) {
-			int amountOf = data.getAmountOf(material);
+		public void update(PartitionDataProvider partitionDataProvider) {
+			int amountOf = partitionDataProvider.getPartitionData().getAmountOf(material);
 			plural = amountOf != 1;
 		}
 	}
 
-	private UIPanel panel;
+	private static class PartitionDataProvider extends UiStateProvider<PartitionDataProvider> {
+
+		private IGraphicsGrid grid;
+		private ShortPoint2D position;
+		private IPartitionData partitionData;
+
+		void updatePosition(IGraphicsGrid grid, ShortPoint2D position) {
+			this.grid = grid;
+			this.position = position;
+			updatePartitionData();
+		}
+
+		void updatePartitionData() {
+			partitionData = grid.getPartitionData(position.x, position.y);
+			notifyLiseners();
+		}
+
+		@Override
+		public void updateUi() {
+			updatePartitionData();
+		}
+
+		public IPartitionData getPartitionData() {
+			return partitionData;
+		}
+	}
+
+	private final PartitionDataProvider partitionDataProvider = new PartitionDataProvider();
+	private final UIUpdater uiUpdater = UIUpdater.getUpdater(partitionDataProvider);
+	private final UIPanel panel;
 
 	public InventoryPanel() {
 		panel = new MaterialInventoryLayout()._root;
+
+		// noinspection unchecked
+		stream(panel.getChildren())
+				.filter(c -> c instanceof IUiStateListener)
+				.map(c -> (IUiStateListener<PartitionDataProvider>) c)
+				.forEach(partitionDataProvider::addListener);
 	}
 
 	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		super.showMapPosition(pos, grid);
-
-		IPartitionData data = grid.getPartitionData(pos.x, pos.y);
-		// TODO: Add a data observer.
-		for (UIElement c : panel.getChildren()) {
-			if (c instanceof IPartitionDataLoadable) {
-				((IPartitionDataLoadable) c).loadFromData(data);
-			}
-		}
+	public void showMapPosition(ShortPoint2D position, IGraphicsGrid grid) {
+		super.showMapPosition(position, grid);
+		partitionDataProvider.updatePosition(grid, position);
 	}
 
 	@Override
@@ -121,5 +152,15 @@ public class InventoryPanel extends AbstractContentProvider {
 	@Override
 	public UIPanel getPanel() {
 		return panel;
+	}
+
+	@Override
+	public void contentShowing(ActionFireable actionFireable) {
+		uiUpdater.start(true);
+	}
+
+	@Override
+	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+		uiUpdater.stop();
 	}
 }

@@ -15,12 +15,12 @@
 
 package jsettlers.graphics.utils;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static java8.util.stream.StreamSupport.stream;
-
-public abstract class UiStateProvider<T extends UiStateProvider> {
+public abstract class UiStateProvider<T extends UiStateProvider> implements UIUpdater.IUpdateReceiver {
 
 	public interface IUiStateListener<T extends UiStateProvider> {
 		void update(T uiStateProvider);
@@ -48,7 +48,7 @@ public abstract class UiStateProvider<T extends UiStateProvider> {
 
 	public void notifyLiseners() {
 		synchronized (listeners) {
-			//noinspection unchecked
+			// noinspection unchecked
 			stream(listeners).forEach(listeners -> listeners.update((T) this));
 		}
 	}
