@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,8 +11,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
 import java8.util.Optional;
 import jsettlers.common.buildings.EBuildingType;
@@ -25,6 +25,8 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
 import jsettlers.graphics.utils.UiStateProvider;
@@ -89,7 +91,7 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	private final UIUpdater uiUpdater;
 	private final BuildingCountStateProvider buildingCounts = new BuildingCountStateProvider();
 
-	BuildingBuildContent(EBuildingsCategory buildingsCategory) {
+	public BuildingBuildContent(EBuildingsCategory buildingsCategory) {
 		panel = new UIPanel();
 
 		float colWidth = 1f / COLUMNS;

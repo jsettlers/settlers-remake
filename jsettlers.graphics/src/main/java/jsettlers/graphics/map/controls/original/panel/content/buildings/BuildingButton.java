@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,8 +11,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
@@ -25,7 +25,6 @@ import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountStateProvider;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
@@ -38,7 +37,7 @@ import jsettlers.graphics.utils.UiStateProvider;
  *
  * @author Michael Zangl
  */
-public class BuildingButton extends Button implements UiStateProvider.IUiStateListener<BuildingCountStateProvider> {
+public class BuildingButton extends Button implements UiStateProvider.IUiStateListener<BuildingBuildContent.BuildingCountStateProvider> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
@@ -115,7 +114,7 @@ public class BuildingButton extends Button implements UiStateProvider.IUiStateLi
 	}
 
 	@Override
-	public void update(BuildingCountStateProvider buildingCount) {
+	public void update(BuildingBuildContent.BuildingCountStateProvider buildingCount) {
 		if (buildingCount.shouldDisplayCounts()) {
 			int constructed = buildingCount.getCount(getBuildingType(), false);
 			int construction = buildingCount.getCount(getBuildingType(), true);

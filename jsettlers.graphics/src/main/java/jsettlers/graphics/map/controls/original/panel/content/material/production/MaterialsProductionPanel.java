@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015 - 2017
+/*
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,21 +11,27 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.material.production;
+
+import java.util.Arrays;
 
 import go.graphics.text.EFontSize;
+
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.SetMaterialProductionAction;
-import jsettlers.graphics.action.SetMaterialProductionAction.PositionSupplyer;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.BarFill;
+import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.SetMaterialProductionButton;
@@ -33,11 +39,9 @@ import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
 import jsettlers.graphics.utils.UiStateProvider;
 
-import java.util.Arrays;
+public class MaterialsProductionPanel extends AbstractContentProvider {
 
-public class ToolsPanel extends AbstractContentProvider {
-
-	private static class Row extends UIPanel implements PositionSupplyer, UiStateProvider.IUiStateListener<MaterialProductionProvider> {
+	private static class Row extends UIPanel implements UiStateProvider.IUiStateListener<MaterialProductionProvider> {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
@@ -62,15 +66,16 @@ public class ToolsPanel extends AbstractContentProvider {
 
 			lblQuantity = new Label(Labels.getString(Integer.toString(quantity)), EFontSize.NORMAL);
 
-			Button upButton = new SetMaterialProductionButton(this, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE);
-			Button downButton = new SetMaterialProductionButton(this, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE);
+			IPositionSupplier positionSupplier = () -> position;
+			Button upButton = new SetMaterialProductionButton(positionSupplier, type, SetMaterialProductionAction.EMaterialProductionType.INCREASE);
+			Button downButton = new SetMaterialProductionButton(positionSupplier, type, SetMaterialProductionAction.EMaterialProductionType.DECREASE);
 
 			arrows = new UIPanel();
 			arrows.setBackground(arrowsImageLink);
 			arrows.addChild(upButton, 0f, 0.5f, 1f, 1f);
 			arrows.addChild(downButton, 0f, 0f, 1f, 0.5f);
 
-			barFill = new SetMaterialProductionRatioBarFill(type, this);
+			barFill = new SetMaterialProductionRatioBarFill(type, positionSupplier);
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);
@@ -81,11 +86,6 @@ public class ToolsPanel extends AbstractContentProvider {
 
 		public void setPosition(ShortPoint2D position) {
 			this.position = position;
-		}
-
-		@Override
-		public ShortPoint2D getCurrentPosition() {
-			return position;
 		}
 
 		@Override
@@ -141,7 +141,7 @@ public class ToolsPanel extends AbstractContentProvider {
 	private final UIUpdater uiUpdater;
 	private MaterialProductionProvider materialProductionProvider = new MaterialProductionProvider();
 
-	ToolsPanel() {
+	public MaterialsProductionPanel() {
 		panel = new UIPanel();
 
 		panel.addChild(new Label(Labels.getString("controlpanel_tools_title"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);

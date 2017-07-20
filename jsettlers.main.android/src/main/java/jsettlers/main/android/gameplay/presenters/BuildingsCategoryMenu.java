@@ -20,7 +20,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;

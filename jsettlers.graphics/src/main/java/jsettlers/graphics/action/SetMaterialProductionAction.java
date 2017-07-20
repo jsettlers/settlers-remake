@@ -60,8 +60,4 @@ public class SetMaterialProductionAction extends Action {
 	public ShortPoint2D getPosition() {
 		return position;
 	}
-
-	public interface PositionSupplyer {
-		ShortPoint2D getCurrentPosition();
-	}
 }

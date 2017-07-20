@@ -13,7 +13,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
 import java.util.Arrays;
 import java.util.List;
