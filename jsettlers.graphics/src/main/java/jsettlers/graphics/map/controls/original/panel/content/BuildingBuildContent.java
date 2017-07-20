@@ -89,9 +89,9 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	/**
 	 * Sets the active building the user wants to build.
-	 * 
+	 *
 	 * @param type
-	 *            The type. May be <code>null</code>
+	 * 		The type. May be <code>null</code>
 	 */
 	private void setActiveBuilding(EBuildingType type) {
 		activeBuilding = null;
@@ -106,14 +106,14 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	@Override
 	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		buildingCount = new BuildingCountState(pos, grid);
-		updater.forceUpdate();
 		super.showMapPosition(pos, grid);
+		buildingCount = getCurrentUIData();
+		updater.forceUpdate();
 	}
 
 	@Override
 	public BuildingCountState getCurrentUIData() {
-		return buildingCount;
+		return new BuildingCountState(position, grid);
 	}
 
 	@Override
@@ -125,8 +125,6 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 	public ESecondaryTabType getTabs() {
 		return ESecondaryTabType.BUILD;
 	}
-
-
 
 	@Override
 	public IAction catchAction(IAction action) {
