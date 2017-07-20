@@ -30,9 +30,6 @@ import jsettlers.graphics.ui.UIPanel;
  */
 public abstract class AbstractContentProvider {
 
-	protected ShortPoint2D position;
-	protected IGraphicsGrid grid;
-
 	/**
 	 * Gets the UI panel that should be displayed. It fills the whole main panel.
 	 *
@@ -67,8 +64,6 @@ public abstract class AbstractContentProvider {
 	 * 		The map grid.
 	 */
 	public void showMapPosition(ShortPoint2D position, IGraphicsGrid grid) {
-		this.position = position;
-		this.grid = grid;
 	}
 
 	/**

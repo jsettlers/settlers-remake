@@ -25,20 +25,20 @@ import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountStateProvider;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.Label.EHorizontalAlignment;
 import jsettlers.graphics.ui.Label.EVerticalAlignment;
-import jsettlers.graphics.utils.UIUpdater.IUpdateReceiver;
+import jsettlers.graphics.utils.UiStateProvider;
 
 /**
  * This is a button to construct a building.
- * 
+ *
  * @author Michael Zangl
  */
-public class BuildingButton extends Button implements IUpdateReceiver<BuildingCountState> {
+public class BuildingButton extends Button implements UiStateProvider.IUiStateListener<BuildingCountStateProvider> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
@@ -82,8 +82,7 @@ public class BuildingButton extends Button implements IUpdateReceiver<BuildingCo
 		float buttonWidth = position.getWidth();
 		float imageHeight = buildingImage.getHeight();
 		float imageWidth = buildingImage.getWidth();
-		if (buttonHeight != lastButtonHeight || buttonWidth != lastButtonWidth ||
-				imageHeight != lastImageHeight || imageWidth != lastImageWidth) {
+		if (buttonHeight != lastButtonHeight || buttonWidth != lastButtonWidth || imageHeight != lastImageHeight || imageWidth != lastImageWidth) {
 			if (buildingImageLink instanceof OriginalImageLink) {
 				buildingImage = ImageProvider.getInstance().getImage(buildingImageLink, position.getWidth(), position.getHeight());
 			} else {
@@ -116,10 +115,10 @@ public class BuildingButton extends Button implements IUpdateReceiver<BuildingCo
 	}
 
 	@Override
-	public void uiUpdate(BuildingCountState data) {
-		if (data.isInPlayerPartition()) {
-			int constructed = data.getCount(getBuildingType(), false);
-			int construction = data.getCount(getBuildingType(), true);
+	public void update(BuildingCountStateProvider buildingCount) {
+		if (buildingCount.shouldDisplayCounts()) {
+			int constructed = buildingCount.getCount(getBuildingType(), false);
+			int construction = buildingCount.getCount(getBuildingType(), true);
 			String text = constructed + (construction == 0 ? "" : "\n+" + construction);
 			constructedLabel.setText(text);
 		} else {

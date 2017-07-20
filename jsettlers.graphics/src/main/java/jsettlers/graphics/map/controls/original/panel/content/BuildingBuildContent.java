@@ -14,8 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import java.util.ArrayList;
-
+import java8.util.Optional;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IBuildingCounts;
@@ -26,35 +25,56 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
-import jsettlers.graphics.utils.UIUpdater.IDataProvider;
+import jsettlers.graphics.utils.UiStateProvider;
 
-public class BuildingBuildContent extends AbstractContentProvider implements IDataProvider<BuildingCountState> {
+import java.util.ArrayList;
 
-	public static class BuildingCountState {
-		private final IGraphicsGrid grid;
-		private final ShortPoint2D pos;
+public class BuildingBuildContent extends AbstractContentProvider {
 
-		public BuildingCountState(ShortPoint2D pos, IGraphicsGrid grid) {
-			this.pos = pos;
-			this.grid = grid;
-		}
+	public static class BuildingCountStateProvider extends UiStateProvider<BuildingCountStateProvider> implements UIUpdater.IUpdateReceiver {
+
+		private ShortPoint2D position;
+		private IGraphicsGrid grid;
+
+		private Optional<IBuildingCounts> buildingCounts = Optional.empty();
 
 		public int getCount(EBuildingType buildingType, boolean construction) {
-			if (grid == null) {
-				return 0;
-			} else {
-				IBuildingCounts counts = grid.getPartitionData(pos.x, pos.y).getBuildingCounts();
-				return construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartition(buildingType);
-			}
+			return buildingCounts
+					.map(counts -> construction ? counts.buildingsInPartitionUnderConstruction(buildingType) : counts.buildingsInPartition(buildingType))
+					.orElse(0);
 		}
 
-		public boolean isInPlayerPartition() {
+		boolean shouldDisplayCounts() {
+			return buildingCounts.isPresent();
+		}
+
+		private boolean isInPlayerPartition(IGraphicsGrid grid, ShortPoint2D position) {
 			// TODO: Check current player
 			// Tom-Pratt: I added getPlayer to IInGamePlayer which may help here
-			return grid != null && grid.getPlayerIdAt(pos.x, pos.y) >= 0;
+			return grid != null && grid.getPlayerIdAt(position.x, position.y) >= 0;
+		}
+
+		void updatePosition(ShortPoint2D position, IGraphicsGrid grid) {
+			this.position = position;
+			this.grid = grid;
+
+			updateBuildingCounts();
+		}
+
+		private void updateBuildingCounts() {
+			if (grid == null || !isInPlayerPartition(grid, position)) {
+				buildingCounts = Optional.empty();
+			} else {
+				buildingCounts = Optional.of(grid.getPartitionData(position.x, position.y).getBuildingCounts());
+			}
+			notifyLiseners();
+		}
+
+		@Override
+		public void updateUi() {
+			updateBuildingCounts();
 		}
 	}
 
@@ -66,10 +86,10 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 	private final ArrayList<BuildingButton> buttons = new ArrayList<>();
 	private EBuildingType activeBuilding;
 
-	private final UIUpdater<BuildingCountState> updater;
-	private BuildingCountState buildingCount = new BuildingCountState(null, null);
+	private final UIUpdater uiUpdater;
+	private final BuildingCountStateProvider buildingCounts = new BuildingCountStateProvider();
 
-	public BuildingBuildContent(EBuildingsCategory buildingsCategory) {
+	BuildingBuildContent(EBuildingsCategory buildingsCategory) {
 		panel = new UIPanel();
 
 		float colWidth = 1f / COLUMNS;
@@ -82,9 +102,10 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 			int col = i % COLUMNS;
 			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight, (col + 1) * colWidth, 1 - row * rowHeight);
 			buttons.add(button);
+			buildingCounts.addListener(button);
 			i++;
 		}
-		updater = UIUpdater.getUpdater(this, buttons);
+		uiUpdater = UIUpdater.getUpdater(buildingCounts);
 	}
 
 	/**
@@ -105,15 +126,9 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 	}
 
 	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		super.showMapPosition(pos, grid);
-		buildingCount = getCurrentUIData();
-		updater.forceUpdate();
-	}
-
-	@Override
-	public BuildingCountState getCurrentUIData() {
-		return new BuildingCountState(position, grid);
+	public void showMapPosition(ShortPoint2D position, IGraphicsGrid grid) {
+		buildingCounts.updatePosition(position, grid);
+		super.showMapPosition(position, grid);
 	}
 
 	@Override
@@ -149,12 +164,12 @@ public class BuildingBuildContent extends AbstractContentProvider implements IDa
 
 	@Override
 	public void contentShowing(ActionFireable actionFireable) {
-		updater.start(true);
+		uiUpdater.start(true);
 	}
 
 	@Override
 	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
-		updater.stop();
+		uiUpdater.stop();
 		if (activeBuilding != null) {
 			actionFireable.fireAction(new ShowConstructionMarksAction(null));
 		}

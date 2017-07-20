@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,83 +14,49 @@
  *******************************************************************************/
 package jsettlers.graphics.utils;
 
-import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * This class manages a timer that is called every second to update the UI contents.
- * 
+ *
  * @author Michael Zangl
- * @param <T>
- *            The data type that backs this UI element. Should be immutable.
  */
-public class UIUpdater<T> {
-	private static final int UPDATER_INTERVALL = 1000;
+public class UIUpdater {
+	private static final int UPDATER_INTERVAL = 1000;
 
 	/**
 	 * A listener that listens to UI update events.
-	 * 
-	 * @author Michael Zangl
 	 *
-	 * @param <T>
-	 *            The data type that is updated. Should be immutable.
+	 * @author Michael Zangl
 	 */
-	public interface IUpdateReceiver<T> {
+	public interface IUpdateReceiver {
 		/**
 		 * Called when an update to the UI is required.
-		 * 
-		 * @param data
-		 *            The data to update with.
 		 */
-		void uiUpdate(T data);
-	}
-
-	/**
-	 * A data provider that provides the data that might have updated.
-	 * 
-	 * @author Michael Zangl
-	 *
-	 * @param <T>
-	 *            The data type. Should be immutable.
-	 */
-	public interface IDataProvider<T> {
-		/**
-		 * Gets the current data state.
-		 * 
-		 * @return The state.
-		 */
-		T getCurrentUIData();
+		void updateUi();
 	}
 
 	private static Timer timer;
 
+	private final IUpdateReceiver receiver;
 	private TimerTask started;
-
-	private IDataProvider<T> dataProvider;
-
-	private Collection<? extends IUpdateReceiver<T>> receivers;
-
-	private T lastData;
 
 	/**
 	 * Creates a new updater.
-	 * 
-	 * @param dataProvider
-	 *            The data provider to check for.
-	 * @param receivers
-	 *            The receivers to notify on data changes.
+	 *
+	 * @param receiver
+	 * 		The receiver to regularly notify to update the ui
 	 */
-	public UIUpdater(IDataProvider<T> dataProvider, Collection<? extends IUpdateReceiver<T>> receivers) {
-		this.dataProvider = dataProvider;
-		this.receivers = receivers;
+	private UIUpdater(IUpdateReceiver receiver) {
+		this.receiver = receiver;
 	}
 
 	/**
 	 * Starts the updater thread.
-	 * 
+	 *
 	 * @param sendNow
-	 *            <code>true</code> if we should fire an update now.
+	 * 		<code>true</code> if we should fire an update now.
 	 */
 	public synchronized void start(boolean sendNow) {
 		if (started != null) {
@@ -98,16 +64,16 @@ public class UIUpdater<T> {
 		}
 
 		if (sendNow) {
-			updateState();
+			updateUi();
 		}
 
 		started = new TimerTask() {
 			@Override
 			public void run() {
-				updateState();
+				updateUi();
 			}
 		};
-		getUITimer().scheduleAtFixedRate(started, 0, UPDATER_INTERVALL);
+		getUITimer().scheduleAtFixedRate(started, UPDATER_INTERVAL, UPDATER_INTERVAL);
 	}
 
 	/**
@@ -122,22 +88,6 @@ public class UIUpdater<T> {
 		started = null;
 	}
 
-	/**
-	 * Sends a state update.
-	 */
-	protected synchronized void updateState() {
-		T data = dataProvider.getCurrentUIData();
-		if (data == null) {
-			throw new NullPointerException(dataProvider + " returned null.");
-		}
-		if (lastData == null || !data.equals(lastData)) {
-			for (IUpdateReceiver<T> r : receivers) {
-				r.uiUpdate(data);
-			}
-			lastData = data;
-		}
-	}
-
 	private static synchronized Timer getUITimer() {
 		if (timer == null) {
 			timer = new Timer();
@@ -147,23 +97,23 @@ public class UIUpdater<T> {
 
 	/**
 	 * Creates a new updater.
-	 * 
-	 * @param dataProvider
-	 *            The data provider to check for.
-	 * @param receivers
-	 *            The receivers to notify on data changes.
-	 * @param <T>
-	 *            The data type that backs this UI element. Should be immutable.
+	 *
+	 * @param receiver
+	 * 		The regularly call to update the ui
 	 * @return The updater.
 	 */
-	public static <T> UIUpdater<T> getUpdater(IDataProvider<T> dataProvider, Collection<? extends IUpdateReceiver<T>> receivers) {
-		return new UIUpdater<>(dataProvider, receivers);
+	public static UIUpdater getUpdater(IUpdateReceiver receiver) {
+		return new UIUpdater(receiver);
 	}
 
 	/**
 	 * Forces an immediate update.
 	 */
 	public void forceUpdate() {
-		updateState();
+		updateUi();
+	}
+
+	private void updateUi() {
+		receiver.updateUi();
 	}
 }

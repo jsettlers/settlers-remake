@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import java.util.Arrays;
-
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.images.EImageLinkType;
@@ -33,19 +31,20 @@ import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.UIUpdater;
+import jsettlers.graphics.utils.UiStateProvider;
 
-public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDataProvider<ToolsPanel.RowUiData> {
-	private final UIUpdater<RowUiData> updater;
-	private IMaterialProductionSettings materialProduction;
+import java.util.Arrays;
 
-	private static class Row extends UIPanel implements PositionSupplyer, UIUpdater.IUpdateReceiver<RowUiData> {
+public class ToolsPanel extends AbstractContentProvider {
+
+	private static class Row extends UIPanel implements PositionSupplyer, UiStateProvider.IUiStateListener<MaterialProductionProvider> {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
 		private static final float quantityTextMarginV = 5f / iconSize_px;
 		private static final float arrowsWidth = 12f / contentWidth_px;
 		private static final float barPaddingLeft = 6f / contentWidth_px;
-		private static final float barMerginV = 3f / iconSize_px;
+		private static final float barMarginV = 3f / iconSize_px;
 
 		private final UIPanel goodsIcon;
 		private final Label lblQuantity;
@@ -54,7 +53,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		private final EMaterialType type;
 
 		private ShortPoint2D position;
-		int quantity = 0;
+		private int quantity = 0;
 
 		public Row(final EMaterialType materialType) {
 			type = materialType;
@@ -77,7 +76,7 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);
 			addChild(lblQuantity, left, quantityTextMarginV, left += quantityTextWidth, 1f - quantityTextMarginV);
 			addChild(arrows, left, 0f, left += arrowsWidth, 1f);
-			addChild(barFill, left + barPaddingLeft, barMerginV, 1f, 1f - barMerginV);
+			addChild(barFill, left + barPaddingLeft, barMarginV, 1f, 1f - barMarginV);
 		}
 
 		public void setPosition(ShortPoint2D position) {
@@ -90,11 +89,17 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		}
 
 		@Override
-		public void uiUpdate(RowUiData rowUiData) {
-			quantity = rowUiData.getMaterialProduction().getAbsoluteProductionRequest(type);
-			lblQuantity.setText(Integer.toString(quantity));
-			barFill.setBarFill(rowUiData.getMaterialProduction().getRelativeProductionRequest(type),
-					rowUiData.getMaterialProduction().resultingRatioOfMaterial(type));
+		public void update(MaterialProductionProvider materialProductionProvider) {
+			if (materialProductionProvider.shouldDisplay()) {
+				quantity = materialProductionProvider.getMaterialProduction().getAbsoluteProductionRequest(type);
+				lblQuantity.setText(Integer.toString(quantity));
+				barFill.setBarFill(materialProductionProvider.getMaterialProduction().getRelativeProductionRequest(type),
+						materialProductionProvider.getMaterialProduction().resultingRatioOfMaterial(type));
+			} else {
+				quantity = 0;
+				lblQuantity.setText("");
+				barFill.setBarFill(0, 0);
+			}
 		}
 	}
 
@@ -133,7 +138,10 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 
 	private UIPanel panel;
 
-	public ToolsPanel() {
+	private final UIUpdater uiUpdater;
+	private MaterialProductionProvider materialProductionProvider = new MaterialProductionProvider();
+
+	ToolsPanel() {
 		panel = new UIPanel();
 
 		panel.addChild(new Label(Labels.getString("controlpanel_tools_title"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);
@@ -151,7 +159,9 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 		for (int r = 0; r < WEAPONS_ROWS; r++, top -= rowHeight) {
 			panel.addChild(rows[itemIdx++], marginH, top - rowHeight, 1f - marginH, top);
 		}
-		updater = UIUpdater.getUpdater(this, Arrays.asList(rows));
+
+		materialProductionProvider.addListeners(Arrays.asList(rows));
+		uiUpdater = UIUpdater.getUpdater(materialProductionProvider);
 	}
 
 	@Override
@@ -166,37 +176,50 @@ public class ToolsPanel extends AbstractContentProvider implements UIUpdater.IDa
 
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		materialProduction = grid.getPartitionData(pos.x, pos.y).getPartitionSettings().getMaterialProductionSettings();
+		materialProductionProvider.updatePosition(pos, grid);
 		for (Row row : rows) {
 			row.setPosition(pos);
 		}
-		updater.forceUpdate();
+		uiUpdater.forceUpdate();
 	}
 
 	@Override
 	public void contentShowing(ActionFireable actionFireable) {
-		updater.start(true);
+		uiUpdater.start(true);
 	}
 
 	@Override
 	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
-		updater.stop();
+		uiUpdater.stop();
 	}
 
-	@Override
-	public RowUiData getCurrentUIData() {
-		return new RowUiData(materialProduction);
-	}
+	private class MaterialProductionProvider extends UiStateProvider<MaterialProductionProvider> implements UIUpdater.IUpdateReceiver {
+		private ShortPoint2D position;
+		private IGraphicsGrid grid;
+		private IMaterialProductionSettings materialProduction;
 
-	class RowUiData {
-		private final IMaterialProductionSettings materialProduction;
-
-		RowUiData(IMaterialProductionSettings materialProduction) {
-			this.materialProduction = materialProduction;
+		IMaterialProductionSettings getMaterialProduction() {
+			return materialProduction;
 		}
 
-		public IMaterialProductionSettings getMaterialProduction() {
-			return materialProduction;
+		boolean shouldDisplay() {
+			return materialProduction != null;
+		}
+
+		void updatePosition(ShortPoint2D position, IGraphicsGrid grid) {
+			this.position = position;
+			this.grid = grid;
+			updateMaterialProduction();
+		}
+
+		private void updateMaterialProduction() {
+			this.materialProduction = grid.getPartitionData(position.x, position.y).getPartitionSettings().getMaterialProductionSettings();
+			notifyLiseners();
+		}
+
+		@Override
+		public void updateUi() {
+			updateMaterialProduction();
 		}
 	}
 }
