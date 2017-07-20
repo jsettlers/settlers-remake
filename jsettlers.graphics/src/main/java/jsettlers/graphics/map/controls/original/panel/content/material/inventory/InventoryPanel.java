@@ -26,28 +26,26 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater.IUiStateListener;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
-import jsettlers.graphics.utils.UIUpdater;
-import jsettlers.graphics.utils.UiStateProvider;
-import jsettlers.graphics.utils.UiStateProvider.IUiStateListener;
 
 /**
  * This is a statistics panel that displays the number of items the user has on the current partition.
- * 
+ *
  * @author Michael Zangl
  */
 public class InventoryPanel extends AbstractContentProvider {
 
 	/**
 	 * This label displays the number of items in the current area.
-	 * 
-	 * @author Michael Zangl
 	 *
+	 * @author Michael Zangl
 	 */
-	public static class InventoryCount extends Label implements IUiStateListener<PartitionDataProvider> {
+	public static class InventoryCount extends Label implements IUiStateListener<IPartitionData> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -58,13 +56,13 @@ public class InventoryPanel extends AbstractContentProvider {
 		}
 
 		@Override
-		public String getDescription(float relativex, float relativey) {
+		public String getDescription(float relativeX, float relativeY) {
 			return Labels.getName(material, plural);
 		}
 
 		@Override
-		public void update(PartitionDataProvider partitionDataProvider) {
-			int amountOf = partitionDataProvider.getPartitionData().getAmountOf(material);
+		public void update(IPartitionData partitionData) {
+			int amountOf = partitionData != null ? partitionData.getAmountOf(material) : 0;
 			plural = amountOf != 1;
 			setText(amountOf + "");
 		}
@@ -72,10 +70,10 @@ public class InventoryPanel extends AbstractContentProvider {
 
 	/**
 	 * This is a button that displays the icon of a material.
-	 * 
+	 *
 	 * @author Michael Zangl
 	 */
-	public static class MaterialButton extends Button implements IUiStateListener<PartitionDataProvider> {
+	public static class MaterialButton extends Button implements IUiStateListener<IPartitionData> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -86,47 +84,19 @@ public class InventoryPanel extends AbstractContentProvider {
 		}
 
 		@Override
-		public String getDescription(float relativex, float relativey) {
+		public String getDescription(float relativeX, float relativeY) {
 			return Labels.getName(material, plural);
 		}
 
 		@Override
-		public void update(PartitionDataProvider partitionDataProvider) {
-			int amountOf = partitionDataProvider.getPartitionData().getAmountOf(material);
+		public void update(IPartitionData partitionData) {
+			int amountOf = partitionData != null ? partitionData.getAmountOf(material) : 0;
 			plural = amountOf != 1;
 		}
 	}
 
-	private static class PartitionDataProvider extends UiStateProvider<PartitionDataProvider> {
-
-		private IGraphicsGrid grid;
-		private ShortPoint2D position;
-		private IPartitionData partitionData;
-
-		void updatePosition(IGraphicsGrid grid, ShortPoint2D position) {
-			this.grid = grid;
-			this.position = position;
-			updatePartitionData();
-		}
-
-		void updatePartitionData() {
-			partitionData = grid.getPartitionData(position.x, position.y);
-			notifyLiseners();
-		}
-
-		@Override
-		public void updateUi() {
-			updatePartitionData();
-		}
-
-		public IPartitionData getPartitionData() {
-			return partitionData;
-		}
-	}
-
-	private final PartitionDataProvider partitionDataProvider = new PartitionDataProvider();
-	private final UIUpdater uiUpdater = UIUpdater.getUpdater(partitionDataProvider);
 	private final UIPanel panel;
+	private final UiContentUpdater<IPartitionData> uiContentUpdater = new UiContentUpdater<>((grid, position) -> grid.getPartitionData(position.x, position.y));
 
 	public InventoryPanel() {
 		panel = new MaterialInventoryLayout()._root;
@@ -134,14 +104,14 @@ public class InventoryPanel extends AbstractContentProvider {
 		// noinspection unchecked
 		stream(panel.getChildren())
 				.filter(c -> c instanceof IUiStateListener)
-				.map(c -> (IUiStateListener<PartitionDataProvider>) c)
-				.forEach(partitionDataProvider::addListener);
+				.map(c -> (IUiStateListener<IPartitionData>) c)
+				.forEach(uiContentUpdater::addListener);
 	}
 
 	@Override
 	public void showMapPosition(ShortPoint2D position, IGraphicsGrid grid) {
 		super.showMapPosition(position, grid);
-		partitionDataProvider.updatePosition(grid, position);
+		uiContentUpdater.updatePosition(grid, position);
 	}
 
 	@Override
@@ -156,11 +126,12 @@ public class InventoryPanel extends AbstractContentProvider {
 
 	@Override
 	public void contentShowing(ActionFireable actionFireable) {
-		uiUpdater.start(true);
+		uiContentUpdater.start();
 	}
 
 	@Override
 	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
-		uiUpdater.stop();
+		uiContentUpdater.stop();
 	}
+
 }

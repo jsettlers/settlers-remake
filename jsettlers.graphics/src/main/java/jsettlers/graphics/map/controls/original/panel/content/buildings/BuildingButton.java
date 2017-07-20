@@ -16,28 +16,30 @@ package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.Label.EHorizontalAlignment;
 import jsettlers.graphics.ui.Label.EVerticalAlignment;
-import jsettlers.graphics.utils.UiStateProvider;
 
 /**
  * This is a button to construct a building.
  *
  * @author Michael Zangl
  */
-public class BuildingButton extends Button implements UiStateProvider.IUiStateListener<BuildingBuildContent.BuildingCountStateProvider> {
+public class BuildingButton extends Button implements UiContentUpdater.IUiStateListener<IBuildingCounts> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
@@ -114,11 +116,11 @@ public class BuildingButton extends Button implements UiStateProvider.IUiStateLi
 	}
 
 	@Override
-	public void update(BuildingBuildContent.BuildingCountStateProvider buildingCount) {
-		if (buildingCount.shouldDisplayCounts()) {
-			int constructed = buildingCount.getCount(getBuildingType(), false);
-			int construction = buildingCount.getCount(getBuildingType(), true);
-			String text = constructed + (construction == 0 ? "" : "\n+" + construction);
+	public void update(IBuildingCounts buildingCounts) {
+		if (buildingCounts != null) {
+			int constructed = buildingCounts.buildingsInPartition(getBuildingType());
+			int inConstruction = buildingCounts.buildingsInPartitionUnderConstruction(getBuildingType());
+			String text = constructed + (inConstruction == 0 ? "" : "\n+" + inConstruction);
 			constructedLabel.setText(text);
 		} else {
 			constructedLabel.setText("");
