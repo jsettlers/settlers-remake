@@ -55,7 +55,7 @@ public abstract class UiContentUpdater<T> {
 		}
 	}
 
-	protected void updateUi() {
+	public void updateUi() {
 		currentData = getUpdatedData();
 		notifyListeners();
 	}
