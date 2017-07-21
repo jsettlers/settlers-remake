@@ -26,8 +26,9 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
-import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
-import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater.IUiStateListener;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater.IUiContentReceiver;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIPanel;
@@ -45,7 +46,7 @@ public class InventoryPanel extends AbstractContentProvider {
 	 *
 	 * @author Michael Zangl
 	 */
-	public static class InventoryCount extends Label implements IUiStateListener<IPartitionData> {
+	public static class InventoryCount extends Label implements IUiContentReceiver<IPartitionData> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -73,7 +74,7 @@ public class InventoryPanel extends AbstractContentProvider {
 	 *
 	 * @author Michael Zangl
 	 */
-	public static class MaterialButton extends Button implements IUiStateListener<IPartitionData> {
+	public static class MaterialButton extends Button implements IUiContentReceiver<IPartitionData> {
 
 		private final EMaterialType material;
 		private boolean plural;
@@ -96,15 +97,15 @@ public class InventoryPanel extends AbstractContentProvider {
 	}
 
 	private final UIPanel panel;
-	private final UiContentUpdater<IPartitionData> uiContentUpdater = new UiContentUpdater<>((grid, position) -> grid.getPartitionData(position.x, position.y));
+	private final UiLocationDependingContentUpdater<IPartitionData> uiContentUpdater = new UiLocationDependingContentUpdater<>((grid, position) -> grid.getPartitionData(position.x, position.y));
 
 	public InventoryPanel() {
 		panel = new MaterialInventoryLayout()._root;
 
 		// noinspection unchecked
 		stream(panel.getChildren())
-				.filter(c -> c instanceof IUiStateListener)
-				.map(c -> (IUiStateListener<IPartitionData>) c)
+				.filter(c -> c instanceof UiContentUpdater.IUiContentReceiver)
+				.map(c -> (IUiContentReceiver<IPartitionData>) c)
 				.forEach(uiContentUpdater::addListener);
 	}
 

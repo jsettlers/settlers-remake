@@ -28,7 +28,7 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
-import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.UIPanel;
 
 public class BuildingBuildContent extends AbstractContentProvider {
@@ -37,7 +37,7 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	private static final int COLUMNS = 2;
 
 	private final UIPanel panel;
-	private final UiContentUpdater<IBuildingCounts> uiContentUpdater = new UiContentUpdater<>((grid, position) -> grid.getPartitionData(position.x, position.y).getBuildingCounts());
+	private final UiLocationDependingContentUpdater<IBuildingCounts> uiContentUpdater = new UiLocationDependingContentUpdater<>((grid, position) -> grid.getPartitionData(position.x, position.y).getBuildingCounts());
 
 	private final ArrayList<BuildingButton> buttons = new ArrayList<>();
 	private EBuildingType activeBuilding;

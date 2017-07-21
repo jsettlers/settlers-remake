@@ -32,7 +32,8 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
-import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.SetMaterialProductionButton;
@@ -59,7 +60,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 	private static final float weaponsTitleMarginTop = weaponsTitleMarginTop_px / contentHeight_px;
 	private static final float weaponsTitleMarginBottom = weaponsTitleMarginBottom_px / contentHeight_px;
 
-	private static class Row extends UIPanel implements UiContentUpdater.IUiStateListener<IMaterialProductionSettings> {
+	private static class Row extends UIPanel implements UiContentUpdater.IUiContentReceiver<IMaterialProductionSettings> {
 		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
@@ -134,7 +135,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 	};
 
 	private final UIPanel panel;
-	private final UiContentUpdater<IMaterialProductionSettings> uiContentUpdater = new UiContentUpdater<>(
+	private final UiLocationDependingContentUpdater<IMaterialProductionSettings> uiContentUpdater = new UiLocationDependingContentUpdater<>(
 			((grid, position) -> grid.getPartitionData(position.x, position.y).getPartitionSettings().getMaterialProductionSettings()));
 
 	public MaterialsProductionPanel() {

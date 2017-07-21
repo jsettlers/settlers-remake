@@ -27,7 +27,7 @@ import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UiContentUpdater;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
@@ -39,7 +39,7 @@ import jsettlers.graphics.ui.Label.EVerticalAlignment;
  *
  * @author Michael Zangl
  */
-public class BuildingButton extends Button implements UiContentUpdater.IUiStateListener<IBuildingCounts> {
+public class BuildingButton extends Button implements UiContentUpdater.IUiContentReceiver<IBuildingCounts> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 

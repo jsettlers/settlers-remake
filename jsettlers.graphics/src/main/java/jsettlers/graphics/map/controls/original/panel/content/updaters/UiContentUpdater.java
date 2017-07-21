@@ -13,51 +13,36 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.graphics.map.controls.original.panel.content;
-
-import static java8.util.stream.StreamSupport.stream;
+package jsettlers.graphics.map.controls.original.panel.content.updaters;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.position.ShortPoint2D;
+import static java8.util.stream.StreamSupport.stream;
 
-public final class UiContentUpdater<T> {
+public abstract class UiContentUpdater<T> {
 	private static final int UPDATER_INTERVAL = 1000;
 
-	public interface IUiStateProvider<T> {
-		T getData(IGraphicsGrid grid, ShortPoint2D position);
-	}
-
-	public interface IUiStateListener<T> {
-		void update(T uiStateProvider);
+	public interface IUiContentReceiver<T> {
+		void update(T data);
 	}
 
 	private static Timer timer;
 	private TimerTask started;
 
-	private final IUiStateProvider<T> freshDataProvider;
-
 	private T currentData;
-	private IGraphicsGrid grid;
-	private ShortPoint2D position;
 
-	public UiContentUpdater(IUiStateProvider<T> freshDataProvider) {
-		this.freshDataProvider = freshDataProvider;
-	}
+	private final ArrayList<IUiContentReceiver<T>> listeners = new ArrayList<>();
 
-	private final ArrayList<IUiStateListener<T>> listeners = new ArrayList<>();
-
-	public void addListener(IUiStateListener<T> listener) {
+	public void addListener(IUiContentReceiver<T> listener) {
 		synchronized (listeners) {
 			listeners.add(listener);
 		}
 	}
 
-	public void addListeners(List<IUiStateListener<T>> listeners) {
+	public void addListeners(List<IUiContentReceiver<T>> listeners) {
 		synchronized (this.listeners) {
 			this.listeners.addAll(listeners);
 		}
@@ -70,21 +55,12 @@ public final class UiContentUpdater<T> {
 		}
 	}
 
-	public void updatePosition(IGraphicsGrid grid, ShortPoint2D position) {
-		this.grid = grid;
-		this.position = position;
-		updateUi();
-	}
-
-	private void updateUi() {
-		if (grid == null || position == null) {
-			currentData = null;
-		} else {
-			currentData = freshDataProvider.getData(grid, position);
-		}
-
+	protected void updateUi() {
+		currentData = getUpdatedData();
 		notifyListeners();
 	}
+
+	protected abstract T getUpdatedData();
 
 	public synchronized void start() {
 		if (started != null) {
