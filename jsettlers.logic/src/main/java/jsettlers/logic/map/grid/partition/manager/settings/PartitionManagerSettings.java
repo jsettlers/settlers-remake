@@ -16,7 +16,6 @@ package jsettlers.logic.map.grid.partition.manager.settings;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 

@@ -22,14 +22,17 @@ import jsettlers.common.buildings.MaterialsOfBuildings;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.panel.content.ActionProvidedBarFill;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater.IUiContentReceiver;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.Label;
@@ -76,19 +79,24 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 
 	private static final float rowTextMarginLeft = rowTextMarginLeft_px / contentWidth_px;
 
-	private static class BuildingDistributionSetting extends UIPanel {
+	private static class BuildingDistributionSettingPanel extends UIPanel {
 		private static final float textHeight = rowTextHeight_px / rowHeight_px;
 		private static final float textMarginBottom = rowTextMarginBottom_px / rowHeight_px;
 		private static final float textPercentageWidth = 30f / 84f;
 
-		private final Label lblPercentage;
+		private final Label lblPercentage = new Label("0%", EFontSize.NORMAL, EHorizontalAlignment.LEFT);
 		private final BarFill barFill;
 
-		BuildingDistributionSetting(EBuildingType buildingType) {
+		BuildingDistributionSettingPanel(EMaterialType materialType, EBuildingType buildingType, IPositionSupplier positionSupplier) {
+			barFill = new ActionProvidedBarFill(ratio -> {
+				ShortPoint2D position = positionSupplier.getPosition();
+				if (position != null) {
+					return new SetMaterialDistributionSettingsAction(position, materialType, buildingType, ratio);
+				} else {
+					return null;
+				}
+			});
 			Label rowTitle = new Label(Labels.getName(buildingType), EFontSize.SMALL, EHorizontalAlignment.LEFT);
-
-			lblPercentage = new Label("0%", EFontSize.NORMAL, EHorizontalAlignment.LEFT);
-			barFill = new BarFill();
 
 			addChild(rowTitle, 0f, 1f - textHeight, 1f, 1f);
 			addChild(lblPercentage, 0f, 0f, textPercentageWidth, 1f - (textHeight + textMarginBottom));
@@ -106,18 +114,21 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 		private static final float rowHeight = rowHeight_px / panelHeight_px;
 		private static final float rowSpacing = rowSpacingV_px / panelHeight_px;
 
-		private final List<BuildingDistributionSetting> buildingDistributionSettings;
+		private final List<BuildingDistributionSettingPanel> buildingDistributionSettings;
 
-		MaterialDistributionPanel(EMaterialType materialType) {
+		MaterialDistributionPanel(EMaterialType materialType, IPositionSupplier positionSupplier) {
 			EBuildingType[] buildingsForMaterial = MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType);
-			buildingDistributionSettings = J8Arrays.stream(buildingsForMaterial).map(BuildingDistributionSetting::new).collect(Collectors.toList());
+
+			buildingDistributionSettings = J8Arrays.stream(buildingsForMaterial)
+					.map(buildingType -> new BuildingDistributionSettingPanel(materialType, buildingType, positionSupplier))
+					.collect(Collectors.toList());
 
 			placeRows(buildingDistributionSettings);
 		}
 
-		private void placeRows(List<BuildingDistributionSetting> rows) {
+		private void placeRows(List<BuildingDistributionSettingPanel> rows) {
 			float top = 1f;
-			for (BuildingDistributionSetting row : rows) {
+			for (BuildingDistributionSettingPanel row : rows) {
 				addChild(row, 0f, top - rowHeight, 1f, top);
 				top -= rowHeight + rowSpacing;
 			}
@@ -135,7 +146,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 		private final MaterialButton materialButton;
 		private final MaterialDistributionPanel configurationPanel;
 
-		private MaterialDistributionTab(EMaterialType materialType) {
+		private MaterialDistributionTab(EMaterialType materialType, IPositionSupplier positionSupplier) {
 			MaterialDistributionTab thisTab = this;
 			materialButton = new MaterialButton(new ExecutableAction() {
 				@Override
@@ -144,7 +155,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 				}
 			}, materialType);
 
-			configurationPanel = new MaterialDistributionPanel(materialType);
+			configurationPanel = new MaterialDistributionPanel(materialType, positionSupplier);
 		}
 	}
 
@@ -159,7 +170,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 	}
 
 	private UIPanel buildPanel() {
-		List<MaterialDistributionTab> materialDistributionTabs = createTabs();
+		List<MaterialDistributionTab> materialDistributionTabs = createTabs(uiContentUpdater::getPosition);
 
 		UIPanel panel = new UIPanel();
 		panel.addChild(new Label(Labels.getString("controlpanel_distribution_title"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);
@@ -174,8 +185,10 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 		return panel;
 	}
 
-	private List<MaterialDistributionTab> createTabs() {
-		return J8Arrays.stream(MATERIAL_TYPES_FOR_DISTRIBUTION).map(MaterialDistributionTab::new).collect(Collectors.toList());
+	private List<MaterialDistributionTab> createTabs(IPositionSupplier positionSupplier) {
+		return J8Arrays.stream(MATERIAL_TYPES_FOR_DISTRIBUTION)
+				.map(materialType -> new MaterialDistributionTab(materialType, positionSupplier))
+				.collect(Collectors.toList());
 	}
 
 	private void setCurrentTab(MaterialDistributionTab tab) {

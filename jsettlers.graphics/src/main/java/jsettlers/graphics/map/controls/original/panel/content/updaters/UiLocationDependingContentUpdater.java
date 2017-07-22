@@ -47,4 +47,8 @@ public class UiLocationDependingContentUpdater<T> extends UiContentUpdater<T> {
 			return null;
 		}
 	}
+
+	public ShortPoint2D getPosition() {
+		return position;
+	}
 }

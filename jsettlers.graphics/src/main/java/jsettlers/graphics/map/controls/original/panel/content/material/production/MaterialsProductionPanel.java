@@ -14,10 +14,7 @@
  */
 package jsettlers.graphics.map.controls.original.panel.content.material.production;
 
-import java.util.Arrays;
-
 import go.graphics.text.EFontSize;
-
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -32,12 +29,15 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.panel.content.ActionProvidedBarFill;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.SetMaterialProductionButton;
 import jsettlers.graphics.ui.UIPanel;
+
+import java.util.Arrays;
 
 public class MaterialsProductionPanel extends AbstractContentProvider {
 	private static final float contentHeight_px = 216;
@@ -94,7 +94,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 			arrows.addChild(upButton, 0f, 0.5f, 1f, 1f);
 			arrows.addChild(downButton, 0f, 0f, 1f, 0.5f);
 
-			barFill = new SetMaterialProductionRatioBarFill(type, positionSupplier);
+			barFill = new ActionProvidedBarFill(fillForClick -> new SetMaterialProductionAction(position, materialType, SetMaterialProductionAction.EMaterialProductionType.SET_RATIO, fillForClick));
 
 			float left = 0;
 			addChild(goodsIcon, left, 0f, left += iconWidth, 1f);
