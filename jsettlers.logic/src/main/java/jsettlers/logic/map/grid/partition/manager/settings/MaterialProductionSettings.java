@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,130 +14,81 @@
  */
 package jsettlers.logic.map.grid.partition.manager.settings;
 
-import static java8.util.stream.StreamSupport.stream;
-
 import java.io.Serializable;
-import java.util.EnumSet;
 
 import jsettlers.common.buildings.IMaterialProductionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.utils.collections.CollectionUtils;
-import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.grid.partition.manager.settings.RelativeSettings.OrdinalToTypeMapper;
 
-/**
- * @author codingberlin
- */
 public class MaterialProductionSettings implements IMaterialProductionSettings, Serializable {
-	private static final long serialVersionUID = 5315922528738308895L;
+	private static final int MAXIMUM_ABSOLUTE_REQUEST_VALUE = 99;
+	private static final OrdinalToTypeMapper<EMaterialType> ordinalToTypeMapper = ordinal -> EMaterialType.VALUES[ordinal];
 
-	private static final int MAXIMUM_FUTURE_PRODUCTION = 99;
-	private static final float RELATIVE_SCALE_FACTOR = 100;
+	private final RelativeSettings<EMaterialType> relativeWeaponRequests = new RelativeSettings<>(EMaterialType.NUMBER_OF_MATERIALS, ordinalToTypeMapper, false);
+	private final RelativeSettings<EMaterialType> relativeToolRequests = new RelativeSettings<>(EMaterialType.NUMBER_OF_MATERIALS, ordinalToTypeMapper, false);
 
-	private final int[] relativeProductionRequests = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
-	private final int[] absoluteProductionRequests = new int[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+	private final RelativeSettings<EMaterialType> absoluteWeaponRequests = new RelativeSettings<>(EMaterialType.NUMBER_OF_MATERIALS, ordinalToTypeMapper, true, 0, MAXIMUM_ABSOLUTE_REQUEST_VALUE);
+	private final RelativeSettings<EMaterialType> absoluteToolRequests = new RelativeSettings<>(EMaterialType.NUMBER_OF_MATERIALS, ordinalToTypeMapper, true, 0, MAXIMUM_ABSOLUTE_REQUEST_VALUE);
 
 	public MaterialProductionSettings() {
-		relativeProductionRequests[EMaterialType.SWORD.ordinal] = 100;
-		relativeProductionRequests[EMaterialType.SPEAR.ordinal] = 30;
-		relativeProductionRequests[EMaterialType.BOW.ordinal] = 70;
+		relativeWeaponRequests.setUserValue(EMaterialType.SWORD, 1f);
+		relativeWeaponRequests.setUserValue(EMaterialType.BOW, 0.7f);
+		relativeWeaponRequests.setUserValue(EMaterialType.SPEAR, 0.3f);
+	}
+
+	private RelativeSettings<EMaterialType> getRelativeSettingsForType(EMaterialType type) {
+		return EMaterialType.WEAPONS.contains(type) ? relativeWeaponRequests : relativeToolRequests;
+	}
+
+	private RelativeSettings<EMaterialType> getAbsoluteSettingsForType(EMaterialType type) {
+		return EMaterialType.WEAPONS.contains(type) ? absoluteWeaponRequests : absoluteToolRequests;
+	}
+
+	public void setRelativeProductionRequest(EMaterialType type, float userValue) {
+		getRelativeSettingsForType(type).setUserValue(type, userValue);
 	}
 
 	@Override
 	public float getRelativeProductionRequest(EMaterialType type) {
-		return relativeProductionRequests[type.ordinal] / RELATIVE_SCALE_FACTOR;
+		return getRelativeSettingsForType(type).getUserValue(type);
 	}
 
 	@Override
 	public float resultingRatioOfMaterial(EMaterialType type) {
-		if (EMaterialType.WEAPONS.contains(type)) {
-			return calculateDistributionValue(type, EMaterialType.WEAPONS);
+		return getRelativeSettingsForType(type).getProbability(type);
+	}
 
-		} else if (EMaterialType.TOOLS.contains(type)) {
-			return calculateDistributionValue(type, EMaterialType.TOOLS);
+	public void setAbsoluteProductionRequest(EMaterialType type, int count) {
+		getAbsoluteSettingsForType(type).setUserValue(type, count);
+	}
 
-		} else {
-			return 0;
-		}
+	public void increaseAbsoluteProductionRequest(EMaterialType type) {
+		getAbsoluteSettingsForType(type).changeUserValue(type, +1);
+	}
+
+	public void decreaseAbsoluteProductionRequest(EMaterialType type) {
+		getAbsoluteSettingsForType(type).changeUserValue(type, -1);
 	}
 
 	@Override
 	public int getAbsoluteProductionRequest(EMaterialType type) {
-		return absoluteProductionRequests[type.ordinal];
-	}
-
-	public void increaseAbsoluteProductionRequest(EMaterialType type) {
-		setAbsoluteProductionRequest(type, absoluteProductionRequests[type.ordinal] + 1);
-	}
-
-	public void decreaseAbsoluteProductionRequest(EMaterialType type) {
-		setAbsoluteProductionRequest(type, absoluteProductionRequests[type.ordinal] - 1);
-	}
-
-	public void setAbsoluteProductionRequest(EMaterialType type, int count) {
-		absoluteProductionRequests[type.ordinal] = Math.min(MAXIMUM_FUTURE_PRODUCTION, Math.max(0, count));
-	}
-
-	public void setRelativeProductionRequest(EMaterialType type, float ratio) {
-		relativeProductionRequests[type.ordinal] = (int) (ratio * RELATIVE_SCALE_FACTOR);
+		return (int) getAbsoluteSettingsForType(type).getUserValue(type);
 	}
 
 	public EMaterialType getWeaponToProduce() {
-		EMaterialType weapon = getAbsolutelyRequestedMaterial(EMaterialType.WEAPONS);
+		EMaterialType weapon = absoluteWeaponRequests.drawRandom();
 		if (weapon != null) {
 			return weapon;
 		} else {
-			return getRelativelyRequestedMaterial(EMaterialType.WEAPONS);
+			return relativeWeaponRequests.drawRandom();
 		}
 	}
 
-	public EMaterialType getAbsolutelyRequestedMaterial(EnumSet<EMaterialType> materialGroup) {
-		return getMaterialOfGroupToProduce(materialGroup, absoluteProductionRequests);
+	public EMaterialType drawRandomAbsolutelyRequestedTool() {
+		return absoluteToolRequests.drawRandom();
 	}
 
-	public EMaterialType getRelativelyRequestedMaterial(EnumSet<EMaterialType> materialGroup) {
-		return getMaterialOfGroupToProduce(materialGroup, relativeProductionRequests);
+	public EMaterialType drawRandomRelativelyRequestedTool() {
+		return relativeToolRequests.drawRandom();
 	}
-
-	private EMaterialType getMaterialOfGroupToProduce(EnumSet<EMaterialType> materialGroup, int[] productionRequests) {
-		float[] materialDistribution = calculateDistribution(materialGroup, productionRequests);
-
-		float random = MatchConstants.random().nextFloat();
-		float distributionSum = 0;
-		int i = 0;
-
-		for (EMaterialType material : materialGroup) {
-			distributionSum += materialDistribution[i];
-			if (random <= distributionSum) {
-				decreaseAbsoluteProductionRequest(material);
-				return material;
-			}
-			i++;
-		}
-		return null;
-	}
-
-	private float[] calculateDistribution(EnumSet<EMaterialType> materialGroup, int[] valuesForMaterials) {
-		int sum = calculateSumOfGroup(materialGroup, valuesForMaterials);
-		float[] materialDistribution = new float[materialGroup.size()];
-
-		if (sum <= 0) {
-			return materialDistribution;
-		}
-
-		CollectionUtils.iterateWithIndex(materialGroup, (i, material) -> materialDistribution[i] = valuesForMaterials[material.ordinal] / (float) sum);
-		return materialDistribution;
-	}
-
-	private int calculateSumOfGroup(EnumSet<EMaterialType> materialGroup, int[] valuesForMaterials) {
-		return stream(materialGroup).mapToInt(materialType -> valuesForMaterials[materialType.ordinal]).sum();
-	}
-
-	private float calculateDistributionValue(EMaterialType materialType, EnumSet<EMaterialType> materialGroup) {
-		int sum = calculateSumOfGroup(materialGroup, relativeProductionRequests);
-		if (sum == 0) {
-			return 0;
-		}
-		return (relativeProductionRequests[materialType.ordinal] / (float) sum);
-	}
-
 }
