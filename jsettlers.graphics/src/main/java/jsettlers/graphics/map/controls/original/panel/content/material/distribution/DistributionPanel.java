@@ -14,13 +14,14 @@
  */
 package jsettlers.graphics.map.controls.original.panel.content.material.distribution;
 
+import java.util.List;
+
 import go.graphics.text.EFontSize;
-import java8.util.J8Arrays;
-import java8.util.stream.Collectors;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.MaterialsOfBuildings;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IMaterialsDistributionSettings;
+import jsettlers.common.map.partition.IMaterialDistributionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.IPositionSupplier;
 import jsettlers.common.position.ShortPoint2D;
@@ -30,18 +31,19 @@ import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton;
 import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.ActionProvidedBarFill;
 import jsettlers.graphics.map.controls.original.panel.content.BarFill;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
-import jsettlers.graphics.map.controls.original.panel.content.ActionProvidedBarFill;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater.IUiContentReceiver;
 import jsettlers.graphics.map.controls.original.panel.content.updaters.UiLocationDependingContentUpdater;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.Label.EHorizontalAlignment;
 import jsettlers.graphics.ui.UIPanel;
 
-import java.util.List;
+import java8.util.J8Arrays;
+import java8.util.stream.Collectors;
 
-public class DistributionPanel extends AbstractContentProvider implements IUiContentReceiver<IMaterialsDistributionSettings> {
+public class DistributionPanel extends AbstractContentProvider implements IUiContentReceiver<IMaterialDistributionSettings> {
 	private static final EMaterialType[] MATERIAL_TYPES_FOR_DISTRIBUTION = new EMaterialType[] {
 			EMaterialType.COAL,
 			EMaterialType.IRON,
@@ -86,8 +88,10 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 
 		private final Label lblPercentage = new Label("0%", EFontSize.NORMAL, EHorizontalAlignment.LEFT);
 		private final BarFill barFill;
+		private final EBuildingType buildingType;
 
 		BuildingDistributionSettingPanel(EMaterialType materialType, EBuildingType buildingType, IPositionSupplier positionSupplier) {
+			this.buildingType = buildingType;
 			barFill = new ActionProvidedBarFill(ratio -> {
 				ShortPoint2D position = positionSupplier.getPosition();
 				if (position != null) {
@@ -103,9 +107,12 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 			addChild(barFill, textPercentageWidth, 0f, 1f, 1f - (textHeight + textMarginBottom));
 		}
 
-		void setProbability(float probability) {
+		void update(IMaterialDistributionSettings distributionSettings) {
+			float probability = distributionSettings.getDistributionProbability(buildingType);
+			float userBarValue = distributionSettings.getUserConfiguredDistributionValue(buildingType);
+
 			lblPercentage.setText(Integer.toString((int) (probability * 100)) + "%");
-			barFill.setBarFill(probability, probability);
+			barFill.setBarFill(userBarValue, probability);
 		}
 	}
 
@@ -134,10 +141,9 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 			}
 		}
 
-		public void update(IMaterialsDistributionSettings materialsDistributionSettings) {
+		public void update(IMaterialDistributionSettings materialsDistributionSettings) {
 			for (int i = 0; i < buildingDistributionSettings.size(); i++) {
-				float probability = materialsDistributionSettings.getProbablity(i);
-				buildingDistributionSettings.get(i).setProbability(probability);
+				buildingDistributionSettings.get(i).update(materialsDistributionSettings);
 			}
 		}
 	}
@@ -160,7 +166,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 	}
 
 	private final UIPanel panel;
-	private final UiLocationDependingContentUpdater<IMaterialsDistributionSettings> uiContentUpdater = new UiLocationDependingContentUpdater<>(this::currentDistributionSettingsProvider);
+	private final UiLocationDependingContentUpdater<IMaterialDistributionSettings> uiContentUpdater = new UiLocationDependingContentUpdater<>(this::currentDistributionSettingsProvider);
 
 	private MaterialDistributionTab currentTab;
 
@@ -207,7 +213,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 	}
 
 	@Override
-	public void update(IMaterialsDistributionSettings materialsDistributionSettings) {
+	public void update(IMaterialDistributionSettings materialsDistributionSettings) {
 		if (currentTab != null) {
 			if (materialsDistributionSettings == null) {
 				setCurrentTab(null);
@@ -217,7 +223,7 @@ public class DistributionPanel extends AbstractContentProvider implements IUiCon
 		}
 	}
 
-	private IMaterialsDistributionSettings currentDistributionSettingsProvider(IGraphicsGrid grid, ShortPoint2D position) {
+	private IMaterialDistributionSettings currentDistributionSettingsProvider(IGraphicsGrid grid, ShortPoint2D position) {
 		if (currentTab != null) {
 			if (grid.getPlayerIdAt(position.x, position.y) >= 0) {
 				return grid.getPartitionData(position.x, position.y).getPartitionSettings().getDistributionSettings(currentTab.materialButton.getMaterial());

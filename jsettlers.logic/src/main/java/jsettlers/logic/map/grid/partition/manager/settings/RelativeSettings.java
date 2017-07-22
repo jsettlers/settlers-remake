@@ -49,9 +49,6 @@ public class RelativeSettings<T extends Enum> implements Serializable {
 
 	private void setUserValue(int index, float value) {
 		sum -= userValues[index];
-		if (sum < 0) {
-			System.out.println("SUM IS < 0: " + sum);
-		}
 		userValues[index] = Math.min(upperBound, Math.max(lowerBound, value));
 		sum += userValues[index];
 	}

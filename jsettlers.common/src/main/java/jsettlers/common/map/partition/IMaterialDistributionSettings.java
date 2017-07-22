@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -18,37 +18,22 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 
 /**
- * Interface to supply distribution informations. Instances of this interface are used to get the distribution probabilitys for the buildings that can
- * receive a specific {@link EMaterialType}.
+ * Interface to supply distribution information. Instances of this interface are used to get the distribution probabilities for the buildings that can receive a specific {@link EMaterialType}.
  * 
  * @author Andreas Eberle
  * 
  */
-public interface IMaterialsDistributionSettings {
-	/**
-	 * 
-	 * @return Returns the number of buildings that can request the material this setting is used for.
-	 */
-	int getNumberOfBuildingTypes();
+public interface IMaterialDistributionSettings {
 
 	/**
-	 * 
-	 * @param index
-	 *            Index in the interval [0, {@link #getNumberOfBuildingTypes()} - 1].
-	 * @return Returns the {@link EBuildingType} represented by the given index.
+	 * This returns the configured ratio of the material which means how much the material bar is filled.
 	 */
-	EBuildingType getBuildingType(int index);
+	float getUserConfiguredDistributionValue(EBuildingType buildingType);
 
 	/**
-	 * 
-	 * @param index
-	 *            Index of the {@link EBuildingType}. The index has to be in the interval [0, {@link #getNumberOfBuildingTypes()} - 1]. <br>
-	 *            To get the {@link EBuildingType} call {@link #getBuildingType(index)}
-	 * @return Returns the probability that a material should be send to a requester of the {@link EBuildingType} represented by the given index. <br>
-	 * 
-	 * @see #getBuildingType(int)
+	 * This returns the resulting ratio of the material in relation to the other weapons. E.g. when you have 100% swords, 100% bows and 100% spears this would return 0.33f for bows.
 	 */
-	float getProbablity(int index);
+	float getDistributionProbability(EBuildingType buildingType);
 
 	/**
 	 * 

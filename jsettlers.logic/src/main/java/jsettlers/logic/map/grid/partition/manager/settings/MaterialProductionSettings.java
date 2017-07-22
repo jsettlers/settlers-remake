@@ -44,17 +44,17 @@ public class MaterialProductionSettings implements IMaterialProductionSettings, 
 		return EMaterialType.WEAPONS.contains(type) ? absoluteWeaponRequests : absoluteToolRequests;
 	}
 
-	public void setRelativeProductionRequest(EMaterialType type, float userValue) {
+	public void setUserConfiguredRelativeRequestValue(EMaterialType type, float userValue) {
 		getRelativeSettingsForType(type).setUserValue(type, userValue);
 	}
 
 	@Override
-	public float getRelativeProductionRequest(EMaterialType type) {
+	public float getUserConfiguredRelativeRequestValue(EMaterialType type) {
 		return getRelativeSettingsForType(type).getUserValue(type);
 	}
 
 	@Override
-	public float resultingRatioOfMaterial(EMaterialType type) {
+	public float getRelativeRequestProbability(EMaterialType type) {
 		return getRelativeSettingsForType(type).getProbability(type);
 	}
 

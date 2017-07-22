@@ -112,7 +112,7 @@ public class MaterialsProductionPanel extends AbstractContentProvider {
 			if (materialProductionProvider != null) {
 				quantity = materialProductionProvider.getAbsoluteProductionRequest(type);
 				lblQuantity.setText(Integer.toString(quantity));
-				barFill.setBarFill(materialProductionProvider.getRelativeProductionRequest(type), materialProductionProvider.resultingRatioOfMaterial(type));
+				barFill.setBarFill(materialProductionProvider.getUserConfiguredRelativeRequestValue(type), materialProductionProvider.getRelativeRequestProbability(type));
 			} else {
 				quantity = 0;
 				lblQuantity.setText("");

@@ -279,7 +279,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-//			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getRatio()));
+			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getBuildingType(), a.getRatio()));
 			break;
 		}
 
