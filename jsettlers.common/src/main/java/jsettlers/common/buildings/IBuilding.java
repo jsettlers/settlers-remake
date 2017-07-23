@@ -87,7 +87,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 *
 	 * @return Return list of required material.
 	 */
-	ArrayList<EMaterialType> getRemainingOrder();
+	List<EMaterialType> getRemainingOrder();
 
 	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.

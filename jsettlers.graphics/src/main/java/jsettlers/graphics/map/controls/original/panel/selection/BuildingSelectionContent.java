@@ -352,11 +352,11 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			IBuilding.IResourceBuilding resourceBuilding = (IBuilding.IResourceBuilding) building;
 			text = Labels.getString("productivity", (int) (resourceBuilding.getProductivity() * 100));
 		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-			ArrayList<EMaterialType> list = (building).getRemainingOrder();
+			List<EMaterialType> list = (building).getRemainingOrder();
 			text = Labels.getString("materials_required");
 			layout.materialText.setText(text);
 			if (list != null) {
-				addShipRequestStacks(layout.materialArea, list);
+				addShipRequestStacks(layout.materialArea, (ArrayList)list);
 			}
 			BuildingBackgroundPanel root = layout._root;
 			return root;

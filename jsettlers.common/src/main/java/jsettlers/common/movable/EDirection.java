@@ -180,12 +180,8 @@ public enum EDirection {
 	}
 
 	public static EDirection getDirection(int dx, int dy) {
-		int max = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
-		int deltaX = max > 0 ? dx / max : dx;
-		int deltaY = max > 0 ? dy / max : dy;
-		if (deltaX == -deltaY) deltaY = 0;
 		for (EDirection currDir : VALUES) {
-			if (currDir.gridDeltaX == deltaX && currDir.gridDeltaY == deltaY) {
+			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
 				return currDir;
 			}
 		}

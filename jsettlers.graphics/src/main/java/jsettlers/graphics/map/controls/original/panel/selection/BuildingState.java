@@ -58,7 +58,7 @@ public class BuildingState {
 	 */
 	public static class StackState {
 		private final EMaterialType type;
-		private int count;
+		private final int count;
 		private final boolean offering;
 
 		/**
@@ -96,10 +96,6 @@ public class BuildingState {
 		 */
 		public int getCount() {
 			return count;
-		}
-
-		public void setCount(int count) {
-			this.count = count;
 		}
 
 		/**

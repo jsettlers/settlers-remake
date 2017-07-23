@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.manageables.interfaces;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -24,8 +24,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.DockPosition;
+import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 
 /**
@@ -78,7 +78,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	void setOrder(EMaterialType[] list, EMovableType type);
 
-	ArrayList<EMaterialType> getRemainingOrder();
+	List<EMaterialType> getRemainingOrder();
 
 	void reduceOrder();
 
