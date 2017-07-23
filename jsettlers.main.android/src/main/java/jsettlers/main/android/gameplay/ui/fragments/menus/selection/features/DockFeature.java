@@ -52,11 +52,6 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 
 	private Snackbar snackbar;
 
-	//this.buttonDockPosition = new jsettlers.graphics.ui.SimpleActionButton(
-	// jsettlers.common.menu.action.EActionType.ASK_SET_DOCK,
-	// jsettlers.common.images.ImageLink.fromName("original_3_GUI_201", 0),
-	// jsettlers.common.images.ImageLink.fromName("original_3_GUI_201", 0));
-
 	public DockFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls, TaskControls taskControls) {
 		super(view, building, menuNavigator);
 		this.drawControls = drawControls;
@@ -66,7 +61,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		placeDockButton = (InGameButton) getView().findViewById(R.id.imageView_placeDock);
 		placeDockButton.setVisibility(View.VISIBLE);
 		placeDockButton.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK)));
-		//		OriginalImageProvider.get(ImageLink.fromName("original_3_GUI_201", 0)).setAsImage(placeDockButton.getImageView());
+		OriginalImageProvider.get(ImageLink.fromName("original_3_GUI_390", 0)).setAsImage(placeDockButton.getImageView());
 
 		ferryImageShip = (ImageView) getView().findViewById(R.id.imageView_ferry);
 		ferryImageShip.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_FERRY)));
