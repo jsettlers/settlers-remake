@@ -290,8 +290,7 @@ public final class MainGrid implements Serializable {
 		}
 		return isWaterSafe(x - 1, y - 1) && isWaterSafe(x, y - 1) && isWaterSafe(x - 1, y) && isWaterSafe(x, y)
 				&& isWaterSafe(x + 1, y) && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
-				&& (object == null || type != EMapObjectType.CARGO_BOAT &&
-				type != EMapObjectType.FERRY && type != EMapObjectType.DOCK);
+				&& (object == null || type != EMapObjectType.DOCK);
 	}
 
 	public boolean isWaterSafe(int x, int y) {

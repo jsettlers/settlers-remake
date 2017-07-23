@@ -180,7 +180,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	public ArrayList<EMaterialType> getRemainingOrder() {
+	public List<EMaterialType> getRemainingOrder() {
 		if (order == null) {
 			return null;
 		}

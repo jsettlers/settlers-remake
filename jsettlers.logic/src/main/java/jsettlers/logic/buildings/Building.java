@@ -651,7 +651,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	public ArrayList<EMaterialType> getRemainingOrder() {
+	public List<EMaterialType> getRemainingOrder() {
 		return ((WorkerBuilding) this).getRemainingOrder();
 	}
 

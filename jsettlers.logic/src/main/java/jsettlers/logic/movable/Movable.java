@@ -526,7 +526,7 @@ public final class Movable implements ILogicMovable {
 
 				} else if (pushingMovable.getMovableType().isPlayerControllable()
 						|| strategy.isValidPosition(pushingMovable.getPosition())) { // exchange positions
-					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPosition());
+					EDirection directionToPushing = EDirection.getApproxDirection(this.position, pushingMovable.getPosition());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
 					goInDirection(directionToPushing, EGoInDirectionMode.GO_IF_ALLOWED_WAIT_TILL_FREE);
 					return true;
@@ -602,7 +602,7 @@ public final class Movable implements ILogicMovable {
 
 	private boolean goToRandomDirection(ILogicMovable pushingMovable) {
 		int offset = MatchConstants.random().nextInt(EDirection.NUMBER_OF_DIRECTIONS);
-		EDirection pushedFromDir = EDirection.getDirection(this.getPosition(), pushingMovable.getPosition());
+		EDirection pushedFromDir = EDirection.getApproxDirection(this.getPosition(), pushingMovable.getPosition());
 		if (pushedFromDir == null) {
 			return false;
 		}
