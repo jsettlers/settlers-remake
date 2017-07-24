@@ -30,6 +30,7 @@ import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -190,7 +191,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case BUILD_SHIP:
-			building.buildShipAction();
+			if (building instanceof DockyardBuilding) {
+				((DockyardBuilding) building).buildShipAction();
+			}
 			jobFinished();
 			break;
 

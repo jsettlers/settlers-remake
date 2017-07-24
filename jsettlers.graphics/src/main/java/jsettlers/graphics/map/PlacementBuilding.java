@@ -21,7 +21,6 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.player.IPlayer.DummyPlayer;
@@ -138,10 +137,5 @@ public class PlacementBuilding implements IBuilding, IBuilding.IMill {
 	@Override
 	public boolean cannotWork() {
 		return false;
-	}
-
-	@Override
-	public List<EMaterialType> getRemainingOrder() {
-		return this.getRemainingOrder();
 	}
 }
