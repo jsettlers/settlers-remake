@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -32,7 +33,7 @@ import jsettlers.logic.player.Player;
 /**
  * An extension to the worker building for dockyards
  */
-public class DockyardBuilding extends WorkerBuilding {
+public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction {
 	private static final long serialVersionUID = -6262522980943839741L;
 	
 	private EMaterialType[] order = null;

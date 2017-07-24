@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.common.buildings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.map.partition.IStockSettings;
@@ -169,5 +170,14 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 * @return True for sea trading buildings.
 		 */
 		boolean isSeaTrading();
+	}
+
+	interface IShipConstruction extends IBuilding {
+		/**
+		 * Gets the remeining amount of material requested for the current ship to build
+		 *
+		 * @return The remaining order or null.
+		 */
+		ArrayList<EMaterialType> getRemainingOrder();
 	}
 }

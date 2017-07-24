@@ -51,6 +51,7 @@ public class BuildingState {
 	private final int[] tradingCounts;
 	private final boolean isSeaTrading;
 	private final boolean isDockyard;
+	private final boolean isWorkingDockyard;
 
 	/**
 	 * This is the state for a building stack.
@@ -169,6 +170,8 @@ public class BuildingState {
 		}
 		isSeaTrading = building instanceof IBuilding.ITrading && ((IBuilding.ITrading) building).isSeaTrading();
 		isDockyard = building.getBuildingType() == EBuildingType.DOCKYARD;
+		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction
+				&& ((IBuilding.IShipConstruction) building).getRemainingOrder() != null);
 	}
 
 	private int[] computeTradingCounts(IBuilding building) {
@@ -347,6 +350,6 @@ public class BuildingState {
 	 * @return <code>true</code> if this dockyard is currently building a ship.
 	 */
 	public boolean isWorkingDockyard() {
-		return isDockyard;
+		return isWorkingDockyard;
 	}
 }
