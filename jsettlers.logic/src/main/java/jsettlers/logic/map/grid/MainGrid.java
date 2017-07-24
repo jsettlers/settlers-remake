@@ -1867,7 +1867,7 @@ public final class MainGrid implements Serializable {
 					ferryPosition = direction.rotateRight(r1).getNextHexPoint(position);
 				}
 				ship = getMovableGrid().getMovableAt(ferryPosition.x, ferryPosition.y);
-				if (ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
+				if (ship != null && ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
 					for (int r2 = 0; r2 < EDirection.NUMBER_OF_DIRECTIONS && searching; r2++) { // search ferry entrance
 						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 2);
 						if (!this.isBlocked(entrance.x, entrance.y)) {
