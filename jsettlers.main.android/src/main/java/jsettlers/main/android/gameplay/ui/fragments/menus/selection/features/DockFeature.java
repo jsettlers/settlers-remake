@@ -51,6 +51,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	private final DrawControls drawControls;
 	private final ActionControls actionControls;
 	private final TaskControls taskControls;
+	private final MenuNavigator menuNavigator;
 
 	private final InGameButton placeDockButton;
 	private final ImageView ferryImageShip;
@@ -65,10 +66,11 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		this.drawControls = drawControls;
 		this.actionControls = actionControls;
 		this.taskControls = taskControls;
+		this.menuNavigator = menuNavigator;
 
 		placeDockButton = (InGameButton) getView().findViewById(R.id.imageView_placeDock);
 		placeDockButton.setVisibility(View.VISIBLE);
-		placeDockButton.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK)));
+		placeDockButton.setOnClickListener(this::setDockClicked);
 		OriginalImageProvider.get(placeDockImageLink).setAsImage(placeDockButton.getImageView());
 
 		ferryImageShip = (ImageView) getView().findViewById(R.id.imageView_ferry);
@@ -142,6 +144,11 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 
 			currentOrderedShip = orderedShip;
 		}
+	}
+
+	private void setDockClicked(View view) {
+		actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK));
+		menuNavigator.dismissMenu();
 	}
 
 	private void dismissSnackbar() {

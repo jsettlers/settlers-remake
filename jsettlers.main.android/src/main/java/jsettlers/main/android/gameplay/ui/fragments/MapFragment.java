@@ -190,13 +190,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			return true;
 		}
 
-		if (selectionControls.getCurrentSelection() != null) {
-			selectionControls.deselect();
+		if (isMenuOpen()) {
+			dismissMenu();
 			return true;
 		}
 
-		if (isMenuOpen()) {
-			dismissMenu();
+		if (selectionControls.getCurrentSelection() != null) {
+			selectionControls.deselect();
 			return true;
 		}
 
