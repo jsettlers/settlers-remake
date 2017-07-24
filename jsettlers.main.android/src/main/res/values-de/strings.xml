@@ -121,4 +121,6 @@
     <string name="service_description">JSettlers Spiel-Service, welcher das aktuelle Spiel ausführt.</string>
     <string name="dock">Dock</string>
     <string name="destination">Ziel</string>
+    <string name="global_stock_message">Die globalen Lagereinstellungen können nur in einer eigenen Siedlung gesetzt werden.</string>
+    <string name="goods_stock_title">Globale Lagereinstellungen</string>
 </resources>
