@@ -83,4 +83,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	void reduceOrder();
 
 	void buildShipAction();
+
+	EMovableType getOrderedShipType();
 }

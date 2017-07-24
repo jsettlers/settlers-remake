@@ -216,6 +216,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			if (this.ship.getStateProgress() >= .99) {
 				this.ship = null;
 				this.order = null;
+				this.orderedShipType = null;
 			}
 		}
 	}
@@ -256,5 +257,9 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 		}
 		return null;
+	}
+
+	public EMovableType getOrderedShipType() {
+		return orderedShipType;
 	}
 }
