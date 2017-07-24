@@ -16,6 +16,7 @@
 package jsettlers.main.android.core.controls;
 
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Created by tompr on 27/05/2017.
@@ -25,6 +26,8 @@ public interface PositionControls {
     boolean isInPlayerPartition();
     
     IPartitionData getCurrentPartitionData();
+
+    ShortPoint2D getCurrentPosition();
 
     void addPositionChangedListener(PositionChangedListener positionChangedListener);
 

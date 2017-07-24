@@ -26,6 +26,7 @@ import org.androidannotations.annotations.EFragment;
 
 import java.util.LinkedList;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.main.android.R;
@@ -35,6 +36,7 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.TaskControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.DestroyFeature;
+import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.DockFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.MaterialsFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.OccupiedFeature;
 import jsettlers.main.android.gameplay.ui.fragments.menus.selection.features.PriorityFeature;
@@ -96,11 +98,15 @@ public class BuildingSelectionFragment extends SelectionFragment {
 
 		} else if (building instanceof IBuilding.IStock) {
 			layoutInflater.inflate(R.layout.menu_selection_building_stock, rootView, true);
-			features.add(new StockFeature(getView(), building, menuNavigator, drawControls, actionControls));
+			features.add(new StockFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls));
 
 		} else if (building instanceof IBuilding.ITrading) {
 			layoutInflater.inflate(R.layout.menu_selection_building_trading, rootView, true);
 			features.add(new TradingFeature(getView(), building, menuNavigator, drawControls, actionControls));
+
+		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+			layoutInflater.inflate(R.layout.menu_selection_building_dock, rootView, true);
+			features.add(new DockFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls, taskControls));
 
 		} else {
 			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);

@@ -13,48 +13,32 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.core.controls;
-
-import jsettlers.graphics.map.MapContent;
-import jsettlers.main.android.core.GameManager;
-
-import android.app.Activity;
+package jsettlers.main.android.gameplay.viewstates;
 
 /**
- * Created by tompr on 13/01/2017.
+ * Created by Tom Pratt on 12/07/2017.
  */
-public class ControlsResolver {
-	private final ControlsAdapter controlsAdapter;
 
-	public ControlsResolver(Activity activity) {
-		this.controlsAdapter = ((GameManager) activity.getApplication()).getControlsAdapter();
-	}
+import jsettlers.common.map.partition.IStockSettings;
+import jsettlers.common.material.EMaterialType;
 
-	public ActionControls getActionControls() {
-		return controlsAdapter;
-	}
+/**
+ * Model for stock item
+ */
+public class StockMaterialState {
+    private final EMaterialType materialType;
+    private final boolean stocked;
 
-	public DrawControls getDrawControls() {
-		return controlsAdapter;
-	}
+    public StockMaterialState(EMaterialType materialType, IStockSettings stockSettings) {
+        this.materialType = materialType;
+        this.stocked = stockSettings.isAccepted(materialType);
+    }
 
-	public SelectionControls getSelectionControls() {
-		return controlsAdapter;
-	}
+    public EMaterialType getMaterialType() {
+        return materialType;
+    }
 
-	public TaskControls getTaskControls() {
-		return controlsAdapter;
-	}
-
-	public MapContent getMapContent() {
-		return controlsAdapter.getMapContent();
-	}
-
-	public GameMenu getGameMenu() {
-		return controlsAdapter.getGameMenu();
-	}
-
-    public PositionControls getPositionControls() {
-        return controlsAdapter;
+    public boolean isStocked() {
+        return stocked;
     }
 }

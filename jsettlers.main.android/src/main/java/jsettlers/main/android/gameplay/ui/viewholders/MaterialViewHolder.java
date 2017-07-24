@@ -13,48 +13,36 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package jsettlers.main.android.core.controls;
-
-import jsettlers.graphics.map.MapContent;
-import jsettlers.main.android.core.GameManager;
-
-import android.app.Activity;
+package jsettlers.main.android.gameplay.ui.viewholders;
 
 /**
- * Created by tompr on 13/01/2017.
+ * Created by Tom Pratt on 12/07/2017.
  */
-public class ControlsResolver {
-	private final ControlsAdapter controlsAdapter;
 
-	public ControlsResolver(Activity activity) {
-		this.controlsAdapter = ((GameManager) activity.getApplication()).getControlsAdapter();
-	}
 
-	public ActionControls getActionControls() {
-		return controlsAdapter;
-	}
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
 
-	public DrawControls getDrawControls() {
-		return controlsAdapter;
-	}
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.viewstates.StockMaterialState;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
-	public SelectionControls getSelectionControls() {
-		return controlsAdapter;
-	}
 
-	public TaskControls getTaskControls() {
-		return controlsAdapter;
-	}
+public class MaterialViewHolder extends RecyclerView.ViewHolder {
+    private final ImageView imageView;
 
-	public MapContent getMapContent() {
-		return controlsAdapter.getMapContent();
-	}
+    public MaterialViewHolder(View itemView) {
+        super(itemView);
+        imageView = (ImageView) itemView.findViewById(R.id.imageView_material);
+    }
 
-	public GameMenu getGameMenu() {
-		return controlsAdapter.getGameMenu();
-	}
+    public void bind(StockMaterialState materialState) {
+        OriginalImageProvider.get(materialState.getMaterialType()).setAsImage(imageView);
+        itemView.setSelected(materialState.isStocked());
+    }
 
-    public PositionControls getPositionControls() {
-        return controlsAdapter;
+    public void updateState(StockMaterialState materialState) {
+        itemView.setSelected(materialState.isStocked());
     }
 }

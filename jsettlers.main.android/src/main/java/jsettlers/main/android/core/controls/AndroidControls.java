@@ -27,6 +27,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.SetDockAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
@@ -71,7 +72,11 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 		case ASK_SET_WORK_AREA:
 			startTask(action);
 			break;
+		case ASK_SET_DOCK:
+			startTask(action);
+			break;
 		case SET_WORK_AREA:
+		case SET_DOCK:
 		case BUILD:
 		case ABORT:
 			endTask();
@@ -96,6 +101,8 @@ public class AndroidControls implements IControls, ActionFireable, TaskControls 
 					return new BuildAction(showConstructionMarksAction.getBuildingType(), pointAction.getPosition());
 				case ASK_SET_WORK_AREA:
 					return new PointAction(EActionType.SET_WORK_AREA, pointAction.getPosition());
+				case ASK_SET_DOCK:
+					return new SetDockAction(pointAction.getPosition());
 				}
 			}
 
