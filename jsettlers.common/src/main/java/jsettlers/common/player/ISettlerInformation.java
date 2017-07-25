@@ -16,6 +16,14 @@ package jsettlers.common.player;
 
 import jsettlers.common.movable.EMovableType;
 
+/**
+ * An interface that allows to access the current statistics on movables
+ */
 public interface ISettlerInformation {
+	/**
+	 * Gets the number of movables of a given type the player currently has
+	 * @param type The movable type
+	 * @return The amount for that exact type.
+	 */
 	int getMovableCount(EMovableType type);
 }
