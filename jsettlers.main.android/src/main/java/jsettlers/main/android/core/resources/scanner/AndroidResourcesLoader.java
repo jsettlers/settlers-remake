@@ -53,7 +53,7 @@ public class AndroidResourcesLoader {
 			return false;
 		}
 
-		ImageProvider.setLookupPath(settlersFolders.gfxFolder);
+		ImageProvider.addLookupPath(settlersFolders.gfxFolder);
 		SoundManager.setLookupPath(settlersFolders.sndFolder);
 
 		MapList.setDefaultListFactory(new AndroidMapListFactory(context.getAssets(), outputDirectory));
