@@ -298,13 +298,9 @@ public class OriginalMapFileContentReader {
 	// - to process a map File this class loads the whole file to memory. To save memory this File-Buffer is
 	// - closed after using/when done processing. If more data are requested from the File, the File-Biffer
 	// - is loaded again with this reOpen() function.
-	public void reOpen(InputStream originalMapFile) {
+	public void reOpen(InputStream originalMapFile) throws IOException {
 		// - read File into buffer
-		try {
-			mapContent = getBytesFromInputStream(originalMapFile);
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
-		}
+		mapContent = getBytesFromInputStream(originalMapFile);
 
 		// - reset Crypt Info
 		for (MapResourceInfo element : resources.values()) {

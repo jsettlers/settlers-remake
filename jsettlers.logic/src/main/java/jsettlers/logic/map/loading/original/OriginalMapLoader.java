@@ -173,30 +173,7 @@ public class OriginalMapLoader extends MapLoader {
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 
-		try {
-			// - the map buffer of the class may is closed and need to reopen!
-			mapContent.reOpen(this.listedMap.getInputStream());
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-
-		// - load all common map information
-		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			return null;
-		}
-		mapContent.readBasicMapInformation();
-
-		// - read the landscape
-		mapContent.readMapData();
-		// - read Stacks
-		mapContent.readStacks();
-		// - read Settlers
-		mapContent.readSettlers();
-		// - read the buildings
-		mapContent.readBuildings();
-		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers(startResources);
+		loadMapContent(startResources);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();
@@ -227,6 +204,15 @@ public class OriginalMapLoader extends MapLoader {
 	@Override
 	public IMapData getMapData() throws MapLoadException {
 
+		loadMapContent(EMapStartResources.HIGH_GOODS);
+
+		OriginalMapFileContent mapData = mapContent.mapData;
+		mapData.calculateBlockedPartitions();
+
+		return mapData;
+	}
+
+	private void loadMapContent(EMapStartResources startResources) throws MapLoadException {
 		try {
 			// - the map buffer of the class may is closed and need to reopen!
 			mapContent.reOpen(this.listedMap.getInputStream());
@@ -236,10 +222,8 @@ public class OriginalMapLoader extends MapLoader {
 
 		// - load all common map information
 		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			throw new MapLoadException();
+			throw new MapLoadException("Unable to open original map (" + fileName + ")!");
 		}
-
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
@@ -251,13 +235,6 @@ public class OriginalMapLoader extends MapLoader {
 		// - read the buildings
 		mapContent.readBuildings();
 		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers(EMapStartResources.HIGH_GOODS);
-
-		OriginalMapFileContent mapData = mapContent.mapData;
-		mapData.calculateBlockedPartitions();
-
-		return mapData;
-
+		mapContent.addStartTowerMaterialsAndSettlers(startResources);
 	}
-
 }
