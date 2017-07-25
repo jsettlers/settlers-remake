@@ -47,7 +47,6 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		super(type, player, position, buildingsGrid);
 	}
 
-	@Override
 	public EMaterialType getOrderedMaterial() {
 		if (this.order != null && this.orderPointer < this.order.length) {
 			return this.order[this.orderPointer];
@@ -99,7 +98,6 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		}
 	}
 
-	@Override
 	public void reduceOrder() {
 		this.orderPointer++;
 	}
@@ -180,5 +178,9 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 				EMaterialType.PLANK,
 				EMaterialType.IRON};
 		setOrder(material, EMovableType.CARGO_BOAT);
+	}
+
+	public EMovableType getOrderedShipType() {
+		return orderedShipType;
 	}
 }

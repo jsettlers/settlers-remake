@@ -22,7 +22,6 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.DockPosition;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 
 /**
@@ -68,10 +67,4 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	void addMapObjectCleanupPosition(ShortPoint2D pos, EMapObjectType objectType);
 
 	ShortPoint2D whereIsMaterialAvailable(EMaterialType material);
-
-    DockPosition getDock();
-
-    EMaterialType getOrderedMaterial();
-
-	void reduceOrder();
 }

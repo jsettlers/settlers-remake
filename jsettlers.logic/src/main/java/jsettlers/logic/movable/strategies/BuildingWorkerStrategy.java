@@ -288,9 +288,12 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	private void requestAction() {
 		boolean pathFound = false;
-		if (building.getBuildingType() == EBuildingType.DOCKYARD && building.getDock() != null) {
-			ShortPoint2D stackPosition = building.whereIsMaterialAvailable(building.getOrderedMaterial());
-			if (stackPosition != null) pathFound = super.setPathTo(stackPosition);
+		if (building.getBuildingType() == EBuildingType.DOCKYARD) {
+			DockyardBuilding dockyard = (DockyardBuilding) building;
+			if (dockyard.getDock() != null) {
+				ShortPoint2D stackPosition = dockyard.whereIsMaterialAvailable(dockyard.getOrderedMaterial());
+				if (stackPosition != null) pathFound = super.setPathTo(stackPosition);
+			}
 		}
 		if (pathFound) {
 			jobFinished();
@@ -300,15 +303,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void gotoDockAction() {
+		DockyardBuilding dockyard = (DockyardBuilding) building;
 		if (!done) {
 			this.done = true;
-			ShortPoint2D point = building.getDock().getPosition();
-			EDirection direction = building.getDock().getDirection();
+			ShortPoint2D point = dockyard.getDock().getPosition();
+			EDirection direction = dockyard.getDock().getDirection();
 			if (!super.goToPos(direction.getNextHexPoint(point, 2))) {
 				jobFailed();
 			}
 		} else {
-			building.reduceOrder();
+			dockyard.reduceOrder();
 			jobFinished(); // start next action
 		}
 	}
@@ -382,8 +386,13 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void takeRequestedAction() {
-		if (super.take(building.getOrderedMaterial(), currentJob.isTakeMaterialFromMap())) {
-			jobFinished();
+		if (building instanceof DockyardBuilding) {
+			DockyardBuilding dockyard = (DockyardBuilding) building;
+			if (super.take(dockyard.getOrderedMaterial(), currentJob.isTakeMaterialFromMap())) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
 		} else {
 			jobFailed();
 		}
