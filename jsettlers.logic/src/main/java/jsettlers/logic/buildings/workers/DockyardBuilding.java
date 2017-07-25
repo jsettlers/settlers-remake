@@ -181,6 +181,9 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	public EMovableType getOrderedShipType() {
+		if (this.order == null) {
+			return null;
+		}
 		return orderedShipType;
 	}
 }
