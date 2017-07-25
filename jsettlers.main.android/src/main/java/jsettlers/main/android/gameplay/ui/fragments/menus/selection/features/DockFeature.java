@@ -27,7 +27,7 @@ import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
-import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ActionListener;
@@ -123,8 +123,8 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	}
 
 	private void update() {
-		IWorkerRequestBuilding workerRequestBuilding = (IWorkerRequestBuilding) getBuilding();
-		EMovableType orderedShip = workerRequestBuilding.getOrderedShipType();
+		DockyardBuilding dockyard = (DockyardBuilding) getBuilding();
+		EMovableType orderedShip = dockyard.getOrderedShipType();
 
 		if (currentOrderedShip != orderedShip) {
 			switch (orderedShip) {

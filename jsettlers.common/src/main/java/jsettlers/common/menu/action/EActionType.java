@@ -41,11 +41,6 @@ public enum EActionType {
 	DESTROY,
 
 	/**
-	 * Unload ferries.
-	 */
-	UNLOAD,
-
-	/**
 	 * Select a point on the map.
 	 * 
 	 * @see PointAction
@@ -344,8 +339,25 @@ public enum EActionType {
 	 */
 	ASK_SET_DOCK,
 
+	/**
+	 * Order a ferry.
+	 *
+	 * @see PointAction
+	 */
 	MAKE_FERRY,
+
+	/**
+	 * Order a cargo boat.
+	 *
+	 * @see PointAction
+	 */
 	MAKE_CARGO_BOAT,
+
+	/**
+	 * Passengers should leave the ferry.
+	 *
+	 * @see PointAction
+	 */
 	UNLOAD_FERRIES,
 
 	/**

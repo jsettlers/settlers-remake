@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.ViewsById;
 
 import java.util.List;
@@ -38,7 +36,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.gameplay.ImageLinkFactory;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
@@ -90,7 +87,7 @@ public class ShipsSelectionFragment extends SelectionFragment {
 
     @Click(R.id.button_unload)
     void unloadClicked() {
-        actionControls.fireAction(EActionType.UNLOAD);
+        actionControls.fireAction(EActionType.UNLOAD_FERRIES);
     }
 
     @Click(R.id.button_kill)

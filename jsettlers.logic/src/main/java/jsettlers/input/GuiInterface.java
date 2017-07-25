@@ -333,24 +333,24 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
-			case SET_TRADING_WAYPOINT: {
-				final ISelectable selected = currentSelection.getSingle();
-				if (selected instanceof Building) {
-					final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
-					scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
-							a.getWaypointType(), a.getPosition()));
-				}
-				break;
+		case SET_TRADING_WAYPOINT: {
+			final ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				final SetTradingWaypointAction a = (SetTradingWaypointAction) action;
+				scheduleTask(new SetTradingWaypointGuiTask(EGuiAction.SET_TRADING_WAYPOINT, playerId, ((Building) selected).getPosition(),
+						a.getWaypointType(), a.getPosition()));
 			}
+			break;
+		}
 
-			case SET_DOCK: {
-				final ISelectable selected = currentSelection.getSingle();
-				if (selected instanceof Building) {
-					final SetDockAction a = (SetDockAction) action;
-					setDock(a.getPosition());
-				}
-				break;
+		case SET_DOCK: {
+			final ISelectable selected = currentSelection.getSingle();
+			if (selected instanceof Building) {
+				final SetDockAction a = (SetDockAction) action;
+				setDock(a.getPosition());
 			}
+			break;
+		}
 
 		case SOLDIERS_ALL:
 			requestSoldiers(EChangeTowerSoldierTaskType.FULL, null);

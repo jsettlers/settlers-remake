@@ -1869,7 +1869,7 @@ public final class MainGrid implements Serializable {
 				ship = getMovableGrid().getMovableAt(ferryPosition.x, ferryPosition.y);
 				if (ship != null && ship.getMovableType() == EMovableType.FERRY && ship.getPlayer().playerId == playerId) {
 					for (int r2 = 0; r2 < EDirection.NUMBER_OF_DIRECTIONS && searching; r2++) { // search ferry entrance
-						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 2);
+						entrance = direction.rotateRight(r2).getNextHexPoint(ferryPosition, 3);
 						if (!this.isBlocked(entrance.x, entrance.y)) {
 							searching = false;
 						}
@@ -1883,7 +1883,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		public ShortPoint2D getUnloadPosition(ShortPoint2D position) {
-			int distance = 2;
+			int distance = 3;
 			EDirection direction = EDirection.getDirection(0, 1);
 			boolean searching = true;
 			ShortPoint2D point = null;
