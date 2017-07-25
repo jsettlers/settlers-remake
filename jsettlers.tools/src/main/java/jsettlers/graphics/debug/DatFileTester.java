@@ -53,7 +53,7 @@ import jsettlers.graphics.swing.utils.ImageUtils;
 import jsettlers.main.swing.resources.ConfigurationPropertiesFile;
 
 public class DatFileTester {
-	private static final int DAT_FILE_INDEX = 14;
+	private static final int DAT_FILE_INDEX = 0;
 	private static final DatFileType TYPE = DatFileType.RGB565;
 
 	private static final String FILE_NAME_PATTERN = "siedler3_%02d" + TYPE.getFileSuffix();
@@ -76,7 +76,7 @@ public class DatFileTester {
 		region.setContent(new Content());
 	}
 
-	private File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
+	private static File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
 		String fileNameLowercase = fileName.toLowerCase();
 
 		Mutable<File> graphicsFile = new Mutable<>();
@@ -142,7 +142,11 @@ public class DatFileTester {
 				} else if ("E".equalsIgnoreCase(keyCode)) {
 					export();
 				} else if ("W".equalsIgnoreCase(keyCode)) {
-					exportAll();
+					try {
+						exportAll();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 				region.requestRedraw();
 			}
@@ -231,7 +235,11 @@ public class DatFileTester {
 		}
 	}
 
-	private static void exportAll() {
+	private static void exportAll() throws IOException {
+		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
+		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
+		File settlersGfxFolder = settlersFolderInfo.gfxFolder;
+
 		final JFileChooser fc = new JFileChooser();
 
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -239,9 +247,10 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file = new File(FILE_NAME_PATTERN.replace("%", String.format(Locale.ENGLISH, "%02d", i)));
-
-				if (file.exists()) {
+				String fileName = String.format(Locale.ENGLISH, FILE_NAME_PATTERN, i);
+				File file = findFileIgnoringCase(settlersGfxFolder, fileName);
+				
+				if (file != null && file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
 				}
