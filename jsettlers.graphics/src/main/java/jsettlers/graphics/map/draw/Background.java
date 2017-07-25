@@ -1023,9 +1023,17 @@ public class Background implements IGraphicsBackgroundListener {
 
 			// mountain <=> snow
 		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOW) {
-			index = 156;
+			index = 156; // OLD!
 		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.MOUNTAIN) {
+			index = 158; // OLD!
+		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOWBORDER) {
+			index = 156;
+		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.MOUNTAIN) {
 			index = 158;
+		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.SNOW) {
+			index = 160;
+		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.SNOWBORDER) {
+			index = 162;
 
 			// earth <=> grass
 		} else if (outer == ELandscapeType.EARTH && inner == ELandscapeType.GRASS) {
