@@ -184,6 +184,6 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		if (this.order == null) {
 			return null;
 		}
-		return orderedShipType;
+		return this.orderedShipType;
 	}
 }
