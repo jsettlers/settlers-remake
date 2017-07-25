@@ -34,7 +34,7 @@ public enum EMapResources {
 	public final EResourceType value;
 
 	// - length of THIS enum (without NOT_A_TYPE)
-	public static final int length = EMapResources.values().length - 1;
+	private static final int LENGTH = EMapResources.values().length - 1;
 
 	EMapResources(EResourceType value) {
 		this.value = value;
@@ -43,7 +43,7 @@ public enum EMapResources {
 	public static EMapResources getTypeByInt(int type) {
 		if (type < 0)
 			return NOT_A_RESOURCE_TYPE;
-		if (type >= EMapResources.length)
+		if (type >= EMapResources.LENGTH)
 			return NOT_A_RESOURCE_TYPE;
 
 		return EMapResources.values()[type];

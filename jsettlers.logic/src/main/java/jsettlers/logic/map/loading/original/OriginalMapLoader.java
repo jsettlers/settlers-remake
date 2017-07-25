@@ -54,10 +54,8 @@ public class OriginalMapLoader extends MapLoader {
 			throw new MapLoadException(e);
 		}
 
-		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM) {
-			if (!mapContent.isChecksumValid()) {
-				throw new MapLoadException("Checksum of original map (" + fileName + ") is not valid!");
-			}
+		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM && !mapContent.isChecksumValid()) {
+			throw new MapLoadException("Checksum of original map (" + fileName + ") is not valid!");
 		}
 
 		// - read all important information from file
@@ -152,7 +150,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public String getMapId() {
-		return Integer.toString(mapContent.fileChecksum) + getMapName();
+		return mapContent.getChecksum() + getMapName();
 	}
 
 	@Override

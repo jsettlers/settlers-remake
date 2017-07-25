@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 
@@ -99,9 +100,9 @@ public class OriginalMapFileContentReader {
 		}
 	}
 
-	private final HashMap<EMapFilePartType, MapResourceInfo> resources = new HashMap<>();
+	private final EnumMap<EMapFilePartType, MapResourceInfo> resources = new EnumMap<>(EMapFilePartType.class);
 
-	public int fileChecksum = 0;
+	private int fileChecksum = 0;
 	public int widthHeight;
 	public boolean isSinglePlayerMap = false;
 	private boolean hasBuildings = false;
@@ -113,7 +114,7 @@ public class OriginalMapFileContentReader {
 	private String mapQuestTip = null;
 	private String mapQuestText = null;
 
-	private short previewImage[] = null;
+	private short[] previewImage = null;
 	private short previewWidth = 0;
 	private short previewHeight = 0;
 
@@ -162,7 +163,7 @@ public class OriginalMapFileContentReader {
 	public int readBEIntFrom(int offset) {
 		if (mapContent == null)
 			return 0;
-		return ((mapContent[offset] & 0xFF)) |
+		return (mapContent[offset] & 0xFF) |
 				((mapContent[offset + 1] & 0xFF) << 8) |
 				((mapContent[offset + 2] & 0xFF) << 16) |
 				((mapContent[offset + 3] & 0xFF) << 24);
@@ -172,7 +173,7 @@ public class OriginalMapFileContentReader {
 	public int readBEWordFrom(int offset) {
 		if (mapContent == null)
 			return 0;
-		return ((mapContent[offset] & 0xFF)) |
+		return (mapContent[offset] & 0xFF) |
 				((mapContent[offset + 1] & 0xFF) << 8);
 	}
 
@@ -234,7 +235,7 @@ public class OriginalMapFileContentReader {
 		for (int i = 8; i < count; i += 4) {
 
 			// - read DWord
-			int currentInt = ((mapContent[i] & 0xFF)) |
+			int currentInt = (mapContent[i] & 0xFF) |
 					((mapContent[i + 1] & 0xFF) << 8) |
 					((mapContent[i + 2] & 0xFF) << 16) |
 					((mapContent[i + 3] & 0xFF) << 24);
@@ -399,20 +400,20 @@ public class OriginalMapFileContentReader {
 		int unknown = readBEWordFrom(pos);
 		pos += 2;
 
-		float scaleX = wh / width;
-		float scaleY = wh / height;
+		int scaleX = wh / width;
+		int scaleY = wh / height;
 
 		int outIndex = 0;
 		int offset = pos;
 
 		for (int y = 0; y < height; y++) {
-			int srcRow = offset + ((int) (Math.floor(scaleY * y)) * wh) * 2;
+			int srcRow = offset + (scaleY * y) * wh * 2;
 
 			for (int x = 0; x < width; x++) {
 
-				int inIndex = srcRow + ((int) Math.floor(x * scaleX)) * 2;
+				int inIndex = srcRow + (x * scaleX) * 2;
 
-				int colorValue = ((mapContent[inIndex] & 0xFF)) | ((mapContent[inIndex + 1] & 0xFF) << 8);
+				int colorValue = (mapContent[inIndex] & 0xFF) | ((mapContent[inIndex + 1] & 0xFF) << 8);
 
 				// - the Settlers Remake uses Short-Colors like argb_1555 (alpha, r, g, b)
 				outImg[outIndex] = (short) (1 | colorValue << 1);
@@ -459,8 +460,6 @@ public class OriginalMapFileContentReader {
 		// - read Text
 		mapQuestTip = readCStrFrom(filePart.offset, filePart.size);
 
-		// System.out.println("Tip: "+ mapQuestTip);
-
 		return mapQuestTip;
 	}
 
@@ -488,7 +487,7 @@ public class OriginalMapFileContentReader {
 		} else if (mapType == 0) {
 			isSinglePlayerMap = false;
 		} else {
-			System.err.println("wrong value for 'isSinglePlayerMap' " + Integer.toString(mapType) + " in mapfile!");
+			throw new MapLoadException("wrong value for 'isSinglePlayerMap' " + Integer.toString(mapType) + " in mapfile!");
 		}
 
 		// ----------------------------------
@@ -789,6 +788,10 @@ public class OriginalMapFileContentReader {
 			return new RelativePoint(previousX - 1, previousY);
 
 		return null;
+	}
+
+	public String getChecksum() {
+		return Integer.toString(fileChecksum);
 	}
 
 

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -53,7 +55,7 @@ public enum EMapStartResources {
 	}
 
 	public static List<MapDataObject> generateStackObjects(EMapStartResources mapStartResources) {
-		List<MapDataObject> goods = new Vector<>();
+		List<MapDataObject> goods = new ArrayList<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
 			goods.add(new StackMapDataObject(EMaterialType.PLANK, 6));
@@ -127,7 +129,7 @@ public enum EMapStartResources {
 	}
 
 	public static List<MapDataObject> generateMovableObjects(EMapStartResources mapStartResources, byte playerId) {
-		List<MapDataObject> movables = new Vector<>();
+		List<MapDataObject> movables = new ArrayList<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
 			for (byte i = 0; i < 2; i++)
