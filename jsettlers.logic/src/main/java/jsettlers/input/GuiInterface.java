@@ -760,7 +760,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void unloadFerries() {
 		for (int i = 0; i < currentSelection.getSize(); i++) {
-			Movable ship = (Movable) currentSelection.get(0);
+			Movable ship = (Movable) currentSelection.get(i);
 			if (ship.getMovableType() == EMovableType.FERRY) {
 				ShortPoint2D position = grid.getUnloadPosition(ship.getPosition());
 				if (position != null){
