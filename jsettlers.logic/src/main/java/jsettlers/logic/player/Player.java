@@ -35,7 +35,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.IOffersCountL
  *
  * @author Andreas Eberle
  */
-public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener, IPlayer {
+public class Player implements Serializable, IMessenger, IInGamePlayer, IOffersCountListener {
 	private static final long serialVersionUID = 1L;
 
 	public final byte playerId;
