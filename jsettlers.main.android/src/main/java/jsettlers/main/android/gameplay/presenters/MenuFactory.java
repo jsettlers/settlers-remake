@@ -20,7 +20,7 @@ import jsettlers.main.android.core.controls.ControlsAdapter;
 import jsettlers.main.android.core.utils.Dispatcher;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.navigation.MenuNavigatorProvider;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
 import jsettlers.main.android.gameplay.ui.views.SettlersSoldiersView;
 

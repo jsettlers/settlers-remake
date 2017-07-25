@@ -44,7 +44,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableInt;
-import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;

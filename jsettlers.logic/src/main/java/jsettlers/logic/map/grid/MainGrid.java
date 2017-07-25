@@ -74,7 +74,6 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
@@ -101,6 +100,7 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.map.loading.data.IMapData;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.IPlayerIdProvider;
@@ -1848,15 +1848,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
-			if (isInBounds(managerPosition))
-				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, probabilities);
+		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, EBuildingType buildingType, float ratio) {
+			if (isInBounds(managerPosition)) {
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, buildingType, ratio);
+			}
 		}
 
 		@Override
 		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
-			if (isInBounds(managerPosition))
+			if (isInBounds(managerPosition)) {
 				partitionsGrid.getPartitionSettings(managerPosition).setMaterialPriorities(materialTypeForPriority);
+			}
 		}
 
 		@Override
