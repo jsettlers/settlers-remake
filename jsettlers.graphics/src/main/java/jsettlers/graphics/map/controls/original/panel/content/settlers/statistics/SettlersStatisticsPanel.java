@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,16 +11,18 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.settlers.statistics;
 
 import go.graphics.text.EFontSize;
-
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.player.ISettlerInformation;
-import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater.IUiContentReceiver;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiPlayerDependingContentUpdater;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
@@ -33,24 +35,22 @@ import jsettlers.graphics.ui.layout.StatisticLayoutRomans;
  * @author nptr
  * @author Andreas Eberle
  */
-public class SettlersStatisticsPanel extends AbstractContentProvider {
+public class SettlersStatisticsPanel extends AbstractContentProvider implements IUiContentReceiver<ISettlerInformation> {
 
-	private IInGamePlayer player;
-	private ISettlerInformation settlerInformation;
-	private UIPanel panel = new StatisticLayoutRomans()._root;
+	private final UIPanel panel = new StatisticLayoutRomans()._root;
+	private final UiPlayerDependingContentUpdater<ISettlerInformation> uiContentUpdater = new UiPlayerDependingContentUpdater<>(IInGamePlayer::getSettlerInformation);
+
+	public SettlersStatisticsPanel() {
+		uiContentUpdater.addListener(this);
+	}
 
 	public void setPlayer(IInGamePlayer player) {
-		this.player = player;
-		switch (player.getCivilisation()) {
-		case ROMAN:
-			panel = new StatisticLayoutRomans()._root;
-			break;
-		default:
-			panel = new StatisticLayoutRomans()._root;
-			break;
-		}
+		uiContentUpdater.updatePlayer(player);
+	}
 
-		settlerInformation = player.getSettlerInformation();
+	@Override
+	public UIPanel getPanel() {
+		return panel;
 	}
 
 	@Override
@@ -58,37 +58,12 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 		return ESecondaryTabType.SETTLERS;
 	}
 
-	@Override
-	public UIPanel getPanel() {
-		if (player != null) {
-			settlerInformation = player.getSettlerInformation();
-		}
-
-		if (settlerInformation != null) {
-			updateUI(panel, settlerInformation);
-		}
-
-		return panel;
-	}
-
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-		if (player != null) {
-			settlerInformation = player.getSettlerInformation();
-		}
-
-		if (settlerInformation != null) {
-			updateUI(panel, settlerInformation);
-		}
-	}
-
 	private static String getMovableCountAsString(ISettlerInformation settlerInformation, EMovableType type) {
 		return String.valueOf(settlerInformation.getMovableCount(type));
 	}
 
-	private void updateUI(UIPanel panel, ISettlerInformation settlerInformation) {
-		System.out.println("Test");
-
+	@Override
+	public void update(ISettlerInformation settlerInformation) {
 		int soldierCount = calculateSoldiersCount(settlerInformation);
 		int genericWorker = calculateGenericWorkersCount(settlerInformation);
 		int civilianCount = calculateCiviliansCount(settlerInformation, genericWorker);
@@ -201,6 +176,16 @@ public class SettlersStatisticsPanel extends AbstractContentProvider {
 				+ settlerInformation.getMovableCount(EMovableType.WINEGROWER)
 				+ settlerInformation.getMovableCount(EMovableType.CHARCOAL_BURNER)
 				+ settlerInformation.getMovableCount(EMovableType.STONECUTTER);
+	}
+
+	@Override
+	public void contentShowing(ActionFireable actionFireable) {
+		uiContentUpdater.start();
+	}
+
+	@Override
+	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+		uiContentUpdater.stop();
 	}
 
 	public static class NamedLabel extends Label {

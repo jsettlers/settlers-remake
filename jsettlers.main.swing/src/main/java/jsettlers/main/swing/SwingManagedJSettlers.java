@@ -36,6 +36,7 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.DirectoryMapLister;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -151,7 +152,7 @@ public class SwingManagedJSettlers {
 		ReplayUtils.ReplayFile loadableReplayFile = null;
 		int targetGameTime = 0;
 
-		String mapfile = options.getProperty("mapfile");
+		String mapFile = options.getProperty("mapfile");
 		if (options.containsKey("random")) {
 			randomSeed = Long.parseLong(options.getProperty("random"));
 		}
@@ -169,13 +170,18 @@ public class SwingManagedJSettlers {
 			targetGameTime = Integer.valueOf(options.getProperty("targetTime")) * 60 * 1000;
 		}
 
-		if (mapfile != null || loadableReplayFile != null) {
+		if (mapFile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
-				byte playerId = 0;
-				PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
-				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
+				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapFile)));
+				if (mapLoader.getFileHeader().getType() == MapFileHeader.MapType.NORMAL) {
+					byte playerId = 0;
+					PlayerSetting[] playerSettings = PlayerSetting.createDefaultSettings(playerId, (byte) mapLoader.getMaxPlayers());
+					game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
+				} else {
+					MapFileHeader header = mapLoader.getFileHeader();
+					game = new JSettlersGame(mapLoader, randomSeed, header.getPlayerId(), header.getPlayerSettings()).start();
+				}
 			} else if (options.isOptionSet("all-ai-replay")) {
 				game = JSettlersGame.loadFromReplayFileAllAi(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			} else {

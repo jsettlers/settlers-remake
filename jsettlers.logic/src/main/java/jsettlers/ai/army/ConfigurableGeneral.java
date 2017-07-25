@@ -154,7 +154,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 	}
 
 	private void setRatioOfMaterial(byte playerId, EMaterialType materialType, float ratio) {
-		if (aiStatistics.getMaterialProduction(playerId).getRelativeProductionRequest(materialType) != ratio) {
+		if (aiStatistics.getMaterialProduction(playerId).getUserConfiguredRelativeRequestValue(materialType) != ratio) {
 			taskScheduler.scheduleTask(new SetMaterialProductionGuiTask(playerId, aiStatistics.getPositionOfPartition(playerId), materialType,
 					EMaterialProductionType.SET_RATIO, ratio));
 		}

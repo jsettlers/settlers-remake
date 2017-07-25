@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2015
+/*
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -11,34 +11,35 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.buildings;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
+import jsettlers.graphics.map.controls.original.panel.content.updaters.UiContentUpdater;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.Label.EHorizontalAlignment;
 import jsettlers.graphics.ui.Label.EVerticalAlignment;
-import jsettlers.graphics.utils.UIUpdater.IUpdateReceiver;
 
 /**
  * This is a button to construct a building.
- * 
+ *
  * @author Michael Zangl
  */
-public class BuildingButton extends Button implements IUpdateReceiver<BuildingCountState> {
+public class BuildingButton extends Button implements UiContentUpdater.IUiContentReceiver<IBuildingCounts> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
@@ -82,8 +83,7 @@ public class BuildingButton extends Button implements IUpdateReceiver<BuildingCo
 		float buttonWidth = position.getWidth();
 		float imageHeight = buildingImage.getHeight();
 		float imageWidth = buildingImage.getWidth();
-		if (buttonHeight != lastButtonHeight || buttonWidth != lastButtonWidth ||
-				imageHeight != lastImageHeight || imageWidth != lastImageWidth) {
+		if (buttonHeight != lastButtonHeight || buttonWidth != lastButtonWidth || imageHeight != lastImageHeight || imageWidth != lastImageWidth) {
 			if (buildingImageLink instanceof OriginalImageLink) {
 				buildingImage = ImageProvider.getInstance().getImage(buildingImageLink, position.getWidth(), position.getHeight());
 			} else {
@@ -116,11 +116,11 @@ public class BuildingButton extends Button implements IUpdateReceiver<BuildingCo
 	}
 
 	@Override
-	public void uiUpdate(BuildingCountState data) {
-		if (data.isInPlayerPartition()) {
-			int constructed = data.getCount(getBuildingType(), false);
-			int construction = data.getCount(getBuildingType(), true);
-			String text = constructed + (construction == 0 ? "" : "\n+" + construction);
+	public void update(IBuildingCounts buildingCounts) {
+		if (buildingCounts != null) {
+			int constructed = buildingCounts.buildingsInPartition(getBuildingType());
+			int inConstruction = buildingCounts.buildingsInPartitionUnderConstruction(getBuildingType());
+			String text = constructed + (inConstruction == 0 ? "" : "\n+" + inConstruction);
 			constructedLabel.setText(text);
 		} else {
 			constructedLabel.setText("");

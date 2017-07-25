@@ -20,7 +20,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetAcceptedStockMaterialAction;
-import jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent;
+import jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent;
 import jsettlers.graphics.ui.Button;
 
 /**

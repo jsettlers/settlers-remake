@@ -8,242 +8,242 @@
 
 	<!-- Row 1 -->
 	<element x="14" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="PLANK" />
 	</element>
 	<element x="14" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="PLANK" />
 	</element>
 
 	<element x="32" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="STONE" />
 	</element>
 	<element x="32" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="STONE" />
 	</element>
 
 	<element x="50" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="TRUNK" />
 	</element>
 	<element x="50" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="TRUNK" />
 	</element>
 
 	<element x="68" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="COAL" />
 	</element>
 	<element x="68" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="COAL" />
 	</element>
 
 	<element x="86" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="IRONORE" />
 	</element>
 	<element x="86" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="IRONORE" />
 	</element>
 
 	<element x="104" width="18" y="248" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="GOLDORE" />
 	</element>
 	<element x="104" width="18" y="265" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="GOLDORE" />
 	</element>
 
 	<!-- Row 2 -->
 	<element x="14" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="IRON" />
 	</element>
 	<element x="14" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="IRON" />
 	</element>
 
 	<element x="32" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="HAMMER" />
 	</element>
 	<element x="32" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="HAMMER" />
 	</element>
 
 	<element x="50" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="BLADE" />
 	</element>
 	<element x="50" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="BLADE" />
 	</element>
 
 	<element x="68" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="AXE" />
 	</element>
 	<element x="68" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="AXE" />
 	</element>
 
 	<element x="86" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="SAW" />
 	</element>
 	<element x="86" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="SAW" />
 	</element>
 
 	<element x="104" width="18" y="275" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="PICK" />
 	</element>
 	<element x="104" width="18" y="292" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="PICK" />
 	</element>
 
 
 	<!-- Row 3 -->
 	<element x="14" width="18" y="302" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="FISHINGROD" />
 	</element>
 	<element x="14" width="18" y="319" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="FISHINGROD" />
 	</element>
 
 	<element x="32" width="18" y="302" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="SCYTHE" />
 	</element>
 	<element x="32" width="18" y="319" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="SCYTHE" />
 	</element>
 
 	<element x="50" width="18" y="302" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="SWORD" />
 	</element>
 	<element x="50" width="18" y="319" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="SWORD" />
 	</element>
 
 	<element x="68" width="18" y="302" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="BOW" />
 	</element>
 	<element x="68" width="18" y="319" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="BOW" />
 	</element>
 
 	<element x="86" width="18" y="302" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="SPEAR" />
 	</element>
 	<element x="86" width="18" y="319" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="SPEAR" />
 	</element>
 
 	<!-- Row 4 -->
 	<element x="14" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="FISH" />
 	</element>
 	<element x="14" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="FISH" />
 	</element>
 
 	<element x="32" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="PIG" />
 	</element>
 	<element x="32" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="PIG" />
 	</element>
 
 	<element x="50" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="MEAT" />
 	</element>
 	<element x="50" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="MEAT" />
 	</element>
 
 	<element x="68" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="CROP" />
 	</element>
 	<element x="68" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="CROP" />
 	</element>
 
 	<element x="86" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="FLOUR" />
 	</element>
 	<element x="86" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="FLOUR" />
 	</element>
 
 	<element x="104" width="18" y="329" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="BREAD" />
 	</element>
 	<element x="104" width="18" y="346" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="BREAD" />
 	</element>
 
 	<!-- Row 5 -->
 	<element x="14" width="18" y="356" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="WATER" />
 	</element>
 	<element x="14" width="18" y="373" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="WATER" />
 	</element>
 
 	<element x="32" width="18" y="356" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="WINE" />
 	</element>
 	<element x="32" width="18" y="373" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="WINE" />
 	</element>
 
 	<!-- Row 6 -->
 	<element x="14" width="18" y="383" height="18"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.MaterialButton">
 		<material material="GOLD" />
 	</element>
 	<element x="14" width="18" y="400" height="7"
-		class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.InventoryCount">
+		class="jsettlers.graphics.map.controls.original.panel.content.material.inventory.InventoryPanel.InventoryCount">
 		<material material="GOLD" />
 	</element>
 

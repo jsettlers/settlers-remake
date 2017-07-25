@@ -28,6 +28,7 @@ import jsettlers.common.logging.StatisticsStopWatch;
 import jsettlers.common.menu.IStartedGame;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
@@ -68,21 +69,20 @@ public class AiDifficultiesIT {
 
 	@Test
 	public void veryHardShouldProduceCertainAmountOfSoldiersWithin85Minutes() throws MapLoadException {
+		byte playerId = (byte) 0;
 		PlayerSetting[] playerSettings = getDefaultPlayerSettings(12);
-		playerSettings[0] = new PlayerSetting(EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, (byte) 0);
+		playerSettings[playerId] = new PlayerSetting(EPlayerType.AI_VERY_HARD, ECivilisation.ROMAN, playerId);
 
 		JSettlersGame.GameRunner startingGame = createStartingGame(playerSettings);
 		IStartedGame startedGame = ReplayUtils.waitForGameStartup(startingGame);
 
 		MatchConstants.clock().fastForwardTo(86 * MINUTES);
 
-		ReplayUtils.awaitShutdown(startedGame);
-
 		short expectedMinimalProducedSoldiers = 950;
 		short producedSoldiers = startingGame.getMainGrid().getPartitionsGrid().getPlayer(0).getEndgameStatistic().getAmountOfProducedSoldiers();
 		if (producedSoldiers < expectedMinimalProducedSoldiers) {
-			fail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
-					+ " soldiers were produced. Some code changes make the AI weaker.");
+			stopAndFail("AI_VERY_HARD was not able to produce " + expectedMinimalProducedSoldiers + " soldiers within 90 minutes.\nOnly " + producedSoldiers
+					+ " soldiers were produced. Some code changes make the AI weaker.", startedGame, startingGame.getMainGrid(), playerId);
 		}
 		ensureRuntimePerformance("to apply rules", startingGame.getAiExecutor().getApplyRulesStopWatch(), 200, 2500);
 		ensureRuntimePerformance("to update statistics", startingGame.getAiExecutor().getUpdateStatisticsStopWatch(), 100, 2500);
@@ -105,15 +105,13 @@ public class AiDifficultiesIT {
 			MatchConstants.clock().fastForwardTo(targetGameTime);
 			aiStatistics.updateStatistics();
 			if (!aiStatistics.isAlive(expectedWinnerSlotId)) {
-				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame);
+				stopAndFail(expectedWinner + " was defeated by " + expectedLooser, startedGame, startingGame.getMainGrid(), expectedWinnerSlotId);
 			}
 			if (MatchConstants.clock().getTime() > maximumTimeToWin) {
-				MapLoader savegame = MapUtils.saveMainGrid(startingGame.getMainGrid(), expectedLooserSlotId, null);
-				System.out.println("Saved game at: " + savegame.getListedMap().getFile());
 				stopAndFail(expectedWinner + " was not able to defeat " + expectedLooser + " within " + (maximumTimeToWin / 60000)
 						+ " minutes.\nIf the AI code was changed in a way which makes the " + expectedLooser + " stronger with the sideeffect that "
 						+ "the " + expectedWinner + " needs more time to win you could make the " + expectedWinner + " stronger, too, or increase "
-						+ "the maximumTimeToWin.", startedGame);
+						+ "the maximumTimeToWin.", startedGame, startingGame.getMainGrid(), expectedWinnerSlotId);
 			}
 		} while (aiStatistics.isAlive(expectedLooserSlotId));
 		System.out.println("The battle between " + expectedWinner + " and " + expectedLooser + " took " + (MatchConstants.clock().getTime() / 60000) +
@@ -152,7 +150,10 @@ public class AiDifficultiesIT {
 		return (JSettlersGame.GameRunner) game.start();
 	}
 
-	private void stopAndFail(String reason, IStartedGame startedGame) {
+	private void stopAndFail(String reason, IStartedGame startedGame, MainGrid mainGrid, byte playerId) {
+		MapLoader savegame = MapUtils.saveMainGrid(mainGrid, playerId, null);
+		System.out.println("Saved game at: " + savegame.getListedMap().getFile());
+
 		ReplayUtils.awaitShutdown(startedGame);
 		fail(reason);
 	}
