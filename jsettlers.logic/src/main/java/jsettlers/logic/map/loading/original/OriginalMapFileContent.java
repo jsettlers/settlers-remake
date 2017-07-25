@@ -42,8 +42,8 @@ import jsettlers.common.position.ShortPoint2D;
 public class OriginalMapFileContent implements IMapData {
 
 	// - Heigh of original maps are 0..225 and of remake 0..127
-	private final static float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
-	private final static float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
+	private static final float ORIGINAL_TO_REMAKE_HEIGHT_FACTOR = 127f / 225f;
+	private static final float ORIGINAL_TO_REMAKE_RESOURCE_AMOUNT_FACTOR = 127f / 15f;
 
 	// --------------------------------------------------//
 	public static class MapPlayerInfo {
@@ -153,7 +153,6 @@ public class OriginalMapFileContent implements IMapData {
 	}
 
 	public void setMapObject(int x, int y, MapDataObject newMapObject) {
-
 		int pos = y * widthHeight + x;
 
 		if ((pos < 0) || (pos >= dataCount))

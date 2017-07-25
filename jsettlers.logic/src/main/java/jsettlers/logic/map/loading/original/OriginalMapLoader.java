@@ -56,16 +56,12 @@ public class OriginalMapLoader extends MapLoader {
 
 		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM) {
 			if (!mapContent.isChecksumValid()) {
-				System.out.println("Checksum of original map (" + fileName + ") is not valid!");
-				return;
+				throw new MapLoadException("Checksum of original map (" + fileName + ") is not valid!");
 			}
 		}
 
 		// - read all important information from file
-		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			return;
-		}
+		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);
 
 		// - free the DataBuffer
@@ -142,7 +138,11 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public String getDescription() {
-		return mapContent.readMapQuestText();
+		try {
+			return mapContent.readMapQuestText();
+		} catch (MapLoadException e) {
+			return "";
+		}
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() {
-		return new ArrayList<>(); // - ToDo
+		return new ArrayList<>(); // - TODO
 	}
 
 	// ----------------------------//
@@ -221,9 +221,7 @@ public class OriginalMapLoader extends MapLoader {
 		}
 
 		// - load all common map information
-		if (!mapContent.loadMapResources()) {
-			throw new MapLoadException("Unable to open original map (" + fileName + ")!");
-		}
+		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
