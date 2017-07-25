@@ -16,6 +16,7 @@ package jsettlers.graphics.map.controls;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.IMapInterfaceListener;
@@ -82,11 +83,11 @@ public interface IControls extends IMapInterfaceListener {
 	 *
 	 * @param position
 	 *            The positon.
-	 * @param selecting
-	 *            If the event is a select event.
+	 * @param event
+	 *            The event
 	 * @return The action for the position.
 	 */
-	Action getActionFor(UIPoint position, boolean selecting);
+	Action getActionFor(UIPoint position, GOCommandEvent event);
 
 	/**
 	 * Handles a draw event. The event may be fired even if it is outside the interface.

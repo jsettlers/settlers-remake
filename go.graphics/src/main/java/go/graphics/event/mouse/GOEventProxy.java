@@ -45,4 +45,9 @@ public class GOEventProxy<T extends GOEvent> implements GOEvent {
 		this.baseEvent.setHandler(new EventHandlerProxy(this, handler));
 	}
 
+	@Override
+	public int getModifiers() {
+		return this.baseEvent.getModifiers();
+	}
+
 }

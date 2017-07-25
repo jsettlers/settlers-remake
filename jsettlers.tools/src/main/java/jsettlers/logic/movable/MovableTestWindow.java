@@ -20,6 +20,7 @@ import jsettlers.TestToolUtils;
 import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.IMapInterfaceConnector;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.ECivilisation;
 import jsettlers.common.position.ShortPoint2D;
@@ -57,7 +58,7 @@ public class MovableTestWindow {
 		connector.addListener(action -> {
 			switch (action.getActionType()) {
 			case MOVE_TO:
-				movable.moveTo(((PointAction) action).getPosition());
+				movable.moveTo(((PointAction) action).getPosition(), EMoveToMode.NORMAL);
 				break;
 			case SPEED_FASTER:
 				MatchConstants.clock().multiplyGameSpeed(1.2f);
@@ -98,9 +99,9 @@ public class MovableTestWindow {
 			ILogicMovable m2 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), PLAYER_0);
 			ILogicMovable m3 = new Movable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), PLAYER_0);
 
-			m1.moveTo(new ShortPoint2D(52, 65));
-			m2.moveTo(new ShortPoint2D(49, 63));
-			m3.moveTo(new ShortPoint2D(50, 66));
+			m1.moveTo(new ShortPoint2D(52, 65), EMoveToMode.NORMAL);
+			m2.moveTo(new ShortPoint2D(49, 63), EMoveToMode.NORMAL);
+			m3.moveTo(new ShortPoint2D(50, 66), EMoveToMode.NORMAL);
 		}
 	}
 }

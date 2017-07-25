@@ -16,6 +16,7 @@ package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.OccupierPlace;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -108,7 +109,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 						if (!isInTower) { // we are in danger because an enemy entered our range where we can't attack => run away
 							EDirection escapeDirection = EDirection.getApproxDirection(toCloseEnemy.getPos(), movable.getPos());
 							super.goInDirection(escapeDirection, EGoInDirectionMode.GO_IF_ALLOWED_AND_FREE);
-							movable.moveTo(null); // reset moveToRequest, so the soldier doesn't go there after fleeing.
+							movable.moveTo(null, EMoveToMode.NORMAL); // reset moveToRequest, so the soldier doesn't go there after fleeing.
 
 						} // else { // we are in the tower, so wait and check again next time.
 

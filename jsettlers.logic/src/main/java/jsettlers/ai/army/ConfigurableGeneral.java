@@ -22,6 +22,7 @@ import java.util.Vector;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.player.IPlayer;
@@ -214,7 +215,7 @@ public class ConfigurableGeneral implements ArmyGeneral {
 			}
 		}
 
-		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds));
+		taskScheduler.scheduleTask(new MoveToGuiTask(player.playerId, target, attackerIds, EMoveToMode.NORMAL));
 	}
 
 	private ShortPoint2D getTargetEnemyDoorToAttack(IPlayer enemyToAttack) {

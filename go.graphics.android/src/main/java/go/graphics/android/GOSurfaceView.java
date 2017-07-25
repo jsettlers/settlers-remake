@@ -282,4 +282,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 	public void setContextDestroyedListener(IContextDestroyedListener contextDestroyedListener) {
 		this.contextDestroyedListener = contextDestroyedListener;
 	}
+
+	@Override
+	protected int getCurrentModifiers() {
+		return GOEvent.MODIFIER_ALT | GOEvent.MODIFIER_CTRL | GOEvent.MODIFIER_SHIFT;
+	}
 }

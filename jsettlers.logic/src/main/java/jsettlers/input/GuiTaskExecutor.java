@@ -22,6 +22,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
@@ -100,7 +101,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case MOVE_TO: {
 			MoveToGuiTask task = (MoveToGuiTask) guiTask;
-			moveSelectedTo(task.getPosition(), task.getSelection());
+			moveSelectedTo(task.getPosition(), task.getSelection(), task.getMode());
 			break;
 		}
 
@@ -293,19 +294,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 *            position to move to
 	 * @param movableIds
 	 *            A list of the id's of the movables.
+	 * @param mode The move to mode to use
 	 */
-	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
+	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds, EMoveToMode mode) {
 		if (movableIds.size() == 1) {
 			ILogicMovable currMovable = Movable.getMovableByID(movableIds.get(0));
 			if (currMovable != null) {
-				currMovable.moveTo(targetPosition);
+				currMovable.moveTo(targetPosition, mode);
 			}
 		} else if (!movableIds.isEmpty()) {
-			sendMovablesNew(targetPosition, movableIds);
+			sendMovablesNew(targetPosition, movableIds, mode);
 		}
 	}
 
-	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds) {
+	private void sendMovablesNew(ShortPoint2D targetPosition, List<Integer> movableIds, EMoveToMode mode) {
 		List<ILogicMovable> movables = stream(movableIds).map(Movable::getMovableByID).filter(Objects::nonNull).collect(Collectors.toList());
 		if (movables.isEmpty()) {
 			return;
@@ -322,7 +324,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 						Optional<ILogicMovable> movableOptional = removeMovableThatCanMoveTo(movables, x, y);
 
 						movableOptional.ifPresent(movable -> {
-							movable.moveTo(new ShortPoint2D(x, y));
+							movable.moveTo(new ShortPoint2D(x, y), mode);
 							numberOfSendMovables.value++;
 						});
 					});

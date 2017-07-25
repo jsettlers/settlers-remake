@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -12,30 +12,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package go.graphics.event;
+package jsettlers.common.menu.action;
 
 /**
- * This is a extension to normal events.
- * <p>
- * Modal events are capable of passing on data about the event while the event is on the modal phase.
- * 
- * @author michael
+ * The mode movables should use for move_to
+ * @author Michael Zangl
  */
-public class SingleHandlerGoModalEvent extends SingleHandlerGoEvent {
-	public SingleHandlerGoModalEvent() {
-	}
-	
-	public SingleHandlerGoModalEvent(int modifiers) {
-		super(modifiers);
-	}
-	
+public enum EMoveToMode {
 	/**
-	 * This method notifies the handler, if it supports the {@link GOModalEventHandler}, that the event data has changed.
+	 * Normal move
 	 */
-	protected void fireModalDataRefreshed() {
-		if (getHandler() instanceof GOModalEventHandler) {
-			GOModalEventHandler modalHandler = (GOModalEventHandler) getHandler();
-			modalHandler.eventDataChanged(this);
-		}
+	NORMAL(false, false),
+	/**
+	 * Forced move
+	 */
+	FORCED(true, false),
+	/**
+	 * Work at destination
+	 */
+	WORK(true, true);
+	
+	private final boolean force;
+	private final boolean workAtDestination;
+
+	EMoveToMode(boolean doForce, boolean doWorkAtDestination) {
+		this.force = doForce;
+		this.workAtDestination = doWorkAtDestination;
+	}
+	
+	public boolean isForced() {
+		return force;
+	}
+	
+	public boolean doWorkAtDestination() {
+		return workAtDestination;
 	}
 }

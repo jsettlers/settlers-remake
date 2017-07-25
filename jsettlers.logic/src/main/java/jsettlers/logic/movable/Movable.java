@@ -23,6 +23,7 @@ import jsettlers.algorithms.path.Path;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
@@ -125,9 +126,11 @@ public final class Movable implements ILogicMovable {
 	 *
 	 * @param targetPosition
 	 */
-	public final void moveTo(ShortPoint2D targetPosition) {
+	@Override
+	public final void moveTo(ShortPoint2D targetPosition, EMoveToMode mode) {
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
+			strategy.stopOrStartWorking(!mode.doWorkAtDestination());
 		}
 	}
 
@@ -135,6 +138,7 @@ public final class Movable implements ILogicMovable {
 		return this.state == EMovableState.PATHING && this.path.getTargetPos().equals(targetPosition);
 	}
 
+	@Override
 	public void leavePosition() {
 		if (state != EMovableState.DOING_NOTHING || !enableNothingToDo) {
 			return;

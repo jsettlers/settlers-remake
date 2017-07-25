@@ -321,6 +321,10 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	private class SimpleHoverEvent extends AbstractMouseEvent implements
 			GOHoverEvent {
+		private SimpleHoverEvent() {
+			super(0);
+		}
+		
 		public void finish() {
 			this.setPhase(PHASE_FINISHED);
 		}

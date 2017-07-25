@@ -29,8 +29,10 @@ public class ConvertedDrawEvent extends AbstractMouseEvent implements
 	 * 
 	 * @param point
 	 *            The point where it starts.
+	 * @param modifiers The modifiers
 	 */
-	public ConvertedDrawEvent(final UIPoint point) {
+	public ConvertedDrawEvent(final UIPoint point, int modifiers) {
+		super(modifiers);
 		this.position = point;
 	}
 

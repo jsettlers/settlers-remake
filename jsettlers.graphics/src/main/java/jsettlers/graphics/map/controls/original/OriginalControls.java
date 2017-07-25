@@ -18,9 +18,11 @@ import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
+import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.menu.action.EActionType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.player.IInGamePlayer;
 import jsettlers.common.position.FloatRectangle;
@@ -30,6 +32,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
@@ -198,12 +201,12 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position, boolean selecting) {
+	public Action getActionFor(UIPoint position, GOCommandEvent event) {
 		float relativex = (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey = (float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
 		if (minimap != null && relativey > layoutProperties.MAIN_PANEL_TOP && getMinimapOffset(position.getY()) < position.getX()) {
-			action = getForMinimap(relativex, relativey, selecting);
+			action = getForMinimap(relativex, relativey, event.isSelecting(), MoveToAction.modeForModifiers(event.getModifiers()));
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
 			action = uiBase.getAction(relativex, relativey);
@@ -226,10 +229,11 @@ public class OriginalControls implements IControls {
 	 *            The position on the minimap.
 	 * @param selecting
 	 *            <code>true</code> if it was a selection click and the view should move there.
+	 * @param moveToMode The mode to use for move tos
 	 * @return the action for that point or <code>null</code> for no action.
 	 */
 	private Action getForMinimap(float relativex, float relativey,
-			boolean selecting) {
+			boolean selecting, EMoveToMode moveToMode) {
 		float minimapx = (relativex - layoutProperties.miniMap.MAP_LEFT)
 				/ layoutProperties.miniMap.MAP_WIDTH;
 		float minimapy = ((relativey - layoutProperties.MAIN_PANEL_TOP)
@@ -240,7 +244,7 @@ public class OriginalControls implements IControls {
 			if (selecting) {
 				return new PointAction(EActionType.PAN_TO, clickPosition);
 			} else {
-				return new PointAction(EActionType.MOVE_TO, clickPosition);
+				return new MoveToAction(clickPosition, moveToMode);
 			}
 		} else {
 			return null;
@@ -296,7 +300,7 @@ public class OriginalControls implements IControls {
 		float height = this.uiBase.getPosition().getHeight();
 		float relativey = (float) position.getY() / height;
 
-		return getForMinimap(relativex, relativey, true);
+		return getForMinimap(relativex, relativey, true, MoveToAction.modeForModifiers(event.getModifiers()));
 	}
 
 	/**

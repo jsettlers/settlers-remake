@@ -32,6 +32,19 @@ public class GOKeyEvent extends SingleHandlerGoEvent {
 	public GOKeyEvent(String keyCode) {
 		this.keyCode = keyCode;
 	}
+	
+	/**
+	 * Creates a new key event for a given key code.
+	 * 
+	 * @param keyCode
+	 *            The key code.
+	 * @param modifiers
+	 *            The modifiers.
+	 */
+	public GOKeyEvent(String keyCode, int modifiers) {
+		super(modifiers);
+		this.keyCode = keyCode;
+	}
 
 	/**
 	 * Gets the key code the event has.
