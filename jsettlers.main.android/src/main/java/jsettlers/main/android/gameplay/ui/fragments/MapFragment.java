@@ -190,13 +190,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			return true;
 		}
 
-		if (selectionControls.getCurrentSelection() != null) {
-			selectionControls.deselect();
+		if (isMenuOpen()) {
+			dismissMenu();
 			return true;
 		}
 
-		if (isMenuOpen()) {
-			dismissMenu();
+		if (selectionControls.getCurrentSelection() != null) {
+			selectionControls.deselect();
 			return true;
 		}
 
@@ -328,7 +328,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 					.commit();
 			break;
 		case SPECIALISTS:
-			showMenu();
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, SpecialistsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
 					.commit();
@@ -340,7 +339,6 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 					.commit();
 			break;
 		case SHIPS:
-			showMenu();
 			getChildFragmentManager().beginTransaction()
 					.replace(R.id.container_menu, ShipsSelectionFragment.newInstance(), TAG_FRAGMENT_SELECTION_MENU)
 					.commit();

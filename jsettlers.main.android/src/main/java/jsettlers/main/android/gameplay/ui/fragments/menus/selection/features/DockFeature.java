@@ -24,8 +24,10 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.ActionListener;
@@ -36,19 +38,26 @@ import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
-import static jsettlers.common.menu.action.EActionType.ABORT;
-
 /**
  * Created by Tom Pratt on 10/01/2017.
  */
 public class DockFeature extends SelectionFeature implements DrawListener, ActionListener {
+	private final ImageLink ferryImageLink = ImageLink.fromName("original_14_GUI_272", 0);
+	private final ImageLink ferrySelectedImageLink = ImageLink.fromName("original_14_GUI_273", 0);
+	private final ImageLink tradeShipImageLink = ImageLink.fromName("original_14_GUI_278", 0);
+	private final ImageLink tradeShipSelectedImageLink = ImageLink.fromName("original_14_GUI_279", 0);
+	private final ImageLink placeDockImageLink = ImageLink.fromName("original_3_GUI_390", 0);
+
 	private final DrawControls drawControls;
 	private final ActionControls actionControls;
 	private final TaskControls taskControls;
+	private final MenuNavigator menuNavigator;
 
 	private final InGameButton placeDockButton;
 	private final ImageView ferryImageShip;
 	private final ImageView tradeShipImageView;
+
+	private EMovableType currentOrderedShip = null;
 
 	private Snackbar snackbar;
 
@@ -57,19 +66,20 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		this.drawControls = drawControls;
 		this.actionControls = actionControls;
 		this.taskControls = taskControls;
+		this.menuNavigator = menuNavigator;
 
 		placeDockButton = (InGameButton) getView().findViewById(R.id.imageView_placeDock);
 		placeDockButton.setVisibility(View.VISIBLE);
-		placeDockButton.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK)));
-		OriginalImageProvider.get(ImageLink.fromName("original_3_GUI_390", 0)).setAsImage(placeDockButton.getImageView());
+		placeDockButton.setOnClickListener(this::setDockClicked);
+		OriginalImageProvider.get(placeDockImageLink).setAsImage(placeDockButton.getImageView());
 
 		ferryImageShip = (ImageView) getView().findViewById(R.id.imageView_ferry);
 		ferryImageShip.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_FERRY)));
-		OriginalImageProvider.get(ImageLink.fromName("original_14_GUI_272", 0)).setAsImage(ferryImageShip);
+		OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
 
 		tradeShipImageView = (ImageView) getView().findViewById(R.id.imageView_tradeShip);
 		tradeShipImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_CARGO_BOAT)));
-		OriginalImageProvider.get(ImageLink.fromName("original_14_GUI_278", 0)).setAsImage(tradeShipImageView);
+		OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
 	}
 
 	@Override
@@ -113,6 +123,32 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	}
 
 	private void update() {
+		IWorkerRequestBuilding workerRequestBuilding = (IWorkerRequestBuilding) getBuilding();
+		EMovableType orderedShip = workerRequestBuilding.getOrderedShipType();
+
+		if (currentOrderedShip != orderedShip) {
+			switch (orderedShip) {
+				case FERRY:
+					OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageShip);
+					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+					break;
+				case CARGO_BOAT:
+					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
+					OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
+					break;
+				default:
+					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
+					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+					break;
+			}
+
+			currentOrderedShip = orderedShip;
+		}
+	}
+
+	private void setDockClicked(View view) {
+		actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK));
+		menuNavigator.dismissMenu();
 	}
 
 	private void dismissSnackbar() {
