@@ -109,10 +109,9 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = EWaypointType.DESTINATION;
 		}
-		if (this.isSeaTrading && waypointType == EWaypointType.DESTINATION) {
-			if (!coastIsReachable(position)) {
-				return;
-			}
+		if (this.isSeaTrading && waypointType == EWaypointType.DESTINATION
+				&& !coastIsReachable(position)) {
+			return;
 		}
 		if (isSelected()) {
 			drawWaypointLine(false);
