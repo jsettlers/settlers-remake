@@ -25,7 +25,8 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapFilePartType;
+import jsettlers.logic.map.loading.original.data.EMapFilePartType;
+import jsettlers.logic.map.loading.original.data.EMapFileVersion;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.loading.EMapStartResources;
@@ -35,7 +36,7 @@ import jsettlers.logic.map.loading.EMapStartResources;
  */
 public class OriginalMapFileContentReader {
 	public class MapResourceInfo {
-		public final OriginalMapFileDataStructs.EMapFilePartType partType;
+		public final EMapFilePartType partType;
 		public final int offset;
 		public final int size;
 		public final int cryptKey;
@@ -210,7 +211,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - returns a File Resources
-	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type) {
+	private MapResourceInfo findResource(EMapFilePartType type) {
 		return resources.get(type);
 	}
 
@@ -248,7 +249,7 @@ public class OriginalMapFileContentReader {
 		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
-		if ((fileVersion != OriginalMapFileDataStructs.EMapFileVersion.DEFAULT.value) && (fileVersion != OriginalMapFileDataStructs.EMapFileVersion.AMAZONS.value))
+		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value))
 			return false;
 
 		// - Data length
@@ -276,7 +277,7 @@ public class OriginalMapFileContentReader {
 			filePos = filePos + partLen;
 
 			// - save the values
-			if ((partType > 0) && (partType < OriginalMapFileDataStructs.EMapFilePartType.length) && (partLen >= 0)) {
+			if ((partType > 0) && (partType < EMapFilePartType.length) && (partLen >= 0)) {
 				EMapFilePartType type = EMapFilePartType.getTypeByInt(partType);
 				MapResourceInfo newRes = new MapResourceInfo(type, mapPartPos, partLen - 8, partType);
 
@@ -345,7 +346,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - get resource information for the area to get map height and width
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
+		MapResourceInfo filePart = findResource(EMapFilePartType.AREA);
 
 		if (filePart == null)
 			return;
@@ -381,7 +382,7 @@ public class OriginalMapFileContentReader {
 		short[] outImg = new short[width * height];
 
 		// - get resource information for the area
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PREVIEW);
+		MapResourceInfo filePart = findResource(EMapFilePartType.PREVIEW);
 
 		if (filePart == null)
 			return outImg;
@@ -430,7 +431,7 @@ public class OriginalMapFileContentReader {
 		if (mapQuestText != null)
 			return mapQuestText;
 
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TEXT);
+		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TEXT);
 
 		if ((filePart == null) || (filePart.size == 0))
 			return "";
@@ -452,7 +453,7 @@ public class OriginalMapFileContentReader {
 		if (mapQuestTip != null)
 			return mapQuestTip;
 
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.QUEST_TIP);
+		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TIP);
 
 		if ((filePart == null) || (filePart.size == 0))
 			return "";
@@ -471,7 +472,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read some common information from the map-file
 	public void readMapInfo() {
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.MAP_INFO);
+		MapResourceInfo filePart = findResource(EMapFilePartType.MAP_INFO);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -515,7 +516,7 @@ public class OriginalMapFileContentReader {
 	public boolean readBuildings() {
 		hasBuildings = false;
 
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.BUILDINGS);
+		MapResourceInfo filePart = findResource(EMapFilePartType.BUILDINGS);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No Buildings available in mapfile!");
@@ -586,7 +587,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read stacks from the map-file
 	public boolean readStacks() {
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.STACKS);
+		MapResourceInfo filePart = findResource(EMapFilePartType.STACKS);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No Stacks available in mapfile!");
@@ -633,7 +634,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read settlers from the map-file
 	public boolean readSettlers() {
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.SETTLERS);
+		MapResourceInfo filePart = findResource(EMapFilePartType.SETTLERS);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No Settlers available in mapfile!");
@@ -678,7 +679,7 @@ public class OriginalMapFileContentReader {
 
 	// - Read the Player Info
 	public void readPlayerInfo() {
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.PLAYER_INFO);
+		MapResourceInfo filePart = findResource(EMapFilePartType.PLAYER_INFO);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No Player information available in mapfile!");
@@ -714,7 +715,7 @@ public class OriginalMapFileContentReader {
 	// - Reads in the Map Data / Landscape and MapObjects like trees
 	public boolean readMapData() {
 		// - get resource information for the area
-		MapResourceInfo filePart = findResource(OriginalMapFileDataStructs.EMapFilePartType.AREA);
+		MapResourceInfo filePart = findResource(EMapFilePartType.AREA);
 
 		if ((filePart == null) || (filePart.size == 0)) {
 			System.err.println("Warning: No area information available in mapfile!");

@@ -26,11 +26,14 @@ import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
 import jsettlers.logic.map.loading.data.objects.MovableObject;
 import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
+import jsettlers.logic.map.loading.original.data.EMapBuildingType;
+import jsettlers.logic.map.loading.original.data.EMapNations;
+import jsettlers.logic.map.loading.original.data.EMapResources;
+import jsettlers.logic.map.loading.original.data.EMapSettlersType;
+import jsettlers.logic.map.loading.original.data.EMapStackType;
+import jsettlers.logic.map.loading.original.data.EObjectType;
+import jsettlers.logic.map.loading.original.data.EOriginalLandscapeType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapBuildingType;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapResources;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapSettlersType;
-import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapStackType;
 
 /**
  * @author Thomas Zeugner
@@ -47,20 +50,20 @@ public class OriginalMapFileContent implements IMapData {
 		public int startX;
 		public int startY;
 		public String playerName;
-		public OriginalMapFileDataStructs.EMapNations nation;
+		public EMapNations nation;
 
 		public MapPlayerInfo(int x, int y, String playerName, int nationInt) {
 			this.startX = x;
 			this.startY = y;
 			this.playerName = playerName;
-			this.nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationInt);
+			this.nation = EMapNations.fromMapValue(nationInt);
 		}
 
 		public MapPlayerInfo(int x, int y) {
 			this.startX = x;
 			this.startY = y;
 			this.playerName = "";
-			this.nation = OriginalMapFileDataStructs.EMapNations.ROMANS;
+			this.nation = EMapNations.ROMANS;
 		}
 	}
 
@@ -116,7 +119,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos > dataCount))
 			return;
 
-		OriginalMapFileDataStructs.EOriginalLandscapeType originalType = OriginalMapFileDataStructs.EOriginalLandscapeType.getTypeByInt(type);
+		EOriginalLandscapeType originalType = EOriginalLandscapeType.getTypeByInt(type);
 
 		landscapeType[pos] = originalType.value;
 	}
@@ -125,7 +128,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((pos < 0) || (pos > dataCount))
 			return;
 
-		mapObject[pos] = OriginalMapFileDataStructs.EObjectType.getTypeByInt(type).getNewInstance();
+		mapObject[pos] = EObjectType.getTypeByInt(type).getNewInstance();
 	}
 
 	public void setPlayerCount(int count) {
@@ -143,7 +146,7 @@ public class OriginalMapFileContent implements IMapData {
 		if ((index < 0) || (index >= mapPlayerInfos.length))
 			return;
 
-		mapPlayerInfos[index].nation = OriginalMapFileDataStructs.EMapNations.fromMapValue(nationType);
+		mapPlayerInfos[index].nation = EMapNations.fromMapValue(nationType);
 		mapPlayerInfos[index].startX = x;
 		mapPlayerInfos[index].startY = y;
 		mapPlayerInfos[index].playerName = playerName;
