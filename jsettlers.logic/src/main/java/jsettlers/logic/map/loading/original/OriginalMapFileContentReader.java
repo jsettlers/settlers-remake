@@ -19,12 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.original.OriginalMapFileDataStructs.EMapFilePartType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.loading.EMapStartResources;
@@ -33,17 +34,67 @@ import jsettlers.logic.map.loading.EMapStartResources;
  * @author Thomas Zeugner
  */
 public class OriginalMapFileContentReader {
-	// --------------------------------------------------//
-	public static class MapResourceInfo {
-		OriginalMapFileDataStructs.EMapFilePartType partType;
-		public int offset = 0;
-		public int size = 0;
-		public int cryptKey = 0;
+	public class MapResourceInfo {
+		public final OriginalMapFileDataStructs.EMapFilePartType partType;
+		public final int offset;
+		public final int size;
+		public final int cryptKey;
 		public boolean hasBeenDecrypted = false;
-	}
-	// --------------------------------------------------//
+		
+		public MapResourceInfo(EMapFilePartType partType, int offset, int size, int cryptKey) {
+			super();
+			this.partType = partType;
+			this.offset = offset;
+			this.size = size;
+			this.cryptKey = cryptKey;
+		}
 
-	private final List<MapResourceInfo> resources;
+		// - Decrypt a file resource
+		private boolean doDecrypt() {
+			if (mapContent == null) {
+				System.err.println("OriginalMapFile-Warning: Unable to decrypt map file: no data loaded!");
+				return false;
+			}
+
+			// - already encrypted
+			if (hasBeenDecrypted)
+				return true;
+
+			// - length of data
+			if (size <= 0)
+				return true;
+
+			// - start of data
+			int pos = offset;
+
+			// - check if the file has enough data
+			if ((pos + size) >= mapContent.length) {
+				System.err.println("Error: Unable to decrypt map file: out of data!");
+				return false;
+			}
+
+			// - init the key
+			int key = (cryptKey & 0xFF);
+
+			for (int i = size; i > 0; i--) {
+
+				// - read one byte and uncrypt it
+				int byt = (mapContent[pos] ^ key);
+
+				// - calculate next Key
+				key = (key << 1) ^ byt;
+
+				// - write Byte
+				mapContent[pos] = (byte) byt;
+				pos++;
+			}
+
+			hasBeenDecrypted = true;
+			return true;
+		}
+	}
+
+	private final HashMap<EMapFilePartType, MapResourceInfo> resources = new HashMap<>();
 
 	public int fileChecksum = 0;
 	public int widthHeight;
@@ -69,8 +120,6 @@ public class OriginalMapFileContentReader {
 	private static final Charset TEXT_CHARSET = Charset.forName("ISO-8859-1");
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
-		// - init Resource Info
-		resources = new LinkedList<>();
 
 		// - init players
 		mapData.setPlayerCount(1);
@@ -162,12 +211,7 @@ public class OriginalMapFileContentReader {
 
 	// - returns a File Resources
 	private MapResourceInfo findResource(OriginalMapFileDataStructs.EMapFilePartType type) {
-		for (MapResourceInfo element : resources) {
-			if (element.partType == type)
-				return element;
-		}
-
-		return null;
+		return resources.get(type);
 	}
 
 	// - calculates the checksum of the file and compares it
@@ -233,15 +277,10 @@ public class OriginalMapFileContentReader {
 
 			// - save the values
 			if ((partType > 0) && (partType < OriginalMapFileDataStructs.EMapFilePartType.length) && (partLen >= 0)) {
-				MapResourceInfo newRes = new MapResourceInfo();
+				EMapFilePartType type = EMapFilePartType.getTypeByInt(partType);
+				MapResourceInfo newRes = new MapResourceInfo(type, mapPartPos, partLen - 8, partType);
 
-				newRes.partType = OriginalMapFileDataStructs.EMapFilePartType.getTypeByInt(partType);
-				newRes.cryptKey = partType;
-				newRes.hasBeenDecrypted = false;
-				newRes.offset = mapPartPos;
-				newRes.size = partLen - 8;
-
-				resources.add(newRes);
+				resources.put(type, newRes);
 			}
 
 		} while ((partTypeTemp != 0) && ((filePos + 8) <= dataLength));
@@ -267,7 +306,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - reset Crypt Info
-		for (MapResourceInfo element : resources) {
+		for (MapResourceInfo element : resources.values()) {
 			element.hasBeenDecrypted = false;
 		}
 	}
@@ -316,7 +355,7 @@ public class OriginalMapFileContentReader {
 		// TODO: original map: the whole AREA-Block is decrypted but we only need the first 4 byte. Problem... maybe later we need the rest but only
 		// if this map is selected for playing AND there was no freeBuffer() and reOpen() call in between.
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return;
 
 		// - file position of this part
@@ -350,7 +389,7 @@ public class OriginalMapFileContentReader {
 			return outImg;
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return outImg;
 
 		// - file position
@@ -397,7 +436,7 @@ public class OriginalMapFileContentReader {
 			return "";
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return "";
 
 		// - read Text
@@ -419,7 +458,7 @@ public class OriginalMapFileContentReader {
 			return "";
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return "";
 
 		// - read Text
@@ -440,7 +479,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return;
 
 		// - file position
@@ -484,7 +523,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return false;
 
 		// - file position
@@ -555,7 +594,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return false;
 
 		// - file position
@@ -602,7 +641,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return false;
 
 		// - file position
@@ -647,7 +686,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return;
 
 		// - file position
@@ -683,7 +722,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - Decrypt this resource if necessary
-		if (!doDecrypt(filePart))
+		if (!filePart.doDecrypt())
 			return false;
 
 		// - file position
@@ -778,53 +817,5 @@ public class OriginalMapFileContentReader {
 		return null;
 	}
 
-	// - Decrypt a file resource
-	private boolean doDecrypt(MapResourceInfo filePart) {
-
-		if (filePart == null)
-			return false;
-
-		if (mapContent == null) {
-			System.err.println("OriginalMapFile-Warning: Unable to decrypt map file: no data loaded!");
-			return false;
-		}
-
-		// - already encrypted
-		if (filePart.hasBeenDecrypted)
-			return true;
-
-		// - length of data
-		int length = filePart.size;
-		if (length <= 0)
-			return true;
-
-		// - start of data
-		int pos = filePart.offset;
-
-		// - check if the file has enough data
-		if ((pos + length) >= mapContent.length) {
-			System.err.println("Error: Unable to decrypt map file: out of data!");
-			return false;
-		}
-
-		// - init the key
-		int key = (filePart.cryptKey & 0xFF);
-
-		for (int i = length; i > 0; i--) {
-
-			// - read one byte and uncrypt it
-			int byt = (mapContent[pos] ^ key);
-
-			// - calculate next Key
-			key = (key << 1) ^ byt;
-
-			// - write Byte
-			mapContent[pos] = (byte) byt;
-			pos++;
-		}
-
-		filePart.hasBeenDecrypted = true;
-		return true;
-	}
 
 }
