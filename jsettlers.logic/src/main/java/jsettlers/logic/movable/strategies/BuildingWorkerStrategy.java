@@ -104,7 +104,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case TRY_TAKING_FOOD:
-			if (building.tryTakingFoood(currentJob.getFoodOrder())) {
+			if (building.tryTakingFood(currentJob.getFoodOrder())) {
 				jobFinished();
 			} else {
 				jobFailed();
