@@ -65,29 +65,13 @@ public class DatFileTester {
 	private final Region region;
 
 	private DatFileTester() throws IOException {
-		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
-		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
-		File settlersGfxFolder = settlersFolderInfo.gfxFolder;
+		File settlersGfxFolder = getSettlersGfxFolder();
 
 		File file = findFileIgnoringCase(settlersGfxFolder, FILE_NAME);
 		reader = new AdvancedDatFileReader(file, TYPE);
 
 		region = new Region(Region.POSITION_CENTER);
 		region.setContent(new Content());
-	}
-
-	private static File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
-		String fileNameLowercase = fileName.toLowerCase();
-
-		Mutable<File> graphicsFile = new Mutable<>();
-
-		FileUtils.iterateChildren(settlersGfxFolder, currentFile -> {
-			if(currentFile.isFile() && fileNameLowercase.equalsIgnoreCase(currentFile.getName())){
-				graphicsFile.object = currentFile;
-			}
-		});
-
-		return graphicsFile.object;
 	}
 
 	/**
@@ -236,10 +220,7 @@ public class DatFileTester {
 	}
 
 	private static void exportAll() throws IOException {
-		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
-		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
-		File settlersGfxFolder = settlersFolderInfo.gfxFolder;
-
+		File settlersGfxFolder = getSettlersGfxFolder();
 		final JFileChooser fc = new JFileChooser();
 
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -249,7 +230,7 @@ public class DatFileTester {
 			for (int i = 0; i <= 99; i++) {
 				String fileName = String.format(Locale.ENGLISH, FILE_NAME_PATTERN, i);
 				File file = findFileIgnoringCase(settlersGfxFolder, fileName);
-				
+
 				if (file != null && file.exists()) {
 					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
@@ -301,5 +282,25 @@ public class DatFileTester {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static File getSettlersGfxFolder() throws IOException {
+		String settlersFolderPath = new ConfigurationPropertiesFile(new OptionableProperties()).getSettlersFolderValue();
+		SettlersFolderChecker.SettlersFolderInfo settlersFolderInfo = SettlersFolderChecker.checkSettlersFolder(settlersFolderPath);
+		return settlersFolderInfo.gfxFolder;
+	}
+
+	private static File findFileIgnoringCase(File settlersGfxFolder, String fileName) {
+		String fileNameLowercase = fileName.toLowerCase();
+
+		Mutable<File> graphicsFile = new Mutable<>();
+
+		FileUtils.iterateChildren(settlersGfxFolder, currentFile -> {
+			if (currentFile.isFile() && fileNameLowercase.equalsIgnoreCase(currentFile.getName())) {
+				graphicsFile.object = currentFile;
+			}
+		});
+
+		return graphicsFile.object;
 	}
 }
