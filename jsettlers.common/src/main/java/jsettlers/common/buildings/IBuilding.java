@@ -22,6 +22,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.EShipType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
@@ -173,6 +174,6 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	}
 
 	interface IShipConstruction extends IBuilding {
-		EMovableType getOrderedShipType();
+		EShipType getOrderedShipType();
 	}
 }

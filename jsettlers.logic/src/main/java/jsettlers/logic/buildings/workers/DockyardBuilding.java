@@ -21,9 +21,8 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.EShipType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.IBuildingsGrid;
@@ -37,45 +36,6 @@ import jsettlers.logic.player.Player;
  */
 public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction {
 	private static final long serialVersionUID = -6262522980943839741L;
-
-	private enum EShipType {
-		FERRY(EMovableType.FERRY, 4, 1, 30),
-		CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1, 42);
-
-		public final EMovableType movableType;
-		public final short requiredPlanks;
-		public final short requiredIron;
-		public final int buildingSteps;
-
-		EShipType(EMovableType movableType, int requiredPlanks, int requiredIron, int buildingSteps) {
-			this.movableType = movableType;
-			this.requiredPlanks = (short) requiredPlanks;
-			this.requiredIron = (short) requiredIron;
-			this.buildingSteps = buildingSteps;
-		}
-
-		public EShipType get(EMovableType movableType) {
-			switch (movableType) {
-			case FERRY:
-				return FERRY;
-			case CARGO_BOAT:
-				return CARGO_SHIP;
-			default:
-				throw new IllegalArgumentException("MovableType is no ship: " + movableType);
-			}
-		}
-
-		public short getRequiredMaterial(EMaterialType materialType) {
-			switch (materialType) {
-			case PLANK:
-				return requiredPlanks;
-			case IRON:
-				return requiredIron;
-			default:
-				return 0;
-			}
-		}
-	}
 
 	private EShipType orderedShipType = null;
 	private Movable ship = null;
@@ -166,7 +126,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	@Override
-	public EMovableType getOrderedShipType() { // TODO use EShipType outside of this class
-		return orderedShipType == null ? null : orderedShipType.movableType;
+	public EShipType getOrderedShipType() { // TODO use EShipType outside of this class
+		return orderedShipType;
 	}
 }

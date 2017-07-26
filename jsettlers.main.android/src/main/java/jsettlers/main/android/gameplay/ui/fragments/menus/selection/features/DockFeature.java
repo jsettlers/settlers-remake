@@ -24,7 +24,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
-import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.EShipType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
@@ -57,7 +57,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	private final ImageView ferryImageShip;
 	private final ImageView tradeShipImageView;
 
-	private EMovableType currentOrderedShip = null;
+	private EShipType currentOrderedShip = null;
 
 	private Snackbar snackbar;
 
@@ -124,7 +124,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 
 	private void update() {
 		DockyardBuilding dockyard = (DockyardBuilding) getBuilding();
-		EMovableType orderedShip = dockyard.getOrderedShipType();
+		EShipType orderedShip = dockyard.getOrderedShipType();
 
 		if (currentOrderedShip != orderedShip) {
 			switch (orderedShip) {
@@ -132,7 +132,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 					OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageShip);
 					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
 					break;
-				case CARGO_BOAT:
+				case CARGO_SHIP:
 					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
 					OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
 					break;
