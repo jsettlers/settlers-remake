@@ -30,6 +30,11 @@ import jsettlers.common.sound.ISoundable;
 public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable, IIDable {
 	EMovableType getMovableType();
 
+	/**
+	 * Get the current action that the movable is doing.
+	 * @return The action
+	 * @see #getMoveProgress()
+	 */
 	EMovableAction getAction();
 
 	EDirection getDirection();

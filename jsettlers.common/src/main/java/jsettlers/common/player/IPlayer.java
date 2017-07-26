@@ -19,6 +19,10 @@ package jsettlers.common.player;
  * Created by Andreas Eberle on 27.06.2017.
  */
 public interface IPlayer {
+	/**
+	 * The id of the player. It is unique in this game
+	 * @return The id as byte
+	 */
 	byte getPlayerId();
 
 	byte getTeamId();
