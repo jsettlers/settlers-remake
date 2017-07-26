@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.common.buildings;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.map.partition.IStockSettings;
@@ -22,6 +21,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
@@ -83,7 +83,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	boolean cannotWork();
 
 	/**
-	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
+	 * This is a mill building. An animation is shown when {@link #isRotating()} returns true.
 	 *
 	 * @author michael
 	 */
@@ -173,11 +173,6 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	}
 
 	interface IShipConstruction extends IBuilding {
-		/**
-		 * Gets the remeining amount of material requested for the current ship to build
-		 *
-		 * @return The remaining order or null.
-		 */
-		ArrayList<EMaterialType> getRemainingOrder();
+		EMovableType getOrderedShipType();
 	}
 }

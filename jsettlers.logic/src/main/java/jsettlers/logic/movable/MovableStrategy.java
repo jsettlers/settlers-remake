@@ -181,10 +181,6 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
 	}
 
-	protected final boolean setPathTo(ShortPoint2D destination) {
-		return movable.setPathTo(destination);
-	}
-
 	protected final ShortPoint2D followPresearchedPath() {
 		return movable.followPresearchedPath();
 	}

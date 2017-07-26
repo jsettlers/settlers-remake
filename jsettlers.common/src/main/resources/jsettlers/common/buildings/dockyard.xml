@@ -4,7 +4,7 @@
     <ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
-	
+
 	<blocked dx="0" dy="0" block="true" />
 	<blocked dx="-2" dy="1" block="true" />
 	<blocked dx="-1" dy="1" block="true" />
@@ -63,7 +63,7 @@
 
 	<constructionStack dx="1" dy="4" material="PLANK" buildrequired="3" />
 	<constructionStack dx="3" dy="4" material="STONE" buildrequired="5" />
-	
+
 	<requestStack dx="-2" dy="2" material="PLANK" />
 	<requestStack dx="0" dy="4" material="IRON" />
 
@@ -88,20 +88,27 @@
 	<startjob name="gohome"/>
 
 	<!-- go home -->
-	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="2" dy="1"/>
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome"		dx="2" dy="0"/>
 	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome"/>
 	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
 
 	<!-- wait some time -->
-	<job name="wait_at_home" 	type="WAIT" 			successjob="check" 			failjob="wait_at_home" 	time="3.0"/>
-	<job name="check"		 	type="REQUEST"			successjob="show" 			failjob="wait_at_home"/>
+	<job name="wait_at_home" 	type="WAIT" 			successjob="check_planks" 	failjob="wait_at_home" 	time="3.0"/>
+	<job name="check_planks"	type="AVAILABLE" 		successjob="get_plank_show" failjob="check_iron"	dx="-2" dy="2" material="PLANK"/>
+	<job name="check_iron"		type="AVAILABLE" 		successjob="get_iron_show"  failjob="wait_at_home"	dx="0" dy="4" material="IRON"/>
 
-	<!-- show and take the requested material to the dock -->
-	<job name="show" 			type="SHOW" 			successjob="go_to_material"	failjob="hide"			dx="3" dy="1"/>
-	<job name="go_to_material"	type="FOLLOW_SEARCHED"	successjob="take"			failjob="gohome"/>
-	<job name="take"		 	type="TAKE_REQUESTED" 	successjob="go_to_ship" 	failjob="gohome"/>
-	<job name="go_to_ship"		type="GO_TO_DOCK"		successjob="at_dock"		failjob="drop"/>
-	<job name="drop"			type="DROP"				successjob="gohome"			failjob="gohome"/>
+	<!-- show and take the plank to the dock -->
+	<job name="get_plank_show"	type="SHOW" 			successjob="go_to_plank"    failjob="hide"			dx="2" dy="0"/>
+    <job name="go_to_plank" 	type="GO_TO" 			successjob="take_plank" 	failjob="gohome"		dx="-2" dy="2"/>
+    <job name="take_plank"	 	type="TAKE" 	        successjob="go_to_ship" 	failjob="gohome"        material="PLANK"/>
+
+    <!-- show and take the iron to the dock -->
+    <job name="get_iron_show"	type="SHOW" 			successjob="go_to_iron"     failjob="hide"			dx="2" dy="0"/>
+    <job name="go_to_iron"   	type="GO_TO" 			successjob="take_iron" 	    failjob="gohome"		dx="0" dy="4"/>
+    <job name="take_iron"	 	type="TAKE" 	        successjob="go_to_ship" 	failjob="gohome"        material="IRON"/>
+
+    <!-- go to the ship at the dock -->
+    <job name="go_to_ship"		type="GO_TO_DOCK"		successjob="at_dock"        failjob="gohome"/>
 
 	<!-- build the ship -->
 	<job name="at_dock"			type="SET_MATERIAL"		successjob="hammer1"		failjob="hammer1"		material="NO_MATERIAL"/>

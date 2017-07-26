@@ -22,12 +22,11 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * Created by Rudolf Polzer
  */
-
 public class DockPosition implements Serializable {
 	private static final long serialVersionUID = 1142611313386931880L;
 
-	private ShortPoint2D coastPosition = null;
-	private EDirection direction = null;
+	private final ShortPoint2D coastPosition;
+	private final EDirection direction;
 
 	public DockPosition(ShortPoint2D coastPosition, EDirection direction) {
 		this.coastPosition = coastPosition;
@@ -40,5 +39,9 @@ public class DockPosition implements Serializable {
 
 	public EDirection getDirection() {
 		return this.direction;
+	}
+
+	public ShortPoint2D getEndPosition() {
+		return direction.getNextHexPoint(coastPosition, 2);
 	}
 }

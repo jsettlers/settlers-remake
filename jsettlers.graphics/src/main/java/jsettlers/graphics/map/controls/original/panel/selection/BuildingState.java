@@ -170,8 +170,7 @@ public class BuildingState {
 		}
 		isSeaTrading = building instanceof IBuilding.ITrading && ((IBuilding.ITrading) building).isSeaTrading();
 		isDockyard = building.getBuildingType() == EBuildingType.DOCKYARD;
-		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction
-				&& ((IBuilding.IShipConstruction) building).getRemainingOrder() != null);
+		isWorkingDockyard = (building instanceof IBuilding.IShipConstruction && ((IBuilding.IShipConstruction) building).getOrderedShipType() != null);
 	}
 
 	private int[] computeTradingCounts(IBuilding building) {

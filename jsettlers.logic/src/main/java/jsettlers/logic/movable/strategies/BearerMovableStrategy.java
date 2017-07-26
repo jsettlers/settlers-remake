@@ -182,7 +182,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			if (request != null) {
 				boolean offerMaterial = droppingMaterial();
 				super.setMaterial(EMaterialType.NO_MATERIAL);
-				super.getGrid().dropMaterial(super.getPosition(), materialType, offerMaterial, false);
+				super.getGrid().dropMaterial(movable.getPosition(), materialType, offerMaterial, false);
 			}
 			break;
 

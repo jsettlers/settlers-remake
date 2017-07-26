@@ -594,9 +594,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		ArrayList<IBuildingMaterial> materials = new ArrayList<>();
 
 		for (IRequestStack stack : stacks) {
-			if (state == EBuildingState.CONSTRUCTED) {
+			if (stack.getStillRequired() == Short.MAX_VALUE) {
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
-			} else { // during construction
+			} else { // stacks with a maximum required amount should show the required amount
 				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillRequired()));
 			}
 		}
@@ -650,7 +650,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-    public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+	public static Building createBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
 			return new BigLivinghouse(player, position, buildingsGrid);
@@ -678,10 +678,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new WorkerBuilding(type, player, position, buildingsGrid);
 
 		case DOCKYARD:
-			return new DockyardBuilding(type, player, position, buildingsGrid);
+			return new DockyardBuilding(player, position, buildingsGrid);
 
 		case MILL:
-			return new MillBuilding(type, player, position, buildingsGrid);
+			return new MillBuilding(player, position, buildingsGrid);
 
 		case TOWER:
 		case BIG_TOWER:

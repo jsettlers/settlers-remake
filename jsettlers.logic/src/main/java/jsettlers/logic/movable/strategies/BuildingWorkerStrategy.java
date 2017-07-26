@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -155,19 +154,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			takeAction();
 			break;
 
-		case TAKE_REQUESTED:
-			takeRequestedAction();
-			break;
-
 		case DROP:
 			dropAction(currentJob.getMaterial());
 			break;
 		case DROP_POPPED:
 			dropAction(poppedMaterial);
-			break;
-
-		case REQUEST:
-			requestAction();
 			break;
 
 		case PRE_SEARCH:
@@ -286,33 +277,15 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		return currentJob == null;
 	}
 
-	private void requestAction() {
-		boolean pathFound = false;
-		if (building.getBuildingType() == EBuildingType.DOCKYARD) {
-			DockyardBuilding dockyard = (DockyardBuilding) building;
-			if (dockyard.getDock() != null) {
-				ShortPoint2D stackPosition = dockyard.whereIsMaterialAvailable(dockyard.getOrderedMaterial());
-				if (stackPosition != null) pathFound = super.setPathTo(stackPosition);
-			}
-		}
-		if (pathFound) {
-			jobFinished();
-		} else {
-			jobFailed();
-		}
-	}
-
 	private void gotoDockAction() {
 		DockyardBuilding dockyard = (DockyardBuilding) building;
 		if (!done) {
 			this.done = true;
-			ShortPoint2D point = dockyard.getDock().getPosition();
-			EDirection direction = dockyard.getDock().getDirection();
-			if (!super.goToPos(direction.getNextHexPoint(point, 2))) {
+			ShortPoint2D dockEndPosition = dockyard.getDock().getEndPosition();
+			if (!super.goToPos(dockEndPosition)) {
 				jobFailed();
 			}
 		} else {
-			dockyard.reduceOrder();
 			jobFinished(); // start next action
 		}
 	}
@@ -355,7 +328,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		poppedMaterial = building.getMaterialProduction().getAbsolutelyRequestedMaterial(EMaterialType.TOOLS); // first priority: Absolutely set tool production requests of user
 		if (poppedMaterial == null) {
-			poppedMaterial = super.getGrid().popToolProductionRequest(pos);  // second priority: Tools needed by settlers (automated production)
+			poppedMaterial = super.getGrid().popToolProductionRequest(pos); // second priority: Tools needed by settlers (automated production)
 		}
 		if (poppedMaterial == null) {
 			poppedMaterial = building.getMaterialProduction().getRelativelyRequestedMaterial(EMaterialType.TOOLS); // third priority: Relatively set tool production requests of user
@@ -385,19 +358,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		}
 	}
 
-	private void takeRequestedAction() {
-		if (building instanceof DockyardBuilding) {
-			DockyardBuilding dockyard = (DockyardBuilding) building;
-			if (super.take(dockyard.getOrderedMaterial(), currentJob.isTakeMaterialFromMap())) {
-				jobFinished();
-			} else {
-				jobFailed();
-			}
-		} else {
-			jobFailed();
-		}
-	}
-
 	private void dropAction(EMaterialType materialType) {
 		super.drop(materialType);
 		if (materialType == EMaterialType.GOLD) {
@@ -408,8 +368,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	/**
 	 * @param dijkstra
-	 * 		if true, dijkstra algorithm is used<br>
-	 * 		if false, in area finder is used.
+	 *            if true, dijkstra algorithm is used<br>
+	 *            if false, in area finder is used.
 	 */
 	private void preSearchPathAction(boolean dijkstra) {
 		super.setPosition(getCurrentJobPos());
