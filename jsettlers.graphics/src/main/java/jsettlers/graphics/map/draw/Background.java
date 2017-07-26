@@ -1054,9 +1054,17 @@ public class Background implements IGraphicsBackgroundListener {
 
 			// mountain <=> snow
 		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOW) {
-			index = 156;
+			index = 156; // OLD!
 		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.MOUNTAIN) {
+			index = 158; // OLD!
+		} else if (outer == ELandscapeType.MOUNTAIN && inner == ELandscapeType.SNOWBORDER) {
+			index = 156;
+		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.MOUNTAIN) {
 			index = 158;
+		} else if (outer == ELandscapeType.SNOWBORDER && inner == ELandscapeType.SNOW) {
+			index = 160;
+		} else if (outer == ELandscapeType.SNOW && inner == ELandscapeType.SNOWBORDER) {
+			index = 162;
 
 			// earth <=> grass
 		} else if (outer == ELandscapeType.EARTH && inner == ELandscapeType.GRASS) {
@@ -1081,7 +1089,7 @@ public class Background implements IGraphicsBackgroundListener {
 			index = 52;
 		} else if (outer == ELandscapeType.RIVER1 && inner == ELandscapeType.GRASS) {
 			index = 54;
-		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER1) {
+		} else if (outer == ELandscapeType.GRASS && inner == ELandscapeType.RIVER2) {
 			index = 56;
 		} else if (outer == ELandscapeType.RIVER2 && inner == ELandscapeType.GRASS) {
 			index = 58;
@@ -1099,7 +1107,7 @@ public class Background implements IGraphicsBackgroundListener {
 			index = 68;
 		} else if (outer == ELandscapeType.RIVER1 && inner == ELandscapeType.SAND) {
 			index = 70;
-		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER1) {
+		} else if (outer == ELandscapeType.SAND && inner == ELandscapeType.RIVER2) {
 			index = 72;
 		} else if (outer == ELandscapeType.RIVER2 && inner == ELandscapeType.SAND) {
 			index = 74;

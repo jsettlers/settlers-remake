@@ -36,8 +36,8 @@ public enum ELandscapeType {
 	RIVER2(10, new Color(0xff4786FC), false, false),
 	RIVER3(10, new Color(0xff4786FC), false, false),
 	RIVER4(10, new Color(0xff4786FC), false, false),
-	MOUNTAINBORDER(21, new Color(0xff424142), false, false),
-	MOUNTAINBORDEROUTER(21, new Color(0xff105910), false, false), // TODO: color
+	MOUNTAINBORDER(22, new Color(0xff424142), false, false),
+	MOUNTAINBORDEROUTER(23, new Color(0xff105910), false, false), // TODO: color
 	WATER1(17, new Color(0xff1863F0), true, true),
 	WATER2(16, new Color(0xff1562E0), true, true),
 	WATER3(15, new Color(0xff1260D0), true, true),
@@ -55,7 +55,7 @@ public enum ELandscapeType {
 	DESERTBORDER(19, new Color(0xff949200), false, false),
 	DESERTBORDEROUTER(20, new Color(0xff949200), false, false),
 	SNOWINNER(24, new Color(0xffd7fffe), false, true),
-	SNOWBORDER(23, new Color(0xffd7fffe), false, false),
+	SNOWBORDER(25, new Color(0xffd7fffe), false, false),
 	MUD(5, new Color(0xff0e87cc), false, true), // TODO: color
 	MUDINNER(4, new Color(0xff0e87cc), false, true), // TODO: color
 	MUDBORDER(6, new Color(0xff0e87cc), false, false); // TODO: color
