@@ -39,6 +39,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	 */
 	private enum ESoldierState {
 		AGGRESSIVE,
+		FORCED_MOVE,
 
 		SEARCH_FOR_ENEMIES,
 		HITTING,
@@ -71,6 +72,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	protected void action() {
 		switch (state) {
 		case AGGRESSIVE:
+		case FORCED_MOVE:
 			break;
 
 		case HITTING:
@@ -313,12 +315,12 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToMode mode) {
 		if (targetPos != null && this.oldPathTarget != null) {
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 			inSaveGotoMode = false;
 		}
-		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
+		changeStateTo(mode.isForced() ? ESoldierState.FORCED_MOVE : ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
 	@Override
@@ -389,12 +391,24 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
 		switch (state) {
+		case FORCED_MOVE:
+			changeStateTo(ESoldierState.AGGRESSIVE);
+			break;
 		case INIT_GOTO_TOWER:
 		case GOING_TO_TOWER:
 			notifyTowerThatRequestFailed();
 			break;
 		default:
 			state = ESoldierState.AGGRESSIVE;
+			break;
+		}
+	}
+	
+	@Override
+	protected void pathDone(ShortPoint2D pathTarget) {
+		switch (state) {
+		case FORCED_MOVE:
+			changeStateTo(ESoldierState.AGGRESSIVE);
 			break;
 		}
 	}

@@ -16,6 +16,7 @@ package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.action.EMoveToMode;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -151,7 +152,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos, EMoveToMode mode) {
 		this.state = EGeologistState.GOING_TO_POS;
 		centerPos = null;
 
