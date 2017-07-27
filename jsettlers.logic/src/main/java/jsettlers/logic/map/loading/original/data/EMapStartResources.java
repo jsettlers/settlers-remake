@@ -132,47 +132,64 @@ public enum EMapStartResources {
 		List<MapDataObject> movables = new ArrayList<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
-			for (byte i = 0; i < 2; i++)
+			for (byte i = 0; i < 2; i++) {
 				movables.add(new MovableObject(EMovableType.MINER, playerId));
+			}
 			movables.add(new MovableObject(EMovableType.SMITH, playerId));
 			movables.add(new MovableObject(EMovableType.BOWMAN_L1, playerId));
 			movables.add(new MovableObject(EMovableType.PIKEMAN_L1, playerId));
-			for (byte i = 0; i < 6; i++)
+			for (byte i = 0; i < 6; i++) {
 				movables.add(new MovableObject(EMovableType.SWORDSMAN_L1, playerId));
-			for (byte i = 0; i < 16; i++)
+			}
+			for (byte i = 0; i < 16; i++) {
 				movables.add(new MovableObject(EMovableType.BEARER, playerId));
+			}
 			break;
 		case MEDIUM_GOODS:
-			for (byte i = 0; i < 4; i++)
+			for (byte i = 0; i < 4; i++) {
 				movables.add(new MovableObject(EMovableType.MINER, playerId));
-			for (byte i = 0; i < 2; i++)
+			}
+			for (byte i = 0; i < 2; i++) {
 				movables.add(new MovableObject(EMovableType.SMITH, playerId));
-			for (byte i = 0; i < 2; i++)
+			}
+			for (byte i = 0; i < 2; i++) {
 				movables.add(new MovableObject(EMovableType.BOWMAN_L1, playerId));
-			for (byte i = 0; i < 2; i++)
+			}
+			for (byte i = 0; i < 2; i++) {
 				movables.add(new MovableObject(EMovableType.PIKEMAN_L1, playerId));
-			for (byte i = 0; i < 10; i++)
+			}
+			for (byte i = 0; i < 10; i++) {
 				movables.add(new MovableObject(EMovableType.SWORDSMAN_L1, playerId));
-			for (byte i = 0; i < 32; i++)
+			}
+			for (byte i = 0; i < 32; i++) {
 				movables.add(new MovableObject(EMovableType.BEARER, playerId));
-			for (byte i = 0; i < 4; i++)
+			}
+			for (byte i = 0; i < 4; i++) {
 				movables.add(new MovableObject(EMovableType.DONKEY, playerId));
+			}
 			break;
 		default:
-			for (byte i = 0; i < 6; i++)
+			for (byte i = 0; i < 6; i++) {
 				movables.add(new MovableObject(EMovableType.MINER, playerId));
-			for (byte i = 0; i < 3; i++)
+			}
+			for (byte i = 0; i < 3; i++) {
 				movables.add(new MovableObject(EMovableType.SMITH, playerId));
-			for (byte i = 0; i < 4; i++)
+			}
+			for (byte i = 0; i < 4; i++) {
 				movables.add(new MovableObject(EMovableType.BOWMAN_L1, playerId));
-			for (byte i = 0; i < 4; i++)
+			}
+			for (byte i = 0; i < 4; i++) {
 				movables.add(new MovableObject(EMovableType.PIKEMAN_L1, playerId));
-			for (byte i = 0; i < 12; i++)
+			}
+			for (byte i = 0; i < 12; i++) {
 				movables.add(new MovableObject(EMovableType.SWORDSMAN_L1, playerId));
-			for (byte i = 0; i < 50; i++)
+			}
+			for (byte i = 0; i < 50; i++) {
 				movables.add(new MovableObject(EMovableType.BEARER, playerId));
-			for (byte i = 0; i < 6; i++)
+			}
+			for (byte i = 0; i < 6; i++) {
 				movables.add(new MovableObject(EMovableType.DONKEY, playerId));
+			}
 			break;
 		}
 		return movables;

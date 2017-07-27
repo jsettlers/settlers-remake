@@ -156,14 +156,12 @@ public enum EObjectType {
 	RES_STONE_10(EMapObjectTypeType.STONE, 3), // - GAME_OBJECT_RES_STONE_10 = 124,
 	RES_STONE_11(EMapObjectTypeType.STONE, 2), // - GAME_OBJECT_RES_STONE_11 = 125,
 	RES_STONE_12(EMapObjectTypeType.STONE, 1), // - GAME_OBJECT_RES_STONE_12 = 126,
-	RES_STONE_13(EMapObjectTypeType.STONE, 0), // - GAME_OBJECT_RES_STONE_13 = 127,
-
-	END_OF_LIST(null, 0); // - has to be the last item
+	RES_STONE_13(EMapObjectTypeType.STONE, 0); // - GAME_OBJECT_RES_STONE_13 = 127,;
+	
+	private static final EObjectType[] VALUES = EObjectType.values();
 
 	public final EMapObjectTypeType type;
 	public final int style;
-
-	public static final int length = EObjectType.values().length - 1;
 
 	EObjectType(EMapObjectTypeType type, int style) {
 		this.type = type;
@@ -176,27 +174,26 @@ public enum EObjectType {
 	}
 
 	public static EObjectType getTypeByInt(int type) {
-		if (type < 0)
+		if (type < 0 || type >= VALUES.length) {
 			return NO_OBJECT;
-		if (type >= EObjectType.length)
-			return NO_OBJECT;
-
-		return EObjectType.values()[type];
+		} else {
+			return VALUES[type];
+		}
 	}
 
 	public MapDataObject getNewInstance() {
-		if (type == null)
+		if (type == null) {
 			return null;
+		}
 
 		switch (type) {
 		case DECORATION:
-			if (style < 0)
+			if (style < 0 || style >= EMapObjectType.VALUES.length) {
 				return null;
-			if (style >= EMapObjectType.values().length)
-				return null;
-
-			// - TODO: does not work?!
-			return new DecorationMapDataObject(EMapObjectType.values()[style]);
+			} else {
+				// - TODO: does not work?!
+				return new DecorationMapDataObject(EMapObjectType.VALUES[style]);
+			}
 
 		case STONE:
 			return StoneMapDataObject.getInstance(style);

@@ -61,10 +61,13 @@ public enum EMapStackType {
 	Met(null),
 	HONEY(EMaterialType.HONEY),
 
-	END_OF_LIST(null); // - has to be the last item
+	/**
+	 * has to be the last item
+	 */
+	END_OF_LIST(null);
+	
+	private static final EMapStackType[] VALUES = EMapStackType.values();
 
-	// - length of THIS enum (without END_OF_LIST)
-	public static final int length = EMapStackType.values().length - 1;
 	public final EMaterialType value;
 
 	EMapStackType(EMaterialType value) {
@@ -72,12 +75,11 @@ public enum EMapStackType {
 	}
 
 	public static EMapStackType getTypeByInt(int type) {
-		if (type < 0)
+		if (type < 0 || type >= VALUES.length) {
 			return NOT_A_STACK;
-		if (type >= EMapBuildingType.length)
-			return NOT_A_STACK;
-
-		return EMapStackType.values()[type];
+		} else {
+			return VALUES[type];
+		}
 	}
 
 }

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
+import java.util.stream.Stream;
+
 /**
  * The civilization the player is of
  * @author Thomas Zeugner
@@ -28,20 +30,13 @@ public enum EMapNations {
 	NOT_DEFINED(256);
 
 	private static final EMapNations[] VALUES = EMapNations.values();
-	public final int value;
+	private final int value;
 
 	EMapNations(int value) {
 		this.value = value;
 	}
 
 	public static EMapNations fromMapValue(int mapValue) {
-		for (int i = 0; i < EMapNations.VALUES.length; i++) {
-			if (EMapNations.VALUES[i].value == mapValue)
-				return EMapNations.VALUES[i];
-		}
-
-		System.err.println("wrong value for 'EMapNations' " + Integer.toString(mapValue) + "!");
-
-		return EMapNations.ROMANS;
+		return Stream.of(VALUES).filter(nation -> nation.value == mapValue).findAny().orElse(ROMANS);
 	}
 }

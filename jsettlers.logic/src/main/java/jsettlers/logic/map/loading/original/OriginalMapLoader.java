@@ -108,8 +108,9 @@ public class OriginalMapLoader extends MapLoader {
 	@Override
 	public String getMapName() {
 		// - remove the extension {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
-		if (fileName == null)
+		if (fileName == null) {
 			return "";
+		}
 
 		int pos = fileName.lastIndexOf('.');
 		if (pos >= 0) {

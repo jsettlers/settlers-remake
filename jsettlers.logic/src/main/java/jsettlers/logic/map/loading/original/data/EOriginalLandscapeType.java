@@ -282,7 +282,6 @@ public enum EOriginalLandscapeType {
 
 	// - length of THIS enum (without END_OF_LIST)
 	private static final EOriginalLandscapeType[] VALUES = EOriginalLandscapeType.values();
-	private static final int NUMBER_OF_ELEMENTS = VALUES.length;
 	public final ELandscapeType value;
 
 	EOriginalLandscapeType(ELandscapeType value) {
@@ -290,9 +289,10 @@ public enum EOriginalLandscapeType {
 	}
 
 	public static EOriginalLandscapeType getTypeByInt(int type) {
-		if (type < 0 || type > EOriginalLandscapeType.NUMBER_OF_ELEMENTS)
+		if (type < 0 || type > VALUES.length) {
 			return NOT_A_TYPE;
-
-		return EOriginalLandscapeType.VALUES[type];
+		} else {
+			return VALUES[type];
+		}
 	}
 }

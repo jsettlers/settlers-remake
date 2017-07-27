@@ -172,8 +172,8 @@ public class OriginalMapFileContent implements IMapData {
 
 		if (mapBuildingType == EMapBuildingType.NOT_A_BUILDING)
 			return;
-		if (mapBuildingType.value != null) {
-			mapObject[pos] = new BuildingMapDataObject(mapBuildingType.value, (byte) party);
+		if (mapBuildingType.getValue() != null) {
+			mapObject[pos] = new BuildingMapDataObject(mapBuildingType.getValue(), (byte) party);
 		}
 	}
 

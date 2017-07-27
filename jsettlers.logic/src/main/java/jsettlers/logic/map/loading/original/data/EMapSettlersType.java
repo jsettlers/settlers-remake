@@ -74,8 +74,8 @@ public enum EMapSettlersType {
 
 	NOT_A_SETTLER(null);
 
+	private static final EMapSettlersType[] VALUES = EMapSettlersType.values();
 	// - length of THIS enum (without END_OF_LIST)
-	public static final int length = EMapSettlersType.values().length - 1;
 	public final EMovableType value;
 
 	EMapSettlersType(EMovableType value) {
@@ -83,12 +83,11 @@ public enum EMapSettlersType {
 	}
 
 	public static EMapSettlersType getTypeByInt(int type) {
-		if (type < 0)
+		if (type < 0  || type >= VALUES.length) {
 			return NOT_A_SETTLER;
-		if (type >= EMapSettlersType.length)
-			return NOT_A_SETTLER;
-
-		return EMapSettlersType.values()[type];
+		} else {
+			return VALUES[type];
+		}
 	}
 
 }

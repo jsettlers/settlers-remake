@@ -33,9 +33,7 @@ public enum EMapFilePartType {
 	QUEST_TEXT(11, "QuestText"),
 	QUEST_TIP(12, "QuestTip");
 
-	// - length of [MapFilePartsTypes]
-	public static final int length = 13;
-
+	private static final EMapFilePartType[] VALUES = EMapFilePartType.values();
 	public final int value;
 	private final String typeText;
 
@@ -51,12 +49,11 @@ public enum EMapFilePartType {
 
 	public static EMapFilePartType getTypeByInt(int intType) {
 		int val = intType & 0x0000FFFF;
-		if (val <= 0)
+		if (val <= 0 || val >= VALUES.length) {
 			return EOF;
-		if (val >= length)
-			return EOF;
-
-		return EMapFilePartType.values()[val];
+		} else {
+			return VALUES[val];
+		}
 	}
 
 }

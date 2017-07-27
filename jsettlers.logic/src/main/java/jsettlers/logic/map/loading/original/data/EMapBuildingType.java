@@ -79,25 +79,25 @@ public enum EMapBuildingType {
 	Labortorium(null),
 	kleiner_Tempel(null),
 	grosser_Tempel(null),
-	SchwefelmineAmazonen(null),
+	SchwefelmineAmazonen(null);
 
-	END_OF_LIST(null); // - has to be the last item
-
-	// - length of THIS enum (without END_OF_LIST)
-	public static final int length = EMapBuildingType.values().length - 1;
-	public final EBuildingType value;
+	private static final EMapBuildingType[] VALUES = EMapBuildingType.values();
+	private final EBuildingType value;
 
 	EMapBuildingType(EBuildingType value) {
 		this.value = value;
 	}
 
-	public static EMapBuildingType getTypeByInt(int type) {
-		if (type < 0)
-			return NOT_A_BUILDING;
-		if (type >= EMapBuildingType.length)
-			return NOT_A_BUILDING;
+	public EBuildingType getValue() {
+		return value;
+	}
 
-		return EMapBuildingType.values()[type];
+	public static EMapBuildingType getTypeByInt(int type) {
+		if (type < 0 || type >= VALUES.length) {
+			return NOT_A_BUILDING;
+		} else {
+			return VALUES[type];
+		}
 	}
 
 }

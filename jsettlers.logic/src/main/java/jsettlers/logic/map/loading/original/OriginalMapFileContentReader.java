@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -126,7 +125,6 @@ public class OriginalMapFileContentReader {
 	private static final Charset TEXT_CHARSET = Charset.forName("ISO-8859-1");
 
 	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
-
 		// - init players
 		mapData.setPlayerCount(1);
 
@@ -136,7 +134,6 @@ public class OriginalMapFileContentReader {
 
 	// - reads the whole stream and returns it as BYTE-Array
 	public static byte[] getBytesFromInputStream(InputStream is) throws IOException {
-
 		// - read file to buffer
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			byte[] buffer = new byte[0xFFFF];
@@ -161,43 +158,50 @@ public class OriginalMapFileContentReader {
 
 	// - Read Big-Ending INT from Buffer
 	public int readBEIntFrom(int offset) {
-		if (mapContent == null)
+		if (mapContent == null) {
 			return 0;
-		return (mapContent[offset] & 0xFF) |
-				((mapContent[offset + 1] & 0xFF) << 8) |
-				((mapContent[offset + 2] & 0xFF) << 16) |
-				((mapContent[offset + 3] & 0xFF) << 24);
+		} else {
+			return (mapContent[offset] & 0xFF) |
+					((mapContent[offset + 1] & 0xFF) << 8) |
+					((mapContent[offset + 2] & 0xFF) << 16) |
+					((mapContent[offset + 3] & 0xFF) << 24);
+		}
 	}
 
 	// - Read Big-Ending 2 Byte Number from Buffer
 	public int readBEWordFrom(int offset) {
-		if (mapContent == null)
+		if (mapContent == null) {
 			return 0;
-		return (mapContent[offset] & 0xFF) |
-				((mapContent[offset + 1] & 0xFF) << 8);
+		} else {
+			return (mapContent[offset] & 0xFF) |
+					((mapContent[offset + 1] & 0xFF) << 8);
+		}
 	}
 
 	// - read the Higher 4-Bit of the buffer
 	public int readHighNibbleFrom(int offset) {
-		if (mapContent == null)
+		if (mapContent == null) {
 			return 0;
-		return (mapContent[offset] >> 4) & 0x0F;
+		} else {
+			return (mapContent[offset] >> 4) & 0x0F;
+		}
 	}
 
 	// - read the Lower 4-Bit of the buffer
 	public int readLowNibbleFrom(int offset) {
-		if (mapContent == null)
+		if (mapContent == null) {
 			return 0;
-		return (mapContent[offset]) & 0x0F;
+		} else {
+			return (mapContent[offset]) & 0x0F;
+		}
 
 	}
 
 	// - read a C-Style String from Buffer (ends with the first \0)
 	public String readCStrFrom(int offset, int length) {
-		if (mapContent == null)
+		if (mapContent == null || mapContent.length <= offset + length) {
 			return "";
-		if (mapContent.length <= offset + length)
-			return "";
+		}
 
 		// - find \0 char in buffer
 		int i = 0;
@@ -254,8 +258,9 @@ public class OriginalMapFileContentReader {
 		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
-		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value))
+		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value)) {
 			throw new MapLoadException("The version " + fileVersion + " is unknown");
+		}
 
 		// - Data length
 		int dataLength = mapContent.length;
@@ -282,8 +287,8 @@ public class OriginalMapFileContentReader {
 			filePos = filePos + partLen;
 
 			// - save the values
-			if ((partType > 0) && (partType < EMapFilePartType.length) && (partLen >= 0)) {
-				EMapFilePartType type = EMapFilePartType.getTypeByInt(partType);
+			EMapFilePartType type = EMapFilePartType.getTypeByInt(partType);
+			if (type != EMapFilePartType.EOF && (partLen >= 0)) {
 				MapResourceInfo newRes = new MapResourceInfo(type, mapPartPos, partLen - 8, partType);
 
 				resources.put(type, newRes);
@@ -322,10 +327,9 @@ public class OriginalMapFileContentReader {
 		hasBuildings = false;
 
 		// - safety checks
-		if (mapContent == null)
+		if (mapContent == null || mapContent.length < 100) {
 			return;
-		if (mapContent.length < 100)
-			return;
+		}
 
 		// - checksum is the first DWord in File
 		fileChecksum = readBEIntFrom(0);
@@ -347,10 +351,9 @@ public class OriginalMapFileContentReader {
 		// - get resource information for the area to get map height and width
 		MapResourceInfo filePart = findResource(EMapFilePartType.AREA);
 
-		if (filePart == null)
+		if (filePart == null || filePart.size < 4) {
 			return;
-		if (filePart.size < 4)
-			return;
+		}
 
 		// TODO: original map: the whole AREA-Block is decrypted but we only need the first 4 byte. Problem... maybe later we need the rest but only
 		// if this map is selected for playing AND there was no freeBuffer() and reOpen() call in between.
@@ -382,10 +385,9 @@ public class OriginalMapFileContentReader {
 		// - get resource information for the area
 		MapResourceInfo filePart = findResource(EMapFilePartType.PREVIEW);
 
-		if (filePart == null)
+		if (filePart == null || filePart.size < 4) {
 			return outImg;
-		if (filePart.size < 4)
-			return outImg;
+		}
 
 		// - Decrypt this resource if necessary
 		filePart.doDecrypt();
@@ -425,13 +427,15 @@ public class OriginalMapFileContentReader {
 	}
 
 	public String readMapQuestText() throws MapLoadException {
-		if (mapQuestText != null)
+		if (mapQuestText != null) {
 			return mapQuestText;
+		}
 
 		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TEXT);
 
-		if ((filePart == null) || (filePart.size == 0))
+		if ((filePart == null) || (filePart.size == 0)) {
 			return "";
+		}
 
 		// - Decrypt this resource if necessary
 		filePart.doDecrypt();
@@ -445,14 +449,15 @@ public class OriginalMapFileContentReader {
 	}
 
 	public String readMapQuestTip() throws MapLoadException {
-
-		if (mapQuestTip != null)
+		if (mapQuestTip != null) {
 			return mapQuestTip;
+		}
 
 		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TIP);
 
-		if ((filePart == null) || (filePart.size == 0))
+		if ((filePart == null) || (filePart.size == 0)) {
 			return "";
+		}
 
 		// - Decrypt this resource if necessary
 		filePart.doDecrypt();
@@ -727,8 +732,9 @@ public class OriginalMapFileContentReader {
 
 	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
 		// - only if there are no buildings
-		if (hasBuildings)
+		if (hasBuildings) {
 			return;
+		}
 
 		int playerCount = mapData.getPlayerCount();
 
@@ -753,8 +759,9 @@ public class OriginalMapFileContentReader {
 					relativeMapObjectPoint = nextPointOnSpiral(relativeMapObjectPoint);
 
 					// - don't put things under the tower
-					if (towerTiles.contains(relativeMapObjectPoint))
+					if (towerTiles.contains(relativeMapObjectPoint)) {
 						continue;
+					}
 
 					// - get absolute position
 					int x = relativeMapObjectPoint.calculateX(startPoint.x);
@@ -778,16 +785,17 @@ public class OriginalMapFileContentReader {
 
 		short basis = (short) Math.max(Math.abs(previousX), Math.abs(previousY));
 
-		if (previousX == basis && previousY > -basis)
+		if (previousX == basis && previousY > -basis) {
 			return new RelativePoint(previousX, previousY - 1);
-		if (previousX == -basis && previousY <= basis)
+		} else if (previousX == -basis && previousY <= basis) {
 			return new RelativePoint(previousX, previousY + 1);
-		if (previousX < basis && previousY == basis)
+		} else if (previousX < basis && previousY == basis) {
 			return new RelativePoint(previousX + 1, previousY);
-		if (previousX > -basis && previousY == -basis)
+		} else if (previousX > -basis && previousY == -basis) {
 			return new RelativePoint(previousX - 1, previousY);
-
-		return null;
+		} else {
+			return null;
+		}
 	}
 
 	public String getChecksum() {
