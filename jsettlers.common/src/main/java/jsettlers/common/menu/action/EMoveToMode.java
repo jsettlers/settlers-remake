@@ -28,9 +28,15 @@ public enum EMoveToMode {
 	 */
 	FORCED(true, false),
 	/**
-	 * Work at destination
+	 * Work at destination.
+	 * For geologists, thieves and pioneers, this implies that they shoud start their work when they reach the destination
+	 * For soldiers, they should start to patrol between the start and end point
 	 */
-	WORK(true, true);
+	WORK(true, true),
+	/**
+	 * Add a waypoint to the route the movable should take on the next move action of any other type
+	 */
+	ADD_WAYPOINT(false, false);
 	
 	private final boolean force;
 	private final boolean workAtDestination;

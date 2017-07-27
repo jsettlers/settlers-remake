@@ -38,11 +38,14 @@ public class MoveToAction extends PointAction {
 	}
 
 	public static EMoveToMode modeForModifiers(int modifiers) {
-		if ((modifiers & GOEvent.MODIFIER_CTRL) != 0) {
+		if ((modifiers & GOEvent.MODIFIER_ALT) != 0) {
 			return EMoveToMode.WORK;
 		}
-		if ((modifiers & GOEvent.MODIFIER_SHIFT) != 0) {
+		if ((modifiers & GOEvent.MODIFIER_CTRL) != 0) {
 			return EMoveToMode.FORCED;
+		}
+		if ((modifiers & GOEvent.MODIFIER_SHIFT) != 0) {
+			return EMoveToMode.ADD_WAYPOINT;
 		}
 		return EMoveToMode.NORMAL;
 	}
