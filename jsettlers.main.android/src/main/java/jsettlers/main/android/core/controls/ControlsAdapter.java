@@ -118,9 +118,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		if (fireDrawListenerCounter == 0) {
 			synchronized (infrequentDrawListeners) {
-				for (DrawListener listener : infrequentDrawListeners) {
-					listener.draw();
-				}
+				stream(infrequentDrawListeners).forEach(DrawListener::draw);
 			}
 		}
 	}

@@ -16,17 +16,18 @@ package jsettlers.input;
 
 import java.io.IOException;
 
-import java8.util.Optional;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.FerryEntrance;
-import jsettlers.logic.buildings.MaterialProductionSettings;
 import jsettlers.logic.DockPosition;
+import jsettlers.logic.FerryEntrance;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
+
+import java8.util.Optional;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -104,10 +105,13 @@ public interface IGuiInputGrid {
 	 *            The position of the manger to set the given settings.
 	 * @param materialType
 	 *            The {@link EMaterialType} of the material the given settings shall be used for.
-	 * @param probabilities
-	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings .getBuildingTypesRequestingMaterial(materialType).
+	 * @param buildingType
+	 *            The building type for which this setting should be set.
+	 * @param ratio
+	 *            The ratio that should be set for given materialType and buildingType.
+	 *
 	 */
-	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities);
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, EBuildingType buildingType, float ratio);
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.
@@ -133,7 +137,7 @@ public interface IGuiInputGrid {
 
 	DockPosition findDockPosition(ShortPoint2D position);
 
-    FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
+	FerryEntrance ferryAtPosition(ShortPoint2D position, byte playerId);
 
 	ShortPoint2D getUnloadPosition(ShortPoint2D position);
 }

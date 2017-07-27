@@ -7,21 +7,21 @@
 		<font-size size="NORMAL" />
 	</element>
 
-	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.CombatStrengthLabel" x="9" maxx="127" y="235" maxy="250">
+	<element class="jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel.CombatStrengthLabel" x="9" maxx="127" y="235" maxy="250">
 	</element>
 
-	<element class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeProgressLabel" x="9" maxx="127" y="265" maxy="280">
+	<element class="jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel.UpgradeProgressLabel" x="9" maxx="127" y="265" maxy="280">
 	</element>
 
-	<element x="15" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+	<element x="15" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel.UpgradeButton">
 		<soldierType soldierType="SWORDSMAN" />
 	</element>
 
-	<element x="50" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+	<element x="50" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel.UpgradeButton">
 		<soldierType soldierType="BOWMAN" />
 	</element>
 
-	<element x="85" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+	<element x="85" width="35" y="280" height="23" class="jsettlers.graphics.map.controls.original.panel.content.settlers.warriors.WarriorsPanel.UpgradeButton">
 		<soldierType soldierType="PIKEMAN" />
 	</element>
 

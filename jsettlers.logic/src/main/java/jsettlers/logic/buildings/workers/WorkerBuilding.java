@@ -23,7 +23,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;

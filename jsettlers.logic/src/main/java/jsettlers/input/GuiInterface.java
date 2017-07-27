@@ -111,8 +111,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 */
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-			IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
+	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
@@ -288,8 +287,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a
-					.getProbabilities()));
+			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getBuildingType(), a.getRatio()));
 			break;
 		}
 
@@ -557,8 +555,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	/**
 	 * @param stop
-	 * 		if true the members of currentSelection will stop working<br>
-	 * 		if false, they will start working
+	 *            if true the members of currentSelection will stop working<br>
+	 *            if false, they will start working
 	 */
 	private void stopOrStartWorkingAction(boolean stop) {
 		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, playerId, getIDsOfSelected()));
@@ -710,7 +708,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 * Sets the selection.
 	 *
 	 * @param selection
-	 * 		The selected items. Not null!
+	 *            The selected items. Not null!
 	 */
 	private void setSelection(SelectionSet selection) {
 		currentSelection.setSelected(false);

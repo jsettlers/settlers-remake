@@ -28,6 +28,8 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.AbstractMat
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPriorityQueue;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
+import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
+
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
@@ -53,7 +55,7 @@ public final class MaterialsManager implements Serializable {
 	 * @param settings
 	 * 		{@link IPartitionSettings} providing the settings of the partition.
 	 */
-	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IPartitionSettings settings) {
+	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, PartitionManagerSettings settings) {
 		this.joblessSupplier = joblessSupplier;
 		this.offersList = offersList;
 		this.settings = settings;

@@ -21,7 +21,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 
 /**

@@ -25,7 +25,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import biz.laenger.android.vpbs.BottomSheetUtils;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.R;
 import me.relex.circleindicator.CircleIndicator;
 
