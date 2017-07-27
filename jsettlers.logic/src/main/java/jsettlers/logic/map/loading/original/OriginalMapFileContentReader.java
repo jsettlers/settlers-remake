@@ -58,20 +58,16 @@ public class OriginalMapFileContentReader {
 			}
 
 			// - already encrypted
-			if (hasBeenDecrypted)
+			if (hasBeenDecrypted || size <= 0) {
 				return true;
-
-			// - length of data
-			if (size <= 0)
-				return true;
+			}
 
 			// - start of data
 			int pos = offset;
 
 			// - check if the file has enough data
 			if ((pos + size) >= mapContent.length) {
-				System.err.println("Error: Unable to decrypt map file: out of data!");
-				return false;
+				throw new MapLoadException("Error: Unable to decrypt map file: out of data!");
 			}
 
 			// - init the key

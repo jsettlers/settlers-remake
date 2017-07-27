@@ -41,11 +41,10 @@ public enum EMapResources {
 	}
 
 	public static EMapResources getTypeByInt(int type) {
-		if (type < 0)
+		if (type < 0 || type >= EMapResources.LENGTH) {
 			return NOT_A_RESOURCE_TYPE;
-		if (type >= EMapResources.LENGTH)
-			return NOT_A_RESOURCE_TYPE;
-
-		return EMapResources.values()[type];
+		} else {
+			return EMapResources.values()[type];
+		}
 	}
 }
