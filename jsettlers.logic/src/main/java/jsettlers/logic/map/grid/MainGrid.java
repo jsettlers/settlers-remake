@@ -1882,23 +1882,10 @@ public final class MainGrid implements Serializable {
 		}
 
 		public ShortPoint2D getUnloadPosition(ShortPoint2D position) {
-			int distance = 3;
-			EDirection direction = EDirection.getDirection(0, 1);
-			boolean searching = true;
-			ShortPoint2D point = null;
-			for (int rotate = 0; rotate < EDirection.NUMBER_OF_DIRECTIONS; rotate++) {
-				point = direction.rotateRight(rotate).getNextHexPoint(position, distance);
-				if (isInBounds(point) && !isWaterSafe(point.x, point.y)
-						&& !landscapeGrid.isBlocked(point.x, point.y)) {
-					searching = false;
-					break;
-				}
-			}
-			if (searching) {
-				return null; // no coast near by
-			} else {
-				return point; // coast found, return point for unloading
-			}
+			return HexGridArea.stream(position.x, position.y, 1, 5)
+					.filterBounds(width, height)
+					.filter((x, y) -> !isBlocked(x, y))
+					.getFirst().orElse(null);
 		}
 
 		public DockPosition findDockPosition(ShortPoint2D requestedPosition) {
