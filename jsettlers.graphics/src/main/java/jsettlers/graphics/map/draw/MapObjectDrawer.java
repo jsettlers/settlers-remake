@@ -195,6 +195,8 @@ public class MapObjectDrawer {
 	}
 
 	public void drawShip(int x, int y, IMovable ship) {
+		forceSetup();
+
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return;
