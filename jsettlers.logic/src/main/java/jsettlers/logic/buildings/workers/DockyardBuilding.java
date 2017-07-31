@@ -26,6 +26,7 @@ import jsettlers.common.movable.EShipType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.movable.Movable;
@@ -34,7 +35,7 @@ import jsettlers.logic.player.Player;
 /**
  * An extension to the worker building for dockyards
  */
-public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction {
+public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction, IDockBuilding {
 	private static final long serialVersionUID = -6262522980943839741L;
 
 	private EShipType orderedShipType = null;
@@ -63,7 +64,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	public void buildShipAction() {
-		if(this.orderedShipType == null){
+		if (this.orderedShipType == null) {
 			return;
 		}
 
@@ -88,16 +89,30 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		}
 	}
 
-	public boolean setDock(DockPosition dockPosition) {
-		if (this.dockPosition != null) { // replace dock
-			if (this.ship != null) {
-				return false; // do not change the dock when a ship is in construction
-			}
-			this.grid.setDock(this.dockPosition, false, this.getPlayer());
+	public void setDock(ShortPoint2D requestedDockPosition) {
+		if (orderedShipType != null) {
+			return;
 		}
-		this.dockPosition = dockPosition;
-		this.grid.setDock(dockPosition, true, this.getPlayer());
-		return true;
+
+		DockPosition newDockPosition = findValidDockPosition(requestedDockPosition);
+		if (newDockPosition == null) {
+			return;
+		}
+
+		if (dockPosition != null) { // replace dock
+			grid.setDock(dockPosition, false, this.getPlayer());
+		}
+		dockPosition = newDockPosition;
+		grid.setDock(dockPosition, true, this.getPlayer());
+	}
+
+	@Override
+	public boolean canDockBePlaced(ShortPoint2D requestedDockPosition) {
+		return orderedShipType == null && findValidDockPosition(requestedDockPosition) != null;
+	}
+
+	private DockPosition findValidDockPosition(ShortPoint2D requestedDockPosition) {
+		return grid.findValidDockPosition(requestedDockPosition, pos, IDockBuilding.MAXIMUM_DOCKYARD_DISTANCE);
 	}
 
 	public DockPosition getDock() {

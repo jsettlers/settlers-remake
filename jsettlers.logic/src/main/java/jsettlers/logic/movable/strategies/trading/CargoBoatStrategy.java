@@ -62,7 +62,7 @@ public class CargoBoatStrategy extends MovableStrategy {
                 }
 
             case INIT_GOING_TO_HARBOR:
-                if (harbor.needsShip() && super.goToPos(harbor.getShipWayStart())) {
+                if (harbor.needsShip() && super.goToPos(harbor.getWaypointsStartPosition())) {
                     state = EShipState.GOING_TO_HARBOR;
                 } else {
                     reset();

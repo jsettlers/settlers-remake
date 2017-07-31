@@ -16,9 +16,7 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -26,7 +24,10 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.graphics.action.SetTradingWaypointAction;
+import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.movable.strategies.trading.IShipHarbor;
 import jsettlers.logic.player.Player;
@@ -36,106 +37,135 @@ import jsettlers.logic.player.Player;
  * @author Rudolf Polzer
  *
  */
-public class HarborBuilding extends TradingBuilding implements IShipHarbor {
-    private static final long serialVersionUID = 1299515926871666381L;
+public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDockBuilding {
+	private static final long serialVersionUID = 1299515926871666381L;
 
-    private static final List<HarborBuilding> ALL_HARBORS = new ArrayList<>();
+	private static final List<HarborBuilding> ALL_HARBORS = new ArrayList<>();
 
-    public static Iterable<HarborBuilding> getAllHarbors(final Player player) {
-        return new IteratorFilter<>(ALL_HARBORS, building -> building.getPlayer() == player);
-    }
+	public static Iterable<HarborBuilding> getAllHarbors(final Player player) {
+		return new IteratorFilter<>(ALL_HARBORS, building -> building.getPlayer() == player);
+	}
 
-    public static void clearState() {
-        ALL_HARBORS.clear();
-    }
+	public static void clearState() {
+		ALL_HARBORS.clear();
+	}
 
-    public HarborBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
-        super(type, player, position, buildingsGrid, true);
-        ALL_HARBORS.add(this);
-    }
+	private DockPosition dockPosition = null;
 
-    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-        ois.defaultReadObject();
-        ALL_HARBORS.add(this);
-    }
+	public HarborBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
+		super(type, player, position, buildingsGrid);
+		ALL_HARBORS.add(this);
+	}
 
-    @Override
-    protected void killedEvent() {
-        super.killedEvent();
-        ALL_HARBORS.remove(this);
-    }
+	@Override
+	public ShortPoint2D getWaypointsStartPosition() {
+		return dockPosition != null ? dockPosition.getEndPosition() : null;
+	}
 
-    @Override
-    public boolean needsShip() {
-        return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
-    }
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		ois.defaultReadObject();
+		ALL_HARBORS.add(this);
+	}
 
-    @Override
-    public int tryToTakeFurtherMaterial(EMaterialType materialType, int requestedNumber) {
-        if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
-            return 0;
-        }
-        IRequestStack stack = super.getStackWithMaterial();
-        int remainingRequest = requestedNumber;
-        while (remainingRequest > 0 && stack != null && materialType == stack.getMaterialType()) {
-            if (stack.pop()) {
-                remainingRequest--;
-            } else {
-                break;
-            }
-        }
-        return requestedNumber - remainingRequest;
-    }
+	@Override
+	public boolean isSeaTrading() {
+		return true;
+	}
 
-    @Override
-    public EMaterialType tryToTakeShipMaterial() {
-        if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
-            return null;
-        }
+	@Override
+	protected void killedEvent() {
+		super.killedEvent();
+		ALL_HARBORS.remove(this);
+		if (dockPosition != null) {
+			removeDock();
+		}
+	}
 
-        IRequestStack stack = super.getStackWithMaterial();
+	@Override
+	public boolean needsShip() {
+		return isTargetSet() && getPriority() != EPriority.STOPPED && super.getStackWithMaterial() != null;
+	}
 
-        if (stack != null) {
-            EMaterialType materialType = stack.getMaterialType(); // get this before pop, as pop may reset the currentType of the stack
-            if (stack.pop()) {
-                return materialType;
-            }
-        }
+	@Override
+	public int tryToTakeFurtherMaterial(EMaterialType materialType, int requestedNumber) {
+		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
+			return 0;
+		}
+		IRequestStack stack = super.getStackWithMaterial();
+		int remainingRequest = requestedNumber;
+		while (remainingRequest > 0 && stack != null && materialType == stack.getMaterialType()) {
+			if (stack.pop()) {
+				remainingRequest--;
+			} else {
+				break;
+			}
+		}
+		return requestedNumber - remainingRequest;
+	}
 
-        return null;
-    }
+	@Override
+	public EMaterialType tryToTakeShipMaterial() {
+		if (!isTargetSet() || getPriority() == EPriority.STOPPED) { // if no target is set, or work is stopped don't give materials
+			return null;
+		}
 
-    @Override
-    public Iterator<ShortPoint2D> getWaypointsIterator() {
-        return new WaypointsIterator(getWaypoints());
-    }
+		IRequestStack stack = super.getStackWithMaterial();
 
-    private static class WaypointsIterator implements Iterator<ShortPoint2D>, Serializable {
-        private static final long serialVersionUID = 5229610228646171358L;
+		if (stack != null) {
+			EMaterialType materialType = stack.getMaterialType(); // get this before pop, as pop may reset the currentType of the stack
+			if (stack.pop()) {
+				return materialType;
+			}
+		}
 
-        private final ShortPoint2D[] waypoints;
-        private int i = 0;
+		return null;
+	}
 
-        WaypointsIterator(ShortPoint2D[] waypoints) {
-            this.waypoints = waypoints;
-            hasNext();
-        }
+	@Override
+	protected boolean isWaypointFulfillingPreconditions(SetTradingWaypointAction.EWaypointType waypointType, ShortPoint2D position) {
+		return waypointType != SetTradingWaypointAction.EWaypointType.DESTINATION || grid.isCoastReachable(position);
+	}
 
-        @Override
-        public boolean hasNext() {
-            for (; i < waypoints.length && waypoints[i] == null; i++)
-                ;
-            return i < waypoints.length;
-        }
+	@Override
+	public void setDock(ShortPoint2D requestedDockPosition) {
+		DockPosition newDockPosition = findValidDockPosition(requestedDockPosition);
+		if (newDockPosition == null) {
+			return;
+		}
 
-        @Override
-        public ShortPoint2D next() {
-            return hasNext() ? waypoints[i++] : null;
-        }
+		if (dockPosition != null) { // replace dock
+			grid.setDock(dockPosition, false, this.getPlayer());
+		}
+		if (isSelected()) {
+			drawWaypointLine(false);
+		}
 
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
+		dockPosition = newDockPosition;
+		grid.setDock(dockPosition, true, this.getPlayer());
+
+		if (isSelected()) {
+			drawWaypointLine(true);
+		}
+	}
+
+	@Override
+	public boolean canDockBePlaced(ShortPoint2D requestedDockPosition) {
+		return findValidDockPosition(requestedDockPosition) != null;
+	}
+
+	private DockPosition findValidDockPosition(ShortPoint2D requestedDockPosition) {
+		return grid.findValidDockPosition(requestedDockPosition, pos, IDockBuilding.MAXIMUM_DOCKYARD_DISTANCE);
+	}
+
+	public DockPosition getDock() {
+		return this.dockPosition;
+	}
+
+	private void removeDock() {
+		if (this.dockPosition == null) {
+			return;
+		}
+		this.grid.setDock(this.dockPosition, false, this.getPlayer());
+		this.dockPosition = null;
+	}
 }

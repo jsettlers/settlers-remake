@@ -16,9 +16,7 @@ package jsettlers.logic.buildings.trading;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
@@ -50,13 +48,23 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 	}
 
 	public MarketBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
-		super(type, player, position, buildingsGrid, false);
+		super(type, player, position, buildingsGrid);
 		ALL_MARKETS.add(this);
+	}
+
+	@Override
+	protected ShortPoint2D getWaypointsStartPosition() {
+		return super.pos;
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
 		ALL_MARKETS.add(this);
+	}
+
+	@Override
+	public boolean isSeaTrading() {
+		return false;
 	}
 
 	@Override
@@ -88,37 +96,4 @@ public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 		return null;
 	}
 
-	@Override
-	public Iterator<ShortPoint2D> getWaypointsIterator() {
-		return new WaypointsIterator(getWaypoints());
-	}
-
-	private static class WaypointsIterator implements Iterator<ShortPoint2D>, Serializable {
-		private static final long serialVersionUID = 5229610228646171358L;
-
-		private final ShortPoint2D[] waypoints;
-		private int i = 0;
-
-		WaypointsIterator(ShortPoint2D[] waypoints) {
-			this.waypoints = waypoints;
-			hasNext();
-		}
-
-		@Override
-		public boolean hasNext() {
-			for (; i < waypoints.length && waypoints[i] == null; i++)
-				;
-			return i < waypoints.length;
-		}
-
-		@Override
-		public ShortPoint2D next() {
-			return hasNext() ? waypoints[i++] : null;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
 }

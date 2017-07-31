@@ -25,8 +25,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.DockPosition;
+import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
@@ -38,17 +38,16 @@ import jsettlers.logic.player.Player;
 
 /**
  * This interface defines the methods needed by buildings to exist on a grid.
- * 
+ *
  * @author Andreas Eberle
- * 
  */
 public interface IBuildingsGrid {
 
 	/**
 	 * Gives the height at the given position.
-	 * 
+	 *
 	 * @param position
-	 *            position to be checked.
+	 * 		position to be checked.
 	 * @return height at given position.
 	 */
 	byte getHeightAt(ShortPoint2D position);
@@ -57,25 +56,25 @@ public interface IBuildingsGrid {
 
 	/**
 	 * Gives the width of the grid.
-	 * 
+	 *
 	 * @return width of the grid.
 	 */
 	short getWidth();
 
 	/**
 	 * Gives the height of the grid.
-	 * 
+	 *
 	 * @return height of the grid,
 	 */
 	short getHeight();
 
 	/**
 	 * Gives the movable currently located at the given position.
-	 * 
+	 *
 	 * @param position
-	 *            position to be checked.
+	 * 		position to be checked.
 	 * @return the movable currently located at the given position<br>
-	 *         or null if no movable is located at the given position.
+	 * or null if no movable is located at the given position.
 	 */
 	ILogicMovable getMovable(ShortPoint2D position);
 
@@ -108,7 +107,7 @@ public interface IBuildingsGrid {
 
 	/**
 	 * Occupies the given area for the given player.
-	 * 
+	 *
 	 * @param player
 	 * @param influencingArea
 	 */
@@ -116,14 +115,14 @@ public interface IBuildingsGrid {
 
 	/**
 	 * Frees the area occupied by the tower at the given position.
-	 * 
+	 *
 	 * @param towerPosition
 	 */
 	void freeAreaOccupiedByTower(ShortPoint2D towerPosition);
 
 	/**
 	 * Changes the player of the tower at the given position to the given new player. The given groundArea will always become occupied by the new player.
-	 * 
+	 *
 	 * @param towerPosition
 	 * @param newPlayer
 	 * @param groundArea
@@ -132,7 +131,7 @@ public interface IBuildingsGrid {
 
 	/**
 	 * Checks if the given relative area has the flattened landscape type and the given height.
-	 * 
+	 *
 	 * @param position
 	 * @param positions
 	 * @param expectedHeight
@@ -141,26 +140,25 @@ public interface IBuildingsGrid {
 	boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight);
 
 	/**
-	 * 
 	 * @param buildingPosition
 	 * @param workAreaCenter
 	 * @param radius
 	 * @param draw
-	 *            If true, the work area circle is drawn,<br>
-	 *            if false, it is removed.
+	 * 		If true, the work area circle is drawn,<br>
+	 * 		if false, it is removed.
 	 */
 	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
 
 	/**
 	 * Draws the trading path.
-	 * 
+	 *
 	 * @param start
-	 *            The market position.
+	 * 		The market position.
 	 * @param waypoints
-	 *            The waypoints. May contain null elements.
+	 * 		The waypoints. May contain null elements.
 	 * @param draw
-	 *            If true, the line is drawn,<br>
-	 *            if false, it is removed.
+	 * 		If true, the line is drawn,<br>
+	 * 		if false, it is removed.
 	 */
 	void drawTradingPathLine(ShortPoint2D start, ShortPoint2D[] waypoints, boolean draw);
 
@@ -172,6 +170,9 @@ public interface IBuildingsGrid {
 
 	MaterialProductionSettings getMaterialProductionAt(int x, int y);
 
-	ShortPoint2D getClosestReachablePosition(ShortPoint2D start, ShortPoint2D target,
-			boolean needsPlayersGround, boolean isShip, IPlayer player, short targetRadius);
+	ShortPoint2D getClosestReachablePosition(ShortPoint2D start, ShortPoint2D target, boolean needsPlayersGround, boolean isShip, IPlayer player, short targetRadius);
+
+	boolean isCoastReachable(ShortPoint2D position);
+
+	DockPosition findValidDockPosition(ShortPoint2D requestedDockPosition, ShortPoint2D buildingPosition, int maxRadius);
 }

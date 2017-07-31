@@ -21,19 +21,21 @@ import jsettlers.common.material.EMaterialType;
  * Created by Andreas Eberle on 26.07.2017.
  */
 public enum EShipType {
-	FERRY(EMovableType.FERRY, 4, 1, 30),
-	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1, 42);
+	FERRY(EMovableType.FERRY, 4, 1),
+	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1);
+
+	private static final int BUILD_STEPS_PER_MATERIAL = 6;
 
 	public final EMovableType movableType;
 	public final short requiredPlanks;
 	public final short requiredIron;
 	public final int buildingSteps;
 
-	EShipType(EMovableType movableType, int requiredPlanks, int requiredIron, int buildingSteps) {
+	EShipType(EMovableType movableType, int requiredPlanks, int requiredIron) {
 		this.movableType = movableType;
 		this.requiredPlanks = (short) requiredPlanks;
 		this.requiredIron = (short) requiredIron;
-		this.buildingSteps = buildingSteps;
+		this.buildingSteps = (requiredIron + requiredPlanks) * BUILD_STEPS_PER_MATERIAL;
 	}
 
 	public EShipType get(EMovableType movableType) {

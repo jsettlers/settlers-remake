@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,28 +11,19 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.logic.movable.strategies.trading;
+ */
 
-import java.io.Serializable;
-import java.util.Iterator;
+package jsettlers.logic.buildings;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- *
- * @author Rudolf Polzer
+ * Created by Andreas Eberle on 31.07.2017.
  */
-public interface IShipHarbor extends ILocatable, Serializable {
-    boolean needsShip();
+public interface IDockBuilding {
+	int MAXIMUM_DOCKYARD_DISTANCE = 25;
 
-    ShortPoint2D getWaypointsStartPosition();
+	void setDock(ShortPoint2D dockPosition);
 
-    int tryToTakeFurtherMaterial(EMaterialType materialType, int requestedNumber);
-
-    EMaterialType tryToTakeShipMaterial();
-
-    Iterator<ShortPoint2D> getWaypointsIterator();
+	boolean canDockBePlaced(ShortPoint2D requestedDockPosition);
 }

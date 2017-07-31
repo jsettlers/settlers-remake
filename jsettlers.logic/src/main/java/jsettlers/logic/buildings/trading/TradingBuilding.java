@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,10 +26,8 @@ import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.SetTradingWaypointAction.EWaypointType;
-import jsettlers.logic.DockPosition;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
@@ -36,16 +36,10 @@ import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
 
-public class TradingBuilding extends Building implements IBuilding.ITrading {
+public abstract class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
 
-	private static final long serialVersionUID = -1760409147232184087L;
-
 	private static final EPriority[] SUPPORTED_PRIORITIES = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
-
-	private final boolean isSeaTrading;
-	private DockPosition dockPosition = null;
-	private ShortPoint2D shipWayStart = null;
 
 	/**
 	 * How many materials were requested by the user. Integer#MAX_VALUE for infinity.
@@ -53,9 +47,8 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private final MultiMaterialRequestSettings requestedMaterials = new MultiMaterialRequestSettings();
 	private final ShortPoint2D[] waypoints = new ShortPoint2D[EWaypointType.VALUES.length];
 
-	public TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid, boolean isSeaTrading) {
+	TradingBuilding(EBuildingType type, Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
 		super(type, player, position, buildingsGrid);
-		this.isSeaTrading = isSeaTrading;
 	}
 
 	@Override
@@ -83,11 +76,6 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return requestedMaterials.getRequestedAmount(materialType);
 	}
 
-	@Override
-	public boolean isSeaTrading() {
-		return isSeaTrading;
-	}
-
 	public void changeRequestedMaterial(EMaterialType materialType, int amount, boolean relative) {
 		long newValue = amount;
 		if (relative) {
@@ -103,16 +91,10 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 	}
 
 	public void setWaypoint(EWaypointType waypointType, ShortPoint2D position) {
-		if (this.isSeaTrading && dockPosition == null) {
-			return;
-		}
 		if (waypointType != EWaypointType.DESTINATION && !isTargetSet()) {
 			waypointType = EWaypointType.DESTINATION;
 		}
-		if (this.isSeaTrading && waypointType == EWaypointType.DESTINATION
-				&& !coastIsReachable(position)) {
-			return;
-		}
+
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
@@ -121,6 +103,9 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 
 		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
+		if (!isWaypointFulfillingPreconditions(waypointType, closeReachableLocation)) {
+			return;
+		}
 
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
 
@@ -129,34 +114,13 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 	}
 
-	private boolean coastIsReachable(ShortPoint2D position) {
-		boolean waterFound = false;
-		boolean landFound = false;
-		short x = position.x;
-		short y = position.y;
-		final byte[] xDeltaArray = EDirection.getXDeltaArray();
-		final byte[] yDeltaArray = EDirection.getYDeltaArray();
-		int distance = 5;
-		for (int direction = 0; direction < EDirection.NUMBER_OF_DIRECTIONS
-				&& (!waterFound || !landFound); direction++) {
-			int dx = x + xDeltaArray[direction] * distance;
-			int dy = y + yDeltaArray[direction] * distance;
-			if (grid.getMovableGrid().isInBounds(dx, dy)) {
-				if (grid.getMovableGrid().isWaterSafe(dx, dy)) {
-					waterFound = true;
-				} else {
-					landFound = true;
-				}
-			}
-		}
-		return waterFound && landFound;
+	protected boolean isWaypointFulfillingPreconditions(EWaypointType waypointType, ShortPoint2D position) {
+		return true;
 	}
 
 	private ShortPoint2D findClosestReachablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
-		ShortPoint2D waypointBefore = this.pos;
-		if (this.isSeaTrading) {
-			waypointBefore = this.shipWayStart;
-		}
+		ShortPoint2D waypointBefore = getWaypointsStartPosition();
+
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {
 				waypointBefore = waypoints[index];
@@ -164,16 +128,11 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			}
 		}
 
-		return grid.getClosestReachablePosition(waypointBefore, targetPosition,
-				false, this.isSeaTrading, null, WAYPOINT_SEARCH_RADIUS);
+		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, this.isSeaTrading(), null, WAYPOINT_SEARCH_RADIUS);
 	}
 
 	boolean isTargetSet() {
 		return waypoints[waypoints.length - 1] != null;
-	}
-
-	ShortPoint2D[] getWaypoints() {
-		return waypoints;
 	}
 
 	@Override
@@ -187,22 +146,17 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
-		if (dockPosition != null) {
-			removeDock();
-		}
 		super.kill();
 	}
 
-	public void drawWaypointLine(boolean draw) {
-		if (this.isSeaTrading) {
-			if (this.dockPosition == null) {
-				return;
-			}
-			super.grid.drawTradingPathLine(this.shipWayStart, waypoints, draw);
-		} else {
-			super.grid.drawTradingPathLine(super.pos, waypoints, draw);
+	protected void drawWaypointLine(boolean draw) {
+		ShortPoint2D waypointStart = getWaypointsStartPosition();
+		if (waypointStart != null) {
+			super.grid.drawTradingPathLine(waypointStart, waypoints, draw);
 		}
 	}
+
+	protected abstract ShortPoint2D getWaypointsStartPosition();
 
 	@Override
 	protected List<IRequestStack> createWorkStacks() {
@@ -222,42 +176,36 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		return SUPPORTED_PRIORITIES;
 	}
 
-	public boolean setDock(DockPosition dockPosition) {
-		if (this.type != EBuildingType.HARBOR) {
-			return false;
-		}
-		if (this.dockPosition != null) { // replace dock
-			this.grid.setDock(this.dockPosition, false, this.getPlayer());
-		}
-		this.dockPosition = dockPosition;
-		this.grid.setDock(dockPosition, true, this.getPlayer());
-		this.shipWayStart = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), 5);
-		return true;
+	public Iterator<ShortPoint2D> getWaypointsIterator() {
+		return new WaypointsIterator(waypoints);
 	}
 
-	public DockPosition getDock() {
-		return this.dockPosition;
-	}
+	private static class WaypointsIterator implements Iterator<ShortPoint2D>, Serializable {
+		private static final long serialVersionUID = 5229610228646171358L;
 
-	public void removeDock() {
-		if (this.dockPosition == null) {
-			return;
+		private final ShortPoint2D[] waypoints;
+		private int i = 0;
+
+		WaypointsIterator(ShortPoint2D[] waypoints) {
+			this.waypoints = waypoints;
+			hasNext();
 		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayer());
-		this.dockPosition = null;
-		this.shipWayStart = null;
-	}
 
-	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
-		for (IRequestStack stack : getStacks()) {
-			if (stack.getMaterialType() == material && stack.hasMaterial()) {
-				return stack.getPosition();
-			}
+		@Override
+		public boolean hasNext() {
+			for (; i < waypoints.length && waypoints[i] == null; i++)
+				;
+			return i < waypoints.length;
 		}
-		return null;
-	}
 
-	public ShortPoint2D getShipWayStart() {
-		return this.shipWayStart;
+		@Override
+		public ShortPoint2D next() {
+			return hasNext() ? waypoints[i++] : null;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

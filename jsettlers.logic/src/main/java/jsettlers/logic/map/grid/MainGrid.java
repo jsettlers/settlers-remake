@@ -443,14 +443,14 @@ public final class MainGrid implements Serializable {
 	 * Creates a new building at the given position.
 	 *
 	 * @param position
-	 *            The position to place the building.
+	 * 		The position to place the building.
 	 * @param type
-	 *            The {@link EBuildingType} of the building.
+	 * 		The {@link EBuildingType} of the building.
 	 * @param player
-	 *            The player owning the building.
+	 * 		The player owning the building.
 	 * @param fullyConstructed
-	 *            If true, the building will be placed as fully constructed building.<br>
-	 *            If false, it will only be placed as a construction site.
+	 * 		If true, the building will be placed as fully constructed building.<br>
+	 * 		If false, it will only be placed as a construction site.
 	 * @return The newly created building.
 	 */
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
@@ -718,10 +718,8 @@ public final class MainGrid implements Serializable {
 					ShortPoint2D inDirPos = direction.getNextHexPoint(x, y);
 					ShortPoint2D invDirPos = direction.getInverseDirection().getNextHexPoint(x, y);
 
-					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
-							EMapObjectType.WINE_DEAD)
-							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
-									EMapObjectType.WINE_DEAD);
+					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
+							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD);
 				}
 			}
 			return false;
@@ -804,10 +802,10 @@ public final class MainGrid implements Serializable {
 			case MARKS_AND_OBJECTS:
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB()
-								: (objectsGrid
-										.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-												: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-														: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+						: (objectsGrid
+						.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+						: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+						: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1520,6 +1518,36 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
+		public DockPosition findValidDockPosition(ShortPoint2D requestedPosition, ShortPoint2D buildingPosition, int maximumDistance) {
+			if (!isWaterSafe(requestedPosition.x, requestedPosition.y)) {
+				return null; // requested position is not in water
+			}
+
+			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
+
+			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
+					.filterBounds(width, height)
+					.filter((x, y) -> ShortPoint2D.getOnGridDist(buildingPosition.x, buildingPosition.y, x, y) <= maximumDistance)
+					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+					.filter((x, y) -> partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) // ensure the dock is the same partition (accessible by worker of building)
+					.filter((x, y) -> { // check that the dock goes from land to water
+						EDirection direction = EDirection.getApproxDirection(x, y, requestedPosition.x, requestedPosition.y);
+						ShortPoint2D firstDockWaterPosition = direction.getNextHexPoint(x, y);
+						ShortPoint2D secondDockWaterPosition = direction.getNextHexPoint(x, y);
+
+						return isWaterSafe(firstDockWaterPosition.x, firstDockWaterPosition.y) && isWaterSafe(secondDockWaterPosition.x, secondDockWaterPosition.y);
+					})
+					.getFirst();
+
+			if (!coastPosition.isPresent()) {
+				return null;
+			}
+
+			EDirection direction = EDirection.getApproxDirection(coastPosition.get(), requestedPosition);
+			return new DockPosition(coastPosition.get(), direction);
+		}
+
+		@Override
 		public void setDock(DockPosition dockPosition, boolean place, Player player) {
 			ShortPoint2D point;
 			if (place) { // place dock
@@ -1539,6 +1567,14 @@ public final class MainGrid implements Serializable {
 					flagsGrid.setBlockedAndProtected(point.x, point.y, true);
 				}
 			}
+		}
+
+		@Override
+		public boolean isCoastReachable(ShortPoint2D position) {
+			return !HexGridArea.stream(position.x, position.y, 0, 2)
+					.filterBounds(width, height)
+					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater)
+					.isEmpty();
 		}
 
 		@Override
@@ -1795,9 +1831,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target,
-				final boolean needsPlayersGround, final boolean isShip,
-				final IPlayer player, short targetRadius) {
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final boolean isShip, final IPlayer player,
+				short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
 
@@ -1886,24 +1921,6 @@ public final class MainGrid implements Serializable {
 					.filterBounds(width, height)
 					.filter((x, y) -> !isBlocked(x, y))
 					.getFirst().orElse(null);
-		}
-
-		public DockPosition findDockPosition(ShortPoint2D requestedPosition) {
-			if (!isWaterSafe(requestedPosition.x, requestedPosition.y)) {
-				return null; // requested position is not in water
-			}
-
-			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
-					.filterBounds(width, height)
-					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
-					.getFirst();
-
-			if (!coastPosition.isPresent()) {
-				return null;
-			}
-
-			EDirection direction = EDirection.getApproxDirection(coastPosition.get(), requestedPosition);
-			return new DockPosition(coastPosition.get(), direction);
 		}
 
 		@Override

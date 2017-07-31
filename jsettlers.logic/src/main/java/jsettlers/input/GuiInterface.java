@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import java8.util.Optional;
-import java8.util.stream.Collectors;
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -75,9 +73,8 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
-import jsettlers.logic.DockPosition;
-import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
@@ -85,6 +82,9 @@ import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -223,9 +223,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case MOVE_TO: {
 			final PointAction moveToAction = (PointAction) action;
 
-			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
-				if (((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.DOCKYARD
-						|| ((Building) (currentSelection.get(0))).getBuildingType() == EBuildingType.HARBOR) {
+			if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+				Building building = (Building) currentSelection.getSingle();
+				if (building == null) {
+					return;
+				}
+
+				if (building instanceof IDockBuilding) {
 					setDock(moveToAction.getPosition());
 				} else {
 					setBuildingWorkArea(moveToAction.getPosition());
@@ -342,11 +346,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		case SET_DOCK: {
-			final ISelectable selected = currentSelection.getSingle();
-			if (selected instanceof Building) {
-				final SetDockAction a = (SetDockAction) action;
-				setDock(a.getPosition());
-			}
+			setDock(((SetDockAction) action).getPosition());
 			break;
 		}
 
@@ -442,30 +442,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	public void setDock(ShortPoint2D requestedDockPosition) {
 		final ISelectable selected = currentSelection.getSingle();
-		if (selected instanceof Building) {
-			DockPosition dockPosition = grid.findDockPosition(requestedDockPosition);
-			if (dockPosition == null) {
-				connector.playSound(116, 1); // this dock position is not at the coast
-			} else {
-				Building building = (Building) selected;
-				if (MapCircle.getDistance(building.getPosition().x, building.getPosition().y,
-						dockPosition.getPosition().x, dockPosition.getPosition().y) > 15) {
-					connector.playSound(116, 1); // this dock position would be too far away
-				} else if (building instanceof DockyardBuilding) {
-					if (!((DockyardBuilding) building).setDock(dockPosition)) {
-						connector.playSound(116, 1); // the dock cannot be moved when a ship is tied to it
-					}
-				} else if (building.getBuildingType() == EBuildingType.HARBOR) {
-					TradingBuilding harbor = (TradingBuilding) building;
-					if (harbor.isSelected()) {
-						harbor.drawWaypointLine(false);
-					}
-					harbor.setDock(dockPosition);
-					if (harbor.isSelected()) {
-						harbor.drawWaypointLine(true);
-					}
-				}
-			}
+		if (!(selected instanceof IDockBuilding)) {
+			return;
+		}
+
+		IDockBuilding building = (IDockBuilding) selected;
+
+		if (building.canDockBePlaced(requestedDockPosition)) {
+			building.setDock(requestedDockPosition);
+		} else {
+			connector.playSound(116, 1); // this dock position is not at the coast
 		}
 	}
 
@@ -761,7 +747,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			Movable ship = (Movable) currentSelection.get(i);
 			if (ship.getMovableType() == EMovableType.FERRY) {
 				ShortPoint2D position = grid.getUnloadPosition(ship.getPosition());
-				if (position != null){
+				if (position != null) {
 					ship.unload(position);
 				}
 			}
