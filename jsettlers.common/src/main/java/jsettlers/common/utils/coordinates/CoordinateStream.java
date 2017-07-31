@@ -137,6 +137,10 @@ public abstract class CoordinateStream implements Serializable {
 		return iterate((x, y) -> false);
 	}
 
+	public Optional<ShortPoint2D> getFirst() {
+		return iterateForResult((x, y) -> Optional.of(new ShortPoint2D(x, y)));
+	}
+
 	public List<ShortPoint2D> toList() {
 		List<ShortPoint2D> result = new ArrayList<>();
 		forEach((x, y) -> result.add(new ShortPoint2D(x, y)));

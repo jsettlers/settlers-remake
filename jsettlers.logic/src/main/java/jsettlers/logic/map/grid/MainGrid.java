@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import java8.util.Optional;
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -123,6 +122,8 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
+
+import java8.util.Optional;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -282,22 +283,20 @@ public final class MainGrid implements Serializable {
 		return object instanceof BuildingMapDataObject && ((BuildingMapDataObject) object).getType().isMilitaryBuilding();
 	}
 
-	private boolean isInsideWater(short x, short y) {
-		AbstractHexMapObject object = objectsGrid.getObjectsAt(x, y);
-		EMapObjectType type = null;
-		if (object != null) {
-			type = object.getObjectType();
+	private boolean isInsideWater(int x, int y) {
+		for (EDirection direction : EDirection.VALUES) {
+			if (!isWaterSafe(direction.getNextTileX(x), direction.getNextTileY(y))) {
+				return false;
+			}
 		}
-		return isWaterSafe(x - 1, y - 1) && isWaterSafe(x, y - 1) && isWaterSafe(x - 1, y) && isWaterSafe(x, y)
-				&& isWaterSafe(x + 1, y) && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
-				&& (object == null || type != EMapObjectType.DOCK);
+		return true;
 	}
 
-	public boolean isWaterSafe(int x, int y) {
-		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
+	private boolean isWaterSafe(int x, int y) {
+		return isInBounds(x, y) && landscapeGrid.getLandscapeTypeAt(x, y).isWater();
 	}
 
-	private void addMapObject(short x, short y, MapDataObject object) {
+	private void addMapObject(int x, int y, MapDataObject object) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 
 		if (object instanceof MapTreeObject) {
@@ -494,7 +493,7 @@ public final class MainGrid implements Serializable {
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 		if (pathCalculatable.isShip()) {
-			return isInsideWater((short)x, (short)y);
+			return isInsideWater((short) x, (short) y);
 		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
@@ -514,7 +513,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 			if (requester.isShip()) {
-				return !isInsideWater((short)x, (short)y);
+				return !isInsideWater((short) x, (short) y);
 			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
@@ -1906,35 +1905,18 @@ public final class MainGrid implements Serializable {
 			if (!isWaterSafe(requestedPosition.x, requestedPosition.y)) {
 				return null; // requested position is not in water
 			}
-			int distance;
-			boolean searching = true;
-			ShortPoint2D point = null;
-			EDirection direction = EDirection.getDirection(1, 0);
-			for (distance = 1; distance < 12 && searching; distance++) { // search coast
-				for (int rotate = 0; rotate < EDirection.NUMBER_OF_DIRECTIONS && searching; rotate++) {
-					point = direction.rotateRight(rotate).getNextHexPoint(requestedPosition, distance);
-					if (MainGrid.this.isInBounds(point.x, point.y) && !isWaterSafe(point.x, point.y)) {
-						searching = false;
-						direction = direction.rotateRight(rotate + 3);
-					}
-				}
+
+			Optional<ShortPoint2D> coastPosition = HexGridArea.stream(requestedPosition.x, requestedPosition.y, 0, 12)
+					.filterBounds(width, height)
+					.filter((x, y) -> !landscapeGrid.getLandscapeTypeAt(x, y).isWater())
+					.getFirst();
+
+			if (!coastPosition.isPresent()) {
+				return null;
 			}
-			if (searching) {
-				return null; // no coast found
-			}
-			searching = true;
-			point = direction.getNextHexPoint(point);
-			DockPosition dockPosition = new DockPosition(point, direction);
-			for (distance = 1; distance < 6 && searching; distance++) { // check water width
-				point = direction.getNextHexPoint(point);
-				if (!isWaterSafe(point.x, point.y)) {
-					searching = false;
-				}
-			}
-			if (!searching) {
-				return null; // water width not sufficient to build ships
-			}
-			return dockPosition;
+
+			EDirection direction = EDirection.getApproxDirection(coastPosition.get(), requestedPosition);
+			return new DockPosition(coastPosition.get(), direction);
 		}
 
 		@Override
