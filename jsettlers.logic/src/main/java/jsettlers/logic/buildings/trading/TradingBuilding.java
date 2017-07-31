@@ -103,7 +103,7 @@ public abstract class TradingBuilding extends Building implements IBuilding.ITra
 		}
 
 		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
-		if (!isWaypointFulfillingPreconditions(waypointType, closeReachableLocation)) {
+		if (closeReachableLocation != null && !isWaypointFulfillingPreconditions(waypointType, closeReachableLocation)) {
 			return;
 		}
 

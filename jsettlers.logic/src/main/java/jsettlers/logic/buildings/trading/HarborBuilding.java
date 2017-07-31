@@ -59,7 +59,7 @@ public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDoc
 
 	@Override
 	public ShortPoint2D getWaypointsStartPosition() {
-		return dockPosition != null ? dockPosition.getEndPosition() : null;
+		return dockPosition != null ? dockPosition.getWaterPosition() : null;
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {

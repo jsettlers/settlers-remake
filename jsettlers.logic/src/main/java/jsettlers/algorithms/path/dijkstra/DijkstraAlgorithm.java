@@ -76,8 +76,9 @@ public final class DijkstraAlgorithm {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, type, requester)) {
 							Path path = findPathTo(requester, x, y);
-							if (path != null)
+							if (path != null) {
 								return path;
+							}
 						}
 					}
 				}

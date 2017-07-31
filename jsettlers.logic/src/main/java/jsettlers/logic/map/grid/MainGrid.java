@@ -251,7 +251,7 @@ public final class MainGrid implements Serializable {
 				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					addMapObject(x, y, object);
 				}
-				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
+				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isSurroundedByWater(x, y)) {
 					mapObjectsManager.addWaves(x, y);
 					if (landscapeGrid.getResourceAmountAt(x, y) > 50) {
 						mapObjectsManager.addFish(x, y);
@@ -283,7 +283,7 @@ public final class MainGrid implements Serializable {
 		return object instanceof BuildingMapDataObject && ((BuildingMapDataObject) object).getType().isMilitaryBuilding();
 	}
 
-	private boolean isInsideWater(int x, int y) {
+	private boolean isSurroundedByWater(int x, int y) {
 		for (EDirection direction : EDirection.VALUES) {
 			if (!isWaterSafe(direction.getNextTileX(x), direction.getNextTileY(y))) {
 				return false;
@@ -493,7 +493,7 @@ public final class MainGrid implements Serializable {
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 		if (pathCalculatable.isShip()) {
-			return isInsideWater((short) x, (short) y);
+			return isSurroundedByWater((short) x, (short) y);
 		}
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
@@ -513,7 +513,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 			if (requester.isShip()) {
-				return !isInsideWater((short) x, (short) y);
+				return !isSurroundedByWater((short) x, (short) y);
 			}
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
@@ -1319,7 +1319,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isFreeShipPosition(ShortPoint2D position) {
-			return isInsideWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
+			return isSurroundedByWater(position.x, position.y) && movableGrid.hasNoMovableAt(position.x, position.y);
 		}
 
 		@Override
