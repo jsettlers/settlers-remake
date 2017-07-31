@@ -136,7 +136,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	private void setOrder(EShipType shipType) {
-		if (orderedShipType != null) {
+		if (orderedShipType != null || dockPosition == null || !isOccupied()) {
 			return;
 		}
 
