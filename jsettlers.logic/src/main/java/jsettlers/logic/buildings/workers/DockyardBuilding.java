@@ -63,6 +63,10 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	public void buildShipAction() {
+		if(this.orderedShipType == null){
+			return;
+		}
+
 		if (this.ship == null) {
 			ShortPoint2D position = this.dockPosition.getDirection().getNextHexPoint(this.dockPosition.getPosition(), 5);
 			// push old ship
@@ -72,7 +76,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 			}
 			// make new ship
 			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType.movableType, position, super.getPlayer());
-			EDirection direction = dockPosition.getDirection().rotateRight(1);
+			EDirection direction = dockPosition.getDirection().getNeighbor(-1);
 			this.ship.setDirection(direction);
 		}
 
