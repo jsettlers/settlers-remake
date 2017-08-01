@@ -65,6 +65,7 @@ import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetDockGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
@@ -449,7 +450,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		IDockBuilding building = (IDockBuilding) selected;
 
 		if (building.canDockBePlaced(requestedDockPosition)) {
-			building.setDock(requestedDockPosition);
+			taskScheduler.scheduleTask(new SetDockGuiTask(playerId, building, requestedDockPosition));
 		} else {
 			connector.playSound(116, 1); // this dock position is not at the coast
 		}

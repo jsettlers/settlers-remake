@@ -15,12 +15,13 @@
 
 package jsettlers.logic.buildings;
 
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Created by Andreas Eberle on 31.07.2017.
  */
-public interface IDockBuilding {
+public interface IDockBuilding extends ILocatable {
 	int MAXIMUM_DOCKYARD_DISTANCE = 25;
 
 	void setDock(ShortPoint2D dockPosition);

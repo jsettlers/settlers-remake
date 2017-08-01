@@ -99,7 +99,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 			return;
 		}
 
-		if (dockPosition != null) { // replace dock
+		if (dockPosition != null) { // remove old dock
 			grid.setDock(dockPosition, false, this.getPlayer());
 		}
 		dockPosition = newDockPosition;

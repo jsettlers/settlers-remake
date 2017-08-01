@@ -186,7 +186,7 @@ public enum EDirection {
 			}
 		}
 
-		return null; // if no direction is found, returning null will typically kill the movable
+		return null;
 	}
 
 	public final int getNextTileX(int x) {

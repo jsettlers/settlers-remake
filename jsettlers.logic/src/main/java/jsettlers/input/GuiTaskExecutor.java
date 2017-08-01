@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.ShortPoint2D;
@@ -35,6 +34,7 @@ import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetDockGuiTask;
 import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
@@ -44,16 +44,19 @@ import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.FerryEntrance;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
+import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  *
@@ -201,6 +204,9 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			setAcceptedStockMaterial((SetAcceptedStockMaterialGuiTask) guiTask);
 			break;
 
+		case SET_DOCK:
+			setDock((SetDockGuiTask) guiTask);
+
 		default:
 			break;
 
@@ -299,8 +305,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			return;
 		}
 		FerryEntrance ferryEntrance = null;
-		if (!(Movable.getMovableByID(movableIds.get(0)).isShip()) &&
-				grid.isBlocked(targetPosition.x, targetPosition.y)) {
+		if (!Movable.getMovableByID(movableIds.get(0)).isShip() && grid.isBlocked(targetPosition.x, targetPosition.y)) {
 			ferryEntrance = grid.ferryAtPosition(targetPosition, this.playerId);
 		}
 		if (ferryEntrance != null) { // enter a ferry
@@ -375,6 +380,15 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		if (building != null) {
 			building.setWorkAreaCenter(pos);
+		}
+	}
+
+	public void setDock(SetDockGuiTask task) {
+		ShortPoint2D buildingPos = task.getBuildingPos();
+		IDockBuilding building = (IDockBuilding) grid.getBuildingAt(buildingPos.x, buildingPos.y);
+
+		if (building != null) {
+			building.setDock(task.getRequestedDockPosition());
 		}
 	}
 }
