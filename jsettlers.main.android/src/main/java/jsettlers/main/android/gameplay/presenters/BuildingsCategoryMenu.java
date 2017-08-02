@@ -58,7 +58,7 @@ public class BuildingsCategoryMenu implements DrawListener {
 	}
 
 	public void finish() {
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	public void buildingSelected(EBuildingType buildingType) {
