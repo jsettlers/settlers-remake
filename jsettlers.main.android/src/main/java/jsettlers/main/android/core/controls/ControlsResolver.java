@@ -53,4 +53,8 @@ public class ControlsResolver {
 	public GameMenu getGameMenu() {
 		return controlsAdapter.getGameMenu();
 	}
+
+    public PositionControls getPositionControls() {
+        return controlsAdapter;
+    }
 }

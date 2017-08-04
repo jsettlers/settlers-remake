@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,28 +28,20 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
 /**
  * @author codingberlin
  */
-public class WhatToDoAiFactory {
+class WhatToDoAiFactory {
 
 	private static float[] ATTACKER_COUNT_FACTOR = { 1.1F, 1F, 0.9F, 0.8F, 0F };
 
-	public IWhatToDoAi buildWhatToDoAi(
-			EPlayerType type,
-			ECivilisation civilisation,
-			AiStatistics aiStatistics,
-			Player player,
-			MainGrid mainGrid,
-			MovableGrid movableGrid,
-			ITaskScheduler taskScheduler) {
+	IWhatToDoAi buildWhatToDoAi(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MainGrid mainGrid, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		ArmyGeneral general = determineArmyGeneral(type, civilisation, aiStatistics, player, movableGrid, taskScheduler);
 		EconomyMinister minister = determineMinister(type, civilisation, aiStatistics, player);
 		return new WhatToDoAi(player.playerId, aiStatistics, minister, general, mainGrid, taskScheduler);
 	}
 
-	private EconomyMinister determineMinister(
-			EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
+	private EconomyMinister determineMinister(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player) {
 		switch (type) {
 		case AI_VERY_EASY:
-		    return new BuildingListEconomyMinister(aiStatistics, player, 1F / 8F, 1F / 4F, true);
+			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 8F, 1F / 4F, true);
 		case AI_EASY:
 			return new BuildingListEconomyMinister(aiStatistics, player, 1F / 4F, 1F / 2F, false);
 		case AI_HARD:
@@ -59,8 +51,7 @@ public class WhatToDoAiFactory {
 		}
 	}
 
-	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player,
-			MovableGrid movableGrid, ITaskScheduler taskScheduler) {
+	private ArmyGeneral determineArmyGeneral(EPlayerType type, ECivilisation civilisation, AiStatistics aiStatistics, Player player, MovableGrid movableGrid, ITaskScheduler taskScheduler) {
 		// TODO: use civilisation to determine different general when there is more than ROMAN
 		return new ConfigurableGeneral(aiStatistics, player, movableGrid, taskScheduler, ATTACKER_COUNT_FACTOR[type.ordinal()]);
 	}

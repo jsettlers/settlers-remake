@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static java8.util.stream.StreamSupport.stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +24,6 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 import jsettlers.network.synchronic.timer.INetworkTimerable;
-
-import static java8.util.stream.StreamSupport.stream;
 
 /**
  * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
@@ -66,8 +66,6 @@ public class AiExecutor implements INetworkTimerable {
 		stream(whatToDoAis).forEach(IWhatToDoAi::applyRules);
 		applyRulesStopWatch.stop("computerplayer:applyRules()");
 	}
-
-
 
 	public StatisticsStopWatch getUpdateStatisticsStopWatch() {
 		return updateStatisticsStopWatch;

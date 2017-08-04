@@ -48,6 +48,9 @@ public class GoodsMenuFragment extends Fragment {
 		BottomSheetUtils.setupViewPager(viewPager);
 		viewPager.setAdapter(new GoodsPagerAdapter(getChildFragmentManager()));
 		circleIndicator.setViewPager(viewPager);
+
+		// temporary fix to show the global stock menu first as the others havent been implemented yet
+		viewPager.setCurrentItem(4);
 	}
 
 	private class GoodsPagerAdapter extends FragmentPagerAdapter {
@@ -57,7 +60,7 @@ public class GoodsMenuFragment extends Fragment {
 
 		@Override
 		public int getCount() {
-			return 4;
+			return 5;
 		}
 
 		@Override
@@ -71,6 +74,8 @@ public class GoodsMenuFragment extends Fragment {
 				return GoodsDistributionFragment.newInstance();
 			case 3:
 				return GoodsPrioritiesFragment.newInstance();
+			case 4:
+				return GoodsStockFragment_.builder().build();
 			default:
 				throw new RuntimeException("PagerAdapter count doesn't match available number of Goods menu fragments");
 			}

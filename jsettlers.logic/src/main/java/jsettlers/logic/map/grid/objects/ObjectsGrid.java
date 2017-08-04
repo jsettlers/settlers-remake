@@ -199,13 +199,13 @@ public final class ObjectsGrid implements Serializable {
 			area = HexGridArea.streamBorder(position.x, position.y, Constants.TOWER_SEARCH_RADIUS - 1);
 		}
 
-		byte movablePlayer = attackable.getPlayerId();
+		byte movableTeam = attackable.getPlayer().getTeamId();
 
 		area.filterBounds(width, height)
 				.forEach((x, y) -> {
 					IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 
-					if (currTower != null && currTower.getPlayerId() != movablePlayer) {
+					if (currTower != null && currTower.getPlayer().getTeamId() != movableTeam) {
 						currTower.informAboutAttackable(attackable);
 
 						if (informAttackable) {

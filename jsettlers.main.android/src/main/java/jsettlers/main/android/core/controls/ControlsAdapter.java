@@ -118,9 +118,7 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 
 		if (fireDrawListenerCounter == 0) {
 			synchronized (infrequentDrawListeners) {
-				for (DrawListener listener : infrequentDrawListeners) {
-					listener.draw();
-				}
+				stream(infrequentDrawListeners).forEach(DrawListener::draw);
 			}
 		}
 	}
@@ -250,6 +248,11 @@ public class ControlsAdapter implements ActionControls, DrawControls, SelectionC
 	@Override
 	public IPartitionData getCurrentPartitionData() {
 		return graphicsGrid.getPartitionData(displayCenter.x, displayCenter.y);
+	}
+
+	@Override
+	public ShortPoint2D getCurrentPosition() {
+		return displayCenter;
 	}
 
 	@Override

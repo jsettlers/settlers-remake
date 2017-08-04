@@ -16,7 +16,7 @@ package jsettlers.mapcreator.tools.objects;
 
 import java.util.Locale;
 
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -24,7 +24,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
 public class PlaceStackTool extends PlaceMapObjectTool {
 
 	public PlaceStackTool(EMaterialType type, int count) {
-		super(new StackObject(type, count));
+		super(new StackMapDataObject(type, count));
 		this.translatedName = String.format(Locale.ENGLISH, EditorLabels.getLabel("tool.place_n"), count, Labels.getName(type, count != 1));
 	}
 }

@@ -21,6 +21,7 @@ import java.util.Locale;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
@@ -151,5 +152,9 @@ public final class Labels extends AbstractLabels {
 	 */
 	public static String getProgress(EProgressState progress) {
 		return getString("progress_" + progress);
+	}
+
+	public static String getErrorName(EGameError errorType) {
+		return getString("error_" + errorType);
 	}
 }

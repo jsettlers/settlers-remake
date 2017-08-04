@@ -40,7 +40,7 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
+		List<ShortPoint2D> diggers = aiStatistics.getPositionsOfMovablesWithTypeForPlayer(playerId, DIGGER);
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<>();
 
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {

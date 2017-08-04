@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import jsettlers.common.ai.EPlayerType;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.common.menu.IJoiningGame;
@@ -38,6 +37,7 @@ import jsettlers.common.menu.IStartingGame;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
+import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.savegame.SavegameLoader;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
@@ -124,16 +124,9 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		SavegameLoader savegameLoader = (SavegameLoader) map;
 
 		if (savegameLoader != null) {
-			PlayerSetting[] playerSettings = savegameLoader.getFileHeader().getPlayerSettings();
-
-			byte playerId = 0; // find playerId of HUMAN player
-			for (byte i = 0; i < playerSettings.length; i++) {
-				if (playerSettings[i].getPlayerType() == EPlayerType.HUMAN) {
-					playerId = i;
-					break;
-				}
-			}
-
+			MapFileHeader mapFileHeader = savegameLoader.getFileHeader();
+			PlayerSetting[] playerSettings = mapFileHeader.getPlayerSettings();
+			byte playerId = mapFileHeader.getPlayerId();
 			JSettlersGame game = new JSettlersGame(savegameLoader, -1, playerId, playerSettings);
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
@@ -194,6 +187,5 @@ public class MainMenuPanel extends SplitedBackgroundPanel {
 		add(panelToBeSet);
 		settlersFrame.revalidate();
 		settlersFrame.repaint();
-
 	}
 }

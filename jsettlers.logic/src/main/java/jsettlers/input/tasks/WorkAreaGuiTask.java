@@ -87,6 +87,6 @@ public class WorkAreaGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	public String toString() {
 		return "WorkAreaGuiTask [workAreaPosition=" + workAreaPosition + ", getBuildingPos()=" + getBuildingPos() + ", getGuiAction()="
-				+ getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+				+ getGuiAction() + ", getPlayer()=" + getPlayerId() + "]";
 	}
 }

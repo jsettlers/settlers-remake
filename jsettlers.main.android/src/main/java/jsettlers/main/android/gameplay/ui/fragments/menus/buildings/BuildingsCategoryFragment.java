@@ -35,7 +35,7 @@ import org.androidannotations.annotations.ViewById;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.R;
 import jsettlers.main.android.gameplay.presenters.BuildingTile;
 import jsettlers.main.android.gameplay.presenters.BuildingsCategoryMenu;

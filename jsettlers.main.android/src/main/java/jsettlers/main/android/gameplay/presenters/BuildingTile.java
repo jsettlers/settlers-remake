@@ -35,7 +35,7 @@ public class BuildingTile {
         this.name = Labels.getName(buildingType);
 
         if (buildingCounts != null) {
-            this.count = Integer.toString(buildingCounts.buildingsInPartiton(buildingType));
+            this.count = Integer.toString(buildingCounts.buildingsInPartition(buildingType));
 
             int constructionCount = buildingCounts.buildingsInPartitionUnderConstruction(buildingType);
             if (constructionCount > 0) {

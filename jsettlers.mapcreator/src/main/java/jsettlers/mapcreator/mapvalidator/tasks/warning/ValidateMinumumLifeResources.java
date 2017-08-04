@@ -19,9 +19,9 @@ import java.util.Set;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.mapvalidator.ErrorMarker;
 import jsettlers.mapcreator.mapvalidator.tasks.AbstractValidationTask;
@@ -84,7 +84,7 @@ public class ValidateMinumumLifeResources extends AbstractValidationTask {
 	private void checkTree() {
 		for (short x = 0; x < data.getWidth(); x++) {
 			for (short y = 0; y < data.getHeight(); y++) {
-				MapObject obj = data.getMapObject(x, y);
+				MapDataObject obj = data.getMapObject(x, y);
 				if (obj instanceof MapTreeObject) {
 					return;
 				}
@@ -100,8 +100,8 @@ public class ValidateMinumumLifeResources extends AbstractValidationTask {
 	private void checkStone() {
 		for (short x = 0; x < data.getWidth(); x++) {
 			for (short y = 0; y < data.getHeight(); y++) {
-				MapObject obj = data.getMapObject(x, y);
-				if (obj instanceof MapStoneObject) {
+				MapDataObject obj = data.getMapObject(x, y);
+				if (obj instanceof StoneMapDataObject) {
 					return;
 				}
 			}

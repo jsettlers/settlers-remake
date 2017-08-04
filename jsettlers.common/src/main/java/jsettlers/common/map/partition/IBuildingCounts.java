@@ -20,7 +20,7 @@ public interface IBuildingCounts {
 
 	int buildingsInPartitionUnderConstruction(EBuildingType buildingType);
 
-	int buildingsInPartiton(EBuildingType buildingType);
+	int buildingsInPartition(EBuildingType buildingType);
 
 	int buildingsUnderConstruction(EBuildingType buildingType);
 

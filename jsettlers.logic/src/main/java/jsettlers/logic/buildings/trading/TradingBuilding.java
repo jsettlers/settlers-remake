@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.trading;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.stacks.RelativeStack;
@@ -29,10 +33,6 @@ import jsettlers.logic.buildings.stack.multi.MultiMaterialRequestSettings;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStack;
 import jsettlers.logic.buildings.stack.multi.MultiRequestStackSharedData;
 import jsettlers.logic.player.Player;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class TradingBuilding extends Building implements IBuilding.ITrading {
 	private static final short WAYPOINT_SEARCH_RADIUS = (short) 20;
@@ -110,7 +110,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			Arrays.fill(waypoints, null);
 		}
 
-		ShortPoint2D closeReachableLocation = findClosestRechablePosition(waypointType, position);
+		ShortPoint2D closeReachableLocation = findClosestReachablePosition(waypointType, position);
 
 		waypoints[waypointType.ordinal()] = closeReachableLocation;
 
@@ -119,7 +119,7 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 		}
 	}
 
-	private ShortPoint2D findClosestRechablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
+	private ShortPoint2D findClosestReachablePosition(EWaypointType waypointType, ShortPoint2D targetPosition) {
 		ShortPoint2D waypointBefore = this.pos;
 		for (int index = waypointType.ordinal() - 1; index >= 0; index--) {
 			if (waypoints[index] != null) {
@@ -128,14 +128,14 @@ public class TradingBuilding extends Building implements IBuilding.ITrading {
 			}
 		}
 
-		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, (byte) 0, WAYPOINT_SEARCH_RADIUS);
+		return grid.getClosestReachablePosition(waypointBefore, targetPosition, false, null, WAYPOINT_SEARCH_RADIUS);
 	}
 
-	protected boolean isTargetSet() {
+	boolean isTargetSet() {
 		return waypoints[waypoints.length - 1] != null;
 	}
 
-	protected ShortPoint2D[] getWaypoints() {
+	ShortPoint2D[] getWaypoints() {
 		return waypoints;
 	}
 

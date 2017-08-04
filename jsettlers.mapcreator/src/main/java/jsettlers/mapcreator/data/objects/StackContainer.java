@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.mapcreator.data.objects;
 
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.StackObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
@@ -24,14 +24,14 @@ import jsettlers.common.position.RelativePoint;
 
 public class StackContainer implements ObjectContainer, IStackMapObject {
 
-	private final StackObject object;
+	private final StackMapDataObject object;
 
-	public StackContainer(StackObject object) {
+	public StackContainer(StackMapDataObject object) {
 		this.object = object;
 	}
 
 	@Override
-	public MapObject getMapObject() {
+	public MapDataObject getMapObject() {
 		return object;
 	}
 

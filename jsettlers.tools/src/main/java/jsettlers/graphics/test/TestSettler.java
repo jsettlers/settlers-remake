@@ -15,10 +15,11 @@
 package jsettlers.graphics.test;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
@@ -27,7 +28,7 @@ public class TestSettler implements IMovable {
 	private EDirection direction;
 	private TestTile position;
 	private short progress = 0;
-	private final byte player;
+	private final IPlayer player;
 	private EMaterialType material = EMaterialType.NO_MATERIAL;
 	private final EMovableType type;
 
@@ -35,7 +36,7 @@ public class TestSettler implements IMovable {
 		this.type = type;
 		this.setDirection(direction);
 		this.setPosition(tile);
-		this.player = player;
+		this.player = new IPlayer.DummyPlayer(player);
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public byte getPlayerId() {
+	public IPlayer getPlayer() {
 		return this.player;
 	}
 

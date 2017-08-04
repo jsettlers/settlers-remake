@@ -26,8 +26,6 @@ public final class PartitionDataSupplier implements IPartitionData {
 	private final IPartitionSettings settings;
 	private final MaterialCounts materialCounts;
 
-	private IBuildingCounts buildingCounts;
-
 	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, MaterialCounts materialCounts) {
 		this.playerId = playerId;
 		this.partitionId = partitionId;
@@ -47,9 +45,6 @@ public final class PartitionDataSupplier implements IPartitionData {
 
 	@Override
 	public IBuildingCounts getBuildingCounts() {
-		if (buildingCounts == null || true) { // Disabled caching since BuildingCounts is not updating yet.
-			buildingCounts = new BuildingCounts(playerId, partitionId);
-		}
-		return buildingCounts;
+		return new BuildingCounts(playerId, partitionId);
 	}
 }

@@ -21,7 +21,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
-import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.EGoInDirectionMode;
 import jsettlers.logic.movable.Movable;

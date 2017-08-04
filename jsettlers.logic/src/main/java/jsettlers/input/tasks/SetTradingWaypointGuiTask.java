@@ -87,6 +87,6 @@ public class SetTradingWaypointGuiTask extends SimpleBuildingGuiTask {
 	@Override
 	public String toString() {
 		return "SetTradingWaypointGuiTask [waypointType=" + waypointType + ", position=" + position + ", getBuildingPos()=" + getBuildingPos()
-				+ ", getGuiAction()=" + getGuiAction() + ", getPlayerId()=" + getPlayerId() + "]";
+				+ ", getGuiAction()=" + getGuiAction() + ", getPlayer()=" + getPlayerId() + "]";
 	}
 }

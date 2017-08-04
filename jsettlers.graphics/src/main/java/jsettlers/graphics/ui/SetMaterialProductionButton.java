@@ -1,6 +1,6 @@
 /**
  * ****************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,6 +17,7 @@
 package jsettlers.graphics.ui;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.IPositionSupplier;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetMaterialProductionAction;
 
@@ -25,21 +26,18 @@ import jsettlers.graphics.action.SetMaterialProductionAction;
  */
 public class SetMaterialProductionButton extends Button {
 
-	private final SetMaterialProductionAction.PositionSupplyer positionSupplyer;
+	private final IPositionSupplier positionSupplier;
 	private final EMaterialType materialType;
 	private final SetMaterialProductionAction.EMaterialProductionType productionType;
 
-	public SetMaterialProductionButton(
-			SetMaterialProductionAction.PositionSupplyer positionSupplyer,
-			EMaterialType materialType,
-			SetMaterialProductionAction.EMaterialProductionType productionType) {
+	public SetMaterialProductionButton(IPositionSupplier positionSupplier, EMaterialType materialType, SetMaterialProductionAction.EMaterialProductionType productionType) {
 		super(null);
-		this.positionSupplyer = positionSupplyer;
+		this.positionSupplier = positionSupplier;
 		this.materialType = materialType;
 		this.productionType = productionType;
 	}
 
 	public Action getAction() {
-		return new SetMaterialProductionAction(positionSupplyer.getCurrentPosition(), materialType, productionType, 0);
+		return new SetMaterialProductionAction(positionSupplier.getPosition(), materialType, productionType, 0);
 	}
 }

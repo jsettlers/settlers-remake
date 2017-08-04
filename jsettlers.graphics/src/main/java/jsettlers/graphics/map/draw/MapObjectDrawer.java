@@ -498,7 +498,7 @@ public class MapObjectDrawer {
 		final float moveProgress = movable.getMoveProgress();
 		final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
 
-		Color color = context.getPlayerColor(movable.getPlayerId());
+		Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogStatus);
 
 		float viewX;
@@ -900,7 +900,7 @@ public class MapObjectDrawer {
 				OccupierPlace place = occupier.getPlace();
 
 				IMovable movable = occupier.getMovable();
-				Color color = context.getPlayerColor(movable.getPlayerId());
+				Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
 
 				Image image;
 				switch (place.getSoldierClass()) {
@@ -974,7 +974,7 @@ public class MapObjectDrawer {
 	private Color getColor(IMapObject object) {
 		Color color = null;
 		if (object instanceof IPlayerable) {
-			color = context.getPlayerColor(((IPlayerable) object).getPlayerId());
+			color = context.getPlayerColor(((IPlayerable) object).getPlayer().getPlayerId());
 		}
 		return color;
 	}

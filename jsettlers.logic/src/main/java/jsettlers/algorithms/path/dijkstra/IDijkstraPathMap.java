@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,10 +14,10 @@
  *******************************************************************************/
 package jsettlers.algorithms.path.dijkstra;
 
+import java.util.Set;
+
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.common.material.ESearchType;
-
-import java.util.Set;
 
 public interface IDijkstraPathMap {
 
@@ -26,5 +26,4 @@ public interface IDijkstraPathMap {
 	boolean fitsSearchType(int x, int y, Set<ESearchType> types, IPathCalculatable requester);
 
 	void setDijkstraSearched(int x, int y);
-
 }
