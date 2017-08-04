@@ -33,27 +33,6 @@ public final class LabelUiFactory {
 	 */
 	public static final ForwardFactory FORWARD = new ForwardFactory();
 
-	// Original graphics..., can be delete if not needed for sure... (and also SettlersLabelUi.java)
-	// /**
-	// * Header Label
-	// */
-	// private static final SettlersLabelUi headerLabel = new SettlersLabelUi(UIDefaults.HEADER_TEXT_COLOR, 311, 30, 210, 27);
-	//
-	// /**
-	// * Label short
-	// */
-	// private static final SettlersLabelUi labelShort = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 19, 324, 122, 26);
-	//
-	// /**
-	// * Label long
-	// */
-	// private static final SettlersLabelUi labelLong = new SettlersLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
-	//
-	// /**
-	// * Label long
-	// */
-	// private static final SettlersDynamicLabelUi labelDynamic = new SettlersDynamicLabelUi(UIDefaults.LABEL_TEXT_COLOR, 311, 30, 210, 27);
-
 	/**
 	 * Header Label
 	 */

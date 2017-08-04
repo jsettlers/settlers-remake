@@ -25,6 +25,8 @@ import javax.swing.tree.TreeNode;
 
 import jsettlers.common.resources.SettlersFolderChecker;
 
+import java8.util.Comparators;
+
 /**
  * Node to display file / folders
  * 
@@ -208,8 +210,7 @@ public class FilesystemTreeNode implements TreeNode {
 			settlersFolder = false;
 		}
 
-		// TODO !!!
-		// Collections.sort(list, Comparators.comparing(node -> node.getFile().getName()));
+		Collections.sort(list, Comparators.comparing(node -> node.getFile().getName()));
 
 		return list;
 	}
