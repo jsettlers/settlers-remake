@@ -35,7 +35,7 @@ public class BackgroundPanel extends JPanel {
 	 * Constructor
 	 */
 	public BackgroundPanel() {
-		setLayout(null);
+		super(null);
 	}
 
 	@Override

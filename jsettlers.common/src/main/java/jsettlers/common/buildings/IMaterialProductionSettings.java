@@ -24,13 +24,13 @@ public interface IMaterialProductionSettings {
 	/**
 	 * This returns the configured ratio of the material which means how much the material bar is filled.
 	 */
-	float getRelativeProductionRequest(EMaterialType type);
+	float getUserConfiguredRelativeRequestValue(EMaterialType materialType);
 
 	/**
 	 * This returns the resulting ratio of the material in relation to the other weapons.
 	 * E.g. when you have 100% swords, 100% bows and 100% spears this would return 0.33f for bows.
 	 */
-	float resultingRatioOfMaterial(EMaterialType type);
+	float getRelativeRequestProbability(EMaterialType materialType);
 
-	int getAbsoluteProductionRequest(EMaterialType type);
+	int getAbsoluteProductionRequest(EMaterialType materialType);
 }

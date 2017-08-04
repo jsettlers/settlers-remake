@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+  ~ to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  ~ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  ~ DEALINGS IN THE SOFTWARE.
+  -->
+
+<resources>
+  <string name="app_name">JSettlers</string>
+  <string name="please_wait">Por favor, espera</string>
+
+  <string name="skip_1_minute">Avanzar un minuto</string>
+  <string name="save_string">Guardar</string>
+  <string name="stop_string">Parar</string>
+  <string name="kill_string">Terminar</string>
+  <string name="load_string">Cargar</string>
+  <string name="pause_string">Pausa</string>
+  <string name="plus_string">+</string>
+  <string name="minus_string">-</string>
+
+  <string name="local_game">Un Jugador</string>
+  <string name="local_game_new">Nueva Partida</string>
+  <string name="local_game_load">Cargar Partida</string>
+  <string name="local_game_resume">Continuar</string>
+  <string name="local_game_resume_error">Ha habido un error al cargar la partida.</string>
+  <string name="network_game">Multijugador</string>
+  <string name="startscreen_network_new">Alojar</string>
+  <string name="startscreen_network_join">Unirse</string>
+  <string name="startscreen_network_load">Cargar</string>
+
+  <string name="game_title">Bienvenido a JSettlers</string>
+
+  <string name="maplist_local_new_headline">Empezar Nueva Partida</string>
+  <string name="maplist_local_new_submit">Iniciar</string>
+  <string name="maplist_local_load_headline">Cargar Partida</string>
+  <string name="maplist_local_load_submit">Cargar</string>
+  <string name="maplist_network_new_headline">Alojar Partida Multijugador</string>
+  <string name="maplist_network_new_submit">Iniciar</string>
+  <string name="maplist_network_join_headline">Unirse a Partida Multijugador</string>
+  <string name="maplist_network_join_submit">Entrar</string>
+
+  <string name="player_count">Jugadores</string>
+  <string name="illegal_playercount">Número de jugadores inválido</string>
+  <string name="illegal_playercount_too_high">No pueden jugar tantos jugadores en este mapa</string>
+  <string name="illegal_playercount_too_low">No pueden jugar tan pocos jugadores en este mapa</string>
+
+  <string name="send">Enviar</string>
+  <string name="accept_start">Aceptar Inicio</string>
+  <string name="local_game_delete">Borrar Partida</string>
+  <string name="network_start">Iniciar</string>
+  <string name="preferences_playername">Nombre</string>
+  <string name="preferences_server">Servidor Multijugador</string>
+  <string name="preferences_ok">Aceptar</string>
+  <string name="network_chat">Chat…</string>
+  <string name="filechoser_ok">Usar esta carpeta</string>
+  <string name="filechoser_message">¿Dónde están las carpetas GFX y SND?</string>
+  <string name="cancel">Cancelar</string>
+  <string name="confirm_kill">¿Matar?</string>
+  <string name="convert_all">Convertir todos</string>
+  <string name="convert_one">Convertir uno</string>
+  <string name="convert_to_carriers">Convertir a porteadores</string>
+  <string name="empty_directory">Esta carpeta está vacía</string>
+  <string name="game_menu_pause">Pausa</string>
+  <string name="game_menu_paused">Pausado</string>
+  <string name="game_menu_quit">Salir</string>
+  <string name="game_menu_quit_confirm">¿Seguro?</string>
+  <string name="game_menu_save">Guardar</string>
+  <string name="game_menu_saved">Partida guardada</string>
+  <string name="game_menu_title">Menú Principal</string>
+  <string name="game_menu_unpause">Continuar</string>
+  <string name="halt">Alto</string>
+  <string name="join_multi_player_game">Unirse a partida multijugador</string>
+  <string name="load_single_player_game">Cargar partida de un jugador</string>
+  <string name="menu_game_in_progress">Partida en proceso</string>
+  <string name="menu_join">Unirse</string>
+  <string name="menu_load">Cargar</string>
+  <string name="menu_multi_player_info">Desafía a tus amigos en móvil, tablet u ordenador.</string>
+  <string name="menu_multi_player_title">Multijugador</string>
+  <string name="menu_new">Nuevo</string>
+  <string name="menu_single_player_info">Inicia una partida contra la IA.</string>
+  <string name="menu_single_player_title">Un Jugador</string>
+  <string name="new_multi_player_game">Nueva Partida Multijugador</string>
+  <string name="new_single_player_game">Nueva Partida de Un Jugador</string>
+  <string name="no_saved_games">No se encuentran partidas guardadas</string>
+  <string name="notification_game_in_progress">Partida en Progreso</string>
+  <string name="number_of_players">Jugadores</string>
+  <string name="ok">OK</string>
+  <string name="peacetime">Tregua</string>
+  <string name="resource_directory_button">Localizar carpeta</string>
+  <string name="resource_directory_info">JSettlers requiere las carpetas GFX y SND de una instalación original de Settlers III. Copia estas carpetas a tu dispositivo Android para jugar.</string>
+  <string name="resource_directory_title">Archivos gráficos y de audio.</string>
+  <string name="resource_selection_dialog_title">Localiza los archivos gráficos y de audio</string>
+  <string name="searching_for_multiplayer_games">Buscando partidas…</string>
+  <string name="settings">Configuración</string>
+  <string name="settings_name">Nombre</string>
+  <string name="settings_player_name">Nombre de Jugador</string>
+  <string name="start_game">Iniciar Partida</string>
+  <string name="start_resources">Recursos</string>
+  <string name="work_here">Trabajar aquí</string>
+  <string name="yes">Sí</string>
+  <string name="fast">Velocidad Rápida</string>
+  <string name="faster">Más Rápido</string>
+  <string name="slower">Más Lento</string>
+  <string name="buildings">Edificios</string>
+  <string name="goods">Almacén</string>
+  <string name="settlers">Settlers</string>
+  <string name="multiplayer_not_all_players_ready">Todos los jugadores deben de estar preparados para poder comenzar la partida.</string>
+  <string name="normal">Velocidad Normal</string>
+
+  <string name="service_description">Servicio de ejecución de JSettlers.</string>
+  <string name="global_stock_message">La configuración global de almacenamiento solo puede aplicarse al propio asentamiento.</string>
+  <string name="goods_stock_title">Configuración Global de Almacenamiento</string>
+</resources>

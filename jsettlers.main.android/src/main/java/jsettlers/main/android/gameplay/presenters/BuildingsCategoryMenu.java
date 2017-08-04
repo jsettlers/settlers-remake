@@ -15,22 +15,22 @@
 
 package jsettlers.main.android.gameplay.presenters;
 
-import static java8.util.stream.StreamSupport.stream;
-
-import java.util.List;
-
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.partition.IBuildingCounts;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.map.controls.original.panel.content.EBuildingsCategory;
+import jsettlers.graphics.map.controls.original.panel.content.buildings.EBuildingsCategory;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.core.controls.PositionControls;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.views.BuildingsCategoryView;
+
+import java.util.List;
+
+import static java8.util.stream.StreamSupport.stream;
 
 /**
  * Created by tompr on 22/11/2016.
@@ -43,10 +43,8 @@ public class BuildingsCategoryMenu implements DrawListener {
 	private final MenuNavigator menuNavigator;
 	private final EBuildingsCategory buildingsCategory;
 
-	private final int updateLimit = 30;
-	private int updateCounter = -1;
-
-	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionControls actionControls, DrawControls drawControls, PositionControls positionControls, MenuNavigator menuNavigator, EBuildingsCategory buildingsCategory) {
+	public BuildingsCategoryMenu(BuildingsCategoryView view, ActionControls actionControls, DrawControls drawControls, PositionControls positionControls, MenuNavigator menuNavigator,
+			EBuildingsCategory buildingsCategory) {
 		this.view = view;
 		this.actionControls = actionControls;
 		this.drawControls = drawControls;
@@ -56,11 +54,11 @@ public class BuildingsCategoryMenu implements DrawListener {
 	}
 
 	public void start() {
-		drawControls.addDrawListener(this);
+		drawControls.addInfrequentDrawListener(this);
 	}
 
 	public void finish() {
-		drawControls.removeDrawListener(this);
+		drawControls.removeInfrequentDrawListener(this);
 	}
 
 	public void buildingSelected(EBuildingType buildingType) {
@@ -74,19 +72,14 @@ public class BuildingsCategoryMenu implements DrawListener {
 	 */
 	@Override
 	public void draw() {
-		updateCounter = (updateCounter + 1) % updateLimit;
+		IBuildingCounts buildingCounts = null;
 
-		if (updateCounter == 0) {
-			IBuildingCounts buildingCounts = null;
-
-			if (positionControls.isInPlayerPartition()) {
-				buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
-			}
-
-			view.setBuildings(buildingTiles(buildingCounts));
+		if (positionControls.isInPlayerPartition()) {
+			buildingCounts = positionControls.getCurrentPartitionData().getBuildingCounts();
 		}
-	}
 
+		view.setBuildings(buildingTiles(buildingCounts));
+	}
 
 	private List<BuildingTile> buildingTiles(IBuildingCounts buildingCounts) {
 

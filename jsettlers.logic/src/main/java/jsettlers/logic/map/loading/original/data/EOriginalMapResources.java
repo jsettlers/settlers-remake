@@ -12,49 +12,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.logic.map.loading.original.data;
 
-public class AnimatablePosition {
-	private static final long ANIMATION_TIME = 300;
-	private float startx, starty;
-	private float destx, desty;
-	private long animationstart = 0;
+import jsettlers.common.landscape.EResourceType;
 
-	public AnimatablePosition(float startx, float starty) {
-		this.startx = startx;
-		this.starty = starty;
-		this.destx = startx;
-		this.desty = starty;
+/**
+ * The map resources and their mapping to {@link EResourceType}
+ * 
+ * @author Thomas Zeugner
+ * @author codingberlin
+ */
+public enum EOriginalMapResources {
+
+	FISH(EResourceType.FISH),
+	COAL(EResourceType.COAL),
+	IRONORE(EResourceType.IRONORE),
+	GOLDORE(EResourceType.GOLDORE),
+	GEMS(EResourceType.GEMSTONE),
+	SULFUR(EResourceType.BRIMSTONE),
+	NOT_A_RESOURCE_TYPE(EResourceType.NOTHING);
+
+	public final EResourceType value;
+
+	public static final EOriginalMapResources[] VALUES = values();
+
+	EOriginalMapResources(EResourceType value) {
+		this.value = value;
 	}
 
-	public float getX() {
-		float p = getProgress();
-		return (1 - p) * startx + p * destx;
-	}
-
-	private float getProgress() {
-		if (animationstart == 0) {
-			return 1; // faster
+	public static EOriginalMapResources getTypeByInt(int type) {
+		if (type < 0 || type > EOriginalMapResources.VALUES.length) {
+			return NOT_A_RESOURCE_TYPE;
+		} else {
+			return EOriginalMapResources.values()[type];
 		}
-
-		long timediff = System.currentTimeMillis() - animationstart;
-		if (timediff >= ANIMATION_TIME) {
-			animationstart = 0;
-			return 1;
-		}
-		return (float) timediff / ANIMATION_TIME;
-	}
-
-	public float getY() {
-		float p = getProgress();
-		return (1 - p) * starty + p * desty;
-	}
-
-	public void setPosition(float x, float y) {
-		this.startx = getX();
-		this.starty = getY();
-		this.animationstart = System.currentTimeMillis();
-		this.destx = x;
-		this.desty = y;
 	}
 }

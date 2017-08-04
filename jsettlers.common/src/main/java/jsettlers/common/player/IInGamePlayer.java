@@ -17,16 +17,30 @@ package jsettlers.common.player;
 /**
  * @author codingberlin
  */
-public interface IInGamePlayer {
-	byte getPlayerId();
-
+public interface IInGamePlayer extends IPlayer {
+	/**
+	 * Gets the mana information (settler leveling progress) for this player
+	 * @return The mana information
+	 */
 	IMannaInformation getMannaInformation();
 
+	/**
+	 * Gets the combat strength information for the player
+	 * @return The combat strength information
+	 */
 	ICombatStrengthInformation getCombatStrengthInformation();
 
 	IEndgameStatistic getEndgameStatistic();
 
+	/**
+	 * Gets the current movable statistics for this player
+	 * @return The statistics of movables.
+	 */
 	ISettlerInformation getSettlerInformation();
 
+	/**
+	 * Get the civilisation for the player
+	 * @return The civilisation the player has
+	 */
 	ECivilisation getCivilisation();
 }

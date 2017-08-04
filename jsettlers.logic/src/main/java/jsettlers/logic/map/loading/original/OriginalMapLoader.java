@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -54,18 +54,12 @@ public class OriginalMapLoader extends MapLoader {
 			throw new MapLoadException(e);
 		}
 
-		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM) {
-			if (!mapContent.isChecksumValid()) {
-				System.out.println("Checksum of original map (" + fileName + ") is not valid!");
-				return;
-			}
+		if (!CommonConstants.DISABLE_ORIGINAL_MAPS_CHECKSUM && !mapContent.isChecksumValid()) {
+			throw new MapLoadException("Checksum of original map (" + fileName + ") is not valid!");
 		}
 
 		// - read all important information from file
-		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			return;
-		}
+		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation(MapFileHeader.PREVIEW_IMAGE_SIZE, MapFileHeader.PREVIEW_IMAGE_SIZE);
 
 		// - free the DataBuffer
@@ -114,8 +108,9 @@ public class OriginalMapLoader extends MapLoader {
 	@Override
 	public String getMapName() {
 		// - remove the extension {.map or .edm} of filename and replace all '_' with ' ' (filename is without path)
-		if (fileName == null)
+		if (fileName == null) {
 			return "";
+		}
 
 		int pos = fileName.lastIndexOf('.');
 		if (pos >= 0) {
@@ -142,7 +137,11 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public String getDescription() {
-		return mapContent.readMapQuestText();
+		try {
+			return mapContent.readMapQuestText();
+		} catch (MapLoadException e) {
+			return "";
+		}
 	}
 
 	@Override
@@ -152,12 +151,12 @@ public class OriginalMapLoader extends MapLoader {
 
 	@Override
 	public String getMapId() {
-		return Integer.toString(mapContent.fileChecksum) + getMapName();
+		return mapContent.getChecksum() + getMapName();
 	}
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() {
-		return new ArrayList<>(); // - ToDo
+		return new ArrayList<>(); // - TODO
 	}
 
 	// ----------------------------//
@@ -173,30 +172,7 @@ public class OriginalMapLoader extends MapLoader {
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings, EMapStartResources startResources) throws MapLoadException {
 		MilliStopWatch watch = new MilliStopWatch();
 
-		try {
-			// - the map buffer of the class may is closed and need to reopen!
-			mapContent.reOpen(this.listedMap.getInputStream());
-		} catch (Exception e) {
-			System.err.println("Error: " + e.getMessage());
-		}
-
-		// - load all common map information
-		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			return null;
-		}
-		mapContent.readBasicMapInformation();
-
-		// - read the landscape
-		mapContent.readMapData();
-		// - read Stacks
-		mapContent.readStacks();
-		// - read Settlers
-		mapContent.readSettlers();
-		// - read the buildings
-		mapContent.readBuildings();
-		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers(startResources);
+		loadMapContent(startResources);
 
 		OriginalMapFileContent mapData = mapContent.mapData;
 		mapData.calculateBlockedPartitions();
@@ -227,6 +203,15 @@ public class OriginalMapLoader extends MapLoader {
 	@Override
 	public IMapData getMapData() throws MapLoadException {
 
+		loadMapContent(EMapStartResources.HIGH_GOODS);
+
+		OriginalMapFileContent mapData = mapContent.mapData;
+		mapData.calculateBlockedPartitions();
+
+		return mapData;
+	}
+
+	private void loadMapContent(EMapStartResources startResources) throws MapLoadException {
 		try {
 			// - the map buffer of the class may is closed and need to reopen!
 			mapContent.reOpen(this.listedMap.getInputStream());
@@ -235,11 +220,7 @@ public class OriginalMapLoader extends MapLoader {
 		}
 
 		// - load all common map information
-		if (!mapContent.loadMapResources()) {
-			System.out.println("Unable to open original map (" + fileName + ")!");
-			throw new MapLoadException();
-		}
-
+		mapContent.loadMapResources();
 		mapContent.readBasicMapInformation();
 
 		// - read the landscape
@@ -251,13 +232,6 @@ public class OriginalMapLoader extends MapLoader {
 		// - read the buildings
 		mapContent.readBuildings();
 		// - add player resources
-		mapContent.addStartTowerMaterialsAndSettlers(EMapStartResources.HIGH_GOODS);
-
-		OriginalMapFileContent mapData = mapContent.mapData;
-		mapData.calculateBlockedPartitions();
-
-		return mapData;
-
+		mapContent.addStartTowerMaterialsAndSettlers(startResources);
 	}
-
 }

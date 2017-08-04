@@ -7,7 +7,7 @@
         <font-size size="NORMAL"/>
     </element>
 
-    <element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.MaterialPriorityPanel" height="165" id="panel" maxx="122" x="14" y="236"/>
+    <element class="jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent.MaterialPriorityPanel" height="165" id="panel" maxx="122" x="14" y="236"/>
 
     <element class="jsettlers.graphics.map.controls.original.panel.button.stock.StockChangeAcceptButton" height="18" id="stock_accept" width="18" x="11" y="410">
         <image file="3" sequence="213" type="GUI"/>
@@ -18,19 +18,19 @@
         <localized label="dont-stock-material-global"/>
     </element>
 
-    <element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" height="18" id="all_up" width="18" x="53" y="410">
+    <element class="jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent.ReorderButton" height="18" id="all_up" width="18" x="53" y="410">
         <image file="3" sequence="219" type="GUI"/>
         <localized label="priority-to-top"/>
     </element>
-    <element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" height="18" id="one_up" width="18" x="71" y="410">
+    <element class="jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent.ReorderButton" height="18" id="one_up" width="18" x="71" y="410">
         <image file="3" sequence="225" type="GUI"/>
         <localized label="priority-one-up"/>
     </element>
-    <element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" height="18" id="one_down" width="18" x="89" y="410">
+    <element class="jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent.ReorderButton" height="18" id="one_down" width="18" x="89" y="410">
         <image file="3" sequence="228" type="GUI"/>
         <localized label="priority-one-down"/>
     </element>
-    <element class="jsettlers.graphics.map.controls.original.panel.content.MaterialPriorityContent.ReorderButton" height="18" id="all_down" width="18" x="107" y="410">
+    <element class="jsettlers.graphics.map.controls.original.panel.content.material.priorities.MaterialPriorityContent.ReorderButton" height="18" id="all_down" width="18" x="107" y="410">
         <image file="3" sequence="222" type="GUI"/>
         <localized label="priority-to-bottom"/>
     </element>

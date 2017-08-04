@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -11,8 +11,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+ */
+package jsettlers.graphics.map.controls.original.panel.content.material.priorities;
 
 import go.graphics.GLDrawContext;
 
@@ -30,6 +30,8 @@ import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.map.controls.original.panel.button.MaterialButton.DotColor;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManagedMaterialButton;
 import jsettlers.graphics.map.controls.original.panel.button.SelectionManager;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialPriorityLayout;

@@ -286,7 +286,7 @@ public class BuildingState {
 		}
 		int i = 0;
 		for (IBuildingMaterial mat : materials) {
-			if (stackStates.get(i++).isStillInState(mat)) {
+			if (!stackStates.get(i++).isStillInState(mat)) {
 				return false;
 			}
 		}
