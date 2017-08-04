@@ -14,82 +14,110 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.settingsmenu;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import jsettlers.graphics.localization.Labels;
-import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
 import jsettlers.main.swing.menu.mainmenu.MainMenuPanel;
+import jsettlers.main.swing.settings.SettingsManager;
 
 /**
- * @author codingberlin
+ * Panel with the settings of the game
  */
 public class SettingsMenuPanel extends JPanel {
-	private static final long serialVersionUID = 7440094092937597684L;
+	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Reference to main panel
+	 */
 	private final MainMenuPanel mainMenuPanel;
-	private final JLabel playerNameLabel = new JLabel();
-	private final JTextField playerNameField = new JTextField();
-	private final JLabel volumeLabel = new JLabel();
-	private final VolumeSlider volumeSlider = new VolumeSlider();
-	private final JButton cancelButton = new JButton();
-	private final JButton saveButton = new JButton();
 
+	/**
+	 * Name of the player
+	 */
+	private final JTextField playerNameField = new JTextField();
+
+	/**
+	 * Volume slider
+	 */
+	private final VolumeSlider volumeSlider = new VolumeSlider();
+
+	/**
+	 * Panel with the settings entries (2 column grid)
+	 */
+	private final JPanel settinsgPanel = new JPanel();
+
+	/**
+	 * Constructor
+	 * 
+	 * @param mainMenuPanel
+	 *            Reference to main panel
+	 */
 	public SettingsMenuPanel(MainMenuPanel mainMenuPanel) {
 		this.mainMenuPanel = mainMenuPanel;
-		createStructure();
-		setStyle();
-		localize();
-		addListener();
-	}
+		setLayout(new BorderLayout());
+		settinsgPanel.setLayout(new GridLayout(0, 2, 10, 10));
+		add(settinsgPanel, BorderLayout.NORTH);
 
-	private void createStructure() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(0, 2, 20, 20));
-		panel.add(playerNameLabel);
 		playerNameField.putClientProperty(ELFStyle.KEY, ELFStyle.TEXT_DEFAULT);
 		SwingUtilities.updateComponentTreeUI(playerNameField);
-		panel.add(playerNameField);
-		panel.add(volumeLabel);
-		panel.add(volumeSlider);
-		panel.add(cancelButton);
-		panel.add(saveButton);
-		add(panel);
+		addSetting("settings-name", playerNameField);
+
+		addSetting("settings-volume", volumeSlider);
+
+		initButton();
 	}
 
-	private void setStyle() {
-		saveButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+	/**
+	 * Add a settings entry
+	 * 
+	 * @param translationKey
+	 *            Translation key to read translation
+	 * @param settingComponent
+	 *            Component to display
+	 */
+	private void addSetting(String translationKey, JComponent settingComponent) {
+		JLabel header = new JLabel(Labels.getString(translationKey));
+		header.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
+		settinsgPanel.add(header);
+		settinsgPanel.add(settingComponent);
+	}
+
+	/**
+	 * Init the Button
+	 */
+	private void initButton() {
+		JButton cancelButton = new JButton(Labels.getString("settings-back"));
 		cancelButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
-		playerNameLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-		volumeLabel.putClientProperty(ELFStyle.KEY, ELFStyle.LABEL_SHORT);
-	}
+		cancelButton.addActionListener(e -> mainMenuPanel.reset());
 
-	private void localize() {
-		playerNameLabel.setText(Labels.getString("settings-name"));
-		volumeLabel.setText(Labels.getString("settings-volume"));
-		saveButton.setText(Labels.getString("settings-ok"));
-		cancelButton.setText(Labels.getString("settings-back"));
+		JButton saveButton = new JButton(Labels.getString("settings-ok"));
+		saveButton.putClientProperty(ELFStyle.KEY, ELFStyle.BUTTON_MENU);
+		saveButton.addActionListener(e -> {
+			SettingsManager settingsManager = SettingsManager.getInstance();
+			settingsManager.set(SettingsManager.SETTING_USERNAME, playerNameField.getText());
+			settingsManager.set(SettingsManager.SETTING_VOLUME, (volumeSlider.getValue() / 100d) + "");
+			mainMenuPanel.reset();
+		});
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridLayout(1, 0, 20, 20));
+		buttonPanel.add(cancelButton);
+		buttonPanel.add(saveButton);
+		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
 	public void initializeValues() {
 		SettingsManager settingsManager = SettingsManager.getInstance();
 		playerNameField.setText(settingsManager.getPlayer().getName());
 		volumeSlider.setValue((int) (settingsManager.getVolume() * 100));
-	}
-
-	private void addListener() {
-		saveButton.addActionListener(e -> {
-			SettingsManager settingsManager = SettingsManager.getInstance();
-			settingsManager.set(SettingsManager.SETTING_USERNAME, playerNameField.getText());
-			settingsManager.set(SettingsManager.SETTING_VOLUME, (volumeSlider.getValue() / 100D) + "");
-			mainMenuPanel.reset();
-		});
-		cancelButton.addActionListener(e -> mainMenuPanel.reset());
 	}
 }

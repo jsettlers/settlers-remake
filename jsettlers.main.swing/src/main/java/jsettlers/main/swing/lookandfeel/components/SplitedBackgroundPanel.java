@@ -69,14 +69,18 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 
 	@Override
 	public void doLayout() {
+		// Left menu
 		if (getComponentCount() >= 2) {
 			getComponent(1).setBounds(50, 70, splitPosition - 80, getHeight() - 140);
 		}
+
+		// Center contents
 		int width = getWidth() - splitPosition - 80;
 		if (getComponentCount() >= 3) {
-			getComponent(2).setBounds(splitPosition + 30, 70, width, getHeight() - 140);
+			getComponent(2).setBounds(splitPosition + 30, 80, width, getHeight() - 150);
 		}
 
+		// Header
 		Dimension preferredLabelSize = titleLabel.getPreferredSize();
 		int x = 320 + (width - preferredLabelSize.width) / 2;
 		titleLabel.setBounds(x, 40, preferredLabelSize.width, preferredLabelSize.height);
