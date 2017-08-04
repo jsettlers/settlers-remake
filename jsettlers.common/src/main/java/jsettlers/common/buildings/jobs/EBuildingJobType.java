@@ -17,6 +17,10 @@ package jsettlers.common.buildings.jobs;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.ESearchType;
 
+/**
+ * The jobs types that can be done by building workers.
+ * @see IBuildingJob
+ */
 public enum EBuildingJobType {
 	/**
 	 * Waits a given time.

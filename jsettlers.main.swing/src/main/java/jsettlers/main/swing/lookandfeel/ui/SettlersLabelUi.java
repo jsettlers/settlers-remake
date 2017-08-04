@@ -77,7 +77,9 @@ public class SettlersLabelUi extends BasicLabelUI {
 
 	@Override
 	public void paint(Graphics g, JComponent c) {
-		g.drawImage(backgroundImage, 0, 0, c);
+		g.drawImage(backgroundImage,
+				(c.getWidth() - backgroundImage.getWidth()) / 2,
+				(c.getHeight() - backgroundImage.getHeight()) / 2, c);
 
 		super.paint(g, c);
 	}
