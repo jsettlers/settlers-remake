@@ -14,29 +14,20 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
-import java.util.stream.Stream;
 
 /**
- * The civilization the player is of
+ * The settler 3 version of the file, for compatibility
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapNations {
-	ROMANS(0),
-	EGYPTIANS(1),
-	ASIANS(2),
-	AMAZONS(3),
-	FREE_CHOICE(255),
-	NOT_DEFINED(256);
+public enum EOriginalMapFileVersion {
+	NO_S3_FILE(0x00),
+	DEFAULT(0x0A),
+	AMAZONS(0x0B);
 
-	private static final EMapNations[] VALUES = EMapNations.values();
-	private final int value;
+	public final int value;
 
-	EMapNations(int value) {
+	EOriginalMapFileVersion(int value) {
 		this.value = value;
-	}
-
-	public static EMapNations fromMapValue(int mapValue) {
-		return Stream.of(VALUES).filter(nation -> nation.value == mapValue).findAny().orElse(ROMANS);
 	}
 }

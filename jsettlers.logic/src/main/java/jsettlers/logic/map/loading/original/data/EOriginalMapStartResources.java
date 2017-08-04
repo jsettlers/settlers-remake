@@ -15,9 +15,7 @@
 package jsettlers.logic.map.loading.original.data;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -31,30 +29,30 @@ import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapStartResources {
+public enum EOriginalMapStartResources {
 	LOW_GOODS(1),
 	MEDIUM_GOODS(2),
 	HIGH_GOODS(3);
 
-	private static final EMapStartResources[] VALUES = EMapStartResources.values();
+	private static final EOriginalMapStartResources[] VALUES = EOriginalMapStartResources.values();
 	public final int value;
 
-	EMapStartResources(int value) {
+	EOriginalMapStartResources(int value) {
 		this.value = value;
 	}
 
-	public static EMapStartResources fromMapValue(int mapValue) {
-		for (int i = 0; i < EMapStartResources.VALUES.length; i++) {
-			if (EMapStartResources.VALUES[i].value == mapValue)
-				return EMapStartResources.VALUES[i];
+	public static EOriginalMapStartResources fromMapValue(int mapValue) {
+		for (int i = 0; i < EOriginalMapStartResources.VALUES.length; i++) {
+			if (EOriginalMapStartResources.VALUES[i].value == mapValue)
+				return EOriginalMapStartResources.VALUES[i];
 		}
 
-		System.err.println("wrong value for 'EMapStartResources' " + Integer.toString(mapValue) + "!");
+		System.err.println("wrong value for 'EOriginalMapStartResources' " + Integer.toString(mapValue) + "!");
 
-		return EMapStartResources.HIGH_GOODS;
+		return EOriginalMapStartResources.HIGH_GOODS;
 	}
 
-	public static List<MapDataObject> generateStackObjects(EMapStartResources mapStartResources) {
+	public static List<MapDataObject> generateStackObjects(EOriginalMapStartResources mapStartResources) {
 		List<MapDataObject> goods = new ArrayList<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:
@@ -128,7 +126,7 @@ public enum EMapStartResources {
 		return goods;
 	}
 
-	public static List<MapDataObject> generateMovableObjects(EMapStartResources mapStartResources, byte playerId) {
+	public static List<MapDataObject> generateMovableObjects(EOriginalMapStartResources mapStartResources, byte playerId) {
 		List<MapDataObject> movables = new ArrayList<>();
 		switch (mapStartResources) {
 		case LOW_GOODS:

@@ -14,46 +14,29 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
+import java.util.stream.Stream;
+
 /**
+ * The civilization the player is of
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapFilePartType {
-	EOF(0, ""), // End of File and Padding
-	MAP_INFO(1, "Map Info"),
-	PLAYER_INFO(2, "Player Info"),
-	TEAM_INFO(3, "Team Info"),
-	PREVIEW(4, "Preview"),
-	UNKNOWN_5(5, "UNKNOWN_5"),
-	AREA(6, "Area"),
-	SETTLERS(7, "Settlers"),
-	BUILDINGS(8, "Buildings"),
-	STACKS(9, "Stacks"),
-	UNKNOWN_10(10, "UNKNOWN_10"), // - maybe the winning conditions
-	QUEST_TEXT(11, "QuestText"),
-	QUEST_TIP(12, "QuestTip");
+public enum EOriginalMapCivilizations {
+	ROMANS(0),
+	EGYPTIANS(1),
+	ASIANS(2),
+	AMAZONS(3),
+	FREE_CHOICE(255),
+	NOT_DEFINED(256);
 
-	private static final EMapFilePartType[] VALUES = EMapFilePartType.values();
-	public final int value;
-	private final String typeText;
+	private static final EOriginalMapCivilizations[] VALUES = EOriginalMapCivilizations.values();
+	private final int value;
 
-	EMapFilePartType(int typeValue, String typeText) {
-		this.value = typeValue;
-		this.typeText = typeText;
+	EOriginalMapCivilizations(int value) {
+		this.value = value;
 	}
 
-	@Override
-	public String toString() {
-		return typeText;
+	public static EOriginalMapCivilizations fromMapValue(int mapValue) {
+		return Stream.of(VALUES).filter(nation -> nation.value == mapValue).findAny().orElse(ROMANS);
 	}
-
-	public static EMapFilePartType getTypeByInt(int intType) {
-		int val = intType & 0x0000FFFF;
-		if (val <= 0 || val >= VALUES.length) {
-			return EOF;
-		} else {
-			return VALUES[val];
-		}
-	}
-
 }

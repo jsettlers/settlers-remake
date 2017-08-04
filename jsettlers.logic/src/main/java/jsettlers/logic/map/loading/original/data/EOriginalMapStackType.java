@@ -21,7 +21,7 @@ import jsettlers.common.material.EMaterialType;
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapStackType {
+public enum EOriginalMapStackType {
 
 	NOT_A_STACK(null), // - 0 is not defined
 
@@ -66,15 +66,15 @@ public enum EMapStackType {
 	 */
 	END_OF_LIST(null);
 	
-	private static final EMapStackType[] VALUES = EMapStackType.values();
+	private static final EOriginalMapStackType[] VALUES = EOriginalMapStackType.values();
 
 	public final EMaterialType value;
 
-	EMapStackType(EMaterialType value) {
+	EOriginalMapStackType(EMaterialType value) {
 		this.value = value;
 	}
 
-	public static EMapStackType getTypeByInt(int type) {
+	public static EOriginalMapStackType getTypeByInt(int type) {
 		if (type < 0 || type >= VALUES.length) {
 			return NOT_A_STACK;
 		} else {

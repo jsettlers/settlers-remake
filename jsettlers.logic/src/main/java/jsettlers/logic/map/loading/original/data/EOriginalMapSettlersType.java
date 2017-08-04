@@ -18,10 +18,11 @@ import jsettlers.common.movable.EMovableType;
 
 /**
  * The settlers on the map.
+ * 
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapSettlersType {
+public enum EOriginalMapSettlersType {
 
 	BEARER(EMovableType.BEARER),
 	DIGGER(EMovableType.DIGGER),
@@ -74,20 +75,18 @@ public enum EMapSettlersType {
 
 	NOT_A_SETTLER(null);
 
-	private static final EMapSettlersType[] VALUES = EMapSettlersType.values();
-	// - length of THIS enum (without END_OF_LIST)
+	public static final EOriginalMapSettlersType[] VALUES = EOriginalMapSettlersType.values();
 	public final EMovableType value;
 
-	EMapSettlersType(EMovableType value) {
+	EOriginalMapSettlersType(EMovableType value) {
 		this.value = value;
 	}
 
-	public static EMapSettlersType getTypeByInt(int type) {
-		if (type < 0  || type >= VALUES.length) {
+	public static EOriginalMapSettlersType getTypeByInt(int type) {
+		if (type < 0 || type >= VALUES.length) {
 			return NOT_A_SETTLER;
 		} else {
 			return VALUES[type];
 		}
 	}
-
 }

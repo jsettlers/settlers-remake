@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -23,28 +23,29 @@ import java.util.EnumMap;
 import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
-import jsettlers.logic.map.loading.data.objects.MapDataObject;
-import jsettlers.logic.map.loading.original.data.EMapFilePartType;
-import jsettlers.logic.map.loading.original.data.EMapFileVersion;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoadException;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.original.data.EOriginalMapFilePartType;
+import jsettlers.logic.map.loading.original.data.EOriginalMapFileVersion;
+
+import java8.util.Optional;
 
 /**
  * @author Thomas Zeugner
  */
-public class OriginalMapFileContentReader {
-	public class MapResourceInfo {
-		public final EMapFilePartType partType;
+class OriginalMapFileContentReader {
+	private class MapResourceInfo {
+		final EOriginalMapFilePartType partType;
 		public final int offset;
 		public final int size;
-		public final int cryptKey;
+		final int cryptKey;
 		private boolean hasBeenDecrypted = false;
-		
-		public MapResourceInfo(EMapFilePartType partType, int offset, int size, int cryptKey) {
-			super();
+
+		MapResourceInfo(EOriginalMapFilePartType partType, int offset, int size, int cryptKey) {
 			this.partType = partType;
 			this.offset = offset;
 			this.size = size;
@@ -57,7 +58,7 @@ public class OriginalMapFileContentReader {
 				throw new MapLoadException("OriginalMapFile-Warning: Unable to decrypt map file: no data loaded!");
 			}
 
-			// - already encrypted
+			// - already decrypted
 			if (hasBeenDecrypted || size <= 0) {
 				return true;
 			}
@@ -90,16 +91,16 @@ public class OriginalMapFileContentReader {
 			return true;
 		}
 
-		public void resetDecryptedFlag() {
+		void resetDecryptedFlag() {
 			hasBeenDecrypted = false;
 		}
 	}
 
-	private final EnumMap<EMapFilePartType, MapResourceInfo> resources = new EnumMap<>(EMapFilePartType.class);
+	private final EnumMap<EOriginalMapFilePartType, MapResourceInfo> resources = new EnumMap<>(EOriginalMapFilePartType.class);
 
 	private int fileChecksum = 0;
-	public int widthHeight;
-	public boolean isSinglePlayerMap = false;
+	int widthHeight;
+	private boolean isSinglePlayerMap = false;
 	private boolean hasBuildings = false;
 
 	private byte[] mapContent;
@@ -113,14 +114,14 @@ public class OriginalMapFileContentReader {
 	private short previewWidth = 0;
 	private short previewHeight = 0;
 
-	public OriginalMapFileContent mapData = new OriginalMapFileContent(0);
+	OriginalMapFileContent mapData = new OriginalMapFileContent(0);
 
 	/**
 	 * Charset of read strings
 	 */
 	private static final Charset TEXT_CHARSET = Charset.forName("ISO-8859-1");
 
-	public OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
+	OriginalMapFileContentReader(InputStream originalMapFile) throws IOException {
 		// - init players
 		mapData.setPlayerCount(1);
 
@@ -129,7 +130,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - reads the whole stream and returns it as BYTE-Array
-	public static byte[] getBytesFromInputStream(InputStream is) throws IOException {
+	private static byte[] getBytesFromInputStream(InputStream is) throws IOException {
 		// - read file to buffer
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			byte[] buffer = new byte[0xFFFF];
@@ -146,14 +147,14 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - Read UNSIGNED Byte from Buffer
-	public int readByteFrom(int offset) {
+	private int readByteFrom(int offset) {
 		if (mapContent == null)
 			return 0;
 		return mapContent[offset] & 0xFF;
 	}
 
 	// - Read Big-Ending INT from Buffer
-	public int readBEIntFrom(int offset) {
+	private int readBEIntFrom(int offset) {
 		if (mapContent == null) {
 			return 0;
 		} else {
@@ -165,7 +166,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - Read Big-Ending 2 Byte Number from Buffer
-	public int readBEWordFrom(int offset) {
+	private int readBEWordFrom(int offset) {
 		if (mapContent == null) {
 			return 0;
 		} else {
@@ -175,7 +176,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - read the Higher 4-Bit of the buffer
-	public int readHighNibbleFrom(int offset) {
+	private int readHighNibbleFrom(int offset) {
 		if (mapContent == null) {
 			return 0;
 		} else {
@@ -184,7 +185,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - read the Lower 4-Bit of the buffer
-	public int readLowNibbleFrom(int offset) {
+	private int readLowNibbleFrom(int offset) {
 		if (mapContent == null) {
 			return 0;
 		} else {
@@ -194,7 +195,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - read a C-Style String from Buffer (ends with the first \0)
-	public String readCStrFrom(int offset, int length) {
+	private String readCStrFrom(int offset, int length) {
 		if (mapContent == null || mapContent.length <= offset + length) {
 			return "";
 		}
@@ -216,7 +217,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - returns a File Resources
-	private MapResourceInfo findResource(EMapFilePartType type) {
+	private MapResourceInfo findResource(EOriginalMapFilePartType type) {
 		return resources.get(type);
 	}
 
@@ -254,7 +255,7 @@ public class OriginalMapFileContentReader {
 		int fileVersion = readBEIntFrom(4);
 
 		// - check if the Version is compatible?
-		if ((fileVersion != EMapFileVersion.DEFAULT.value) && (fileVersion != EMapFileVersion.AMAZONS.value)) {
+		if ((fileVersion != EOriginalMapFileVersion.DEFAULT.value) && (fileVersion != EOriginalMapFileVersion.AMAZONS.value)) {
 			throw new MapLoadException("The version " + fileVersion + " is unknown");
 		}
 
@@ -277,14 +278,14 @@ public class OriginalMapFileContentReader {
 
 			// - debug output
 			// System.out.println("@ "+ filePos +" size: "+ PartLen +" Type:"+ partType +" Sub:"+ PartTypeSub +" -> "+
-			// OriginalMapFileDataStructs.EMapFilePartType .getTypeByInt(partType).toString() );
+			// OriginalMapFileDataStructs.EOriginalMapFilePartType .getTypeByInt(partType).toString() );
 
 			// - next position in File
 			filePos = filePos + partLen;
 
 			// - save the values
-			EMapFilePartType type = EMapFilePartType.getTypeByInt(partType);
-			if (type != EMapFilePartType.EOF && (partLen >= 0)) {
+			EOriginalMapFilePartType type = EOriginalMapFilePartType.getTypeByInt(partType);
+			if (type != EOriginalMapFilePartType.EOF && (partLen >= 0)) {
 				MapResourceInfo newRes = new MapResourceInfo(type, mapPartPos, partLen - 8, partType);
 
 				resources.put(type, newRes);
@@ -294,7 +295,7 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - freeing the internal File-Buffer
-	public void freeBuffer() {
+	void freeBuffer() {
 		mapContent = null;
 		mapData.freeBuffer();
 	}
@@ -302,7 +303,7 @@ public class OriginalMapFileContentReader {
 	// - to process a map File this class loads the whole file to memory. To save memory this File-Buffer is
 	// - closed after using/when done processing. If more data are requested from the File, the File-Biffer
 	// - is loaded again with this reOpen() function.
-	public void reOpen(InputStream originalMapFile) throws IOException {
+	void reOpen(InputStream originalMapFile) throws IOException {
 		// - read File into buffer
 		mapContent = getBytesFromInputStream(originalMapFile);
 
@@ -312,11 +313,11 @@ public class OriginalMapFileContentReader {
 		}
 	}
 
-	public void readBasicMapInformation() throws MapLoadException {
+	void readBasicMapInformation() throws MapLoadException {
 		this.readBasicMapInformation(0, 0);
 	}
 
-	public void readBasicMapInformation(int previewWidth, int previewHeight) throws MapLoadException {
+	void readBasicMapInformation(int previewWidth, int previewHeight) throws MapLoadException {
 		// - Reset
 		fileChecksum = 0;
 		widthHeight = 0;
@@ -345,7 +346,7 @@ public class OriginalMapFileContentReader {
 		}
 
 		// - get resource information for the area to get map height and width
-		MapResourceInfo filePart = findResource(EMapFilePartType.AREA);
+		MapResourceInfo filePart = findResource(EOriginalMapFilePartType.AREA);
 
 		if (filePart == null || filePart.size < 4) {
 			return;
@@ -363,12 +364,12 @@ public class OriginalMapFileContentReader {
 		widthHeight = readBEIntFrom(pos);
 	}
 
-	public short[] getPreviewImage() {
+	short[] getPreviewImage() {
 		// - return cached Image
 		return previewImage;
 	}
 
-	public short[] getPreviewImage(int width, int height) throws MapLoadException {
+	private short[] getPreviewImage(int width, int height) throws MapLoadException {
 
 		// - return cached Image if available
 		if ((previewWidth == width) && (previewHeight == height) && (previewImage != null)) {
@@ -379,7 +380,7 @@ public class OriginalMapFileContentReader {
 		short[] outImg = new short[width * height];
 
 		// - get resource information for the area
-		MapResourceInfo filePart = findResource(EMapFilePartType.PREVIEW);
+		MapResourceInfo filePart = findResource(EOriginalMapFilePartType.PREVIEW);
 
 		if (filePart == null || filePart.size < 4) {
 			return outImg;
@@ -392,20 +393,20 @@ public class OriginalMapFileContentReader {
 		int pos = filePart.offset;
 
 		// - height and width are the same
-		int wh = readBEWordFrom(pos);
+		int widthAndHeight = readBEWordFrom(pos);
 		pos += 2;
 		@SuppressWarnings("unused")
 		int unknown = readBEWordFrom(pos);
 		pos += 2;
 
-		int scaleX = wh / width;
-		int scaleY = wh / height;
+		int scaleX = widthAndHeight / width;
+		int scaleY = widthAndHeight / height;
 
 		int outIndex = 0;
 		int offset = pos;
 
 		for (int y = 0; y < height; y++) {
-			int srcRow = offset + (scaleY * y) * wh * 2;
+			int srcRow = offset + (scaleY * y) * widthAndHeight * 2;
 
 			for (int x = 0; x < width; x++) {
 
@@ -422,61 +423,59 @@ public class OriginalMapFileContentReader {
 		return outImg;
 	}
 
-	public String readMapQuestText() throws MapLoadException {
+	private MapResourceInfo findAndDecryptFilePartSafe(EOriginalMapFilePartType partType) throws MapLoadException {
+		Optional<MapResourceInfo> filePart = findAndDecryptFilePart(partType);
+		if (filePart.isPresent()) {
+			return filePart.get();
+		} else {
+			throw new MapLoadException("No " + partType + " information available in mapfile!");
+		}
+	}
+
+	private Optional<MapResourceInfo> findAndDecryptFilePart(EOriginalMapFilePartType partType) throws MapLoadException {
+		MapResourceInfo filePart = findResource(partType);
+
+		if ((filePart == null) || (filePart.size == 0)) {
+			return Optional.empty();
+		}
+
+		// Decrypt this resource if necessary
+		filePart.doDecrypt();
+
+		// Call consumer
+		return Optional.of(filePart);
+	}
+
+	String readMapQuestText() throws MapLoadException {
 		if (mapQuestText != null) {
 			return mapQuestText;
 		}
 
-		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TEXT);
-
-		if ((filePart == null) || (filePart.size == 0)) {
-			return "";
-		}
-
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
-
-		// - read Text
-		mapQuestText = readCStrFrom(filePart.offset, filePart.size);
-
-		// System.out.println("Quest: "+ mapQuestText);
-
-		return mapQuestText;
+		return findAndDecryptFilePart(EOriginalMapFilePartType.QUEST_TEXT)
+				.map(filePart -> {
+					mapQuestText = readCStrFrom(filePart.offset, filePart.size);
+					return mapQuestText;
+				})
+				.orElse("");
 	}
 
-	public String readMapQuestTip() throws MapLoadException {
+	private String readMapQuestTip() throws MapLoadException {
 		if (mapQuestTip != null) {
 			return mapQuestTip;
 		}
 
-		MapResourceInfo filePart = findResource(EMapFilePartType.QUEST_TIP);
-
-		if ((filePart == null) || (filePart.size == 0)) {
-			return "";
-		}
-
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
-
-		// - read Text
-		mapQuestTip = readCStrFrom(filePart.offset, filePart.size);
-
-		return mapQuestTip;
+		return findAndDecryptFilePart(EOriginalMapFilePartType.QUEST_TIP).map(filePart -> {
+			mapQuestTip = readCStrFrom(filePart.offset, filePart.size);
+			return mapQuestTip;
+		}).orElse("");
 	}
 
 	// - Read some common information from the map-file
-	public void readMapInfo() throws MapLoadException {
-		MapResourceInfo filePart = findResource(EMapFilePartType.MAP_INFO);
-
-		if ((filePart == null) || (filePart.size == 0)) {
-			throw new MapLoadException("No Player information available in mapfile!");
-		}
-
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+	private void readMapInfo() throws MapLoadException {
+		MapResourceInfo filePartOptional = findAndDecryptFilePartSafe(EOriginalMapFilePartType.MAP_INFO);
 
 		// - file position
-		int pos = filePart.offset;
+		int pos = filePartOptional.offset;
 
 		// ----------------------------------
 		// - read mapType (single / multiplayer map?)
@@ -505,167 +504,145 @@ public class OriginalMapFileContentReader {
 	}
 
 	// - read buildings from the map-file
-	public void readBuildings() throws MapLoadException {
+	void readBuildings() throws MapLoadException {
 		hasBuildings = false;
 
-		MapResourceInfo filePart = findResource(EMapFilePartType.BUILDINGS);
+		Optional<MapResourceInfo> filePartOptional = findAndDecryptFilePart(EOriginalMapFilePartType.BUILDINGS);
 
-		if ((filePart == null) || (filePart.size == 0)) {
-			return;
-		}
+		if (filePartOptional.isPresent()) {
+			MapResourceInfo filePart = filePartOptional.get();
+			// - file position
+			int pos = filePart.offset;
 
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+			// - Number of buildings
+			int buildingsCount = readBEIntFrom(pos);
+			pos += 4;
 
-		// - file position
-		int pos = filePart.offset;
+			// - safety check
+			if ((buildingsCount * 12 > filePart.size) || (buildingsCount < 0)) {
+				throw new MapLoadException("wrong number of buildings in map File: " + buildingsCount);
+			}
 
-		// - Number of buildings
-		int buildingsCount = readBEIntFrom(pos);
-		pos += 4;
+			hasBuildings = true;
 
-		// - safety check
-		if ((buildingsCount * 12 > filePart.size) || (buildingsCount < 0)) {
-			throw new MapLoadException("wrong number of buildings in map File: " + buildingsCount);
-		}
+			// - read all Buildings
+			for (int i = 0; i < buildingsCount; i++) {
 
-		hasBuildings = true;
+				int party = readByteFrom(pos++); // - Party starts with 0
+				int buildingType = readByteFrom(pos++);
+				int posX = readBEWordFrom(pos);
+				pos += 2;
+				int posY = readBEWordFrom(pos);
+				pos += 2;
 
-		// - read all Buildings
-		for (int i = 0; i < buildingsCount; i++) {
+				pos++; // not used - maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
 
-			int party = readByteFrom(pos++); // - Party starts with 0
-			int buildingType = readByteFrom(pos++);
-			int posX = readBEWordFrom(pos);
-			pos += 2;
-			int posY = readBEWordFrom(pos);
-			pos += 2;
+				// -----------
+				// - number of soldier in building is saved as 4-Bit (=Nibble):
+				int countSword1 = readHighNibbleFrom(pos);
+				int countSword2 = readLowNibbleFrom(pos);
+				pos++;
 
-			pos++; // not used - maybe a filling byte to make the record 12 Byte (= 3 INTs) long or unknown?!
+				int countArcher2 = readHighNibbleFrom(pos);
+				int countArcher3 = readLowNibbleFrom(pos);
+				pos++;
 
-			// -----------
-			// - number of soldier in building is saved as 4-Bit (=Nibble):
-			int countSword1 = readHighNibbleFrom(pos);
-			int countSword2 = readLowNibbleFrom(pos);
-			pos++;
+				int countSword3 = readHighNibbleFrom(pos);
+				int countArcher1 = readLowNibbleFrom(pos);
+				pos++;
 
-			int countArcher2 = readHighNibbleFrom(pos);
-			int countArcher3 = readLowNibbleFrom(pos);
-			pos++;
+				int countSpear3 = readHighNibbleFrom(pos);
+				// low nibble is a not used count
+				pos++;
 
-			int countSword3 = readHighNibbleFrom(pos);
-			int countArcher1 = readLowNibbleFrom(pos);
-			pos++;
+				int countSpear1 = readHighNibbleFrom(pos);
+				int countSpear2 = readLowNibbleFrom(pos);
+				pos++;
 
-			int countSpear3 = readHighNibbleFrom(pos);
-			// low nibble is a not used count
-			pos++;
-
-			int countSpear1 = readHighNibbleFrom(pos);
-			int countSpear2 = readLowNibbleFrom(pos);
-			pos++;
-
-			// -------------
-			// - update data
-			mapData.setBuilding(posX, posY, buildingType, party, countSword1, countSword2, countSword3, countArcher1, countArcher2, countArcher3,
-					countSpear1, countSpear2, countSpear3);
+				// -------------
+				// - update data
+				mapData.setBuilding(posX, posY, buildingType, party, countSword1, countSword2, countSword3, countArcher1, countArcher2, countArcher3, countSpear1, countSpear2, countSpear3);
+			}
 		}
 	}
 
 	// - Read stacks from the map-file
-	public void readStacks() throws MapLoadException {
-		MapResourceInfo filePart = findResource(EMapFilePartType.STACKS);
+	void readStacks() throws MapLoadException {
+		Optional<MapResourceInfo> filePartOptional = findAndDecryptFilePart(EOriginalMapFilePartType.STACKS);
 
-		if ((filePart == null) || (filePart.size == 0)) {
-			// This is normal
-			return;
-		}
+		if (filePartOptional.isPresent()) {
+			MapResourceInfo filePart = filePartOptional.get();
+			// - file position
+			int pos = filePart.offset;
 
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+			// - Number of buildings
+			int stackCount = readBEIntFrom(pos);
+			pos += 4;
 
-		// - file position
-		int pos = filePart.offset;
+			// - safety check
+			if ((stackCount * 8 > filePart.size) || (stackCount < 0)) {
+				throw new MapLoadException("wrong number of stacks in map File: " + stackCount);
+			}
 
-		// - Number of buildings
-		int stackCount = readBEIntFrom(pos);
-		pos += 4;
+			// - read all Stacks
+			for (int i = 0; i < stackCount; i++) {
 
-		// - safety check
-		if ((stackCount * 8 > filePart.size) || (stackCount < 0)) {
-			throw new MapLoadException("wrong number of stacks in map File: " + stackCount);
-		}
+				int posX = readBEWordFrom(pos);
+				pos += 2;
+				int posY = readBEWordFrom(pos);
+				pos += 2;
 
-		// - read all Stacks
-		for (int i = 0; i < stackCount; i++) {
+				int stackType = readByteFrom(pos++);
+				int count = readByteFrom(pos++);
 
-			int posX = readBEWordFrom(pos);
-			pos += 2;
-			int posY = readBEWordFrom(pos);
-			pos += 2;
+				pos += 2; // not used - maybe: padding to size of 8 (2 INTs)
 
-			int stackType = readByteFrom(pos++);
-			int count = readByteFrom(pos++);
-
-			pos += 2; // not used - maybe: padding to size of 8 (2 INTs)
-
-			// -------------
-			// - update data
-			mapData.setStack(posX, posY, stackType, count);
+				// -------------
+				// - update data
+				mapData.setStack(posX, posY, stackType, count);
+			}
 		}
 	}
 
 	// - Read settlers from the map-file
-	public void readSettlers() throws MapLoadException {
-		MapResourceInfo filePart = findResource(EMapFilePartType.SETTLERS);
+	void readSettlers() throws MapLoadException {
+		Optional<MapResourceInfo> filePartOptional = findAndDecryptFilePart(EOriginalMapFilePartType.SETTLERS);
 
-		if ((filePart == null) || (filePart.size == 0)) {
-			// This may happen regularely
-			return;
-		}
+		if (filePartOptional.isPresent()) {
+			MapResourceInfo filePart = filePartOptional.get();
+			// - file position
+			int pos = filePart.offset;
 
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+			// - Number of buildings
+			int settlerCount = readBEIntFrom(pos);
+			pos += 4;
 
-		// - file position
-		int pos = filePart.offset;
+			// - safety check
+			if ((settlerCount * 6 > filePart.size) || (settlerCount < 0)) {
+				throw new MapLoadException("wrong number of settlers in map File: " + settlerCount);
+			}
 
-		// - Number of buildings
-		int settlerCount = readBEIntFrom(pos);
-		pos += 4;
+			// - read all Stacks
+			for (int i = 0; i < settlerCount; i++) {
 
-		// - safety check
-		if ((settlerCount * 6 > filePart.size) || (settlerCount < 0)) {
-			throw new MapLoadException("wrong number of settlers in map File: " + settlerCount);
-		}
+				int party = readByteFrom(pos++);
+				int settlerType = readByteFrom(pos++);
 
-		// - read all Stacks
-		for (int i = 0; i < settlerCount; i++) {
+				int posX = readBEWordFrom(pos);
+				pos += 2;
+				int posY = readBEWordFrom(pos);
+				pos += 2;
 
-			int party = readByteFrom(pos++);
-			int settlerType = readByteFrom(pos++);
-
-			int posX = readBEWordFrom(pos);
-			pos += 2;
-			int posY = readBEWordFrom(pos);
-			pos += 2;
-
-			// -------------
-			// - update data
-			mapData.setSettler(posX, posY, settlerType, party);
+				// -------------
+				// - update data
+				mapData.setSettler(posX, posY, settlerType, party);
+			}
 		}
 	}
 
 	// - Read the Player Info
-	public void readPlayerInfo() throws MapLoadException {
-		MapResourceInfo filePart = findResource(EMapFilePartType.PLAYER_INFO);
-
-		if ((filePart == null) || (filePart.size == 0)) {
-			throw new MapLoadException("No Player information available in mapfile!");
-		}
-
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+	private void readPlayerInfo() throws MapLoadException {
+		MapResourceInfo filePart = findAndDecryptFilePartSafe(EOriginalMapFilePartType.PLAYER_INFO);
 
 		// - file position
 		int pos = filePart.offset;
@@ -685,21 +662,14 @@ public class OriginalMapFileContentReader {
 			pos += 33;
 
 			mapData.setPlayer(i, startX, startY, nation, playerName);
-
 		}
 	}
 
-	// - Reads in the Map Data / Landscape and MapObjects like trees
-	public void readMapData() throws MapLoadException {
-		// - get resource information for the area
-		MapResourceInfo filePart = findResource(EMapFilePartType.AREA);
-
-		if ((filePart == null) || (filePart.size == 0)) {
-			throw new MapLoadException("Warning: No area information available in mapfile!");
-		}
-
-		// - Decrypt this resource if necessary
-		filePart.doDecrypt();
+	/**
+	 * Reads in the Map Data / Landscape and MapObjects like trees
+	 */
+	void readMapData() throws MapLoadException {
+		MapResourceInfo filePart = findAndDecryptFilePartSafe(EOriginalMapFilePartType.AREA);
 
 		// - file position
 		int pos = filePart.offset;
@@ -726,7 +696,7 @@ public class OriginalMapFileContentReader {
 		}
 	}
 
-	public void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
+	void addStartTowerMaterialsAndSettlers(EMapStartResources startResources) {
 		// - only if there are no buildings
 		if (hasBuildings) {
 			return;
@@ -794,9 +764,7 @@ public class OriginalMapFileContentReader {
 		}
 	}
 
-	public String getChecksum() {
+	String getChecksum() {
 		return Integer.toString(fileChecksum);
 	}
-
-
 }

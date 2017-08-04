@@ -21,23 +21,23 @@ import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
 
 /**
- * The map objects on the map, see {@link EMapObjectTypeType}
+ * The map objects on the map, see {@link EOriginalMapObjectClass}
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EObjectType {
+public enum EOriginalMapObjectType {
 
 	NO_OBJECT(null, 0), // - 0
 
-	// TODO: EMapObjectTypeType.DECORATION does not work!
-	UNKNOWN_01(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_1 = 1,
-	UNKNOWN_02(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_2 = 2,
-	UNKNOWN_03(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_3 = 3,
-	UNKNOWN_04(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_4 = 4,
-	UNKNOWN_05(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_5 = 5,
-	UNKNOWN_06(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_6 = 6,
-	UNKNOWN_07(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_7 = 7,
-	UNKNOWN_08(EMapObjectTypeType.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_8 = 8,
+	// TODO: EOriginalMapObjectClass.DECORATION does not work!
+	UNKNOWN_01(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_1 = 1,
+	UNKNOWN_02(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_2 = 2,
+	UNKNOWN_03(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_3 = 3,
+	UNKNOWN_04(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_4 = 4,
+	UNKNOWN_05(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_5 = 5,
+	UNKNOWN_06(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_6 = 6,
+	UNKNOWN_07(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_7 = 7,
+	UNKNOWN_08(EOriginalMapObjectClass.DECORATION, EMapObjectType.STONE), // - GAME_OBJECT_BIG_STONE_8 = 8,
 	UNKNOWN_09(null, 0), // - GAME_OBJECT_STONE_1 = 9,
 	UNKNOWN_0A(null, 0), // - GAME_OBJECT_STONE_2 = 10,
 	UNKNOWN_0B(null, 0), // - GAME_OBJECT_STONE_3 = 11,
@@ -97,23 +97,23 @@ public enum EObjectType {
 	UNKNOWN_41(null, 0), // - GAME_OBJECT_REED_BEDS_4 = 65,
 	UNKNOWN_42(null, 0), // - GAME_OBJECT_REED_BEDS_5 = 66,
 	UNKNOWN_43(null, 0), // - GAME_OBJEC()T_REED_BEDS_6 = 67,
-	TREE_BIRCH_1(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_1 = 68,
-	TREE_BIRCH_2(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_2 = 69,
-	TREE_ELM_1(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_ELM_1 = 70,
-	TREE_ELM_2(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_ELM_2 = 71,
-	TREE_OAK_1(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_OAK_1 = 72,
-	TREE_UNKNOWN_1(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_1 = 73,
-	TREE_UNKNOWN_2(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_2 = 74,
-	TREE_UNKNOWN_3(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_3 = 75,
-	TREE_UNKNOWN_4(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_4 = 76,
-	TREE_UNKNOWN_5(EMapObjectTypeType.TREE, 0), // - //-- unknown: 77
-	TREE_ARECACEAE_1(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_ARECACEAE_1 = 78,
-	TREE_ARECACEAE_2(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_ARECACEAE_2 = 79,
-	TREE_UNKNOWN_6(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_6 = 80,
+	TREE_BIRCH_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_1 = 68,
+	TREE_BIRCH_2(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_BIRCH_2 = 69,
+	TREE_ELM_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_ELM_1 = 70,
+	TREE_ELM_2(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_ELM_2 = 71,
+	TREE_OAK_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_OAK_1 = 72,
+	TREE_UNKNOWN_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_1 = 73,
+	TREE_UNKNOWN_2(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_2 = 74,
+	TREE_UNKNOWN_3(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_3 = 75,
+	TREE_UNKNOWN_4(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_4 = 76,
+	TREE_UNKNOWN_5(EOriginalMapObjectClass.TREE, 0), // - //-- unknown: 77
+	TREE_ARECACEAE_1(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_ARECACEAE_1 = 78,
+	TREE_ARECACEAE_2(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_ARECACEAE_2 = 79,
+	TREE_UNKNOWN_6(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_UNKNOWN_6 = 80,
 	UNKNOWN_51(null, 0), // - //-- unknown: 81
 	UNKNOWN_52(null, 0), // - //-- unknown: 82
 	UNKNOWN_53(null, 0), // - //-- unknown: 83
-	UNKNOWN_54(EMapObjectTypeType.TREE, 0), // - GAME_OBJECT_TREE_SMALL = 84,
+	UNKNOWN_54(EOriginalMapObjectClass.TREE, 0), // - GAME_OBJECT_TREE_SMALL = 84,
 	UNKNOWN_55(null, 0), // - //-- unknown...
 	UNKNOWN_56(null, 0), // - //-- unknown...
 	UNKNOWN_57(null, 0), // - //-- unknown...
@@ -144,36 +144,36 @@ public enum EObjectType {
 	UNKNOWN_70(null, 0), // - GAME_OBJECT_REEF_MEDIUM = 112,
 	UNKNOWN_71(null, 0), // - GAME_OBJECT_REEF_LARGE = 113,
 	UNKNOWN_72(null, 0), // - GAME_OBJECT_REEF_XLARGE = 114,
-	RES_STONE_01(EMapObjectTypeType.STONE, 12), // - GAME_OBJECT_RES_STONE_01 = 115,
-	RES_STONE_02(EMapObjectTypeType.STONE, 11), // - GAME_OBJECT_RES_STONE_02 = 116,
-	RES_STONE_03(EMapObjectTypeType.STONE, 10), // - GAME_OBJECT_RES_STONE_03 = 117,
-	RES_STONE_04(EMapObjectTypeType.STONE, 9), // - GAME_OBJECT_RES_STONE_04 = 118,
-	RES_STONE_05(EMapObjectTypeType.STONE, 8), // - GAME_OBJECT_RES_STONE_05 = 119,
-	RES_STONE_06(EMapObjectTypeType.STONE, 7), // - GAME_OBJECT_RES_STONE_06 = 120,
-	RES_STONE_07(EMapObjectTypeType.STONE, 6), // - GAME_OBJECT_RES_STONE_07 = 121,
-	RES_STONE_08(EMapObjectTypeType.STONE, 5), // - GAME_OBJECT_RES_STONE_08 = 122,
-	RES_STONE_09(EMapObjectTypeType.STONE, 4), // - GAME_OBJECT_RES_STONE_09 = 123,
-	RES_STONE_10(EMapObjectTypeType.STONE, 3), // - GAME_OBJECT_RES_STONE_10 = 124,
-	RES_STONE_11(EMapObjectTypeType.STONE, 2), // - GAME_OBJECT_RES_STONE_11 = 125,
-	RES_STONE_12(EMapObjectTypeType.STONE, 1), // - GAME_OBJECT_RES_STONE_12 = 126,
-	RES_STONE_13(EMapObjectTypeType.STONE, 0); // - GAME_OBJECT_RES_STONE_13 = 127,;
+	RES_STONE_01(EOriginalMapObjectClass.STONE, 12), // - GAME_OBJECT_RES_STONE_01 = 115,
+	RES_STONE_02(EOriginalMapObjectClass.STONE, 11), // - GAME_OBJECT_RES_STONE_02 = 116,
+	RES_STONE_03(EOriginalMapObjectClass.STONE, 10), // - GAME_OBJECT_RES_STONE_03 = 117,
+	RES_STONE_04(EOriginalMapObjectClass.STONE, 9), // - GAME_OBJECT_RES_STONE_04 = 118,
+	RES_STONE_05(EOriginalMapObjectClass.STONE, 8), // - GAME_OBJECT_RES_STONE_05 = 119,
+	RES_STONE_06(EOriginalMapObjectClass.STONE, 7), // - GAME_OBJECT_RES_STONE_06 = 120,
+	RES_STONE_07(EOriginalMapObjectClass.STONE, 6), // - GAME_OBJECT_RES_STONE_07 = 121,
+	RES_STONE_08(EOriginalMapObjectClass.STONE, 5), // - GAME_OBJECT_RES_STONE_08 = 122,
+	RES_STONE_09(EOriginalMapObjectClass.STONE, 4), // - GAME_OBJECT_RES_STONE_09 = 123,
+	RES_STONE_10(EOriginalMapObjectClass.STONE, 3), // - GAME_OBJECT_RES_STONE_10 = 124,
+	RES_STONE_11(EOriginalMapObjectClass.STONE, 2), // - GAME_OBJECT_RES_STONE_11 = 125,
+	RES_STONE_12(EOriginalMapObjectClass.STONE, 1), // - GAME_OBJECT_RES_STONE_12 = 126,
+	RES_STONE_13(EOriginalMapObjectClass.STONE, 0); // - GAME_OBJECT_RES_STONE_13 = 127,;
 	
-	private static final EObjectType[] VALUES = EObjectType.values();
+	private static final EOriginalMapObjectType[] VALUES = EOriginalMapObjectType.values();
 
-	public final EMapObjectTypeType type;
+	public final EOriginalMapObjectClass type;
 	public final int style;
 
-	EObjectType(EMapObjectTypeType type, int style) {
+	EOriginalMapObjectType(EOriginalMapObjectClass type, int style) {
 		this.type = type;
 		this.style = style;
 	}
 
-	EObjectType(EMapObjectTypeType type, EMapObjectType style) {
+	EOriginalMapObjectType(EOriginalMapObjectClass type, EMapObjectType style) {
 		this.type = type;
 		this.style = style.ordinal();
 	}
 
-	public static EObjectType getTypeByInt(int type) {
+	public static EOriginalMapObjectType getTypeByInt(int type) {
 		if (type < 0 || type >= VALUES.length) {
 			return NO_OBJECT;
 		} else {

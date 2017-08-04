@@ -14,13 +14,37 @@
  *******************************************************************************/
 package jsettlers.logic.map.loading.original.data;
 
+import jsettlers.common.landscape.EResourceType;
+
 /**
- * Special map objects
+ * The map resources and their mapping to {@link EResourceType}
+ * 
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapObjectTypeType {
-	DECORATION,
-	STONE,
-	TREE
+public enum EOriginalMapResources {
+
+	FISH(EResourceType.FISH),
+	COAL(EResourceType.COAL),
+	IRONORE(EResourceType.IRONORE),
+	GOLDORE(EResourceType.GOLDORE),
+	GEMS(EResourceType.GEMSTONE),
+	SULFUR(EResourceType.BRIMSTONE),
+	NOT_A_RESOURCE_TYPE(EResourceType.NOTHING);
+
+	public final EResourceType value;
+
+	public static final EOriginalMapResources[] VALUES = values();
+
+	EOriginalMapResources(EResourceType value) {
+		this.value = value;
+	}
+
+	public static EOriginalMapResources getTypeByInt(int type) {
+		if (type < 0 || type > EOriginalMapResources.VALUES.length) {
+			return NOT_A_RESOURCE_TYPE;
+		} else {
+			return EOriginalMapResources.values()[type];
+		}
+	}
 }

@@ -20,7 +20,7 @@ import jsettlers.common.buildings.EBuildingType;
  * @author Thomas Zeugner
  * @author codingberlin
  */
-public enum EMapBuildingType {
+public enum EOriginalMapBuildingType {
 
 	NOT_A_BUILDING(null), // - 0 is not defined
 
@@ -81,10 +81,10 @@ public enum EMapBuildingType {
 	grosser_Tempel(null),
 	SchwefelmineAmazonen(null);
 
-	private static final EMapBuildingType[] VALUES = EMapBuildingType.values();
+	private static final EOriginalMapBuildingType[] VALUES = EOriginalMapBuildingType.values();
 	private final EBuildingType value;
 
-	EMapBuildingType(EBuildingType value) {
+	EOriginalMapBuildingType(EBuildingType value) {
 		this.value = value;
 	}
 
@@ -92,7 +92,7 @@ public enum EMapBuildingType {
 		return value;
 	}
 
-	public static EMapBuildingType getTypeByInt(int type) {
+	public static EOriginalMapBuildingType getTypeByInt(int type) {
 		if (type < 0 || type >= VALUES.length) {
 			return NOT_A_BUILDING;
 		} else {
