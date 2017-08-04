@@ -43,6 +43,11 @@ public class ButtonUiStone extends BasicButtonUI {
 	private final BufferedImage backgroundImage = UiImageLoader.get("sr_ui_button/sr_ui_button-bg.png");
 
 	/**
+	 * Background Image pressed
+	 */
+	private final BufferedImage backgroundImagePressed = UiImageLoader.get("sr_ui_button_down/sr_ui_button-bg.png");
+
+	/**
 	 * Border images if the Button is not pressed
 	 */
 	private final BufferedImage[] BORDER_NORMAL = { UiImageLoader.get("sr_ui_button/sr_ui_button-corner-upper-left.png"),
@@ -123,20 +128,23 @@ public class ButtonUiStone extends BasicButtonUI {
 			down = model.isArmed() && model.isPressed();
 		}
 
-		// Draw background
-		g.drawImage(backgroundImage, 0, 0, c);
-
+		BufferedImage bg;
 		BufferedImage[] border;
 		float scale = this.scale;
 
 		if (down) {
 			border = BORDER_DOWN;
 			scale /= 2;
+			bg = backgroundImagePressed;
 		} else {
+			bg = backgroundImage;
 			border = BORDER_NORMAL;
 		}
 
-		drawBorder(g1, c, border, scale);
+		// Draw background
+		g.drawImage(bg, 0, 0, c);
+
+		BorderHelper.drawBorder(g1, c, border, scale);
 
 		FontMetrics fm = g.getFontMetrics();
 		int y = (b.getHeight() - fm.getAscent() - fm.getDescent()) / 2 + fm.getAscent();
@@ -162,55 +170,6 @@ public class ButtonUiStone extends BasicButtonUI {
 		size.width += textPaddingLeftRight * 2;
 		size.height += textPaddingTopBottom * 2;
 		return size;
-	}
-
-	/**
-	 * Draw the border
-	 * 
-	 * @param g
-	 *            Graphics
-	 * @param c
-	 *            Component
-	 * @param border
-	 *            Border
-	 * @param scale
-	 *            Border scale factor
-	 */
-	private void drawBorder(Graphics g, JComponent c, BufferedImage[] border, float scale) {
-		final int width = c.getWidth();
-		final int height = c.getHeight();
-
-		// top-left
-		drawImage(g, c, scale, border[0], 0, 0);
-
-		// top
-		drawScaled(g, c, border[1], (int) (border[0].getWidth() * scale), (int) (width - scale * border[2].getWidth()), 0, (int) (scale * border[1].getHeight()));
-
-		// top-right
-		drawImage(g, c, scale, border[2], (int) (width - border[2].getWidth() * scale), 0);
-
-		// right
-		drawScaled(g, c, border[3], (int) (width - border[3].getWidth() * scale), width, (int) (border[2].getHeight() * scale), (int) (height - border[4].getHeight() * scale));
-
-		// bottom-right
-		drawImage(g, c, scale, border[4], (int) (width - border[4].getWidth() * scale), (int) (height - border[4].getWidth() * scale));
-
-		// bottom
-		drawScaled(g, c, border[5], (int) (border[0].getWidth() * scale), (int) (width - border[2].getWidth() * scale), (int) (height - border[5].getHeight() * scale), height);
-
-		// bottom-left
-		drawImage(g, c, scale, border[6], 0, (int) (height - border[6].getWidth() * scale));
-
-		// left
-		drawScaled(g, c, border[7], 0, (int) (border[7].getWidth() * scale), (int) (border[0].getHeight() * scale), (int) (height - border[6].getHeight() * scale));
-	}
-
-	private void drawImage(Graphics g, JComponent c, float scale, BufferedImage img, int x, int y) {
-		g.drawImage(img, x, y, (int) (x + img.getWidth() * scale), (int) (y + img.getHeight() * scale), 0, 0, img.getWidth(), img.getHeight(), c);
-	}
-
-	private void drawScaled(Graphics g, JComponent c, BufferedImage img, int x, int x2, int y, int y2) {
-		g.drawImage(img, x, y, x2, y2, 0, 0, img.getWidth(), img.getHeight(), c);
 	}
 
 }
