@@ -15,10 +15,16 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 
+import java.util.List;
+
+import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.main.android.R;
@@ -26,8 +32,11 @@ import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
-import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
+import jsettlers.main.android.gameplay.ui.adapters.TradeMaterialsAdapter;
+import jsettlers.main.android.gameplay.viewstates.TradeMaterialState;
 import jsettlers.main.android.utils.OriginalImageProvider;
+
+import static java8.util.J8Arrays.stream;
 
 /**
  * Created by Rudolf Polzer
@@ -40,42 +49,38 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     private final ActionControls actionControls;
     private final DrawControls drawControls;
 
-    private RecyclerView materialView;
-//    private MaterialsAdapter adapter;
+    private RecyclerView recyclerView;
+    private TradeMaterialsAdapter adapter;
 
-    public TradingFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
+    public TradingFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
         super(view, building, menuNavigator);
         this.actionControls = actionControls;
         this.drawControls = drawControls;
+
+
+        adapter = new TradeMaterialsAdapter(activity);
+        adapter.setItemClickListener(this::materialSelected);
+        recyclerView = (RecyclerView) getView().findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
     }
 
     @Override
     public void initialize(BuildingState buildingState) {
         super.initialize(buildingState);
-
-        InGameButton waypointsButton = (InGameButton) getView().findViewById(R.id.image_view_waypoints);
-        if (((TradingBuilding) (this.getBuilding())).isSeaTrading()) {
-            OriginalImageProvider.get(imageWaypointsSea).setAsImage(waypointsButton.getImageView());
-        } else {
-            OriginalImageProvider.get(imageWaypointsLand).setAsImage(waypointsButton.getImageView());
-        }
-
-        materialView = (RecyclerView) getView().findViewById(R.id.recycler_view_materials);
-/*
-        if (adapter == null) {
-            adapter = new BuildingsCategoryFragment.BuildingsAdapter(buildingTiles);
-        } else {
-            adapter.setBuildingTiles(buildingTiles);
-        }
-
-        if (recyclerView.getAdapter() == null) {
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-            recyclerView.setAdapter(adapter);
-        }
-*/
-        update();
         drawControls.addInfrequentDrawListener(this);
+
+        ImageView waypointsButton = (ImageView) getView().findViewById(R.id.imageView_waypoints);
+        if (((TradingBuilding) (this.getBuilding())).isSeaTrading()) {
+            OriginalImageProvider.get(imageWaypointsSea).setAsImage(waypointsButton);
+        } else {
+            OriginalImageProvider.get(imageWaypointsLand).setAsImage(waypointsButton);
+        }
+
+
+        adapter.setMaterialStates(materialStates());
+        recyclerView.setAdapter(adapter);
+
+        update();
     }
 
     @Override
@@ -91,7 +96,21 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         }
     }
 
-    private void update() {
+
+    private void materialSelected(TradeMaterialState materialState) {
     }
 
+    private void update() {
+        if (getBuildingState().isTrading() || getBuildingState().isSeaTrading()) {
+            recyclerView.setVisibility(View.VISIBLE);
+
+            adapter.setMaterialStates(materialStates());
+        }
+    }
+
+    private List<TradeMaterialState> materialStates() {
+        return stream(EMaterialType.STOCK_MATERIALS)
+                .map(eMaterialType -> new TradeMaterialState(eMaterialType))
+                .collect(Collectors.toList());
+    }
 }

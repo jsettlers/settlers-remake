@@ -61,7 +61,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 
 	private Snackbar snackbar;
 
-	public DockFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls, TaskControls taskControls) {
+	public DockFeature(View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls, TaskControls taskControls) {
 		super(view, building, menuNavigator);
 		this.drawControls = drawControls;
 		this.actionControls = actionControls;
