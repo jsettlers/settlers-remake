@@ -105,7 +105,7 @@ public class TradeMaterialsAdapter extends RecyclerView.Adapter<TradeMaterialVie
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return true;// oldStates.get(oldItemPosition).isStocked() == newStates.get(newItemPosition).isStocked();
+            return oldStates.get(oldItemPosition).getCount() == newStates.get(newItemPosition).getCount();
         }
 
         @Nullable

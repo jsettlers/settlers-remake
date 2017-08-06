@@ -155,8 +155,10 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     }
 
     private List<TradeMaterialState> materialStates() {
+        BuildingState buildingState = getBuildingState();
+
         return stream(EMaterialType.STOCK_MATERIALS)
-                .map(eMaterialType -> new TradeMaterialState(eMaterialType))
+                .map(eMaterialType -> new TradeMaterialState(eMaterialType, buildingState.getTradingCount(eMaterialType)))
                 .collect(Collectors.toList());
     }
 }
