@@ -15,7 +15,6 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 
-import android.app.Activity;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -54,7 +53,7 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	private final MenuNavigator menuNavigator;
 
 	private final InGameButton placeDockButton;
-	private final ImageView ferryImageShip;
+	private final ImageView ferryImageView;
 	private final ImageView tradeShipImageView;
 
 	private EShipType currentOrderedShip = null;
@@ -73,9 +72,9 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 		placeDockButton.setOnClickListener(this::setDockClicked);
 		OriginalImageProvider.get(placeDockImageLink).setAsImage(placeDockButton.getImageView());
 
-		ferryImageShip = (ImageView) getView().findViewById(R.id.imageView_ferry);
-		ferryImageShip.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_FERRY)));
-		OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
+		ferryImageView = (ImageView) getView().findViewById(R.id.imageView_ferry);
+		ferryImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_FERRY)));
+		OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
 
 		tradeShipImageView = (ImageView) getView().findViewById(R.id.imageView_tradeShip);
 		tradeShipImageView.setOnClickListener(v -> actionControls.fireAction(new Action(EActionType.MAKE_CARGO_BOAT)));
@@ -123,26 +122,31 @@ public class DockFeature extends SelectionFeature implements DrawListener, Actio
 	}
 
 	private void update() {
-		DockyardBuilding dockyard = (DockyardBuilding) getBuilding();
-		EShipType orderedShip = dockyard.getOrderedShipType();
+		if (!getBuildingState().isConstruction()) {
+			ferryImageView.setVisibility(View.VISIBLE);
+			tradeShipImageView.setVisibility(View.VISIBLE);
 
-		if (currentOrderedShip != orderedShip) {
-			switch (orderedShip) {
-				case FERRY:
-					OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageShip);
-					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
-					break;
-				case CARGO_SHIP:
-					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
-					OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
-					break;
-				default:
-					OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageShip);
-					OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
-					break;
+			DockyardBuilding dockyard = (DockyardBuilding) getBuilding();
+			EShipType orderedShip = dockyard.getOrderedShipType();
+
+			if (currentOrderedShip != orderedShip) {
+				switch (orderedShip) {
+					case FERRY:
+						OriginalImageProvider.get(ferrySelectedImageLink).setAsImage(ferryImageView);
+						OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+						break;
+					case CARGO_SHIP:
+						OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
+						OriginalImageProvider.get(tradeShipSelectedImageLink).setAsImage(tradeShipImageView);
+						break;
+					default:
+						OriginalImageProvider.get(ferryImageLink).setAsImage(ferryImageView);
+						OriginalImageProvider.get(tradeShipImageLink).setAsImage(tradeShipImageView);
+						break;
+				}
+
+				currentOrderedShip = orderedShip;
 			}
-
-			currentOrderedShip = orderedShip;
 		}
 	}
 

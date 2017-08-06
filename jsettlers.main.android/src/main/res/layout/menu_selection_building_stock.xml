@@ -61,8 +61,8 @@
     <LinearLayout
         android:id="@+id/layout_materials"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/menu_button_size"
         android:orientation="horizontal"
-        android:padding="8dp" />
+        android:layout_margin="8dp" />
 
 </LinearLayout>

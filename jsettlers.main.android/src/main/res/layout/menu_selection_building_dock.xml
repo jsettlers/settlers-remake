@@ -48,7 +48,9 @@
         <ImageView
             android:id="@+id/imageView_tradeShip"
             android:layout_width="64dp"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
         <Space
             android:layout_weight="1"
@@ -80,7 +82,9 @@
         <ImageView
             android:id="@+id/imageView_ferry"
             android:layout_width="64dp"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
         <Space
             android:layout_weight="1"
@@ -93,9 +97,9 @@
     <LinearLayout
         android:id="@+id/layout_materials"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/menu_button_size"
         android:orientation="horizontal"
-        android:padding="8dp" />
+        android:layout_margin="8dp" />
 
 
 </LinearLayout>

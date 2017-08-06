@@ -314,21 +314,21 @@ public class BuildingState {
 	 * @return <code>true</code> if we are a constructed occupied building.
 	 */
 	public boolean isOccupied() {
-		return occupierStates != null && !construction;
+		return occupierStates != null;
 	}
 
 	/**
 	 * @return <code>true</code> if we are a constructed stock building.
 	 */
 	public boolean isStock() {
-		return stockStates != null && !construction;
+		return stockStates != null;
 	}
 
 	/**
 	 * @return <code>true</code> if we are a constructed trading building.
 	 */
 	public boolean isTrading() {
-		return tradingCounts != null && !construction;
+		return tradingCounts != null;
 	}
 
 	/**

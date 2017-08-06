@@ -163,7 +163,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener, Ba
     }
 
     private void update() {
-        if (getBuildingState().isTrading() || getBuildingState().isSeaTrading()) {
+        if (!getBuildingState().isConstruction()) {
             recyclerView.setVisibility(View.VISIBLE);
             adapter.setMaterialStates(materialStates());
         }

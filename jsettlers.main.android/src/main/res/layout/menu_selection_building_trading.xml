@@ -90,7 +90,7 @@
 
             <TextView
                 android:id="@+id/text_view_building_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
@@ -118,8 +118,8 @@
     <LinearLayout
         android:id="@+id/layout_materials"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/menu_button_size"
         android:orientation="horizontal"
-        android:padding="8dp" />
+        android:layout_margin="8dp" />
 
 </LinearLayout>
