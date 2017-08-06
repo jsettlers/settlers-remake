@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:contentPadding="12dp">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imageView_tradeButton_infinite"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+            <ImageView
+                android:id="@+id/imageView_tradeButton_none"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+
+            <ImageView
+                android:id="@+id/imageView_tradeButton_eightMore"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+            <ImageView
+                android:id="@+id/imageView_tradeButton_oneMore"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+            <ImageView
+                android:id="@+id/imageView_tradeButton_oneLess"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+            <ImageView
+                android:id="@+id/imageView_tradeButton_eightLess"
+                android:layout_width="@dimen/menu_button_size"
+                android:layout_height="@dimen/menu_button_size"
+                android:background="#ff0000"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

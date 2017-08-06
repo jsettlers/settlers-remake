@@ -22,8 +22,7 @@
         <ImageView
             android:id="@+id/imageView_waypoints"
             android:layout_width="224dp"
-            android:layout_height="56dp"
-            android:background="#00ff00" />
+            android:layout_height="56dp" />
 
         <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_destroy"

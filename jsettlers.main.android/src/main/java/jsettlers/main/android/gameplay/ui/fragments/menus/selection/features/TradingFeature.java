@@ -18,13 +18,16 @@ package jsettlers.main.android.gameplay.ui.fragments.menus.selection.features;
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 
 import java.util.List;
 
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.graphics.action.ChangeTradingRequestAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.main.android.R;
@@ -42,10 +45,18 @@ import static java8.util.J8Arrays.stream;
  * Created by Rudolf Polzer
  */
 public class TradingFeature extends SelectionFeature implements DrawListener {
+    private static final int TRADING_MULTIPLE_STEP_INCREASE = 8;
 
     private static final String imageWaypointsLand = "original_3_GUI_374";
     private static final String imageWaypointsSea = "original_3_GUI_377";
+    private static final String imageInfinite = "original_3_GUI_384";
+    private static final String imageNone = "original_3_GUI_387";
+    private static final String imageEightMore = "original_3_GUI_219";
+    private static final String imageOneMore = "original_3_GUI_225";
+    private static final String imageOneLess = "original_3_GUI_228";
+    private static final String imageEightLess = "original_3_GUI_222";
 
+    private final Activity activity;
     private final ActionControls actionControls;
     private final DrawControls drawControls;
 
@@ -54,6 +65,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
 
     public TradingFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
         super(view, building, menuNavigator);
+        this.activity = activity;
         this.actionControls = actionControls;
         this.drawControls = drawControls;
 
@@ -97,7 +109,41 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     }
 
 
-    private void materialSelected(TradeMaterialState materialState) {
+    private void materialSelected(View sender, TradeMaterialState materialState) {
+        View popupView = activity.getLayoutInflater().inflate(R.layout.popup_trade_material, null);
+
+        ImageView infiniteButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_infinite);
+        ImageView noneButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_none);
+        ImageView eightMoreButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_eightMore);
+        ImageView oneMoreButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_oneMore);
+        ImageView oneLessButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_oneLess);
+        ImageView eightLessButton = (ImageView) popupView.findViewById(R.id.imageView_tradeButton_eightLess);
+
+        OriginalImageProvider.get(imageInfinite).setAsImage(infiniteButton);
+        OriginalImageProvider.get(imageNone).setAsImage(noneButton);
+        OriginalImageProvider.get(imageEightMore).setAsImage(eightMoreButton);
+        OriginalImageProvider.get(imageOneMore).setAsImage(oneMoreButton);
+        OriginalImageProvider.get(imageOneLess).setAsImage(oneLessButton);
+        OriginalImageProvider.get(imageEightLess).setAsImage(eightLessButton);
+
+        infiniteButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), Integer.MAX_VALUE, false));
+        noneButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), 0, false));
+        eightMoreButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), TRADING_MULTIPLE_STEP_INCREASE, true));
+        oneMoreButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), 1, true));
+        oneLessButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), -1, true));
+        eightLessButton.setOnClickListener(v -> changeTradeMaterialAmount(materialState.getMaterialType(), -TRADING_MULTIPLE_STEP_INCREASE, true));
+
+        popupView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        int xOffset = -((popupView.getMeasuredWidth() - sender.getWidth()) / 2);
+        int yOffset = -(popupView.getMeasuredHeight() + sender.getHeight());
+
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.showAsDropDown(sender, xOffset, yOffset);
+    }
+
+    private void changeTradeMaterialAmount(EMaterialType materialType, int amount, boolean relative) {
+        actionControls.fireAction(new ChangeTradingRequestAction(materialType, amount, relative));
     }
 
     private void update() {

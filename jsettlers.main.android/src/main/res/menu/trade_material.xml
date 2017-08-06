@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_trading_8more"
+        android:title="8 more" />
+
+    <item
+        android:id="@+id/menu_trading_1more"
+        android:title="1 more" />
+
+    <item
+        android:id="@+id/menu_trading_1less"
+        android:title="1 less" />
+
+    <item
+        android:id="@+id/menu_trading_8less"
+        android:title="8 less" />
+
+    <item
+        android:id="@+id/menu_trading_infinite"
+        android:title="Infinite" />
+
+    <item
+        android:id="@+id/menu_trading_none"
+        android:title="None" />
+
+</menu>

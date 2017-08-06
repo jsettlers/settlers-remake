@@ -20,7 +20,7 @@ import jsettlers.main.android.gameplay.viewstates.TradeMaterialState;
 
 public class TradeMaterialsAdapter extends RecyclerView.Adapter<TradeMaterialViewHolder> {
     public interface ItemClickListener {
-        void onItemClick(TradeMaterialState tradeMaterialState);
+        void onItemClick(View sender, TradeMaterialState tradeMaterialState);
     }
 
     private final LayoutInflater inflater;
@@ -39,9 +39,9 @@ public class TradeMaterialsAdapter extends RecyclerView.Adapter<TradeMaterialVie
 
     @Override
     public TradeMaterialViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_stock_material, parent, false);
+        View view = inflater.inflate(R.layout.item_trade_material, parent, false);
         TradeMaterialViewHolder materialViewHolder = new TradeMaterialViewHolder(view);
-        view.setOnClickListener(v -> itemClickListener.onItemClick(tradeMaterialStates.get(materialViewHolder.getAdapterPosition())));
+        view.setOnClickListener(v -> itemClickListener.onItemClick(view, tradeMaterialStates.get(materialViewHolder.getAdapterPosition())));
         return materialViewHolder;
     }
 

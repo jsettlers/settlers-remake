@@ -110,7 +110,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_button_size">
+                android:layout_height="wrap_content">
 
                 <jsettlers.main.android.gameplay.ui.customviews.InGameButton
                     android:id="@+id/image_view_minimum_soldiers"
