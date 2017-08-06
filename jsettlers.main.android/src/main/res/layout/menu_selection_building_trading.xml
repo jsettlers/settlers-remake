@@ -19,10 +19,52 @@
             android:visibility="invisible" />
 
 
-        <ImageView
-            android:id="@+id/imageView_waypoints"
+        <FrameLayout
             android:layout_width="224dp"
-            android:layout_height="56dp" />
+            android:layout_height="56dp">
+            <ImageView
+                android:id="@+id/imageView_waypoints"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/view_placeDock"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointOne"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointTwo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointThree"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointDestination"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            </LinearLayout>
+        </FrameLayout>
 
         <jsettlers.main.android.gameplay.ui.customviews.InGameButton
             android:id="@+id/image_view_destroy"

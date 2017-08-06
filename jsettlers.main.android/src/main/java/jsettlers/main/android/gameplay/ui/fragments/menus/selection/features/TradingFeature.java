@@ -27,7 +27,11 @@ import java.util.List;
 import java8.util.stream.Collectors;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.action.EActionType;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.AskSetTradingWaypointAction;
 import jsettlers.graphics.action.ChangeTradingRequestAction;
+import jsettlers.graphics.action.SetTradingWaypointAction;
 import jsettlers.graphics.map.controls.original.panel.selection.BuildingState;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.main.android.R;
@@ -36,6 +40,7 @@ import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.adapters.TradeMaterialsAdapter;
+import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.gameplay.viewstates.TradeMaterialState;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
@@ -57,18 +62,37 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     private static final String imageEightLess = "original_3_GUI_222";
 
     private final Activity activity;
+    private final MenuNavigator menuNavigator;
     private final ActionControls actionControls;
     private final DrawControls drawControls;
 
     private RecyclerView recyclerView;
     private TradeMaterialsAdapter adapter;
 
+    private View placeDockView;
+    private View vaypointOneView;
+    private View vaypointTwoView;
+    private View vaypointThreeView;
+    private View vaypointDestinationView;
+
     public TradingFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
         super(view, building, menuNavigator);
         this.activity = activity;
+        this.menuNavigator = menuNavigator;
         this.actionControls = actionControls;
         this.drawControls = drawControls;
 
+        placeDockView = getView().findViewById(R.id.view_placeDock);
+        placeDockView.setOnClickListener(this::placeDock);
+
+        vaypointOneView = getView().findViewById(R.id.view_waypointOne);
+        vaypointTwoView = getView().findViewById(R.id.view_waypointTwo);
+        vaypointThreeView = getView().findViewById(R.id.view_waypointThree);
+        vaypointDestinationView = getView().findViewById(R.id.view_waypointDestination);
+        vaypointOneView.setOnClickListener(v -> setWaypoint(SetTradingWaypointAction.EWaypointType.WAYPOINT_1));
+        vaypointTwoView.setOnClickListener(v -> setWaypoint(SetTradingWaypointAction.EWaypointType.WAYPOINT_2));
+        vaypointThreeView.setOnClickListener(v -> setWaypoint(SetTradingWaypointAction.EWaypointType.WAYPOINT_3));
+        vaypointDestinationView.setOnClickListener(v -> setWaypoint(SetTradingWaypointAction.EWaypointType.DESTINATION));
 
         adapter = new TradeMaterialsAdapter(activity);
         adapter.setItemClickListener(this::materialSelected);
@@ -84,8 +108,10 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         ImageView waypointsButton = (ImageView) getView().findViewById(R.id.imageView_waypoints);
         if (((TradingBuilding) (this.getBuilding())).isSeaTrading()) {
             OriginalImageProvider.get(imageWaypointsSea).setAsImage(waypointsButton);
+            placeDockView.setVisibility(View.VISIBLE);
         } else {
             OriginalImageProvider.get(imageWaypointsLand).setAsImage(waypointsButton);
+            placeDockView.setVisibility(View.GONE);
         }
 
 
@@ -108,6 +134,27 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         }
     }
 
+    private void placeDock(View view) {
+        actionControls.fireAction(new Action(EActionType.ASK_SET_DOCK));
+        menuNavigator.dismissMenu();
+    }
+
+    private void setWaypoint(SetTradingWaypointAction.EWaypointType waypointType) {
+        actionControls.fireAction(new AskSetTradingWaypointAction(waypointType));
+        menuNavigator.dismissMenu();
+    }
+
+
+    private void changeTradeMaterialAmount(EMaterialType materialType, int amount, boolean relative) {
+        actionControls.fireAction(new ChangeTradingRequestAction(materialType, amount, relative));
+    }
+
+    private void update() {
+        if (getBuildingState().isTrading() || getBuildingState().isSeaTrading()) {
+            recyclerView.setVisibility(View.VISIBLE);
+            adapter.setMaterialStates(materialStates());
+        }
+    }
 
     private void materialSelected(View sender, TradeMaterialState materialState) {
         View popupView = activity.getLayoutInflater().inflate(R.layout.popup_trade_material, null);
@@ -140,18 +187,6 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAsDropDown(sender, xOffset, yOffset);
-    }
-
-    private void changeTradeMaterialAmount(EMaterialType materialType, int amount, boolean relative) {
-        actionControls.fireAction(new ChangeTradingRequestAction(materialType, amount, relative));
-    }
-
-    private void update() {
-        if (getBuildingState().isTrading() || getBuildingState().isSeaTrading()) {
-            recyclerView.setVisibility(View.VISIBLE);
-
-            adapter.setMaterialStates(materialStates());
-        }
     }
 
     private List<TradeMaterialState> materialStates() {
