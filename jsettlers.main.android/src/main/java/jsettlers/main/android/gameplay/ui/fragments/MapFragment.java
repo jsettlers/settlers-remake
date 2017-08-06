@@ -33,6 +33,8 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.Receiver;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.LinkedList;
+
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
@@ -84,6 +86,8 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	private TaskControls taskControls;
 	private GameMenu gameMenu;
 	private ViewPagerBottomSheetBehavior bottomSheetBehavior;
+
+	private final LinkedList<BackPressedListener> backPressedListeners = new LinkedList<>();
 
 	@ViewById(R.id.toolbar)
 	Toolbar toolbar;
@@ -185,6 +189,13 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 	 */
 	@Override
 	public boolean onBackPressed() {
+		for (BackPressedListener backPressedListener : backPressedListeners) {
+			boolean handled = backPressedListener.onBackPressed();
+			if (handled) {
+				return true;
+			}
+		}
+
 		if (taskControls.isTaskActive()) {
 			taskControls.endTask();
 			return true;
@@ -259,6 +270,16 @@ public class MapFragment extends Fragment implements SelectionListener, BackPres
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void addBackPressedListener(BackPressedListener backPressedListener) {
+		backPressedListeners.add(backPressedListener);
+	}
+
+	@Override
+	public void removeBackPressedListener(BackPressedListener backPressedListener) {
+		backPressedListeners.remove(backPressedListener);
 	}
 
 	private void showMenu() {

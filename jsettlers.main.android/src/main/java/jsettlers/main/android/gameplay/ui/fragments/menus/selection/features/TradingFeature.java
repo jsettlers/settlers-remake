@@ -38,9 +38,9 @@ import jsettlers.main.android.R;
 import jsettlers.main.android.core.controls.ActionControls;
 import jsettlers.main.android.core.controls.DrawControls;
 import jsettlers.main.android.core.controls.DrawListener;
+import jsettlers.main.android.core.navigation.BackPressedListener;
 import jsettlers.main.android.gameplay.navigation.MenuNavigator;
 import jsettlers.main.android.gameplay.ui.adapters.TradeMaterialsAdapter;
-import jsettlers.main.android.gameplay.ui.customviews.InGameButton;
 import jsettlers.main.android.gameplay.viewstates.TradeMaterialState;
 import jsettlers.main.android.utils.OriginalImageProvider;
 
@@ -49,7 +49,7 @@ import static java8.util.J8Arrays.stream;
 /**
  * Created by Rudolf Polzer
  */
-public class TradingFeature extends SelectionFeature implements DrawListener {
+public class TradingFeature extends SelectionFeature implements DrawListener, BackPressedListener {
     private static final int TRADING_MULTIPLE_STEP_INCREASE = 8;
 
     private static final String imageWaypointsLand = "original_3_GUI_374";
@@ -74,6 +74,8 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     private View vaypointTwoView;
     private View vaypointThreeView;
     private View vaypointDestinationView;
+
+    private PopupWindow popupWindow;
 
     public TradingFeature(Activity activity, View view, IBuilding building, MenuNavigator menuNavigator, DrawControls drawControls, ActionControls actionControls) {
         super(view, building, menuNavigator);
@@ -104,6 +106,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     public void initialize(BuildingState buildingState) {
         super.initialize(buildingState);
         drawControls.addInfrequentDrawListener(this);
+        menuNavigator.addBackPressedListener(this);
 
         ImageView waypointsButton = (ImageView) getView().findViewById(R.id.imageView_waypoints);
         if (((TradingBuilding) (this.getBuilding())).isSeaTrading()) {
@@ -125,6 +128,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
     public void finish() {
         super.finish();
         drawControls.removeInfrequentDrawListener(this);
+        menuNavigator.removeBackPressedListener(this);
     }
 
     @Override
@@ -132,6 +136,15 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         if (hasNewState()) {
             getView().post(() -> update());
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (popupWindow.isShowing()) {
+            popupWindow.dismiss();
+            return true;
+        }
+        return false;
     }
 
     private void placeDock(View view) {
@@ -184,7 +197,7 @@ public class TradingFeature extends SelectionFeature implements DrawListener {
         int xOffset = -((popupView.getMeasuredWidth() - sender.getWidth()) / 2);
         int yOffset = -(popupView.getMeasuredHeight() + sender.getHeight());
 
-        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
+        popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, false);
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAsDropDown(sender, xOffset, yOffset);
     }
