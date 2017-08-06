@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015 - 2017
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+  ~ to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  ~ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  ~ DEALINGS IN THE SOFTWARE.
+  -->
+
+<resources>
+    <string name="app_name">JSettlers</string>
+    <string name="please_wait">Vent venligst</string>
+
+    <string name="skip_1_minute">Spring ét minut over</string>
+    <string name="save_string">Gem</string>
+    <string name="stop_string">Stop</string>
+    <string name="kill_string">Slå ihjel</string>
+    <string name="load_string">Hent</string>
+    <string name="pause_string">Pause</string>
+    <string name="plus_string">+</string>
+    <string name="minus_string">-</string>
+
+    <string name="local_game">Spil</string>
+    <string name="local_game_new">Nyt spil</string>
+    <string name="local_game_load">Hent spil</string>
+    <string name="local_game_resume">Fortsæt spil</string>
+    <string name="local_game_resume_error">Det gemte spil kunne ikke hentes</string>
+    <string name="network_game">Netværksspil</string>
+    <string name="startscreen_network_new">Nyt</string>
+    <string name="startscreen_network_join">Deltag</string>
+    <string name="startscreen_network_load">Henter</string>
+
+    <string name="game_title">Velkommen til JSettlers</string>
+
+    <string name="maplist_local_new_headline">Start nyt spil</string>
+    <string name="maplist_local_new_submit">Start</string>
+    <string name="maplist_local_load_headline">Hent</string>
+    <string name="maplist_local_load_submit">Hent</string>
+    <string name="maplist_network_new_headline">Start nyt netværksspil</string>
+    <string name="maplist_network_new_submit">Start</string>
+    <string name="maplist_network_join_headline">Slut netværksspiln</string>
+    <string name="maplist_network_join_submit">Afslut</string>
+
+    <string name="player_count">Spillere</string>
+    <string name="illegal_playercount">Ugyldigt antal spillere</string>
+    <string name="illegal_playercount_too_high">Der er for mange spillere til det valgte kort</string>
+    <string name="illegal_playercount_too_low">Der er for få spillere til det valgte kort</string>
+
+    <string name="send">Send</string>
+    <string name="accept_start">Tillad start</string>
+    <string name="local_game_delete">Slet score</string>
+    <string name="network_start">Start</string>
+    <string name="preferences_playername">Dit navn</string>
+    <string name="preferences_server">Netværksserver</string>
+    <string name="preferences_ok">Anvend</string>
+    <string name="network_chat">Chat…</string>
+    <string name="filechoser_ok">Brug denne mappe</string>
+    <string name="filechoser_message">Hvor er GFX og SND mapperne?</string>
+    <string name="cancel">Fortryd</string>
+    <string name="confirm_kill">Slå ihjel?</string>
+    <string name="convert_all">Konverter alle</string>
+    <string name="convert_one">Konverter én</string>
+    <string name="convert_to_carriers">Konverter til bærere</string>
+    <string name="empty_directory">Denne mappe er tom</string>
+    <string name="game_menu_pause">Pause</string>
+    <string name="game_menu_paused">Pause</string>
+    <string name="game_menu_quit">Afslut</string>
+    <string name="game_menu_quit_confirm">Vil du afslutte?</string>
+    <string name="game_menu_save">Gem</string>
+    <string name="game_menu_saved">Spillet blev gemt</string>
+    <string name="game_menu_title">Menu</string>
+    <string name="game_menu_unpause">Fortsæt</string>
+    <string name="halt">Stop</string>
+    <string name="join_multi_player_game">Deltag i netværksspil</string>
+    <string name="load_single_player_game">Hent spil</string>
+    <string name="menu_game_in_progress">Spillet er i gang</string>
+    <string name="menu_join">Deltag</string>
+    <string name="menu_load">Hent</string>
+    <string name="menu_multi_player_info">Udfordr dine venner på mobil, tablet og desktop</string>
+    <string name="menu_multi_player_title">Netværksspil</string>
+    <string name="menu_new">Ny</string>
+    <string name="menu_single_player_info">Start et spil med computerstyrede modstandere.</string>
+    <string name="menu_single_player_title">Spil</string>
+    <string name="new_multi_player_game">Nyt netværksspil</string>
+    <string name="new_single_player_game">Nyt spil</string>
+    <string name="no_saved_games">Ingen score tilgængelig</string>
+    <string name="notification_game_in_progress">JSettlers kører</string>
+    <string name="number_of_players">Spillere</string>
+    <string name="ok">OK</string>
+    <string name="peacetime">Fredstid</string>
+    <string name="resource_directory_button">Lokaliser mappen</string>
+    <string name="resource_directory_info">Settlers brug for GFX og SND mapperne fra installationsmappen af det originale The Settlers III. Find disse mapper og kopier dem til din Android-enhed, så de kan bruges til JSettlers.</string>
+    <string name="resource_directory_title">Grafik- og lydfiler</string>
+    <string name="resource_selection_dialog_title">Find grafik- og lydfiler</string>
+    <string name="searching_for_multiplayer_games">Søg efter spil...</string>
+    <string name="settings">Indstillinger</string>
+    <string name="settings_name">Navn</string>
+    <string name="settings_player_name">Spillernavn</string>
+    <string name="start_game">Start spil</string>
+    <string name="start_resources">Ressourcer</string>
+    <string name="work_here">Arbejd</string>
+    <string name="yes">Ja</string>
+    <string name="fast">Høj hastighed</string>
+    <string name="faster">Hurtigere</string>
+    <string name="slower">Langsommere</string>
+    <string name="buildings">Bygninger</string>
+    <string name="goods">Varer</string>
+    <string name="settlers">Settlers</string>
+    <string name="multiplayer_not_all_players_ready">Alle spillere skal være klar før spillet kan begynde</string>
+    <string name="normal">Normal hastighed</string>
+
+    <string name="service_description">JSettlers server, som hoster dette spil</string>
+    <string name="global_stock_message">De globale indstillinger for varehuse kan kun ændres i de lokale varehuse.</string>
+    <string name="goods_stock_title">Global varehusindstillinger</string>
+</resources>
