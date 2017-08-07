@@ -24,6 +24,7 @@ public enum EShipType {
 	FERRY(EMovableType.FERRY, 4, 1),
 	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1);
 
+	public static final EShipType[] VALUES = values();
 	private static final int BUILD_STEPS_PER_MATERIAL = 6;
 
 	public final EMovableType movableType;

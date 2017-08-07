@@ -32,6 +32,7 @@ import jsettlers.common.menu.UIState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.menu.action.IAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.EShipType;
 import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.movable.IIDable;
 import jsettlers.common.movable.IMovable;
@@ -59,10 +60,10 @@ import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask.EChangeTowerSoldierTaskT
 import jsettlers.input.tasks.ChangeTradingRequestGuiTask;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.OrderShipGuiTask;
 import jsettlers.input.tasks.SetAcceptedStockMaterialGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
 import jsettlers.input.tasks.SetDockGuiTask;
@@ -70,6 +71,7 @@ import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SetMaterialProductionGuiTask;
 import jsettlers.input.tasks.SetTradingWaypointGuiTask;
+import jsettlers.input.tasks.SimpleBuildingGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
@@ -372,11 +374,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case MAKE_FERRY:
-			makeFerry();
+			orderShip(EShipType.FERRY);
 			break;
 
 		case MAKE_CARGO_BOAT:
-			makeCargoBoat();
+			orderShip(EShipType.CARGO_SHIP);
 			break;
 
 		case UNLOAD_FERRIES:
@@ -508,7 +510,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPosition()));
+			taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, ((Building) currentSelection.iterator().next()).getPosition()));
 		} else {
 			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, playerId, getIDsOfSelected()));
 		}
@@ -733,14 +735,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		refreshSelectionTimer.cancel();
 	}
 
-	private void makeFerry() {
+	private void orderShip(EShipType shipType) {
 		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
-		dockyard.orderFerry();
-	}
-
-	private void makeCargoBoat() {
-		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
-		dockyard.orderCargoBoat();
+		taskScheduler.scheduleTask(new OrderShipGuiTask(playerId, dockyard, shipType));
 	}
 
 	private void unloadFerries() {

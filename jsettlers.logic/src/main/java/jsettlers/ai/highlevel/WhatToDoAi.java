@@ -38,7 +38,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.SimpleBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
@@ -247,7 +247,7 @@ class WhatToDoAi implements IWhatToDoAi {
 				if (nearestStone != null && numberOfStoneCutters < economyMinister.getMidGameNumberOfStoneCutters()) {
 					taskScheduler.scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, nearestStone, stoneCutterPosition));
 				} else {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
+					taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, stoneCutterPosition));
 					break; // destroy only one stone cutter
 				}
 			}
@@ -274,20 +274,20 @@ class WhatToDoAi implements IWhatToDoAi {
 			List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(FORESTER, playerId);
 			if (foresters.size() > 1) {
 				for (int i = 1; i < foresters.size(); i++) {
-					taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, foresters.get(i)));
+					taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, foresters.get(i)));
 				}
 			}
 
 			stream(aiStatistics.getBuildingPositionsOfTypeForPlayer(LUMBERJACK, playerId))
 					.filter(lumberJackPosition -> aiStatistics.getBuildingAt(lumberJackPosition).cannotWork())
-					.forEach(lumberJackPosition -> taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, lumberJackPosition)));
+					.forEach(lumberJackPosition -> taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, lumberJackPosition)));
 
 			if ((aiStatistics.getNumberOfBuildingTypeForPlayer(SAWMILL, playerId) * 3 - 2) > aiStatistics.getNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId)) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, aiStatistics.getBuildingPositionsOfTypeForPlayer(SAWMILL, playerId).get(0)));
 			}
 
 			for (ShortPoint2D bigTemple : aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TEMPLE, playerId)) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, bigTemple));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, bigTemple));
 			}
 		}
 	}
@@ -295,7 +295,7 @@ class WhatToDoAi implements IWhatToDoAi {
 	private boolean destroyLivingHouse(EBuildingType livingHouseType) {
 		for (ShortPoint2D livingHousePosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(livingHouseType, playerId)) {
 			if (aiStatistics.getBuildingAt(livingHousePosition).cannotWork()) {
-				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, livingHousePosition));
+				taskScheduler.scheduleTask(new SimpleBuildingGuiTask(EGuiAction.DESTROY_BUILDING, playerId, livingHousePosition));
 				return true;
 			}
 		}

@@ -127,15 +127,7 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		this.dockPosition = null;
 	}
 
-	public void orderFerry() {
-		setOrder(EShipType.FERRY);
-	}
-
-	public void orderCargoBoat() {
-		setOrder(EShipType.CARGO_SHIP);
-	}
-
-	private void setOrder(EShipType shipType) {
+	public void orderShipType(EShipType shipType) {
 		if (orderedShipType != null || dockPosition == null || !isOccupied()) {
 			return;
 		}
