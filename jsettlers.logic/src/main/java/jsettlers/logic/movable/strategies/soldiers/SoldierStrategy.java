@@ -82,7 +82,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 					break; // the soldier could have entered an attacked tower
 				}
 
-				if (enemy.getHealth() <= 0) {
+				if (!enemy.isAlive()) {
 					enemy = null;
 					changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 					break; // don't directly walk on the enemy's position, because there may be others to walk in first

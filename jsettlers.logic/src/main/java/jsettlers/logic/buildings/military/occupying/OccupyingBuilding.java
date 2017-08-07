@@ -542,7 +542,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 				IAttackableMovable movable = currDefender.getSoldier().getMovable();
 				movable.receiveHit(strength, attackerPos, attackingPlayer);
 
-				if (movable.getHealth() <= 0) {
+				if (!movable.isAlive()) {
 					occupyingBuilding.emptyPlaces.add(currDefender.place); // dijkstraRequest a new soldier.
 					occupyingBuilding.requestSoldier(currDefender.place.getSoldierClass());
 
@@ -564,12 +564,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 		}
 
 		@Override
-		public float getHealth() {
-			if (occupyingBuilding.doorHealth > 0) {
-				return occupyingBuilding.doorHealth;
-			} else {
-				return currDefender == null ? 0 : currDefender.getMovable().getHealth();
-			}
+		public boolean isAlive() {
+			return occupyingBuilding.doorHealth > 0 || currDefender != null && currDefender.getMovable().isAlive();
 		}
 
 		@Override

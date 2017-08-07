@@ -98,7 +98,6 @@ public final class Movable implements ILogicMovable {
 
 	// the following block of data only for ships
 	private ImageLink[] images = null;
-	private ImageLink[] buildImages = null;
 	private ArrayList<IMovable> passengers = new ArrayList<>();
 	public static final Set<EMovableType> ships = EnumSet.of(EMovableType.FERRY, EMovableType.CARGO_BOAT);
 	private ShortPoint2D unloadingPosition = null;
@@ -129,7 +128,6 @@ public final class Movable implements ILogicMovable {
 		if (isShip()) {
 			BuildingFile file = new BuildingFile(this.movableType.toString());
 			this.images = file.getImages();
-			this.buildImages = file.getBuildImages();
 			for (int i = 0; i < this.cargoStacks; i++) {
 				this.cargoType[i] = null;
 				this.cargoCount[i] = 0;
@@ -958,6 +956,11 @@ public final class Movable implements ILogicMovable {
 	}
 
 	@Override
+	public final boolean isAlive() {
+		return health > 0;
+	}
+
+	@Override
 	public final boolean isRightstep() {
 		return isRightstep;
 	}
@@ -1112,10 +1115,6 @@ public final class Movable implements ILogicMovable {
 
 	public final ImageLink[] getImages() {
 		return images;
-	}
-
-	public final ImageLink[] getBuildImages() {
-		return buildImages;
 	}
 
 	public final void setDirection(EDirection direction) {

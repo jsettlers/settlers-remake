@@ -37,11 +37,11 @@ public interface IAttackable extends ILocatable, IInformable {
 	void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer);
 
 	/**
-	 * Get the health of this {@link IAttackable}.
-	 * 
-	 * @return Health of the {@link IAttackable} in the interval [0,1] where 1 is fully healthy and 0 is dead.
+	 * Used to check if the movable is still alive
+	 *
+	 * @return true if the movable is still alive, false otherwise.
 	 */
-	float getHealth();
+	boolean isAlive();
 
 	/**
 	 * Gets the UiPlayer of this {@link IAttackable}.
