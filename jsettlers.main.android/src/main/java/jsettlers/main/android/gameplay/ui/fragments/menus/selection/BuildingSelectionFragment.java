@@ -102,11 +102,11 @@ public class BuildingSelectionFragment extends SelectionFragment {
 
 		} else if (building instanceof IBuilding.ITrading) {
 			layoutInflater.inflate(R.layout.menu_selection_building_trading, rootView, true);
-			features.add(new TradingFeature(getView(), building, menuNavigator, drawControls, actionControls));
+			features.add(new TradingFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls));
 
 		} else if (building.getBuildingType() == EBuildingType.DOCKYARD) {
 			layoutInflater.inflate(R.layout.menu_selection_building_dock, rootView, true);
-			features.add(new DockFeature(getActivity(), getView(), building, menuNavigator, drawControls, actionControls, taskControls));
+			features.add(new DockFeature(getView(), building, menuNavigator, drawControls, actionControls, taskControls));
 
 		} else {
 			layoutInflater.inflate(R.layout.menu_selection_building_normal, rootView, true);

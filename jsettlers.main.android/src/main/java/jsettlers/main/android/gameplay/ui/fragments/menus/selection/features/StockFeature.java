@@ -91,7 +91,7 @@ public class StockFeature extends SelectionFeature implements DrawListener {
 	}
 
 	private void update() {
-		if (getBuildingState().isStock()) {
+		if (!getBuildingState().isConstruction()) {
 			recyclerView.setVisibility(View.VISIBLE);
 			buildingImageView.setVisibility(View.INVISIBLE);
 

@@ -1,80 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+            android:id="@+id/image_view_priority"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+
+        <FrameLayout
+            android:layout_width="224dp"
+            android:layout_height="56dp">
+            <ImageView
+                android:id="@+id/imageView_waypoints"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/view_placeDock"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointOne"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointTwo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointThree"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+                <View
+                    android:id="@+id/view_waypointDestination"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
+            android:id="@+id/image_view_destroy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-            <jsettlers.main.android.gameplay.ui.customviews.InGameButton
-                android:id="@+id/image_view_priority"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/text_view_building_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="invisible" />
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:text="TextView" />
 
             <ImageView
                 android:id="@+id/image_view_building"
                 android:layout_width="64dp"
                 android:layout_height="64dp" />
 
-            <TextView
-                android:id="@+id/text_view_building_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"/>
-
-            <jsettlers.main.android.gameplay.ui.customviews.InGameButton
-                android:id="@+id/image_view_destroy"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="invisible" />
-
         </LinearLayout>
 
-        <jsettlers.main.android.gameplay.ui.customviews.InGameButton
-            android:id="@+id/image_view_waypoints"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            app:layoutManager="GridLayoutManager"
+            app:spanCount="7" />
 
 
-        <FrameLayout
-            android:id="@+id/layout_material_selection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    </FrameLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view_materials"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:paddingTop="0dp"
-                android:paddingBottom="16dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay" />
+    <LinearLayout
+        android:id="@+id/layout_materials"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_button_size"
+        android:orientation="horizontal"
+        android:layout_margin="8dp" />
 
-            <LinearLayout
-                android:id="@+id/layout_materials"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:layout_gravity="bottom" />
-
-        </FrameLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>

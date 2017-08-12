@@ -309,17 +309,21 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
 		BuildingBackgroundPanel root;
-		if (state.isOccupied()) {
+
+		if (state.isConstruction()) {
+			root = createNormalBuildingContent(state);
+		} else if (state.isOccupied()) {
 			root = createOccupiedBuildingContent(state);
 		} else if (state.isStock()) {
 			root = createStockBuildingContent(state);
 		} else if (state.isTrading()) {
 			root = createTradingBuildingContent(state);
-		} else if (state.isDockyard() && !state.isConstruction()) {
+		} else if (state.isDockyard()) {
 			root = createDockyardBuildingContent(state);
 		} else {
 			root = createNormalBuildingContent(state);
 		}
+
 		ImageLink[] images = building.getBuildingType().getImages();
 		root.setImages(images);
 		rootPanel.addChild(root, 0, 0, 1, 1);
