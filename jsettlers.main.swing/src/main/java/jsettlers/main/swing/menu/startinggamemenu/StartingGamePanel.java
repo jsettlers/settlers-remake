@@ -17,6 +17,7 @@ package jsettlers.main.swing.menu.startinggamemenu;
 import java.awt.BorderLayout;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -82,6 +83,8 @@ public class StartingGamePanel extends BackgroundPanel implements IStartingGameL
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
+		JOptionPane.showMessageDialog(settlersFrame, exception.getMessage(), Labels.getErrorName(errorType), JOptionPane.ERROR_MESSAGE);
+		settlersFrame.showMainMenu();
 	}
 
 	@Override

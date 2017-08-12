@@ -21,7 +21,6 @@ import java.util.Random;
 
 import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
-
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -257,14 +256,14 @@ public class SoundManager {
 					leftVolume = 0;
 					rightVolume = 0;
 				} else if (a < maxA / 4) {
-					leftVolume = 4f * a / maxA;
+					leftVolume = volume * 4f * a / maxA;
 					rightVolume = 0;
 				} else if (a < 3 * maxA / 4) {
-					leftVolume = (2f * a / maxA - .5f);
-					rightVolume = (2f * (maxA - a) / maxA - .5f);
+					leftVolume = volume * (2f * a / maxA - .5f);
+					rightVolume = volume * (2f * (maxA - a) / maxA - .5f);
 				} else if (a < maxA) {
 					leftVolume = 0;
-					rightVolume = 4f * (maxA - a) / maxA;
+					rightVolume = volume* 4f * (maxA - a) / maxA;
 				} else {
 					leftVolume = 0;
 					rightVolume = 0;
