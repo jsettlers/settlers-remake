@@ -149,15 +149,4 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		}
 		cleanupPositions.add(new Tuple<>(pos, objectType));
 	}
-
-	public ShortPoint2D whereIsMaterialAvailable(EMaterialType material) {
-		for (IRequestStack stack : getStacks()) {
-			if (stack.getMaterialType() == material) {
-				if (stack.hasMaterial()) {
-					return stack.getPosition();
-				}
-			}
-		}
-		return null;
-	}
 }
