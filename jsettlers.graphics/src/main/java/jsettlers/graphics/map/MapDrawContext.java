@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
+import java.util.Iterator;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import jsettlers.common.Color;
@@ -29,8 +31,6 @@ import jsettlers.common.utils.coordinates.IBooleanCoordinateFunction;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
-
-import java.util.Iterator;
 
 /**
  * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
@@ -437,18 +437,10 @@ public final class MapDrawContext implements IGLProvider {
 			return new CoordinateStream() {
 				@Override
 				public boolean iterate(IBooleanCoordinateFunction function) {
-					int width = base.getWidth();
-					int lastRelativeYWithPoint = 0;
-
-					for (int relativeY = 0; relativeY < MIN_SEARCH_LINES || relativeY - lastRelativeYWithPoint <= 2; relativeY++) {
-						int lineStartX = base.getLineStartX(relativeY);
-
-						for (int relativeX = 0; relativeX < width; relativeX++) {
-							int x = lineStartX + relativeX;
-							int y = base.getLineY(relativeY);
-
+					MapRectangle rect = getConverter().getMapForScreen(drawRect);
+					for (int x = rect.getMinX(); x <= rect.getMinX() + rect.getHeight(); x++) {
+						for (int y = rect.getMinY(); y <= rect.getMinY() + rect.getHeight(); y++) {
 							if (HeightedMapRectangle.this.contains(x, y)) {
-								lastRelativeYWithPoint = relativeY;
 								if (!function.apply(x, y)) {
 									return false;
 								}
