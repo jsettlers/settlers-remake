@@ -443,14 +443,14 @@ public final class MainGrid implements Serializable {
 	 * Creates a new building at the given position.
 	 *
 	 * @param position
-	 * 		The position to place the building.
+	 *            The position to place the building.
 	 * @param type
-	 * 		The {@link EBuildingType} of the building.
+	 *            The {@link EBuildingType} of the building.
 	 * @param player
-	 * 		The player owning the building.
+	 *            The player owning the building.
 	 * @param fullyConstructed
-	 * 		If true, the building will be placed as fully constructed building.<br>
-	 * 		If false, it will only be placed as a construction site.
+	 *            If true, the building will be placed as fully constructed building.<br>
+	 *            If false, it will only be placed as a construction site.
 	 * @return The newly created building.
 	 */
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
@@ -802,10 +802,10 @@ public final class MainGrid implements Serializable {
 			case MARKS_AND_OBJECTS:
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB()
-						: (objectsGrid
-						.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-						: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-						: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+								: (objectsGrid
+										.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+												: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+														: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -1476,6 +1476,14 @@ public final class MainGrid implements Serializable {
 		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
 			return landscapeGrid.tryTakingResource(position, resource);
 		}
+
+		@Override
+		public ShortPoint2D getFerryUnloadPosition(ShortPoint2D position) {
+			return HexGridArea.stream(position.x, position.y, 1, 5)
+					.filterBounds(width, height)
+					.filter((x, y) -> !isBlocked(x, y))
+					.getFirst().orElse(null);
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
@@ -1914,13 +1922,6 @@ public final class MainGrid implements Serializable {
 				return null;
 			}
 			return new FerryEntrance((Movable) ship, entrance);
-		}
-
-		public ShortPoint2D getUnloadPosition(ShortPoint2D position) {
-			return HexGridArea.stream(position.x, position.y, 1, 5)
-					.filterBounds(width, height)
-					.filter((x, y) -> !isBlocked(x, y))
-					.getFirst().orElse(null);
 		}
 
 		@Override

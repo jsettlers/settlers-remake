@@ -22,6 +22,7 @@ import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
@@ -64,13 +65,13 @@ import java8.util.stream.Collectors;
 /**
  * @author Andreas Eberle
  */
-public class GuiTaskExecutor implements ITaskExecutor {
+class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
 	private final IGuiInputGrid grid;
 	private final ITaskExecutorGuiInterface guiInterface;
 	private final byte playerId;
 
-	public GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface, byte playerId) {
+	GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface, byte playerId) {
 		this.grid = grid;
 		this.guiInterface = guiInterface;
 		this.playerId = playerId;
@@ -143,7 +144,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			SetMaterialPrioritiesGuiTask task = (SetMaterialPrioritiesGuiTask) guiTask;
 			grid.setMaterialPrioritiesSettings(task.getManagerPosition(), task.getMaterialTypeForPriority());
 		}
-		break;
+			break;
 
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
@@ -202,9 +203,15 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case SET_DOCK:
 			setDock((SetDockGuiTask) guiTask);
+			break;
 
 		case ORDER_SHIP:
 			orderShip((OrderShipGuiTask) guiTask);
+			break;
+
+		case UNLOAD_FERRY:
+			unloadFerry((MovableGuiTask) guiTask);
+			break;
 
 		default:
 			break;
@@ -260,7 +267,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private void setBuildingPriority(SetBuildingPriorityGuiTask task) {
-		this.<Building>forBuilding(task, building -> building.setPriority(task.getNewPriority()));
+		this.<Building> forBuilding(task, building -> building.setPriority(task.getNewPriority()));
 	}
 
 	private void convertMovables(ConvertGuiTask guiTask) {
@@ -295,9 +302,9 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 * Move the selected {@link Movable} to the given position.
 	 *
 	 * @param targetPosition
-	 * 		position to move to
+	 *            position to move to
 	 * @param movableIds
-	 * 		A list of the id's of the movables.
+	 *            A list of the id's of the movables.
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		if (movableIds.isEmpty()) {
@@ -356,7 +363,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private Optional<ILogicMovable> removeMovableThatCanMoveTo(List<ILogicMovable> movables, int x, int y) {
-		for (Iterator<ILogicMovable> iterator = movables.iterator(); iterator.hasNext(); ) {
+		for (Iterator<ILogicMovable> iterator = movables.iterator(); iterator.hasNext();) {
 			ILogicMovable movable = iterator.next();
 			if (canMoveTo(movable, x, y)) {
 				iterator.remove();
@@ -367,28 +374,36 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	private boolean canMoveTo(ILogicMovable movable, int x, int y) {
-		if (movable.isShip()) {
-			return true;
-		} else {
-			return !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPosition().x, movable.getPosition().y) == grid.getBlockedPartition(x, y);
-		}
+		return movable.isShip() || !grid.isBlocked(x, y) && grid.getBlockedPartition(movable.getPosition().x, movable.getPosition().y) == grid.getBlockedPartition(x, y);
 	}
 
 	private void setWorkArea(WorkAreaGuiTask task) {
-		this.<Building>forBuilding(task, building -> building.setWorkAreaCenter(task.getPosition()));
+		this.<Building> forBuilding(task, building -> building.setWorkAreaCenter(task.getPosition()));
 	}
 
 	public void setDock(SetDockGuiTask task) {
-		this.<IDockBuilding>forBuilding(task, building -> building.setDock(task.getRequestedDockPosition()));
+		this.<IDockBuilding> forBuilding(task, building -> building.setDock(task.getRequestedDockPosition()));
 	}
 
 	private void orderShip(OrderShipGuiTask task) {
-		this.<DockyardBuilding>forBuilding(task, building -> building.orderShipType(task.getShipType()));
+		this.<DockyardBuilding> forBuilding(task, building -> building.orderShipType(task.getShipType()));
+	}
+
+	private void unloadFerry(MovableGuiTask task) {
+		forMovables(task, ILogicMovable::unloadFerry);
+	}
+
+	private void forMovables(MovableGuiTask task, Consumer<ILogicMovable> movableConsumer) {
+		stream(task.getSelection())
+				.map(Movable::getMovableByID)
+				.filter(ILogicMovable::isAlive)
+				.filter(movable -> movable.getMovableType() == EMovableType.FERRY)
+				.forEach(movableConsumer);
 	}
 
 	private <T> void forBuilding(SimpleBuildingGuiTask buildingTask, Consumer<T> buildingConsumer) {
 		ShortPoint2D buildingPos = buildingTask.getBuildingPos();
-		//noinspection unchecked
+		// noinspection unchecked
 		T building = (T) grid.getBuildingAt(buildingPos.x, buildingPos.y);
 
 		if (building != null) {

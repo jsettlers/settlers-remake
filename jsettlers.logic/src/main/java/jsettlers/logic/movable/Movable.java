@@ -47,7 +47,6 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.RescheduleTimer;
 
-
 /**
  * Central Movable class of JSettlers.
  *
@@ -95,7 +94,6 @@ public final class Movable implements ILogicMovable {
 	private transient boolean soundPlayed = false;
 	private float constructionProgress = 0.0f;
 
-
 	// the following block of data only for ships
 	private ImageLink[] images = null;
 	private ArrayList<IMovable> passengers = new ArrayList<>();
@@ -107,7 +105,6 @@ public final class Movable implements ILogicMovable {
 
 	// the following data only for ship passengers
 	private Movable ferryToEnter = null;
-
 
 	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -800,15 +797,6 @@ public final class Movable implements ILogicMovable {
 		return path != null;
 	}
 
-	final boolean setPathTo(ShortPoint2D destination) {
-		this.path = grid.calculatePathTo(this, destination);
-		if (this.path == null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
 	final ShortPoint2D followPresearchedPath() {
 		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
 		followPath(this.path);
@@ -1133,18 +1121,15 @@ public final class Movable implements ILogicMovable {
 		return this.passengers;
 	}
 
-	public boolean unload(ShortPoint2D position) {
-		if (this.getMovableType() != EMovableType.FERRY) {
-			return false;
+	public void unloadFerry() {
+		if (this.getMovableType() != EMovableType.FERRY || position == null) {
+			return;
 		}
-		if (position == null) {
-			return false;
-		}
-		this.unloadingPosition = position;
+
+		this.unloadingPosition = grid.getFerryUnloadPosition(position);
 		if (this.passengers.size() > 0 && this.state == EMovableState.DOING_NOTHING) {
 			setState(EMovableState.UNLOADING);
 		}
-		return true;
 	}
 
 	private boolean checkStackNumber(int stack) {

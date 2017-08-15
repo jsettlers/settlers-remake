@@ -28,6 +28,9 @@ import jsettlers.logic.buildings.IDockBuilding;
 public class OrderShipGuiTask extends SimpleBuildingGuiTask {
 	private EShipType shipType;
 
+	public OrderShipGuiTask() {
+	}
+
 	public OrderShipGuiTask(byte playerId, IDockBuilding building, EShipType shipType) {
 		super(EGuiAction.ORDER_SHIP, playerId, building);
 		this.shipType = shipType;

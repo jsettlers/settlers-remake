@@ -28,6 +28,9 @@ import jsettlers.logic.buildings.IDockBuilding;
 public class SetDockGuiTask extends SimpleBuildingGuiTask {
 	private ShortPoint2D requestedDockPosition;
 
+	public SetDockGuiTask(){
+	}
+
 	public SetDockGuiTask(byte playerId, IDockBuilding building, ShortPoint2D requestedDockPosition) {
 		super(EGuiAction.SET_DOCK, playerId, building);
 		this.requestedDockPosition = requestedDockPosition;

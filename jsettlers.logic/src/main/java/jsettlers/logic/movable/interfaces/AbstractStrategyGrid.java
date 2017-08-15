@@ -243,4 +243,6 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
 	public abstract ILogicMovable getMovableAt(int x, int y);
+
+	public abstract ShortPoint2D getFerryUnloadPosition(ShortPoint2D position);
 }

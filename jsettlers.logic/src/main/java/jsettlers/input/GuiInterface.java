@@ -80,7 +80,6 @@ import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.DockyardBuilding;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
@@ -556,6 +555,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
 	}
 
+	private void orderShip(EShipType shipType) {
+		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
+		taskScheduler.scheduleTask(new OrderShipGuiTask(playerId, dockyard, shipType));
+	}
+
+	private void unloadFerries() {
+		taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.UNLOAD_FERRY, playerId, getIDsOfSelected()));
+	}
+
 	private List<Integer> getIDsOfSelected() {
 		return getIDsOfIterable(currentSelection);
 	}
@@ -733,22 +741,5 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		constructionMarksCalculator.cancel();
 		connector.removeListener(this);
 		refreshSelectionTimer.cancel();
-	}
-
-	private void orderShip(EShipType shipType) {
-		DockyardBuilding dockyard = (DockyardBuilding) currentSelection.get(0);
-		taskScheduler.scheduleTask(new OrderShipGuiTask(playerId, dockyard, shipType));
-	}
-
-	private void unloadFerries() {
-		for (int i = 0; i < currentSelection.getSize(); i++) {
-			Movable ship = (Movable) currentSelection.get(i);
-			if (ship.getMovableType() == EMovableType.FERRY) {
-				ShortPoint2D position = grid.getUnloadPosition(ship.getPosition());
-				if (position != null) {
-					ship.unload(position);
-				}
-			}
-		}
 	}
 }

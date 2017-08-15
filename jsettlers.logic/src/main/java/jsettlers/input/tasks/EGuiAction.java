@@ -26,6 +26,7 @@ public enum EGuiAction {
 
 	SET_DOCK,
 	ORDER_SHIP,
+	UNLOAD_FERRY,
 
 	MAKE_FERRY,
 	MAKE_CARGO_BOAT,
