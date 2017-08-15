@@ -17,12 +17,10 @@ package jsettlers.graphics.map;
 import java.util.Iterator;
 
 import go.graphics.GLDrawContext;
-import go.graphics.UIPoint;
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -206,29 +204,16 @@ public final class MapDrawContext implements IGLProvider {
 	 * @return The map position under the point.
 	 */
 	public ShortPoint2D getPositionUnder(float screenX, float screenY) {
-		ShortPoint2D currentPoint = converter.getMap(screenX, screenY);
-		UIPoint desiredOnScreen = new UIPoint(screenX, screenY);
-
-		UIPoint onScreen = converter.getView(currentPoint.x, currentPoint.y, getHeight(currentPoint.x, currentPoint.y));
-		double currentBest = onScreen.distance(desiredOnScreen);
-
-		boolean couldBeImproved;
-		do {
-			couldBeImproved = false;
-
-			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
-				onScreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
-				double newDistance = onScreen.distance(desiredOnScreen);
-				if (newDistance < currentBest) {
-					currentBest = newDistance;
-					currentPoint = p;
-					couldBeImproved = true;
-				}
-			}
-
-		} while (couldBeImproved);
-
-		return currentPoint;
+		// do a three step iteration by using the coordinate transformation and the map height
+		int mapX = getConverter().getMapX(screenX, screenY);
+		int mapY = getConverter().getMapY(screenX, screenY);
+		float height = map.getHeightAt(mapX, mapY);
+		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
+		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
+		height = map.getHeightAt(mapX, mapY);
+		mapX = (int) (getConverter().getExactMapXwithHeight(screenX, screenY, height) + 0.5);
+		mapY = (int) (getConverter().getExactMapYwithHeight(screenX, screenY, height) + 0.5);
+		return new ShortPoint2D(mapX, mapY);
 	}
 
 	/**

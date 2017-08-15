@@ -155,7 +155,7 @@ public final class MapCoordinateConverter {
 				+ this.inverse[M_02];
 	}
 
-	private float getExactMapXwithHeight(float x, float y, float height) {
+	public float getExactMapXwithHeight(float x, float y, float height) {
 		return x * this.heightinverse[M_00] + y * this.heightinverse[M_01]
 				+ height * this.heightinverse[M_HX] + this.heightinverse[M_02];
 	}
@@ -179,7 +179,7 @@ public final class MapCoordinateConverter {
 				+ this.inverse[M_12];
 	}
 
-	private float getExactMapYwithHeight(float x, float y, float height) {
+	public float getExactMapYwithHeight(float x, float y, float height) {
 		return x * this.heightinverse[M_10] + y * this.heightinverse[M_11]
 				+ height * this.heightinverse[M_HY] + this.heightinverse[M_12];
 	}
