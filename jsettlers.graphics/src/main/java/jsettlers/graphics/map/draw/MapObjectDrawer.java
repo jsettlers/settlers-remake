@@ -17,7 +17,6 @@ package jsettlers.graphics.map.draw;
 import java.util.ConcurrentModificationException;
 
 import go.graphics.GLDrawContext;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -35,7 +34,6 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableAction;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
@@ -430,62 +428,67 @@ public class MapObjectDrawer {
 	}
 
 	private void playMovableSound(IMovable movable) {
-		if (!movable.isSoundPlayed()) {
-			final EMovableAction action = movable.getAction();
-			if (action == EMovableAction.ACTION1) {
-				playSoundAction1(movable.getMovableType(), movable.getPos());
-				movable.setSoundPlayed();
-			} else if (action == EMovableAction.ACTION2) {
-				playSoundAction2(movable.getMovableType(), movable.getPos());
-				movable.setSoundPlayed();
-			}
+		if (movable.isSoundPlayed()) {
+			return;
 		}
-	}
-
-	private void playSoundAction1(EMovableType type, ShortPoint2D position) {
-		switch (type) {
-		case BRICKLAYER:
-			sound.playSound(1, 1, position);
-			break;
-		case LUMBERJACK:
-			sound.playSound(0, 1, position);
-			break;
-		case SAWMILLER:
-			sound.playSound(5, 1, position);
-			break;
-		case STONECUTTER:
-			sound.playSound(3, 1, position);
-			break;
-		case DIGGER:
-			sound.playSound(2, 1, position);
-			break;
-		case SMITH:
-			sound.playSound(6, 1, position);
-			break;
-		case FARMER:
-			sound.playSound(12, 1, position);
-			break;
-		case SWORDSMAN_L1:
-		case SWORDSMAN_L2:
-		case SWORDSMAN_L3:
-			sound.playSound(30, 1, position);
-			break;
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
-			sound.playSound(33, 1, position);
-			break;
-		case CHARCOAL_BURNER:
-			sound.playSound(45, 1, position);
-			break;
+		int soundNumber = -1;
+		float delay = movable.getMoveProgress();
+		switch (movable.getAction()) {
+			case ACTION1:
+				switch (movable.getMovableType()) {
+					case LUMBERJACK:
+						if (delay > .8) soundNumber = 0; break;
+					case BRICKLAYER:
+						if (delay > .7) soundNumber = 1; break;
+					case DIGGER:
+						if (delay > .6) soundNumber = 2; break;
+					case STONECUTTER:
+						if (delay > .8) soundNumber = 3; break;
+					case SAWMILLER:
+						if (delay > .2) soundNumber = 5; break;
+					case SMITH:
+						if (delay > .8) soundNumber = 6; break;
+					case FARMER:
+						if (delay > .8) soundNumber = 8; break;
+					case SLAUGHTERER:
+						if (delay > .4) soundNumber = 14; break;
+					case FISHERMAN:
+						if (delay > .8) soundNumber = 15; break;
+					case DOCKWORKER:
+						if (delay > .8) soundNumber = 20; break;
+					case HEALER:
+						if (delay > .8) soundNumber = 21; break;
+					case GEOLOGIST:
+						if (delay > .8) soundNumber = 24; break;
+					case SWORDSMAN_L1:
+					case SWORDSMAN_L2:
+					case SWORDSMAN_L3:
+						if (delay > .8) soundNumber = 30; break;
+					case BOWMAN_L1:
+					case BOWMAN_L2:
+					case BOWMAN_L3:
+						if (delay > .4) soundNumber = 33; break;
+					case DONKEY_FARMER:
+						if (delay > .8) soundNumber = 40; break;
+					case PIG_FARMER:
+						if (delay > .4) soundNumber = 41; break;
+					case MILLER:
+						if (delay > .4) soundNumber = 42; break;
+					case CHARCOAL_BURNER:
+						if (delay > .8) soundNumber = 45; break;
+				}
+				break;
+			case ACTION2:
+				switch (movable.getMovableType()) {
+					case FARMER:
+						if (delay > .8) soundNumber = 12; break;
+					case LUMBERJACK:
+						if (delay > .8) soundNumber = 36; break;
+				}
 		}
-	}
-
-	private void playSoundAction2(EMovableType type, ShortPoint2D position) {
-		switch (type) {
-		case LUMBERJACK:
-			sound.playSound(36, 1, position);
-			break;
+		if (soundNumber >= 0) {
+			sound.playSound(soundNumber, 1, movable.getPos());
+			movable.setSoundPlayed();
 		}
 	}
 
