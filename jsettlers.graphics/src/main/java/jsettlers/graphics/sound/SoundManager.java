@@ -42,7 +42,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 6: smith <br>
  * 7: smith <br>
  * 8 and 12: farmer <br>
- * 14: pig <br>
+ * 14: dying pig <br>
  * 15: fisherman
  * 20: shipyard
  * 21: healer
@@ -54,7 +54,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 35 soldier killed <br>
  * 36: falling tree <br>
  * 39: pigs or brewer? <br>
- * 40: donkey or dying pig (butcher) <br>
+ * 40: donkey <br>
  * 41: pig <br>
  * 42: wind/mill: 2.5s <br>
  * 45: charcoal burner
