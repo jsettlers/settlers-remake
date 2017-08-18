@@ -495,6 +495,14 @@ public class MapObjectDrawer {
 			return; // break
 		}
 
+
+
+		if (movable.getMovableType() == EMovableType.SAWMILLER){
+			int i = 0;
+			i++;
+		}
+
+
 		final float moveProgress = movable.getMoveProgress();
 		final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
 

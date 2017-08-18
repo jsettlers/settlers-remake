@@ -346,6 +346,16 @@ public final class SettlerImageMap {
 	 */
 	private SettlerImageMapItem getMapItem(EMovableType movableType,
 			EMovableAction action, EMaterialType material, EDirection direction) {
+
+
+		if(movableType==null||action==null||material==null||direction==null){
+			int i = 0;
+			i++;
+		}
+
+
+
+
 		SettlerImageMapItem item = this.map[movableType.ordinal()][action.ordinal()][material
 				.ordinal()][direction.ordinal()];
 		if (item == null) {
