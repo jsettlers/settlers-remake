@@ -42,6 +42,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 6: smith <br>
  * 7: smith <br>
  * 8 and 12: farmer <br>
+ * 13: fire
  * 14: dying pig <br>
  * 15: fisherman
  * 20: shipyard
@@ -51,8 +52,10 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 30: sword Soldier <br>
  * 31/32 (soldier ?) <br>
  * 33 Bowman <br>
+ * 34 Pikeman
  * 35 soldier killed <br>
  * 36: falling tree <br>
+ * 37/38 molten metal
  * 39: pigs or brewer? <br>
  * 40: donkey <br>
  * 41: pig <br>
@@ -122,7 +125,7 @@ public class SoundManager {
 	private static File lookupPath;
 
 	private final SoundPlayer soundPlayer;
-	private final Random random = new Random();
+	public final Random random = new Random();
 
 	/**
 	 * The start positions of all the playable sounds.

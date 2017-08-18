@@ -459,7 +459,7 @@ public class MapObjectDrawer {
 					case HEALER:
 						if (delay > .8) soundNumber = 21; break;
 					case GEOLOGIST:
-						if (delay > .8) soundNumber = 24; break;
+						if (sound.random.nextInt(256) == 0) soundNumber = 24; break; // TODO: should also check grid.getResourceAmountAt(x, y)
 					case SWORDSMAN_L1:
 					case SWORDSMAN_L2:
 					case SWORDSMAN_L3:
@@ -468,6 +468,10 @@ public class MapObjectDrawer {
 					case BOWMAN_L2:
 					case BOWMAN_L3:
 						if (delay > .4) soundNumber = 33; break;
+					case PIKEMAN_L1:
+					case PIKEMAN_L2:
+					case PIKEMAN_L3:
+						if (delay > .4) soundNumber = 34; break;
 					case DONKEY_FARMER:
 						if (delay > .8) soundNumber = 40; break;
 					case PIG_FARMER:
