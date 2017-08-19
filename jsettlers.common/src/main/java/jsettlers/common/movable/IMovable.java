@@ -89,4 +89,12 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 *            if false, it should stop working.
 	 */
 	void stopOrStartWorking(boolean stop);
+
+	/**
+	 * This method returns the melter ore: Goldore or Ironore
+	 *
+	 * @return
+	 */
+	EMaterialType getMelterOre();
+
 }

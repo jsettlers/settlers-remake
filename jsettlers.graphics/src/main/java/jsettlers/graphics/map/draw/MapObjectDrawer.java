@@ -503,25 +503,46 @@ public class MapObjectDrawer {
 		if (fogStatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
-
 		final float moveProgress = movable.getMoveProgress();
-		final Image image = this.imageMap.getImageForSettler(movable, moveProgress);
-
 		Color color = context.getPlayerColor(movable.getPlayer().getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogStatus);
-
+		Image image;
 		float viewX;
 		float viewY;
+		int height = context.getHeight(x, y);
+
+		// melter action
+		if (movable.getMovableType() == EMovableType.MELTER && movable.getAction() == EMovableAction.ACTION1) {
+			int number = (int) (moveProgress * 36);
+			// draw molten metal
+			int metalX = x - 2;
+			int metalY = y - 5;
+			viewX = context.getConverter().getViewX(metalX, metalY, height);
+			viewY = context.getConverter().getViewY(metalX, metalY, height);
+			int metal = (movable.getMelterOre() == EMaterialType.IRONORE) ? 37 : 36;
+			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, metal, number > 24 ? 24 : number);
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+			// draw smoke
+			int smokeX = x - 9;
+			int smokeY = y - 14;
+			viewX = context.getConverter().getViewX(smokeX, smokeY, height);
+			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
+			link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 42, number > 35 ? 35 : number);
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+		}
+
 		if (movable.getAction() == EMovableAction.WALKING) {
 			int originX = x - movable.getDirection().getGridDeltaX();
 			int originY = y - movable.getDirection().getGridDeltaY();
 			viewX = betweenTilesX(originX, originY, x, y, moveProgress);
 			viewY = betweenTilesY;
 		} else {
-			int height = context.getHeight(x, y);
 			viewX = context.getConverter().getViewX(x, y, height);
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
+		image = this.imageMap.getImageForSettler(movable, moveProgress);
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
 
 		if (movable.isSelected()) {

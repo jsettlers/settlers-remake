@@ -209,15 +209,17 @@
     <job name="D_walkB6" type="WALK" successjob="D_hide" failjob="resetandgohome" direction="NORTH_WEST" />
 
     <job name="D_hide" type="HIDE" successjob="D_wait" failjob="resetandgohome" />
-    <job name="D_wait" type="WAIT" successjob="smoke_off" failjob="resetandgohome" time=".5" />
+    <job name="D_wait" type="WAIT" successjob="smoke_off" failjob="resetandgohome" time="5" />
 
     <job name="smoke_off" type="SMOKE_OFF" successjob="Z_reset" failjob="Z_reset" dx="-3" dy="-4" />
 
     <job name="Z_reset" type="SET_MATERIAL" successjob="Z_show" failjob="resetandgohome" material="COAL" />
     <job name="Z_show" type="SHOW" successjob="Z_walkA1" failjob="resetandgohome" dx="0" dy="1" />
-    <job name="Z_walkA1" type="WALK" successjob="Z_walkA2" failjob="resetandgohome" direction="SOUTH_EAST" />
+    <job name="Z_walkA1" type="WALK" successjob="cough" failjob="resetandgohome" direction="SOUTH_EAST" />
+    <job name="cough" type="PLAY_ACTION1" successjob="Z_walkA2" failjob="resetandgohome" time=".1" />
     <job name="Z_walkA2" type="WALK" successjob="Z_walkA3" failjob="resetandgohome" direction="SOUTH_EAST" />
-    <job name="Z_walkA3" type="WALK" successjob="Z_drop1" failjob="resetandgohome" direction="SOUTH_EAST" />
+    <job name="Z_walkA3" type="WALK" successjob="look" failjob="resetandgohome" direction="SOUTH_EAST" />
+    <job name="look"    type="LOOK_AT"  successjob="Z_drop1"    failjob="hide"  direction="SOUTH_WEST"/>
 
     <job name="Z_drop1" type="DROP" successjob="Z_walkB1" failjob="resetandgohome" material="COAL" />
 
