@@ -471,7 +471,9 @@ public class MapObjectDrawer {
 					case PIKEMAN_L1:
 					case PIKEMAN_L2:
 					case PIKEMAN_L3:
-						if (delay > .4) soundNumber = 34; break;
+						soundNumber = 34; break;
+					case MELTER:
+						soundNumber = 40; break;
 					case DONKEY_FARMER:
 						if (delay > .8) soundNumber = 40; break;
 					case PIG_FARMER:
