@@ -39,12 +39,11 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 2 (3 times): digger <br>
  * 3 (twice): stonecutter <br>
  * 5: sawmiller <br>
- * 6: smith <br>
- * 7: smith <br>
- * 8 and 12: farmer <br>
+ * 6/7 smith <br>
+ * 8/9 and 12: farmer <br>
  * 13: fire
  * 14: dying pig <br>
- * 15: fisherman
+ * 15/16/17: fisherman
  * 20: shipyard
  * 21: healer
  * 24: geologist
@@ -56,11 +55,12 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 35 soldier killed <br>
  * 36: falling tree <br>
  * 37/38 molten metal
- * 39: pigs or brewer? <br>
- * 40: donkey <br>
- * 41: pig <br>
- * 42: wind/mill: 2.5s <br>
- * 45: charcoal burner
+ * 39: pigs <br>
+ * 40/41: donkey <br>
+ * 42: wind/mill: 5s <br>
+ * 43/44: distillery
+ * 45: charcoal burner coughing
+ * 46-50 no sound
  * 51: trigger for building destruction
  * 56: lock <br>
  * 57-59: notification sounds<br>

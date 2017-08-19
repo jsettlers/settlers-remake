@@ -35,7 +35,7 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
-public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
+public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.ISlaughterhouse, IBuilding.IOccupied {
 
 	private final BuildingMapDataObject buildingObject;
 	private final ShortPoint2D position;

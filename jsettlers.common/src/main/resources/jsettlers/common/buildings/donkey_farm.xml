@@ -204,7 +204,12 @@
 	<job name="walkHomeWater3" type="HIDE" successjob="waitForFeed1" failjob="gohome"/>
 	
 	<job name="waitForFeed1" type="SET_MATERIAL" material="BASKET" successjob="waitForFeed2" failjob="reset1" />
-	<job name="waitForFeed2" type="WAIT" time="5" successjob="feed1" failjob="reset1" />
+	<job name="waitForFeed2" type="WAIT" time="5" successjob="growDonkey1" failjob="reset1" />
+
+	<!-- Donkey growing: Attempt to grow both -->
+	<job name="growDonkey1" type="GROW_DONKEY" successjob="feed1" failjob="growDonkey2" dx="2" dy="2"/>
+	<job name="growDonkey2" type="GROW_DONKEY" successjob="feed1" failjob="growDonkey3" dx="4" dy="4"/>
+	<job name="growDonkey3" type="WAIT" successjob="growDonkey1" failjob="growDonkey1" time="1"/>
 
 	<!-- Walk and feed -->
 	<job name="feed1" type="SHOW"  dx="-2" dy="2" successjob="feed2" failjob="gohome"/>
@@ -223,10 +228,6 @@
 	<job name="feed14" type="WALK" direction="NORTH_WEST" successjob="feed15" failjob="gohome"/>
 	<job name="feed15" type="WALK" direction="NORTH_WEST" successjob="feed16" failjob="gohome"/>
 	<job name="feed16" type="WALK" direction="NORTH_WEST" successjob="feed17" failjob="gohome"/>
-	<job name="feed17" type="HIDE" successjob="growDonkey1" failjob="gohome"/>
+	<job name="feed17" type="HIDE" successjob="reset1" failjob="reset1"/>
 	
-	<!-- Donkey growing: Attempt to grow both -->
-	<job name="growDonkey1" type="GROW_DONKEY" successjob="reset1" failjob="growDonkey2" dx="2" dy="2"/>
-	<job name="growDonkey2" type="GROW_DONKEY" successjob="reset1" failjob="growDonkey3" dx="4" dy="4"/>
-	<job name="growDonkey3" type="WAIT" successjob="growDonkey1" failjob="growDonkey1" time="1"/>
 </building>

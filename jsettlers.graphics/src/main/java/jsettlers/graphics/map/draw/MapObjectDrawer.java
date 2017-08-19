@@ -56,6 +56,7 @@ import jsettlers.graphics.sound.SoundManager;
 public class MapObjectDrawer {
 
 	private static final int SOUND_MILL = 42;
+	private static final int SOUND_SLAUGHTERHOUSE = 14;
 	private static final int SOUND_BUILDING_DESTROYED = 93;
 	private static final int SOUND_SETTLER_KILLED = 35;
 	private static final int SOUND_FALLING_TREE = 36;
@@ -307,7 +308,8 @@ public class MapObjectDrawer {
 			break;
 
 		case SMOKE:
-			drawByProgress(x, y, 13, 42, progress, color);
+			int height = 30;
+			drawByProgressWithHeight(x, y, height, 13, 42, progress, color);
 			break;
 
 		case PLANT_DECORATION:
@@ -469,17 +471,12 @@ public class MapObjectDrawer {
 						break;
 					case FARMER:
 						if (delay > .8) {
-							soundNumber = 8;
-						}
-						break;
-					case SLAUGHTERER:
-						if (delay > .4) {
-							soundNumber = 14;
+							soundNumber = 9;
 						}
 						break;
 					case FISHERMAN:
 						if (delay > .8) {
-							soundNumber = 15;
+							soundNumber = 16;
 						}
 						break;
 					case DOCKWORKER:
@@ -516,20 +513,15 @@ public class MapObjectDrawer {
 					case PIKEMAN_L3:
 						soundNumber = 34; break;
 					case MELTER:
-						soundNumber = 40; break;
-					case DONKEY_FARMER:
-						if (delay > .8) {
-							soundNumber = 40;
-						}
-						break;
+						soundNumber = 38; break;
 					case PIG_FARMER:
 						if (delay > .4) {
-							soundNumber = 41;
+							soundNumber = 39;
 						}
 						break;
-					case MILLER:
+					case DONKEY_FARMER:
 						if (delay > .4) {
-							soundNumber = 42;
+							soundNumber = 40;
 						}
 						break;
 					case CHARCOAL_BURNER:
@@ -546,9 +538,22 @@ public class MapObjectDrawer {
 							soundNumber = 12;
 						}
 						break;
+					case FISHERMAN:
+						if (delay > .5) {
+							soundNumber = 15;
+						}
+						break;
 					case LUMBERJACK:
 						if (delay > .8) {
 							soundNumber = 36;
+						}
+						break;
+				}
+			case ACTION3:
+				switch (movable.getMovableType()) {
+					case FISHERMAN:
+						if (delay > .95) {
+							soundNumber = 17;
 						}
 						break;
 				}
@@ -638,7 +643,9 @@ public class MapObjectDrawer {
 	}
 
 	private void playSound(IMapObject object, int soundId, int x, int y) {
-		if (object instanceof ISoundable) {
+		if (object instanceof IBuilding.ISoundRequestable) {
+			sound.playSound(soundId, 1, x, y);
+		} else if (object instanceof ISoundable) {
 			ISoundable soundable = (ISoundable) object;
 			if (!soundable.isSoundPlayed()) {
 				sound.playSound(soundId, 1, x, y);
@@ -909,6 +916,10 @@ public class MapObjectDrawer {
 		float state = building.getStateProgress();
 
 		if (state >= 0.99) {
+			if (type == EBuildingType.SLAUGHTERHOUSE && ((IBuilding.ISoundRequestable) building).isSoundRequested()) {
+				playSound(building, SOUND_SLAUGHTERHOUSE, x, y);
+			}
+
 			if (type == EBuildingType.MILL && ((IBuilding.IMill) building).isRotating()) {
 				Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(MILL_FILE, MILL_SEQ);
 
@@ -1083,6 +1094,12 @@ public class MapObjectDrawer {
 		draw(sequence.getImageSafe(index), x, y, color);
 	}
 
+	private void drawByProgressWithHeight(int x, int y, int height, int file, int sequenceIndex, float progress, float color) {
+		Sequence<? extends Image> sequence = this.imageProvider.getSettlerSequence(file, sequenceIndex);
+		int index = Math.min((int) (progress * sequence.length()), sequence.length() - 1);
+		drawWithHeight(sequence.getImageSafe(index), x, y, height, color);
+	}
+
 	private void draw(Image image, int x, int y, Color color, float baseColor) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
@@ -1108,10 +1125,23 @@ public class MapObjectDrawer {
 		draw(image, x, y, iColor);
 	}
 
+	private void drawWithHeight(Image image, int x, int y, int height, float color) {
+		int iColor = Color.getABGR(color, color, color, 1);
+		drawWithHeight(image, x, y, height, iColor);
+	}
+
 	private void draw(Image image, int x, int y, int color) {
 		int height = context.getHeight(x, y);
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
+
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
+	}
+
+	private void drawWithHeight(Image image, int x, int y, int height, int color) {
+		int baseHeight = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, baseHeight + height);
+		float viewY = context.getConverter().getViewY(x, y, baseHeight + height);
 
 		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color);
 	}
