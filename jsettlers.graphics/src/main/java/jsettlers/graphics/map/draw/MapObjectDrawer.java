@@ -34,6 +34,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableAction;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
@@ -437,37 +438,79 @@ public class MapObjectDrawer {
 			case ACTION1:
 				switch (movable.getMovableType()) {
 					case LUMBERJACK:
-						if (delay > .8) soundNumber = 0; break;
+						if (delay > .8) {
+							soundNumber = 0;
+						}
+						break;
 					case BRICKLAYER:
-						if (delay > .7) soundNumber = 1; break;
+						if (delay > .7) {
+							soundNumber = 1;
+						}
+						break;
 					case DIGGER:
-						if (delay > .6) soundNumber = 2; break;
+						if (delay > .6) {
+							soundNumber = 2;
+						}
+						break;
 					case STONECUTTER:
-						if (delay > .8) soundNumber = 3; break;
+						if (delay > .8) {
+							soundNumber = 3;
+						}
+						break;
 					case SAWMILLER:
-						if (delay > .2) soundNumber = 5; break;
+						if (delay > .2) {
+							soundNumber = 5;
+						}
+						break;
 					case SMITH:
-						if (delay > .8) soundNumber = 6; break;
+						if (delay > .8) {
+							soundNumber = 6;
+						}
+						break;
 					case FARMER:
-						if (delay > .8) soundNumber = 8; break;
+						if (delay > .8) {
+							soundNumber = 8;
+						}
+						break;
 					case SLAUGHTERER:
-						if (delay > .4) soundNumber = 14; break;
+						if (delay > .4) {
+							soundNumber = 14;
+						}
+						break;
 					case FISHERMAN:
-						if (delay > .8) soundNumber = 15; break;
+						if (delay > .8) {
+							soundNumber = 15;
+						}
+						break;
 					case DOCKWORKER:
-						if (delay > .8) soundNumber = 20; break;
+						if (delay > .8) {
+							soundNumber = 20;
+						}
+						break;
 					case HEALER:
-						if (delay > .8) soundNumber = 21; break;
-					case GEOLOGIST:
-						if (sound.random.nextInt(256) == 0) soundNumber = 24; break; // TODO: should also check grid.getResourceAmountAt(x, y)
+						if (delay > .8) {
+							soundNumber = 21;
+						}
+						break;
+					case GEOLOGIST: // TODO: should also check grid.getResourceAmountAt(x, y)
+						if (sound.random.nextInt(256) == 0) {
+							soundNumber = 24;
+						}
+						break;
 					case SWORDSMAN_L1:
 					case SWORDSMAN_L2:
 					case SWORDSMAN_L3:
-						if (delay > .8) soundNumber = 30; break;
+						if (delay > .8) {
+							soundNumber = 30;
+						}
+						break;
 					case BOWMAN_L1:
 					case BOWMAN_L2:
 					case BOWMAN_L3:
-						if (delay > .4) soundNumber = 33; break;
+						if (delay > .4) {
+							soundNumber = 33;
+						}
+						break;
 					case PIKEMAN_L1:
 					case PIKEMAN_L2:
 					case PIKEMAN_L3:
@@ -475,21 +518,39 @@ public class MapObjectDrawer {
 					case MELTER:
 						soundNumber = 40; break;
 					case DONKEY_FARMER:
-						if (delay > .8) soundNumber = 40; break;
+						if (delay > .8) {
+							soundNumber = 40;
+						}
+						break;
 					case PIG_FARMER:
-						if (delay > .4) soundNumber = 41; break;
+						if (delay > .4) {
+							soundNumber = 41;
+						}
+						break;
 					case MILLER:
-						if (delay > .4) soundNumber = 42; break;
+						if (delay > .4) {
+							soundNumber = 42;
+						}
+						break;
 					case CHARCOAL_BURNER:
-						if (delay > .8) soundNumber = 45; break;
+						if (delay > .8) {
+							soundNumber = 45;
+						}
+						break;
 				}
 				break;
 			case ACTION2:
 				switch (movable.getMovableType()) {
 					case FARMER:
-						if (delay > .8) soundNumber = 12; break;
+						if (delay > .8) {
+							soundNumber = 12;
+						}
+						break;
 					case LUMBERJACK:
-						if (delay > .8) soundNumber = 36; break;
+						if (delay > .8) {
+							soundNumber = 36;
+						}
+						break;
 				}
 		}
 		if (soundNumber >= 0) {
