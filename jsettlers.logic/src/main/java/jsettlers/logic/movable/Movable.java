@@ -83,6 +83,7 @@ public final class Movable implements ILogicMovable {
 	private int flockDelay = 700;
 
 	private EMaterialType takeDropMaterial;
+	private EMaterialType melterOre;
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
@@ -245,6 +246,11 @@ public final class Movable implements ILogicMovable {
 		case TAKE:
 			grid.takeMaterial(position, takeDropMaterial);
 			setMaterial(takeDropMaterial);
+			if (this.getMovableType() == EMovableType.MELTER) {
+				if (takeDropMaterial == EMaterialType.IRONORE || takeDropMaterial == EMaterialType.GOLDORE) {
+					this.melterOre = takeDropMaterial;
+				}
+			}
 			playAnimation(EMovableAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			strategy.tookMaterial();
 			break;
@@ -789,6 +795,11 @@ public final class Movable implements ILogicMovable {
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
 		strategy.stopOrStartWorking(stop);
+	}
+
+	@Override
+	public EMaterialType getMelterOre() {
+		return this.melterOre;
 	}
 
 	@Override

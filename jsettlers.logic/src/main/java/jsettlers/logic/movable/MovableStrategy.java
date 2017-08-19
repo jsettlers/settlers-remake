@@ -14,16 +14,19 @@
  *******************************************************************************/
 package jsettlers.logic.movable;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
 import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
@@ -34,9 +37,6 @@ import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
 import jsettlers.logic.movable.strategies.trading.DonkeyStrategy;
-
-import java.io.Serializable;
-import java.util.LinkedList;
 
 /**
  * Abstract super class of all movable strategies.
