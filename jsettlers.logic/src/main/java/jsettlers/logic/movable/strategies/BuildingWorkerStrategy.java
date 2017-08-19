@@ -192,6 +192,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			super.playAction(EMovableAction.ACTION2, currentJob.getTime());
 			jobFinished();
 			break;
+		case PLAY_ACTION3:
+			super.playAction(EMovableAction.ACTION3, currentJob.getTime());
+			jobFinished();
+			break;
 
 		case AVAILABLE:
 			if (super.getGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {

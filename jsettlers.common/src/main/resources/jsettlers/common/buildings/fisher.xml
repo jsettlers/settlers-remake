@@ -90,19 +90,21 @@
 	<job name="search_fish" 	type="FOLLOW_SEARCHED" 			successjob="look_at_fish" 	failjob="hide" 		/>
 
 	<!-- fish it -->
-	<job name="look_at_fish" 	type="LOOK_AT_SEARCHED"			successjob="play" 			failjob="gohome" 		direction="NORTH_WEST" search="FISHABLE"/>
-	<job name="play" 			type="PLAY_ACTION2" 			successjob="successful" 	failjob="gohome" 		time="1"/>
-	<job name="successful"		type="TRY_TAKING_RESOURCE"		successjob="play_success1" 	failjob="play_fail"		/>
+	<job name="look_at_fish" 	type="LOOK_AT_SEARCHED"			successjob="try" 			failjob="gohome" 		direction="NORTH_WEST" search="FISHABLE"/>
+	<job name="try"				type="TRY_TAKING_RESOURCE"		successjob="play_success1" 	failjob="play_fail1"		/>
 
 	<!--  fail -->
-	<job name="play_fail" 		type="PLAY_ACTION1" 			successjob="gohome" 		failjob="gohome" 		time="2"/>
+	<job name="play_fail1" 		type="PLAY_ACTION1" 			successjob="play_fail2" 	failjob="gohome" 		time="1"/>
+	<job name="play_fail2" 		type="PLAY_ACTION2" 			successjob="gohome" 		failjob="gohome" 		time="2"/>
 
 	<!-- success -->
-	<job name="play_success1"	type="SET_MATERIAL" 			successjob="play_success2" 	failjob="gohome" 		material="FISH"/>
-	<job name="play_success2" 	type="PLAY_ACTION1" 			successjob="go_drop" 		failjob="gohome" 		time="2"/>
+	<job name="play_success1"	type="PLAY_ACTION1" 			successjob="play_success2" 	failjob="gohome" 		time="1"/>
+	<job name="play_success2" 	type="PLAY_ACTION3" 			successjob="success" 		failjob="gohome" 		time="2"/>
+	<job name="success"			type="SET_MATERIAL"				successjob="go_drop"	 	failjob="gohome" 		material="FISH"/>
 
 	<!-- drop it at (3|4) -->
-	<job name="go_drop"			type="GO_TO" 					successjob="drop1" 			failjob="gohome" 		dx="3" dy="4"/>
+	<job name="go_drop"			type="GO_TO" 					successjob="look" 			failjob="gohome" 		dx="3" dy="4"/>
+	<job name="look"		    type="LOOK_AT"  				successjob="drop1"	    	failjob="hide"  		direction="SOUTH_WEST"/>
 	<job name="drop1" 			type="DROP" 					successjob="walk1" 			failjob="gohome" 		material="FISH"/>
 
 	<job name="walk1" 			type="WALK" 					successjob="walk2" 			failjob="hide" 			direction="NORTH_EAST"/>
