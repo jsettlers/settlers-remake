@@ -14,13 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.image;
 
+import java.nio.ShortBuffer;
+
 import go.graphics.GLDrawContext;
 import go.graphics.GeometryHandle;
 import go.graphics.IllegalBufferException;
 import go.graphics.TextureHandle;
-
-import java.nio.ShortBuffer;
-
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
