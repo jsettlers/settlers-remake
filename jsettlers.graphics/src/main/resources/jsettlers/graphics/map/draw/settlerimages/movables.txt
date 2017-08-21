@@ -909,6 +909,14 @@ SMITH, NO_ACTION, NO_MATERIAL, NORTH_EAST = 11, 40, 36, 1
 SMITH, NO_ACTION, NO_MATERIAL, EAST       = 11, 40, 48, 1
 SMITH, NO_ACTION, NO_MATERIAL, SOUTH_EAST = 11, 40, 60, 1
 
+# action 3 is only smoke - the smith is standing still
+SMITH, ACTION3, NO_MATERIAL, SOUTH_WEST = 11, 40,  0, 1
+SMITH, ACTION3, NO_MATERIAL, WEST       = 11, 40, 12, 1
+SMITH, ACTION3, NO_MATERIAL, NORTH_WEST = 11, 40, 24, 1
+SMITH, ACTION3, NO_MATERIAL, NORTH_EAST = 11, 40, 36, 1
+SMITH, ACTION3, NO_MATERIAL, EAST       = 11, 40, 48, 1
+SMITH, ACTION3, NO_MATERIAL, SOUTH_EAST = 11, 40, 60, 1
+
 SMITH, BEND_DOWN, *, NORTH_WEST = 11, 41, 0, 4
 SMITH, RAISE_UP, *, NORTH_WEST = 11, 41, 3, -4
 
@@ -935,17 +943,11 @@ SMITH, WALKING, COAL, NORTH_EAST = 11, 40, 36, 12
 SMITH, WALKING, COAL, EAST       = 11, 40, 48, 12
 SMITH, WALKING, COAL, SOUTH_EAST = 11, 40, 60, 12
 
-# need more reserch in original game (maybe additional animation is implemented through the buildings)
-# probably examines, ready or not
-#SMITH, ACTION3, *, NORTH_WEST = 11, 44, 0, 8
-# probably after this return to ACTION1
-# This needs to be uncommented as soon as #71 is implemented
-#SMITH, ACTION4, *, NORTH_WEST = 11, 44, 7, -8
-# probably cools ready weapons (after complate it on the anvil)
-#SMITH, ACTION5, *, NORTH_EAST = 11, 45, 0, 8
-# probably after this go and DROP ready weapon to the ground
-# This needs to be uncommented as soon as #71 is implemented
-#SMITH, ACTION6, *, NORTH_EAST = 11, 45, 7, -8
+# move iron in the fire - not used in the original game
+SMITH, ACTION2, *, NORTH_WEST = 11, 44, 0, 8
+SMITH, ACTION2, *, NORTH_WEST = 11, 44, 7, -8
+SMITH, ACTION2, *, NORTH_EAST = 11, 45, 0, 8
+SMITH, ACTION2, *, NORTH_EAST = 11, 45, 7, -8
 
 SMITH, WALKING, SWORD, SOUTH_WEST = 11, 46,  0, 12
 SMITH, WALKING, SWORD, WEST       = 11, 46, 12, 12
@@ -960,10 +962,9 @@ SMITH, NO_ACTION, SWORD, NORTH_EAST = 11, 46, 36, 1
 SMITH, NO_ACTION, SWORD, EAST       = 11, 46, 48, 1
 SMITH, NO_ACTION, SWORD, SOUTH_EAST = 11, 46, 60, 1
 
-# treatment of hot metal
+# hammering at the anvil
 SMITH, ACTION1, *, NORTH_WEST = 11, 47, 0, 12
-# treatment weapons on the anvil
-SMITH, ACTION2, *, NORTH_EAST = 11, 48, 0, 12
+SMITH, ACTION1, *, NORTH_EAST = 11, 48, 0, 12
 ###
 # SMITH movables end
 ###

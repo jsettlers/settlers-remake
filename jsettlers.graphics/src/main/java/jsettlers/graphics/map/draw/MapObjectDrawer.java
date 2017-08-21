@@ -33,6 +33,7 @@ import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierClass;
@@ -576,6 +577,22 @@ public class MapObjectDrawer {
 		float viewX;
 		float viewY;
 		int height = context.getHeight(x, y);
+
+		// smith action
+		if (movable.getMovableType() == EMovableType.SMITH && movable.getAction() == EMovableAction.ACTION3) {
+			// draw smoke
+			ShortPoint2D smokePosition = movable.getDirection().getNextHexPoint(movable.getPos(), 2);
+			int smokeX = smokePosition.x - 0;
+			int smokeY = smokePosition.y - 0;
+			if (movable.getDirection() == EDirection.NORTH_WEST) {
+				smokeY--;
+			}
+			viewX = context.getConverter().getViewX(smokeX, smokeY, height);
+			viewY = context.getConverter().getViewY(smokeX, smokeY, height);
+			ImageLink link = new OriginalImageLink(EImageLinkType.SETTLER, 13, 43, (int) (moveProgress * 40));
+			image = imageProvider.getImage(link);
+			image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY, color, shade);
+		}
 
 		// melter action
 		if (movable.getMovableType() == EMovableType.MELTER && movable.getAction() == EMovableAction.ACTION1) {
