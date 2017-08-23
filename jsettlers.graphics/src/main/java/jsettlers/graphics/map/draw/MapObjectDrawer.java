@@ -466,7 +466,7 @@ public class MapObjectDrawer {
 						}
 						break;
 					case SMITH:
-						if (delay > .8) {
+						if (delay > .7) {
 							soundNumber = 6;
 						}
 						break;
