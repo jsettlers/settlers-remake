@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -17,6 +17,7 @@ package jsettlers.graphics.ui.generate;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,7 +79,7 @@ public class LayoutConverter {
 
 		// size alternatives
 		for (EGeneratedLayoutSize s : EGeneratedLayoutSize.values()) {
-			File sizeXmlFile = new File(sourceXMLDirectory, name + "." + s.toString().toLowerCase() + ".xml");
+			File sizeXmlFile = new File(sourceXMLDirectory, name + "." + s.toString().toLowerCase(Locale.ENGLISH) + ".xml");
 			if (sizeXmlFile.isFile()) {
 				sourceGenerator.addSize(s, loader.loadLayoutFromXML(sizeXmlFile));
 			}

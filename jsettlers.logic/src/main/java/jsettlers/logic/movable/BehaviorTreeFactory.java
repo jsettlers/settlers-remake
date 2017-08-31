@@ -88,7 +88,7 @@ public abstract class BehaviorTreeFactory implements Serializable {
     }
 
     protected static class Debug extends Decorator<Entity> {
-        private static final boolean DEBUG = true;
+        private static final boolean DEBUG = false;
         private static final long serialVersionUID = 9019598003328102086L;
         private final String message;
         public Debug(String message) {

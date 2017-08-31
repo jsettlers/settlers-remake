@@ -35,7 +35,7 @@ public class ChatMessageForwardingListener extends PacketChannelListener<ChatMes
 	private final Player player;
 
 	public ChatMessageForwardingListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.ENetworkKey.CHAT_MESSAGE, new GenericDeserializer<ChatMessagePacket>(ChatMessagePacket.class));
+		super(NetworkConstants.ENetworkKey.CHAT_MESSAGE, new GenericDeserializer<>(ChatMessagePacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}

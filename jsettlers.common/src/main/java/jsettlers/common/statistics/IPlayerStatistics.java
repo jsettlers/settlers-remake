@@ -33,14 +33,14 @@ public interface IPlayerStatistics {
 	 *            The material we want to know about.
 	 * @return The list of consumers for this material.
 	 */
-	public List<IConsuming> getConsumers(EMaterialType type);
+	List<IConsuming> getConsumers(EMaterialType type);
 
 	/**
 	 * Gets the number of materials that are available in the current partition. This is just used for information purposes.
 	 * 
 	 * @return The number of materials.
 	 */
-	public int getMaterialCount(EMaterialType material);
+	int getMaterialCount(EMaterialType material);
 
 	/**
 	 * Gets the number of movables that have the given type.
@@ -49,28 +49,28 @@ public interface IPlayerStatistics {
 	 *            The movable type to count
 	 * @return The number of movables of that type.
 	 */
-	public int getMovableCount(EMovableType movable);
+	int getMovableCount(EMovableType movable);
 
 	/**
 	 * Gets the rate settings for converting bearers to bricklayers.
 	 * 
 	 * @return
 	 */
-	public IConversionRate getBricklayerConverstionRate();
+	IConversionRate getBricklayerConverstionRate();
 
 	/**
 	 * Gets the rate settings for converting bearers to diggers.
 	 * 
 	 * @return
 	 */
-	public IConversionRate getDiggerConverstionRate();
+	IConversionRate getDiggerConverstionRate();
 
 	/**
 	 * Gets the minimum rate for all bearers. At least this part of the overall population needs to be bearers.
 	 * 
 	 * @return The rate from 0..1.
 	 */
-	public float getMinimumBearerRate();
+	float getMinimumBearerRate();
 
 	/**
 	 * Sets the bearer rate. The rate may be clamped internally by the logic.
@@ -78,5 +78,5 @@ public interface IPlayerStatistics {
 	 * @param rate
 	 *            The rate, ranging from 0..1.
 	 */
-	public void setMinimumBearerRate(float rate);
+	void setMinimumBearerRate(float rate);
 }

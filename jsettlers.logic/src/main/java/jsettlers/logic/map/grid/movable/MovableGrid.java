@@ -22,14 +22,15 @@ import java.io.Serializable;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableBoolean;
 import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.landscape.IWalkableGround;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
@@ -113,7 +114,7 @@ public final class MovableGrid implements Serializable {
 		}
 
 		MutableBoolean foundOne = new MutableBoolean();
-		byte movablePlayer = movable.getPlayerId();
+		IPlayer movablePlayer = movable.getPlayer();
 
 		area.filterBounds(width, height).forEach((currX, currY) -> {
 			ILogicMovable currMovable = getMovableAt(currX, currY);
@@ -128,7 +129,6 @@ public final class MovableGrid implements Serializable {
 		});
 	}
 
-	// FIXME @Andreas Eberle replace player everywhere by an object with team and player and move this method to the new class
 	/**
 	 * 
 	 * @param player
@@ -138,8 +138,8 @@ public final class MovableGrid implements Serializable {
 	 * 
 	 * @return
 	 */
-	public static boolean isEnemy(byte player, IAttackable otherAttackable) {
-		return otherAttackable.getPlayerId() != player && otherAttackable.isAttackable();
+	public static boolean isEnemy(IPlayer player, IAttackable otherAttackable) {
+		return otherAttackable.getPlayer().getTeamId() != player.getTeamId() && otherAttackable.isAttackable();
 	}
 
 	public boolean hasNoMovableAt(int x, int y) {

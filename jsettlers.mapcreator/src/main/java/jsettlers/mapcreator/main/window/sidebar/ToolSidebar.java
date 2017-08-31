@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -19,16 +19,14 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.object.MapDecorationObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.DecorationMapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -121,21 +119,21 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.objects"), new ToolNode[] {
 					new PlaceMapObjectTool(MapTreeObject.getInstance()),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(0)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(2)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(4)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(6)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(8)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(11)),
-					new PlaceMapObjectTool(MapStoneObject.getInstance(12)),
-					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
-					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION))
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(0)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(1)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(2)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(3)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(4)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(5)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(6)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(7)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(8)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(9)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(10)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(11)),
+					new PlaceMapObjectTool(StoneMapDataObject.getInstance(12)),
+					new PlaceMapObjectTool(new DecorationMapDataObject(EMapObjectType.PLANT_DECORATION)),
+					new PlaceMapObjectTool(new DecorationMapDataObject(EMapObjectType.DESERT_DECORATION))
 					}),
 			new ToolBox(EditorLabels.getLabel("tools.category.settlers"), new ToolNode[] {
 					new ToolBox(EditorLabels.getLabel("tools.category.worker"), new ToolNode[] {
@@ -279,23 +277,20 @@ public abstract class ToolSidebar extends JPanel implements IPlayerSetter {
 
 		final JTree toolshelf = new JTree(new ToolTreeModel(TOOLBOX));
 		add(new JScrollPane(toolshelf), BorderLayout.CENTER);
-		toolshelf.addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				TreePath path = e.getNewLeadSelectionPath();
-				if (path == null) {
-					changeTool(null);
-					return;
-				}
-				Object lastPathComponent = path.getLastPathComponent();
-				if (lastPathComponent instanceof ToolBox) {
-					changeTool(null);
-				} else if (lastPathComponent instanceof Tool) {
-					Tool newTool = (Tool) lastPathComponent;
-					changeTool(newTool);
-				}
-
+		toolshelf.addTreeSelectionListener(e -> {
+			TreePath path = e.getNewLeadSelectionPath();
+			if (path == null) {
+				changeTool(null);
+				return;
 			}
+			Object lastPathComponent = path.getLastPathComponent();
+			if (lastPathComponent instanceof ToolBox) {
+				changeTool(null);
+			} else if (lastPathComponent instanceof Tool) {
+				Tool newTool = (Tool) lastPathComponent;
+				changeTool(newTool);
+			}
+
 		});
 		toolshelf.setCellRenderer(new ToolRenderer());
 		toolshelf.setRootVisible(false);

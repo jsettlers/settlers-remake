@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016
+ * Copyright (c) 2016 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -25,7 +25,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.stack.IRequestStack;
@@ -40,15 +39,10 @@ import jsettlers.logic.player.Player;
 public class MarketBuilding extends TradingBuilding implements IDonkeyMarket {
 	private static final long serialVersionUID = 4979115926871683024L;
 
-	private static final List<MarketBuilding> ALL_MARKETS = new ArrayList<MarketBuilding>();
+	private static final List<MarketBuilding> ALL_MARKETS = new ArrayList<>();
 
 	public static Iterable<MarketBuilding> getAllMarkets(final Player player) {
-		return new IteratorFilter<>(ALL_MARKETS, new IPredicate<MarketBuilding>() {
-			@Override
-			public boolean evaluate(MarketBuilding building) {
-				return building.getPlayer() == player;
-			}
-		});
+		return new IteratorFilter<>(ALL_MARKETS, building -> building.getPlayer() == player);
 	}
 
 	public static void clearState() {

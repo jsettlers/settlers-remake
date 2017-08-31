@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -25,15 +25,14 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * Assumptions: foresters are placed after lumberjacks were placed
  * 
- * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by distance to the most near lumberjack - score is affected by distance to other foresters in order to not build new foresters
- * next to other foresters
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score - score is affected by distance to the most near
+ * lumberjack - score is affected by distance to other foresters in order to not build new foresters next to other foresters
  * 
  * @author codingberlin
  */
 public class BestForesterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	EBuildingType buildingType;
+	private EBuildingType buildingType;
 
 	public BestForesterConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
@@ -44,10 +43,10 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 		List<ShortPoint2D> lumberJacks = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId);
 		List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.FORESTER, playerId);
 
-		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point,
-					playerId, buildingType)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)
+					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point.x, point.y, playerId, buildingType)) {
 				int foresterDistance = 0;
 				int lumberJackDistance = 0;
 				ShortPoint2D nearestLumberJackPoint = AiStatistics.detectNearestPointFromList(point, lumberJacks);
@@ -59,8 +58,7 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 					foresterDistance = point.getOnGridDistTo(nearestForesterPoint);
 				}
 
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance
-						- foresterDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance - foresterDistance));
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,28 +24,31 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupier;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.ESoldierClass;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupied {
 
-	private final BuildingObject buildingObject;
+	private final BuildingMapDataObject buildingObject;
 	private final ShortPoint2D position;
+	private final IPlayer player;
 
-	public BuildingContainer(BuildingObject buildingObject, ShortPoint2D position) {
+	public BuildingContainer(BuildingMapDataObject buildingObject, ShortPoint2D position) {
 		this.buildingObject = buildingObject;
 		this.position = position;
+		this.player = new IPlayer.DummyPlayer(buildingObject.getPlayerId());
 	}
 
 	@Override
-	public BuildingObject getMapObject() {
+	public BuildingMapDataObject getMapObject() {
 		return buildingObject;
 	}
 
@@ -70,8 +73,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public byte getPlayerId() {
-		return buildingObject.getPlayerId();
+	public IPlayer getPlayer() {
+		return player;
 	}
 
 	@Override
@@ -119,7 +122,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public List<? extends IBuildingOccupier> getOccupiers() {
-		return new LinkedList<IBuildingOccupier>();
+		return new LinkedList<>();
 	}
 
 	@Override

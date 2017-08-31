@@ -43,22 +43,21 @@ import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialOffer;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
-import jsettlers.logic.map.grid.partition.manager.materials.offers.MaterialOffer;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
-	private final short  width;
-	private final short  height;
+	private final short width;
+	private final short height;
 	private final Player defaultPlayer;
 
 	private final ILogicMovable movableMap[][];
-	private final EMaterialType    materialTypeMap[][];
-	private final byte             materialAmountMap[][];
+	private final EMaterialType materialTypeMap[][];
+	private final byte materialAmountMap[][];
 	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
@@ -228,7 +227,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			}
 		}
 
-		private final LinkedList<ShortPoint2D> materials = new LinkedList<ShortPoint2D>();
+		private final LinkedList<ShortPoint2D> materials = new LinkedList<>();
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
@@ -297,8 +296,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			return false;
 		}
 
-		;
-
 		@Override
 		public void placeSmoke(ShortPoint2D position, boolean smokeOn) {
 		}
@@ -347,7 +344,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
-			return isInBounds(x, y) && !isBlocked(x, y) && (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
+			return isInBounds(x, y) && !isBlocked(x, y) && (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override

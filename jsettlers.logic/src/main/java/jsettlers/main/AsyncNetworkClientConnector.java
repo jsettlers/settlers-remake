@@ -57,24 +57,18 @@ public class AsyncNetworkClientConnector {
 			}
 
 			private IPacketReceiver<RejectPacket> generateRejectReceiver() {
-				return new IPacketReceiver<RejectPacket>() {
-					@Override
-					public void receivePacket(RejectPacket packet) {
-						if (packet.getRejectedKey() == ENetworkKey.IDENTIFY_USER) {
-							setState(AsyncNetworkClientFactoryState.FAILED_CONNECTING);
-						}
-						System.out.println("Received reject packet: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
+				return packet -> {
+					if (packet.getRejectedKey() == ENetworkKey.IDENTIFY_USER) {
+						setState(AsyncNetworkClientFactoryState.FAILED_CONNECTING);
 					}
+					System.out.println("Received reject packet: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
 				};
 			}
 
 			private IPacketReceiver<ArrayOfMatchInfosPacket> generateMatchesRetriever(final IPacketReceiver<ArrayOfMatchInfosPacket> matchesRetriever) {
-				return new IPacketReceiver<ArrayOfMatchInfosPacket>() {
-					@Override
-					public void receivePacket(ArrayOfMatchInfosPacket packet) {
-						setState(AsyncNetworkClientFactoryState.CONNECTED_TO_SERVER);
-						matchesRetriever.receivePacket(packet);
-					}
+				return packet -> {
+					setState(AsyncNetworkClientFactoryState.CONNECTED_TO_SERVER);
+					matchesRetriever.receivePacket(packet);
 				};
 			}
 

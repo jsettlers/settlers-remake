@@ -40,7 +40,7 @@ public class SyncTasksPacket extends Packet {
 	public void deserialize(DataInputStream dis) throws IOException {
 		lockstepNumber = dis.readInt();
 		int numberOfTasks = dis.readInt();
-		tasks = new LinkedList<TaskPacket>();
+		tasks = new LinkedList<>();
 
 		for (int i = 0; i < numberOfTasks; i++) {
 			TaskPacket task = TaskPacket.DEFAULT_DESERIALIZER.deserialize(null, dis);

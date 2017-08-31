@@ -25,21 +25,21 @@ public interface IMultiplayerPlayer {
 	/**
 	 * @return Returns the id of the player.
 	 */
-	public String getId();
+	String getId();
 
 	/**
 	 * Gets the name of the player, may return null if the channel is free.
 	 * 
 	 * @return
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * If the player is ready for start.
 	 * 
 	 * @return
 	 */
-	public boolean isReady();
+	boolean isReady();
 
 	/* getTeam() */
 }

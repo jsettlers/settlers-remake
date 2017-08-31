@@ -95,8 +95,6 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		if (getClass() != obj.getClass())
 			return false;
 		SimpleMaterialRequestPriorityQueue other = (SimpleMaterialRequestPriorityQueue) obj;
-		if (!Arrays.equals(queues, other.queues))
-			return false;
-		return true;
+		return Arrays.equals(queues, other.queues);
 	}
 }

@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.swing.menu.joinpanel.slots;
 
-import java.util.Random;
-
 import jsettlers.common.player.ECivilisation;
 import jsettlers.graphics.localization.Labels;
 

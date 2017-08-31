@@ -27,7 +27,6 @@ import java.util.Date;
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.IGameExitListener;
@@ -49,6 +48,7 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.loading.IGameCreator;
 import jsettlers.logic.map.loading.IGameCreator.MainGridWithUiSettings;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableDataManager;
@@ -135,15 +135,29 @@ public class JSettlersGame {
 		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, CommonConstants.CONTROL_ALL, false, null);
 	}
 
-	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector,
-			ReplayStartInformation replayStartInformation) throws MapLoadException {
+	public static JSettlersGame loadFromReplayFile(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
+			throws MapLoadException {
 		try {
 			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
 			replayStartInformation.deserialize(replayFileInputStream);
 
 			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
-			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-					(byte) replayStartInformation.getPlayerId(), replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(),
+					replayStartInformation.getReplayablePlayerSettings(), true, false, replayFileInputStream);
+		} catch (IOException e) {
+			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
+		}
+	}
+
+	public static JSettlersGame loadFromReplayFileAllAi(ReplayUtils.IReplayStreamProvider loadableReplayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
+			throws MapLoadException {
+		try {
+			DataInputStream replayFileInputStream = new DataInputStream(loadableReplayFile.openStream());
+			replayStartInformation.deserialize(replayFileInputStream);
+
+			MapLoader mapCreator = loadableReplayFile.getMap(replayStartInformation);
+			return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector, (byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(),
+					true, false, null);
 		} catch (IOException e) {
 			throw new MapLoadException("Could not deserialize " + loadableReplayFile, e);
 		}

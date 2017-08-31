@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,12 +24,7 @@ public interface IBlockingProvider {
 	/**
 	 * This {@link IBlockingProvider} always returns false, so that no position will be seen as blocked.
 	 */
-	public static final IBlockingProvider DEFAULT_IMPLEMENTATION = new IBlockingProvider() {
-		@Override
-		public boolean isBlocked(int x, int y) {
-			return false;
-		}
-	};
+	IBlockingProvider DEFAULT_IMPLEMENTATION = (x, y) -> false;
 
 	/**
 	 * True if the given position is blocked.

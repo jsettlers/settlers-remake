@@ -28,7 +28,7 @@ import jsettlers.network.infrastructure.channel.packet.Packet;
  * 
  */
 public class TestPacket extends Packet {
-	public static final IDeserializingable<TestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<TestPacket>(TestPacket.class);
+	public static final IDeserializingable<TestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<>(TestPacket.class);
 
 	private int testInt;
 	private String testString;

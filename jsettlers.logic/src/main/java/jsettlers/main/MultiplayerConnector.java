@@ -38,22 +38,19 @@ import jsettlers.network.common.packets.MatchInfoPacket;
 public class MultiplayerConnector implements IMultiplayerConnector {
 
 	private final AsyncNetworkClientConnector networkClientFactory;
-	private final ChangingList<IJoinableGame> joinableGames = new ChangingList<IJoinableGame>();
+	private final ChangingList<IJoinableGame> joinableGames = new ChangingList<>();
 
 	public MultiplayerConnector(final String serverAddress, final String userId, final String userName) {
 		networkClientFactory = new AsyncNetworkClientConnector(serverAddress, userId, userName, generateMatchesReceiver());
 	}
 
 	private IPacketReceiver<ArrayOfMatchInfosPacket> generateMatchesReceiver() {
-		return new IPacketReceiver<ArrayOfMatchInfosPacket>() {
-			@Override
-			public void receivePacket(ArrayOfMatchInfosPacket packet) {
-				List<IJoinableGame> openGames = new LinkedList<IJoinableGame>();
-				for (MatchInfoPacket matchInfo : packet.getMatches()) {
-					openGames.add(new JoinableGame(matchInfo));
-				}
-				joinableGames.setList(openGames);
+		return packet -> {
+			List<IJoinableGame> openGames = new LinkedList<>();
+			for (MatchInfoPacket matchInfo : packet.getMatches()) {
+				openGames.add(new JoinableGame(matchInfo));
 			}
+			joinableGames.setList(openGames);
 		};
 	}
 

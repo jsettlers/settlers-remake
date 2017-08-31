@@ -255,9 +255,7 @@ public class SimpleMaterialRequestPriorityQueueTest {
 					return false;
 			} else if (!position.equals(other.position))
 				return false;
-			if (stillRequired != other.stillRequired)
-				return false;
-			return true;
+			return stillRequired == other.stillRequired;
 		}
 	}
 }

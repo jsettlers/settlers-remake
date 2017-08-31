@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,12 +24,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.utils.FileUtils;
-import jsettlers.common.utils.FileUtils.IFileVisitor;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 
@@ -89,25 +89,18 @@ public class DirectoryMapLister implements IMapLister {
 			return;
 		}
 
-		try {
-			// traverse all files and sub-folders
-			FileUtils.walkFileTree(directory, new IFileVisitor() {
-				@Override
-				public void visitFile(File file) throws IOException {
-					String fileName = file.getName();
-					if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
-						callback.foundMap(new ListedMapFile(file));
-					}
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// traverse all files and sub-folders
+		FileUtils.walkFileTree(directory, file -> {
+			String fileName = file.getName();
+			if (!file.isDirectory() && MapLoader.isExtensionKnown(fileName)) {
+				callback.foundMap(new ListedMapFile(file));
+			}
+		});
 	}
 
 	@Override
 	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
-		String name = header.getName().toLowerCase().replaceAll("^\\W+|\\W+$", "").replaceAll("\\W+", "_");
+		String name = header.getName().toLowerCase(Locale.ENGLISH).replaceAll("^\\W+|\\W+$", "").replaceAll("\\W+", "_");
 		if (name.isEmpty()) {
 			name = "map";
 		}
@@ -122,7 +115,7 @@ public class DirectoryMapLister implements IMapLister {
 
 		Date date = header.getCreationDate();
 		if (date != null) {
-			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
+			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss", Locale.ENGLISH);
 			name += format.format(date);
 		}
 

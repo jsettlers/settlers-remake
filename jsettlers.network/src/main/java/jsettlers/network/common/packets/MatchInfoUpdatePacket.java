@@ -98,8 +98,6 @@ public class MatchInfoUpdatePacket extends Packet {
 				return false;
 		} else if (!matchInfo.equals(other.matchInfo))
 			return false;
-		if (updateReason != other.updateReason)
-			return false;
-		return true;
+		return updateReason == other.updateReason;
 	}
 }

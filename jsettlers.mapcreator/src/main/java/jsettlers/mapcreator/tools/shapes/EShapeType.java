@@ -67,7 +67,7 @@ public enum EShapeType {
 	 * 
 	 * @param shape
 	 */
-	private EShapeType(ShapeType shape, ShapeIcon icon) {
+	EShapeType(ShapeType shape, ShapeIcon icon) {
 		this.shape = shape;
 		this.icon = icon;
 	}

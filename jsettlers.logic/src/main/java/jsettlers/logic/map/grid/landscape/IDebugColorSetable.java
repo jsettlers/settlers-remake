@@ -22,5 +22,5 @@ package jsettlers.logic.map.grid.landscape;
  */
 public interface IDebugColorSetable {
 
-	public void setDebugColor(int x, int y, int argb);
+	void setDebugColor(int x, int y, int argb);
 }

@@ -30,6 +30,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -77,8 +78,8 @@ import jsettlers.graphics.sound.SoundManager;
 /**
  * This is the main map content class. It manages the map drawing on the screen region.
  * <p>
- * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for
- * settlers, and other map objects. Then the interface is drawn above everything else.
+ * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for settlers, and other map objects. Then the interface
+ * is drawn above everything else.
  * <p>
  * The objects and background are drawn with the map draw context.
  * <p>
@@ -103,8 +104,7 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
-	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0,
-			2);
+	private static final AnimationSequence GOTO_ANIMATION = new AnimationSequence(new OriginalImageLink(EImageLinkType.SETTLER, 3, 1).getName(), 0, 2);
 	private static final float UI_OVERLAY_Z = .95f;
 
 	private final class ZoomEventHandler implements GOModalEventHandler {
@@ -116,22 +116,22 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		@Override
 		public void finished(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
 		@Override
 		public void aborted(GOEvent event) {
-			eventDataChanged(1);
+			eventDataChanged(1, null);
 		}
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			eventDataChanged(((GOZoomEvent) event).getZoomFactor(), ((GOZoomEvent) event).getPointingPosition());
 		}
 
-		private void eventDataChanged(float zoomFactor) {
+		private void eventDataChanged(float zoomFactor, UIPoint p) {
 			float newZoom = startZoom * zoomFactor;
-			setZoom(newZoom);
+			setZoom(newZoom, p);
 		}
 	}
 
@@ -142,6 +142,10 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private static final int MESSAGE_LINE_HEIGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
 	private static final long DOUBLE_CLICK_TIME = 500;
+	/**
+	 * Sound ID when we are attacked.
+	 */
+	public static final int NOTIFY_ATTACKED_SOUND_ID = 80;
 
 	private final IGraphicsGrid map;
 
@@ -199,35 +203,33 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 	/**
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
-	 *            The player
+	 * @param soundPlayer
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition) {
-		this(game, player, textDrawPosition, null);
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition) {
+		this(game, soundPlayer, textDrawPosition, null);
 	}
 
 	/**
 	 * 
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param game
 	 *            The map.
-	 * @param player
+	 * @param soundPlayer
 	 *            The player
 	 * @param controls
-	 *            The controls object to use as user interface. If it is <code>null</code> the original controls are overlayed.
 	 */
-	public MapContent(IStartedGame game, SoundPlayer player, ETextDrawPosition textDrawPosition, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer soundPlayer, ETextDrawPosition textDrawPosition, IControls controls) {
 		this.map = game.getMap();
 		this.gameTimeProvider = game.getGameTimeProvider();
 		this.textDrawPosition = textDrawPosition;
 		this.messenger = new Messenger(this.gameTimeProvider);
 		this.textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map);
-		this.soundmanager = new SoundManager(player);
+		this.soundmanager = new SoundManager(soundPlayer);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
@@ -337,7 +339,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	}
 
 	private float messageAlpha(IMessage m) {
-		int age = (int) m.getAge();
+		int age = m.getAge();
 		return age < 1500
 				? Math.min(1, age / 1000f)
 				: Math.max(0, 1f - (float) age / IMessage.MESSAGE_TTL);
@@ -354,7 +356,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			if (m.getSender() >= 0) {
 				String name = getPlayername(m.getSender()) + ":";
 				Color color = context.getPlayerColor(m.getSender());
-				float width = (float) drawer.getWidth(name);
+				float width = drawer.getWidth(name);
 				float bright = color.getRed() + color.getGreen() + color.getBlue();
 				if (bright < .9f) {
 					// black
@@ -452,8 +454,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private void drawActionThreadSlow(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		String string = Labels.getString("action_firerer_slow");
-		float x = windowWidth - (float) drawer.getWidth(string) - 5;
-		float y = windowHeight - 3 * (float) drawer.getHeight(string);
+		float x = windowWidth - drawer.getWidth(string) - 5;
+		float y = windowHeight - 3 * drawer.getHeight(string);
 		drawer.drawString(x, y, string);
 	}
 
@@ -611,7 +613,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomIn() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom * 1.3f);
+			setZoom(zoom * 1.3f, null);
 		}
 	}
 
@@ -621,7 +623,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	public void zoomOut() {
 		if (context != null) {
 			float zoom = context.getScreen().getZoom();
-			setZoom(zoom / 1.3f);
+			setZoom(zoom / 1.3f, null);
 		}
 	}
 
@@ -630,7 +632,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 */
 	public void zoom100() {
 		if (context != null) {
-			setZoom(1.0f);
+			setZoom(1.0f, null);
 		}
 	}
 
@@ -722,7 +724,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * @param position
 	 *            The new mouse position.
 	 */
-	protected void changeMousePosition(UIPoint position) {
+	private void changeMousePosition(UIPoint position) {
 		mousePosition = position;
 
 		if (controls.containsPoint(position)) {
@@ -807,7 +809,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	protected void abortSelectionArea() {
+	private void abortSelectionArea() {
 		this.currentSelectionAreaStart = null;
 		this.currentSelectionAreaEnd = null;
 	}
@@ -883,12 +885,12 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			break;
 		case ZOOM_IN:
 			if (context.getScreen().getZoom() < 1.1) {
-				setZoom(context.getScreen().getZoom() * 2);
+				setZoom(context.getScreen().getZoom() * 2, null);
 			}
 			break;
 		case ZOOM_OUT:
 			if (context.getScreen().getZoom() > 0.6) {
-				setZoom(context.getScreen().getZoom() / 2);
+				setZoom(context.getScreen().getZoom() / 2, null);
 			}
 			break;
 		case MOVE_TO:
@@ -907,8 +909,8 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		}
 	}
 
-	private void setZoom(float f) {
-		context.getScreen().setZoom(f);
+	private void setZoom(float newZoom, UIPoint pointingPosition) {
+		context.getScreen().setZoom(newZoom, pointingPosition);
 		reapplyContentSizes();
 	}
 
@@ -917,15 +919,17 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		synchronized (messenger) {
 			printMsg = messenger.addMessage(message);
 		}
-		if (printMsg)
+
+		if (printMsg) {
 			switch (message.getType()) {
 			case ATTACKED:
-				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1);
+				soundmanager.playSound(NOTIFY_ATTACKED_SOUND_ID, 1);
 				break;
 
 			default:
 				break;
 			}
+		}
 	}
 
 	@Override
@@ -951,7 +955,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		controls.stop();
 	}
 
-	protected void loadUIState(UIState state) {
+	void loadUIState(UIState state) {
 		if (state == null) {
 			return;
 		}
@@ -959,7 +963,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 		if (state.getStartPoint() != null) {
 			scrollTo(state.getStartPoint(), false);
 		} else {
-			setZoom(state.getZoom());
+			setZoom(state.getZoom(), null);
 			context.getScreen().setScreenCenter(state.getScreenCenterX(), state.getScreenCenterY());
 		}
 	}

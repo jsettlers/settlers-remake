@@ -59,7 +59,7 @@ public class ServersideSyncTasksPacket extends Packet {
 	public void deserialize(DataInputStream dis) throws IOException {
 		lockstepNumber = dis.readInt();
 		int numberOfTasks = dis.readInt();
-		tasks = new LinkedList<ServersideTaskPacket>();
+		tasks = new LinkedList<>();
 
 		for (int i = 0; i < numberOfTasks; i++) {
 			ServersideTaskPacket curr = new ServersideTaskPacket();

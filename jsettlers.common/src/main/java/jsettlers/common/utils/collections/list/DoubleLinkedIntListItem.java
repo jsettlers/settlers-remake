@@ -51,8 +51,6 @@ public final class DoubleLinkedIntListItem extends DoubleLinkedListItem<DoubleLi
 		if (getClass() != obj.getClass())
 			return false;
 		DoubleLinkedIntListItem other = (DoubleLinkedIntListItem) obj;
-		if (value != other.value)
-			return false;
-		return true;
+		return value == other.value;
 	}
 }

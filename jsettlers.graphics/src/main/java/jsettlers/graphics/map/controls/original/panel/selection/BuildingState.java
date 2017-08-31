@@ -200,7 +200,7 @@ public class BuildingState {
 			IBuilding.IOccupied occupied = (IBuilding.IOccupied) building;
 			newStates = new Hashtable<>();
 			for (ESoldierClass soldierClass : ESoldierClass.VALUES) {
-				newStates.put(soldierClass, new ArrayList<OccupierState>());
+				newStates.put(soldierClass, new ArrayList<>());
 			}
 
 			for (IBuildingOccupier o : occupied.getOccupiers()) {
@@ -286,7 +286,7 @@ public class BuildingState {
 		}
 		int i = 0;
 		for (IBuildingMaterial mat : materials) {
-			if (stackStates.get(i++).isStillInState(mat)) {
+			if (!stackStates.get(i++).isStillInState(mat)) {
 				return false;
 			}
 		}

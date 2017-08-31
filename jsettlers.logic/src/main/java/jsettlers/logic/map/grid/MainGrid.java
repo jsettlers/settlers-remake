@@ -14,7 +14,14 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid;
 
-import java8.util.Optional;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.algorithms.borders.BordersThread;
 import jsettlers.algorithms.borders.IBordersThreadGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -33,6 +40,7 @@ import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
+import jsettlers.algorithms.traversing.area.IAreaVisitor;
 import jsettlers.common.Color;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
@@ -42,13 +50,6 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.object.BuildingObject;
-import jsettlers.common.map.object.MapObject;
-import jsettlers.common.map.object.MapStoneObject;
-import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.map.object.MovableObject;
-import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
@@ -59,10 +60,11 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.menu.UIState;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.player.IPlayerable;
+import jsettlers.common.player.IPlayer;
 import jsettlers.common.position.MutablePoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -72,8 +74,8 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.MaterialProductionSettings;
-import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.stack.IRequestsStackGrid;
 import jsettlers.logic.buildings.stack.multi.StockSettings;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -98,27 +100,30 @@ import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDigger
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IOfferEmptiedListener;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.EOfferPriority;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
+import jsettlers.logic.map.loading.data.IMapData;
+import jsettlers.logic.map.loading.data.objects.BuildingMapDataObject;
+import jsettlers.logic.map.loading.data.objects.IPlayerIdProvider;
+import jsettlers.logic.map.loading.data.objects.MapDataObject;
+import jsettlers.logic.map.loading.data.objects.MapTreeObject;
+import jsettlers.logic.map.loading.data.objects.MovableObject;
+import jsettlers.logic.map.loading.data.objects.StackMapDataObject;
+import jsettlers.logic.map.loading.data.objects.StoneMapDataObject;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.logic.map.loading.newmap.MapFileHeader.MapType;
 import jsettlers.logic.movable.EntityFactory;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableDataManager;
-import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Date;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java8.util.Optional;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -202,7 +207,7 @@ public final class MainGrid implements Serializable {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;
 		} else {
-			this.fogOfWar = new FogOfWar(width, height, playerId);
+			this.fogOfWar = new FogOfWar(width, height, partitionsGrid.getPlayer(playerId));
 		}
 	}
 
@@ -242,7 +247,7 @@ public final class MainGrid implements Serializable {
 		// two phases, we might need the base grid tiles to add blocking, status
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
-				MapObject object = mapGrid.getMapObject(x, y);
+				MapDataObject object = mapGrid.getMapObject(x, y);
 				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					addMapObject(x, y, object);
 				}
@@ -257,7 +262,7 @@ public final class MainGrid implements Serializable {
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
-				MapObject object = mapGrid.getMapObject(x, y);
+				MapDataObject object = mapGrid.getMapObject(x, y);
 				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					try {
 						addMapObject(x, y, object);
@@ -270,12 +275,12 @@ public final class MainGrid implements Serializable {
 		System.out.println("grid filled");
 	}
 
-	private boolean isActivePlayer(MapObject object, PlayerSetting[] playerSettings) {
-		return !(object instanceof IPlayerable) || playerSettings[((IPlayerable) object).getPlayerId()].isAvailable();
+	private boolean isActivePlayer(MapDataObject object, PlayerSetting[] playerSettings) {
+		return !(object instanceof IPlayerIdProvider) || playerSettings[((IPlayerIdProvider) object).getPlayerId()].isAvailable();
 	}
 
-	private static boolean isOccupyableBuilding(MapObject object) {
-		return object instanceof BuildingObject && ((BuildingObject) object).getType().isMilitaryBuilding();
+	private static boolean isOccupyableBuilding(MapDataObject object) {
+		return object instanceof BuildingMapDataObject && ((BuildingMapDataObject) object).getType().isMilitaryBuilding();
 	}
 
 	private boolean isInsideWater(short x, short y) {
@@ -287,19 +292,19 @@ public final class MainGrid implements Serializable {
 		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
 	}
 
-	private void addMapObject(short x, short y, MapObject object) {
+	private void addMapObject(short x, short y, MapDataObject object) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 
 		if (object instanceof MapTreeObject) {
 			if (isInBounds(x, y) && movablePathfinderGrid.pathfinderGrid.isTreePlantable(x, y)) {
 				mapObjectsManager.plantAdultTree(pos);
 			}
-		} else if (object instanceof MapStoneObject) {
-			mapObjectsManager.addStone(pos, ((MapStoneObject) object).getCapacity());
-		} else if (object instanceof StackObject) {
-			placeStack(pos, ((StackObject) object).getType(), ((StackObject) object).getCount());
-		} else if (object instanceof BuildingObject) {
-			BuildingObject buildingObject = (BuildingObject) object;
+		} else if (object instanceof StoneMapDataObject) {
+			mapObjectsManager.addStone(pos, ((StoneMapDataObject) object).getCapacity());
+		} else if (object instanceof StackMapDataObject) {
+			placeStack(pos, ((StackMapDataObject) object).getType(), ((StackMapDataObject) object).getCount());
+		} else if (object instanceof BuildingMapDataObject) {
+			BuildingMapDataObject buildingObject = (BuildingMapDataObject) object;
 			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayer(buildingObject.getPlayerId()), true);
 
 			if (building instanceof IOccupyableBuilding) {
@@ -313,7 +318,56 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public MapFileHeader generateSaveHeader() {
+	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
+		for (int i = 0; i < count; i++) {
+			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
+		}
+	}
+
+	public void save(Byte playerId, UIState uiState) throws IOException {
+		boolean savedPausingState = MatchConstants.clock().isPausing();
+		MatchConstants.clock().setPausing(true);
+		try {
+			Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		PlayerState[] playerStates = calculatePlayerStates(playerId, uiState);
+		MapFileHeader header = generateSaveHeader(playerId);
+		MapList list = MapList.getDefaultList();
+		list.saveMap(playerStates, header, MainGrid.this);
+
+		MatchConstants.clock().setPausing(savedPausingState);
+	}
+
+	private PlayerState[] calculatePlayerStates(Byte playerId, UIState uiState) {
+		byte numberOfPlayers = partitionsGrid.getNumberOfPlayers();
+		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
+		for (byte currPlayerId = 0; currPlayerId < numberOfPlayers; currPlayerId++) {
+			// find a tower of the player
+			UIState currUIState = calculateUiStateByTower(currPlayerId);
+			playerStates[currPlayerId] = new PlayerState(currPlayerId, currUIState);
+		}
+		if (playerId != null) {
+			if (uiState == null) {
+				uiState = calculateUiStateByTower(playerId);
+			}
+			playerStates[playerId] = new PlayerState(playerId, uiState, fogOfWar);
+		}
+		return playerStates;
+	}
+
+	private UIState calculateUiStateByTower(byte currPlayerId) {
+		for (Building building : Building.getAllBuildings()) {
+			if (building.getPlayer().playerId == currPlayerId && building instanceof OccupyingBuilding) {
+				return new UIState(building.getPos());
+			}
+		}
+		return null;
+	}
+
+	public MapFileHeader generateSaveHeader(Byte playerId) {
 		// TODO: description
 		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
 				landscapeGrid.getPreviewImageDataSupplier());
@@ -333,20 +387,16 @@ public final class MainGrid implements Serializable {
 
 		return new MapFileHeader(
 				MapType.SAVED_SINGLE,
-				mapName, mapId,
+				mapName,
+				mapId,
 				"TODO: description",
 				width,
 				height,
 				(short) 1,
 				playerConfigurations,
 				new Date(),
-				bgImage);
-	}
-
-	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
-		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.dropMaterial(pos, materialType, true, false);
-		}
+				bgImage,
+				playerId);
 	}
 
 	public ConstructionMarksGrid getConstructionMarksGrid() {
@@ -439,7 +489,7 @@ public final class MainGrid implements Serializable {
 
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
-				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
+				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer().getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
 	}
 
 	public FlagsGrid getFlagsGrid() {
@@ -455,7 +505,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
-			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
+			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer().getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
 		@Override
@@ -484,7 +534,7 @@ public final class MainGrid implements Serializable {
 			switch (searchType) {
 
 			case UNENFORCED_FOREIGN_GROUND:
-				return !flagsGrid.isProtected(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+				return !objectsGrid.isBuildingAt(x, y) && !hasSameTeam(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
 			case VALID_FREE_POSITION:
 				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
@@ -511,11 +561,6 @@ public final class MainGrid implements Serializable {
 				return y + 1 < height && x - 1 > 0 && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case ENEMY: {
-				IMovable movable = movableGrid.getMovableAt(x, y);
-				return movable != null && movable.getPlayerId() != pathCalculable.getPlayerId();
-			}
-
 			case RIVER:
 				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
@@ -530,13 +575,18 @@ public final class MainGrid implements Serializable {
 			case SOLDIER_SWORDSMAN:
 			case SOLDIER_PIKEMAN:
 			case SOLDIER_INFANTRY:
-				return isSoldierAt(x, y, searchType, pathCalculable.getPlayerId());
+				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 
 			case RESOURCE_SIGNABLE:
-				return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
+				return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && !flagsGrid.isMarked(x, y) && canAddResourceSign(x, y);
 
 			case FOREIGN_MATERIAL:
 				return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
+
+			case ENEMY: {
+				IMovable movable = movableGrid.getMovableAt(x, y);
+				return movable != null && movable.getPlayer().getTeamId() != pathCalculable.getPlayer().getTeamId();
+			}
 
 			default:
 				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
@@ -554,7 +604,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		final boolean canAddRessourceSign(int x, int y) {
+		final boolean canAddResourceSign(int x, int y) {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
@@ -567,12 +617,12 @@ public final class MainGrid implements Serializable {
 							EMapObjectType.FOUND_BRIMSTONE);
 		}
 
-		private boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
+		private boolean isSoldierAt(int x, int y, ESearchType searchType, IPlayer player) {
 			ILogicMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
 			} else {
-				if (movable.getPlayerId() == player && movable.canOccupyBuilding()) {
+				if (movable.getPlayer() == player && movable.canOccupyBuilding()) {
 					EMovableType movableType = movable.getMovableType();
 
 					switch (searchType) {
@@ -615,7 +665,12 @@ public final class MainGrid implements Serializable {
 		}
 
 		private boolean hasSamePlayer(int x, int y, IPathCalculatable requester) {
-			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayerId();
+			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayer().getPlayerId();
+		}
+
+		private boolean hasSameTeam(int x, int y, IPathCalculatable requester) {
+			Player player = partitionsGrid.getPlayerAt(x, y);
+			return player != null && player.getTeamId() == requester.getPlayer().getTeamId();
 		}
 
 		private boolean isRiver(int x, int y) {
@@ -738,10 +793,11 @@ public final class MainGrid implements Serializable {
 				return landscapeGrid.getDebugColor(x, y);
 			case MARKS_AND_OBJECTS:
 				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-										: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
-												: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB()
+								: (objectsGrid
+										.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+												: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB()
+														: (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 			case RESOURCE_AMOUNTS:
 				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
 				return Color.getARGB(1, .6f, 0, resource);
@@ -852,12 +908,12 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public EResourceType getRessourceTypeAt(int x, int y) {
+		public EResourceType getResourceTypeAt(int x, int y) {
 			return landscapeGrid.getResourceTypeAt(x, y);
 		}
 
 		@Override
-		public byte getRessourceAmountAt(int x, int y) {
+		public byte getResourceAmountAt(int x, int y) {
 			return landscapeGrid.getResourceAmountAt(x, y);
 		}
 
@@ -874,9 +930,9 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void spawnDonkey(ShortPoint2D position, byte playerId) {
-			Player player = partitionsGrid.getPlayer(playerId);
-			ILogicMovable donkey = EntityFactory.CreateMovable(movablePathfinderGrid, EMovableType.DONKEY, position, player);
+		public void spawnDonkey(ShortPoint2D position, Player player) {
+			Player realPlayer = partitionsGrid.getPlayer(player.getPlayerId());
+			ILogicMovable donkey = EntityFactory.CreateMovable(movablePathfinderGrid, EMovableType.DONKEY, position, realPlayer);
 			donkey.leavePosition();
 		}
 
@@ -894,8 +950,12 @@ public final class MainGrid implements Serializable {
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
 		public final boolean isPioneerBlockedAndWithoutTowerProtection(int x, int y) {
-			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0
-					&& !partitionsGrid.isEnforcedByTower(x, y);
+			return MainGrid.this.isInBounds(x, y) && flagsGrid.isPioneerBlocked(x, y) && !landscapeGrid.isBlockedPartition(x, y) && !partitionsGrid.isEnforcedByTower(x, y);
+		}
+
+		@Override
+		public boolean isOfPlayerOrBlocked(int x, int y, byte playerId) {
+			return partitionsGrid.getPlayerIdAt(x, y) == playerId || landscapeGrid.isBlockedPartition(x, y);
 		}
 
 		@Override
@@ -904,13 +964,27 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final short getPartitionAt(int x, int y) {
-			return partitionsGrid.getPartitionIdAt(x, y);
+		public final byte getPlayerIdAt(int x, int y) {
+			return partitionsGrid.getPlayerIdAt(x, y);
+		}
+
+		private void destroyBuildingOrTakeOver(int x, int y, byte playerId) {
+			if (flagsGrid.isBlocked(x, y)) {
+				partitionsGrid.changePlayerAt(x, y, playerId);
+			}
+
+			Building building = objectsGrid.getBuildingAt(x, y);
+			if (building != null && building.getPlayer().getPlayerId() != playerId) {
+				building.kill();
+			}
 		}
 
 		@Override
-		public final void setPartitionAt(int x, int y, short partition) {
-			partitionsGrid.setPartitionAt(x, y, partition);
+		public IAreaVisitor getDestroyBuildingOrTakeOverVisitor(byte newPlayer) {
+			return (x, y) -> {
+				destroyBuildingOrTakeOver(x, y, newPlayer);
+				return true;
+			};
 		}
 
 		@Override
@@ -948,7 +1022,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType buildingType, byte playerId) {
+		public boolean canConstructAt(int x, int y, EBuildingType buildingType, byte playerId) {
 			RelativePoint[] buildingArea = buildingType.getBuildingArea();
 			BuildingAreaBitSet areaBitSet = buildingType.getBuildingAreaBitSet();
 			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
@@ -1207,8 +1281,8 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean feedDonkeyAt(ShortPoint2D position) {
-			byte playerId = partitionsGrid.getPartitionAt(position.x, position.y).getPlayerId();
-			return mapObjectsManager.feedDonkeyAt(position, playerId);
+			Player player = partitionsGrid.getPlayerAt(position.x, position.y);
+			return mapObjectsManager.feedDonkeyAt(position, player);
 		}
 
 		@Override
@@ -1312,17 +1386,17 @@ public final class MainGrid implements Serializable {
 				final short maxSearchRadius, final boolean includeTowers) {
 			boolean isBowman = searchingAttackable.getMovableType().isBowman();
 
-			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, minSearchRadius,
+			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, minSearchRadius,
 					maxSearchRadius), isBowman, includeTowers);
 			if (includeTowers && !isBowman && enemy == null) {
-				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, maxSearchRadius,
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.x, position.y, maxSearchRadius,
 						Constants.TOWER_SEARCH_RADIUS), false, true);
 			}
 
 			return enemy;
 		}
 
-		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
+		private IAttackable getEnemyInSearchArea(IPlayer searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
 			return area.stream().filterBounds(width, height).iterateForResult((x, y) -> {
 				IAttackable currAttackable = movableGrid.getMovableAt(x, y);
 				if (includeTowers && !isBowman && currAttackable == null) {
@@ -1589,8 +1663,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
-			CoordinateStream positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
-			checkAllPositionsForEnclosedBlockedAreas(positions);
+			partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
 		}
 
 		@Override
@@ -1618,8 +1691,9 @@ public final class MainGrid implements Serializable {
 				float circleRadius = radius * circle / (float) numCircles;
 				float mapObjectProgress = (circle - 1) / (float) (numCircles - 1);
 
-				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius).forEach(
-						(x, y) -> addOrRemoveMarkObject(buildingPartition, draw, new ShortPoint2D(x, y), mapObjectProgress));
+				MapCircle.streamBorder(workAreaCenter.x, workAreaCenter.y, circleRadius)
+						.filterBounds(width, height)
+						.forEach((x, y) -> addOrRemoveMarkObject(buildingPartition, draw, x, y, mapObjectProgress));
 			}
 		}
 
@@ -1647,14 +1721,14 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, ShortPoint2D pos, float progress) {
+		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, int x, int y, float progress) {
 			if (draw) {
 				// Only place an object if the position is the same as the one of the building.
-				if (partitionsGrid.getPartitionIdAt(pos.x, pos.y) == buildingPartition) {
-					mapObjectsManager.addBuildingWorkAreaObject(pos.x, pos.y, progress);
+				if (partitionsGrid.getPartitionIdAt(x, y) == buildingPartition) {
+					mapObjectsManager.addBuildingWorkAreaObject(x, y, progress);
 				}
 			} else {
-				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
+				mapObjectsManager.removeMapObjectType(x, y, EMapObjectType.WORKAREA_MARK);
 			}
 		}
 
@@ -1679,8 +1753,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround,
-				final byte playerId, short targetRadius) {
+		public ShortPoint2D getClosestReachablePosition(final ShortPoint2D start, ShortPoint2D target, final boolean needsPlayersGround, final IPlayer player, short targetRadius) {
 			Path path = movablePathfinderGrid.searchDijkstra(new IPathCalculatable() {
 				private static final long serialVersionUID = 1L;
 
@@ -1690,8 +1763,8 @@ public final class MainGrid implements Serializable {
 				}
 
 				@Override
-				public byte getPlayerId() {
-					return playerId;
+				public IPlayer getPlayer() {
+					return player;
 				}
 
 				@Override
@@ -1736,36 +1809,16 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId, boolean useNeighbors) {
-			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, playerId)) {
-				return pos;
-			} else if (useNeighbors) {
-				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
-					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, playerId)) {
-						return neighbour;
-					}
-				}
-				return null;
-
-			} else {
-				return null;
-			}
+		public final Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId) {
+			return MapCircle.stream(pos, Constants.BUILDING_PLACEMENT_MAX_SEARCH_RADIUS)
+					.filterBounds(width, height)
+					.filter((x, y) -> constructionMarksGrid.canConstructAt(x, y, type, playerId))
+					.min((x, y) -> ShortPoint2D.getOnGridDist(pos.x, pos.y, x, y));
 		}
 
 		@Override
-		public final void save(PlayerState[] playerStates) throws IOException, InterruptedException {
-			boolean savedPausingState = MatchConstants.clock().isPausing();
-			MatchConstants.clock().setPausing(true);
-			try {
-				Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			MapList list = MapList.getDefaultList();
-			list.saveMap(playerStates, MainGrid.this);
-
-			MatchConstants.clock().setPausing(savedPausingState);
+		public final void save(Byte playerId, UIState uiState) throws IOException, InterruptedException {
+			MainGrid.this.save(playerId, uiState);
 		}
 
 		@Override
@@ -1797,15 +1850,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
-			if (isInBounds(managerPosition))
-				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, probabilities);
+		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, EBuildingType buildingType, float ratio) {
+			if (isInBounds(managerPosition)) {
+				partitionsGrid.getPartitionSettings(managerPosition).setMaterialDistributionSettings(materialType, buildingType, ratio);
+			}
 		}
 
 		@Override
 		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
-			if (isInBounds(managerPosition))
+			if (isInBounds(managerPosition)) {
 				partitionsGrid.getPartitionSettings(managerPosition).setMaterialPriorities(materialTypeForPriority);
+			}
 		}
 
 		@Override
@@ -1829,11 +1884,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public FogOfWar getFogOfWar() {
-			return fogOfWar;
-		}
-
-		@Override
 		public MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position) {
 			return getPartitionsGrid().getMaterialProductionAt(position.x, position.y);
 		}
@@ -1845,8 +1895,7 @@ public final class MainGrid implements Serializable {
 	}
 
 	/**
-	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid
-	 * changes it's player.
+	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid changes it's player.
 	 *
 	 * @author Andreas Eberle
 	 */
@@ -1858,7 +1907,7 @@ public final class MainGrid implements Serializable {
 			bordersThread.checkPosition(position);
 
 			Building building = objectsGrid.getBuildingAt(x, y);
-			if (building != null && building.getPlayerId() != newPlayerId) {
+			if (building != null && building.getPlayer().getPlayerId() != newPlayerId) {
 				building.kill();
 			}
 		}

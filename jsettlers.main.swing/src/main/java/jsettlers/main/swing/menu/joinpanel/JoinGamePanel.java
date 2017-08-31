@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,13 +15,13 @@
 package jsettlers.main.swing.menu.joinpanel;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -49,7 +49,7 @@ import jsettlers.common.menu.IMultiplayerPlayer;
 import jsettlers.common.menu.IStartingGame;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.logic.map.loading.EMapStartResources;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.player.PlayerSetting;
@@ -57,6 +57,7 @@ import jsettlers.main.JSettlersGame;
 import jsettlers.main.swing.JSettlersFrame;
 import jsettlers.main.swing.JSettlersSwingUtil;
 import jsettlers.main.swing.lookandfeel.ELFStyle;
+import jsettlers.main.swing.lookandfeel.GBC;
 import jsettlers.main.swing.lookandfeel.components.BackgroundPanel;
 import jsettlers.main.swing.menu.joinpanel.slots.PlayerSlot;
 import jsettlers.main.swing.menu.joinpanel.slots.SlotToggleGroup;
@@ -65,7 +66,21 @@ import jsettlers.main.swing.menu.joinpanel.slots.factories.HostOfMultiplayerPlay
 import jsettlers.main.swing.menu.joinpanel.slots.factories.IPlayerSlotFactory;
 import jsettlers.main.swing.menu.joinpanel.slots.factories.SinglePlayerSlotFactory;
 
+import java8.util.J8Arrays;
+
 /**
+ * Layout:
+ * 
+ * +---------------------------------------------------------------+
+ * |              titleLabel                                       |
+ * +------------------------+--------------------------------------+
+ * |                        |       playerSlotsPanel               |
+ * |                        +--------------------------------------+
+ * | westPanel              |       chatPanel                      |
+ * |                        +--------------------------------------+
+ * |                        |       southPanel                     |
+ * +------------------------+--------------------------------------+
+ * 
  * @author codingberlin
  */
 public class JoinGamePanel extends BackgroundPanel {
@@ -73,11 +88,9 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private final JSettlersFrame settlersFrame;
 	private final JLabel titleLabel = new JLabel();
-	private final JPanel contentPanel = new JPanel();
 	private final JPanel westPanel = new JPanel();
 	private final JPanel mapPanel = new JPanel();
 	private final JPanel settingsPanel = new JPanel();
-	private final JPanel centerPanel = new JPanel();
 	private final JLabel mapNameLabel = new JLabel();
 	private final JLabel mapImage = new JLabel();
 	private final JLabel numberOfPlayersLabel = new JLabel();
@@ -98,7 +111,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	private final JTextArea chatArea = new JTextArea();
 	private final JButton sendChatMessageButton = new JButton();
 	private MapLoader mapLoader;
-	private final List<PlayerSlot> playerSlots = new Vector<>();
+	private final List<PlayerSlot> playerSlots = new ArrayList<>();
 	private IPlayerSlotFactory playerSlotFactory;
 
 	public JoinGamePanel(JSettlersFrame settlersFrame) {
@@ -110,14 +123,7 @@ public class JoinGamePanel extends BackgroundPanel {
 	}
 
 	private void createStructure() {
-		add(contentPanel);
-		contentPanel.setLayout(new BorderLayout(30, 30));
-		JPanel titleLabelWrapper = new JPanel();
-		contentPanel.add(titleLabelWrapper, BorderLayout.NORTH);
-		titleLabelWrapper.add(titleLabel);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPanel.add(westPanel, BorderLayout.WEST);
-		contentPanel.add(centerPanel, BorderLayout.CENTER);
 		westPanel.setLayout(new BorderLayout());
 		westPanel.add(mapPanel, BorderLayout.NORTH);
 		JPanel settingsPanelWrapper = new JPanel();
@@ -137,7 +143,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		settingsPanel.add(startResourcesComboBox);
 		settingsPanel.add(peaceTimeLabel);
 		settingsPanel.add(peaceTimeComboBox);
-		centerPanel.setLayout(new BorderLayout(0, 30));
 		sendChatMessageButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 15));
 		JPanel chatPanel = new JPanel();
 		chatPanel.setLayout(new BorderLayout(0, 10));
@@ -147,24 +152,23 @@ public class JoinGamePanel extends BackgroundPanel {
 		chatPanel.add(chatInputPanel, BorderLayout.SOUTH);
 		chatInputPanel.add(chatInputField, BorderLayout.CENTER);
 		chatInputPanel.add(sendChatMessageButton, BorderLayout.EAST);
-		centerPanel.add(chatPanel, BorderLayout.CENTER);
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		
 		playerSlotsPanel.setLayout(new GridBagLayout());
-		JScrollPane playerSlotPanelWrapper = new JScrollPane(playerSlotsPanel);
 		playerSlotsPanel.setBorder(new EmptyBorder(20, 25, 20, 20));
-		centerPanel.add(playerSlotPanelWrapper, BorderLayout.NORTH);
-		JPanel southPanelWrapper = new JPanel();
-		contentPanel.add(southPanelWrapper, BorderLayout.SOUTH);
 		JPanel southPanel = new JPanel();
-		southPanel.setLayout(new GridLayout(0, 3, 20, 20));
-		southPanelWrapper.add(southPanel);
+		southPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
 		cancelButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 15));
 		southPanel.add(cancelButton);
 		startGameButton.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 15));
 		southPanel.add(startGameButton);
+		
+		JPanel content = new JPanel(new GridBagLayout());
+		content.add(titleLabel, new GBC().grid(0, 0).size(2, 1).fillx().insets(0, 0, 30, 0));
+		content.add(westPanel, new GBC().grid(0, 1).size(1, 3).filly());
+		content.add(new JScrollPane(playerSlotsPanel), new GBC().grid(1, 1).fillx().filly());
+		content.add(chatPanel, new GBC().grid(1, 2).fillx().filly().insets(30, 0, 0, 0));
+		content.add(southPanel, new GBC().grid(1, 3).fillx().insets(30, 0, 0, 0));
+		add(content);
 	}
 
 	private void setStyle() {
@@ -234,9 +238,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			IStartingGame startingGame = game.start();
 			settlersFrame.showStartingGamePanel(startingGame);
 		});
-		setCancelButtonActionListener(e -> {
-			settlersFrame.showMainMenu();
-		});
+		setCancelButtonActionListener(e -> settlersFrame.showMainMenu());
 
 		prepareUiFor(mapLoader);
 	}
@@ -262,9 +264,7 @@ public class JoinGamePanel extends BackgroundPanel {
 			public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
 				SwingUtilities.invokeLater(() -> {
 					initializeChatFor(connector);
-					setStartButtonActionListener(e -> {
-						connector.startGame();
-					});
+					setStartButtonActionListener(e -> connector.startGame());
 					connector.getPlayers().setListener(changingPlayers -> onPlayersChanges(changingPlayers, connector));
 					connector.setMultiplayerListener(new IMultiplayerListener() {
 						@Override
@@ -279,7 +279,7 @@ public class JoinGamePanel extends BackgroundPanel {
 					});
 
 					onPlayersChanges(connector.getPlayers(), connector); // init the UI with the players
-					});
+				});
 			}
 		});
 
@@ -298,16 +298,12 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.setEnabled(false);
 		startResourcesComboBox.setEnabled(false);
 		setChatVisible(true);
-		cancelButton.addActionListener(e -> {
-			settlersFrame.showMainMenu();
-		});
+		cancelButton.addActionListener(e -> settlersFrame.showMainMenu());
 		startGameButton.setVisible(false);
 
 		prepareUiFor(mapLoader);
 
-		joinMultiPlayerMap.getPlayers().setListener(changingPlayers -> {
-			onPlayersChanges(changingPlayers, joinMultiPlayerMap);
-		});
+		joinMultiPlayerMap.getPlayers().setListener(changingPlayers -> onPlayersChanges(changingPlayers, joinMultiPlayerMap));
 		joinMultiPlayerMap.setMultiplayerListener(new IMultiplayerListener() {
 			@Override
 			public void gameIsStarting(IStartingGame game) {
@@ -343,8 +339,8 @@ public class JoinGamePanel extends BackgroundPanel {
 				chatInputField.setText("");
 			}
 		};
-		Arrays.asList(sendChatMessageButton.getActionListeners()).stream().forEach(sendChatMessageButton::removeActionListener);
-		Arrays.asList(chatInputField.getActionListeners()).stream().forEach(chatInputField::removeActionListener);
+		J8Arrays.stream(sendChatMessageButton.getActionListeners()).forEach(sendChatMessageButton::removeActionListener);
+		J8Arrays.stream(chatInputField.getActionListeners()).forEach(chatInputField::removeActionListener);
 		sendChatMessageButton.addActionListener(sendChatMessage);
 		chatInputField.addActionListener(sendChatMessage);
 
@@ -367,6 +363,7 @@ public class JoinGamePanel extends BackgroundPanel {
 				IMultiplayerPlayer player = players.get(i);
 				playerSlot.setPlayerName(player.getName());
 				playerSlot.setReady(player.isReady());
+				playerSlot.setPlayerType(EPlayerType.HUMAN, false);
 				if (player.getId().equals(myId)) {
 					playerSlot.setReadyButtonEnabled(true);
 					playerSlot.informGameAboutReady(joinMultiPlayerMap);
@@ -384,8 +381,6 @@ public class JoinGamePanel extends BackgroundPanel {
 		});
 	}
 
-	;
-
 	private void prepareUiFor(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
 		mapNameLabel.setText(mapLoader.getMapName());
@@ -393,7 +388,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		peaceTimeComboBox.removeAllItems();
 		peaceTimeComboBox.addItem(EPeaceTime.WITHOUT);
 		startResourcesComboBox.removeAllItems();
-		Arrays.asList(EMapStartResources.values()).stream()
+		J8Arrays.stream(EMapStartResources.values())
 				.map(MapStartResourcesUIWrapper::new)
 				.forEach(startResourcesComboBox::addItem);
 		startResourcesComboBox.setSelectedIndex(EMapStartResources.HIGH_GOODS.value - 1);
@@ -435,13 +430,13 @@ public class JoinGamePanel extends BackgroundPanel {
 
 	private void setStartButtonActionListener(ActionListener actionListener) {
 		ActionListener[] actionListeners = startGameButton.getActionListeners();
-		Arrays.asList(actionListeners).stream().forEach(startGameButton::removeActionListener);
+		J8Arrays.stream(actionListeners).forEach(startGameButton::removeActionListener);
 		startGameButton.addActionListener(actionListener);
 	}
 
 	private void setCancelButtonActionListener(ActionListener actionListener) {
 		ActionListener[] actionListeners = cancelButton.getActionListeners();
-		Arrays.asList(actionListeners).stream().forEach(cancelButton::removeActionListener);
+		J8Arrays.stream(actionListeners).forEach(cancelButton::removeActionListener);
 		cancelButton.addActionListener(actionListener);
 	}
 
@@ -468,7 +463,7 @@ public class JoinGamePanel extends BackgroundPanel {
 		}
 		SwingUtilities.updateComponentTreeUI(playerSlotsPanel);
 		SlotToggleGroup slotToggleGroup = new SlotToggleGroup();
-		playerSlots.stream().forEach(slotToggleGroup::add);
+		playerSlots.forEach(slotToggleGroup::add);
 	}
 
 	private void addPlayerSlotHeadline() {

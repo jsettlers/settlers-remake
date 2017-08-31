@@ -16,15 +16,16 @@ package jsettlers.graphics.localization;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.menu.EGameError;
 import jsettlers.common.menu.EProgressState;
 import jsettlers.common.menu.action.EActionType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.ESoldierType;
-import jsettlers.common.resources.ResourceManager;
 
 /**
  * This class provides access to all messages.
@@ -67,7 +68,7 @@ public final class Labels extends AbstractLabels {
 	 */
 	public static String getString(String string, Object... args) {
 		String parsedString = getString(string);
-		return String.format(INSTANCE.getUsedLocale(), parsedString, args);
+		return String.format(Locale.ENGLISH, parsedString, args);
 	}
 
 	/**
@@ -151,5 +152,9 @@ public final class Labels extends AbstractLabels {
 	 */
 	public static String getProgress(EProgressState progress) {
 		return getString("progress_" + progress);
+	}
+
+	public static String getErrorName(EGameError errorType) {
+		return getString("error_" + errorType);
 	}
 }

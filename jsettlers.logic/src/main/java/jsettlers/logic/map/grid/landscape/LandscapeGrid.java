@@ -36,7 +36,7 @@ import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListen
  *
  * @author Andreas Eberle
  */
-public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener,	IBlockingProvider {
+public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener, IBlockingProvider {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	/**
@@ -282,6 +282,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return this.blockedPartitions[x + y * width];
 	}
 
+	public boolean isBlockedPartition(int x, int y) {
+		return isBlocked(x, y);
+	}
+
 	@Override
 	public boolean isBlocked(int x, int y) {
 		return getBlockedPartitionAt(x, y) == 0;
@@ -305,9 +309,9 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * This method activates the unflattening process. This causes a flattened position to be turned into grass after a while.
 	 *
 	 * @param x
-	 *            X coordinate of the position.
+	 * 		X coordinate of the position.
 	 * @param y
-	 *            Y coordinate of the position.
+	 * 		Y coordinate of the position.
 	 */
 	private void activateUnflattening(int x, int y) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);

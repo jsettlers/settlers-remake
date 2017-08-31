@@ -14,18 +14,18 @@
  *******************************************************************************/
 package jsettlers.input;
 
+import java.io.IOException;
+
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.player.Player;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java8.util.Optional;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -55,22 +55,19 @@ public interface IGuiInputGrid {
 	 *            The type of the building
 	 * @param player
 	 *            The player that wants to construct the building.
-	 * @param useNeighbors
-	 *            If this is true, not only the given position is checked, if it can be used to construct a building, but also the neighbors.<br>
-	 *            If this is false, only the given position will be checked.
 	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ShortPoint2D getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player, boolean useNeighbors);
+	Optional<ShortPoint2D> getConstructablePosition(ShortPoint2D position, EBuildingType type, byte player);
 
 	/**
 	 * Saves the map with the given {@link UIState}.
 	 *
-	 * @param playerStates
-	 * @throws FileNotFoundException
+	 * @param playerId
+	 * @param uiState
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	void save(PlayerState[] playerStates) throws IOException, InterruptedException;
+	void save(Byte playerId, UIState uiState) throws IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -106,11 +103,13 @@ public interface IGuiInputGrid {
 	 *            The position of the manger to set the given settings.
 	 * @param materialType
 	 *            The {@link EMaterialType} of the material the given settings shall be used for.
-	 * @param probabilities
-	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings
-	 *            .getBuildingTypesRequestingMaterial(materialType).
+	 * @param buildingType
+	 *            The building type for which this setting should be set.
+	 * @param ratio
+	 *            The ratio that should be set for given materialType and buildingType.
+	 *
 	 */
-	void setMaterialDistributionSettings(ShortPoint2D managerPosition,			EMaterialType materialType, float[] probabilities);
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, EBuildingType buildingType, float ratio);
 
 	/**
 	 * Sets the material priorities setting in the given manager at the given managerPosition.
@@ -129,8 +128,6 @@ public interface IGuiInputGrid {
 	Player getPlayer(byte playerId);
 
 	byte getNumberOfPlayers();
-
-	FogOfWar getFogOfWar();
 
 	MaterialProductionSettings getMaterialProductionAt(ShortPoint2D position);
 

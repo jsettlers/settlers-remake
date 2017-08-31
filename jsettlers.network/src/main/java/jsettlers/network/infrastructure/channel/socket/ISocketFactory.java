@@ -26,7 +26,7 @@ import jsettlers.network.infrastructure.channel.socket.standard.JavaSocketFactor
  * 
  */
 public interface ISocketFactory {
-	public static ISocketFactory DEFAULT_FACTORY = NetworkConstants.USE_DELAYED_SOCKETS ? new DelayedSocketFactory() : new JavaSocketFactory();
+	ISocketFactory DEFAULT_FACTORY = NetworkConstants.USE_DELAYED_SOCKETS ? new DelayedSocketFactory() : new JavaSocketFactory();
 
 	ISocket generateSocket(String host, int port) throws SocketConnectException;
 

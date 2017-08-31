@@ -80,7 +80,7 @@ public class SplitedBackgroundPanel extends BackgroundPanel {
 		Dimension preferredLabelSize = titleLabel.getPreferredSize();
 		int x = 320 + (width - preferredLabelSize.width) / 2;
 		titleLabel.setBounds(x, 40, preferredLabelSize.width, preferredLabelSize.height);
-	};
+	}
 
 	/**
 	 * @return The title label on the right side

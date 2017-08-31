@@ -14,7 +14,13 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java8.util.stream.Collectors;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -66,19 +72,15 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
@@ -105,8 +107,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 */
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
-			IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
+	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, IGameStoppable gameStoppable, byte playerId, boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
@@ -140,24 +141,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		switch (action.getActionType()) {
 		case BUILD:
-			this.setSelection(new SelectionSet());
-			final BuildAction buildAction = (BuildAction) action;
-			EBuildingType buildingType = buildAction.getBuildingType();
-
-			final ShortPoint2D pos2 = grid.getConstructablePosition(buildAction.getPosition(), buildingType, playerId,
-					InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
-			if (pos2 != null) {
-				scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos2, buildingType));
-			}
-
-			System.out.println("build: " + buildingType);
+			handleBuildAction((BuildAction) action);
 			break;
 
-		case SHOW_CONSTRUCTION_MARK: {
-			buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
-			constructionMarksCalculator.setBuildingType(buildingType);
+		case SHOW_CONSTRUCTION_MARK:
+			constructionMarksCalculator.setBuildingType(((ShowConstructionMarksAction) action).getBuildingType());
 			break;
-		}
 
 		case DEBUG_ACTION:
 			for (final ISelectable curr : currentSelection) {
@@ -186,7 +175,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		case SPEED_FAST:
 			if (!multiplayer) {
-				clock.setGameSpeed(2.0f);
+				clock.setGameSpeed(5.0f);
 			}
 			break;
 		case SPEED_FASTER:
@@ -290,8 +279,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			final SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a
-					.getProbabilities()));
+			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a.getBuildingType(), a.getRatio()));
 			break;
 		}
 
@@ -369,6 +357,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
+	private void handleBuildAction(BuildAction buildAction) {
+		this.setSelection(new SelectionSet());
+		EBuildingType buildingType = buildAction.getBuildingType();
+
+		Optional<ShortPoint2D> position = grid.getConstructablePosition(buildAction.getPosition(), buildingType, playerId);
+		position.ifPresent(pos -> scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos, buildingType)));
+		System.out.println("build " + buildingType + " at " + position);
+	}
+
 	private void requestSoldiers(EChangeTowerSoldierTaskType taskType, ESoldierType soldierType) {
 		ISelectable selectable = currentSelection.getSingle();
 		if (selectable instanceof OccupyingBuilding) {
@@ -393,7 +390,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				if (currBuilding == building) {
 					buildingFound = true;
 				} else {
-					if (currBuilding.getBuildingType() == buildingType && currBuilding.getPlayerId() == playerId) {
+					if (currBuilding.getBuildingType() == buildingType && currBuilding.getPlayer().getPlayerId() == playerId) {
 						if (first == null) {
 							first = currBuilding;
 						}
@@ -511,12 +508,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
 	}
 
-	private final List<Integer> getIDsOfSelected() {
+	private List<Integer> getIDsOfSelected() {
 		return getIDsOfIterable(currentSelection);
 	}
 
-	private final static List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
-		final List<Integer> selectedIds = new LinkedList<Integer>();
+	private static List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
+		final List<Integer> selectedIds = new LinkedList<>();
 
 		for (final ISelectable curr : iterable) {
 			if (curr instanceof IIDable) {
@@ -531,11 +528,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		action.getArea().stream().filterBounds(grid.getWidth(), grid.getHeight()).forEach((x, y) -> {
 			final IGuiMovable movable = grid.getMovable(x, y);
-			if (movable != null && canSelectPlayer(movable.getPlayerId())) {
+			if (movable != null && canSelectPlayer(movable.getPlayer().getPlayerId())) {
 				selectionSet.add(movable);
 			}
 			final IBuilding building = grid.getBuildingAt(x, y);
-			if (building != null && canSelectPlayer(building.getPlayerId())) {
+			if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
 				selectionSet.add(building);
 			}
 		});
@@ -582,7 +579,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			} else {
 				// search buildings
 				final IBuilding building = grid.getBuildingAt(pos.x, pos.y);
-				if (building != null && canSelectPlayer(building.getPlayerId())) {
+				if (building != null && canSelectPlayer(building.getPlayer().getPlayerId())) {
 					return building;
 				} else {
 					return null;
@@ -599,13 +596,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		final IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
 		final IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
-		if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
+		if (m1 != null && canSelectPlayer(m1.getPlayer().getPlayerId())) {
 			return m1;
-		} else if (m2 != null && canSelectPlayer(m2.getPlayerId())) {
+		} else if (m2 != null && canSelectPlayer(m2.getPlayer().getPlayerId())) {
 			return m2;
-		} else if (m3 != null && canSelectPlayer(m3.getPlayerId())) {
+		} else if (m3 != null && canSelectPlayer(m3.getPlayer().getPlayerId())) {
 			return m3;
-		} else if (m4 != null && canSelectPlayer(m4.getPlayerId())) {
+		} else if (m4 != null && canSelectPlayer(m4.getPlayer().getPlayerId())) {
 			return m4;
 		} else {
 			return null;
@@ -622,28 +619,29 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		EMovableType selectedType = selectedMovable.getMovableType();
-		byte selectedPlayerId = selectedMovable.getPlayerId();
+		byte selectedPlayerId = selectedMovable.getPlayer().getPlayerId();
 
 		Set<EMovableType> selectableTypes;
 		if (selectedType.isSwordsman()) {
-			selectableTypes = EMovableType.swordsmen;
+			selectableTypes = EMovableType.SWORDSMEN;
 		} else if (selectedType.isPikeman()) {
-			selectableTypes = EMovableType.pikemen;
+			selectableTypes = EMovableType.PIKEMEN;
 		} else if (selectedType.isBowman()) {
-			selectableTypes = EMovableType.bowmen;
+			selectableTypes = EMovableType.BOWMEN;
 		} else {
 			selectableTypes = EnumSet.of(selectedType);
 		}
 
 		final List<ISelectable> selected = new LinkedList<>();
 
-		MapCircle.stream(actionPosition, SELECT_BY_TYPE_RADIUS).forEach((x, y) -> {
-			final IGuiMovable movable = grid.getMovable(x, y);
-			if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayerId()) {
-				selected.add(movable);
-			}
-		});
-
+		MapCircle.stream(actionPosition, SELECT_BY_TYPE_RADIUS)
+				.filterBounds(grid.getWidth(), grid.getHeight())
+				.forEach((x, y) -> {
+					final IGuiMovable movable = grid.getMovable(x, y);
+					if (movable != null && selectableTypes.contains(movable.getMovableType()) && selectedPlayerId == movable.getPlayer().getPlayerId()) {
+						selected.add(movable);
+					}
+				});
 		setSelection(new SelectionSet(selected));
 	}
 
@@ -666,7 +664,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (!currentSelection.isEmpty()) {
 			SelectionSet newSelection = new SelectionSet(currentSelection.stream()
 					.filter(ISelectable::isSelected)
-					.filter(selected -> canSelectPlayer(selected.getPlayerId()))
+					.filter(selected -> canSelectPlayer(selected.getPlayer().getPlayerId()))
 					.collect(Collectors.toList()));
 
 			if (currentSelection.getSize() != newSelection.getSize() || currentSelection.getSelectionType() != newSelection.getSelectionType()) {

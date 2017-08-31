@@ -12,7 +12,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
-import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.buildings.military.occupying.IOccupyableBuilding;
 import jsettlers.logic.movable.components.AnimationComponent;
 import jsettlers.logic.movable.components.AttackableComponent;
 import jsettlers.logic.movable.components.GameFieldComponent;
@@ -127,11 +127,6 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
     }
 
     @Override
-    public byte getPlayerId() {
-        return entity.get(MovableComponent.class).getPlayerId();
-    }
-
-    @Override
     public boolean isAttackable() {
         if (!entity.containsComponent(AttackableComponent.class)) return false;
         return entity.get(AttackableComponent.class).isAttackable();
@@ -185,8 +180,7 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
 
     @Override
     public ShortPoint2D getPosition() {
-        assert false: "not implemented";
-        return null;
+        return entity.movC().getPos();
     }
 
     @Override
@@ -236,7 +230,6 @@ public final class MovableWrapper implements ILogicMovable, Serializable {
         //TODO: switch to playerID or player everywhere
         return entity.get(MovableComponent.class).getPlayer();
     }
-
 
     @Override
     public void moveTo(ShortPoint2D targetPosition) {

@@ -36,12 +36,12 @@ final class FlattenedResetter implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = -7786860099434140327L;
 	private static final int SCHEDULE_INTERVAL = 1500;
 
-	private transient LinkedList<ShortPoint2D> positions = new LinkedList<ShortPoint2D>();
+	private transient LinkedList<ShortPoint2D> positions = new LinkedList<>();
 	private final IFlattenedResettable grid;
 
 	FlattenedResetter(IFlattenedResettable grid) {
 		this.grid = grid;
-		positions = new LinkedList<ShortPoint2D>();
+		positions = new LinkedList<>();
 		RescheduleTimer.add(this, SCHEDULE_INTERVAL);
 	}
 
@@ -57,7 +57,7 @@ final class FlattenedResetter implements IScheduledTimerable, Serializable {
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 
-		positions = new LinkedList<ShortPoint2D>();
+		positions = new LinkedList<>();
 
 		ShortPoint2D curr = (ShortPoint2D) ois.readObject();
 		while (curr != null) {

@@ -70,8 +70,6 @@ public class ConvertGuiTask extends MovableGuiTask {
 		if (getClass() != obj.getClass())
 			return false;
 		ConvertGuiTask other = (ConvertGuiTask) obj;
-		if (targetType != other.targetType)
-			return false;
-		return true;
+		return targetType == other.targetType;
 	}
 }

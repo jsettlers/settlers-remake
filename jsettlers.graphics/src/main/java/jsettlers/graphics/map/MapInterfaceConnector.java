@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -37,16 +37,13 @@ import jsettlers.graphics.action.ActionFirerer;
  */
 public class MapInterfaceConnector implements ActionFireable, IMapInterfaceConnector {
 
-	private final LinkedList<IMapInterfaceListener> listeners = new LinkedList<IMapInterfaceListener>();
+	private final LinkedList<IMapInterfaceListener> listeners = new LinkedList<>();
 
 	private final ActionFirerer actionFirerer = new ActionFirerer(
-			new ActionFireable() {
-				@Override
-				public void fireAction(IAction action) {
-					synchronized (listeners) {
-						for (IMapInterfaceListener listener : listeners) {
-							listener.action(action);
-						}
+			action -> {
+				synchronized (listeners) {
+					for (IMapInterfaceListener listener : listeners) {
+						listener.action(action);
 					}
 				}
 			});

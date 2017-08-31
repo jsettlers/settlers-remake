@@ -100,7 +100,7 @@ public final class FreeMapArea implements IMapArea {
 	}
 
 	private final static ArrayList<ShortPoint2D> convertRelative(ShortPoint2D pos, RelativePoint[] relativePoints) {
-		ArrayList<ShortPoint2D> list = new ArrayList<ShortPoint2D>();
+		ArrayList<ShortPoint2D> list = new ArrayList<>();
 
 		for (RelativePoint relative : relativePoints) {
 			list.add(relative.calculatePoint(pos));

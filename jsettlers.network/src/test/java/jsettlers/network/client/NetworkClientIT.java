@@ -249,7 +249,7 @@ public class NetworkClientIT {
 	}
 
 	private void openMatch(String id, String name, NetworkClient client) throws IllegalStateException, InterruptedException {
-		BufferingPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
+		BufferingPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver = new BufferingPacketReceiver<>();
 		assertEquals(0, matchesReceiver.popBufferedPackets().size());
 
 		client.logIn(id, name, matchesReceiver);
@@ -260,7 +260,7 @@ public class NetworkClientIT {
 		assertEquals(1, arrayOfMatches.size()); // check that we got one result for the request
 		assertEquals(0, arrayOfMatches.get(0).getMatches().length); // currently no matches should be in the result, because non should be open
 
-		BufferingPacketReceiver<MatchInfoUpdatePacket> matchUpdateListener = new BufferingPacketReceiver<MatchInfoUpdatePacket>();
+		BufferingPacketReceiver<MatchInfoUpdatePacket> matchUpdateListener = new BufferingPacketReceiver<>();
 		final String matchName = "TestMatch";
 		final byte maxPlayers = (byte) 5;
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName", 5);
@@ -292,7 +292,7 @@ public class NetworkClientIT {
 	public void testChatMessaging() throws IllegalStateException, InterruptedException {
 		testLogIn();
 
-		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<ChatMessagePacket>();
+		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<>();
 		client1.openNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 9), 923409340394293842L, null, null, chatReceiver);
 
 		Thread.sleep(80);
@@ -424,7 +424,7 @@ public class NetworkClientIT {
 		openMatch("id1", "player1", client1); // open match and join client2
 		client2.joinMatch(client1.getMatchInfo().getId(), null, null, null);
 
-		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<RejectPacket>();
+		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<>();
 		client2.registerRejectReceiver(rejectReceiver2);
 
 		Thread.sleep(50);

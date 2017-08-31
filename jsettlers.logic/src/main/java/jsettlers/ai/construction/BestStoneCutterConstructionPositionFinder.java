@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -24,8 +24,8 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * Assumptions: stones are placed as groups at the map, never alone without other stones
  * 
- * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near
- * stone of the possible construction position - takes the position with the best score (lowest distance to the most near stone)
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near stone of the possible construction position - takes
+ * the position with the best score (lowest distance to the most near stone)
  * 
  * @author codingberlin
  */
@@ -37,13 +37,13 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 	public static class StoneCutterPositionRater implements AiPositions.PositionRater {
 		private static final int BLOCKS_WORK_AREA_MALUS = 12;
 		private static final int NEAR_OTHER_STONE_CUTTER_MALUS = 8;
+
 		private final AbstractConstructionMarkableMap constructionMap;
 		private final AiStatistics aiStatistics;
 		private final byte playerId;
 		private final AiPositions objects;
 
-		public StoneCutterPositionRater(
-				AbstractConstructionMarkableMap constructionMap, AiStatistics aiStatistics, byte playerId, AiPositions stones) {
+		public StoneCutterPositionRater(AbstractConstructionMarkableMap constructionMap, AiStatistics aiStatistics, byte playerId, AiPositions stones) {
 			this.constructionMap = constructionMap;
 			this.aiStatistics = aiStatistics;
 			this.playerId = playerId;
@@ -58,7 +58,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 				int score = 0;
 				ShortPoint2D p = new ShortPoint2D(x, y);
 
-				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p, playerId, STONECUTTER)) {
+				if (aiStatistics.blocksWorkingAreaOfOtherBuilding(p.x, p.y, playerId, STONECUTTER)) {
 					score += BLOCKS_WORK_AREA_MALUS;
 				}
 				if (score >= currentBestRating) {
@@ -102,5 +102,4 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 
 		return aiStatistics.getLandForPlayer(playerId).getBestRatedPoint(rater);
 	}
-
 }

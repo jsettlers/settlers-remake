@@ -16,7 +16,7 @@ package jsettlers.main.swing.menu.joinpanel;
 
 import jsettlers.common.menu.IMapDefinition;
 import jsettlers.common.menu.IOpenMultiplayerGameInfo;
-import jsettlers.graphics.startscreen.SettingsManager;
+import jsettlers.main.swing.settings.SettingsManager;
 
 final class OpenMultiPlayerGameInfo implements IOpenMultiplayerGameInfo {
 	private final IMapDefinition map;

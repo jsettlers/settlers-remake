@@ -78,9 +78,7 @@ public class SimpleGuiTask extends TaskPacket {
 		SimpleGuiTask other = (SimpleGuiTask) obj;
 		if (guiAction != other.guiAction)
 			return false;
-		if (playerId != other.playerId)
-			return false;
-		return true;
+		return playerId == other.playerId;
 	}
 
 	public static void serializePosition(DataOutputStream dos, ShortPoint2D position) throws IOException {

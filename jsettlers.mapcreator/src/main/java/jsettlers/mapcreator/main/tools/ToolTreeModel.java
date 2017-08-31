@@ -45,7 +45,7 @@ public class ToolTreeModel implements TreeModel {
 		this.root = root;
 	}
 
-	private final LinkedList<TreeModelListener> listeners = new LinkedList<TreeModelListener>();
+	private final LinkedList<TreeModelListener> listeners = new LinkedList<>();
 
 	@Override
 	public void addTreeModelListener(TreeModelListener l) {

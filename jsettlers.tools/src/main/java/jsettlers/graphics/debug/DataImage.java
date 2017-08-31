@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Locale;
 
 import javax.swing.JPanel;
 
@@ -35,8 +36,8 @@ public class DataImage extends JPanel implements MouseListener,
 		MouseMotionListener {
 
 	/**
-     * 
-     */
+	 * 
+	 */
 	private static final long serialVersionUID = 6066076752384349596L;
 
 	private final byte[] data;
@@ -76,9 +77,8 @@ public class DataImage extends JPanel implements MouseListener,
 			int pos = pixelIndexToDataPos(index);
 			long current = getData(pos, this.pixelLength);
 
-			Color c =
-					new Color(getMasked(current, this.redMask), getMasked(current,
-							this.greenMask), getMasked(current, this.blueMask));
+			Color c = new Color(getMasked(current, this.redMask), getMasked(current,
+					this.greenMask), getMasked(current, this.blueMask));
 			g2d.setColor(c);
 			Point screen = dataPosToScreen(pos);
 			g2d.fillRect(screen.x, screen.y, this.pixelSize, this.pixelSize);
@@ -231,10 +231,7 @@ public class DataImage extends JPanel implements MouseListener,
 		 * for (int i = 0; i < getPixelLength(); i++) { str += " " + Integer.toHexString(0xff & data[i]); }
 		 */
 		long pixel = getData(realCurrentMarked, getPixelLength());
-		str +=
-				" 0x"
-						+ String.format("%0" + (getPixelLength() * 2) + "x",
-								pixel);
+		str += " 0x" + String.format(Locale.ENGLISH, "%0" + (getPixelLength() * 2) + "x", pixel);
 
 		int fontHeight = g.getFontMetrics().getHeight() + 4;
 		g.setColor(Color.WHITE);

@@ -29,7 +29,7 @@ public interface IProtectedProvider {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public interface IProtectedChangedListener {
+	interface IProtectedChangedListener {
 		void protectedChanged(int x, int y, boolean newProtectedState);
 	}
 }

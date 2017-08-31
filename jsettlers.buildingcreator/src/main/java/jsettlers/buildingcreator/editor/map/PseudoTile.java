@@ -73,7 +73,7 @@ public class PseudoTile {
 	@Override
 	public int hashCode() {
 		return ShortPoint2D.hashCode(x, y);
-	};
+	}
 
 	public void setBuilding(IBuilding building) {
 		this.building = building;

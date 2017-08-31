@@ -36,7 +36,7 @@ public enum EResourceType {
 	public final byte ordinal;
 	public final EMapObjectType mapObjectType;
 
-	private EResourceType(EMapObjectType mapObjectType) {
+	EResourceType(EMapObjectType mapObjectType) {
 		this.mapObjectType = mapObjectType;
 		this.ordinal = (byte) super.ordinal();
 	}

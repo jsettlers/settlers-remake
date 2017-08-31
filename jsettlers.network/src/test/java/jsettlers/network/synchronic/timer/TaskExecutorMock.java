@@ -28,7 +28,7 @@ import jsettlers.network.synchronic.timer.ITaskExecutor;
  */
 public class TaskExecutorMock implements ITaskExecutor {
 
-	private LinkedList<TaskPacket> buffer = new LinkedList<TaskPacket>();
+	private LinkedList<TaskPacket> buffer = new LinkedList<>();
 
 	@Override
 	public void executeTask(TaskPacket task) {
@@ -37,7 +37,7 @@ public class TaskExecutorMock implements ITaskExecutor {
 
 	public List<TaskPacket> popBufferedPackets() {
 		List<TaskPacket> temp = buffer;
-		buffer = new LinkedList<TaskPacket>();
+		buffer = new LinkedList<>();
 		return temp;
 	}
 }

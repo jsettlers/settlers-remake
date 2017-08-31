@@ -14,9 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
-import jsettlers.algorithms.traversing.borders.IBorderVisitor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
@@ -54,9 +52,9 @@ final class PartitionsDividedTester {
 		assert partition1.partitionId == partition2.partitionId;
 
 		return posNotOnBorder(partitionObjects, partitions, width, partition1.positionOfPartition,
-					partition1.insideNeighborPosition, partition2.positionOfPartition, partition1.partitionId, partition1Size)
+				partition1.insideNeighborPosition, partition2.positionOfPartition, partition1.partitionId, partition1Size)
 				&& posNotOnBorder(partitionObjects, partitions, width, partition2.positionOfPartition,
-					partition2.insideNeighborPosition, partition1.positionOfPartition, partition1.partitionId, partition2Size);
+						partition2.insideNeighborPosition, partition1.positionOfPartition, partition1.partitionId, partition2Size);
 	}
 
 	/**
@@ -77,18 +75,8 @@ final class PartitionsDividedTester {
 		final short checkPositionX = checkPosition.x;
 		final short checkPositionY = checkPosition.y;
 
-		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
-			@Override
-			public boolean contains(int x, int y) {
-				return partitionObjects[partitions[x + y * width]].partitionId == partitionId;
-			}
-		}, insideStartPosition, outsideStartPosition, new IBorderVisitor() {
-			@Override
-			public boolean visit(int insideX, int insideY, int outsideX, int outsideY) {
-				return checkPositionX != insideX || checkPositionY != insideY;
-			}
-		}, false, partitionSize);
-
-		return pos2NotOnBorder;
+		return BorderTraversingAlgorithm.traverseBorder(
+				(x, y) -> partitionObjects[partitions[x + y * width]].partitionId == partitionId, insideStartPosition, outsideStartPosition,
+				(insideX, insideY, outsideX, outsideY) -> checkPositionX != insideX || checkPositionY != insideY, false, partitionSize);
 	}
 }

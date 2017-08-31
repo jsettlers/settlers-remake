@@ -144,9 +144,7 @@ public class MatchInfoPacket extends Packet {
 			return false;
 		if (maxPlayers != other.maxPlayers)
 			return false;
-		if (!Arrays.equals(players, other.players))
-			return false;
-		return true;
+		return Arrays.equals(players, other.players);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -49,7 +49,7 @@ public abstract class BasicSettlerListCellRenderer<T> extends JLabel implements 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getListCellRendererComponent(JList<? extends Object> list, Object value, int index, boolean isSelected,
+	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 
 		if (isSelected) {
@@ -82,5 +82,5 @@ public abstract class BasicSettlerListCellRenderer<T> extends JLabel implements 
 	 * @param index
 	 *            Index
 	 */
-	protected abstract void setValue(JList<? extends Object> list, T value, int index, boolean isSelected, boolean cellHasFocus);
+	protected abstract void setValue(JList<?> list, T value, int index, boolean isSelected, boolean cellHasFocus);
 }

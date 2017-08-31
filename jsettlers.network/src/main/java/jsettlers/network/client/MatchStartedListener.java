@@ -34,7 +34,7 @@ public class MatchStartedListener extends PacketChannelListener<MatchStartPacket
 	private IPacketReceiver<MatchStartPacket> matchStartedListener;
 
 	public MatchStartedListener(NetworkClient networkClient, IPacketReceiver<MatchStartPacket> matchStartedListener) {
-		super(NetworkConstants.ENetworkKey.MATCH_STARTED, new GenericDeserializer<MatchStartPacket>(MatchStartPacket.class));
+		super(NetworkConstants.ENetworkKey.MATCH_STARTED, new GenericDeserializer<>(MatchStartPacket.class));
 		this.networkClient = networkClient;
 		this.matchStartedListener = matchStartedListener;
 	}

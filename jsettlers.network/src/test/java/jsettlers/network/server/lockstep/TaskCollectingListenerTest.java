@@ -58,7 +58,7 @@ public class TaskCollectingListenerTest {
 
 	@Test
 	public void testSendAndReceive() throws InterruptedException {
-		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<TaskPacket>(
+		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<>(
 				NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, TaskPacket.DEFAULT_DESERIALIZER);
 		client.registerListener(clientListener);
 

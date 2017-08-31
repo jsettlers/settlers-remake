@@ -53,7 +53,7 @@ public class StatisticsDialog extends JDialog {
 		StatisticsTableModel model = new StatisticsTableModel(data);
 		JTabbedPane tabs = new JTabbedPane();
 		JTable table = new JTable(model);
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
 		table.setRowSorter(sorter);
 
 		tabs.add(EditorLabels.getLabel("statistics.overview"), new JScrollPane(table));

@@ -25,7 +25,7 @@ public class TestPacketListener extends PacketChannelListener<TestPacket> {
 		super(key, TestPacket.DEFAULT_DESERIALIZER);
 	}
 
-	public final LinkedList<TestPacket> packets = new LinkedList<TestPacket>();
+	public final LinkedList<TestPacket> packets = new LinkedList<>();
 
 	@Override
 	protected void receivePacket(ENetworkKey key, TestPacket deserialized) {

@@ -14,7 +14,18 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition;
 
-import java8.util.Lists;
+import static java8.util.stream.StreamSupport.stream;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -33,7 +44,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.coordinates.CoordinateStream;
 import jsettlers.common.utils.mutables.MutableInt;
-import jsettlers.logic.buildings.MaterialProductionSettings;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
 import jsettlers.logic.map.grid.partition.PartitionsListingBorderVisitor.BorderPartitionInfo;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
@@ -41,17 +52,8 @@ import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Lists;
+import java8.util.Maps;
 
 /**
  * This class handles the partitions of the map.
@@ -74,16 +76,12 @@ public final class PartitionsGrid implements Serializable {
 	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
-	private final Team[] teams;
-
 	final short[] partitions;
 	private final byte[] towers;
 
+	private final short[] blockedPartitionsForPlayers;
 	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 
-	private final short[] blockedPartitionsForPlayers;
-
-	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
 	public PartitionsGrid(short width, short height, PlayerSetting[] playerSettings, IBlockingProvider blockingProvider) {
@@ -93,30 +91,24 @@ public final class PartitionsGrid implements Serializable {
 
 		this.players = new Player[playerSettings.length]; // create the players.
 		this.blockedPartitionsForPlayers = new short[playerSettings.length];
+
 		Map<Byte, Team> teams = new HashMap<>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			PlayerSetting playerSetting = playerSettings[(int) playerId];
 			if (playerSetting.isAvailable()) {
-				if (teams.get(playerSetting.getTeamId()) == null) {
-					teams.put(playerSetting.getTeamId(), new Team(playerSetting.getTeamId()));
-				}
+				Maps.computeIfAbsent(teams, playerSetting.getTeamId(), Team::new);
 				Team team = teams.get(playerSetting.getTeamId());
-				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(),
-						playerSetting.getCivilisation());
+				this.players[playerId] = new Player(playerId, team, (byte) playerSettings.length, playerSetting.getPlayerType(), playerSetting.getCivilisation());
 				team.registerPlayer(this.players[playerId]);
 				this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 			}
 		}
-		Team[] teamsArray = new Team[teams.size()];
-		this.teams = teams.values().toArray(teamsArray);
 
 		this.partitions = new short[width * height];
 		this.towers = new byte[width * height];
 
 		// the no player partition (the manager won't be started)
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
-
-		initAdditionalFields();
 	}
 
 	public void initWithPlayerSettings(PlayerSetting[] playerSettings) {
@@ -144,11 +136,6 @@ public final class PartitionsGrid implements Serializable {
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		initAdditionalFields();
-	}
-
-	private void initAdditionalFields() {
-		partitionsWriteLock = new Object();
 	}
 
 	public boolean isDefaultPartition(short partitionId) {
@@ -242,26 +229,21 @@ public final class PartitionsGrid implements Serializable {
 	 * 
 	 * @param pos
 	 *            The position of the tower.
-	 * @return
-	 */
-	public CoordinateStream removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+	  */
+	public void removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
 		if (tower == null) {
-			return CoordinateStream.EMPTY;
+			return ;
 		}
 
 		// reduce the tower counter
-		CoordinateStream towerStream = tower.area.stream();
-		changeTowerCounter(tower.playerId, towerStream, -1);
+		changeTowerCounter(tower.playerId, tower.area.stream(), -1);
 		checkOtherTowersInArea(tower);
-
-		return towerStream;
 	}
 
 	/**
-	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the
-	 * new player.
+	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the new player.
 	 * 
 	 * @param towerPosition
 	 * @param newPlayerId
@@ -298,16 +280,20 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	public void changePlayerAt(ShortPoint2D position, byte playerId) {
-		int idx = position.x + position.y * width;
+		changePlayerAt(position.x, position.y, playerId);
+	}
+
+	public void changePlayerAt(int x, int y, byte playerId) {
+		int idx = x + y * width;
 		if (towers[idx] <= 0) {
 			short newPartition = createNewPartition(playerId);
-			changePartitionUncheckedAt(position.x, position.y, newPartition);
-			notifyPlayerChangedListener(position.x, position.y, playerId);
+			changePartitionUncheckedAt(x, y, newPartition);
+			notifyPlayerChangedListener(x, y, playerId);
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.VALUES) {
-				borderVisitor.visit(position.x, position.y, currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+				borderVisitor.visit(x, y, currDir.gridDeltaX + x, currDir.gridDeltaY + y);
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
@@ -325,8 +311,7 @@ public final class PartitionsGrid implements Serializable {
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
 		area.stream().forEach((x, y) -> towers[x + y * width] = 0);
 
-		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius,
-				currTower -> currTower.playerId == tower.playerId);
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius, currTower -> currTower.playerId == tower.playerId);
 		stream(towersInRange)
 				.forEach(currTower -> area.stream()
 						.filter(currTower.e2.area::contains)
@@ -408,8 +393,7 @@ public final class PartitionsGrid implements Serializable {
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
 			short innerPartition = newPartitionsMap[i];
 
-			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos,
-					borderVisitor, true);
+			BorderTraversingAlgorithm.traverseBorder((x, y) -> partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition], pos, borderVisitor, true);
 
 			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, borderVisitor.getPartitionsList());
 		}
@@ -426,8 +410,7 @@ public final class PartitionsGrid implements Serializable {
 			Short currPartitionId = currPartitionInfo.partitionId;
 			BorderPartitionInfo existingPartitionInfo = foundPartitionsSet.get(currPartitionId);
 			if (existingPartitionInfo != null) {
-				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other
-																				// player's positions
+				if (partitionObjects[currPartitionId].playerId != playerId) { // the player cannot divide its own partitions => only check other player's positions
 					checkIfDividePartition(currPartitionInfo, existingPartitionInfo);
 
 					// if the entry of the set changed its partition, replace that entry with the one of the old partition. Further divides can only
@@ -469,8 +452,7 @@ public final class PartitionsGrid implements Serializable {
 		MutableInt partition2Size = new MutableInt();
 
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2,
-						partition2Size)) {
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, partitionInfo1, partition1Size, partitionInfo2, partition2Size)) {
 			if (partition1Size.value < partition2Size.value) {
 				dividePartition(partition, partitionInfo1.positionOfPartition, partitionInfo2.positionOfPartition);
 			} else {
@@ -511,7 +493,8 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	private void changeTowerCounter(final byte playerId, CoordinateStream influencingArea, int delta) {
-		influencingArea.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
+		influencingArea
+				.filter((x, y) -> partitionObjects[partitions[x + y * width]].playerId == playerId)
 				.forEach((x, y) -> towers[x + y * width] += delta);
 	}
 
@@ -571,8 +554,8 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	/**
-	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and
-	 * shall be divided. NOTE: There will be no check if the partition is really divided!
+	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and shall be divided. NOTE: There will be no check if the
+	 * partition is really divided!
 	 * 
 	 * @param oldPartition
 	 *            The original partition that now needs to be divided.
@@ -602,8 +585,7 @@ public final class PartitionsGrid implements Serializable {
 	 * @param oldPartition
 	 *            The id of the old partition.
 	 * @param relabelStartPos
-	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be
-	 *            relabeled.
+	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be relabeled.
 	 * @param newPartition
 	 *            The id of the new partition.
 	 */
@@ -636,7 +618,7 @@ public final class PartitionsGrid implements Serializable {
 		Partition newPartitionObject = partitionObjects[newPartition];
 
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			partitions[idx] = newPartition;
 		}
 
@@ -657,7 +639,7 @@ public final class PartitionsGrid implements Serializable {
 			int length = partitionObjects.length;
 
 			if (newPartitionId >= length) {
-				synchronized (partitionsWriteLock) {
+				synchronized (this) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
 
@@ -722,7 +704,7 @@ public final class PartitionsGrid implements Serializable {
 
 		// normalize the partitions
 		for (int y = 0; y < height; y++) {
-			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+			synchronized (this) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
 				for (int x = 0; x < width; x++) {
 					int idx = x + y * width;
 					this.partitions[idx] = this.partitionObjects[this.partitions[idx]].partitionId;
@@ -731,7 +713,7 @@ public final class PartitionsGrid implements Serializable {
 		}
 
 		// clear the partition objects
-		synchronized (partitionsWriteLock) {
+		synchronized (this) {
 			for (int i = 1; i < maxPartitions; i++) {
 				if (stoppedManagers.get(i)) {
 					this.partitionObjects[i] = null;
@@ -744,10 +726,6 @@ public final class PartitionsGrid implements Serializable {
 
 	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
 		return getPartitionAt(x, y).getPartitionData();
-	}
-
-	public Team[] getTeams() {
-		return teams;
 	}
 
 	public PartitionManagerSettings getPartitionSettings(ShortPoint2D position) {

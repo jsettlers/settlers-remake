@@ -14,12 +14,14 @@
  *******************************************************************************/
 package jsettlers.input;
 
-import java8.util.Objects;
-import java8.util.Optional;
-import java8.util.stream.Collectors;
+import static java8.util.stream.StreamSupport.stream;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.menu.UIState;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.mutables.MutableInt;
 import jsettlers.input.tasks.ChangeTowerSoldiersGuiTask;
@@ -40,7 +42,8 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.UpgradeSoldiersGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.map.grid.partition.manager.settings.MaterialProductionSettings;
+import jsettlers.logic.buildings.military.occupying.OccupyingBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.trading.TradingBuilding;
 import jsettlers.logic.movable.Movable;
@@ -49,11 +52,9 @@ import jsettlers.logic.movable.interfaces.ILogicMovable;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import static java8.util.stream.StreamSupport.stream;
+import java8.util.Objects;
+import java8.util.Optional;
+import java8.util.stream.Collectors;
 
 /**
  *
@@ -136,7 +137,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			SetMaterialDistributionSettingsGuiTask task = (SetMaterialDistributionSettingsGuiTask) guiTask;
-			grid.setMaterialDistributionSettings(task.getManagerPosition(), task.getMaterialType(), task.getProbabilities());
+			grid.setMaterialDistributionSettings(task.getManagerPosition(), task.getMaterialType(), task.getBuildingType(), task.getRatio());
 			break;
 		}
 
@@ -174,18 +175,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case SET_MATERIAL_PRODUCTION: {
 			SetMaterialProductionGuiTask task = (SetMaterialProductionGuiTask) guiTask;
+			MaterialProductionSettings materialProduction = grid.getMaterialProductionAt(task.getPosition());
+
 			switch (task.getProductionType()) {
 			case INCREASE:
-				grid.getMaterialProductionAt(task.getPosition()).increaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.increaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case DECREASE:
-				grid.getMaterialProductionAt(task.getPosition()).decreaseNumberOfFutureProducedMaterial(task.getMaterialType());
+				materialProduction.decreaseAbsoluteProductionRequest(task.getMaterialType());
 				break;
 			case SET_PRODUCTION:
-				grid.getMaterialProductionAt(task.getPosition()).setNumberOfFutureProducedMaterial(task.getMaterialType(), (int) task.getRatio());
+				materialProduction.setAbsoluteProductionRequest(task.getMaterialType(), (int) task.getRatio());
 				break;
 			case SET_RATIO:
-				grid.getMaterialProductionAt(task.getPosition()).setRatioOfMaterial(task.getMaterialType(), task.getRatio());
+				materialProduction.setUserConfiguredRelativeRequestValue(task.getMaterialType(), task.getRatio());
 				break;
 			}
 			break;
@@ -242,22 +245,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void save() {
 		try {
-			byte numberOfPlayers = grid.getNumberOfPlayers();
-			PlayerState[] playerStates = new PlayerState[numberOfPlayers];
-			for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
-				// find a tower of the player
-				UIState uiState = null;
-				for (Building building : Building.getAllBuildings()) {
-					if (building.getPlayer().playerId == playerId && building instanceof OccupyingBuilding) {
-						uiState = new UIState(building.getPos());
-						break;
-					}
-				}
-
-				playerStates[playerId] = new PlayerState(playerId, uiState);
-			}
-			playerStates[playerId] = new PlayerState(this.playerId, guiInterface.getUIState(), grid.getFogOfWar());
-			grid.save(playerStates);
+			grid.save(playerId, guiInterface.getUIState());
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}

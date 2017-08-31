@@ -22,21 +22,22 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This {@link Action} is used to set the distribution settings for a material in a manager.
- * 
+ *
  * @author Andreas Eberle
  */
 public class SetMaterialDistributionSettingsAction extends Action {
 
 	private final ShortPoint2D managerPosition;
 	private final EMaterialType materialType;
-	private final float[] probabilities;
+	private final EBuildingType buildingType;
+	private final float ratio;
 
-	public SetMaterialDistributionSettingsAction(ShortPoint2D managerPosition,
-			EMaterialType materialType, float[] probabilities) {
+	public SetMaterialDistributionSettingsAction(ShortPoint2D managerPosition, EMaterialType materialType, EBuildingType buildingType, float ratio) {
 		super(EActionType.SET_MATERIAL_DISTRIBUTION_SETTINGS);
 		this.managerPosition = managerPosition;
 		this.materialType = materialType;
-		this.probabilities = probabilities;
+		this.buildingType = buildingType;
+		this.ratio = ratio;
 	}
 
 	/**
@@ -54,11 +55,15 @@ public class SetMaterialDistributionSettingsAction extends Action {
 	}
 
 	/**
-	 * @return Returns the new distribution probabilities. The values correspond to the {@link EBuildingType} given by
-	 *         MaterialsOfBuildings.getBuildingTypesRequestingMaterial( {@link #getMaterialType()}).
+	 * @return Returns the new distribution ratio. The values correspond to the {@link EBuildingType} given by
+	 * MaterialsOfBuildings.getBuildingTypesRequestingMaterial( {@link #getMaterialType()}).
 	 * @see MaterialsOfBuildings#getBuildingTypesRequestingMaterial(EMaterialType)
 	 */
-	public float[] getProbabilities() {
-		return probabilities;
+	public float getRatio() {
+		return ratio;
+	}
+
+	public EBuildingType getBuildingType() {
+		return buildingType;
 	}
 }

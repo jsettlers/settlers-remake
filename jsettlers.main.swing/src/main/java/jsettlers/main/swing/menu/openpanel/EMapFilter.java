@@ -64,7 +64,7 @@ public enum EMapFilter {
 	/**
 	 * Constructor
 	 */
-	private EMapFilter() {
+	EMapFilter() {
 		this.name = Labels.getString("mapfilter." + name());
 	}
 

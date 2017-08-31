@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -20,13 +20,12 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -61,14 +60,14 @@ public class ExceptionDialog extends JFrame {
 	/**
 	 * Constructor
 	 * 
-	 * @param e
+	 * @param throwable
 	 *            Exception
 	 * @param description
 	 *            Description
 	 * @param t
 	 *            Thread
 	 */
-	public ExceptionDialog(Throwable e, String description, Thread t) {
+	public ExceptionDialog(Throwable throwable, String description, Thread t) {
 		setTitle(ExceptionLabels.getLabel("dialog.header"));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
@@ -82,52 +81,34 @@ public class ExceptionDialog extends JFrame {
 		pHeader.add(new JLabel(ExceptionLabels.getLabel("dialog.errordesc")), BorderLayout.CENTER);
 		add(pHeader, BorderLayout.NORTH);
 
-		JPanel pContents = prepareContents(e, description, t);
+		JPanel pContents = prepareContents(throwable, description, t);
 		add(pContents, BorderLayout.CENTER);
 
 		JPanel pFooter = new JPanel();
 		pFooter.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		JButton btCopyToClipboard = new JButton(ExceptionLabels.getLabel("dialog.copy"));
-		btCopyToClipboard.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				StringSelection selection = new StringSelection(errorString);
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(selection, selection);
-			}
+		btCopyToClipboard.addActionListener(e -> {
+			StringSelection selection = new StringSelection(errorString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(selection, selection);
 		});
 
 		JButton btOpenGithub = new JButton(ExceptionLabels.getLabel("dialog.open-github"));
-		btOpenGithub.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop.getDesktop().browse(new URI(ERROR_URL));
-				} catch (IOException | URISyntaxException e1) {
-					JOptionPane.showMessageDialog(ExceptionDialog.this, String.format(ExceptionLabels.getLabel("dialog.open-failed"), ERROR_URL));
-				}
+		btOpenGithub.addActionListener(e -> {
+			try {
+				Desktop.getDesktop().browse(new URI(ERROR_URL));
+			} catch (IOException | URISyntaxException e1) {
+				JOptionPane.showMessageDialog(ExceptionDialog.this, String.format(Locale.ENGLISH, ExceptionLabels.getLabel("dialog.open-failed"), ERROR_URL));
 			}
 		});
 		JButton btCloseDialog = new JButton(ExceptionLabels.getLabel("action.close"));
-		btCloseDialog.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ExceptionHandler.resetErrorCounter();
-				dispose();
-			}
+		btCloseDialog.addActionListener(e -> {
+			ExceptionHandler.resetErrorCounter();
+			dispose();
 		});
 		JButton btExit = new JButton(ExceptionLabels.getLabel("action.exit"));
-		btExit.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(5);
-			}
-		});
+		btExit.addActionListener(e -> System.exit(5));
 
 		pFooter.add(btCopyToClipboard);
 		pFooter.add(btOpenGithub);

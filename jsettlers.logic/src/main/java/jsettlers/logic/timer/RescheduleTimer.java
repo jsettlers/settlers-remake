@@ -20,7 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.network.client.interfaces.IGameClock;
 import jsettlers.network.synchronic.timer.INetworkTimerable;
@@ -40,7 +40,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 
 	protected RescheduleTimer() {
 		for (int i = 0; i < TIME_SLOTS; i++) {
-			timerables[i] = new ArrayList<IScheduledTimerable>();
+			timerables[i] = new ArrayList<>();
 		}
 	}
 

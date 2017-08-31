@@ -36,7 +36,7 @@ public class ActionFirerer implements ActionFireable {
 	/**
 	 * The actions that are queued to fire.
 	 */
-	private final LinkedBlockingQueue<FireringAction> toFire = new LinkedBlockingQueue<FireringAction>();
+	private final LinkedBlockingQueue<FireringAction> toFire = new LinkedBlockingQueue<>();
 
 	private final Object toFireMutex = new Object();
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 - 2016
+ * Copyright (c) 2015 - 2017
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,6 @@
 package jsettlers.mapcreator.main.window;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
@@ -34,14 +33,10 @@ public class OpenExistingDialog extends AbstractOkCancelDialog {
 	/**
 	 * Listener for Double click
 	 */
-	private final ActionListener doubleClickListener = new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			confirmed = true;
-			beforeOkAction();
-			dispose();
-		}
+	private final ActionListener doubleClickListener = e -> {
+		confirmed = true;
+		beforeOkAction();
+		dispose();
 	};
 
 	/**

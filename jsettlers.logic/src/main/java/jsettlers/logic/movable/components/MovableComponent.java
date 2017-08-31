@@ -101,11 +101,6 @@ public class MovableComponent extends Component implements IPathCalculatable{
         gameC.getMovableGrid().enterPosition(this.position, aMovableWrapper, false);
     }
 
-    @Override
-    public byte getPlayerId() {
-        return player.playerId;
-    }
-
     public void setPlayer(Player player) {
         this.player = player;
     }

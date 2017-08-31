@@ -14,14 +14,40 @@
  *******************************************************************************/
 package jsettlers.mapcreator.control;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.MapLoadException;
+import jsettlers.logic.map.loading.MapLoadException;
 import jsettlers.common.menu.FakeMapGame;
 import jsettlers.common.menu.IMapInterfaceListener;
 import jsettlers.common.menu.action.EActionType;
@@ -31,13 +57,14 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.exceptionhandler.ExceptionHandler;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.ETextDrawPosition;
 import jsettlers.logic.map.loading.MapLoader;
 import jsettlers.logic.map.loading.list.MapList;
 import jsettlers.logic.map.loading.newmap.MapFileHeader;
 import jsettlers.main.swing.SwingManagedJSettlers;
+import jsettlers.main.swing.settings.SettingsManager;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -59,8 +86,6 @@ import jsettlers.mapcreator.mapvalidator.AutoFixErrorAction;
 import jsettlers.mapcreator.mapvalidator.GotoNextErrorAction;
 import jsettlers.mapcreator.mapvalidator.IScrollToAble;
 import jsettlers.mapcreator.mapvalidator.ShowErrorsAction;
-import jsettlers.mapcreator.mapvalidator.ValidationResultListener;
-import jsettlers.mapcreator.mapvalidator.result.ValidationListModel;
 import jsettlers.mapcreator.mapvalidator.result.fix.FixData;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsDialog;
@@ -69,30 +94,6 @@ import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.landscape.ResourceTool;
 import jsettlers.mapcreator.tools.objects.PlaceBuildingTool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
-
-import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Controller for map editing
@@ -185,12 +186,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 	public EditorControl() {
 		// use heavyweight component
 		playerCombobox.setLightWeightPopupEnabled(false);
-		playerCombobox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				currentPlayer = (Integer) playerCombobox.getSelectedItem();
-			}
-		});
+		playerCombobox.addActionListener(e -> currentPlayer = (Integer) playerCombobox.getSelectedItem());
 		playerCombobox.setRenderer(new DefaultListCellRenderer() {
 			private static final long serialVersionUID = 1L;
 
@@ -200,7 +196,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 
 				Integer player = (Integer) value;
 				setIcon(new RectIcon(22, new Color(mapContent.getPlayerColor(player.byteValue()).getARGB()), Color.GRAY));
-				setText(String.format(EditorLabels.getLabel("general.player_x"), player));
+				setText(String.format(Locale.ENGLISH, EditorLabels.getLabel("general.player_x"), player));
 
 				return this;
 			}
@@ -316,7 +312,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		// center on screen
 		window.setLocationRelativeTo(null);
 
-		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(), ETextDrawPosition.TOP_RIGHT,
+		this.mapContent = new MapContent(new FakeMapGame(map), new SwingSoundPlayer(SettingsManager.getInstance()), ETextDrawPosition.TOP_RIGHT,
 				new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = mapContent.getInterfaceConnector();
 		region.setContent(mapContent);
@@ -485,12 +481,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Boolean checked = (Boolean) getValue(EditorFrame.CHECKBOX_VALUE);
-				if (checked != null && checked) {
-					showResourcesAlways = true;
-				} else {
-					showResourcesAlways = false;
-				}
-
+				showResourcesAlways = checked != null && checked;
 				map.setShowResources(showResourcesAlways | showResourcesBecauseOfTool);
 			}
 		});
@@ -579,13 +570,7 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 			}
 		};
 		window.registerAction("play", playAction);
-		validator.addListener(new ValidationResultListener() {
-
-			@Override
-			public void validationFinished(ValidationListModel list) {
-				playAction.setEnabled(list.size() == 0);
-			}
-		});
+		validator.addListener(list -> playAction.setEnabled(list.size() == 0));
 
 		window.registerAction("show-tools", new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -689,23 +674,20 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 		builder.redirectErrorStream(true);
 		final Process process = builder.start();
 
-		Thread streamReader = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		Thread streamReader = new Thread(() -> {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-				while (true) {
-					String line;
-					try {
-						line = reader.readLine();
-					} catch (IOException e) {
-						break;
-					}
-					if (line == null) {
-						break;
-					}
-					System.out.println(name + " " + line);
+			while (true) {
+				String line;
+				try {
+					line = reader.readLine();
+				} catch (IOException e) {
+					break;
 				}
+				if (line == null) {
+					break;
+				}
+				System.out.println(name + " " + line);
 			}
 		}, "ExecThread " + name);
 		streamReader.setDaemon(true);
@@ -787,43 +769,31 @@ public class EditorControl extends EditorControlBase implements IMapInterfaceLis
 				validator.reValidate();
 			}
 		} else if (action instanceof EndDrawingAction) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					undoRedo.endUseStep();
-					validator.reValidate();
-				}
+			SwingUtilities.invokeLater(() -> {
+				undoRedo.endUseStep();
+				validator.reValidate();
 			});
 		} else if (action instanceof AbortDrawingAction) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					MapDataDelta delta = mapData.getUndoDelta();
-					if (delta != null) {
-						mapData.apply(delta);
-					}
-					mapData.resetUndoDelta();
-					validator.reValidate();
+			SwingUtilities.invokeLater(() -> {
+				MapDataDelta delta = mapData.getUndoDelta();
+				if (delta != null) {
+					mapData.apply(delta);
 				}
+				mapData.resetUndoDelta();
+				validator.reValidate();
 			});
 		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
-				SwingUtilities.invokeLater(new Runnable() {
+				SwingUtilities.invokeLater(() -> {
+					PointAction lineAction = (PointAction) action;
 
-					@Override
-					public void run() {
-						PointAction lineAction = (PointAction) action;
+					ShapeType shape = toolSidebar.getActiveShape();
 
-						ShapeType shape = toolSidebar.getActiveShape();
+					tool.start(mapData, shape, lineAction.getPosition());
+					tool.apply(mapData, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
-						tool.start(mapData, shape, lineAction.getPosition());
-						tool.apply(mapData, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
-
-						undoRedo.endUseStep();
-						validator.reValidate();
-					}
+					undoRedo.endUseStep();
+					validator.reValidate();
 				});
 			}
 

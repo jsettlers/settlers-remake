@@ -207,11 +207,8 @@ public class ValidationList {
 				return false;
 			}
 			// bottom
-			if (y2 < y - MAX_DISTANCE) {
-				return false;
-			}
+			return y2 >= y - MAX_DISTANCE;
 
-			return true;
 		}
 
 	}
