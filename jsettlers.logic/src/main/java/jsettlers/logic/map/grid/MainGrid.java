@@ -1556,24 +1556,25 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setDock(DockPosition dockPosition, boolean place, Player player) {
-			ShortPoint2D point;
-			if (place) { // place dock
-				point = dockPosition.getDirection().rotateRight(3).getNextHexPoint(dockPosition.getPosition());
-				short partition = landscapeGrid.getBlockedPartitionAt(point.x, point.y);
-				for (int i = 0; i < 3; i++) {
-					point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
-					mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, player);
-					flagsGrid.setBlockedAndProtected(point.x, point.y, false);
-					partitionsGrid.changePlayerAt(point, player.getPlayerId());
-					landscapeGrid.setBlockedPartition(point.x, point.y, partition);
-				}
-			} else { // remove dock
-				for (int i = 0; i < 3; i++) {
-					point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
-					mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
-					flagsGrid.setBlockedAndProtected(point.x, point.y, true);
-				}
+		public void setDock(DockPosition dockPosition, Player player) {
+			ShortPoint2D point = dockPosition.getDirection().rotateRight(3).getNextHexPoint(dockPosition.getPosition());
+			short partition = landscapeGrid.getBlockedPartitionAt(point.x, point.y);
+			for (int i = 0; i < 3; i++) {
+				point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
+				mapObjectsManager.addSimpleMapObject(point, EMapObjectType.DOCK, false, player);
+				flagsGrid.setBlockedAndProtected(point.x, point.y, false);
+				partitionsGrid.changePlayerAt(point, player.getPlayerId());
+				landscapeGrid.setBlockedPartition(point.x, point.y, partition);
+			}
+		}
+
+		@Override
+		public void removeDock(DockPosition dockPosition) {
+			for (int i = 0; i < 3; i++) {
+				ShortPoint2D point = dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), i);
+				mapObjectsManager.removeMapObjectType(point.x, point.y, EMapObjectType.DOCK);
+				flagsGrid.setBlockedAndProtected(point.x, point.y, true);
+				landscapeGrid.setBlockedPartition(point.x, point.y, LandscapeGrid.SEA_BLOCKED_PARTITION);
 			}
 		}
 

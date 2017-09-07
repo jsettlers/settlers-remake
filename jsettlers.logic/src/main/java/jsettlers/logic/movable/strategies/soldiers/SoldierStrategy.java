@@ -145,7 +145,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			break;
 
 		case GOING_TO_TOWER:
-			if (building.isNotDestroyed() && building.getPlayer() == movable.getPlayer()) {
+			if (!building.isDestroyed() && building.getPlayer() == movable.getPlayer()) {
 				OccupierPlace place = building.addSoldier(this);
 				super.setVisible(false);
 				super.setPosition(place.getPosition().calculatePoint(building.getPosition()));
@@ -300,7 +300,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			oldPathTarget = pathTarget;
 		}
 
-		if (state == ESoldierState.GOING_TO_TOWER && (building == null || !building.isNotDestroyed() || building.getPlayer() != movable.getPlayer())) {
+		if (state == ESoldierState.GOING_TO_TOWER && (building == null || building.isDestroyed() || building.getPlayer() != movable.getPlayer())) {
 			result = false;
 		}
 

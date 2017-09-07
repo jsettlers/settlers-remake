@@ -38,8 +38,6 @@ import jsettlers.logic.player.Player;
  *
  */
 public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDockBuilding {
-	private static final long serialVersionUID = 1299515926871666381L;
-
 	private static final List<HarborBuilding> ALL_HARBORS = new ArrayList<>();
 
 	public static Iterable<HarborBuilding> getAllHarbors(final Player player) {
@@ -76,9 +74,7 @@ public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDoc
 	protected void killedEvent() {
 		super.killedEvent();
 		ALL_HARBORS.remove(this);
-		if (dockPosition != null) {
-			removeDock();
-		}
+		removeDock();
 	}
 
 	@Override
@@ -133,15 +129,13 @@ public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDoc
 			return;
 		}
 
-		if (dockPosition != null) { // replace dock
-			grid.setDock(dockPosition, false, this.getPlayer());
-		}
+		removeDock();
 		if (isSelected()) {
 			drawWaypointLine(false);
 		}
 
 		dockPosition = newDockPosition;
-		grid.setDock(dockPosition, true, this.getPlayer());
+		grid.setDock(dockPosition, this.getPlayer());
 
 		if (isSelected()) {
 			drawWaypointLine(true);
@@ -165,7 +159,7 @@ public class HarborBuilding extends TradingBuilding implements IShipHarbor, IDoc
 		if (this.dockPosition == null) {
 			return;
 		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayer());
+		this.grid.removeDock(this.dockPosition);
 		this.dockPosition = null;
 	}
 }

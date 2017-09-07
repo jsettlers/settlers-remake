@@ -47,7 +47,7 @@ public interface IBuildingsGrid {
 	 * Gives the height at the given position.
 	 *
 	 * @param position
-	 * 		position to be checked.
+	 *            position to be checked.
 	 * @return height at given position.
 	 */
 	byte getHeightAt(ShortPoint2D position);
@@ -72,9 +72,9 @@ public interface IBuildingsGrid {
 	 * Gives the movable currently located at the given position.
 	 *
 	 * @param position
-	 * 		position to be checked.
+	 *            position to be checked.
 	 * @return the movable currently located at the given position<br>
-	 * or null if no movable is located at the given position.
+	 *         or null if no movable is located at the given position.
 	 */
 	ILogicMovable getMovable(ShortPoint2D position);
 
@@ -98,7 +98,9 @@ public interface IBuildingsGrid {
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
-	void setDock(DockPosition dockPosition, boolean place, Player player);
+	void setDock(DockPosition dockPosition, Player player);
+
+	void removeDock(DockPosition dockPosition);
 
 	/**
 	 * @return dijkstra algorithm to be used by buildings.
@@ -144,8 +146,8 @@ public interface IBuildingsGrid {
 	 * @param workAreaCenter
 	 * @param radius
 	 * @param draw
-	 * 		If true, the work area circle is drawn,<br>
-	 * 		if false, it is removed.
+	 *            If true, the work area circle is drawn,<br>
+	 *            if false, it is removed.
 	 */
 	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
 
@@ -153,12 +155,12 @@ public interface IBuildingsGrid {
 	 * Draws the trading path.
 	 *
 	 * @param start
-	 * 		The market position.
+	 *            The market position.
 	 * @param waypoints
-	 * 		The waypoints. May contain null elements.
+	 *            The waypoints. May contain null elements.
 	 * @param draw
-	 * 		If true, the line is drawn,<br>
-	 * 		if false, it is removed.
+	 *            If true, the line is drawn,<br>
+	 *            if false, it is removed.
 	 */
 	void drawTradingPathLine(ShortPoint2D start, ShortPoint2D[] waypoints, boolean draw);
 

@@ -32,139 +32,136 @@ import jsettlers.logic.movable.MovableStrategy;
  *
  */
 public class CargoBoatStrategy extends MovableStrategy {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final short SHIP_WAYPOINT_SEARCH_RADIUS = 50;
+	private static final short SHIP_WAYPOINT_SEARCH_RADIUS = 50;
 
-    private EShipState state = EShipState.JOBLESS;
+	private EShipState state = EShipState.JOBLESS;
 
-    private IShipHarbor harbor;
-    private Iterator<ShortPoint2D> waypoints;
+	private IShipHarbor harbor;
+	private Iterator<ShortPoint2D> waypoints;
 
-    private Movable ship;
+	private Movable ship;
 
-    public CargoBoatStrategy(Movable movable) {
-        super(movable);
-        ship = movable;
-    }
+	public CargoBoatStrategy(Movable movable) {
+		super(movable);
+		ship = movable;
+	}
 
-    @Override
-    protected void action() {
-        switch (state) {
-            case JOBLESS:
-                if (this.ship.getStateProgress() < 0.99) { // ship not ready
-                    break;
-                }
-                this.harbor = findNextHarborNeedingShip();
+	@Override
+	protected void action() {
+		switch (state) {
+		case JOBLESS:
+			this.harbor = findNextHarborNeedingShip();
 
-                if (this.harbor == null) { // no harbor found
-                    break;
-                }
+			if (this.harbor == null) { // no harbor found
+				break;
+			}
 
-            case INIT_GOING_TO_HARBOR:
-                if (harbor.needsShip() && super.goToPos(harbor.getWaypointsStartPosition())) {
-                    state = EShipState.GOING_TO_HARBOR;
-                } else {
-                    reset();
-                }
-                break;
+		case INIT_GOING_TO_HARBOR:
+			if (harbor.needsShip() && super.goToPos(harbor.getWaypointsStartPosition())) {
+				state = EShipState.GOING_TO_HARBOR;
+			} else {
+				reset();
+			}
+			break;
 
-            case GOING_TO_HARBOR:
-                int cargoTotal = 0;
-                int cargoCount;
-                EMaterialType material;
-                for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
-                    if (ship.getCargoCount(stack) == 0) {
-                        material = harbor.tryToTakeShipMaterial();
-                        if (material != null) {
-                            ship.setCargoType(material, stack);
-                            cargoCount = 1 + harbor.tryToTakeFurtherMaterial(material, 7);
-                            ship.setCargoCount(cargoCount, stack);
-                            cargoTotal += cargoCount;
-                        }
-                    }
-                }
-                if (cargoTotal == 0) {
-                    reset();
-                    break;
-                } else {
-                    this.waypoints = harbor.getWaypointsIterator();
-                    state = EShipState.GOING_TO_TARGET;
-                }
+		case GOING_TO_HARBOR:
+			int cargoTotal = 0;
+			int cargoCount;
+			EMaterialType material;
+			for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
+				if (ship.getCargoCount(stack) == 0) {
+					material = harbor.tryToTakeShipMaterial();
+					if (material != null) {
+						ship.setCargoType(material, stack);
+						cargoCount = 1 + harbor.tryToTakeFurtherMaterial(material, 7);
+						ship.setCargoCount(cargoCount, stack);
+						cargoTotal += cargoCount;
+					}
+				}
+			}
+			if (cargoTotal == 0) {
+				reset();
+				break;
+			} else {
+				this.waypoints = harbor.getWaypointsIterator();
+				state = EShipState.GOING_TO_TARGET;
+			}
 
-            case GOING_TO_TARGET:
-                if (!goToNextWaypoint()) { // no waypoint left
-                    dropMaterialIfPossible();
-                    waypoints = null;
-                    state = EShipState.INIT_GOING_TO_HARBOR;
-                }
-                break;
+		case GOING_TO_TARGET:
+			if (!goToNextWaypoint()) { // no waypoint left
+				dropMaterialIfPossible();
+				waypoints = null;
+				state = EShipState.INIT_GOING_TO_HARBOR;
+			}
+			break;
 
-            default:
-                break;
-        }
-    }
+		default:
+			break;
+		}
+	}
 
-    private boolean goToNextWaypoint() {
-        while (waypoints.hasNext()) {
-            ShortPoint2D nextPosition = waypoints.next();
-            if (super.preSearchPath(true, nextPosition.x, nextPosition.y, SHIP_WAYPOINT_SEARCH_RADIUS, ESearchType.VALID_FREE_POSITION)) {
-                super.followPresearchedPath();
-                return true;
-            }
-        }
+	private boolean goToNextWaypoint() {
+		while (waypoints.hasNext()) {
+			ShortPoint2D nextPosition = waypoints.next();
+			if (super.preSearchPath(true, nextPosition.x, nextPosition.y, SHIP_WAYPOINT_SEARCH_RADIUS, ESearchType.VALID_FREE_POSITION)) {
+				super.followPresearchedPath();
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    private void reset() {
-        dropMaterialIfPossible();
-        harbor = null;
-        waypoints = null;
-        state = EShipState.JOBLESS;
-    }
+	private void reset() {
+		dropMaterialIfPossible();
+		harbor = null;
+		waypoints = null;
+		state = EShipState.JOBLESS;
+	}
 
-    private void dropMaterialIfPossible() {
-        int cargoCount;
-        EMaterialType material;
-        for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
-            cargoCount = ship.getCargoCount(stack);
-            material = ship.getCargoType(stack);
-            while (cargoCount > 0) {
-                super.getGrid().dropMaterial(movable.getPosition(), material, true, true);
-                cargoCount--;
-            }
-            ship.setCargoCount(0, stack);
-        }
-    }
+	private void dropMaterialIfPossible() {
+		int cargoCount;
+		EMaterialType material;
+		for (int stack = 0; stack < ship.getNumberOfStacks(); stack++) {
+			cargoCount = ship.getCargoCount(stack);
+			material = ship.getCargoType(stack);
+			while (cargoCount > 0) {
+				super.getGrid().dropMaterial(movable.getPosition(), material, true, true);
+				cargoCount--;
+			}
+			ship.setCargoCount(0, stack);
+		}
+	}
 
-    private IShipHarbor findNextHarborNeedingShip() {
-        if (this.harbor != null && this.harbor.needsShip()) {
-            return this.harbor;
-        }
+	private IShipHarbor findNextHarborNeedingShip() {
+		if (this.harbor != null && this.harbor.needsShip()) {
+			return this.harbor;
+		}
 
-        Iterable<? extends IShipHarbor> harbors = HarborBuilding.getAllHarbors(movable.getPlayer());
-        List<IShipHarbor> harborsNeedingShips = new ArrayList<>();
+		Iterable<? extends IShipHarbor> harbors = HarborBuilding.getAllHarbors(movable.getPlayer());
+		List<IShipHarbor> harborsNeedingShips = new ArrayList<>();
 
-        for (IShipHarbor currHarbor : harbors) {
-            if (currHarbor.needsShip()) {
-                harborsNeedingShips.add(currHarbor);
-            }
-        }
+		for (IShipHarbor currHarbor : harbors) {
+			if (currHarbor.needsShip()) {
+				harborsNeedingShips.add(currHarbor);
+			}
+		}
 
-        if (!harborsNeedingShips.isEmpty()) {
-            // randomly distribute the ships onto the harbors needing them
-            return harborsNeedingShips.get(MatchConstants.random().nextInt(harborsNeedingShips.size()));
-        } else {
-            return null;
-        }
-    }
+		if (!harborsNeedingShips.isEmpty()) {
+			// randomly distribute the ships onto the harbors needing them
+			return harborsNeedingShips.get(MatchConstants.random().nextInt(harborsNeedingShips.size()));
+		} else {
+			return null;
+		}
+	}
 
-    private enum EShipState {
-        JOBLESS,
-        INIT_GOING_TO_HARBOR,
-        GOING_TO_HARBOR,
-        GOING_TO_TARGET,
-        DEAD
-    }
+	private enum EShipState {
+		JOBLESS,
+		INIT_GOING_TO_HARBOR,
+		GOING_TO_HARBOR,
+		GOING_TO_TARGET,
+		DEAD
+	}
 }

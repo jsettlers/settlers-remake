@@ -442,9 +442,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		System.out.println("building killed");
 
 		if (grid != null) {
-			if (this.type == EBuildingType.DOCKYARD && ((DockyardBuilding) this).getDock() != null) {
-				((DockyardBuilding) this).removeDock();
-			}
 			grid.removeBuildingAt(pos);
 			grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
 					EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
@@ -555,8 +552,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return this.heightAvg;
 	}
 
-	public final boolean isNotDestroyed() {
-		return state != EBuildingState.DESTROYED;
+	public final boolean isDestroyed() {
+		return state == EBuildingState.DESTROYED;
 	}
 
 	protected List<? extends IRequestStack> getStacks() {

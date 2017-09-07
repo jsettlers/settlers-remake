@@ -30,6 +30,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -518,11 +519,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 
 		IMovable movable = map.getMovableAt(x, y);
 		if (movable != null) {
-			if (movable.isShip()) {
-				this.objectDrawer.drawShip(x, y, movable);
-			} else {
-				this.objectDrawer.draw(movable);
-			}
+			this.objectDrawer.draw(movable);
 		}
 
 		if (map.isBorder(x, y)) {

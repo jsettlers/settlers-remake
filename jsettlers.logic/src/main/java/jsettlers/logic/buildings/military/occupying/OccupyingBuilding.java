@@ -518,7 +518,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupied, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-			if (!occupyingBuilding.isNotDestroyed()) {
+			if (occupyingBuilding.isDestroyed()) {
 				return; // building is destroyed => do nothing
 			}
 

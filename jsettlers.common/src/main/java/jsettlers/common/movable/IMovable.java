@@ -94,8 +94,6 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 */
 	void stopOrStartWorking(boolean stop);
 
-	float getStateProgress();
-
 	ImageLink[] getImages();
 
 	boolean isShip();

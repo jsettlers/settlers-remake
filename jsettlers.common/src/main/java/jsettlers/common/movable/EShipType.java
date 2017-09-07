@@ -15,14 +15,15 @@
 
 package jsettlers.common.movable;
 
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 
 /**
  * Created by Andreas Eberle on 26.07.2017.
  */
 public enum EShipType {
-	FERRY(EMovableType.FERRY, 4, 1),
-	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1);
+	FERRY(EMovableType.FERRY, 4, 1, EMapObjectType.FERRY),
+	CARGO_SHIP(EMovableType.CARGO_BOAT, 6, 1, EMapObjectType.CARGO_BOAT);
 
 	public static final EShipType[] VALUES = values();
 	private static final int BUILD_STEPS_PER_MATERIAL = 6;
@@ -30,12 +31,14 @@ public enum EShipType {
 	public final EMovableType movableType;
 	public final short requiredPlanks;
 	public final short requiredIron;
+	public final EMapObjectType mapObjectType;
 	public final int buildingSteps;
 
-	EShipType(EMovableType movableType, int requiredPlanks, int requiredIron) {
+	EShipType(EMovableType movableType, int requiredPlanks, int requiredIron, EMapObjectType mapObjectType) {
 		this.movableType = movableType;
 		this.requiredPlanks = (short) requiredPlanks;
 		this.requiredIron = (short) requiredIron;
+		this.mapObjectType = mapObjectType;
 		this.buildingSteps = (requiredIron + requiredPlanks) * BUILD_STEPS_PER_MATERIAL;
 	}
 

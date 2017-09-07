@@ -99,6 +99,8 @@ public enum EMovableType {
 			SWORDSMAN_L1, SWORDSMAN_L2, SWORDSMAN_L3,
 			PIKEMAN_L1, PIKEMAN_L2, PIKEMAN_L3);
 
+	public static final Set<EMovableType> SHIPS = EnumSet.of(FERRY, CARGO_BOAT);
+
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;
 	private final boolean needsPlayersGround;
@@ -171,6 +173,10 @@ public enum EMovableType {
 
 	public boolean isInfantry() {
 		return INFANTRY.contains(this);
+	}
+
+	public boolean isShip() {
+		return SHIPS.contains(this);
 	}
 
 	public ESoldierType getSoldierType() {

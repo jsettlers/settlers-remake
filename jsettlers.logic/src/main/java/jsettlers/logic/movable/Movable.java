@@ -17,9 +17,7 @@ package jsettlers.logic.movable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.path.Path;
@@ -54,7 +52,6 @@ import jsettlers.logic.timer.RescheduleTimer;
  *
  */
 public final class Movable implements ILogicMovable {
-	private static final long serialVersionUID = 2472076796407425256L;
 	private static final HashMap<Integer, ILogicMovable> movablesByID = new HashMap<>();
 	private static final ConcurrentLinkedQueue<ILogicMovable> allMovables = new ConcurrentLinkedQueue<>();
 	private static int nextID = Integer.MIN_VALUE;
@@ -92,12 +89,10 @@ public final class Movable implements ILogicMovable {
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
-	private float constructionProgress = 0.0f;
 
 	// the following block of data only for ships
 	private ImageLink[] images = null;
 	private ArrayList<IMovable> passengers = new ArrayList<>();
-	public static final Set<EMovableType> ships = EnumSet.of(EMovableType.FERRY, EMovableType.CARGO_BOAT);
 	private ShortPoint2D unloadingPosition = null;
 	private final int cargoStacks = 3;
 	private EMaterialType cargoType[] = new EMaterialType[cargoStacks];
@@ -138,10 +133,13 @@ public final class Movable implements ILogicMovable {
 	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
 	 *
 	 * @param ois
+	 *            ObjectInputStream
 	 * @throws IOException
+	 *             Exception regarding IO
 	 * @throws ClassNotFoundException
+	 *             Class not found exception
 	 */
-	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		movablesByID.put(this.id, this);
 		allMovables.add(this);
@@ -152,11 +150,9 @@ public final class Movable implements ILogicMovable {
 	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
 	 *
 	 * @param targetPosition
+	 *            Desired position the movable should move to
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (this.isShip() && this.getStateProgress() < 0.99) {
-			return;
-		}
 		if (movableType.isPlayerControllable() && strategy.canBeControlledByPlayer() && !alreadyWalkingToPosition(targetPosition)) {
 			this.requestedTargetPosition = targetPosition;
 		}
@@ -502,9 +498,6 @@ public final class Movable implements ILogicMovable {
 		if (state == EMovableState.DEAD) {
 			return false;
 		}
-		if (this.isShip() && this.getStateProgress() < 0.99) {
-			return false;
-		}
 
 		switch (state) {
 		case DOING_NOTHING:
@@ -839,11 +832,11 @@ public final class Movable implements ILogicMovable {
 	 * @return returns the movable with the given ID<br>
 	 *         or null if the id can not be found
 	 */
-	public final static ILogicMovable getMovableByID(int id) {
+	public static ILogicMovable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	public final static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
+	public static ConcurrentLinkedQueue<ILogicMovable> getAllMovables() {
 		return allMovables;
 	}
 
@@ -1015,10 +1008,7 @@ public final class Movable implements ILogicMovable {
 
 	@Override
 	public final boolean isAttackable() {
-		if (strategy == null) {
-			return false;
-		}
-		return strategy.isAttackable();
+		return strategy != null && strategy.isAttackable();
 	}
 
 	public void aimAtFerry(Movable ferry) {
@@ -1069,10 +1059,6 @@ public final class Movable implements ILogicMovable {
 				+ " direction: " + direction + " material: " + materialType;
 	}
 
-	public float getStateProgress() {
-		return this.constructionProgress;
-	}
-
 	private enum EMovableState {
 		PLAYING_ACTION,
 		PATHING,
@@ -1093,12 +1079,8 @@ public final class Movable implements ILogicMovable {
 		DEBUG_STATE
 	}
 
-	public void increaseStateProgress(float step) {
-		this.constructionProgress += step;
-	}
-
 	public boolean isShip() {
-		return ships.contains(this.movableType);
+		return movableType.isShip();
 	}
 
 	public final ImageLink[] getImages() {

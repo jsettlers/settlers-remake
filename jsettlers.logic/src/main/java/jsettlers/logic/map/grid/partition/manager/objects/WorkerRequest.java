@@ -45,7 +45,7 @@ public final class WorkerRequest extends WorkerCreationRequest implements ILocat
 
 	@Override
 	public boolean isRequestAlive() {
-		return building.isNotDestroyed();
+		return !building.isDestroyed();
 	}
 
 	@Override

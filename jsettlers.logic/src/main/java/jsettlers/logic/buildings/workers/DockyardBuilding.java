@@ -30,16 +30,15 @@ import jsettlers.logic.buildings.IDockBuilding;
 import jsettlers.logic.buildings.stack.IRequestStack;
 import jsettlers.logic.buildings.stack.RequestStack;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.objects.ShipInConstructionMapObject;
 import jsettlers.logic.player.Player;
 
 /**
  * An extension to the worker building for dockyards
  */
 public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipConstruction, IDockBuilding {
-	private static final long serialVersionUID = -6262522980943839741L;
-
 	private EShipType orderedShipType = null;
-	private Movable ship = null;
+	private ShipInConstructionMapObject ship = null;
 	private DockPosition dockPosition = null;
 
 	public DockyardBuilding(Player player, ShortPoint2D position, IBuildingsGrid buildingsGrid) {
@@ -64,29 +63,37 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	}
 
 	public void buildShipAction() {
-		if (this.orderedShipType == null) {
+		if (orderedShipType == null || isDestroyed()) {
 			return;
 		}
 
-		if (this.ship == null) {
-			ShortPoint2D position = this.dockPosition.getDirection().getNextHexPoint(this.dockPosition.getPosition(), 5);
+		if (ship == null) {
+			ShortPoint2D shipPosition = getShipPosition();
 			// push old ship
-			this.ship = (Movable) super.grid.getMovableGrid().getMovableAt(position.x, position.y);
-			if (this.ship != null) {
-				this.ship.leavePosition();
+			Movable existingShip = (Movable) grid.getMovableGrid().getMovableAt(shipPosition.x, shipPosition.y);
+			if (existingShip != null) {
+				existingShip.leavePosition();
 			}
 			// make new ship
-			this.ship = new Movable(super.grid.getMovableGrid(), this.orderedShipType.movableType, position, super.getPlayer());
 			EDirection direction = dockPosition.getDirection().getNeighbor(-1);
-			this.ship.setDirection(direction);
+			ship = new ShipInConstructionMapObject(orderedShipType, direction);
+			grid.getMapObjectsManager().addMapObject(shipPosition, ship);
 		}
 
-		this.ship.increaseStateProgress((float) (1. / orderedShipType.buildingSteps));
+		ship.workOnShip();
 
-		if (this.ship.getStateProgress() >= .99) {
-			this.ship = null;
-			this.orderedShipType = null;
+		if (ship.isFinished()) { // replace ShipInConstructionMapObject with Movable
+			Movable shipMovable = new Movable(super.grid.getMovableGrid(), orderedShipType.movableType, getShipPosition(), super.getPlayer());
+			shipMovable.setDirection(ship.getDirection());
+			removeShipInConstructionMapObject();
+
+			ship = null;
+			orderedShipType = null;
 		}
+	}
+
+	private ShortPoint2D getShipPosition() {
+		return dockPosition.getDirection().getNextHexPoint(dockPosition.getPosition(), 5);
 	}
 
 	public void setDock(ShortPoint2D requestedDockPosition) {
@@ -99,11 +106,9 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 			return;
 		}
 
-		if (dockPosition != null) { // remove old dock
-			grid.setDock(dockPosition, false, this.getPlayer());
-		}
+		removeDock();
 		dockPosition = newDockPosition;
-		grid.setDock(dockPosition, true, this.getPlayer());
+		grid.setDock(dockPosition, this.getPlayer());
 	}
 
 	@Override
@@ -119,14 +124,6 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 		return this.dockPosition;
 	}
 
-	public void removeDock() {
-		if (this.dockPosition == null) {
-			return;
-		}
-		this.grid.setDock(this.dockPosition, false, this.getPlayer());
-		this.dockPosition = null;
-	}
-
 	public void orderShipType(EShipType shipType) {
 		if (orderedShipType != null || dockPosition == null || !isOccupied()) {
 			return;
@@ -139,5 +136,25 @@ public class DockyardBuilding extends WorkerBuilding implements IBuilding.IShipC
 	@Override
 	public EShipType getOrderedShipType() { // TODO use EShipType outside of this class
 		return orderedShipType;
+	}
+
+	@Override
+	protected void killedEvent() {
+		removeShipInConstructionMapObject();
+		removeDock();
+		super.killedEvent();
+	}
+
+	private void removeDock() {
+		if (this.dockPosition == null) {
+			return;
+		}
+		this.grid.removeDock(this.dockPosition);
+		this.dockPosition = null;
+	}
+
+	private void removeShipInConstructionMapObject() {
+		ShortPoint2D shipPosition = getShipPosition();
+		grid.getMapObjectsManager().removeMapObjectType(shipPosition.x, shipPosition.y, orderedShipType.mapObjectType);
 	}
 }
