@@ -16,17 +16,82 @@
 package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
 
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 
 import jsettlers.main.android.R;
+import jsettlers.main.android.core.controls.ActionControls;
+import jsettlers.main.android.core.controls.ControlsResolver;
+import jsettlers.main.android.core.controls.DrawControls;
+import jsettlers.main.android.core.controls.PositionControls;
+import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
+import jsettlers.main.android.gameplay.viewmodels.ProductionViewModel;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
+
+import static java8.util.J8Arrays.stream;
 
 /**
  * Created by tompr on 24/11/2016.
  */
 @EFragment(R.layout.menu_goods_production)
 public class GoodsProductionFragment extends Fragment {
-	public static GoodsProductionFragment newInstance() {
-		return new GoodsProductionFragment_();
-	}
+    public static GoodsProductionFragment newInstance() {
+        return new GoodsProductionFragment_();
+    }
+
+    private ProductionAdapter productionAdapter;
+
+    @ViewById(R.id.recyclerView)
+    RecyclerView recyclerView;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(ProductionViewModel.class);
+
+
+        productionAdapter = new ProductionAdapter();
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(productionAdapter);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    class ProductionAdapter extends RecyclerView.Adapter<ProductionItemViewHolder> {
+
+        @Override
+        public ProductionItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(ProductionItemViewHolder holder, int position) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return 0;
+        }
+    }
+
+    class ProductionItemViewHolder extends RecyclerView.ViewHolder {
+
+        public ProductionItemViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
 }

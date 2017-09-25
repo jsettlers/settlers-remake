@@ -4,13 +4,13 @@ apply plugin: 'java'
 ext {
     streamSupportVersion = '1.5.4'
 
-    androidAnnotationsVersion = '4.3.0'
-    androidSupportLibraryVersion = '25.3.1'
+    androidAnnotationsVersion = '4.3.1'
+    androidSupportLibraryVersion = '26.1.0'
 
-    androidBuildToolsVersion = '25.0.3'
-    androidCompileSdkVersion = 25
+    androidBuildToolsVersion = '26.0.1'
+    androidCompileSdkVersion = 26
     androidMinSdkVersion = 19
-    androidTargetSdkVersion = 25
+    androidTargetSdkVersion = 26
 }
 
 buildscript {
@@ -30,6 +30,7 @@ allprojects {
         mavenCentral()
         jcenter()
         maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
+        maven { url "https://maven.google.com" }
     }
 }
 

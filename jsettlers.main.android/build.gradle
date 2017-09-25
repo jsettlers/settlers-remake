@@ -64,6 +64,8 @@ dependencies {
     compile 'com.android.support:support-v4:' + rootProject.ext.androidSupportLibraryVersion
     compile 'com.android.support:gridlayout-v7:' + rootProject.ext.androidSupportLibraryVersion
 
+    compile "android.arch.lifecycle:extensions:1.0.0-beta1"
+
     compile 'biz.laenger.android:vpbs:0.0.3'
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.yqritc:recyclerview-flexibledivider:1.4.0'
