@@ -15,28 +15,27 @@
 
 package jsettlers.main.android.gameplay.ui.fragments.menus.goods;
 
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import jsettlers.main.android.R;
-import jsettlers.main.android.core.controls.ActionControls;
-import jsettlers.main.android.core.controls.ControlsResolver;
-import jsettlers.main.android.core.controls.DrawControls;
-import jsettlers.main.android.core.controls.PositionControls;
-import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
-import jsettlers.main.android.gameplay.viewmodels.ProductionViewModel;
-
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-import static java8.util.J8Arrays.stream;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
+
+import jsettlers.main.android.R;
+import jsettlers.main.android.gameplay.viewmodels.ControlsViewModelFactory;
+import jsettlers.main.android.gameplay.viewmodels.ProductionViewModel;
+import jsettlers.main.android.gameplay.viewstates.ProductionState;
+import jsettlers.main.android.utils.OriginalImageProvider;
 
 /**
  * Created by tompr on 24/11/2016.
@@ -47,6 +46,8 @@ public class GoodsProductionFragment extends Fragment {
         return new GoodsProductionFragment_();
     }
 
+    private ProductionViewModel viewModel;
+
     private ProductionAdapter productionAdapter;
 
     @ViewById(R.id.recyclerView)
@@ -56,13 +57,15 @@ public class GoodsProductionFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(ProductionViewModel.class);
+        viewModel = ViewModelProviders.of(this, new ControlsViewModelFactory(getActivity())).get(ProductionViewModel.class);
 
-
-        productionAdapter = new ProductionAdapter();
+        productionAdapter = new ProductionAdapter(getActivity());
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(productionAdapter);
+
+
+        viewModel.getProductionStates().observe(this, productionAdapter::updateProductionStates);
     }
 
     @Override
@@ -72,26 +75,69 @@ public class GoodsProductionFragment extends Fragment {
 
     class ProductionAdapter extends RecyclerView.Adapter<ProductionItemViewHolder> {
 
+        private final LayoutInflater layoutInflater;
+
+        private ProductionState[] productionStates;
+
+        public ProductionAdapter(Activity activity) {
+            this.layoutInflater = LayoutInflater.from(activity);
+        }
+
         @Override
         public ProductionItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
+            View view = layoutInflater.inflate(R.layout.vh_production, parent, false);
+            return new ProductionItemViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ProductionItemViewHolder holder, int position) {
-
+            ProductionState productionState = productionStates[position];
+            holder.bind(productionState);
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            if (productionStates == null) {
+                return 0;
+            } else {
+                return productionStates.length;
+            }
+        }
+
+        public void updateProductionStates(ProductionState[] productionStates) {
+            this.productionStates = productionStates;
+            notifyDataSetChanged();
         }
     }
 
     class ProductionItemViewHolder extends RecyclerView.ViewHolder {
 
+        private final ImageView imageView;
+        private final SeekBar seekBar;
+        private final TextView quantityTextView;
+        private final TextView incrementTextView;
+        private final TextView decrementTextView;
+
         public ProductionItemViewHolder(View itemView) {
             super(itemView);
+            imageView = itemView.findViewById(R.id.imageView_material);
+            seekBar = itemView.findViewById(R.id.seekBar);
+            quantityTextView = itemView.findViewById(R.id.textView_quantity);
+            incrementTextView = itemView.findViewById(R.id.textView_increment);
+            decrementTextView = itemView.findViewById(R.id.textView_decrement);
+
+            incrementTextView.setOnClickListener(view -> {
+
+            });
+
+            decrementTextView.setOnClickListener(view -> {
+
+            });
+        }
+
+        public void bind(ProductionState productionState) {
+            OriginalImageProvider.get(productionState.getMaterialType()).setAsImage(imageView);
+            quantityTextView.setText(productionState.getQuantity() + "");
         }
     }
 }

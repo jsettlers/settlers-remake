@@ -20,7 +20,7 @@ public class ControlsViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass == ProductionViewModel.class) {
-            return (T)new ProductionViewModel();
+            return (T)new ProductionViewModel(controlsResolver.getPositionControls());
         }
 
         throw new RuntimeException("ControlsViewModelFactory doesn't know how to create a: " + modelClass.toString());
